@@ -1,0 +1,82 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>activejdbc</groupId>
+    <artifactId>activejdbc-test-oracle</artifactId>
+    <packaging>jar</packaging>
+    <name>ActiveJDBC Framework Test for Oracle</name>
+    <url>http://maven.apache.org</url>
+
+    <parent>
+        <groupId>activejdbc</groupId>
+        <artifactId>activejdbc-root</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                    <fork>true</fork>
+                    <meminitial>128m</meminitial>
+                    <maxmem>512m</maxmem>
+                </configuration>
+            </plugin>
+            
+            <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.4.2</version>
+                    <configuration>
+                        <reportFormat>brief</reportFormat>
+                        <trimStackTrace>true</trimStackTrace>
+                        <useFile>false</useFile>
+                    </configuration>
+                </plugin>
+            <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>activejdbc</groupId>
+                        <artifactId>activejdbc-instrumentation</artifactId>
+                        <version>1.0-SNAPSHOT</version>
+                    </dependency>
+                </dependencies>
+                    <executions>
+                      <execution>
+                        <id>instrument</id>
+                        <phase>process-test-classes</phase>
+                          <configuration>
+                              <tasks>
+                                  <property name="test_classpath" refid="maven.test.classpath"/>
+                                  <property name="plugin_classpath" refid="maven.plugin.classpath"/>
+                                  <java classname="activejdbc.instrumentation.Main">
+                                      <sysproperty key="outputDirectory" value="${project.basedir}/target/test-classes"/>
+                                      <classpath>
+                                          <pathelement path="${test_classpath}"/>
+                                          <pathelement path="${plugin_classpath}"/>
+                                      </classpath>
+                                  </java>
+                              </tasks>
+                          </configuration>
+
+                          <goals>
+                          <goal>run</goal>
+                        </goals>
+                      </execution>
+                    </executions>
+                  </plugin>
+        </plugins>
+    </build>
+    
+    <dependencies>
+        <dependency><groupId>activejdbc</groupId>   <artifactId>activejdbc</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>activejdbc</groupId>   <artifactId>activejdbc-test</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>junit</groupId>        <artifactId>junit</artifactId></dependency>
+        <dependency><groupId>oracle</groupId>       <artifactId>ojdbc14</artifactId><version>10.2.0.1</version><scope>test</scope></dependency>        
+    </dependencies>
+</project>
