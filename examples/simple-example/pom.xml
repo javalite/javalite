@@ -28,9 +28,7 @@
                 <executions>
                     <execution>
                         <phase>process-classes</phase>
-                        <goals>
-                            <goal>instrument</goal>
-                        </goals>
+                        <goals><goal>instrument</goal></goals>
                     </execution>
                 </executions>
             </plugin>
