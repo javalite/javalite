@@ -18,6 +18,7 @@ limitations under the License.
 package javalite.test;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 import org.dom4j.tree.DefaultAttribute;
@@ -34,17 +35,19 @@ import java.util.List;
  */
 public class XPathHelper {
 
-    /**
-     * Selects text from a single node. 
-     *
-     * @param xpath expression that points to a single node.
-     * @param xml document.
-     * @return text from a selected node.
-     */
-    public static String selectText(String xpath, String xml) {
+    private Document doc;
+
+    public XPathHelper(String xml){
+        StringReader reader = new StringReader(xml);
         try {
-            StringReader reader = new StringReader(xml);
-            Document doc = new SAXReader().read(reader);
+            doc = new SAXReader().read(reader);
+        } catch (DocumentException e) {
+            throw new IllegalArgumentException("failed to parse XML", e);
+        }
+
+    }
+    public String selectText(String xpath) {
+        try {
             return ((Node) doc.selectObject(xpath)).getText();
         }
         catch(ClassCastException e){
@@ -53,19 +56,24 @@ public class XPathHelper {
         catch (Exception e) {
             throw new RuntimeException(e);
         }
+
     }
 
-    /**
-     * Counts a collection selected by XPath expression.
-     *
-     * @param xpath expression which mus evaluate to a list of items.
-     * @param xml xml document.
-     * @return size of a collection selected by expression.
-     */
-    public static int count(String xpath, String xml) {
+    public String attributeValue(String xpath) {
         try {
-            StringReader reader = new StringReader(xml);
-            Document doc = new SAXReader().read(reader);
+            DefaultAttribute at = (DefaultAttribute)doc.selectObject(xpath);
+            return at.getText();
+        }
+        catch(ClassCastException e){
+            throw new IllegalArgumentException("Found result is not an attribute, ensure that you have the right expression which evaluates to attribute.");
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int count(String xpath) {
+        try {
             Object o = doc.selectObject(xpath);
             if(o instanceof DefaultElement){
                 return 1;
@@ -79,6 +87,28 @@ public class XPathHelper {
         catch (Exception e) {
             throw new RuntimeException(e);
         }
+
+    }
+    /**
+     * Selects text from a single node. 
+     *
+     * @param xpath expression that points to a single node.
+     * @param xml document.
+     * @return text from a selected node.
+     */
+    public static String selectText(String xpath, String xml) {
+        return new XPathHelper(xml).selectText(xpath);
+    }
+
+    /**
+     * Counts a collection selected by XPath expression.
+     *
+     * @param xpath expression which mus evaluate to a list of items.
+     * @param xml xml document.
+     * @return size of a collection selected by expression.
+     */
+    public static int count(String xpath, String xml) {
+        return new XPathHelper(xml).count(xpath);
     }
 
     /**
@@ -89,17 +119,6 @@ public class XPathHelper {
      * @return value of selected attribute.
      */
     public static String attributeValue(String xpath, String xml) {
-        try {
-            StringReader reader = new StringReader(xml);
-            Document doc = new SAXReader().read(reader);
-            DefaultAttribute at = (DefaultAttribute)doc.selectObject(xpath);
-            return at.getText();
-        }
-        catch(ClassCastException e){
-            throw new IllegalArgumentException("Found result is not an attribute, ensure that you have the right expression which evaluates to attribute.");
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return new XPathHelper(xml).attributeValue(xpath);
     }
 }
