@@ -35,20 +35,19 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void testModelFinder() {
 
-        List<Person> list = Person.find("name = 'John'").orderBy("dob desc");
+        List<Person> list = Person.where("name = 'John'").orderBy("dob desc");
         a(1).shouldBeEqual(list.size());
     }
 
     @Test
     public void testModelFinderWithParams() {
 
-        List<Person> list = Person.find("name = ?", "John");
+        List<Person> list = Person.where("name = ?", "John");
         a(1).shouldBeEqual(list.size());
     }
 
     @Test
     public void testModelFinderWithListener() {
-
         Person.find("name='John'", new ModelListener<Person>() {
             public void onModel(Person person) {
                 System.out.println("Found person: " + person);
@@ -70,7 +69,6 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void testModelFinderAll() {
-
         List<Person> list = Person.findAll();
         a(4).shouldBeEqual(list.size());
     }
@@ -360,11 +358,11 @@ public class ModelTest extends ActiveJDBCTest {
 
         a.thaw();
 
-        expect(new DifferenceExpectation(u.getAll(Address.class)) {
+        expect(new DifferenceExpectation(u.getAll(Address.class).size()) {
             @Override
             public Object exec() {
                 u.add(a);
-                return u.getAll(Address.class);
+                return u.getAll(Address.class).size();
             }
         });
         u.add(a);
