@@ -1,0 +1,5 @@
+This is a simple example using ActiveJDBC.
+The script run.sh in this directory will build the program,
+collect dependencies and execute the main class.
+
+Run this script and observe the output
