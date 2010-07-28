@@ -393,13 +393,13 @@ public class ModelTest extends ActiveJDBCTest {
         a.set("zip", "60074");
         u.add(a);
 
-        System.out.println("Users: " + User.findAll());
-        System.out.println("Addresses: " + Address.findAll());
-
+        a(User.findAll().size()).shouldBeEqual(3);
+        a(Address.findAll().size()).shouldBeEqual(9);
         u.deleteCascade();
 
-        System.out.println("Users: " + User.findAll());
-        System.out.println("Addresses: " + Address.findAll());
+        a(User.findAll().size()).shouldBeEqual(2);
+        a(Address.findAll().size()).shouldBeEqual(7);
+
     }
 
     @Test
