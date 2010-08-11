@@ -5,7 +5,6 @@
 * Add Model.fromCSV/toCSV - this is a batch insert method, useful in tests and otherwise shoul be able to take a List<String>,
         String, InputStream, Reader, etc. First line is headers. Parametrize delimiter - comma, pipe, etc.
 
-* Bulk updates need to somehow set the updated_at field.
 * table name is still case sensitive, this needs to be fixed.
 * Optimistic locking
 * BUG::  insert into RISK_CATEGORY () values () if no attributes, query is not formed correctly
