@@ -42,6 +42,7 @@ public class Instrumentation {
 
         try {
             System.out.println("\n\n**************************** START INSTRUMENTATION ****************************");
+            System.out.println("Directory: " + outputDirectory);
             InstrumentationModelFinder mf = new InstrumentationModelFinder();
             File target = new File(outputDirectory);
             mf.processDirectoryPath(target);
@@ -54,6 +55,7 @@ public class Instrumentation {
             System.out.println("**************************** END INSTRUMENTATION ****************************\n\n");
         }
         catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
