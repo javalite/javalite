@@ -42,6 +42,15 @@ import java.io.File;
 
 public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
 
+
+    /**
+     * Output directory  - where to do instrumentation.
+     * 
+     * @parameter 
+     */
+    private String outputDirectory;
+
+
     /**
      * The enclosing project.
      *
@@ -54,6 +63,7 @@ public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
+
         //this is an unbelievable hack I had to do in order to add output directory to classpath.
         //if anyone has a better idea, I will gladly listen...
         //Basically, the plugin is running with a different classpath - I searched high and wide, wrote a lot of garbage code,
@@ -61,12 +71,14 @@ public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
         //Igor
         try {
             ClassLoader realmLoader = getClass().getClassLoader();
-            URL outDir = new File(project.getBuild().getOutputDirectory()).toURL();
+
+            String instrumentationDirectory = outputDirectory == null ? project.getBuild().getOutputDirectory() : outputDirectory;
+            URL outDir = new File(instrumentationDirectory).toURL();
             Method addUrlMethod = realmLoader.getClass().getSuperclass().getDeclaredMethod("addURL", URL.class);
             addUrlMethod.setAccessible(true);
             addUrlMethod.invoke(realmLoader, outDir);
             Instrumentation instrumentation = new Instrumentation();
-            instrumentation.setOutputDirectory(project.getBuild().getOutputDirectory());
+            instrumentation.setOutputDirectory(instrumentationDirectory);
             instrumentation.instrument();
         }
         catch (Exception e) {
