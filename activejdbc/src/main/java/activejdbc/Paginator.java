@@ -25,7 +25,7 @@ import java.io.Serializable;
  * tables. This class does not cache resultsets, rather it will make requests to DB
  * each time {@link #getPage(int)} method is called.
  * This class is thread safe and the same instance could be used across multiple web requests and even
- * across multiple users/sessions. It is lightweight class, you cam generate an instance each time you need one,
+ * across multiple users/sessions. It is lightweight class, you can generate an instance each time you need one,
  * or you can cache an instance in a session or even servlet context. 
  *
  * @author Igor Polevoy

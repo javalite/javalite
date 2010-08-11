@@ -1,0 +1,153 @@
+Many to Many Relationships
+=Introduction=
+Often times the database-driven applications require many to many relationships. 
+These are the kind where an entity can have many other entities and also belong to the same type of entities.
+Examples in real life are: doctor treats many patients, and a patient sees many doctors. Another
+examples is when a university course has many students and a student has registered for many courses.
+In order to replicate this type of a relationship, usually three tables are created, one for the first type of entity, the other 
+for another type of entity and a middle table which binds entities from the first two tables. 
+=Example tables=
+
+Let's see an example based on doctors and patients.
+
+Table DOCTORS:
+{{{
++----+------------+-----------+-----------------+
+| id | first_name | last_name | discipline      |
++----+------------+-----------+-----------------+
+|  1 | John       | Doe       | otholaringology | 
+|  2 | Hellen     | Hunt      | dentistry       | 
++----+------------+-----------+-----------------+
+}}}
+Table PATIENTS:
+{{{
++----+------------+-----------+
+| id | first_name | last_name |
++----+------------+-----------+
+|  1 | Jim        | Cary      | 
+|  2 | John       | Carpenter | 
++----+------------+-----------+
+}}}
+As you can see, there is nothing in these to tables that tell us that doctors and patinets are somehow related.
+The third table binds entities between the doctors and patients table:
+Table DOCTORS_PATIENTS:
+{{{
++----+-----------+------------+
+| id | doctor_id | patient_id |
++----+-----------+------------+
+|  1 |         1 |          2 | 
+|  2 |         1 |          1 | 
+|  3 |         2 |          1 | 
++----+-----------+------------+
+}}}
+Looking at this table, we can discern that a doctor with ID = 1 (John Doe) has two patients: Jim Cary and John Carpenter. 
+However Jim Cary also sees doctor Hellent Hunt.
+Let's see what kind of a support ActiveJDBC provides when it comes to many to many relationship.
+We will use the same table we outlined above.
+
+=Models=
+
+Model for table DOCTORS:
+{{{
+public class Doctor extends Model {}
+}}}
+
+Model for table PATIENT:
+{{{
+public class Patient extends Model {}
+}}}
+
+As usual, ActiveJDBC will use inflections to map these models to the tables. When the framework initializes, it will read metadata for tables
+that back the models, and then it will discover a third table DOCTORS_PATIENTS because the table is named using ActiveJDBC conventions. 
+It also expects the DOCTORS_PATIENTS table to have {{{doctor_id}}} and {{{patient_id}}} columns. If everything is named appropriately
+(there are ways to override these conventions, see below), then the many to many relationships are configured across Doctor and Patient models. 
+All the usual CRUD operations are supported right out of the box:
+
+=Many to many operations=
+==Select==
+The select API for many to many is identical that of one to many, The framework is smart enough figure this out:
+{{{
+//Let's lookup a doctor:
+Doctor doctor = Doctor.findById(1);
+//get all patients of this doctor
+List<Patient> patients = doctor.getAll(Patient.class);
+System.out.println("Doctor 1 has " + patients.size() + " patient(s)");//prints "Doctor 1 has 2 patient(s)"
+
+//Lookup a second doctor:
+doctor = Doctor.findById(2);
+patients = doctor.getAll(Patient.class);
+System.out.println("Doctor 2 has " + patients.size() + " patient(s)");//prints "Doctor 1 has 1 patient(s)"
+}}}
+
+As you can see, the API is simple and intuitive;the framework will generate appropriate select statement and execute it across two tables.
+This allows the developers to trully focus on objects and abstract away from tabular nature of data in the DB, which is the purpose 
+of an ORM.
+
+==Checking for association==
+This is pretty simple:
+{{{
+System.out.println(Patient.belongsTo(Doctor.class));//prints "true"
+}}}
+BWT, the same API will also work for one to many relationship.
+
+==Adding new entries==
+In many to many asociations, there are no parents or children, as both sides of the association are equal. 
+
+Adding new entries then is pretty easy:
+{{{
+Doctor doctor = Doctor.findById(1);
+Patient patient = Patient.create("first_name", "Jim", "last_name", "Smith");
+doctor.add(patient);
+}}}
+Here you see an example of a shortcut for creation of models with the {{{create()}}} method.
+Again, the method for adding a new entity is the same for one to many relationship, and the framework figures out what to do based on what it knows
+about the models.
+Here, we are adding a newly created patient, which is does not exist in the database yet. In this case, the framework will create two new 
+records in the DB: one for a new patient, and one in the DOCTORS_PATIENTS table that binds a current doctor and a new patient.
+
+In the case where a patient exists already, it will only add a join record in the DOCTORS_PATIENTS table.
+
+==Removing Entries==
+Removing is also easy:
+{{{
+doctor.remove(patient);
+}}}
+Here, only a join table record is being removed, the actual patient record stays unchanged. In this case, the API for removing a child is 
+the same for one to many an many to many relationships, but semantics are different. In one to many association the child record will be 
+removed from the DB.
+
+=Overriding associations=
+In case the naming conventions cannot be used, you can override the convention to let the framework know which models are bound
+in many to many association:
+{{{
+@Many2Many(other = Course.class, join = "registrations", sourceFKName = "astudent_id", targetFKName = "acourse_id")
+public class Student extends Model {}
+}}}
+Here, "other" is a model that represents the other end of the relationship, "join" is a name of a join table (table in the middle),
+sourceFKName is a source foreign key name. A source is this model, in this case it is Student. This means that the framework will 
+expect to find a column "astudent_id" in the table "registrations" and will assume that it contains keys of records in the "student" table.
+targetFKName is similar to the sourceFKName, but stands for a column "acourse_id" in the table "registrartions" that contains keys to the 
+records in the "courses" table. 
+
+The annotation @Many2Many is one-sided. This means that it provides enough information to the framework, and there is no need 
+to add another one to the model Course (it will not break if you do though). ActiveJDBC follows DRY principle as much as possible.
+
+=Real models for join tables=
+In some cases the join tables might contain more data than just foreign keys to the related tables. In this case, you can create another 
+model that represents these tables. ActiveJDBC handles it transparently.
+To illustrate the ebove examples, for doctor - patient example, you might want to indicate where a specific patient is treated and you would then add 
+a new column to the DOCTORS_PATIENTS table called LOCATION. THen you would defie a new model:
+{{{
+@Table("DOCTORS_PATIENTS")
+class DocPat extends Model{}
+}}}
+
+In the case of the student/course, the join table already has a good name, so it is easy to define a new model:
+{{{
+class Registration extends Model{}
+}}}
+The table REGISTRATIONS might have additional data, such as registration type, etc.
+
+=Conclusion=
+This article showed how to use many to many relationships with ActiveJDBC. The APIs were designed with simplicity and ease of use in mind.
+

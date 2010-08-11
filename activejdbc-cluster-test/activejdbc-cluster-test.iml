@@ -15,6 +15,19 @@
     <orderEntry type="library" exported="" name="Maven: org.slf4j:slf4j-simple:1.5.10" level="project" />
     <orderEntry type="library" exported="" name="Maven: org.slf4j:jcl-over-slf4j:1.5.10" level="project" />
     <orderEntry type="module" module-name="activejdbc" exported="" />
+    <orderEntry type="module" module-name="javalite-common" exported="" />
+    <orderEntry type="library" exported="" name="Maven: dom4j:dom4j:1.6.1" level="project" />
+    <orderEntry type="library" exported="" name="Maven: xml-apis:xml-apis:1.0.b2" level="project" />
+    <orderEntry type="library" exported="" name="Maven: jaxen:jaxen:1.1.1" level="project" />
+    <orderEntry type="library" exported="" name="Maven: jdom:jdom:1.0" level="project" />
+    <orderEntry type="library" exported="" name="Maven: xerces:xercesImpl:2.6.2" level="project" />
+    <orderEntry type="library" exported="" name="Maven: xom:xom:1.0" level="project" />
+    <orderEntry type="library" exported="" name="Maven: xerces:xmlParserAPIs:2.6.2" level="project" />
+    <orderEntry type="library" exported="" name="Maven: xalan:xalan:2.6.0" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.ibm.icu:icu4j:2.6.1" level="project" />
+    <orderEntry type="library" exported="" name="Maven: opensymphony:oscache:2.4" level="project" />
+    <orderEntry type="library" exported="" name="Maven: javax.jms:jms:1.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: javax.servlet:servlet-api:2.5" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: mysql:mysql-connector-java:5.0.4" level="project" />
     <orderEntry type="library" exported="" name="Maven: jgroups:jgroups-all:2.4.1" level="project" />
     <orderEntry type="library" exported="" name="Maven: concurrent:concurrent:1.3.4" level="project" />

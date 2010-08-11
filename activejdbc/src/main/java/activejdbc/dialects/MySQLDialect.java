@@ -28,6 +28,9 @@ public class MySQLDialect extends DefaultDialect{
     @Override
     public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
 
+        if(limit == -1 && offset != -1){
+            throw new IllegalArgumentException("MySQL does not support OFFSET without LIMIT. OFFSET is a parameter of LIMIT function");
+        }
 
         String fullQuery = "SELECT  * FROM " + tableName;
 

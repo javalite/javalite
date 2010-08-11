@@ -196,13 +196,16 @@ public class Registry {
      */
     private Map<String, ColumnMetadata> fetchMetaParams(String table, String dbName) throws SQLException {
         Connection con = ConnectionsAccess.getConnection(dbName);
-        ResultSet rs = con.getMetaData().getColumns(null, null, table, null);
-        Map<String, ColumnMetadata> columns = new HashMap<String, ColumnMetadata>();
-        while (rs.next()) {
-            ColumnMetadata cm = new ColumnMetadata(rs.getString("COLUMN_NAME").toLowerCase(), rs.getString("TYPE_NAME"), rs.getInt("COLUMN_SIZE"));
-            columns.put(cm.getColumnName(), cm);
-        }
+        //try upper case table name first - Oracle uses upper case
+        ResultSet rs = con.getMetaData().getColumns(null, null, table.toUpperCase(), null);
+        Map<String, ColumnMetadata> columns = getColumns(rs);
         rs.close();
+        //if upper case not found, try lower case.
+        if(columns.size() == 0){
+            rs = con.getMetaData().getColumns(null, null, table.toLowerCase(), null);
+            columns = getColumns(rs);
+            rs.close();
+        }
 
         if(columns.size() > 0){
             LogFilter.log(logger, "Fetched metadata for table: " + table);
@@ -212,6 +215,15 @@ public class Registry {
                 + "'. Are you sure this table exists? For some databases table names are case sensitive.");
         }
 
+        return columns;
+    }
+
+    private Map<String, ColumnMetadata> getColumns(ResultSet rs) throws SQLException {
+         Map<String, ColumnMetadata> columns = new HashMap<String, ColumnMetadata>();
+        while (rs.next()) {
+            ColumnMetadata cm = new ColumnMetadata(rs.getString("COLUMN_NAME").toLowerCase(), rs.getString("TYPE_NAME"), rs.getInt("COLUMN_SIZE"));
+            columns.put(cm.getColumnName(), cm);
+        }
         return columns;
     }
 

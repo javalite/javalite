@@ -15,5 +15,5 @@
 * LazyList needs to have where() method for getAll() methods
 * Finish validations - all DSLs, and include resource bundles for messages (look into Locale as well)
 * Add Model.create(Map), useful for web apps
-
+* add other aggregate methods: max, min, avg
 

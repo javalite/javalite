@@ -42,6 +42,7 @@ public class Base {
     }
 
     public static void open(String jndiName) {
+        Base.rollbackTransaction();
         new DB(DEFAULT_DB_NAME).open(jndiName);
     }
     

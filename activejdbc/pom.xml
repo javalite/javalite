@@ -13,7 +13,64 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
+    <!--Default to MySQL if no profile provided-->
+    <properties>
+        <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
+        <jdbc.url>jdbc:mysql://localhost/test</jdbc.url>
+        <jdbc.user>root</jdbc.user>
+        <jdbc.password>p@ssw0rd</jdbc.password>
+        <db>mysql</db>
+    </properties>
+    
+    <profiles>
+        <profile>
+            <id>mysql</id>
+            <properties>
+                <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
+                <jdbc.url>jdbc:mysql://localhost/test</jdbc.url>
+                <jdbc.user>root</jdbc.user>
+                <jdbc.password>p@ssw0rd</jdbc.password>
+                <db>mysql</db>
+            </properties>
+        </profile>
+        <profile>
+            <id>hudson_mysql</id>
+            <properties>
+                <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
+                <jdbc.url>jdbc:mysql://172.30.64.32/test</jdbc.url>
+                <jdbc.user>root</jdbc.user>
+                <jdbc.password>p@ssw0rd</jdbc.password>
+                <db>mysql</db>
+            </properties>
+        </profile>
+        <profile>
+            <id>oracle</id>
+            <properties>
+                <jdbc.driver>oracle.jdbc.driver.OracleDriver</jdbc.driver>
+                <jdbc.url>jdbc:oracle:thin:@localhost:1521:xe</jdbc.url>
+                <jdbc.user>activejdbc</jdbc.user>
+                <jdbc.password>activejdbc</jdbc.password>
+                <db>oracle</db>
+            </properties>
+        </profile>
+        <profile>
+            <id>hudson_oracle</id>
+            <properties>
+                <jdbc.driver>oracle.jdbc.driver.OracleDriver</jdbc.driver>
+                <jdbc.url>jdbc:oracle:thin:@172.30.64.31:1523:orcl</jdbc.url>
+                <jdbc.user>activejdbc</jdbc.user>
+                <jdbc.password>activejdbc</jdbc.password>
+                <db>oracle</db>
+            </properties>
+        </profile>
+    </profiles>
     <build>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -29,13 +86,52 @@
             <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.4.2</version>
+                    <version>2.5</version>
                     <configuration>
                         <reportFormat>brief</reportFormat>
                         <trimStackTrace>true</trimStackTrace>
                         <useFile>false</useFile>
+                        <systemPropertyVariables>
+                            <oracle.jdbc.J2EE13Compliant>true</oracle.jdbc.J2EE13Compliant>
+                        </systemPropertyVariables>
                     </configuration>
                 </plugin>
+
+            <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>activejdbc</groupId>
+                        <artifactId>activejdbc-instrumentation</artifactId>
+                        <version>1.0-SNAPSHOT</version>
+                    </dependency>
+                </dependencies>
+                    <executions>
+                      <execution>
+                        <id>instrument</id>
+                        <phase>process-test-classes</phase>
+                          <configuration>
+                              <tasks>
+                                  <property name="test_classpath" refid="maven.test.classpath"/>
+                                  <property name="plugin_classpath" refid="maven.plugin.classpath"/>
+                                  <java classname="activejdbc.instrumentation.Main">
+                                      <sysproperty key="outputDirectory" value="${project.basedir}/target/test-classes"/>
+                                      <classpath>
+                                          <pathelement path="${test_classpath}"/>
+                                          <pathelement path="${plugin_classpath}"/>
+                                      </classpath>
+                                  </java>
+                              </tasks>
+                          </configuration>
+
+                          <goals>
+                          <goal>run</goal>
+                        </goals>
+                      </execution>
+                    </executions>
+                  </plugin>
+            
         </plugins>
     </build>
 
@@ -56,6 +152,7 @@
         <dependency><groupId>org.slf4j</groupId>    <artifactId>jcl-over-slf4j</artifactId></dependency>
         <dependency><groupId>org.slf4j</groupId>    <artifactId>slf4j-simple</artifactId></dependency>
         <dependency><groupId>mysql</groupId>        <artifactId>mysql-connector-java</artifactId></dependency>
+        <dependency><groupId>oracle</groupId>       <artifactId>ojdbc14</artifactId><scope>test</scope></dependency>
         <dependency><groupId>javalite</groupId>     <artifactId>javalite-common</artifactId><version>${project.version}</version></dependency>
         <dependency><groupId>opensymphony</groupId> <artifactId>oscache</artifactId></dependency>
     </dependencies>

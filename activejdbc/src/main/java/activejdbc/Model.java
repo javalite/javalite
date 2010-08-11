@@ -1137,6 +1137,8 @@ public abstract class Model extends CallbackSupport{
      */
     public void remove(Model child){
 
+        if(child == null) throw new IllegalArgumentException("cannot remove what is null");
+        
         if(child.frozen() || child.getId() == null) throw new IllegalArgumentException("Cannot remove a child that does " +
                 "not exist in DB (either frozen, or ID not set)");
 
@@ -1397,6 +1399,9 @@ public abstract class Model extends CallbackSupport{
             throw new InitException("Failed to create a new instance of: " + metaModel.getModelClass() + ", are you sure this class has a default constructor?");
         }
         catch(DBException e){
+            throw e;
+        }
+        catch(InitException e){
             throw e;
         }
         catch (Exception e) {

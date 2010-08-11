@@ -17,7 +17,10 @@ limitations under the License.
 
 package activejdbc;
 
+import activejdbc.test.ActiveJDBCTest;
+import activejdbc.test_models.Person;
 import junit.framework.TestCase;
+import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -92,3 +95,4 @@ public class ConverterTest extends TestCase {
     //TODO: finish with the rest of methods
     
 }
+
