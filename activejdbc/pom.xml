@@ -63,6 +63,27 @@
                 <db>oracle</db>
             </properties>
         </profile>
+        <profile>
+            <id>instrument</id>
+            <build>
+                <plugins>
+                <plugin>
+                    <groupId>activejdbc</groupId>
+                    <artifactId>activejdbc-instrumentation</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                    <executions>
+                        <execution>
+                            <phase>process-test-classes</phase>
+                            <goals><goal>instrument</goal></goals>
+                            <configuration>
+                                <outputDirectory>${project.basedir}/target/test-classes</outputDirectory>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
     <build>
         <testResources>
@@ -96,21 +117,6 @@
                         </systemPropertyVariables>
                     </configuration>
                 </plugin>
-
-            <plugin>
-                <groupId>activejdbc</groupId>
-                <artifactId>activejdbc-instrumentation</artifactId>
-                <version>1.0-SNAPSHOT</version>
-                <executions>
-                    <execution>
-                        <phase>process-test-classes</phase>
-                        <goals><goal>instrument</goal></goals>
-                        <configuration>
-                            <outputDirectory>${project.basedir}/target/test-classes</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
