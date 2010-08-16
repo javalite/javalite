@@ -230,7 +230,8 @@ public abstract class Model extends CallbackSupport{
      * tables, or run into integrity constraint violations. However, this method if very efficient as it deletes all records
      * in one shot, without pre-loading them.
      * This method also has a side-effect: it will not mark loaded instances corresponding to deleted records as "frozen".
-     * This means that such an instance would allow calling save() and saveIt() methods resulting in a new inserted record in a table.
+     * This means that such an instance would allow calling save() and saveIt() methods resulting DB errors, as you
+     * would be attempting to update phantom records. 
      *
      *
      * @param query narrows which records to delete. Example: <pre>"last_name like '%sen%'"</pre>.
@@ -261,7 +262,7 @@ public abstract class Model extends CallbackSupport{
     }
 
     /**
-     * Deletes all records from associated table.
+     * Deletes all records from associated table. This methods does not take associations into account. 
      *
      * @return number of records deleted.
      */

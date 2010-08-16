@@ -200,8 +200,12 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void testBatchUpdateAll() {
         resetTable("people");
-        Person.updateAll("last_name = ?", "Smith");
-        a(Person.find("last_name like ?", "Smith").size()).shouldBeEqual(4);
+        expect(new DifferenceExpectation(Person.find("last_name like ?", "Smith").size()) {
+            public Object exec() {
+                Person.updateAll("last_name = ?", "Smith");
+                return Person.find("last_name like ?", "Smith").size();
+            }
+        } );
     }
 
     @Test

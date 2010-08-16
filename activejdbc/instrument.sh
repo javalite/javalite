@@ -1,1 +1,1 @@
-mvn -o clean compile process-test-classes
+mvn -o clean compile process-test-classes -Pinstrument
