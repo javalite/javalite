@@ -56,4 +56,18 @@
             <dependency><groupId>oracle</groupId>       <artifactId>ojdbc14</artifactId><version>10.2.0.1</version><scope>test</scope></dependency>
         </dependencies>
     </dependencyManagement>
+
+    <distributionManagement>
+        <repository>
+            <id>vitality-repo</id>
+            <name>Vitality Repository</name>
+            <url>scp://172.30.64.26/opt/maven/repository</url>
+        </repository>
+        <snapshotRepository>
+            <id>PE-dist-repo</id>
+            <name>Vitality Repository</name>
+            <url>scp://172.30.64.26/opt/maven/repository</url>
+        </snapshotRepository>
+    </distributionManagement>
+
 </project>
