@@ -1379,6 +1379,8 @@ public abstract class Model extends CallbackSupport{
             throw new StaleModelException("Failed to update record for model '" + getClass() +
                     "', with " + getIdName() + " = " + getId() + " and record_version = " + get("record_version") +
                     ". Either this record does not exist anymore, or has been updated to have another record_version.");
+        }else{
+            set("record_version", getLong("record_version") + 1);
         }
         if(metaModel.cached()){
             QueryCache.instance().purgeTableCache(metaModel.getTableName());

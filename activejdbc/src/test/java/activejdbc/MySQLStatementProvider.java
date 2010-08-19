@@ -128,13 +128,15 @@ public class MySQLStatementProvider {
             statements =  Arrays.asList();
         } else if (table.equals("pages")) {
             statements =  Arrays.asList();
+        } else if (table.equals("watermelons")) {
+            statements =  Arrays.asList();
         }else{
             throw new IllegalArgumentException("no statements for: " + table);
         }
 
         ArrayList<String> all = new ArrayList<String>();
-        all.add("ALTER TABLE " + table + " AUTO_INCREMENT=1;");
         all.add("DELETE FROM " + table + ";");
+        all.add("ALTER TABLE " + table + " AUTO_INCREMENT=1;");        
         all.addAll(statements);
         return all;
     }

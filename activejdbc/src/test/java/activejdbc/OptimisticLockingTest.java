@@ -2,7 +2,6 @@ package activejdbc;
 
 import activejdbc.test.ActiveJDBCTest;
 import activejdbc.test_models.Watermelon;
-import javalite.test.jspec.ExceptionExpectation;
 import org.junit.Test;
 
 /**
@@ -12,7 +11,7 @@ public class OptimisticLockingTest extends ActiveJDBCTest {
 
     @Test
     public void shouldSetVersionToOneWhenCreatingNewRecord(){
-
+        resetTable("watermelons");
         Watermelon m = new Watermelon();
         m.set("melon_type", "dark_green");
         m.saveIt();
@@ -24,12 +23,14 @@ public class OptimisticLockingTest extends ActiveJDBCTest {
     @Test
     public void shouldAdvanceVersionWhenRecordIsUpdated(){
 
+        resetTable("watermelons");
         Watermelon m = new Watermelon();
         m.set("melon_type", "dark_green");
         m.saveIt();
 
         m = (Watermelon)Watermelon.findById(1);
         m.set("melon_type", "red").saveIt();
+        a(m.get("record_version")).shouldBeEqual(2);// this will ensure that the value is updated in the model itself
         m = (Watermelon)Watermelon.findById(1);
         a(m.get("record_version")).shouldBeEqual(2);
 
@@ -46,7 +47,7 @@ public class OptimisticLockingTest extends ActiveJDBCTest {
 
     @Test(expected = StaleModelException.class)
     public void shouldThrowExceptionWhenVersionCollisionHappens(){
-
+        resetTable("watermelons");
         Watermelon m = new Watermelon();
         m.set("melon_type", "dark_green");
         m.saveIt();

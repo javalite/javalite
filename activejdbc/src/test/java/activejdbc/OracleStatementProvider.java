@@ -128,6 +128,8 @@ public class OracleStatementProvider {
             statements =  Arrays.asList();
         } else if (table.equals("pages")) {
             statements =  Arrays.asList();
+        } else if (table.equals("watermelons")) {
+            statements =  Arrays.asList();
         }else{
             throw new IllegalArgumentException("no statements for: " + table);
         }
