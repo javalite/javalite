@@ -113,6 +113,11 @@
         <option value="$PROJECT_DIR$/pom.xml" />
       </list>
     </option>
+    <option name="activeProfiles">
+      <list>
+        <option value="mysql" />
+      </list>
+    </option>
   </component>
   <component name="ModuleEditorState">
     <option name="LAST_EDITED_MODULE_NAME" />
@@ -258,13 +263,14 @@
       <module fileurl="file://$PROJECT_DIR$/activejdbc-cluster-test/activejdbc-cluster-test.iml" filepath="$PROJECT_DIR$/activejdbc-cluster-test/activejdbc-cluster-test.iml" />
       <module fileurl="file://$PROJECT_DIR$/activejdbc-instrumentation/activejdbc-instrumentation.iml" filepath="$PROJECT_DIR$/activejdbc-instrumentation/activejdbc-instrumentation.iml" />
       <module fileurl="file://$PROJECT_DIR$/activejdbc-root.iml" filepath="$PROJECT_DIR$/activejdbc-root.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../activejdbc-wiki/activejdbc-wiki.iml" filepath="$PROJECT_DIR$/../activejdbc-wiki/activejdbc-wiki.iml" />
       <module fileurl="file://$PROJECT_DIR$/javalite-common/javalite-common.iml" filepath="$PROJECT_DIR$/javalite-common/javalite-common.iml" />
     </modules>
   </component>
   <component name="ProjectReloadState">
     <option name="STATE" value="0" />
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.6_20" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.5" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/classes" />
   </component>
   <component name="Regex">
@@ -393,6 +399,50 @@
     <option name="fileTypes" value="class;svn-base;svn-work;Extra;gif;png;jpg;jpeg;bmp;tga;tiff;ear;war;zip;jar;iml;iws;ipr;bz2;gz;" />
   </component>
   <component name="SvnBranchConfigurationManager">
+    <option name="myConfigurationMap">
+      <map>
+        <entry key="$PROJECT_DIR$">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="https://activejdbc.googlecode.com/svn/branches">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="https://activejdbc.googlecode.com/svn/tags">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="https://activejdbc.googlecode.com/svn/wiki">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="branchUrls">
+                <list>
+                  <option value="https://activejdbc.googlecode.com/svn/branches" />
+                  <option value="https://activejdbc.googlecode.com/svn/tags" />
+                  <option value="https://activejdbc.googlecode.com/svn/wiki" />
+                </list>
+              </option>
+              <option name="trunkUrl" value="https://activejdbc.googlecode.com/svn/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../activejdbc-wiki">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="trunkUrl" value="https://activejdbc.googlecode.com/svn/wiki" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
+      </map>
+    </option>
     <option name="mySupportsUserInfoFilter" value="true" />
   </component>
   <component name="SvnConfiguration" maxAnnotateRevisions="500">
