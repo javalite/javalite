@@ -1297,25 +1297,22 @@ public abstract class Model extends CallbackSupport{
 
         //TODO: need to invoke checkAttributes here too, and maybe rely on MetaModel for this.
 
-        List<String> attrs = getMetaModelLocal().getAttributeNamesSkipId();
+        List<String> attrs = metaModelLocal.getAttributeNamesSkip("record_version", metaModelLocal.getIdName());
 
         List<Object> values = new ArrayList<Object>();
         for (String attribute : attrs) {
             values.add(get(attribute));
         }
-        MetaModel metaModel = getMetaModelLocal();
-
-        String query = metaModel.getDialect().createParametrizedInsert(metaModel.getTableName(), attrs, 
-                metaModel.getIdName(), metaModel.getIdGeneratorCode());
+        String query = metaModelLocal.getDialect().createParametrizedInsert(metaModelLocal);
         try {
-            long id = new DB(metaModel.getDbName()).execInsert(query, metaModel.getIdName(), values.toArray());
-            if(metaModel.cached()){
-                QueryCache.instance().purgeTableCache(metaModel.getTableName());
+            long id = new DB(metaModelLocal.getDbName()).execInsert(query, metaModelLocal.getIdName(), values.toArray());
+            if(metaModelLocal.cached()){
+                QueryCache.instance().purgeTableCache(metaModelLocal.getTableName());
             }
-            String idName = metaModel.getIdName();
-            if(attributes.containsKey(metaModel.getIdNameLower())){
+            String idName = metaModelLocal.getIdName();
+            if(attributes.containsKey(metaModelLocal.getIdNameLower())){
                 attributes.put(idName.toLowerCase(), id);
-            }else if(attributes.containsKey(metaModel.getIdNameUpper())){
+            }else if(attributes.containsKey(metaModelLocal.getIdNameUpper())){
                 attributes.put(idName.toUpperCase(), id);
             } else {
                 attributes.put(idName, id);
@@ -1366,9 +1363,23 @@ public abstract class Model extends CallbackSupport{
             query += ", updated_at = ? ";
             values.add(get("updated_at"));
         }
+
+        if(metaModel.isVersioned()){
+            query += ", record_version = ? ";
+            values.add(getLong("record_version") + 1);
+        }
         query += " where " + metaModel.getIdName() + " = ?";
+        query += metaModel.isVersioned()? " and record_version = ?" :"";
         values.add(getId());
+        if(metaModel.isVersioned()){
+            values.add((get("record_version")));
+        }
         int updated = new DB(metaModel.getDbName()).exec(query, values.toArray());
+        if(metaModel.isVersioned() && updated == 0){
+            throw new StaleModelException("Failed to update record for model '" + getClass() +
+                    "', with " + getIdName() + " = " + getId() + " and record_version = " + get("record_version") +
+                    ". Either this record does not exist anymore, or has been updated to have another record_version.");
+        }
         if(metaModel.cached()){
             QueryCache.instance().purgeTableCache(metaModel.getTableName());
         }

@@ -444,3 +444,20 @@ CREATE OR REPLACE TRIGGER pages_trigger
 select coalesce(:new.id, pages_seq.nextval) into :new.id from dual;
 end;
 
+
+
+-- BREAK
+CREATE TABLE watermelons ( id NUMBER NOT NULL, melon_type VARCHAR(56), record_version NUMBER, created_at TIMESTAMP, updated_at TIMESTAMP)
+-- BREAK
+ALTER TABLE watermelons ADD CONSTRAINT watermelons_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE watermelons_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER watermelons_trigger
+    BEFORE INSERT ON watermelons REFERENCING
+    NEW AS new
+    OLD AS old
+    FOR EACH ROW
+    begin
+select coalesce(:new.id, watermelons_seq.nextval) into :new.id from dual;
+end;

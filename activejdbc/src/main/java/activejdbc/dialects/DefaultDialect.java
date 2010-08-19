@@ -17,6 +17,7 @@ limitations under the License.
 
 package activejdbc.dialects;
 
+import activejdbc.MetaModel;
 import javalite.common.Util;
 
 import java.util.List;
@@ -51,11 +52,14 @@ public class DefaultDialect {
         return sql.substring(0, sql.length() - 5);//remove last comma
     }
 
-    public String createParametrizedInsert(String table, List<String> attributes, String idName, String idGeneratorCode){
-        String query = "INSERT INTO " + table + " (" + Util.join(attributes, ", ");
-        query += idGeneratorCode != null ? ", " + idName :"";
+    public String createParametrizedInsert(MetaModel mm){
+        List<String> attributes = mm.getAttributeNamesSkip("record_version", mm.getIdName());
+        String query = "INSERT INTO " + mm.getTableName() + " (" + Util.join(attributes, ", ");
+        query += mm.getIdGeneratorCode()!= null ? ", " + mm.getIdName() :"";
+        query += mm.isVersioned()? ", " + "record_version" :"";
         query += ") VALUES ("+ getQuestions(attributes.size());
-        query += idGeneratorCode != null ? ", " + idGeneratorCode :"";
+        query += mm.getIdGeneratorCode() != null ? ", " + mm.getIdGeneratorCode() :"";
+        query += mm.isVersioned()? ", " + 1 :"";
         query +=")";
 
 

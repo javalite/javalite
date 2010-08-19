@@ -74,3 +74,7 @@ CREATE TABLE plants (id  int(11) DEFAULT NULL auto_increment PRIMARY KEY, plant_
 
 DROP TABLE IF EXISTS pages;
 CREATE TABLE pages ( id int(11) DEFAULT NULL auto_increment PRIMARY KEY, description VARCHAR(56));
+
+
+DROP TABLE IF EXISTS watermelons;
+CREATE TABLE watermelons ( id int(11) DEFAULT NULL auto_increment PRIMARY KEY, melon_type VARCHAR(56), record_version INT, created_at DATETIME, updated_at DATETIME);

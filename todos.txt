@@ -2,18 +2,18 @@
 * Comparison of DB SQL Flavors:
     http://troels.arvin.dk/db/rdbms/#select-limit
 
-* Add Model.fromCSV/toCSV - this is a batch insert method, useful in tests and otherwise shoul be able to take a List<String>,
-        String, InputStream, Reader, etc. First line is headers. Parametrize delimiter - comma, pipe, etc.
 
-* table name is still case sensitive, this needs to be fixed.
-* Optimistic locking
-* BUG::  insert into RISK_CATEGORY () values () if no attributes, query is not formed correctly
-* created_at, updated_at for join tables in case join model not defined
-* Allow setting of ID on model and still run insert instead of update on save();
-* In class DB, cache other PreparedStatements for performance.
-* LazyList needs to have where() method for getAll() methods
-* Finish validations - all DSLs, and include resource bundles for messages (look into Locale as well)
-* Add Model.create(Map), useful for web apps
-* add other aggregate methods: max, min, avg
-* add deletion of polymorphic children to deleteCascade();
+
+
+
+
+
+
+
+
+
+
+
+
+
 

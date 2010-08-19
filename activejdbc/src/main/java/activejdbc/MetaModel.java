@@ -105,8 +105,8 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
     }
 
     /**
-     * Finds all attribute names except generated like id, created_at, updated_at
-     * @return list of all attributes except id, created_at and updated_at. 
+     * Finds all attribute names except generated like id, created_at, updated_at and record_version.
+     * @return list of all attributes except id, created_at, updated_at and record_version. 
      */
     public List<String> getAttributeNamesSkipGenerated() {
         List<String> attributes = getAttributeNames();
@@ -116,7 +116,28 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
         attributes.remove("created_at");
         attributes.remove("UPDATED_AT");
         attributes.remove("updated_at");
+        attributes.remove("record_version");
+        attributes.remove("RECORD_VERSION");
         return attributes;
+    }
+
+
+    /**
+     * Finds all attribute names except those provided as arguments.
+     * @return list of all attributes except those provided as arguments. 
+     */
+    public List<String> getAttributeNamesSkip(String ... names) {
+        List<String> attributes = getAttributeNames();
+        for(String name:names){
+            attributes.remove(name.toLowerCase());
+            attributes.remove(name.toUpperCase());
+        }
+        return attributes;
+    }
+
+    public boolean isVersioned(){
+        List<String> attrs = getAttributeNames(); 
+        return attrs.contains("record_version") || attrs.contains("RECORD_VERSION");
     }
 
     /**

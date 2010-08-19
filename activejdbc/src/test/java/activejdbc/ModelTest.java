@@ -522,7 +522,6 @@ public class ModelTest extends ActiveJDBCTest {
         resetTables("users", "addresses");
         LazyList<User> users = User.findAll().orderBy("id").include(Address.class);
         List<Map> maps = users.toMaps();
-        users.get(0).getAll(Address.class);
 
         Map user = maps.get(0);
         a(user.get("first_name")).shouldBeEqual("Marilyn");

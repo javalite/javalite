@@ -17,7 +17,6 @@ limitations under the License.
 
 package activejdbc;
 
-import java.sql.Clob;
 
 
 /**

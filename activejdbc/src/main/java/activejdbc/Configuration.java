@@ -40,7 +40,7 @@ public class Configuration {
     protected Configuration(){
         InputStream modelsIn = getClass().getResourceAsStream("/activejdbc_models.properties");
         if(modelsIn == null)
-            throw new InitException("something awful happened, cannot locate any models. Did you instrument the project?");
+            throw new InitException("Cannot locate any models. Did you instrument the project?");
         InputStream in = getClass().getResourceAsStream("/activejdbc.properties");
         try{
             modelsIndex.load(modelsIn);
