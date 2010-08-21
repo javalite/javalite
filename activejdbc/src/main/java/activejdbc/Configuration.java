@@ -22,6 +22,8 @@ import activejdbc.cache.OSCacheManager;
 import activejdbc.dialects.DefaultDialect;
 import activejdbc.dialects.MySQLDialect;
 import activejdbc.dialects.OracleDialect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -34,13 +36,16 @@ public class Configuration {
 
     private Properties modelsIndex = new Properties();
     private Properties properties = new Properties();
+    final static Logger logger = LoggerFactory.getLogger(Configuration.class);
     
     private  Map<String, DefaultDialect> dialects = new HashMap<String, DefaultDialect>();
 
     protected Configuration(){
         InputStream modelsIn = getClass().getResourceAsStream("/activejdbc_models.properties");
-        if(modelsIn == null)
-            throw new InitException("Cannot locate any models. Did you instrument the project?");
+        if(modelsIn == null){
+            LogFilter.log(logger, "ActiveJDBC Warning: Cannot locate any models, assuming project without models.");
+            return;
+        }
         InputStream in = getClass().getResourceAsStream("/activejdbc.properties");
         try{
             modelsIndex.load(modelsIn);
