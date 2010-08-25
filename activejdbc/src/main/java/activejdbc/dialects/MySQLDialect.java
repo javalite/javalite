@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * @author Igor Polevoy
  */
-public class MySQLDialect extends DefaultDialect{
+public class MySQLDialect extends PostgreSQLDialect{
     @Override
     public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
 
@@ -32,29 +32,6 @@ public class MySQLDialect extends DefaultDialect{
             throw new IllegalArgumentException("MySQL does not support OFFSET without LIMIT. OFFSET is a parameter of LIMIT function");
         }
 
-        String fullQuery = "SELECT  * FROM " + tableName;
-
-        if(!Util.blank(subQuery)){
-            String where = " WHERE ";
-            //this is only to support findFirst("order by..."), might need to revisit later
-            if(!subQuery.toLowerCase().trim().startsWith("order") && !subQuery.toLowerCase().trim().startsWith("group")){   
-                fullQuery += where;
-            }
-            fullQuery += " " + subQuery;
-        }
-
-        if(orderBys.size() != 0){
-            fullQuery += " ORDER BY " + Util.join(orderBys, ", ");
-        }
-
-        if(limit != -1){
-            fullQuery +=  " LIMIT " + limit;
-        }
-
-        if(offset != -1){
-            fullQuery += " OFFSET " + offset;
-        }
-
-        return fullQuery;
+        return super.formSelect(tableName, subQuery, orderBys, limit, offset);
     }
 }

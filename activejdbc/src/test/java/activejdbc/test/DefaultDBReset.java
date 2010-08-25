@@ -10,9 +10,9 @@ import java.sql.Statement;
 /**
  * @author Igor Polevoy
  */
-public class MySQLDBReset {
+public class DefaultDBReset {
 
-    static void resetMySQL(String[] statements) throws SQLException {
+    static void resetSchema(String[] statements) throws SQLException {
         Connection connection = Base.connection();
         for (String statement: statements) {
             if(Util.blank(statement)) continue;

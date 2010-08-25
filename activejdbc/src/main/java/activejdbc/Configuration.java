@@ -22,6 +22,7 @@ import activejdbc.cache.OSCacheManager;
 import activejdbc.dialects.DefaultDialect;
 import activejdbc.dialects.MySQLDialect;
 import activejdbc.dialects.OracleDialect;
+import activejdbc.dialects.PostgreSQLDialect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,6 +91,9 @@ public class Configuration {
             }
             else if(mm.getDbType().equalsIgnoreCase("MySQL")){
                 dialects.put(mm.getDbType(), new MySQLDialect());
+            }
+            else if(mm.getDbType().equalsIgnoreCase("PostgreSQL")){
+                dialects.put(mm.getDbType(), new PostgreSQLDialect());
             }
             else{
                 dialects.put(mm.getDbType(), new DefaultDialect());

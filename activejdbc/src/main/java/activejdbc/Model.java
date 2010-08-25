@@ -423,7 +423,7 @@ public abstract class Model extends CallbackSupport{
             }
         }
 
-        List<Map> results = new DB(getMetaModelLocal().getDbName()).findAll(query, fkValue);
+        List<Map> results = new DB(getMetaModelLocal().getDbName()).findAll(query, Integer.parseInt(fkValue));
         //expect only one result here
         if (results.size() == 0) { //ths could be covered by referential integrity constraint
             return null;

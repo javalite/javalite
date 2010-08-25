@@ -27,6 +27,7 @@ import java.util.List;
 import activejdbc.Base;
 import activejdbc.MySQLStatementProvider;
 import activejdbc.OracleStatementProvider;
+import activejdbc.PostgreSQLStatementProvider;
 import javalite.test.jspec.JSpecSupport;
 
 import org.junit.After;
@@ -56,8 +57,11 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
     }
 
     protected void generateSchema() throws SQLException, ClassNotFoundException {
+        String db = db();
         if (db().equals("mysql")) {
-            MySQLDBReset.resetMySQL(getStatements(";", "mysql_schema.sql"));
+            DefaultDBReset.resetSchema(getStatements(";", "mysql_schema.sql"));
+        }else if (db().equals("postgresql")) {
+            DefaultDBReset.resetSchema(getStatements(";", "postgres_schema.sql"));
         } else if (db().equals("oracle")) {
             OracleDBReset.resetOracle(getStatements("-- BREAK", "oracle_schema.sql"));
         }
@@ -134,6 +138,8 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
             statements = new MySQLStatementProvider().getStatements(table);
         } else if (db().equals("oracle")) {
             statements = new OracleStatementProvider().getStatements(table);
+        } else if (db().equals("postgresql")) {
+            statements = new PostgreSQLStatementProvider().getStatements(table);
         }
         executeStatements(statements);
     }

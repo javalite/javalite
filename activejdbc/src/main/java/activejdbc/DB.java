@@ -125,13 +125,19 @@ public class DB {
         }
     }
 
+
     public void close() {
         try {
             Connection connection = ConnectionsAccess.getConnectionMap().get(dbName);
             StatementCache.instance().cleanStatementCache(connection);
-            connection.close();
+            if(connection != null){
+                connection.close();
             log(logger, "Closed connection: " + connection);
             ConnectionsAccess.getConnectionMap().remove(dbName);
+            }else{
+                logger.warn("Cannot close connection if it is null");
+            }
+
         } catch (Exception e) {
             logException("Could not close connection", e);
         }

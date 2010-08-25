@@ -64,6 +64,16 @@
             </properties>
         </profile>
         <profile>
+            <id>postgresql</id>
+            <properties>
+                <jdbc.driver>org.postgresql.Driver</jdbc.driver>
+                <jdbc.url>jdbc:postgresql://localhost/postgres</jdbc.url>
+                <jdbc.user>postgres</jdbc.user>
+                <jdbc.password>p@ssw0rd</jdbc.password>
+                <db>postgresql</db>
+            </properties>
+        </profile>
+        <profile>
             <id>instrument</id>
             <build>
                 <plugins>
@@ -138,6 +148,7 @@
         <dependency><groupId>org.slf4j</groupId>    <artifactId>slf4j-simple</artifactId></dependency>
         <dependency><groupId>mysql</groupId>        <artifactId>mysql-connector-java</artifactId></dependency>
         <dependency><groupId>oracle</groupId>       <artifactId>ojdbc14</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>postgresql</groupId>   <artifactId>postgresql</artifactId><scope>test</scope></dependency>        
         <dependency><groupId>javalite</groupId>     <artifactId>javalite-common</artifactId><version>${project.version}</version></dependency>
         <dependency><groupId>opensymphony</groupId> <artifactId>oscache</artifactId></dependency>
     </dependencies>
