@@ -23,7 +23,7 @@ import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 /**
  * @author Igor Polevoy
  */
-public class OSCacheManager implements CacheManager{
+public class OSCacheManager extends CacheManager{
 
     private GeneralCacheAdministrator administrator;
 
@@ -47,11 +47,11 @@ public class OSCacheManager implements CacheManager{
         catch(Exception ignore){}
     }
 
-    public void flushAll() {
+    public void doFlushAll() {
         administrator.flushAll();
     }
 
-    public void flushGroupCache(String group) {
+    public void doFlushGroupCache(String group) {
         administrator.flushGroup(group);
     }
 }

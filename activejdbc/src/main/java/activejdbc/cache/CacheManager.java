@@ -17,13 +17,17 @@ limitations under the License.
 
 package activejdbc.cache;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Top interface to be implemented by various caching technologies.
  *
  * @author Igor Polevoy
  */
-public interface CacheManager {
+public abstract class CacheManager {
 
+    List<CacheEventListener> listeners = new ArrayList<CacheEventListener>();
 
     /**
      * Returns a cached item. Can return null if not found.
@@ -31,7 +35,7 @@ public interface CacheManager {
      * @param key key of the item.
      * @return a cached item. Can return null if not found.
      */
-    Object getCache(String key);
+    public abstract Object getCache(String key);
 
     /**
      * Adds item to cache. 
@@ -40,18 +44,44 @@ public interface CacheManager {
      * @param key key of the item.
      * @param cache cache item to add to cache.
      */
-    void addCache(String group, String key, Object cache);
+    public abstract void addCache(String group, String key, Object cache);
 
 
     /**
      * Deletes all caches.
      */
-    void flushAll();
+    public final void flushAll(){
+        doFlushAll();
+        fireFlushAll();
+    }
 
+    private void fireFlushAll(){
+        for(CacheEventListener listener: listeners){
+            listener.onFlushAll();
+        }
+    }
+
+
+    abstract void doFlushAll();
+    
+    abstract void doFlushGroupCache(String group);
 
     /**
      * Flushes cache related to a specific group.
      * @param group name of group whose cache needs flushing.
      */
-    void flushGroupCache(String group);
+    public final void flushGroupCache(String group){
+        for(CacheEventListener listener: listeners){
+            listener.onFlushGroupCache(group);
+        }
+        doFlushGroupCache(group);
+    }
+
+    public final void addCacheEventListener(CacheEventListener listener){
+        listeners.add(listener);
+    }
+    
+    public final void removeCacheEventListener(CacheEventListener listener){
+        listeners.remove(listener);
+    }
 }
