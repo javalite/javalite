@@ -127,5 +127,10 @@ public class QueryCache {
         cacheManager.flushGroupCache(tableName);
         LogFilter.log(logger, "table cache purged for: " + tableName);
     }
+
+
+    public CacheManager getCacheManager(){
+        return cacheManager;
+    }
 }
 
