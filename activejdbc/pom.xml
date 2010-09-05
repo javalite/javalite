@@ -47,9 +47,9 @@
             <id>oracle</id>
             <properties>
                 <jdbc.driver>oracle.jdbc.driver.OracleDriver</jdbc.driver>
-                <jdbc.url>jdbc:oracle:thin:@localhost:1521:xe</jdbc.url>
-                <jdbc.user>activejdbc</jdbc.user>
-                <jdbc.password>activejdbc</jdbc.password>
+                <jdbc.url>jdbc:oracle:thin:@192.168.0.55:1521:xe</jdbc.url>
+                <jdbc.user>sysdba</jdbc.user>
+                <jdbc.password>p@ssw0rd</jdbc.password>
                 <db>oracle</db>
             </properties>
         </profile>

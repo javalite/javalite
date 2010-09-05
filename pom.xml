@@ -68,14 +68,14 @@
 
     <distributionManagement>
         <repository>
-            <id>vitality-repo</id>
-            <name>Vitality Repository</name>
-            <url>scp://172.30.64.26/opt/maven/repository</url>
+            <id>ipsolutions-repo</id>
+            <name>IPSolutions Repository</name>
+            <url>scp://localhost/opt/maven/repository</url>
         </repository>
         <snapshotRepository>
-            <id>PE-dist-repo</id>
-            <name>Vitality Repository</name>
-            <url>scp://172.30.64.26/opt/maven/repository</url>
+            <id>ipsolutions-repo</id>
+            <name>IPSolutions Repository</name>
+            <url>scp://localhost/opt/maven/repository</url>
         </snapshotRepository>
     </distributionManagement>
 
