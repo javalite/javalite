@@ -20,6 +20,7 @@ package activejdbc.cache;
 
 import activejdbc.LogFilter;
 import activejdbc.Registry;
+import javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,7 +107,7 @@ public class QueryCache {
     static void logAccess(String query, Object[] params, String access) {
         StringBuffer log = new StringBuffer(access).append(", ").append("\"").append(query).append("\"");
         if (params != null && params.length != 0)
-            log.append(", with parameters: ").append(Arrays.toString(params));
+            log.append(", with parameters: ").append("<").append(Util.join(Arrays.asList(params), ">, <")).append(">");
 
         LogFilter.log(logger, log.toString());
     }

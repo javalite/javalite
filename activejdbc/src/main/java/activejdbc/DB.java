@@ -300,6 +300,7 @@ public class DB {
         if(query.indexOf('?') == -1 && params.length != 0) throw new IllegalArgumentException("you passed arguments, but the query does not have placeholders: (?)");
         if(!query.toLowerCase().contains("select"))throw new IllegalArgumentException("query must be 'select' query");
 
+        //TODO: cache prepared statements here too
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
