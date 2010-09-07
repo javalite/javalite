@@ -1553,6 +1553,20 @@ public abstract class Model extends CallbackSupport{
         }
     }
 
+
+    /**
+     * Convenience method: converts ID value to Long and returns it.
+     * 
+     * @return value of attribute corresponding to <code>getIdName()</code>, converted to Long.
+     */
+    public Long getLongId() {
+        Object id = get(getIdName());
+        if (id == null) {
+            throw new NullPointerException(getIdName() + " is null, cannot convert to Long");
+        }
+        return Converter.toLong(id);
+    }
+
     private static void purgeEdges(){
         //this is to eliminate side effects of cache on associations.
         //TODO: Need to write tests for cases;

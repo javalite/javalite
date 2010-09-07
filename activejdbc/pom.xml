@@ -34,30 +34,10 @@
             </properties>
         </profile>
         <profile>
-            <id>hudson_mysql</id>
-            <properties>
-                <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
-                <jdbc.url>jdbc:mysql://172.30.64.32/test</jdbc.url>
-                <jdbc.user>root</jdbc.user>
-                <jdbc.password>p@ssw0rd</jdbc.password>
-                <db>mysql</db>
-            </properties>
-        </profile>
-        <profile>
             <id>oracle</id>
             <properties>
                 <jdbc.driver>oracle.jdbc.driver.OracleDriver</jdbc.driver>
-                <jdbc.url>jdbc:oracle:thin:@192.168.0.55:1521:xe</jdbc.url>
-                <jdbc.user>sysdba</jdbc.user>
-                <jdbc.password>p@ssw0rd</jdbc.password>
-                <db>oracle</db>
-            </properties>
-        </profile>
-        <profile>
-            <id>hudson_oracle</id>
-            <properties>
-                <jdbc.driver>oracle.jdbc.driver.OracleDriver</jdbc.driver>
-                <jdbc.url>jdbc:oracle:thin:@172.30.64.31:1523:orcl</jdbc.url>
+                <jdbc.url>jdbc:oracle:thin:@localhost:1521:xe</jdbc.url>
                 <jdbc.user>activejdbc</jdbc.user>
                 <jdbc.password>activejdbc</jdbc.password>
                 <db>oracle</db>
@@ -106,8 +86,8 @@
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
+                    <source>1.6</source>
+                    <target>1.6</target>
                     <fork>true</fork>
                     <meminitial>128m</meminitial>
                     <maxmem>512m</maxmem>
