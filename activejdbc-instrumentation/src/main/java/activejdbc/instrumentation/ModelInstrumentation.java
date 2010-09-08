@@ -56,7 +56,7 @@ public class ModelInstrumentation{
         String file = u.getFile();
         file = file.substring(0, file.length() - 6);
         String className = modelClass.getName();
-        className = className.replace(".", System.getProperty("file.separator"));
+        className = className.replace(".", "/");
         return file.substring(0, file.indexOf(className));
     }
 

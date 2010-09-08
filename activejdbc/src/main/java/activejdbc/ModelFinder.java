@@ -118,7 +118,7 @@ public class ModelFinder {
 
                     if (entry.getName().endsWith("class")) {
                         InputStream zin = zip.getInputStream(entry);
-                        classFound(entry.getName().replace('/', '.').substring(0, entry.getName().length() - 6));
+                        classFound(entry.getName().replace(File.separatorChar, '.').substring(0, entry.getName().length() - 6));
                         zin.close();
                     }
                 }
@@ -172,7 +172,7 @@ public class ModelFinder {
             for (File file : files) {
                 int current = currentDirectoryPath.length();
                 String fileName = file.getCanonicalPath().substring(++current);
-                String className = fileName.replace('/', '.').substring(0, fileName.length() - 6);
+                String className = fileName.replace(File.separatorChar, '.').substring(0, fileName.length() - 6);
                 classFound(className);
             }
         }
@@ -180,7 +180,7 @@ public class ModelFinder {
 
     protected void classFound(String className) throws IOException, ClassNotFoundException {
         Class clazz = Class.forName(className);
-        if (clazz.getSuperclass().equals(Model.class)) {
+        if (Model.class==clazz.getSuperclass()) {
             String dbName = getDbName(clazz);
             if (modelClasses.get(dbName) == null) {
                 modelClasses.put(dbName, new ArrayList<Class<? extends Model>>());
