@@ -152,5 +152,4 @@
         <dependency><groupId>javalite</groupId>     <artifactId>javalite-common</artifactId><version>${project.version}</version></dependency>
         <dependency><groupId>opensymphony</groupId> <artifactId>oscache</artifactId></dependency>
     </dependencies>
-
 </project>
