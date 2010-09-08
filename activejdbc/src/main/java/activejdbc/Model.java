@@ -924,23 +924,6 @@ public abstract class Model extends CallbackSupport{
     }
 
 
-    /**
-     * This is a convenience method. It will convert a params aray into a string: "param1, param2, etc".
-     * This is to expect that a query will have only one place holder like this:
-     * <pre>
-     * Stirng[] ids = {"1", "2", "4"};
-     * List<Person> people = Person.where("id in (?)", ids);
-     * </pre>
-     * @param subquery query with only one placeholder, expecting a comma-separated string list as value.
-     * @param params - Stirng[] - string values for the list.
-     * @return list of models according to query selection.
-     */
-    public static <T extends Model> LazyList<T> where(String subquery, String[] params) {
-        String parameter = Util.join(params, "', '");
-        parameter = "'" + parameter + "'";
-        
-        return find(subquery.replaceAll("\\?", parameter));
-    }
 
     /**
      * Synonym of {@link #where(String, Object...)}
