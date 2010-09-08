@@ -21,14 +21,16 @@
                 </configuration>
             </plugin>
 
-             <plugin>
+            <plugin>
                 <groupId>activejdbc</groupId>
                 <artifactId>activejdbc-instrumentation</artifactId>
                 <version>1.0-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <phase>process-classes</phase>
-                        <goals><goal>instrument</goal></goals>
+                        <goals>
+                            <goal>instrument</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -53,7 +55,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-          <dependency>
+        <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>5.0.4</version>
@@ -64,8 +66,40 @@
             <artifactId>slf4j-simple</artifactId>
             <version>1.5.10</version>
         </dependency>
-        
     </dependencies>
+
+
+    <pluginRepositories>
+
+        <pluginRepository>
+            <id>ipsolutionsdev-plugin-snapshots</id>
+            <name>IP Solutions Dev Snapshot Repo</name>
+            <layout>default</layout>
+            <url>http://ipsolutionsdev.com/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <checksumPolicy>warn</checksumPolicy>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+
+        </pluginRepository>
+
+
+    </pluginRepositories>
+    <repositories>
+
+        <repository>
+            <id>ipsolutionsdev-snapshots</id>
+            <name>IP Solutions Dev Snapshot Repo</name>
+            <layout>default</layout>
+            <url>http://ipsolutionsdev.com/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <checksumPolicy>warn</checksumPolicy>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>
 
 
