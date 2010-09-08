@@ -3,23 +3,6 @@
   <component name="AntConfiguration">
     <defaultAnt bundledAnt="true" />
   </component>
-  <component name="BuildJarProjectSettings">
-    <option name="BUILD_JARS_ON_MAKE" value="false" />
-  </component>
-  <component name="CCaseConfig">
-    <option name="checkoutReserved" value="false" />
-    <option name="markExternalChangeAsUpToDate" value="true" />
-    <option name="checkInUseHijack" value="true" />
-    <option name="useUcmModel" value="true" />
-    <option name="isOffline" value="false" />
-    <option name="synchOutside" value="false" />
-    <option name="isHistoryResticted" value="true" />
-    <option name="useIdenticalSwitch" value="true" />
-    <option name="synchActivitiesOnRefresh" value="true" />
-    <option name="lastScr" value="" />
-    <option name="scrTextFileName" value="" />
-    <option name="historyRevisionsNumber" value="4" />
-  </component>
   <component name="CompilerConfiguration">
     <option name="DEFAULT_COMPILER" value="Javac" />
     <resourceExtensions>
@@ -86,9 +69,9 @@
     <option name="SKIP_IMPORT_STATEMENTS" value="false" />
   </component>
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" />
-  <component name="IdProvider" IDEtalkID="982189B4941EC42DA28C59C6377031FE" />
+  <component name="IdProvider" IDEtalkID="EDFAED96E2D08D756526A60AB3FC8774" />
   <component name="JavacSettings">
-    <option name="ADDITIONAL_OPTIONS_STRING" value="-target 1.6" />
+    <option name="ADDITIONAL_OPTIONS_STRING" value="-target 1.5" />
   </component>
   <component name="JavadocGenerationManager">
     <option name="OUTPUT_DIRECTORY" />
@@ -111,11 +94,6 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
-      </list>
-    </option>
-    <option name="activeProfiles">
-      <list>
-        <option value="postgresql" />
       </list>
     </option>
   </component>
@@ -244,9 +222,6 @@
       </item>
     </group>
   </component>
-  <component name="ProjectKey">
-    <option name="state" value="project://default" />
-  </component>
   <component name="ProjectLevelVcsManager">
     <OptionsSetting value="true" id="Add" />
     <OptionsSetting value="true" id="Remove" />
@@ -271,24 +246,6 @@
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/classes" />
-  </component>
-  <component name="Regex">
-    <option name="pos1" value="218" />
-    <option name="pos2" value="218" />
-    <option name="pos3" value="162" />
-    <option name="pos4" value="444" />
-    <option name="pos5" value="162" />
-    <option name="autoUpdate" value="true" />
-    <option name="referenceOn" value="false" />
-    <option name="referencePos" value="0" />
-    <option name="showLabels" value="true" />
-  </component>
-  <component name="ResourceManagerContainer">
-    <option name="myResourceBundles">
-      <value>
-        <list size="0" />
-      </value>
-    </option>
   </component>
   <component name="RunManager">
     <configuration default="true" type="Remote" factoryName="Remote">
@@ -322,7 +279,7 @@
       </method>
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
-      <extension name="coverage" enabled="false" merge="false" runner="emma" />
+      <extension name="coverage" enabled="false" merge="false" />
       <extension name="snapshooter" />
       <option name="MAIN_CLASS_NAME" />
       <option name="VM_PARAMETERS" />
@@ -343,7 +300,7 @@
       </method>
     </configuration>
     <configuration default="true" type="JUnit" factoryName="JUnit">
-      <extension name="coverage" enabled="false" merge="false" runner="emma" />
+      <extension name="coverage" enabled="false" merge="false" />
       <extension name="snapshooter" />
       <module name="" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -386,55 +343,7 @@
     <option name="LOCK_ON_CHECKOUT" value="false" />
     <option name="UNLOCK_ON_CHECKIN" value="false" />
   </component>
-  <component name="StatisticProjectComponent">
-    <option name="excludeCompilerOutput" value="true" />
-    <option name="excludeIdea9ArtifactDirectory" value="true" />
-    <option name="excludeTargetDirectories" value="true" />
-    <option name="excludedDirectories">
-      <value>
-        <list size="0" />
-      </value>
-    </option>
-    <option name="fileTypes" value="class;svn-base;svn-work;Extra;gif;png;jpg;jpeg;bmp;tga;tiff;ear;war;zip;jar;iml;iws;ipr;bz2;gz;" />
-  </component>
   <component name="SvnBranchConfigurationManager">
-    <option name="myConfigurationMap">
-      <map>
-        <entry key="$PROJECT_DIR$">
-          <value>
-            <SvnBranchConfiguration>
-              <option name="branchMap">
-                <map>
-                  <entry key="https://activejdbc.googlecode.com/svn/branches">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="https://activejdbc.googlecode.com/svn/tags">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="https://activejdbc.googlecode.com/svn/wiki">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                </map>
-              </option>
-              <option name="branchUrls">
-                <list>
-                  <option value="https://activejdbc.googlecode.com/svn/branches" />
-                  <option value="https://activejdbc.googlecode.com/svn/tags" />
-                  <option value="https://activejdbc.googlecode.com/svn/wiki" />
-                </list>
-              </option>
-              <option name="trunkUrl" value="https://activejdbc.googlecode.com/svn/trunk" />
-            </SvnBranchConfiguration>
-          </value>
-        </entry>
-      </map>
-    </option>
     <option name="mySupportsUserInfoFilter" value="true" />
   </component>
   <component name="SvnConfiguration" maxAnnotateRevisions="500">
@@ -446,7 +355,7 @@
     <option name="MERGE_DIFF_USE_ANCESTRY" value="true" />
     <option name="UPDATE_LOCK_ON_DEMAND" value="false" />
     <option name="IGNORE_SPACES_IN_MERGE" value="false" />
-    <option name="DETECT_NESTED_COPIES" value="false" />
+    <option name="DETECT_NESTED_COPIES" value="true" />
     <option name="CHECK_NESTED_FOR_QUICK_MERGE" value="false" />
     <option name="IGNORE_SPACES_IN_ANNOTATE" value="true" />
     <option name="SHOW_MERGE_SOURCES_IN_ANNOTATE" value="true" />
@@ -456,10 +365,6 @@
     <mapping directory="" vcs="svn" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
-  <component name="XPathView.XPathProjectComponent">
-    <history />
-    <find-history />
-  </component>
   <component name="libraryTable">
     <library name="Maven: junit:junit:4.8.1">
       <CLASSES>
@@ -571,26 +476,15 @@
         <root url="jar://$MAVEN_REPOSITORY$/com/ibm/icu/icu4j/2.6.1/icu4j-2.6.1-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: javassist:javassist:3.8.0.GA">
+    <library name="Maven: junit:junit:3.8.1">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/javassist/javassist/3.8.0.GA/javassist-3.8.0.GA.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/3.8.1/junit-3.8.1.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/javassist/javassist/3.8.0.GA/javassist-3.8.0.GA-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/3.8.1/junit-3.8.1-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/javassist/javassist/3.8.0.GA/javassist-3.8.0.GA-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: javax.servlet:servlet-api:2.5">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/javax/servlet/servlet-api/2.5/servlet-api-2.5.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/javax/servlet/servlet-api/2.5/servlet-api-2.5-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/javax/servlet/servlet-api/2.5/servlet-api-2.5-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/3.8.1/junit-3.8.1-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: org.slf4j:slf4j-api:1.5.10">
@@ -604,17 +498,6 @@
         <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.5.10/slf4j-api-1.5.10-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.slf4j:jcl-over-slf4j:1.5.10">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/jcl-over-slf4j/1.5.10/jcl-over-slf4j-1.5.10.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/jcl-over-slf4j/1.5.10/jcl-over-slf4j-1.5.10-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/jcl-over-slf4j/1.5.10/jcl-over-slf4j-1.5.10-sources.jar!/" />
-      </SOURCES>
-    </library>
     <library name="Maven: org.slf4j:slf4j-simple:1.5.10">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-simple/1.5.10/slf4j-simple-1.5.10.jar!/" />
@@ -626,26 +509,15 @@
         <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-simple/1.5.10/slf4j-simple-1.5.10-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: mysql:mysql-connector-java:5.0.4">
+    <library name="Maven: org.slf4j:jcl-over-slf4j:1.5.10">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/mysql/mysql-connector-java/5.0.4/mysql-connector-java-5.0.4.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/jcl-over-slf4j/1.5.10/jcl-over-slf4j-1.5.10.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/mysql/mysql-connector-java/5.0.4/mysql-connector-java-5.0.4-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/jcl-over-slf4j/1.5.10/jcl-over-slf4j-1.5.10-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/mysql/mysql-connector-java/5.0.4/mysql-connector-java-5.0.4-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: oracle:ojdbc14:10.2.0.1">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/oracle/ojdbc14/10.2.0.1/ojdbc14-10.2.0.1.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/oracle/ojdbc14/10.2.0.1/ojdbc14-10.2.0.1-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/oracle/ojdbc14/10.2.0.1/ojdbc14-10.2.0.1-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/jcl-over-slf4j/1.5.10/jcl-over-slf4j-1.5.10-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: opensymphony:oscache:2.4">
@@ -659,15 +531,15 @@
         <root url="jar://$MAVEN_REPOSITORY$/opensymphony/oscache/2.4/oscache-2.4-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: junit:junit:3.8.1">
+    <library name="Maven: mysql:mysql-connector-java:5.0.4">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/3.8.1/junit-3.8.1.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/mysql/mysql-connector-java/5.0.4/mysql-connector-java-5.0.4.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/3.8.1/junit-3.8.1-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/mysql/mysql-connector-java/5.0.4/mysql-connector-java-5.0.4-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/3.8.1/junit-3.8.1-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/mysql/mysql-connector-java/5.0.4/mysql-connector-java-5.0.4-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: jgroups:jgroups-all:2.4.1">
@@ -703,17 +575,6 @@
         <root url="jar://$MAVEN_REPOSITORY$/log4j/log4j/1.2.6/log4j-1.2.6-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: postgresql:postgresql:8.4-701.jdbc4">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/postgresql/postgresql/8.4-701.jdbc4/postgresql-8.4-701.jdbc4.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/postgresql/postgresql/8.4-701.jdbc4/postgresql-8.4-701.jdbc4-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/postgresql/postgresql/8.4-701.jdbc4/postgresql-8.4-701.jdbc4-sources.jar!/" />
-      </SOURCES>
-    </library>
     <library name="Maven: org.apache.maven:maven-plugin-api:2.0">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/org/apache/maven/maven-plugin-api/2.0/maven-plugin-api-2.0.jar!/" />
@@ -723,6 +584,17 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/org/apache/maven/maven-plugin-api/2.0/maven-plugin-api-2.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: javassist:javassist:3.8.0.GA">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/javassist/javassist/3.8.0.GA/javassist-3.8.0.GA.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/javassist/javassist/3.8.0.GA/javassist-3.8.0.GA-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/javassist/javassist/3.8.0.GA/javassist-3.8.0.GA-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: org.apache.maven:maven-project:2.2.1">
@@ -877,6 +749,39 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/org/apache/maven/maven-plugin-registry/2.2.1/maven-plugin-registry-2.2.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: javax.servlet:servlet-api:2.5">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/javax/servlet/servlet-api/2.5/servlet-api-2.5.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/javax/servlet/servlet-api/2.5/servlet-api-2.5-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/javax/servlet/servlet-api/2.5/servlet-api-2.5-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: oracle:ojdbc14:10.2.0.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/oracle/ojdbc14/10.2.0.1/ojdbc14-10.2.0.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/oracle/ojdbc14/10.2.0.1/ojdbc14-10.2.0.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/oracle/ojdbc14/10.2.0.1/ojdbc14-10.2.0.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: postgresql:postgresql:8.4-701.jdbc3">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/postgresql/postgresql/8.4-701.jdbc3/postgresql-8.4-701.jdbc3.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/postgresql/postgresql/8.4-701.jdbc3/postgresql-8.4-701.jdbc3-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/postgresql/postgresql/8.4-701.jdbc3/postgresql-8.4-701.jdbc3-sources.jar!/" />
       </SOURCES>
     </library>
   </component>
