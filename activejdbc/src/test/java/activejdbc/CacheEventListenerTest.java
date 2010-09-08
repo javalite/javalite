@@ -6,8 +6,6 @@ import activejdbc.test.ActiveJDBCTest;
 import activejdbc.test_models.Person;
 import org.junit.Test;
 
-import java.util.Date;
-
 /**
  * @author Igor Polevoy
  */
