@@ -103,10 +103,11 @@ public class Configuration {
         return dialects.get(mm.getDbType());
     }
 
+    private static CacheManager cacheManager = new OSCacheManager();
     public CacheManager getCacheManager(){
         //this is a place of extension if a different cache mechanism is needed :
         //http://java-source.net/open-source/cache-solutions
-        
-        return new OSCacheManager();
+
+        return cacheManager;
     }
 }
