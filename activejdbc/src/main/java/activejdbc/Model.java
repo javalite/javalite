@@ -175,13 +175,19 @@ public abstract class Model extends CallbackSupport{
      * has only one record this the ID of this instance.
      * After deletion, this instance becomes {@link #frozen()} and cannot be used anymore until {@link #thaw()} is called.
      *
+     * <p>
+     * For many to many relationships, it will also clear all join links connecting this models to any other models via
+     * join tables. 
      * @return true if a record was deleted, false if not.
      */
     public boolean delete() {
         fireBeforeDelete(this);
         boolean result;
         if( 1 == new DB(getMetaModelLocal().getDbName()).exec("DELETE FROM " + getMetaModelLocal().getTableName()
-                + " WHERE " + getMetaModelLocal().getIdName() + "=?", getId())) {
+                + " WHERE " + getMetaModelLocal().getIdName() + "= ?", getId())) {
+
+            deleteJoinsForManyToMany();
+
             frozen = true;
             if(getMetaModelLocal().cached()){
                 QueryCache.instance().purgeTableCache(getMetaModelLocal().getTableName());
@@ -194,6 +200,16 @@ public abstract class Model extends CallbackSupport{
         }
         fireAfterDelete(this);
         return result;
+    }
+
+    private void deleteJoinsForManyToMany() {
+        List<Association> associations = getMetaModelLocal().getAssociations(Many2ManyAssociation.class);
+        for(Association association:associations){
+            String join = ((Many2ManyAssociation)association).getJoin();
+            String sourceFK = ((Many2ManyAssociation)association).getSourceFkName();
+            String query = "DELETE FROM " + join + " WHERE " + sourceFK + " = " + getId();
+            new DB(getMetaModelLocal().getDbName()).exec(query);
+        }
     }
 
     /**

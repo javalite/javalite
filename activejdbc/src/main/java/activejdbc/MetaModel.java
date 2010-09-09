@@ -198,6 +198,21 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
     }
 
 
+    /**
+     * Returns collection of associations of a specific type.
+     * @param associationClass - type of associations to return.
+     * 
+     * @return collection of associations of a specific type.
+     */
+    public List<Association> getAssociations(Class<? extends Association> associationClass){
+        List<Association> list = new ArrayList<Association>();
+        for (Association association : associations) {
+            if (association.getClass().equals(associationClass)) {
+                list.add(association);
+            }
+        }
+        return list;
+    }
 
     protected void addAssociation(Association association) {
         if (!associations.contains(association)) {
