@@ -458,6 +458,13 @@ public class LazyList<T extends Model> extends AbstractList<T>{
     }
 
     /**
+     * Dumps contents of this list to <code>System.out</code>.
+     */
+    public void dump(){
+        dump(System.out);
+    }
+
+    /**
      * Dumps content of list to a stream. Use for debugging. 
      * @param out
      */

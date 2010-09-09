@@ -239,6 +239,8 @@ public abstract class Model extends CallbackSupport{
         delete();
     }
 
+    pri
+
 
     /**
      * Deletes some records from associated table. This method does not follow any associations.
