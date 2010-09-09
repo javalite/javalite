@@ -172,7 +172,7 @@ public abstract class Model extends CallbackSupport{
 
     /**
      * Deletes a single table record represented by this instance. This method assumes that a corresponding table
-     * has only one record this the ID of this instance.
+     * has only one record whose PK is the ID of this instance.
      * After deletion, this instance becomes {@link #frozen()} and cannot be used anymore until {@link #thaw()} is called.
      *
      * <p>
