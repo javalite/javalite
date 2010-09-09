@@ -32,6 +32,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+/**
+ * This class is a super class of all "models" and provides most functionality
+ * necessary for implementation of Active Record pattern.
+ */
 public abstract class Model extends CallbackSupport{
 
     private final static Logger logger = LoggerFactory.getLogger(Model.class);
