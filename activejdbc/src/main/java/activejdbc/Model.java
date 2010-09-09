@@ -174,10 +174,7 @@ public abstract class Model extends CallbackSupport{
      * Deletes a single table record represented by this instance. This method assumes that a corresponding table
      * has only one record whose PK is the ID of this instance.
      * After deletion, this instance becomes {@link #frozen()} and cannot be used anymore until {@link #thaw()} is called.
-     *
-     * <p>
-     * For many to many relationships, it will also clear all join links connecting this models to any other models via
-     * join tables. 
+     * 
      * @return true if a record was deleted, false if not.
      */
     public boolean delete() {
@@ -185,8 +182,6 @@ public abstract class Model extends CallbackSupport{
         boolean result;
         if( 1 == new DB(getMetaModelLocal().getDbName()).exec("DELETE FROM " + getMetaModelLocal().getTableName()
                 + " WHERE " + getMetaModelLocal().getIdName() + "= ?", getId())) {
-
-            deleteJoinsForManyToMany();
 
             frozen = true;
             if(getMetaModelLocal().cached()){
@@ -202,8 +197,46 @@ public abstract class Model extends CallbackSupport{
         return result;
     }
 
+
+    /**
+     * Convenience method, will call {@link #delete()} or {@link #deleteCascade()}.
+     * 
+     * @param cascade true to call {@link #deleteCascade()}, false to call {@link #delete()}.
+     */
+    public void delete(boolean cascade){
+       if(cascade){
+           deleteCascade();
+       }else{
+           delete();
+       }
+    }
+
+
+    /**
+     * Deletes this record from table.
+     * After deletion, this instance becomes {@link #frozen()} and cannot be used anymore until {@link #thaw()} is called.
+     * <h4>One to many relationships:</h4>
+     * Deletes current model and all one to many associations. This is not a high performance method, as it will
+     * load every row into a model instance before deleting, effectively calling (N + 1) per table queries to the DB, one to select all
+     * the associated records (per table), and one delete statement per record. Use it for small data sets.
+     * It will follow associations of children and their associations too.
+     * <h4>Many to many relationships:</h4>
+     * Deletes current model and will navigate through all many to many relationships
+     * this model has, and clear links to other tables in join tables. This is a high performance call because links are cleared with one
+     * SQL DELETE.
+     * <h4>One to many polymorphic relationship:</h4>
+     * Deletes current model and all polymorphic children. This is a high performance call because links are cleared with one
+     * SQL DELETE. 
+     */
+    public void deleteCascade(){
+        deleteOneToManyChildren();
+        deleteJoinsForManyToMany();
+        deletePolymorphicChildren();
+        delete();
+    }
+
     private void deleteJoinsForManyToMany() {
-        List<Association> associations = getMetaModelLocal().getAssociations(Many2ManyAssociation.class);
+        List<Association> associations = getMetaModelLocal().getManyToManyAssociations();
         for(Association association:associations){
             String join = ((Many2ManyAssociation)association).getJoin();
             String sourceFK = ((Many2ManyAssociation)association).getSourceFkName();
@@ -212,14 +245,17 @@ public abstract class Model extends CallbackSupport{
         }
     }
 
-    /**
-     * Deletes current model and all one to many associations. This is not a high performance method, as it will
-     * load every row into a model instance before deleting, effectively calling (N + 1) per table queries to the DB, one to select all
-     * the associated records (per table), and one delete statement per record. Use it for small data sets.
-     * It will follow associations of children and their associations too.
-     */
-    public void deleteCascade(){
+    private void deletePolymorphicChildren() {
+        List<OneToManyPolymorphicAssociation> polymorphics = getMetaModelLocal().getPolymorphicAssociations();
+        for (OneToManyPolymorphicAssociation association : polymorphics) {            
+            String  target = association.getTarget();
+            String parentType = association.getParentType();
+            String query = "DELETE FROM " + target + " WHERE parent_id = ? AND parent_type = ?";
+            new DB(getMetaModelLocal().getDbName()).exec(query, getId(), parentType);
+        }
+    }
 
+    private void deleteOneToManyChildren(){
         List<Association> one2manies = getMetaModelLocal().getOneToManyAssociations();
         for (Association association : one2manies) {
             String targetTableName = association.getTarget();
@@ -236,10 +272,7 @@ public abstract class Model extends CallbackSupport{
                 }
             }
         }
-        delete();
     }
-
-    pri
 
 
     /**

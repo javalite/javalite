@@ -19,6 +19,7 @@ package activejdbc;
 
 import activejdbc.associations.Many2ManyAssociation;
 import activejdbc.associations.OneToManyAssociation;
+import activejdbc.associations.OneToManyPolymorphicAssociation;
 import activejdbc.dialects.DefaultDialect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -197,23 +198,6 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
         return (E) result;
     }
 
-
-    /**
-     * Returns collection of associations of a specific type.
-     * @param associationClass - type of associations to return.
-     * 
-     * @return collection of associations of a specific type.
-     */
-    public List<Association> getAssociations(Class<? extends Association> associationClass){
-        List<Association> list = new ArrayList<Association>();
-        for (Association association : associations) {
-            if (association.getClass().equals(associationClass)) {
-                list.add(association);
-            }
-        }
-        return list;
-    }
-
     protected void addAssociation(Association association) {
         if (!associations.contains(association)) {
             log(logger, "Association found: " + association);
@@ -266,22 +250,31 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
         return singularize(getTableName()).toLowerCase() + "_id";
     }
 
-    protected List<Association>  getOneToManyAssociations() {
-        List<Association> one2Manies = new ArrayList<Association>();
+    protected List<OneToManyAssociation>  getOneToManyAssociations() {
+        List<OneToManyAssociation> one2Manies = new ArrayList<OneToManyAssociation>();
         for (Association association : associations) {
             if(association.getClass().equals(OneToManyAssociation.class)){
-                one2Manies.add(association);
+                one2Manies.add((OneToManyAssociation)association);
             }
         }
         return one2Manies;
     }
 
+    protected List<OneToManyPolymorphicAssociation>  getPolymorphicAssociations() {
+        List<OneToManyPolymorphicAssociation> one2Manies = new ArrayList<OneToManyPolymorphicAssociation>();
+        for (Association association : associations) {
+            if(association.getClass().equals(OneToManyPolymorphicAssociation.class)){
+                one2Manies.add((OneToManyPolymorphicAssociation)association);
+            }
+        }
+        return one2Manies;
+    }
 
-    protected List<Association>  getManyToManyAssociations() {
-        List<Association> many2Manies = new ArrayList<Association>();
+    protected List<Many2ManyAssociation>  getManyToManyAssociations() {
+        List<Many2ManyAssociation> many2Manies = new ArrayList<Many2ManyAssociation>();
         for (Association association : associations) {
             if(association.getClass().equals(Many2ManyAssociation.class)){
-                many2Manies .add(association);
+                many2Manies .add((Many2ManyAssociation)association);
             }
         }
         return many2Manies ;
