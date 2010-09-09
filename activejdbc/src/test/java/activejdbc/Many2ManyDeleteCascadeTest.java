@@ -15,13 +15,8 @@ public class Many2ManyDeleteCascadeTest extends ActiveJDBCTest {
     @Test
     public void shouldRemoveJoinLinksWHenDeleted() {
         resetTables("doctors", "patients", "doctors_patients");
-
-        Doctor.<Model>findAll().dump(System.out);
-        System.out.println(Base.findAll("Select * from doctors_patients"));
-
         Doctor doctorNumberOne = (Doctor)Doctor.findById(1);
         doctorNumberOne.delete();
-
         a(Base.findAll("Select * from doctors_patients").size()).shouldBeEqual(1);
     }
 
