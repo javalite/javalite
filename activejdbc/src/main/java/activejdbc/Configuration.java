@@ -103,10 +103,15 @@ public class Configuration {
         return dialects.get(mm.getDbType());
     }
 
-    private static CacheManager cacheManager = new OSCacheManager();
+    private static CacheManager cacheManager;
     public CacheManager getCacheManager(){
         //this is a place of extension if a different cache mechanism is needed :
         //http://java-source.net/open-source/cache-solutions
+
+        //note: race conditions are not important. In teh worst case, one manager will be discarded
+        if(cacheManager == null){
+            cacheManager = new OSCacheManager();
+        }
 
         return cacheManager;
     }
