@@ -331,6 +331,10 @@ public class Registry {
         getValidators(daClass).addAll(modelValidators);
     }
 
+    public void removeValidator(Class<Model> daClass, Validator validator) {
+        getValidators(daClass).remove(validator);
+    }
+
     /**
      * Returns edges for a join. An edge is a table in a many to many relationship that is not a join.
      *

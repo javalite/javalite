@@ -763,6 +763,19 @@ public abstract class Model extends CallbackSupport{
         return ValidationHelper.addNumericalityValidators(Model.<Model>getDaClass(), attributes);
     }
 
+    public static void addValidator(Validator validator){
+        ValidationHelper.addValidator(Model.<Model>getDaClass(), validator);
+    }
+
+    public static void removeValidator(Validator validator){
+        Registry.instance().removeValidator(Model.<Model>getDaClass(), validator);
+    }
+
+    public static List<Validator> getValidators(Class<Model> daClass){
+        return Registry.instance().getValidators(daClass);
+    }
+
+
     protected static ValidationBuilder validateRegexpOf(String attribute, String pattern) {
         return ValidationHelper.addRegexpValidator(Model.<Model>getDaClass(), attribute, pattern);
     }
@@ -844,7 +857,7 @@ public abstract class Model extends CallbackSupport{
     }
 
     public void addError(String attribute, String error) {
-        getMetaModelLocal().checkAttributeOrAssociation(attribute);
+        //getMetaModelLocal().checkAttributeOrAssociation(attribute);
         //TODO: what about multiple errors for the same attribute?
         errors.put(attribute, error);
     }
