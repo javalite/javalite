@@ -461,3 +461,19 @@ CREATE OR REPLACE TRIGGER watermelons_trigger
     begin
 select coalesce(:new.id, watermelons_seq.nextval) into :new.id from dual;
 end;
+
+-- BREAK
+CREATE TABLE schools ( id NUMBER NOT NULL, school_name VARCHAR(56), school_type VARCHAR(56), email VARCHAR(56), created_at TIMESTAMP, updated_at TIMESTAMP)
+-- BREAK
+ALTER TABLE schools ADD CONSTRAINT schools_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE schools_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER schools_trigger
+    BEFORE INSERT ON schools REFERENCING
+    NEW AS new
+    OLD AS old
+    FOR EACH ROW
+    begin
+select coalesce(:new.id, schools_seq.nextval) into :new.id from dual;
+end;

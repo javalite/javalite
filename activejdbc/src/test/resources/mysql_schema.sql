@@ -78,3 +78,6 @@ CREATE TABLE pages ( id int(11) DEFAULT NULL auto_increment PRIMARY KEY, descrip
 
 DROP TABLE IF EXISTS watermelons;
 CREATE TABLE watermelons ( id int(11) DEFAULT NULL auto_increment PRIMARY KEY, melon_type VARCHAR(56), record_version INT, created_at DATETIME, updated_at DATETIME);
+
+DROP TABLE IF EXISTS schools;
+CREATE TABLE schools ( id int(11) DEFAULT NULL auto_increment PRIMARY KEY, school_name VARCHAR(56), school_type VARCHAR(56), email VARCHAR(56), created_at DATETIME, updated_at DATETIME);

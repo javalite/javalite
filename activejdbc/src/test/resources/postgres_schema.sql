@@ -1,10 +1,3 @@
--- 
---     /*
---     drop table if exists bar;
---     CREATE TABLE bar (id    SERIAL PRIMARY KEY, name varchar(20));
---
---     select setval('bar_id_seq', 1);
---      */
 
 DROP TABLE IF EXISTS people;
 CREATE TABLE people (id serial PRIMARY KEY, name VARCHAR(56), last_name VARCHAR(56), dob DATE, graduation_date DATE, created_at TIMESTAMP, updated_at TIMESTAMP);
@@ -85,6 +78,9 @@ CREATE TABLE pages ( id serial PRIMARY KEY, description VARCHAR(56));
 
 DROP TABLE IF EXISTS watermelons;
 CREATE TABLE watermelons ( id serial PRIMARY KEY, melon_type VARCHAR(56), record_version INT, created_at TIMESTAMP, updated_at TIMESTAMP);
+
+DROP TABLE IF EXISTS schools;
+CREATE TABLE schools ( id serial PRIMARY KEY, school_name VARCHAR(56), school_type VARCHAR(56), email VARCHAR(56), created_at TIMESTAMP, updated_at TIMESTAMP);
 
 DROP TABLE IF EXISTS dual;
 CREATE TABLE dual ( id serial PRIMARY KEY, next_val BIGINT);

@@ -44,14 +44,14 @@ public abstract class Model extends CallbackSupport{
     private MetaModel metaModelLocal;
     private Map<Class, Model> cachedParents = new HashMap<Class, Model>();
 
-    protected Map<String, String> errors;
+    protected Errors errors;
     
     static{
         Registry.instance().init();
     }
 
     protected Model() {
-        errors = new HashMap<String, String>();
+        errors = new Errors();
     }
 
     public static MetaModel getMetaModel() {
@@ -842,7 +842,7 @@ public abstract class Model extends CallbackSupport{
 
     public void validate() {
         fireBeforeValidation(this);
-        errors = new HashMap<String, String>();
+        errors = new Errors();
         List<Validator> theValidators = Registry.instance().getValidators((Class<Model>)getClass());
         if(theValidators != null){
             for (Validator validator : theValidators) {
@@ -856,14 +856,35 @@ public abstract class Model extends CallbackSupport{
         return errors != null && errors.size() > 0;
     }
 
-    public void addError(String attribute, String error) {
-        //getMetaModelLocal().checkAttributeOrAssociation(attribute);
+    /**
+     * Adds a new error to the Errors collection of this model instance.
+     *
+     * @param attribute name of atribute to which an error pertains.
+     * @param messageKey message key from a resource bundle <code>activejdbc_messages</code>.
+     */
+    public void addError(String attribute, String messageKey) {
         //TODO: what about multiple errors for the same attribute?
-        errors.put(attribute, error);
+        errors.put(attribute, messageKey);
     }
 
-    public Map<String, String> errors() {
-        return Collections.unmodifiableMap(errors);
+    /**
+     * Provides an instance of <code>Errors</code> object, filled with error messages after validation.
+     *
+     * @return an instance of <code>Errors</code> object, filled with error messages after validation.
+     */
+    public Errors errors() {
+        return errors;
+    }
+
+    /**
+     * Provides an instance of localized <code>Errors</code> object, filled with error messages after validation.
+     *
+     * @param locale locale.
+     * @return an instance of localized <code>Errors</code> object, filled with error messages after validation.
+     */
+    public Errors errors(Locale locale) {
+        errors.setLocale(locale);
+        return errors;
     }
 
     /**
