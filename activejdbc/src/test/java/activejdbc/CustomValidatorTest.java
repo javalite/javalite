@@ -17,7 +17,7 @@ public class CustomValidatorTest extends ActiveJDBCTest {
         Validator mock = new ValidatorAdapter() {
             @Override
             public void validate(Model m) {
-               m.addError("custom_message", "this is a test message!");
+               m.addError("custom_message", "message.for.custom.validator");
             }
         };
 
@@ -26,6 +26,8 @@ public class CustomValidatorTest extends ActiveJDBCTest {
         Person p = new Person();
         p.validate();
         a(p.errors().size()).shouldBeEqual(3);
+
+        a(p.errors().get("custom_message")).shouldBeEqual("this is a test message!");
 
         //this is so that other tests succeed
         Person.removeValidator(mock);
