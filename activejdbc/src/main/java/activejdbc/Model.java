@@ -794,7 +794,7 @@ public abstract class Model extends CallbackSupport{
 
     /**
      * Add a custom validator to the model.
-     * @param validator
+     * @param validator  custom validator.
      */
     protected static void validateWith(Validator validator) {
         addValidator(validator);
