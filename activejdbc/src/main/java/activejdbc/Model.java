@@ -793,6 +793,14 @@ public abstract class Model extends CallbackSupport{
     }
 
     /**
+     * Add a custom validator to the model.
+     * @param validator
+     */
+    protected static void validateWith(Validator validator) {
+        addValidator(validator);
+    }
+
+    /**
      * Converts a named attribute to <code>java.sql.Date</code> if possible.
      * Acts as a validator if cannot make a conversion.
      *
