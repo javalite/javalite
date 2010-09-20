@@ -23,9 +23,9 @@ import activejdbc.Converter;
 
 import java.text.NumberFormat;
 
-public class NumericValidator implements Validator {
+public class NumericValidator extends ValidatorAdapter {
     private String attribute;
-    private String message;
+
     private Double min = null;
     private Double max = null;
     private boolean allowNull = false, onlyInteger = false;
@@ -36,9 +36,6 @@ public class NumericValidator implements Validator {
         message = "value is not a number";
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
 
     public void validate(Model m) {
         Object value = m.get(attribute);
@@ -53,10 +50,10 @@ public class NumericValidator implements Validator {
             try {
                 NumberFormat.getInstance().parse(value.toString());
             } catch (Exception e) {
-                m.addError(attribute, message);
+                m.addValidator(attribute, this);
             }
         } else {
-                m.addError(attribute, message);
+                m.addValidator(attribute, this);
         }
 
         if(min != null){
@@ -74,7 +71,7 @@ public class NumericValidator implements Validator {
 
     private void validateMin(Double value, Model m){
         if(value <= min){
-            m.addError(attribute, message);
+            m.addValidator(attribute, this);
         }
     }
 
@@ -83,7 +80,7 @@ public class NumericValidator implements Validator {
             Integer.valueOf(value.toString());
         }
         catch(Exception e){
-            m.addError(attribute, message);
+            m.addValidator(attribute, this);
         }
     }
 
@@ -91,7 +88,7 @@ public class NumericValidator implements Validator {
 
     private void validateMax(Double value, Model m){
         if(value >= max){
-            m.addError(attribute, message);
+            m.addValidator(attribute, this);
         }
     }
 

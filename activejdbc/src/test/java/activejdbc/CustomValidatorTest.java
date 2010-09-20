@@ -14,12 +14,16 @@ public class CustomValidatorTest extends ActiveJDBCTest {
     @Test
     public void shouldRegisterCustomValidator() {
 
-        Validator mock = new ValidatorAdapter() {
+        class SimpleValidator extends ValidatorAdapter {            
+            SimpleValidator(){
+                message = "message.for.custom.validator";
+            }
             @Override
             public void validate(Model m) {
-               m.addError("custom_message", "message.for.custom.validator");
+               m.addValidator("custom_message", this);
             }
-        };
+        }
+        SimpleValidator mock = new SimpleValidator(); 
 
         Person.addValidator(mock);
 

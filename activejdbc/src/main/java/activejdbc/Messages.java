@@ -65,7 +65,7 @@ public class Messages {
                 mf.applyPattern(ResourceBundle.getBundle(BUNDLE, locale).getString(key));
             }
         }catch(Exception e){
-            return key;
+            mf.applyPattern(key);
         }
         return mf.format(params);
     }

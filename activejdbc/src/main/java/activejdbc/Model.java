@@ -867,12 +867,12 @@ public abstract class Model extends CallbackSupport{
     /**
      * Adds a new error to the Errors collection of this model instance.
      *
-     * @param attribute name of atribute to which an error pertains.
-     * @param messageKey message key from a resource bundle <code>activejdbc_messages</code>.
+     * @param attribute name of attribute to which an error pertains.
+     * @param validator -validator that failed validation.
      */
-    public void addError(String attribute, String messageKey) {
+    public void addValidator(String attribute, Validator validator) {
         //TODO: what about multiple errors for the same attribute?
-        errors.put(attribute, messageKey);
+        errors.addValidator(attribute, validator);
     }
 
     /**

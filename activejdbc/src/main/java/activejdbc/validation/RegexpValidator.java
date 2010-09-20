@@ -19,23 +19,24 @@ package activejdbc.validation;
 
 import activejdbc.*;
 
+import java.util.Locale;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 
-public class RegexpValidator implements Validator{
+public class RegexpValidator extends ValidatorAdapter{
 
-    protected String message = "value does not match given format";
     private String rule;
     private String attribute;
 
     public RegexpValidator(String attribute, String rule){
         this.rule = rule;
         this.attribute = attribute;
+        message = "value does not match given format";
     }
     public void validate(Model m) {
         if(m.get(attribute) == null){
-            m.addError(attribute, message);
+            m.addValidator(attribute, this);
             return;
         }
         Object value = m.get(attribute);
@@ -45,11 +46,7 @@ public class RegexpValidator implements Validator{
         Pattern pattern = Pattern.compile(rule, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(value.toString());
         if(!matcher.matches()){
-           m.addError(attribute, message);
+           m.addValidator(attribute, this);
         }
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 }

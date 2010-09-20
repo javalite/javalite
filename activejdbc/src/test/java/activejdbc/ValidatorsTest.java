@@ -32,6 +32,8 @@ public class ValidatorsTest extends ActiveJDBCTest {
         Person p = new Person();
         p.validate();
         a(p.errors().size()).shouldBeEqual(2);
+        a(p.errors().get("name")).shouldBeEqual("value is missing");
+        a(p.errors().get("last_name")).shouldBeEqual("value is missing");
 
         p.set("name", "igor");
         p.validate();
@@ -55,6 +57,7 @@ public class ValidatorsTest extends ActiveJDBCTest {
         a.set("amount", "hello");
         a.validate();
         a(a.errors().size()).shouldBeEqual(1);
+        a(a.errors().get("amount")).shouldBeEqual("value is not a number");
 
         //try numeric string
         a.set("amount", "123");
@@ -66,6 +69,8 @@ public class ValidatorsTest extends ActiveJDBCTest {
         a.set("amount", null);
         a.validate();
         a(a.errors().size()).shouldBeEqual(1);
+        a(a.errors().get("amount")).shouldBeEqual("value is not a number");
+        
     }
 
     @Test
@@ -82,7 +87,7 @@ public class ValidatorsTest extends ActiveJDBCTest {
         t.set("temp", 200);
         t.validate();
         a(t.errors().size()).shouldBeEqual(1);
-        System.out.println(t.errors());
+        a(t.errors().get("temp")).shouldBeEqual("temperature cannot be less than 0 or more than 100");
 
         //pass double, which is a different type than range values specified in the model, exception is thrown
         t.set("temp", 200.00);

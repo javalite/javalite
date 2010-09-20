@@ -19,22 +19,22 @@ package activejdbc.validation;
 
 import activejdbc.*;
 
-public class AttributePresenceValidator implements Validator {
+import java.util.Locale;
 
-    private String attribute, message = "value is missing";
+public class AttributePresenceValidator extends ValidatorAdapter {
+
+    private String attribute;
 
     public AttributePresenceValidator(String attribute) {
         this.attribute = attribute;
+        message = "value is missing";
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
 
     public void validate(Model m) {
         if (m.get(attribute) == null || m.get(attribute).equals("")) {
             //TODO: use resource bundles for messages
-            m.addError(attribute, message);
+            m.addValidator(attribute, this);
         }
     }
 
@@ -48,5 +48,9 @@ public class AttributePresenceValidator implements Validator {
         if(!this.getClass().equals(other.getClass())) return false;
 
         return this.attribute.equals(((AttributePresenceValidator)other).attribute);
+    }
+
+    public String formatMessage(Locale locale) {
+        return locale != null ? Messages.message(message, locale) : Messages.message(message); 
     }
 }

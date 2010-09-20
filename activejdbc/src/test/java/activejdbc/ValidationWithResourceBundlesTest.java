@@ -65,7 +65,5 @@ public class ValidationWithResourceBundlesTest extends ActiveJDBCTest{
         s.validate();
         a(s.errors(new Locale("de", "DE")).get("email", s.get("school_name"), s.get("email"), "computer@science.edu"))
                 .shouldBeEqual("EMail Format fÃ¼r die Schule School of Computer Science ist falsch: computer#science.edu, ein geeignetes Format wÃ¤re so etwas wie dieses: computer@science.edu");
-
-       System.out.println(s.errors().get(null)); 
     }
 }

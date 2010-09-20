@@ -22,7 +22,6 @@ import activejdbc.Model;
 
 public class Temperature extends Model {
     static{
-        int min = 0, max = 100;
-        validateRange("temp", min, max).message("temperature cannot be less than " + min + " or more than " + max);
+        validateRange("temp", 0, 100).message("temperature cannot be less than {0} or more than {1}");
     }
 }

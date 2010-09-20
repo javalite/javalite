@@ -17,24 +17,27 @@ limitations under the License.
 
 package activejdbc.validation;
 
+import activejdbc.Messages;
 import activejdbc.Model;
 import javalite.common.Util;
 
 import java.text.SimpleDateFormat;
 import java.sql.Timestamp;
+import java.util.Locale;
 
 /**
  * @author Igor Polevoy
  */
 public class TimestampConverter extends Converter{
 
-    private String attributeName, message;
+    private String attributeName, message, format;
     private SimpleDateFormat df;
 
     public TimestampConverter(String attributeName, String format){
         this.attributeName = attributeName;
-        this.message = "attribute " + attributeName + " does not conform to format: " + format;
+        this.message = "attribute {0} does not conform to format: {1}";
         df = new SimpleDateFormat(format);
+        this.format = format;
     }
 
     public void convert(Model m) {
@@ -47,9 +50,14 @@ public class TimestampConverter extends Converter{
                 m.set(attributeName, t);
             }
             catch(Exception e){
-                m.addError(attributeName, message + ", current value: '" + val + "'");
+                m.addValidator(attributeName, this);
             }
         }
+    }
+
+    public String formatMessage(Locale locale, Object ... params) {//params not used
+        return locale != null ? Messages.message(message, locale, attributeName, format)
+                : Messages.message(message, attributeName, format);
     }
 
     public void setMessage(String message) {
