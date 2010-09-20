@@ -16,7 +16,7 @@ public class CustomValidatorTest extends ActiveJDBCTest {
 
         class SimpleValidator extends ValidatorAdapter {            
             SimpleValidator(){
-                message = "message.for.custom.validator";
+                setMessage("message.for.custom.validator");
             }
             @Override
             public void validate(Model m) {

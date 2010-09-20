@@ -27,7 +27,7 @@ public class AttributePresenceValidator extends ValidatorAdapter {
 
     public AttributePresenceValidator(String attribute) {
         this.attribute = attribute;
-        message = "value is missing";
+        setMessage("value is missing");
     }
 
 
@@ -51,6 +51,6 @@ public class AttributePresenceValidator extends ValidatorAdapter {
     }
 
     public String formatMessage(Locale locale) {
-        return locale != null ? Messages.message(message, locale) : Messages.message(message); 
+        return locale != null ? Messages.message(getMessage(), locale) : Messages.message(getMessage()); 
     }
 }

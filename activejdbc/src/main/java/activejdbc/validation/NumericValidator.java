@@ -33,7 +33,7 @@ public class NumericValidator extends ValidatorAdapter {
 
     public NumericValidator(String attribute) {
         this.attribute = attribute;
-        message = "value is not a number";
+        setMessage("value is not a number");
     }
 
 

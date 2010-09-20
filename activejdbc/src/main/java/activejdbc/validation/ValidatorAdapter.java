@@ -11,7 +11,7 @@ import java.util.Locale;
  * @author Igor Polevoy
  */
 public abstract class ValidatorAdapter implements Validator{
-    protected String message;
+    private String message;
 
     public abstract void validate(Model m);
 
@@ -21,5 +21,9 @@ public abstract class ValidatorAdapter implements Validator{
 
     public String formatMessage(Locale locale, Object ... params) {
         return locale != null ? Messages.message(message, locale, params) : Messages.message(message, params);     
+    }
+
+    public String getMessage() {
+        return message;
     }
 }

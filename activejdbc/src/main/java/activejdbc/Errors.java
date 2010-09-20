@@ -17,6 +17,7 @@ limitations under the License.
 package activejdbc;
 
 import activejdbc.validation.Validator;
+import activejdbc.validation.ValidatorAdapter;
 
 import java.util.*;
 
@@ -106,8 +107,16 @@ public class Errors implements Map<String, String> {
         return validators.containsValue(value);  
     }
 
+    class NopValidator extends ValidatorAdapter {
+        @Override
+        public void validate(Model m) {}
+    }
+    
     public String put(String key, String value) {
-        throw new UnsupportedOperationException();          
+        NopValidator nv = new NopValidator();
+        nv.setMessage(value);
+        Validator v = validators.put(key, nv);
+        return v == null? null:v.formatMessage(null);          
     }
 
     public String remove(Object key) {

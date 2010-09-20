@@ -763,8 +763,19 @@ public abstract class Model extends CallbackSupport{
         return ValidationHelper.addNumericalityValidators(Model.<Model>getDaClass(), attributes);
     }
 
-    public static void addValidator(Validator validator){
-        ValidationHelper.addValidator(Model.<Model>getDaClass(), validator);
+    public static ValidationBuilder addValidator(Validator validator){
+        return ValidationHelper.addValidator(Model.<Model>getDaClass(), validator);
+    }
+
+    /**
+     * Adds a new error to the collection of errors. This is a convenience method to be used from custom validators.
+     *
+     * @param key - key wy which this error can be retrieved from a collection of errors: {@link #errors()}.
+     * @param value - this is a key of the message in the resource bundle.
+     * @see {@link activejdbc.Messages}.
+     */
+    public void addError(String key, String value){
+        errors.put(key, value);
     }
 
     public static void removeValidator(Validator validator){
@@ -796,8 +807,8 @@ public abstract class Model extends CallbackSupport{
      * Add a custom validator to the model.
      * @param validator  custom validator.
      */
-    protected static void validateWith(Validator validator) {
-        addValidator(validator);
+    protected static ValidationBuilder validateWith(Validator validator) {
+        return addValidator(validator);
     }
 
     /**
@@ -865,7 +876,7 @@ public abstract class Model extends CallbackSupport{
     }
 
     /**
-     * Adds a new error to the Errors collection of this model instance.
+     * Binds a validator to an attribute after validation fails. This is an internal function, do not use.
      *
      * @param attribute name of attribute to which an error pertains.
      * @param validator -validator that failed validation.

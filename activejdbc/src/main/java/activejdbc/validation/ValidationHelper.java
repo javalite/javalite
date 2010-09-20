@@ -47,10 +47,11 @@ public class ValidationHelper {
         return new ValidationBuilder(validators);
     }
 
-     public static void addValidator(Class<Model> modelClass, Validator validator) {
+     public static ValidationBuilder addValidator(Class<Model> modelClass, Validator validator) {
         List<Validator> validators = new ArrayList<Validator>();
         validators.add(validator);
         Registry.instance().addValidators(modelClass, validators);
+        return new ValidationBuilder(validators);
     }
 
     public static ValidationBuilder addEmailValidator(Class<Model> modelClass, String attribute) {

@@ -32,7 +32,7 @@ public class RegexpValidator extends ValidatorAdapter{
     public RegexpValidator(String attribute, String rule){
         this.rule = rule;
         this.attribute = attribute;
-        message = "value does not match given format";
+        setMessage("value does not match given format");
     }
     public void validate(Model m) {
         if(m.get(attribute) == null){
