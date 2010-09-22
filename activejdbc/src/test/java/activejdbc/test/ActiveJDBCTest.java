@@ -57,7 +57,6 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
     }
 
     protected void generateSchema() throws SQLException, ClassNotFoundException {
-        String db = db();
         if (db().equals("mysql")) {
             DefaultDBReset.resetSchema(getStatements(";", "mysql_schema.sql"));
         }else if (db().equals("postgresql")) {

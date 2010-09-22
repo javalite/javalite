@@ -25,7 +25,6 @@ import activejdbc.test_models.*;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.sql.Timestamp;
 import java.util.*;
 
 

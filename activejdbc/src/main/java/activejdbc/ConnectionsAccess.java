@@ -30,7 +30,7 @@ class ConnectionsAccess {
     private final static Logger logger = LoggerFactory.getLogger(ConnectionsAccess.class);
     private static ThreadLocal<HashMap<String, Connection>> connectionsTL = new ThreadLocal<HashMap<String, Connection>>();
 
-    static Map<String, Connection> getConnectionMap(){
+    private static Map<String, Connection> getConnectionMap(){
         if (connectionsTL.get() == null)
             connectionsTL.set(new HashMap<String, Connection>());
         return connectionsTL.get();
@@ -56,8 +56,19 @@ class ConnectionsAccess {
      * @param connection
      */
     static void attach(String dbName, Connection connection) {
+        if(ConnectionsAccess.getConnectionMap().get(dbName) != null){
+            throw  new InternalException("You are opening a connection " + dbName + " without closing a previous one. Check your logic. Connection still remains on thread: " + ConnectionsAccess.getConnectionMap().get(dbName));
+        }
+        LogFilter.log(logger, "Attaching connection: " + connection);
         ConnectionsAccess.getConnectionMap().put(dbName, connection);
         LogFilter.log(logger, "Opened connection:" + connection + " named: " +  dbName + " on thread: " + Thread.currentThread());
+    }
+
+    static void detach(String dbName){
+        LogFilter.log(logger, "Detached connection: " + dbName);
+        getConnectionMap().remove(dbName);
+        Map m = getConnectionMap();
+        int i = 0;
     }
 
 
