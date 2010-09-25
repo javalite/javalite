@@ -43,10 +43,9 @@ public class ModelFinder {
                 classFound(model);
             }
         } else {
-            String paths[] = getClassPath();
-            for (String path : paths) {
-                processPath(path);
-            }
+            throw new InitException("you are trying to work with models, but no models are found. Maybe you have " +
+                    "no models in project, or you did not instrument the models. It is expected that you have " +
+                    "a file activejdbc_models.properties on classpath");
         }
     }
 
@@ -88,6 +87,7 @@ public class ModelFinder {
      *             and/or zip or jar files. Basically, this can be any entry found on a classpath of a Java app.s
      *             <code>dev, prod, searsstress, etc.</code>.
      */
+    @Deprecated
     private void processPath(String path) throws IOException, ClassNotFoundException {
         File f = new File(path);
         if (!f.exists()) {
@@ -105,6 +105,7 @@ public class ModelFinder {
      *
      * @param file zip or jar file.
      */
+    @Deprecated
     private void processFilePath(File file) {
         try {
             if (file.getCanonicalPath().toLowerCase().endsWith(".jar")
@@ -131,6 +132,7 @@ public class ModelFinder {
 
     private String currentDirectoryPath;
 
+    @Deprecated 
     public void processDirectoryPath(File directory) throws IOException, ClassNotFoundException {
         currentDirectoryPath = directory.getCanonicalPath();
         processDirectory(directory);
@@ -141,6 +143,7 @@ public class ModelFinder {
      *
      * @param directory - start directory for processing.
      */
+    @Deprecated
     private void processDirectory(File directory) throws IOException, ClassNotFoundException {
 
         findFiles(directory);
@@ -160,6 +163,7 @@ public class ModelFinder {
      * @param directory directory to scan.
      * @throws IOException, NotFoundException
      */
+    @Deprecated
     private void findFiles(File directory) throws IOException, ClassNotFoundException {
 
         File files[] = directory.listFiles(new FilenameFilter() {

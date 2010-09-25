@@ -96,6 +96,11 @@
         <option value="$PROJECT_DIR$/pom.xml" />
       </list>
     </option>
+    <option name="activeProfiles">
+      <list>
+        <option value="mysql" />
+      </list>
+    </option>
   </component>
   <component name="ModuleEditorState">
     <option name="LAST_EDITED_MODULE_NAME" />
@@ -244,7 +249,7 @@
   <component name="ProjectReloadState">
     <option name="STATE" value="0" />
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.5" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/classes" />
   </component>
   <component name="RunManager">
@@ -797,28 +802,6 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/javax/servlet/servlet-api/2.5/servlet-api-2.5-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: oracle:ojdbc14:10.2.0.1">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/oracle/ojdbc14/10.2.0.1/ojdbc14-10.2.0.1.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/oracle/ojdbc14/10.2.0.1/ojdbc14-10.2.0.1-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/oracle/ojdbc14/10.2.0.1/ojdbc14-10.2.0.1-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: postgresql:postgresql:8.4-701.jdbc3">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/postgresql/postgresql/8.4-701.jdbc3/postgresql-8.4-701.jdbc3.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/postgresql/postgresql/8.4-701.jdbc3/postgresql-8.4-701.jdbc3-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/postgresql/postgresql/8.4-701.jdbc3/postgresql-8.4-701.jdbc3-sources.jar!/" />
       </SOURCES>
     </library>
   </component>

@@ -25,6 +25,9 @@
     <profiles>
         <profile>
             <id>mysql</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <properties>
                 <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
                 <jdbc.url>jdbc:mysql://localhost/test</jdbc.url>
@@ -32,6 +35,14 @@
                 <jdbc.password>p@ssw0rd</jdbc.password>
                 <db>mysql</db>
             </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>mysql</groupId>
+                    <artifactId>mysql-connector-java</artifactId>
+                    <version>5.0.4</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
         </profile>
         <profile>
             <id>oracle</id>
@@ -42,6 +53,14 @@
                 <jdbc.password>activejdbc</jdbc.password>
                 <db>oracle</db>
             </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>oracle</groupId>
+                    <artifactId>ojdbc14</artifactId>
+                    <version>10.2.0.1</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
         </profile>
         <profile>
             <id>postgresql</id>
@@ -52,9 +71,20 @@
                 <jdbc.password>p@ssw0rd</jdbc.password>
                 <db>postgresql</db>
             </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                    <version>8.4-701.jdbc3</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
         </profile>
         <profile>
             <id>instrument</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <build>
                 <plugins>
                 <plugin>
@@ -146,9 +176,9 @@
         <dependency><groupId>org.slf4j</groupId>    <artifactId>slf4j-api</artifactId></dependency>
         <dependency><groupId>org.slf4j</groupId>    <artifactId>jcl-over-slf4j</artifactId></dependency>
         <dependency><groupId>org.slf4j</groupId>    <artifactId>slf4j-simple</artifactId></dependency>
-        <dependency><groupId>mysql</groupId>        <artifactId>mysql-connector-java</artifactId></dependency>
-        <dependency><groupId>oracle</groupId>       <artifactId>ojdbc14</artifactId><scope>test</scope></dependency>
-        <dependency><groupId>postgresql</groupId>   <artifactId>postgresql</artifactId><scope>test</scope></dependency>        
+
+
+
         <dependency><groupId>javalite</groupId>     <artifactId>javalite-common</artifactId><version>${project.version}</version></dependency>
         <dependency><groupId>opensymphony</groupId> <artifactId>oscache</artifactId></dependency>
     </dependencies>

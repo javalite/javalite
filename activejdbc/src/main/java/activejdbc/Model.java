@@ -155,6 +155,28 @@ public abstract class Model extends CallbackSupport{
         return frozen;
     }
 
+
+    /**
+     * Returns names of all attributes from this model.
+     * @return names of all attributes from this model.
+     */
+    public static List<String>  attributes(){
+
+
+        int i = 0;
+
+        MetaModel mm = getMetaModel();
+        return getMetaModel().getAttributeNames();
+    }
+    
+    /**
+     * Returns all associations of this model.
+     * @return all associations of this model.
+     */
+    public static List<Association> associations(){
+        return getMetaModel().getAssociations();
+    }
+
     /**
      * returns true if this is a new instance, not saved yet to DB, false otherwise.
      *
@@ -1574,7 +1596,7 @@ public abstract class Model extends CallbackSupport{
                     return aClass.getName();
                 }
             }
-            throw new RuntimeException("failed to determine Model class name, are you sure models have been instrumented?");
+            throw new InitException("failed to determine Model class name, are you sure models have been instrumented?");
         }
     }
 
