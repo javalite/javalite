@@ -478,4 +478,16 @@ public class DB {
     public Connection getConnection(){        
         return connection();
     }
+
+
+    public static List<String> getCurrrentConnectionNames(){
+        return new ArrayList<String>(ConnectionsAccess.getConnectionMap().keySet());
+    }
+
+    public static void closeAllConnections(){
+        List<String> names = getCurrrentConnectionNames();
+        for(String name: names){
+            new DB(name).close();
+        }
+    }
 }

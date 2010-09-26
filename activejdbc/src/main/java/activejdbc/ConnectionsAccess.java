@@ -26,11 +26,11 @@ import java.util.*;
 /**
  * @author Igor Polevoy
  */
-class ConnectionsAccess {
+public class ConnectionsAccess {
     private final static Logger logger = LoggerFactory.getLogger(ConnectionsAccess.class);
     private static ThreadLocal<HashMap<String, Connection>> connectionsTL = new ThreadLocal<HashMap<String, Connection>>();
 
-    private static Map<String, Connection> getConnectionMap(){
+    static Map<String, Connection> getConnectionMap(){
         if (connectionsTL.get() == null)
             connectionsTL.set(new HashMap<String, Connection>());
         return connectionsTL.get();
@@ -67,13 +67,10 @@ class ConnectionsAccess {
     static void detach(String dbName){
         LogFilter.log(logger, "Detached connection: " + dbName);
         getConnectionMap().remove(dbName);
-        Map m = getConnectionMap();
-        int i = 0;
     }
 
 
     static List<Connection> getAllConnections(){
         return new ArrayList<Connection>(getConnectionMap().values());
     }
-
 }
