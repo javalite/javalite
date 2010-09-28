@@ -18,7 +18,7 @@ limitations under the License.
 package activejdbc.validation;
 
 import activejdbc.*;
-import activejdbc.Converter;
+import javalite.common.Convert;
 
 
 import java.text.NumberFormat;
@@ -57,11 +57,11 @@ public class NumericValidator extends ValidatorAdapter {
         }
 
         if(min != null){
-            validateMin(Converter.toDouble(value), m);
+            validateMin(Convert.toDouble(value), m);
         }
 
         if(max != null){
-            validateMax(Converter.toDouble(value), m);
+            validateMax(Convert.toDouble(value), m);
         }
 
         if(onlyInteger){

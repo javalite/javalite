@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 
-package activejdbc;
+package javalite.common;
 
 /**
  * @author Igor Polevoy

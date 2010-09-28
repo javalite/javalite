@@ -17,6 +17,7 @@ limitations under the License.
 
 package activejdbc;
 
+import javalite.common.Convert;
 
 
 /**
@@ -37,7 +38,7 @@ public class SimpleFormatter implements Formatter{
         if(value.getClass() != clazz) throw new IllegalArgumentException("This formatted was configured for: "
                 + clazz + ", but you are feeding it: " + value.getClass());
 
-        return prefix + Converter.toString(value) + suffix;
+        return prefix + Convert.toString(value) + suffix;
     }
 
     public Class getValueClass() {

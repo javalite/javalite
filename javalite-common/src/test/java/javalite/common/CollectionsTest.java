@@ -36,4 +36,15 @@ public class CollectionsTest {
         a(person.get("name")).shouldBeEqual("James");
         a(person.get("last_name")).shouldBeEqual("Belushi");
     }
+
+    @Test
+    public void shouldCreateArray(){
+        String[] ar = Collections.arr("John", "James", "Mary", "Keith");
+        a(ar.length).shouldBeEqual(4);
+        a(ar[0]).shouldBeEqual("John");
+        a(ar[1]).shouldBeEqual("James");
+        a(ar[2]).shouldBeEqual("Mary");
+        a(ar[3]).shouldBeEqual("Keith");
+
+    }
 }

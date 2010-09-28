@@ -25,9 +25,11 @@ import static javalite.common.Util.blank;
 import java.sql.*;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.Collections;
 
 import static javalite.common.Inflector.*;
-import javalite.common.Util;
+
+import javalite.common.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,7 +90,7 @@ public abstract class Model extends CallbackSupport{
             //Should the Blob behavior be the same?
             //TODO: write about this in future tutorial
             if(value instanceof Clob && getMetaModelLocal().cached()){
-                this.attributes.put(attrName.toLowerCase(), Converter.toString(value));
+                this.attributes.put(attrName.toLowerCase(), Convert.toString(value));
             }else{
                 this.attributes.put(attrName.toLowerCase(), value);
             }
@@ -689,40 +691,40 @@ public abstract class Model extends CallbackSupport{
      */
     public String getString(String attribute) {
         Object value = get(attribute);
-        return Converter.toString(value);
+        return Convert.toString(value);
     }
 
     public BigDecimal getBigDecimal(String attribute) {
-        return Converter.toBigDecimal(get(attribute));
+        return Convert.toBigDecimal(get(attribute));
     }
 
     public Integer getInteger(String attribute) {
-        return Converter.toInteger(get(attribute));
+        return Convert.toInteger(get(attribute));
     }
 
     public Long getLong(String attribute) {
-        return Converter.toLong(get(attribute));
+        return Convert.toLong(get(attribute));
     }
 
     public Float getFloat(String attribute) {
-        return Converter.toFloat(get(attribute));
+        return Convert.toFloat(get(attribute));
     }
 
     public Timestamp getTimestamp(String attribute) {
-        return Converter.toTimestamp(get(attribute));
+        return Convert.toTimestamp(get(attribute));
 
     }
 
     public Double getDouble(String attribute) {
-        return Converter.toDouble(get(attribute));
+        return Convert.toDouble(get(attribute));
     }
 
     public java.sql.Date getDate(String attribute) {
-        return Converter.toSqlDate(get(attribute));
+        return Convert.toSqlDate(get(attribute));
     }
 
     public Boolean getBoolean(String attribute) {
-        return Converter.toBoolean(get(attribute));
+        return Convert.toBoolean(get(attribute));
     }
 
     /**
@@ -1696,7 +1698,7 @@ public abstract class Model extends CallbackSupport{
         if (id == null) {
             throw new NullPointerException(getIdName() + " is null, cannot convert to Long");
         }
-        return Converter.toLong(id);
+        return Convert.toLong(id);
     }
 
     private static void purgeEdges(){

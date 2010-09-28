@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 
-package activejdbc;
+package javalite.common;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -29,12 +29,13 @@ import java.text.*;
 /**
  * @author Igor Polevoy
  */
-public class Converter {
+public class Convert {
 
     /**
-     * Returns string representation of database object
-     * @param value
-     * @return
+     * Returns string representation of an object, including {@link java.sql.Clob}.
+     *
+     * @param value value to convert.
+     * @return string representation of an object, including {@link java.sql.Clob}.
      */
     public static String toString(Object value) {
         if(value == null) {
@@ -75,7 +76,7 @@ public class Converter {
      * Returns true if the value is any numeric type and has a value of 1, or
      * if string type has a value of 'y', 't', 'true' or 'yes'. Otherwise, return false.
      *
-     * @param value
+     * @param value value to convert
      * @return true if the value is any numeric type and has a value of 1, or
      * if string type has a value of 'y', 't', 'true' or 'yes'. Otherwise, return false.
      */
@@ -102,6 +103,13 @@ public class Converter {
     }
 
 
+    /**
+     * Expects a <<code>java.dwl.Date</code>, <code>java.sql.Timestamp</code>, <code>java.util.Date</code> or
+     * string with format: <code>yyyy-mm-dd</code>.
+     *
+     * @param value
+     * @return <code>java.sql.Date</code> instance representing input value.
+     */
     public static java.sql.Date toSqlDate(Object value){
         if (value == null) {
             return null;
@@ -114,15 +122,19 @@ public class Converter {
 
         } else {
             try {
-                DateFormat df = new SimpleDateFormat();
-                java.util.Date d = df.parse(value.toString());
-                return new java.sql.Date(d.getTime());
-            } catch (ParseException e) {
+                return java.sql.Date.valueOf(value.toString());
+            } catch (IllegalArgumentException e) {
                 throw new ConversionException("failed to convert: '" + value + "' to java.sql.Date", e);
             }
         }
     }
 
+    /**
+     * Converts any value to <code>Double</code>.
+     * @param value value to convert.
+     * 
+     * @return converted double. 
+     */
     public static Double toDouble(Object value){
         if (value == null) {
             return null;
@@ -140,7 +152,7 @@ public class Converter {
 
 
     /**
-     *   If the value is instance of java.sql.Timestamp, returns it, else tries to convert the
+     * If the value is instance of java.sql.Timestamp, returns it, else tries to convert the
      * value to Timestamp using {@link Timestamp#valueOf(String)}.
      * This method might trow <code>IllegalArgumentException</code> if fails at conversion.
      *
@@ -160,11 +172,7 @@ public class Converter {
         } else if (value instanceof java.util.Date) {
            return new Timestamp(((java.util.Date)value).getTime());
         } else {
-            try {
-                return Timestamp.valueOf(value.toString());
-            } catch (IllegalArgumentException  e) {
-                throw new ConversionException("failed to convert: '" + value + "' to Timestamp", e);
-            }
+           return Timestamp.valueOf(value.toString());            
         }
     }
 

@@ -17,6 +17,7 @@ limitations under the License.
 
 package activejdbc;
 
+import javalite.common.Convert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -147,7 +148,7 @@ public class DB {
     
     public Long count(String table){
         String sql = "SELECT COUNT(*) FROM " + table ;
-        return Converter.toLong(firstCell(sql));
+        return Convert.toLong(firstCell(sql));
     }
 
     /**
@@ -169,7 +170,7 @@ public class DB {
         }
 
         String sql = "SELECT COUNT(*) FROM " + table + " WHERE " + query;
-        return Converter.toLong(firstCell(sql, params));
+        return Convert.toLong(firstCell(sql, params));
     }
 
 
