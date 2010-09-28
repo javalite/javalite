@@ -104,7 +104,7 @@ public class Convert {
 
 
     /**
-     * Expects a <<code>java.dwl.Date</code>, <code>java.sql.Timestamp</code>, <code>java.util.Date</code> or
+     * Expects a <<code>java.sql.Date</code>, <code>java.sql.Timestamp</code>, <code>java.util.Date</code> or
      * string with format: <code>yyyy-mm-dd</code>.
      *
      * @param value

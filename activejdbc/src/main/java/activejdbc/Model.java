@@ -163,11 +163,6 @@ public abstract class Model extends CallbackSupport{
      * @return names of all attributes from this model.
      */
     public static List<String>  attributes(){
-
-
-        int i = 0;
-
-        MetaModel mm = getMetaModel();
         return getMetaModel().getAttributeNames();
     }
     
@@ -683,6 +678,7 @@ public abstract class Model extends CallbackSupport{
         return targetMM != null? targetMM: null;
     }
 
+    /*************************** typed getters *****************************************/
     /**
      * Get any value as string.
      *
@@ -725,6 +721,113 @@ public abstract class Model extends CallbackSupport{
 
     public Boolean getBoolean(String attribute) {
         return Convert.toBoolean(get(attribute));
+    }
+
+    /*************************** typed setters *****************************************/
+
+    /**
+     * Converts object to string when setting.
+     *
+     * @param attribute name of attribute.
+     * @param value value
+     * @return reference to this model.
+     */
+    public Model setString(String attribute, Object value) {
+        return set(attribute, value.toString());
+
+    }
+
+    /**
+     * Converts object to BigDecimal when setting.
+     *
+     * @param attribute name of attribute.
+     * @param value value
+     * @return reference to this model.
+     */
+    public Model setBigDecimal(String attribute, Object value) {
+        return set(attribute, Convert.toBigDecimal(value));
+    }
+
+    /**
+     * Converts object to <code>Integer</code> when setting.
+     *
+     * @param attribute name of attribute.
+     * @param value value
+     * @return reference to this model.
+     */
+    public Model setInteger(String attribute, Object value) {
+        return set(attribute, Convert.toInteger(value));
+    }
+
+    /**
+     * Converts object to <code>Long</code> when setting.
+     *
+     * @param attribute name of attribute.
+     * @param value value
+     * @return reference to this model.
+     */
+    public Model getLong(String attribute, Object value) {
+        return set(attribute, Convert.toLong(value));
+    }
+
+    /**
+     * Converts object to <code>Float</code> when setting.
+     *
+     * @param attribute name of attribute.
+     * @param value value
+     * @return reference to this model.
+     */
+    public Model setFloat(String attribute, Object value) {
+        return set(attribute, Convert.toFloat(value));
+    }
+
+    /**
+     *
+     * Converts object to <code>java.sql.Timestamp</code> when setting.
+     * If the value is instance of java.sql.Timestamp, just sets it, else tries to convert the value to Timestamp using
+     * Timestamp.valueOf(String). This method might trow IllegalArgumentException if fails at conversion.
+     *
+     * @param attribute name of attribute.
+     * @param value value
+     * @return reference to this model.
+     */
+    public Model setTimestamp(String attribute, Object value) {
+        return set(attribute, Convert.toTimestamp(value));
+    }
+
+    /**
+     * Converts object to <code>Double</code> when setting.
+     *
+     * @param attribute name of attribute.
+     * @param value value
+     * @return reference to this model.
+     */
+    public Model setDouble(String attribute, Object value) {
+        return set(attribute, Convert.toDouble(value));
+    }
+
+    /**
+     * Converts to <code>java.sql.Date</code>. Expects a <<code>java.sql.Date</code>, <code>java.sql.Timestamp</code>, <code>java.util.Date</code> or
+     * string with format: <code>yyyy-mm-dd</code>.
+     *
+     * @param attribute name of attribute.
+     * @param value value to convert.
+     * @return  this model.
+     */
+    public Model setDate(String attribute, Object value) {
+        return set(attribute, Convert.toSqlDate(value));
+    }
+
+    /**
+     * Sets to <code>true</code> if the value is any numeric type and has a value of 1, or if string type has a
+     * value of 'y', 't', 'true' or 'yes'. Otherwise, sets to false.
+     *
+     * @param attribute name of attribute.
+     * @param value value to convert.
+     * @return  this model.
+     */
+    public Model setBoolean(String attribute, Object value) {
+        return set(attribute, Convert.toBoolean(value));
     }
 
     /**
