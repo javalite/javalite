@@ -77,6 +77,17 @@ public class DB {
         }
     }
 
+    public void open(DataSource datasource)
+    {
+        try {
+            Connection connection = datasource.getConnection();
+            ConnectionsAccess.attach(dbName, connection);
+        } catch (Exception e) {
+            throw new InitException(e);
+        }
+    }
+
+
     public void open(String jndiName, Properties jndiProperties) {
         try {
             Context ctx = new InitialContext(jndiProperties);
