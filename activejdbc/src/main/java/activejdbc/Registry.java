@@ -19,6 +19,8 @@ package activejdbc;
 
 import activejdbc.annotations.*;
 import activejdbc.associations.*;
+import activejdbc.cache.CacheManager;
+import activejdbc.cache.QueryCache;
 import activejdbc.statistics.StatisticsQueue;
 import activejdbc.validation.Validator;
 
@@ -65,6 +67,10 @@ public class Registry {
 
     public Configuration getConfiguration(){
         return configuration;
+    }
+
+    public static CacheManager cacheManager(){
+        return QueryCache.instance().getCacheManager();
     }
 
     /**

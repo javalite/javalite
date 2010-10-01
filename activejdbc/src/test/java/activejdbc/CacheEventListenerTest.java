@@ -26,7 +26,7 @@ public class CacheEventListenerTest extends ActiveJDBCTest {
             }
         }
         TestCacheEventListener listener = new TestCacheEventListener();
-        QueryCache.instance().getCacheManager().addCacheEventListener(listener);
+        Registry.cacheManager().addCacheEventListener(listener);
 
         //flush people first time:
         Person.createIt("name", "Matt", "last_name", "Diamont", "dob", "1962-01-01");
@@ -37,7 +37,7 @@ public class CacheEventListenerTest extends ActiveJDBCTest {
 
         a(listener.allCount).shouldBeEqual(0);
         //flush all
-        QueryCache.instance().getCacheManager().flushAll();
+        Registry.cacheManager().flushAll();
         a(listener.allCount).shouldBeEqual(1);
     }
 }
