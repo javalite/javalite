@@ -90,8 +90,8 @@ public class PostgreSQLStatementProvider {
         } else if (table.equals("students")) {
             statements =  Arrays.asList(
 
-                    "INSERT INTO students VALUES(1, 'Jim', 'Cary', '1965-12-01');",
-                    "INSERT INTO students VALUES(2, 'John', 'Carpenter', '1979-12-01');"
+                    "INSERT INTO students (first_name, last_name, dob) VALUES('Jim', 'Cary', '1965-12-01');",
+                    "INSERT INTO students (first_name, last_name, dob) VALUES('John', 'Carpenter', '1979-12-01');"
             );
         } else if (table.equals("courses")) {
             statements =  Arrays.asList(

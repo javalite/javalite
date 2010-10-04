@@ -130,6 +130,13 @@ public class MySQLStatementProvider {
             statements =  Arrays.asList();
         } else if (table.equals("watermelons")) {
             statements =  Arrays.asList();
+        } else if (table.equals("programmers")) {
+            statements =  Arrays.asList();
+        } else if (table.equals("projects")) {
+            statements =  Arrays.asList();
+        } else if (table.equals("programmers_projects")) {
+            statements =  Arrays.asList();
+
         }else{
             throw new IllegalArgumentException("no statements for: " + table);
         }

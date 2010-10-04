@@ -831,32 +831,67 @@ public abstract class Model extends CallbackSupport{
     }
 
     /**
-     * This methods supports one to many as well as many to many relationships.
+     * This methods supports one to man, many to many relationships as well as plymorhic accosiations.
+     * <p/>
      * In case of one to many, the <code>clazz</code>  must be a class of a child model, and it will return a
      * collection of all children.
      * <p/>
      * In case of many to many, the <code>clazz</code>  must be a class of a another related model, and it will return a
      * collection of all related models.
-     * //TODO: add ability to filter children too: getAll(Class<? extends Model> clazz, String query, Object params).orderBy(...)...
+     * <p/>
+     * In case of many to many, the <code>clazz</code>  must be a class of a polymorphicly related model, and it will return a
+     * collection of all related models.
+     *
      *
      * @param clazz class of a child model for one to many, or class of another model, in case of many to many.
      * @return list of children in case of one to many, or list of other models, in case many to many.
      */
 
     public <T extends Model> LazyList<T> getAll(Class<T> clazz) {
-        List<Model> children = cachedChildren.get(clazz);
-        if(children != null){
-            return (LazyList<T>) children;
-        }
+        //TODO: add ability to filter children too: getAll(Class<? extends Model> clazz, String query, Object params).orderBy(...)...
+//        List<Model> children = cachedChildren.get(clazz);
+//        if(children != null){
+//            return (LazyList<T>) children;
+//        }
 
         String tableName = Registry.instance().getTableName(clazz);
         if(tableName == null) throw new IllegalArgumentException("table: " + tableName + " does not exist for model: " + clazz);
 
-        return getAll(tableName);
+        return get(tableName, null);
     }
 
-    
-    private <T extends Model> LazyList<T> getAll(String targetTable) {
+
+    /**
+     * Provides a list of child models in one to many, many to many and polymorphic associations, but in addition also allows to filter this list
+     * by criteria.
+     *
+     * <p/>
+     * <strong>1.</strong> For one to many, the criteria is against the child table.
+     *
+     * <p/>
+     * <strong>2.</strong> For polymorphic association, the criteria is against the child table.
+     *
+     * <p/>
+     * <strong>3.</strong> For many to many, the criteria is against the join table.
+     * For example, if you have table PROJECTS, ASSIGNMENTS and PROGRAMMERS, where a project has many programmers and a programmer
+     * has many projects, and ASSIGNMENTS is a join table, you can write code like this, assuming that the ASSIGNMENTS table
+     * has a column <code>duration_weeks</code>:
+     *
+     * <pre>
+     * List<Project> threeWeekProjects = programmer.get(Project.class, "duration_weeks = ?", 3);
+     * </pre>
+     * where this list wil contain all projects to which this programmer is assigned for 3 weeks.
+     *
+     * @param clazz related type
+     * @param query sub-query for join table.
+     * @param params parameters for a sub-query
+     * @return list of relations in many to many
+     */
+    public <T extends Model> LazyList<T> get(Class<T> clazz, String query, Object ... params){
+        return get(Registry.instance().getTableName(clazz), query, params);
+    }
+
+    private <T extends Model> LazyList<T> get(String targetTable, String criteria, Object ...params) {
         //TODO: interesting thought: is it possible to have two associations of the same name, one to many and many to many? For now, say no.
 
         OneToManyAssociation oneToManyAssociation = (OneToManyAssociation)getMetaModelLocal().getAssociationForTarget(targetTable, OneToManyAssociation.class);
@@ -864,21 +899,23 @@ public abstract class Model extends CallbackSupport{
 
         OneToManyPolymorphicAssociation oneToManyPolymorphicAssociation = (OneToManyPolymorphicAssociation)getMetaModelLocal().getAssociationForTarget(targetTable, OneToManyPolymorphicAssociation.class);
 
+        String additionalCriteria =  criteria != null? " AND " + criteria: "";
         String subQuery;
         if (oneToManyAssociation != null) {
-            subQuery = oneToManyAssociation.getFkName() + " = " + getId();
+            subQuery = oneToManyAssociation.getFkName() + " = " + getId() + additionalCriteria;
         } else if (manyToManyAssociation != null) {
             String targetId = Registry.instance().getMetaModel(targetTable).getIdName();
-            subQuery = targetId + " IN ( SELECT " +
-                    manyToManyAssociation.getTargetFkName() + " FROM " + manyToManyAssociation.getJoin() + " WHERE " +
-                    manyToManyAssociation.getSourceFkName() + " = " + getId() + ")" ;
-        } else if (oneToManyPolymorphicAssociation != null) {
 
-            subQuery = "parent_id = " + getId() + " AND " + " parent_type = '" + getClass().getName() + "'";  
+            subQuery = targetId + " IN ( SELECT " +
+                manyToManyAssociation.getTargetFkName() + " FROM " + manyToManyAssociation.getJoin() + " WHERE " +
+                manyToManyAssociation.getSourceFkName() + " = " + getId() + additionalCriteria + ")"   ;
+
+        } else if (oneToManyPolymorphicAssociation != null) {
+            subQuery = "parent_id = " + getId() + " AND " + " parent_type = '" + getClass().getName() + "'" + additionalCriteria;  
         } else {
             throw new NotAssociatedException(getMetaModelLocal().getTableName(), targetTable);
         }
-        return new LazyList<T>(subQuery, null,Registry.instance().getMetaModel(targetTable));
+        return new LazyList<T>(subQuery, params,Registry.instance().getMetaModel(targetTable));
     }
 
     @Override
@@ -1061,7 +1098,7 @@ public abstract class Model extends CallbackSupport{
         }
         catch(IllegalArgumentException e){throw e;}
         catch(ClassCastException e){throw new  IllegalArgumentException("All even arguments must be strings");}
-        catch (Exception e){throw new InitException(e);}
+        catch (Exception e){throw new InitException("This model must provide a default constructor.", e);}
     }
 
 
@@ -1687,7 +1724,8 @@ public abstract class Model extends CallbackSupport{
 
     private Map<Class, List<Model>> cachedChildren = new HashMap<Class, List<Model>>();
 
-    public void setChildren(Class childClass, List<Model> children) {
+
+    protected void setChildren(Class childClass, List<Model> children) {
         cachedChildren.put(childClass, children);
     }
 

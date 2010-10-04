@@ -30,7 +30,6 @@
     <orderEntry type="module" module-name="activejdbc" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.5.10" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:jcl-over-slf4j:1.5.10" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-simple:1.5.10" level="project" />
     <orderEntry type="module" module-name="javalite-common" />
     <orderEntry type="library" name="Maven: dom4j:dom4j:1.6.1" level="project" />
     <orderEntry type="library" name="Maven: xml-apis:xml-apis:1.0.b2" level="project" />

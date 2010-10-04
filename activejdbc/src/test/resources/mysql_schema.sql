@@ -81,3 +81,12 @@ CREATE TABLE watermelons ( id int(11) DEFAULT NULL auto_increment PRIMARY KEY, m
 
 DROP TABLE IF EXISTS schools;
 CREATE TABLE schools ( id int(11) DEFAULT NULL auto_increment PRIMARY KEY, school_name VARCHAR(56), school_type VARCHAR(56), email VARCHAR(56), created_at DATETIME, updated_at DATETIME);
+
+DROP TABLE IF EXISTS programmers;
+CREATE TABLE programmers ( id int(11) DEFAULT NULL auto_increment PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), email VARCHAR(56), created_at DATETIME, updated_at DATETIME);
+
+DROP TABLE IF EXISTS projects;
+CREATE TABLE projects ( id int(11) DEFAULT NULL auto_increment PRIMARY KEY, project_name VARCHAR(56), created_at DATETIME, updated_at DATETIME);
+
+DROP TABLE IF EXISTS programmers_projects;
+CREATE TABLE programmers_projects ( id int(11) DEFAULT NULL auto_increment PRIMARY KEY, duration_weeks int(3), project_id int(11), programmer_id int(11), created_at DATETIME, updated_at DATETIME);

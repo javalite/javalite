@@ -85,3 +85,12 @@ CREATE TABLE schools ( id serial PRIMARY KEY, school_name VARCHAR(56), school_ty
 DROP TABLE IF EXISTS dual;
 CREATE TABLE dual ( id serial PRIMARY KEY, next_val BIGINT);
 INSERT INTO dual (next_val) VALUES (0);
+
+DROP TABLE IF EXISTS programmers;
+CREATE TABLE programmers ( id serial PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), email VARCHAR(56), created_at TIMESTAMP, updated_at TIMESTAMP);
+
+DROP TABLE IF EXISTS projects;
+CREATE TABLE projects ( id serial PRIMARY KEY, project_name VARCHAR(56), created_at TIMESTAMP, updated_at TIMESTAMP);
+
+DROP TABLE IF EXISTS programmers_projects;
+CREATE TABLE programmers_projects ( id serial PRIMARY KEY, duration_weeks INT, project_id INT, programmer_id INT, created_at TIMESTAMP, updated_at TIMESTAMP);

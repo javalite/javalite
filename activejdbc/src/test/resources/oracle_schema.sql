@@ -477,3 +477,55 @@ CREATE OR REPLACE TRIGGER schools_trigger
     begin
 select coalesce(:new.id, schools_seq.nextval) into :new.id from dual;
 end;
+
+
+-- BREAK
+CREATE TABLE programmers ( id NUMBER NOT NULL, first_name VARCHAR(56), last_name VARCHAR(56), email VARCHAR(56), created_at TIMESTAMP, updated_at TIMESTAMP)
+-- BREAK
+ALTER TABLE programmers ADD CONSTRAINT programmers_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE programmers_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER programmers_trigger
+    BEFORE INSERT ON programmers REFERENCING
+    NEW AS new
+    OLD AS old
+    FOR EACH ROW
+    begin
+select coalesce(:new.id, programmers_seq.nextval) into :new.id from dual;
+end;
+
+
+-- BREAK
+CREATE TABLE projects ( id NUMBER NOT NULL, project_name VARCHAR(56), created_at TIMESTAMP, updated_at TIMESTAMP) 
+-- BREAK
+ALTER TABLE projects ADD CONSTRAINT projects_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE projects_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER projects_trigger
+    BEFORE INSERT ON projects REFERENCING
+    NEW AS new
+    OLD AS old
+    FOR EACH ROW
+    begin
+select coalesce(:new.id, projects_seq.nextval) into :new.id from dual;
+end;
+
+
+-- BREAK
+CREATE TABLE programmers_projects ( id NUMBER NOT NULL, duration_weeks NUMBER(3), project_id NUMBER, programmer_id NUMBER, created_at TIMESTAMP, updated_at TIMESTAMP) 
+-- BREAK
+ALTER TABLE programmers_projects ADD CONSTRAINT programmers_projects_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE programmers_projects_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER programmers_projects_trigger
+    BEFORE INSERT ON programmers_projects REFERENCING
+    NEW AS new
+    OLD AS old
+    FOR EACH ROW
+    begin
+select coalesce(:new.id, programmers_projects_seq.nextval) into :new.id from dual;
+end;
+

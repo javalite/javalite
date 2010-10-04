@@ -277,25 +277,6 @@ public class ModelTest extends ActiveJDBCTest {
 
     }
 
-    @Test
-    public void testSelectManyToMany(){
-        resetTables("doctors", "patients", "doctors_patients");
-        Doctor doctor = (Doctor)Doctor.findById(1);
-        List<Patient> patients = doctor.getAll(Patient.class);
-        a(2).shouldBeEqual(patients.size());
-
-        doctor = (Doctor)Doctor.findById(2);
-        patients = doctor.getAll(Patient.class);
-        a(1).shouldBeEqual(patients.size());
-
-        Patient p = (Patient)Patient.findById(1);
-        List<Doctor> doctors = p.getAll(Doctor.class);
-        a(2).shouldBeEqual(doctors.size());
-
-        p = (Patient)Patient.findById(2);
-        doctors = p.getAll(Doctor.class);
-        a(1).shouldBeEqual(doctors.size());
-    }
 
     @Test
     public void testBelongsToMany(){
@@ -477,14 +458,6 @@ public class ModelTest extends ActiveJDBCTest {
     }
 
     @Test
-    public void shouldFindManyToManyViaGetter(){
-        resetTables("doctors", "patients", "doctors_patients");
-        Doctor doctor = (Doctor)Doctor.findById(1);
-        List<Patient> patients = (List<Patient>)doctor.get("patients");
-        a(2).shouldBeEqual(patients.size());
-    }
-
-    @Test
     public void shouldCreateModelWithSingleSetter(){
         resetTables("people");
         expect(new DifferenceExpectation(Person.count()) {
@@ -503,63 +476,16 @@ public class ModelTest extends ActiveJDBCTest {
     }
 
 
+
+
     @Test
-    public void shouldBeAbleToIncludeParent() {
+    public void shouldFindChildrenWithCriteria(){
         resetTables("users", "addresses");
-        List<Address> addresses = Address.findAll().orderBy("id").include(User.class);
-        a(addresses.get(0).toMap().get("user")).shouldNotBeNull();
-        Map user = (Map)addresses.get(0).toMap().get("user");
-        a(user.get("first_name")).shouldBeEqual("Marilyn");
-
-        user = (Map)addresses.get(6).toMap().get("user");
-        a(user.get("first_name")).shouldBeEqual("John");
+        User user = (User)User.findById(1);
+        
+        a(user.get(Address.class, "address1 like ?", "%2%").size()).shouldBeEqual(2);
     }
 
-
-    @Test
-    public void shouldBeAbleToIncludeChildren() {
-        resetTables("users", "addresses");
-        LazyList<User> users = User.findAll().orderBy("id").include(Address.class);
-        List<Map> maps = users.toMaps();
-
-        Map user = maps.get(0);
-        a(user.get("first_name")).shouldBeEqual("Marilyn");
-        List<Map> addresses = (List<Map>)user.get("addresses");
-        a(addresses.size()).shouldBeEqual(3);
-
-        a(addresses.get(0).get("address1")).shouldBeEqual("123 Pine St.");
-        a(addresses.get(1).get("address1")).shouldBeEqual("456 Brook St.");
-        a(addresses.get(2).get("address1")).shouldBeEqual("23 Grove St.");
-    }
-
-    @Test
-    public void shouldBeAbleToIncludeOtherInManyToMany() {
-        resetTables("doctors", "patients", "doctors_patients");
-        LazyList<Doctor> doctors = Doctor.findAll().orderBy("id").include(Patient.class);
-        List<Map> doctorsMaps = doctors.toMaps();
-
-        System.out.println(doctors.get(0).getAll(Patient.class));
-
-        List<Map> patients = (List<Map>)doctorsMaps.get(0).get("patients");
-        a(patients.size()).shouldBeEqual(2);
-
-        patients = (List<Map>)doctorsMaps.get(1).get("patients");
-        a(patients.size()).shouldBeEqual(1);
-    }
-
-    @Test
-    public void shouldBeAbleToIncludeParentAndChildren() {
-        resetTables("libraries", "books", "readers");
-        List<Book> books = Book.findAll().orderBy(Book.getMetaModel().getIdName()).include(Reader.class, Library.class);
-        Map book = books.get(0).toMap();
-
-        List<Map> readers = (List<Map>)book.get("readers");
-        a(readers.get(0).get("last_name")).shouldBeEqual("Smith");
-        a(readers.get(1).get("last_name")).shouldBeEqual("Doe");
-
-        Map library = (Map)book.get("library");
-        a(library.get("address")).shouldBeEqual("124 Pine Street");
-    }
 }
 
 

@@ -70,6 +70,17 @@ public class PolymorphicAssociationsTest extends ActiveJDBCTest {
     }
 
     @Test
+    public void shouldFindAllPolymorphicChildrenWithCriteria() {
+        resetTables("articles", "posts", "comments");
+        Article a = (Article) Article.findById(1);
+        a.add(Comment.create("author", "ipolevoy", "content", "this is just a test comment text"));
+        a.add(Comment.create("author", "rkinderman", "content", "this is another test comment text"));
+        List<Comment> comments = a.get(Comment.class, "author = ?", "ipolevoy");
+        a(comments.size()).shouldBeEqual(1);
+        a(comments.get(0).get("content")).shouldBeEqual("this is just a test comment text");
+    }
+
+    @Test
     public void shouldRemovePolymorphicChildren() {
         resetTables("articles", "posts", "comments");
         Article a = (Article) Article.findById(1);
