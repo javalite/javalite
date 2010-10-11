@@ -32,4 +32,13 @@ public class UtilTest extends TestCase {
         String[] arr = {"first", "second", "third", "fourth"};
         assertEquals("first, second, third, fourth", Util.join(Arrays.asList(arr), ", "));
     }
+
+
+    public void testSplit(){
+
+        String[] split = Util.split("Hello, Dolly, my darling ", ',');
+        assertEquals(split.length, 3);
+
+
+    }
 }

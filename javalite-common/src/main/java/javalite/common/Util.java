@@ -18,10 +18,7 @@ limitations under the License.
 package javalite.common;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Collection;
-import java.util.Arrays;
+import java.util.*;
 
 /**
  * @author Igor Polevoy
@@ -112,6 +109,25 @@ public class Util {
     public static String join(String[] collection, String delimiter){
         return join(Arrays.asList(collection), delimiter);
     }
+
+    /**
+     * Splits a string into an array using a provided delimiter. The split chunks are also trimmed.
+     *
+     * @param input string to split.
+     * @param delimiter  delimiter
+     * @return a string into an array using a provided delimiter
+     */
+    public static String[] split(String input, char delimiter){
+        if(input == null) throw new NullPointerException("input cannot be null");
+
+        List<String> tokens  = new ArrayList<String>();
+        StringTokenizer st = new StringTokenizer(input, new String(new byte[]{(byte)delimiter}));
+        while(st.hasMoreTokens()){
+            tokens.add(st.nextToken().trim());
+        }
+        return tokens.toArray(new String[0]);
+    }
+
 
     /**
      * Joins the items in collection with a delimiter.
