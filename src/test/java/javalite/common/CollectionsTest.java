@@ -18,6 +18,7 @@ package javalite.common;
 import static javalite.test.jspec.JSpec.a;
 import org.junit.Test;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,6 +46,15 @@ public class CollectionsTest {
         a(ar[1]).shouldBeEqual("James");
         a(ar[2]).shouldBeEqual("Mary");
         a(ar[3]).shouldBeEqual("Keith");
+    }
 
+    @Test
+    public void shouldCreateList(){
+        List<String> list = Collections.li("John", "James", "Mary", "Keith");
+        a(list.size()).shouldBeEqual(4);
+        a(list.get(0)).shouldBeEqual("John");
+        a(list.get(1)).shouldBeEqual("James");
+        a(list.get(2)).shouldBeEqual("Mary");
+        a(list.get(3)).shouldBeEqual("Keith");
     }
 }

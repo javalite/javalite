@@ -40,4 +40,12 @@ public class Collections {
         }
         return result;
     }
+
+    public static <T> List<T> li(T... values) {
+        List<T> ts  = new ArrayList<T>(values.length);
+        for(T value: values){
+            ts.add(value);
+        }
+        return ts;
+    }
 }
