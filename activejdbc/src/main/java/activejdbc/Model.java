@@ -848,11 +848,10 @@ public abstract class Model extends CallbackSupport{
      */
 
     public <T extends Model> LazyList<T> getAll(Class<T> clazz) {
-        //TODO: add ability to filter children too: getAll(Class<? extends Model> clazz, String query, Object params).orderBy(...)...
-//        List<Model> children = cachedChildren.get(clazz);
-//        if(children != null){
-//            return (LazyList<T>) children;
-//        }
+        List<Model> children = cachedChildren.get(clazz);
+        if(children != null){
+            return (LazyList<T>) children;
+        }
 
         String tableName = Registry.instance().getTableName(clazz);
         if(tableName == null) throw new IllegalArgumentException("table: " + tableName + " does not exist for model: " + clazz);

@@ -72,6 +72,18 @@ public class IncludesTest extends ActiveJDBCTest{
         a(patients.size()).shouldBeEqual(1);
     }
 
+
+
+    @Test
+    public void shouldCacheIncludes() {
+        resetTables("doctors", "patients", "doctors_patients");
+        LazyList<Doctor> doctors = Doctor.findAll().orderBy("id").include(Patient.class);
+
+        List<Patient> patients1 = doctors.get(0).getAll(Patient.class);
+        List<Patient> patients2 = doctors.get(0).getAll(Patient.class);
+        a(patients1).shouldBeTheSameAs(patients2);
+    }
+
     @Test
     public void shouldBeAbleToIncludeParentAndChildren() {
         resetTables("libraries", "books", "readers");
