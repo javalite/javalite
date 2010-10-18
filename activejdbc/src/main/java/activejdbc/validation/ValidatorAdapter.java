@@ -10,10 +10,10 @@ import java.util.Locale;
  *
  * @author Igor Polevoy
  */
-public abstract class ValidatorAdapter implements Validator{
+public abstract class ValidatorAdapter<T extends Model> implements Validator<T>{
     private String message;
 
-    public abstract void validate(Model m);
+    public abstract void validate(T m);
 
     public final void setMessage(String message) {
         this.message = message;

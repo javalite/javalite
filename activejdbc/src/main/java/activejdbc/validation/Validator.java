@@ -22,8 +22,8 @@ import activejdbc.Model;
 import java.util.Locale;
 
 
-public interface Validator {
-    void validate(Model m);
+public interface Validator<T extends Model> {
+    void validate(T m);
     void setMessage(String message);
     String formatMessage(Locale locale, Object ... params);
 }
