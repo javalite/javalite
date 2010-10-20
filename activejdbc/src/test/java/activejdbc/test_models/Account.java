@@ -22,6 +22,7 @@ import activejdbc.Model;
 public class Account extends Model {
 
     static{
+        validatePresenceOf("amount");
         validateNumericalityOf("amount");
         validateNumericalityOf("total")
                 .allowNull(true).greaterThan(0)

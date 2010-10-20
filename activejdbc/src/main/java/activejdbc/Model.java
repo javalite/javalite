@@ -926,6 +926,12 @@ public abstract class Model extends CallbackSupport{
         return ValidationHelper.addNumericalityValidators(Model.<Model>getDaClass(), attributes);
     }
 
+    /**
+     * Adds a validator to the model.
+     *
+     * @param validator new validator.
+     * @return
+     */
     public static ValidationBuilder addValidator(Validator validator){
         return ValidationHelper.addValidator(Model.<Model>getDaClass(), validator);
     }
@@ -950,24 +956,53 @@ public abstract class Model extends CallbackSupport{
     }
 
 
+    /**
+     * Validates an attribite format with a ree hand regular expression.
+     *
+     * @param attribute attribute to validate.
+     * @param pattern regexp pattern which must match  the value. 
+     * @return
+     */
     protected static ValidationBuilder validateRegexpOf(String attribute, String pattern) {
         return ValidationHelper.addRegexpValidator(Model.<Model>getDaClass(), attribute, pattern);
     }
 
+    /**
+     * Validates email format.
+     *
+     * @param attribute name of atribute that holds email value. 
+     * @return
+     */
     protected static ValidationBuilder validateEmailOf(String attribute) {
         return ValidationHelper.addEmailValidator(Model.<Model>getDaClass(), attribute);
     }
 
+    /**
+     * Validates range. Accepted types are all java.lang.Number subclasses:
+     * Byte, Short, Integer, Long, Float, Double BigDecimal.  
+     *
+     * @param attribute attribute to validate - should be within range.
+     * @param min min value of range.
+     * @param max max value of range.
+     * @return
+     */
     protected static ValidationBuilder validateRange(String attribute, Number min, Number max) {
         return ValidationHelper.addRangevalidator(Model.<Model>getDaClass(), attribute, min, max);
     }
 
+    /**
+     * The validation will not pass if the value is either an empty string "", or null.
+     *
+     * @param attributes list of attributes to validate. 
+     * @return
+     */
     protected static ValidationBuilder validatePresenceOf(String... attributes) {
         return ValidationHelper.addPresensevalidators(Model.<Model>getDaClass(), attributes);
     }
 
     /**
      * Add a custom validator to the model.
+     * 
      * @param validator  custom validator.
      */
     protected static ValidationBuilder validateWith(Validator validator) {
@@ -1022,6 +1057,9 @@ public abstract class Model extends CallbackSupport{
         return !hasErrors();
     }
 
+    /**
+     * Executes all validators attached to this model.
+     */
     public void validate() {
         fireBeforeValidation(this);
         errors = new Errors();
@@ -1045,8 +1083,8 @@ public abstract class Model extends CallbackSupport{
      * @param validator -validator that failed validation.
      */
     public void addValidator(String attribute, Validator validator) {
-        //TODO: what about multiple errors for the same attribute?
-        errors.addValidator(attribute, validator);
+        if(!errors.containsKey(attribute))
+            errors.addValidator(attribute, validator);
     }
 
     /**
