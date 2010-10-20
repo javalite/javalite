@@ -56,14 +56,16 @@ public class Errors implements Map<String, String> {
 
     /**
      * Provides a message from a resource bundle <code>activejdbc_messages</code>.
+     * If an there was no validation error generated for the requested attribute, returns null.
      *
      * @param attributeName name of attribute in error.
      * @return a message from a resource bundle <code>activejdbc_messages</code>  as configured in a corresponding
-     * validator.
+     * validator. If an there was no validation error generated for the requested attribute, returns null.
      */
     public String get(Object attributeName) {
-        if(attributeName == null) throw new NullPointerException("attributeName cannot be null");
-        return validators.get(attributeName).formatMessage(locale);
+        if(attributeName == null) throw new NullPointerException("attributeName cannot be null");        
+        Validator v = validators.get(attributeName);
+        return v == null? null:v.formatMessage(locale);
     }
 
     /**

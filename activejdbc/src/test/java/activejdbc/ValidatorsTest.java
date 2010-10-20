@@ -147,4 +147,12 @@ public class ValidatorsTest extends ActiveJDBCTest {
         a(it.get("item_number")).shouldBeNull();
     }
 
+
+    @Test
+    public void shouldReturnNullIfRequestedErrorForAttributeWhichDidNotProduceOne(){
+        resetTables("items");
+
+        Item it = new Item();
+        a(it.errors().get("blah")).shouldBeNull();
+    }
 }
