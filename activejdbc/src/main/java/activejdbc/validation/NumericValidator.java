@@ -28,7 +28,7 @@ public class NumericValidator extends ValidatorAdapter {
 
     private Double min = null;
     private Double max = null;
-    private boolean allowNull = false, onlyInteger = false;
+    private boolean allowNull = false, onlyInteger = false, convertNullIfEmpty = false;
 
 
     public NumericValidator(String attribute) {
@@ -40,10 +40,14 @@ public class NumericValidator extends ValidatorAdapter {
     public void validate(Model m) {
         Object value = m.get(attribute);
 
+        if(convertNullIfEmpty && "".equals(value)){
+            m.set(attribute, null);
+            value = null;
+        }
+
         if(value == null && allowNull){
             return;
         }
-
 
         //this is to check just numericality
         if (value != null) {
@@ -108,4 +112,7 @@ public class NumericValidator extends ValidatorAdapter {
         this.onlyInteger = onlyInteger;
     }
 
+    public void convertNullIfEmpty(boolean convertNullIfEmpty) {
+        this.convertNullIfEmpty = convertNullIfEmpty;
+    }
 }

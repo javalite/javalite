@@ -136,4 +136,15 @@ public class ValidatorsTest extends ActiveJDBCTest {
             }
         });
     }
+
+    @Test
+    public void shouldConvertEmptyStringToNull(){
+        resetTables("items");
+
+        Item it = new Item();
+        it.set("item_number", "");
+        it.validate();
+        a(it.get("item_number")).shouldBeNull();
+    }
+
 }

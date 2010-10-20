@@ -22,4 +22,8 @@ import activejdbc.Model;
 /**
  * @author Igor Polevoy
  */
-public class Item extends Model {}
+public class Item extends Model {
+    static {
+        validateNumericalityOf("item_number").convertNullIfEmpty();
+    }
+}
