@@ -77,15 +77,15 @@ public class Registry {
      * @param table name of table represented by this MetaModel.
      * @return
      */
-    protected MetaModel getMetaModel(String table) {
+    public MetaModel getMetaModel(String table) {
         return metaModels.getMetaModel(table);
     }
 
-    protected MetaModel getMetaModelByClassName(String className) {
+    public MetaModel getMetaModelByClassName(String className) {
         return metaModels.getMetaModelByClassName(className);
     }
 
-    protected MetaModel getMetaModel(Class<? extends Model> modelClass) {
+    public MetaModel getMetaModel(Class<? extends Model> modelClass) {
         return metaModels.getMetaModel(modelClass);
     }
 
@@ -307,7 +307,7 @@ public class Registry {
     }
 
 
-    Class<? extends Model> getModelClass(String table) {
+    public Class<? extends Model> getModelClass(String table) {
         Class modelClass = metaModels.getModelClass(table);
 
         if(modelClass == null)        
