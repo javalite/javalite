@@ -65,6 +65,11 @@ public class ValidatorsTest extends ActiveJDBCTest {
         a(a.errors().size()).shouldBeEqual(0);
 
 
+        //try bad string with a number in it
+        a.set("amount", "111 aaa");
+        a.validate();
+        a(a.errors().size()).shouldBeEqual(1);
+
 //        //try null value with a validator.
 //        a.set("amount", null);
 //        a.validate();

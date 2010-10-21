@@ -22,6 +22,8 @@ import javalite.common.Convert;
 
 
 import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.ParsePosition;
 
 public class NumericValidator extends ValidatorAdapter {
     private String attribute;
@@ -52,7 +54,11 @@ public class NumericValidator extends ValidatorAdapter {
         //this is to check just numericality
         if (value != null) {
             try {
-                NumberFormat.getInstance().parse(value.toString());
+                ParsePosition pp = new ParsePosition(0);
+                String input = value.toString();
+                NumberFormat.getInstance().parse(input, pp);
+                if(pp.getIndex() != (input.length()))
+                    throw new RuntimeException("");
             } catch (Exception e) {
                 m.addValidator(attribute, this);
             }
@@ -115,4 +121,18 @@ public class NumericValidator extends ValidatorAdapter {
     public void convertNullIfEmpty(boolean convertNullIfEmpty) {
         this.convertNullIfEmpty = convertNullIfEmpty;
     }
+
+
+
+    public static void main(String[] av) throws ParseException {
+
+        String input = "11 ss";
+        ParsePosition pp = new ParsePosition(0);
+        NumberFormat.getInstance().parse(input, pp);
+        
+        if(pp.getIndex() != (input.length() - 1))
+            throw new RuntimeException("failed to parse");
+
+    }
+
 }
