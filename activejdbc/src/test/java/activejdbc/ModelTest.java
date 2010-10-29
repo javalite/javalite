@@ -482,8 +482,8 @@ public class ModelTest extends ActiveJDBCTest {
     public void shouldFindChildrenWithCriteria(){
         resetTables("users", "addresses");
         User user = (User)User.findById(1);
-        
-        a(user.get(Address.class, "address1 like ?", "%2%").size()).shouldBeEqual(2);
+
+        a(user.get(Address.class, "address1 = ? or address2 = ?", "456 Brook St.", "apt 21").size()).shouldEqual(1);
     }
 
 }

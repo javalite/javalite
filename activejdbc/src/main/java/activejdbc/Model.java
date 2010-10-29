@@ -898,7 +898,7 @@ public abstract class Model extends CallbackSupport{
 
         OneToManyPolymorphicAssociation oneToManyPolymorphicAssociation = (OneToManyPolymorphicAssociation)getMetaModelLocal().getAssociationForTarget(targetTable, OneToManyPolymorphicAssociation.class);
 
-        String additionalCriteria =  criteria != null? " AND " + criteria: "";
+        String additionalCriteria =  criteria != null? " AND ( " + criteria + " ) " : "";
         String subQuery;
         if (oneToManyAssociation != null) {
             subQuery = oneToManyAssociation.getFkName() + " = " + getId() + additionalCriteria;
