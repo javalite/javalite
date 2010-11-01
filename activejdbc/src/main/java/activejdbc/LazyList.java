@@ -117,7 +117,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
 
 
     /**
-     * Use this method include associated objects. This method will eagerly load associated models of
+     * Use this method includes associated objects. This method will eagerly load associated models of
      * models selected by the query. For instance, if there are models <code>Author</code>, <code>Post</code>
      * and <code>Comment</code>, where <code>Author</code> has many <code>Post</code>s and <code> Post</code>
      * has many <code>Comment</code>s, then this query:
@@ -129,7 +129,12 @@ public class LazyList<T extends Model> extends AbstractList<T>{
      * even when a post author and comments are requested. Use this with caution as this method can allocate
      * a lot of memory (obviously).
      *
-     * @param classes list of dependent classes. These classes represent models with which a current models has a
+     * <p/>
+     *
+     * This method will not follow relationships of related models, but rather only relationships of the current
+     * one.  
+     *
+     * @param classes list of dependent classes. These classes represent models with which a current model has a
      * relationship.
      * @return instance of this <code>LazyList</code>
      */
@@ -233,6 +238,10 @@ public class LazyList<T extends Model> extends AbstractList<T>{
 
     private void processParent(BelongsToAssociation association, Class parentClass) {
 
+        if(delegate.size() == 0){//no need to process parents if no models selected.
+            return;
+        }
+
         final MetaModel parentMM = Registry.instance().getMetaModel(parentClass);
         final Map<Object, Model> parentsHasByIds = new HashMap<Object, Model>();
 
@@ -284,6 +293,10 @@ public class LazyList<T extends Model> extends AbstractList<T>{
 
     private void processChildren(OneToManyAssociation association, Class childClass) {
 
+        if(delegate.size() == 0){//no need to process children if no models selected.
+            return;
+        }
+
         final MetaModel childMM = Registry.instance().getMetaModel(childClass);
         final String fkName = association.getFkName();
 
@@ -307,6 +320,9 @@ public class LazyList<T extends Model> extends AbstractList<T>{
     }
 
     private void processOther(Many2ManyAssociation association, Class childClass) {
+        if(delegate.size() == 0){//no need to process other if no models selected.
+            return;
+        }
 
         final MetaModel childMM = Registry.instance().getMetaModel(childClass);
         final Map<Object, List<Model>> childrenByParentId = new HashMap<Object, List<Model>>();

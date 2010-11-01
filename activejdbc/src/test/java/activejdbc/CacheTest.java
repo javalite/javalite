@@ -17,6 +17,7 @@ limitations under the License.
 
 package activejdbc;
 
+import activejdbc.statistics.QueryStats;
 import activejdbc.test.ActiveJDBCTest;
 import activejdbc.test_models.Book;
 import activejdbc.test_models.Doctor;
@@ -125,8 +126,29 @@ public class CacheTest extends ActiveJDBCTest {
         //let's blow away cache
         new Library().set("address", "123 Pirate Street").set("city", "Bloomington").set("state", "CA").saveIt();
         a(l1 == b.parent(Library.class)).shouldNotBeNull();
+    }
 
-        //cleanup
-        //Library.delete("address = ?", "123 Pirate Street");
+    @Test
+    public void shouldNotAddInfoToStatisticsIfFoundResultInCache(){
+        resetTables("libraries", "books");
+
+        try{
+            Thread.sleep(1000);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        Registry.instance().getStatisticsQueue().reset();
+        
+        //calling finder twice, but only one object in the stats queue
+        Library.findAll().dump();
+        Library.findAll().dump();
+
+        try{
+            Thread.sleep(1000);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        List<QueryStats> queryStats = Registry.instance().getStatisticsQueue().getReportSortedBy("total");
+        a(queryStats.get(0).getCount()).shouldEqual(1);
     }
 }

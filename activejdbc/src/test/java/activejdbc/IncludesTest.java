@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License. 
 */
 
-package activejdbc.mock;
+package activejdbc;
 
 import activejdbc.LazyList;
 import activejdbc.test.ActiveJDBCTest;
@@ -70,6 +70,26 @@ public class IncludesTest extends ActiveJDBCTest{
 
         patients = (List<Map>)doctorsMaps.get(1).get("patients");
         a(patients.size()).shouldBeEqual(1);
+    }
+
+
+    @Test
+    public void shouldNotCallDependentIfOriginatedModelQueryReturnsNoResultsForManyToMany() {
+        resetTables("doctors", "patients", "doctors_patients");
+
+        LazyList<Patient> patients = Doctor.find("last_name = ?", " does not exist").include(Patient.class);
+
+        a(patients.size()).shouldEqual(0);
+        
+    }
+
+    @Test
+    public void shouldNotCallDependentIfOriginatedModelQueryReturnsNoResultsForOneToMany() {
+        resetTables("users", "addresses");
+
+        LazyList<Address> addresses = User.find("email = ?", " does not exist").include(Address.class);
+
+        a(addresses.size()).shouldEqual(0);
     }
 
 
