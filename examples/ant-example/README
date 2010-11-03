@@ -1,0 +1,11 @@
+This is an example of ActiveJDBC using Ant
+To execute:
+
+1. Run create.sql against your instance of MySQL - this will create a new table. 
+2. Execute: "ant run" in this directory
+
+
+When building a new project, download the latest versions of JavaLite Common and ActiveJDBC libraries:
+http://ipsolutionsdev.com/snapshots/activejdbc/activejdbc-instrumentation
+http://ipsolutionsdev.com/snapshots/activejdbc/activejdbc/
+http://ipsolutionsdev.com/snapshots/javalite/javalite-common/
