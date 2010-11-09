@@ -1311,14 +1311,29 @@ public abstract class Model extends CallbackSupport{
      *
      * @param query query text.
      * @param listener this is a call back implementation which will receive instances of models found.
+     * @deprecated use {@link #findWith(ModelListener, String, Object...)}.
      */
     public static void find(String query, final ModelListener listener) {
+        findWith(listener, query);
+    }
+
+
+    /**
+     * This method is for processing really large result sets. Results found by this method are never cached. 
+     *
+     * @param listener this is a call back implementation which will receive instances of models found.
+     * @param query sub-query (content after "WHERE" clause)
+     * @param params optional parameters for a query.
+     */
+    public static void findWith(final ModelListener listener, String query, Object ... params) {
         long start = System.currentTimeMillis();
         final MetaModel metaModel = getMetaModel();
         String sql = metaModel.getDialect().selectStar(metaModel.getTableName(), query);
-        new DB(metaModel.getDbName()).find(sql, new RowListenerAdapter() {
-            public void onNext(Map<String, Object> rowMap) {
-                listener.onModel(instance(rowMap, metaModel));
+
+        new DB(metaModel.getDbName()).find(sql, params).with( new RowListenerAdapter() {
+            @Override
+            public void onNext(Map<String, Object> row) {
+                listener.onModel(instance(row, metaModel));
             }
         });
         LogFilter.logQuery(logger, sql, null, start);

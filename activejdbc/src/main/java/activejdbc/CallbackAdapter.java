@@ -20,20 +20,21 @@ package activejdbc;
 /**
  * @author Igor Polevoy
  */
-public class CallbackAdapter implements CallbackListener{
-    public void beforeSave(Model m) {}
+public class CallbackAdapter<T extends Model> implements CallbackListener<T>{
 
-    public void afterSave(Model m) {}
+    public void beforeSave(T m) {}
 
-    public void beforeCreate(Model m) {}
+    public void afterSave(T m) {}
 
-    public void afterCreate(Model m) {}
+    public void beforeCreate(T m) {}
 
-    public void beforeDelete(Model m) {}
+    public void afterCreate(T m) {}
 
-    public void afterDelete(Model m) {}
+    public void beforeDelete(T m) {}
 
-    public void beforeValidation(Model m) {}
+    public void afterDelete(T m) {}
 
-    public void afterValidation(Model m) {}
+    public void beforeValidation(T m) {}
+
+    public void afterValidation(T m) {}
 }

@@ -20,16 +20,16 @@ package activejdbc;
 /**
  * @author Igor Polevoy
  */
-public interface  CallbackListener {
-    void beforeSave(Model m);
-    void afterSave(Model m);
+public interface  CallbackListener<T extends Model> {
+    void beforeSave(T m);
+    void afterSave(T m);
 
-    void beforeCreate(Model m);
-    void afterCreate(Model m);
+    void beforeCreate(T m);
+    void afterCreate(T m);
 
-    void beforeDelete(Model m);
-    void afterDelete(Model m);
+    void beforeDelete(T m);
+    void afterDelete(T m);
 
-    void beforeValidation(Model m);
-    void afterValidation(Model m);
+    void beforeValidation(T m);
+    void afterValidation(T m);
 }

@@ -27,17 +27,19 @@ import java.util.List;
  */
 public class DefaultDialect {
 
-
-    //this is for current version of Oracle
-    //SELECT  * FROM ( SELECT  t.*, ROWNUM AS rn FROM mytable t ORDER BY paginator, id)WHERE   rn >= 900001 AND rownum <= 10;
-
     public String selectStar(String table, String query){        
         return query != null? "SELECT * FROM " + table + " WHERE " + query : "SELECT * FROM " + table;
     }
 
     /**
      * Produces a parametrized  AND query.
-     * 
+     * Example:
+     * <pre>
+     * String sql = dialect.selectStarParametrized("people", "name", "ssn", "dob");
+     * //generates:
+     * //SELECT * FROM people WHERE name = ? AND ssn = ? AND dob = ?
+     * </pre>
+     *
      *
      * @param table name of table
      * @param parameters list of parameter names

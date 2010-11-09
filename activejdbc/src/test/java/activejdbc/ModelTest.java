@@ -49,11 +49,31 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void testModelFinderWithListener() {
         resetTable("people");
-        Person.find("name='John'", new ModelListener<Person>() {
+        Person.findWith(new ModelListener<Person>() {
             public void onModel(Person person) {
                 System.out.println("Found person: " + person);
             }
-        });
+        }, "name='John'");
+    }
+
+
+    int counter = 0;
+
+    @Test
+    public void testModelFinderWithListenerAndParameters() {
+
+        Person.deleteAll();
+        for(int i = 0; i < 100; i++){
+            Person.createIt("name", "Name: " + i, "last_name", "Last Name: " + i);
+        }
+
+        ModelListener<Person> modelListener = new ModelListener<Person>() {
+            public void onModel(Person person) {
+                counter ++;
+            }
+        };
+        Person.findWith(modelListener, "name like ?", "%2%");
+        a(counter).shouldEqual(19);
     }
 
     @Test
