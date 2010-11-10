@@ -30,6 +30,11 @@ public class Expectation {
     public Expectation() {}
 
 
+    /**
+     * Alias to {@link #shouldBeEqual(Object)}.
+     *
+     * @param expected
+     */
     public void shouldEqual(Object expected){
         shouldBeEqual(expected);
     }
@@ -37,6 +42,15 @@ public class Expectation {
     public void shouldBeEqual(Object expected) {
 
         TestException te = new TestException("Objects: '" + actual + "' and '" + expected + "' are not equal, but they should be");
+
+        if(!(actual instanceof Number) && !(expected instanceof Number)){
+            if(!actual.getClass().getName().equals(expected.getClass().getName())){
+                throw new TestException("Objects cannot be equal because they are of different types. Expected: " + expected.getClass()
+                        + ", but the actual: " + actual.getClass());
+            }
+        }
+
+
 
         if(actual == null && expected != null || actual != null && expected == null)
             throw te;
