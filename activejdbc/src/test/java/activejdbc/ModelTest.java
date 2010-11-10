@@ -491,7 +491,7 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void shouldCollectLastNames(){
         resetTables("people");
-        List expected= Arrays.asList("Pesci", "Smith", "Jonston", "Ali");
+        List expected= javalite.common.Collections.li("Pesci", "Smith", "Jonston", "Ali");
         a(Person.findAll().orderBy("name").collect("last_name")).shouldBeEqual(expected);
     }
 
