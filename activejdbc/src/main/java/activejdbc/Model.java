@@ -22,6 +22,7 @@ import activejdbc.cache.QueryCache;
 import activejdbc.validation.*;
 import static javalite.common.Util.blank;
 
+import java.io.StringWriter;
 import java.sql.*;
 import java.math.BigDecimal;
 import java.util.*;
@@ -449,6 +450,56 @@ public abstract class Model extends CallbackSupport{
         }
         return retVal;
     }
+
+    /**
+     * Generates a XML document from content of this model.
+     *
+     * @param spaces by how many spaces to indent.
+     * @param declaration tru to include XML declaration at the top
+     * @param attrs list of attributes to include. No arguments == include all attributes.
+     * @return generated XML.
+     */
+    public String toXml(int spaces, boolean declaration, String ... attrs){
+
+
+        Map<String, Object> modelMap = toMap();
+
+        String indent = "";
+        for(int i = 0; i < spaces; i++)
+            indent += " ";
+
+        List<String> attrList = Arrays.asList(attrs);
+
+        StringWriter sw = new StringWriter();
+
+        if(declaration) sw.write("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" + (spaces > 0?"\n":""));
+
+        String topTag = Inflector.underscore(getClass().getSimpleName());
+
+        sw.write(indent + "<" + topTag + ">" + (spaces > 0?"\n":""));
+
+
+        for(String name: modelMap.keySet()){
+            Object value  = modelMap.get(name);
+            if((attrList.contains(name) || attrs.length == 0) && !(value instanceof List)){
+                sw.write(indent + indent + "<" + name + ">" + value + "</" + name + ">" + (spaces > 0?"\n":""));
+            }else if (value instanceof List){
+                List<Map> children = (List<Map>)value;
+                sw.write(indent + indent + "<" + name + ">" + (spaces > 0?"\n":""));
+                for(Map child: children){
+                    sw.write(indent + indent + indent + "<" + Inflector.singularize(name) + ">" + (spaces > 0?"\n":""));
+                    for(Object childKey: child.keySet()){
+                        sw.write(indent + indent + indent + indent + "<" + childKey + ">" + child.get(childKey)+ "</" + childKey +">" + (spaces > 0?"\n":""));
+                    }
+                    sw.write(indent + indent + indent + "</" + Inflector.singularize(name) + ">" + (spaces > 0?"\n":""));
+                }
+                sw.write(indent + indent + "</" + name + ">" + (spaces > 0?"\n":""));
+            }
+        }
+        sw.write(indent + "</" + topTag + ">"+ (spaces > 0?"\n":""));
+        return sw.toString();
+    }
+
 
     public void fromMap(Map map){
         hydrate(map);
@@ -1430,9 +1481,7 @@ public abstract class Model extends CallbackSupport{
                 }
              }else if(metaModel.hasAssociation(childTable, OneToManyPolymorphicAssociation.class)){
 
-                OneToManyPolymorphicAssociation association = (OneToManyPolymorphicAssociation)
-                        metaModel.getAssociationForTarget(childTable, OneToManyPolymorphicAssociation.class);
-
+                metaModel.getAssociationForTarget(childTable, OneToManyPolymorphicAssociation.class);
                 child.set("parent_id", getId());
                 child.set("parent_type", this.getClass().getName());
                 child.saveIt();

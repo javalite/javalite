@@ -21,12 +21,14 @@ import activejdbc.associations.BelongsToAssociation;
 import activejdbc.associations.Many2ManyAssociation;
 import activejdbc.associations.OneToManyAssociation;
 import activejdbc.cache.QueryCache;
+import javalite.common.Inflector;
 import javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.*;
 
 /**
@@ -169,6 +171,31 @@ public class LazyList<T extends Model> extends AbstractList<T>{
             maps.add(t.toMap());
         }
         return maps;
+    }
+
+    /**
+     * Generates a XML document from content of this list.
+     *
+     * @param spaces by how many spaces to indent.
+     * @param declaration true to include XML declaration at the top
+     * @param attrs list of attributes to include. No arguments == include all attributes.
+     * @return generated XML.
+     */
+    public String toXml(int spaces, boolean declaration, String ... attrs){
+        String topNode = Inflector.pluralize(Inflector.underscore(metaModel.getModelClass().getSimpleName()));
+
+        hydrate();
+
+        StringWriter sw = new StringWriter();
+        if(declaration)
+            sw.write("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" + (spaces > 0?"\n":""));
+
+        sw.write("<"  + topNode + ">" + (spaces > 0 ? "\n":""));
+        for (T t : delegate) {
+            sw.write(t.toXml(spaces, false, attrs));
+        }
+        sw.write("</"  + topNode + ">" + (spaces > 0 ? "\n":""));
+        return sw.toString();
     }
 
 
