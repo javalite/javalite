@@ -41,15 +41,10 @@ public class Expectation {
 
     public void shouldBeEqual(Object expected) {
 
-        TestException te = new TestException("Objects: '" + actual + "' and '" + expected + "' are not equal, but they should be");
-
-        if(!(actual instanceof Number) && !(expected instanceof Number)){
-            if(!actual.getClass().getName().equals(expected.getClass().getName())){
-                throw new TestException("Objects cannot be equal because they are of different types. Expected: " + expected.getClass()
-                        + ", but the actual: " + actual.getClass());
-            }
-        }
-
+        TestException te = new TestException("\nObjects: \n" +
+                actual.getClass().getName() +  " == <" + actual + "> \n" +
+                "and \n" +
+                expected.getClass().getName() + "== <" + expected + "> \nare not equal, but they should be.");
 
 
         if(actual == null && expected != null || actual != null && expected == null)

@@ -25,7 +25,7 @@ public abstract class ExceptionExpectation {
         this.clazz = clazz;
     }
 
-    public abstract void exec();
+    public abstract void exec() throws Exception;
 
     public Class getClazz() {
         return clazz;
