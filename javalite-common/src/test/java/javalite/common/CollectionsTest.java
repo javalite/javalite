@@ -40,7 +40,7 @@ public class CollectionsTest {
 
     @Test
     public void shouldCreateArray(){
-        String[] ar = Collections.arr("John", "James", "Mary", "Keith");
+        String[] ar = Collections.array("John", "James", "Mary", "Keith");
         a(ar.length).shouldBeEqual(4);
         a(ar[0]).shouldBeEqual("John");
         a(ar[1]).shouldBeEqual("James");
@@ -50,7 +50,7 @@ public class CollectionsTest {
 
     @Test
     public void shouldCreateList(){
-        List<String> list = Collections.li("John", "James", "Mary", "Keith");
+        List<String> list = Collections.list("John", "James", "Mary", "Keith");
         a(list.size()).shouldBeEqual(4);
         a(list.get(0)).shouldBeEqual("John");
         a(list.get(1)).shouldBeEqual("James");

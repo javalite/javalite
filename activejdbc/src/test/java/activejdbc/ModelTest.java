@@ -495,9 +495,6 @@ public class ModelTest extends ActiveJDBCTest {
         a(Person.findAll().orderBy("name").collect("last_name")).shouldBeEqual(expected);
     }
 
-
-
-
     @Test
     public void shouldFindChildrenWithCriteria(){
         resetTables("users", "addresses");
@@ -505,7 +502,6 @@ public class ModelTest extends ActiveJDBCTest {
 
         a(user.get(Address.class, "address1 = ? or address2 = ?", "456 Brook St.", "apt 21").size()).shouldEqual(1);
     }
-
 }
 
 
