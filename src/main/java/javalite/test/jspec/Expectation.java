@@ -44,7 +44,7 @@ public class Expectation {
         TestException te = new TestException("\nObjects: \n" +
                 actual.getClass().getName() +  " == <" + actual + "> \n" +
                 "and \n" +
-                expected.getClass().getName() + "== <" + expected + "> \nare not equal, but they should be.");
+                expected.getClass().getName() + " == <" + expected + "> \nare not equal, but they should be.");
 
 
         if(actual == null && expected != null || actual != null && expected == null)
