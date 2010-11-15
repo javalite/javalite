@@ -145,8 +145,35 @@ public class Errors implements Map<String, String> {
         return messageList;
     }
 
+    class ErrorEntry implements Entry{
+        private String  key, value;
+
+        ErrorEntry(String key, String value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public Object getKey() {
+            return key;
+        }
+
+        public Object getValue() {
+            return value;
+        }
+
+        public Object setValue(Object value) {
+            throw new UnsupportedOperationException();  
+        }
+    }
+
     public Set<Entry<String, String>> entrySet() {
-        throw new UnsupportedOperationException();
+        Set<Entry<String, String>> entries = new LinkedHashSet<Entry<String, String>>();
+
+        for(Object key: validators.keySet()){
+            String value = validators.get(key).formatMessage(locale);
+            entries.add(new ErrorEntry(key.toString(), value));
+        }
+        return entries;
     }
 
     @Override
