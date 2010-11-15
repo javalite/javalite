@@ -123,10 +123,10 @@ public class QueryCache {
      * @param tableName table name whose caches are to be purged.
      */
     public void purgeTableCache(String tableName) {
-
-        //TODO: only attempt to purge cached tables. Otherwise, too many invalid messages on log.
-        cacheManager.flushGroupCache(tableName);
-        LogFilter.log(logger, "table cache purged for: " + tableName);
+        if(Registry.instance().getMetaModel(tableName).cached()){
+            cacheManager.flushGroupCache(tableName);
+            LogFilter.log(logger, "table cache purged for: " + tableName);    
+        }
     }
 
 
