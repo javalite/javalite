@@ -2,6 +2,14 @@
 <project version="4">
   <component name="AntConfiguration">
     <defaultAnt bundledAnt="true" />
+    <buildFile url="file://$PROJECT_DIR$/examples/ant-example/build.xml">
+      <additionalClassPath />
+      <antReference projectDefault="true" />
+      <customJdkName value="" />
+      <maximumHeapSize value="128" />
+      <maximumStackSize value="2" />
+      <properties />
+    </buildFile>
   </component>
   <component name="CompilerConfiguration">
     <option name="DEFAULT_COMPILER" value="Javac" />
@@ -243,13 +251,14 @@
       <module fileurl="file://$PROJECT_DIR$/activejdbc-cluster-test/activejdbc-cluster-test.iml" filepath="$PROJECT_DIR$/activejdbc-cluster-test/activejdbc-cluster-test.iml" />
       <module fileurl="file://$PROJECT_DIR$/activejdbc-instrumentation/activejdbc-instrumentation.iml" filepath="$PROJECT_DIR$/activejdbc-instrumentation/activejdbc-instrumentation.iml" />
       <module fileurl="file://$PROJECT_DIR$/activejdbc-root.iml" filepath="$PROJECT_DIR$/activejdbc-root.iml" />
+      <module fileurl="file://$PROJECT_DIR$/examples/ant-example/ant-example.iml" filepath="$PROJECT_DIR$/examples/ant-example/ant-example.iml" />
       <module fileurl="file://$PROJECT_DIR$/javalite-common/javalite-common.iml" filepath="$PROJECT_DIR$/javalite-common/javalite-common.iml" />
     </modules>
   </component>
   <component name="ProjectReloadState">
     <option name="STATE" value="0" />
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.5" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/classes" />
   </component>
   <component name="RunManager">
@@ -637,6 +646,7 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/javassist/javassist/3.8.0.GA/javassist-3.8.0.GA-sources.jar!/" />
+        <root url="file://$PROJECT_DIR$/../../programs/javassist/src/main" />
       </SOURCES>
     </library>
     <library name="Maven: org.apache.maven:maven-project:2.2.1">
