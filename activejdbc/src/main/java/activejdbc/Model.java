@@ -1676,7 +1676,7 @@ public abstract class Model extends CallbackSupport{
 
         List<Object> values = new ArrayList<Object>();
         for (String attribute : attrs) {
-            values.add(get(attribute));
+            values.add(this.attributes.get(attribute));
         }
         String query = metaModelLocal.getDialect().createParametrizedInsert(metaModelLocal);
         try {
