@@ -125,7 +125,7 @@ public class CacheTest extends ActiveJDBCTest {
 
         //let's blow away cache
         new Library().set("address", "123 Pirate Street").set("city", "Bloomington").set("state", "CA").saveIt();
-        a(l1 == b.parent(Library.class)).shouldNotBeNull();
+        a(l1 == b.parent(Library.class)).shouldBeFalse();
     }
 
     @Test
