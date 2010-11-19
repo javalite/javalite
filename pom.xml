@@ -4,7 +4,7 @@
     <groupId>activejdbc</groupId>
     <artifactId>activejdbc-root</artifactId>
     <packaging>pom</packaging>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
     <name>ActiveJDBC Framework Root</name>
     <url>http://maven.apache.org</url>
 

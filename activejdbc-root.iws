@@ -15,14 +15,19 @@
     <option name="historyRevisionsNumber" value="4" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" readonly="true" id="f89d737e-43a7-47cc-858d-571c5b209076" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/CacheTest.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/CacheTest.java" />
+    <list default="true" readonly="true" id="f89d737e-43a7-47cc-858d-571c5b209076" name="Default" comment="fixed a test">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/javalite-common/pom.xml" afterPath="$PROJECT_DIR$/javalite-common/pom.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc-cluster-test/pom.xml" afterPath="$PROJECT_DIR$/activejdbc-cluster-test/pom.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc-instrumentation/pom.xml" afterPath="$PROJECT_DIR$/activejdbc-instrumentation/pom.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/pom.xml" afterPath="$PROJECT_DIR$/activejdbc/pom.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc-root.iws" afterPath="$PROJECT_DIR$/activejdbc-root.iws" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/simple-example/pom.xml" afterPath="$PROJECT_DIR$/examples/simple-example/pom.xml" />
     </list>
-    <ignored path="$USER_HOME_GRIFFON$/" />
     <ignored path=".idea/workspace.xml" />
-    <ignored path="$USER_HOME_GRAILS$/" />
     <ignored path="activejdbc-root.iws" />
+    <ignored path="$USER_HOME_GRAILS$/" />
+    <ignored path="$USER_HOME_GRIFFON$/" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -204,9 +209,27 @@
   <component name="FileEditorManager">
     <leaf>
       <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="6" column="25" selection-start="385" selection-end="385" vertical-scroll-proportion="-3.75">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Model.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/activejdbc/src/main/java/activejdbc/Model.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="673" column="9" selection-start="26687" selection-end="26687" vertical-scroll-proportion="-9.64">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/activejdbc/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="90" column="32" selection-start="3404" selection-end="3404" vertical-scroll-proportion="0.0">
+            <state line="90" column="41" selection-start="3422" selection-end="3422" vertical-scroll-proportion="-4.4166665">
               <folding />
             </state>
           </provider>
@@ -215,7 +238,7 @@
       <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/activejdbc-cluster-test/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="46" column="96" selection-start="2095" selection-end="2095" vertical-scroll-proportion="0.0">
+            <state line="46" column="105" selection-start="2122" selection-end="2122" vertical-scroll-proportion="-4.4166665">
               <folding />
             </state>
           </provider>
@@ -224,25 +247,7 @@
       <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/activejdbc-instrumentation/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="26" column="96" selection-start="1075" selection-end="1075" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pom.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="17" column="7" selection-start="705" selection-end="705" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="CacheTest.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/CacheTest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="128" column="32" selection-start="3737" selection-end="3737" vertical-scroll-proportion="0.65696466">
+            <state line="26" column="105" selection-start="1093" selection-end="1093" vertical-scroll-proportion="-4.4166665">
               <folding />
             </state>
           </provider>
@@ -260,16 +265,16 @@
       <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/examples/simple-example/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="32" column="32" selection-start="1266" selection-end="1266" vertical-scroll-proportion="0.0">
+            <state line="49" column="33" selection-start="1758" selection-end="1758" vertical-scroll-proportion="-4.4166665">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="pom.xml" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/javalite-common/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="11" column="20" selection-start="520" selection-end="520" vertical-scroll-proportion="0.0">
+            <state line="11" column="29" selection-start="529" selection-end="529" vertical-scroll-proportion="0.23766816">
               <folding />
             </state>
           </provider>
@@ -309,20 +314,20 @@
       <list>
         <option value="$PROJECT_DIR$/javalite-common/src/main/java/javalite/test/jspec/Expectation.java" />
         <option value="$PROJECT_DIR$/activejdbc/src/main/java/activejdbc/Errors.java" />
-        <option value="$PROJECT_DIR$/activejdbc/src/main/java/activejdbc/Model.java" />
         <option value="$PROJECT_DIR$/activejdbc/src/main/java/activejdbc/cache/QueryCache.java" />
         <option value="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/ModelTest.java" />
         <option value="$PROJECT_DIR$/activejdbc-instrumentation/src/main/java/activejdbc/instrumentation/Main.java" />
         <option value="$PROJECT_DIR$/activejdbc-test-oracle/pom.xml" />
         <option value="$PROJECT_DIR$/activejdbc-instrumentation/src/main/java/activejdbc/instrumentation/ModelInstrumentation.java" />
         <option value="$PROJECT_DIR$/examples/simple-example/run.sh" />
+        <option value="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/CacheTest.java" />
+        <option value="$PROJECT_DIR$/activejdbc/src/main/java/activejdbc/Model.java" />
         <option value="$PROJECT_DIR$/activejdbc/pom.xml" />
         <option value="$PROJECT_DIR$/activejdbc-cluster-test/pom.xml" />
         <option value="$PROJECT_DIR$/activejdbc-instrumentation/pom.xml" />
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/examples/simple-example/pom.xml" />
         <option value="$PROJECT_DIR$/javalite-common/pom.xml" />
-        <option value="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/CacheTest.java" />
       </list>
     </option>
   </component>
@@ -755,6 +760,8 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -762,10 +769,6 @@
               <option name="myItemId" value="activejdbc-root" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="External Libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
-            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -787,7 +790,67 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="javalite-common" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc-root" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="examples" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="simple-example" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc-root" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="examples" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc-root" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc-instrumentation" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc-root" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc-cluster-test" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -802,104 +865,12 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="activejdbc" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="activejdbc-root" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="activejdbc" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="activejdbc" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="activejdbc" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="activejdbc-root" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="activejdbc" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="activejdbc" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="activejdbc" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CacheTest" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ClassTreeNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="activejdbc-root" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="activejdbc" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="activejdbc" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
       <pane id="Favorites" />
-      <pane id="Scope" />
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -1434,11 +1405,11 @@
       <item index="1" class="java.lang.String" itemvalue="JUnit.ModelTest.hello" />
       <item index="2" class="java.lang.String" itemvalue="JUnit.ModelTest.shouldFindChildrenWithCriteria" />
       <item index="3" class="java.lang.String" itemvalue="JUnit.ModelTest.testModelFinder" />
-      <item index="4" class="java.lang.String" itemvalue="Application.Main" />
-      <item index="5" class="java.lang.String" itemvalue="JUnit.activejdbc in activejdbc" />
-      <item index="6" class="java.lang.String" itemvalue="JUnit.ValidatorsTest.testPresenceValidator" />
-      <item index="7" class="java.lang.String" itemvalue="JUnit.AttributesAndAssociationsTest.shouldReturnCorrectAttributes" />
-      <item index="8" class="java.lang.String" itemvalue="JUnit.CacheTest.testCachedParent" />
+      <item index="4" class="java.lang.String" itemvalue="JUnit.CacheTest.testCachedParent" />
+      <item index="5" class="java.lang.String" itemvalue="Application.Main" />
+      <item index="6" class="java.lang.String" itemvalue="JUnit.activejdbc in activejdbc" />
+      <item index="7" class="java.lang.String" itemvalue="JUnit.ValidatorsTest.testPresenceValidator" />
+      <item index="8" class="java.lang.String" itemvalue="JUnit.AttributesAndAssociationsTest.shouldReturnCorrectAttributes" />
     </list>
     <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
       <Host>localhost</Host>
@@ -1535,25 +1506,26 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="21" y="0" width="1423" height="878" extended-state="6" />
+    <frame x="1436" y="0" width="1688" height="1053" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32876712" sideWeight="0.0" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24640884" sideWeight="0.0" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.42099446" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.19374616" sideWeight="0.6685083" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.37016574" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21657458" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32465753" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3237569" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32928178" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2808093" sideWeight="0.7027624" order="1" side_tool="true" content_ui="combo" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21441774" sideWeight="0.8669623" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39975476" sideWeight="0.6651934" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.238653" sideWeight="0.72328764" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26732066" sideWeight="0.5712707" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26712328" sideWeight="0.9941435" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" x="1802" y="363" width="727" height="323" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.26712328" sideWeight="0.9941435" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" x="479" y="391" width="628" height="181" />
       <window_info id="Statistic" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32928178" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="DBHelper" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Dataflow to this" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -1562,7 +1534,6 @@
       <window_info id="Data Sources" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="SVN Properties" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32928178" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.48508286" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Web Preview" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="DBOutput" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -1582,7 +1553,7 @@
     <option name="ENABLE_BACKGROUND_PROCESSES" value="false" />
     <option name="CHANGED_ON_SERVER_INTERVAL" value="60" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed a test" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed performance during insert" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -1595,7 +1566,6 @@
     <option name="UPDATE_GROUP_BY_CHANGELIST" value="false" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
-    <MESSAGE value="moved Convert class to JavaLite" />
     <MESSAGE value="added typed setters" />
     <MESSAGE value="removed old test" />
     <MESSAGE value="added ability to open a connection from a datasource" />
@@ -1620,6 +1590,7 @@
     <MESSAGE value="improved test message, added convinience methods" />
     <MESSAGE value="eliminated accidental log messages about purging non-cached tables" />
     <MESSAGE value="fixed a test" />
+    <MESSAGE value="fixed performance during insert" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1648,16 +1619,6 @@
     </buildFile>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/test_models/Person.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="8" selection-start="783" selection-end="783" vertical-scroll-proportion="0.34615386" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../programs/javassist/src/main/javassist/CtMember.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="25" column="44" selection-start="955" selection-end="955" vertical-scroll-proportion="0.3035413" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../programs/javassist/src/main/javassist/CtBehavior.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="32" column="12" selection-start="1205" selection-end="1205" vertical-scroll-proportion="0.35750422" />
@@ -1675,28 +1636,17 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/ModelTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="462" column="12" selection-start="13134" selection-end="13134" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="462" column="12" selection-start="13134" selection-end="13134" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/activejdbc/pom.xml">
+    <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/CacheTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="90" column="32" selection-start="3404" selection-end="3404" vertical-scroll-proportion="0.0" />
+        <state line="117" column="26" selection-start="3302" selection-end="3302" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/activejdbc-cluster-test/pom.xml">
+    <entry file="file://$PROJECT_DIR$/activejdbc/src/main/java/activejdbc/LazyList.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="46" column="96" selection-start="2095" selection-end="2095" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/activejdbc-instrumentation/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="26" column="96" selection-start="1075" selection-end="1075" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="382" column="13" selection-start="15535" selection-end="15535" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/examples/simple-example/run.sh">
@@ -1704,21 +1654,9 @@
         <state line="7" column="64" selection-start="417" selection-end="417" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/examples/simple-example/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="32" column="32" selection-start="1266" selection-end="1266" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/javalite-common/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="20" selection-start="520" selection-end="520" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/activejdbc-instrumentation/src/main/java/activejdbc/instrumentation/ModelInstrumentationHelper.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="54" selection-start="771" selection-end="771" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="23" column="54" selection-start="771" selection-end="771" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/activejdbc-instrumentation/src/main/java/activejdbc/instrumentation/ModelInstrumentation.java">
@@ -1726,16 +1664,51 @@
         <state line="23" column="39" selection-start="687" selection-end="687" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pom.xml">
+    <entry file="file://$PROJECT_DIR$/activejdbc/src/main/java/activejdbc/Model.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="7" selection-start="705" selection-end="705" vertical-scroll-proportion="0.0">
+        <state line="673" column="9" selection-start="26687" selection-end="26687" vertical-scroll-proportion="-9.64">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/CacheTest.java">
+    <entry file="file://$PROJECT_DIR$/activejdbc/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="128" column="32" selection-start="3737" selection-end="3737" vertical-scroll-proportion="0.65696466">
+        <state line="90" column="41" selection-start="3422" selection-end="3422" vertical-scroll-proportion="-4.4166665">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/activejdbc-cluster-test/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="46" column="105" selection-start="2122" selection-end="2122" vertical-scroll-proportion="-4.4166665">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/activejdbc-instrumentation/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="26" column="105" selection-start="1093" selection-end="1093" vertical-scroll-proportion="-4.4166665">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="25" selection-start="385" selection-end="385" vertical-scroll-proportion="-3.75">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/simple-example/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="49" column="33" selection-start="1758" selection-end="1758" vertical-scroll-proportion="-4.4166665">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/javalite-common/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="11" column="29" selection-start="529" selection-end="529" vertical-scroll-proportion="0.23766816">
           <folding />
         </state>
       </provider>

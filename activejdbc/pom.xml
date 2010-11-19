@@ -10,7 +10,7 @@
     <parent>
         <groupId>activejdbc</groupId>
         <artifactId>activejdbc-root</artifactId>
-        <version>1.0</version>
+        <version>1.1-SNAPSHOT</version>
     </parent>
 
     <!--Default to MySQL if no profile provided-->
@@ -88,7 +88,7 @@
                 <plugin>
                     <groupId>activejdbc</groupId>
                     <artifactId>activejdbc-instrumentation</artifactId>
-                    <version>1.0</version>
+                    <version>1.1-SNAPSHOT</version>
                     <executions>
                         <execution>
                             <phase>process-test-classes</phase>
