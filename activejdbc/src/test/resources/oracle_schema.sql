@@ -1,5 +1,5 @@
 
-CREATE TABLE people (id  NUMBER NOT NULL, name VARCHAR(56), last_name VARCHAR(56), dob DATE, graduation_date DATE, created_at TIMESTAMP, updated_at TIMESTAMP)
+CREATE TABLE people (id  NUMBER NOT NULL, name VARCHAR(56) NOT NULL, last_name VARCHAR(56), dob DATE, graduation_date DATE, created_at TIMESTAMP, updated_at TIMESTAMP)
 -- BREAK
 ALTER TABLE people ADD CONSTRAINT people_pk PRIMARY KEY ( id )
 -- BREAK

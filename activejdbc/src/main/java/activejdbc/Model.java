@@ -136,15 +136,7 @@ public abstract class Model extends CallbackSupport{
 
         getMetaModelLocal().checkAttributeOrAssociation(attribute);
 
-        if (attributes.get(attribute.toLowerCase()) != null) {
-            attributes.put(attribute.toLowerCase(), value);
-        }
-
-        if (attributes.get(attribute.toUpperCase()) != null) {
-            attributes.put(attribute.toUpperCase(), value);
-        }
-
-        attributes.put(attribute, value);
+        attributes.put(attribute.toLowerCase(), value);
         return this;
     }
 
@@ -653,22 +645,21 @@ public abstract class Model extends CallbackSupport{
         }
 
         Object returnValue;
-        if((returnValue = attributes.get(attribute.toLowerCase())) != null){
+        String attributeName = attribute.toLowerCase();
+        if((returnValue = attributes.get(attributeName.toLowerCase())) != null){
             return returnValue;
-        }else if((returnValue = attributes.get(attribute.toUpperCase())) != null){
+        }else if((returnValue = tryParent(attributeName)) != null){
             return returnValue;
-        }else if((returnValue = tryParent(attribute)) != null){
+        }else if((returnValue = tryPolymorphicParent(attributeName)) != null){
             return returnValue;
-        }else if((returnValue = tryPolymorphicParent(attribute)) != null){
+        }else if((returnValue = tryChildren(attributeName)) != null){
             return returnValue;
-        }else if((returnValue = tryChildren(attribute)) != null){
+        }else if((returnValue = tryPolymorphicChildren(attributeName)) != null){
             return returnValue;
-        }else if((returnValue = tryPolymorphicChildren(attribute)) != null){
-            return returnValue;
-        }else if((returnValue = tryOther(attribute)) != null){
+        }else if((returnValue = tryOther(attributeName)) != null){
             return returnValue;
         }else{
-            getMetaModelLocal().checkAttributeOrAssociation(attribute);
+            getMetaModelLocal().checkAttributeOrAssociation(attributeName);
             return null;
         }
     }

@@ -502,6 +502,21 @@ public class ModelTest extends ActiveJDBCTest {
 
         a(user.get(Address.class, "address1 = ? or address2 = ?", "456 Brook St.", "apt 21").size()).shouldEqual(1);
     }
+
+    @Test
+    public void shouldAcceptUpperCaseAttributeName(){
+
+        Person.deleteAll();
+        
+        Person p = new Person();
+        p.set("NAME", "John");//before the upper case caused exception
+        p.set("last_name", "Deer");
+        p.saveIt();
+        a(Person.count()).shouldBeEqual(1);
+
+    }
+
+
 }
 
 
