@@ -42,13 +42,11 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
     private String idGeneratorCode;
 
     protected MetaModel(String dbName, String tableName, String idName, Class<T> modelClass, String dbType, boolean cached, String idGeneratorCode) {
-        this.idName = idName;
+        this.idName = idName.toLowerCase();
         this.tableName = tableName;
         this.modelClass = modelClass;
         this.dbType = dbType;
         this.cached = cached;
-        this.idNameLower = idName.toLowerCase();
-        this.idNameUpper = idName.toUpperCase();
         this.dbName = dbName;
         this.idGeneratorCode = idGeneratorCode;
     }
@@ -59,14 +57,6 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
 
     public String getDbName() {
         return dbName;
-    }
-
-    public String getIdNameLower() {
-        return idNameLower;
-    }
-
-    public String getIdNameUpper() {
-        return idNameUpper;
     }
 
     public boolean cached(){
@@ -99,8 +89,7 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
     public List<String> getAttributeNamesSkipId() {
         if(attributeNamesNoId == null){
             attributeNamesNoId = getAttributeNames();
-            attributeNamesNoId.remove(getIdName().toLowerCase());
-            attributeNamesNoId.remove(getIdName().toUpperCase());
+            attributeNamesNoId.remove(getIdName());
         }
         return attributeNamesNoId;
     }
@@ -111,14 +100,10 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
      */
     public List<String> getAttributeNamesSkipGenerated() {
         List<String> attributes = getAttributeNames();
-        attributes.remove(getIdName().toUpperCase());
         attributes.remove(getIdName().toLowerCase());
-        attributes.remove("CREATED_AT");
         attributes.remove("created_at");
-        attributes.remove("UPDATED_AT");
         attributes.remove("updated_at");
         attributes.remove("record_version");
-        attributes.remove("RECORD_VERSION");
         return attributes;
     }
 
@@ -131,7 +116,6 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
         List<String> attributes = getAttributeNames();
         for(String name:names){
             attributes.remove(name.toLowerCase());
-            attributes.remove(name.toUpperCase());
         }
         return attributes;
     }
@@ -212,10 +196,7 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
      * @return true if this attribute is present in this meta model, false of not.
      */
     boolean hasAttribute(String attribute) {
-
-        if(columnMetadata == null) return false;
-
-        return columnMetadata.containsKey(attribute.toUpperCase()) || columnMetadata.containsKey(attribute.toLowerCase());
+        return columnMetadata != null && columnMetadata.containsKey(attribute.toLowerCase());
     }
 
     protected boolean hasAssociation(String table, Class<? extends Association> associationClass){
