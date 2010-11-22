@@ -37,6 +37,10 @@ public class Paginator implements Serializable {
     private Object[] params;
     private MetaModel metaModel;
     private int currentPage;
+//
+//    static{
+//        Registry.instance().init();
+//    }
 
     /**
      * Paginator is created with parameters to jump to pages.
@@ -52,6 +56,13 @@ public class Paginator implements Serializable {
      * @param params     a set of parameters if a query is parametrized (has question marks '?').
      */
     public Paginator(Class<? extends Model> modelClass, int pageSize, String query, Object... params) {
+
+        try{
+            Class.forName(modelClass.getName());
+        }catch(Exception e){
+            throw new InitException(e);
+        }
+        
         this.pageSize = pageSize;
         this.query = query;
         this.params = params;
