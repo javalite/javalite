@@ -5,7 +5,7 @@
     <artifactId>activejdbc</artifactId>
     <packaging>jar</packaging>
     <name>ActiveJDBC Framework</name>
-    <url>http://maven.apache.org</url>
+    
 
     <parent>
         <groupId>activejdbc</groupId>

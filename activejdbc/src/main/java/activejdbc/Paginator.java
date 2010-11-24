@@ -37,10 +37,7 @@ public class Paginator implements Serializable {
     private Object[] params;
     private MetaModel metaModel;
     private int currentPage;
-//
-//    static{
-//        Registry.instance().init();
-//    }
+
 
     /**
      * Paginator is created with parameters to jump to pages.
