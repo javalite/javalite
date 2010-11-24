@@ -6,7 +6,6 @@
     <packaging>maven-plugin</packaging>
     <version>1.1-SNAPSHOT</version>
     <name>ActiveJDBC Framework Instrumentation Maven Plugin</name>
-    <url>http://maven.apache.org</url>
 
     <build>
         <plugins>
