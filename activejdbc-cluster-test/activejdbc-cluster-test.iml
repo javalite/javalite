@@ -12,7 +12,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:3.8.1" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.5.10" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.slf4j:slf4j-simple:1.5.10" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-simple:1.5.10" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:jcl-over-slf4j:1.5.10" level="project" />
     <orderEntry type="module" module-name="activejdbc" />
     <orderEntry type="module" module-name="javalite-common" />
