@@ -71,6 +71,24 @@ public class Util {
         return sb.toString();
     }
 
+
+
+    /**
+     * Reads contents of the input stream fully and returns it as byte array.
+     *
+     * @param in InputStream to read from.
+     * @return contents of the input stream fully as byte array
+     */
+    public static byte[] bytes(InputStream in) throws IOException {
+
+        ByteArrayOutputStream bout = new ByteArrayOutputStream(1024);
+        byte[] bytes = new byte[128];
+
+        for (int x = in.read(bytes); x != -1; x = in.read())
+            bout.write(bytes, 0, x);
+
+        return bout.toByteArray();
+    }
     /**
      * Returns lines of text of a resource as list.
      *
