@@ -32,49 +32,54 @@ import java.util.Scanner;
 public class ClusterTest {
 
 
-    public void work(){
+    public void work() {
         Scanner s = new Scanner(System.in);
 
         print("Hint: commands are: 'i' for insert, 's' for select");
         System.out.print("command$ ");
 
-        while(s.hasNext()){
+        while (s.hasNext()) {
 
             String command = s.next();
-            if(!command.equalsIgnoreCase("i") && !command.equalsIgnoreCase("s")){
+            if (!command.equalsIgnoreCase("i") && !command.equalsIgnoreCase("s")) {
                 print("wrong command, use 's' ot 'i'");
-            }
-            else if(command.equalsIgnoreCase("i")){
+            } else if (command.equalsIgnoreCase("i")) {
                 insert();
-            }else{
+            } else {
                 select();
             }
-            System.out.print("command$ ");
+            System.out.print("$ ");
         }
     }
 
 
-    private void print(String s){
+    private void print(String s) {
         System.out.println(s);
     }
+
     public static void main(String[] args) throws SQLException {
+
+        System.setProperty("jgroups.bind_addr", "192.168.0.101");
+        System.setProperty("jgroups.tcpping.initial_hosts", "192.168.0.101[7800]");
+
         ClusterTest ct = new ClusterTest();
         ct.work();
 
     }
 
-    public void insert(){
+    public void insert() {
         Base.open("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/test", "root", "p@ssw0rd");
 
         Account account = new Account();
-        account.set("account", "account: "+ String.valueOf(System.currentTimeMillis()));
+        account.set("account", "account: " + String.valueOf(System.currentTimeMillis()));
         account.set("description", "description: " + String.valueOf(System.currentTimeMillis()));
         account.set("amount", 10.3);
         account.set("total", 444.4);
         account.saveIt();
         Base.close();
     }
-    public void select(){
+
+    public void select() {
 
         Base.open("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/test", "root", "p@ssw0rd");
 
