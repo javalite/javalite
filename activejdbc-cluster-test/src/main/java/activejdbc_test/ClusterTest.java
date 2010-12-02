@@ -59,9 +59,6 @@ public class ClusterTest {
 
     public static void main(String[] args) throws SQLException {
 
-        System.setProperty("jgroups.bind_addr", "192.168.0.101");
-        System.setProperty("jgroups.tcpping.initial_hosts", "192.168.0.101[7800]");
-
         ClusterTest ct = new ClusterTest();
         ct.work();
 
