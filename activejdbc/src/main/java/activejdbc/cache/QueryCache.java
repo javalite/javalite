@@ -47,15 +47,6 @@ public class QueryCache {
         cacheManager = Registry.instance().getConfiguration().getCacheManager();
     }
 
-    /**
-     * This method can be used at runtime to enable/disable cache.
-     *
-     * @param enabled true to enable, false to disable.
-     */
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-        cacheManager.flushAll();
-    }
 
     /**
      * This class is a singleton, get an instance with this method.
@@ -123,12 +114,13 @@ public class QueryCache {
      * @param tableName table name whose caches are to be purged.
      */
     public void purgeTableCache(String tableName) {
-        if(Registry.instance().getMetaModel(tableName).cached()){
-            cacheManager.flushGroupCache(tableName);
-            LogFilter.log(logger, "table cache purged for: " + tableName);    
+        if(enabled){
+            if(Registry.instance().getMetaModel(tableName).cached()){
+                cacheManager.flushGroupCache(tableName);
+                LogFilter.log(logger, "table cache purged for: " + tableName);
+            }
         }
     }
-
 
     public CacheManager getCacheManager(){
         return cacheManager;
