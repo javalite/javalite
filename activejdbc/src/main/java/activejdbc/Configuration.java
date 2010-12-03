@@ -71,11 +71,6 @@ public class Configuration {
             }
 
         }
-
-
-
-
-        cacheManager = new OSCacheManager();
     }
     
     String[] getModelNames() throws IOException {
