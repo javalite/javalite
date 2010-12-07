@@ -28,8 +28,8 @@ import java.io.StringReader;
 import java.util.List;
 
 /**
- * This is a class for use in tests. It provides a set oc convenience methods for checking structure and content
- * of XML files. Such files could be XHTML generated for web apps, or any other XML.  
+ * Convenience class for pulling information from XML documents. It provides a set of convenience methods for checking
+ * structure and content  of XML files. Such files could be XHTML generated for web apps, or any other XML.  
  *
  * @author Igor Polevoy
  */
@@ -37,6 +37,12 @@ public class XPathHelper {
 
     private Document doc;
 
+    /**
+     * Use constructor and instance methods to only parse once and reuse a parsed tree. Use this
+     * method in high performance applicaitons when you need to pull many values from the same document. 
+     *
+     * @param xml XML to parse.
+     */
     public XPathHelper(String xml){
         StringReader reader = new StringReader(xml);
         try {
@@ -46,6 +52,13 @@ public class XPathHelper {
         }
 
     }
+
+    /**
+     * Retrieves text of a single node.
+     *
+     * @param xpath XPath pointing to a single node (not its text).  
+     * @return text of a node. 
+     */
     public String selectText(String xpath) {
         try {
             return ((Node) doc.selectObject(xpath)).getText();
@@ -59,6 +72,12 @@ public class XPathHelper {
 
     }
 
+    /**
+     * Returns a value of an attribute.
+     *
+     * @param xpath needs to point to an attribute of a single node. 
+     * @return value of an attribute of a single node.
+     */
     public String attributeValue(String xpath) {
         try {
             DefaultAttribute at = (DefaultAttribute)doc.selectObject(xpath);
@@ -72,6 +91,12 @@ public class XPathHelper {
         }
     }
 
+    /**
+     * Counts a collection selected by XPath expression.
+     *
+     * @param xpath expression which muse evaluate to a list of items.
+     * @return size of a collection selected by expression.
+     */
     public int count(String xpath) {
         try {
             Object o = doc.selectObject(xpath);
@@ -89,6 +114,7 @@ public class XPathHelper {
         }
 
     }
+    
     /**
      * Selects text from a single node. 
      *
@@ -114,7 +140,7 @@ public class XPathHelper {
     /**
      *  Selects a value of attribute.
      *
-     * @param xpath expression that points to a specific attribute of a specific node. 
+     * @param xpath expression that points to a specific attribute of a specific node. Example: <code>/a/b[1]/@id</code>.
      * @param xml document.
      * @return value of selected attribute.
      */
