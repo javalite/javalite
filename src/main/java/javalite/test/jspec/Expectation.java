@@ -41,10 +41,13 @@ public class Expectation {
 
     public void shouldBeEqual(Object expected) {
 
-        TestException te = new TestException("\nObjects: \n" +
-                actual.getClass().getName() +  " == <" + actual + "> \n" +
-                "and \n" +
-                expected.getClass().getName() + " == <" + expected + "> \nare not equal, but they should be.");
+        String expectedName = expected == null? "null":expected.getClass().getName();
+        String actualName = actual == null? "null":actual.getClass().getName();
+
+        TestException te = new TestException("\nTest object: \n" +
+                actualName +  " == <" + actual + "> \n" +
+                "and expected\n" +
+                expectedName + " == <" + expected + "> \nare not equal, but they should be.");
 
 
         if(actual == null && expected != null || actual != null && expected == null)
