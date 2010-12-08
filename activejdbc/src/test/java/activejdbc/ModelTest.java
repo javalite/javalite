@@ -27,6 +27,8 @@ import org.junit.Test;
 
 import java.util.*;
 
+import static javalite.common.Collections.map;
+
 
 public class ModelTest extends ActiveJDBCTest {
 
@@ -513,9 +515,27 @@ public class ModelTest extends ActiveJDBCTest {
         p.set("last_name", "Deer");
         p.saveIt();
         a(Person.count()).shouldBeEqual(1);
-
     }
 
+
+    @Test
+    public void shouldOverrideSomeAttributesFromMap(){
+
+        Person.deleteAll();
+
+        Person p = new Person();
+        p.set("name", "John");//before the upper case caused exception
+        p.set("last_name", "Deer");
+        p.saveIt();
+        Object id  = p.getId();
+        System.out.println(p);
+
+        p.fromMap(map("name", "Jack"));
+        System.out.println(p);
+        a(p.get("name")).shouldBeEqual("Jack");
+        a(p.get("last_name")).shouldBeEqual("Deer");
+        a(p.getId()).shouldBeEqual(id);
+    }
 
 }
 

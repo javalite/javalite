@@ -62,6 +62,17 @@ public abstract class Model extends CallbackSupport{
     }
 
     /**
+     * Overrides attribute values from map. The map may have attributes whose name do not match the
+     * attribute names (columns) of this model. Such attributes will be ignored. Thise values whose names are
+     * not present in the argument map, will stay untouched.
+     *
+     * @param map map with attributes to overwrite this models'.
+     */
+    public void fromMap(Map map){
+        hydrate(map);
+    }
+
+    /**
      * Hydrates a this instance of model from a map. Only picks values from a map that match
      * this instance's attribute names, while ignoring the others.
      *
@@ -70,11 +81,12 @@ public abstract class Model extends CallbackSupport{
     protected  void hydrate(Map attributesMap) {
 
         List<String> attributeNames = getMetaModelLocal().getAttributeNamesSkipId();
-        this.attributes = new HashMap<String, Object> ();
+        
+        String idName = getMetaModelLocal().getIdName();
+        Object id = attributesMap.get(idName);
 
-        Object id = attributesMap.get(getMetaModelLocal().getIdName());
-
-        attributes.put(getMetaModelLocal().getIdName(), id);
+        if(id != null)
+            attributes.put(idName, id);
 
         for (String attrName : attributeNames) {
 
@@ -495,9 +507,7 @@ public abstract class Model extends CallbackSupport{
     }
 
 
-    public void fromMap(Map map){
-        hydrate(map);
-    }
+
 
 
     /**
