@@ -172,11 +172,25 @@
         <dependency><groupId>javassist</groupId>    <artifactId>javassist</artifactId></dependency>
         <dependency><groupId>javax.servlet</groupId><artifactId>servlet-api</artifactId></dependency>
         <dependency><groupId>org.slf4j</groupId>    <artifactId>slf4j-api</artifactId></dependency>
-        <dependency><groupId>org.slf4j</groupId>    <artifactId>jcl-over-slf4j</artifactId></dependency>
+        <dependency><groupId>org.slf4j</groupId>    <artifactId>jcl-over-slf4j</artifactId><scope>provided</scope></dependency>
         <dependency><groupId>org.slf4j</groupId>    <artifactId>slf4j-simple</artifactId></dependency>
         <!--some tests use MySQL verbatim; -->
         <dependency><groupId>mysql</groupId><artifactId>mysql-connector-java</artifactId><version>5.0.4</version><scope>test</scope></dependency>
-        <dependency><groupId>javalite</groupId>     <artifactId>javalite-common</artifactId><version>${project.version}</version></dependency>
-        <dependency><groupId>opensymphony</groupId> <artifactId>oscache</artifactId></dependency>
+        <dependency>
+            <groupId>javalite</groupId>
+            <artifactId>javalite-common</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>dom4j</groupId>
+                    <artifactId>dom4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>jaxen</groupId>
+                    <artifactId>jaxen</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency><groupId>opensymphony</groupId> <artifactId>oscache</artifactId> <scope>provided</scope></dependency>
     </dependencies>
 </project>
