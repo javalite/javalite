@@ -27,11 +27,11 @@ public final class JSpec{
         return a(o1);
     }
 
-    public static Expectation it() {
-        return new Expectation();
+    public static <T> Expectation<T> it(T o1) {
+        return new Expectation<T>(o1);
     }
 
-    public static void expect(ExceptionExpectation expectation){
+    public static <T> void expect(ExceptionExpectation<T> expectation){
         
         try{
             expectation.exec();
@@ -52,7 +52,7 @@ public final class JSpec{
      * 
      * @param expectation difference expectation.
      */
-    public static void expect(DifferenceExpectation expectation) {        
+    public static <T> void expect(DifferenceExpectation<T> expectation) {
         a(expectation.getExpected()).shouldNotBeEqual(expectation.exec());
     }
 }

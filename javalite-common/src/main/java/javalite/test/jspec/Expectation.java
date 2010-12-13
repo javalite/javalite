@@ -19,11 +19,11 @@ package javalite.test.jspec;
 
 import java.lang.reflect.Method;
 
-public class Expectation {
+public class Expectation<T> {
 
-    private Object actual;
+    private T actual;
 
-    public Expectation(Object actual) {
+    public Expectation(T actual) {
         this.actual = actual;
     }
 
@@ -35,11 +35,11 @@ public class Expectation {
      *
      * @param expected
      */
-    public void shouldEqual(Object expected){
+    public void shouldEqual(T expected){
         shouldBeEqual(expected);
     }
 
-    public void shouldBeEqual(Object expected) {
+    public void shouldBeEqual(T expected) {
 
         String expectedName = expected == null? "null":expected.getClass().getName();
         String actualName = actual == null? "null":actual.getClass().getName();
@@ -77,7 +77,7 @@ public class Expectation {
         invokeBoolean(booleanMethod, false);
     }
 
-    public void shouldNotBeEqual(Object expected) {
+    public void shouldNotBeEqual(T expected) {
         if (actual.equals(expected))
             throw new TestException("Objects: '" + actual + "' and '" + expected + "' are equal, but they should not be");
     }
@@ -86,7 +86,7 @@ public class Expectation {
         if (actual == null) throw new TestException("Object is null, while it is not expected");
     }
 
-    public void shouldBeType(Class clazz) {
+    public void shouldBeType(Class<T> clazz) {
         if (!actual.getClass().equals(clazz)) throw new TestException(actual.getClass() + " is not " + clazz);
     }
 
@@ -103,11 +103,11 @@ public class Expectation {
         if (actual != null) throw new TestException("argument is not null, but it should be");
     }
 
-    public void shouldBeTheSameAs(Object expected) {
+    public void shouldBeTheSameAs(T expected) {
         if (actual != expected) throw new TestException("references are not the same, but they should be");
     }
 
-    public void shouldNotBeTheSameAs(Object expected) {
+    public void shouldNotBeTheSameAs(T expected) {
         if (actual == expected) throw new TestException("references are the same, but they should not be");
     }
 

@@ -18,16 +18,16 @@ limitations under the License.
 package javalite.test.jspec;
 
 
-public abstract class ExceptionExpectation {
-    private Class  clazz;
+public abstract class ExceptionExpectation<T> {
+    private Class<T>  clazz;
 
-    public ExceptionExpectation(Class clazz){
+    public ExceptionExpectation(Class<T> clazz){
         this.clazz = clazz;
     }
 
     public abstract void exec() throws Exception;
 
-    public Class getClazz() {
+    public Class<T> getClazz() {
         return clazz;
     }
 }
