@@ -109,16 +109,15 @@ public class QueryCache {
     }
 
     /**
-     * This method purges (removes) all caches associated with a table.
+     * This method purges (removes) all caches associated with a table, if caching is enabled and
+     * a corresponding model is marked cached.
      *
      * @param tableName table name whose caches are to be purged.
      */
     public void purgeTableCache(String tableName) {
-        if(enabled){
-            if(Registry.instance().getMetaModel(tableName).cached()){
-                cacheManager.flush(new CacheEvent(tableName, null));
-                LogFilter.log(logger, "table cache purged for: " + tableName);
-            }
+        if(enabled  && Registry.instance().getMetaModel(tableName).cached()){
+            cacheManager.flush(new CacheEvent(tableName, getClass().getName()));
+            LogFilter.log(logger, "table cache purged for: " + tableName);
         }
     }
 
