@@ -47,11 +47,13 @@ public class OSCacheManager extends CacheManager{
         catch(Exception ignore){}
     }
 
-    public void doFlushAll() {
-        administrator.flushAll();
-    }
+    @Override
+    public void doFlush(CacheEvent event) {
 
-    public void doFlushGroupCache(String group) {
-        administrator.flushGroup(group);
+        if(event.getType().equals(CacheEvent.CacheEventType.ALL)){
+            administrator.flushAll();
+        }else if(event.getType().equals(CacheEvent.CacheEventType.GROUP)){
+            administrator.flushGroup(event.getGroup());
+        }
     }
 }

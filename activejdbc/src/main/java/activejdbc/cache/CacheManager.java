@@ -47,34 +47,19 @@ public abstract class CacheManager {
     public abstract void addCache(String group, String key, Object cache);
 
 
-    /**
-     * Deletes all caches.
-     */
-    public final void flushAll(){
-        doFlushAll();
-        fireFlushAll();
-    }
+    public abstract void doFlush(CacheEvent event);
 
-    private void fireFlushAll(){
-        for(CacheEventListener listener: listeners){
-            listener.onFlushAll();
-        }
-    }
-
-
-    public abstract void doFlushAll();
-    
-    public abstract void doFlushGroupCache(String group);
 
     /**
-     * Flushes cache related to a specific group.
-     * @param group name of group whose cache needs flushing.
+     * Flash cache.
+     *
+     * @param event type of caches to flush.
      */
-    public final void flushGroupCache(String group){
+    public final void flush(CacheEvent event){        
+        doFlush(event);
         for(CacheEventListener listener: listeners){
-            listener.onFlushGroupCache(group);
+            listener.onFlush(event);
         }
-        doFlushGroupCache(group);
     }
 
     public final void addCacheEventListener(CacheEventListener listener){

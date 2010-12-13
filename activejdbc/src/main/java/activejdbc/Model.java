@@ -1197,6 +1197,7 @@ public abstract class Model extends CallbackSupport{
         }
         catch(IllegalArgumentException e){throw e;}
         catch(ClassCastException e){throw new  IllegalArgumentException("All even arguments must be strings");}
+        catch(DBException e){throw e;}
         catch (Exception e){throw new InitException("This model must provide a default constructor.", e);}
     }
 
