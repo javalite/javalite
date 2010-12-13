@@ -20,17 +20,17 @@ package javalite.test.jspec;
 /**
  * @author Igor Polevoy
  */
-public abstract class DifferenceExpectation {
+public abstract class DifferenceExpectation<T> {
 
-    private Object expected;
+    private T expected;
 
-    public DifferenceExpectation(Object expected){
+    public DifferenceExpectation(T expected){
         this.expected = expected;
     }
 
-    protected Object getExpected(){
+    protected T getExpected(){
         return expected;
     }
 
-    public abstract Object exec();
+    public abstract T exec();
 }

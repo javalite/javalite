@@ -32,15 +32,15 @@ public class JSpecSupport {
         return JSpec.the(o1);
     }
 
-    public Expectation it() {
-        return JSpec.it();
+    public <T> Expectation<T> it(T o1) {
+        return JSpec.it(o1);
     }
 
-    public void expect(ExceptionExpectation expectation){
+    public <T> void expect(ExceptionExpectation<T> expectation){
         JSpec.expect(expectation);
     }
 
-    public void expect(DifferenceExpectation expectation) {
+    public <T> void expect(DifferenceExpectation<T> expectation) {
         JSpec.expect(expectation);
     }
 }
