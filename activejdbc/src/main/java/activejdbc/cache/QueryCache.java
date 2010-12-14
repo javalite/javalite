@@ -117,7 +117,6 @@ public class QueryCache {
     public void purgeTableCache(String tableName) {
         if(enabled  && Registry.instance().getMetaModel(tableName).cached()){
             cacheManager.flush(new CacheEvent(tableName, getClass().getName()));
-            LogFilter.log(logger, "table cache purged for: " + tableName);
         }
     }
 

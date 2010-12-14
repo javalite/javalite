@@ -17,6 +17,10 @@ limitations under the License.
 
 package activejdbc.cache;
 
+import activejdbc.LogFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +30,7 @@ import java.util.List;
  * @author Igor Polevoy
  */
 public abstract class CacheManager {
+    private final static Logger logger = LoggerFactory.getLogger(CacheManager.class);
 
     List<CacheEventListener> listeners = new ArrayList<CacheEventListener>();
 
@@ -60,6 +65,8 @@ public abstract class CacheManager {
         for(CacheEventListener listener: listeners){
             listener.onFlush(event);
         }
+        String message = event.getType() == CacheEvent.CacheEventType.ALL? "all caches": "table: " + event.getGroup(); 
+        LogFilter.log(logger, "Cache purged: " + message);
     }
 
     public final void addCacheEventListener(CacheEventListener listener){
