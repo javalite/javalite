@@ -32,6 +32,9 @@ public class JSpecSupport {
         return JSpec.the(o1);
     }
 
+    /**
+     * Wrapper for {@link javalite.test.jspec.JSpec#it}
+     */
     public <T> Expectation<T> it(T o1) {
         return JSpec.it(o1);
     }

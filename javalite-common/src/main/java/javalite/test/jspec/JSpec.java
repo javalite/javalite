@@ -27,6 +27,28 @@ public final class JSpec{
         return a(o1);
     }
 
+    /**
+     * Works in the same way as methods {@link #the()} or {@link #a()}, but takes generalized instance as parameter. <br/>
+     * For example you can't use it(12345).shouldBeEqual("12345"); you will get compilation error. <br/>
+     * You can perform checking only for the same type instances. <br/>
+     *
+     * Valid examples:
+     * <ul>
+     *   <li><code>it(1).shouldNotBeEqual(2)</code></li>
+     *   <li><code>it("a").shouldNotBeEqual("b")</code></li>
+     * </ul>     
+     * <br/>
+     * 
+     * Not valid examples:
+     * <ul>
+     *   <li><code>it(1l).shouldNotBeEqual(2)</code></li>
+     *   <li><code>it("aaa").shouldNotBeEqual(1)</code></li>
+     * </ul>
+     * 
+     * @param <T> generic type of expectation
+     * @param o1 generic instance for checking
+     * @return generalized expectation
+     */
     public static <T> Expectation<T> it(T o1) {
         return new Expectation<T>(o1);
     }
