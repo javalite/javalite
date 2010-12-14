@@ -28,7 +28,7 @@ public final class JSpec{
     }
 
     /**
-     * Works in the same way as methods {@link #the()} or {@link #a()}, but takes generalized instance as parameter. <br/>
+     * Works in the same way as methods {@link JSpec#the(Object)} or {@link JSpec#a(Object)}, but takes generalized instance as parameter. <br/>
      * For example you can't use it(12345).shouldBeEqual("12345"); you will get compilation error. <br/>
      * You can perform checking only for the same type instances. <br/>
      *
