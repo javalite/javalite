@@ -200,7 +200,7 @@ public class Registry {
      * @return
      * @throws java.sql.SQLException
      */
-    private Map<String, ColumnMetadata> fetchMetaParams(String table, String dbName) throws SQLException {
+    public Map<String, ColumnMetadata> fetchMetaParams(String table, String dbName) throws SQLException {
         Connection con = ConnectionsAccess.getConnection(dbName);
 
         String schemaName = System.getProperty("activejdbc.schema.name");

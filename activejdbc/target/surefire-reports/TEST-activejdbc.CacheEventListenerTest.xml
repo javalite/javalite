@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite failures="0" time="2.524" errors="1" skipped="0" tests="1" name="activejdbc.CacheEventListenerTest">
+  <properties>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="sun.boot.library.path" value="C:\My Dropbox\Development\jdk6u22\jre\bin"/>
+    <property name="java.vm.version" value="17.1-b03"/>
+    <property name="java.vm.vendor" value="Sun Microsystems Inc."/>
+    <property name="java.vendor.url" value="http://java.sun.com/"/>
+    <property name="path.separator" value=";"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="file.encoding.pkg" value="sun.io"/>
+    <property name="user.country" value="US"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.os.patch.level" value=""/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="user.dir" value="C:\My Dropbox\Development\helios_workspace\activejdbc_svn"/>
+    <property name="java.runtime.version" value="1.6.0_22-b04"/>
+    <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment"/>
+    <property name="basedir" value="C:\My Dropbox\Development\helios_workspace\activejdbc_svn"/>
+    <property name="java.endorsed.dirs" value="C:\My Dropbox\Development\jdk6u22\jre\lib\endorsed"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="surefire.real.class.path" value="C:\Users\jkr\AppData\Local\Temp\surefirebooter3346288735632880440.jar"/>
+    <property name="java.io.tmpdir" value="C:\Users\jkr\AppData\Local\Temp\"/>
+    <property name="line.separator" value="
+"/>
+    <property name="java.vm.specification.vendor" value="Sun Microsystems Inc."/>
+    <property name="user.variant" value=""/>
+    <property name="os.name" value="Windows 7"/>
+    <property name="sun.jnu.encoding" value="Cp1252"/>
+    <property name="java.library.path" value="C:\My Dropbox\Development\jdk6u22\jre\bin;.;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:/My Dropbox/Development/jdk6u22/bin/../jre/bin/server;C:/My Dropbox/Development/jdk6u22/bin/../jre/bin;C:/My Dropbox/Development/jdk6u22/bin/../jre/lib/amd64;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\ATI Technologies\ATI.ACE\Core-Static;C:\java\jdk1.6u18\bin;C:\Program Files (x86)\QuickTime\QTSystem\;C:\apache-maven-2.2.1\bin;C:\Program Files\SlikSvn\bin\"/>
+    <property name="surefire.test.class.path" value="C:\My Dropbox\Development\helios_workspace\activejdbc_svn\target\test-classes;C:\My Dropbox\Development\helios_workspace\activejdbc_svn\target\classes;C:\Users\jkr\.m2\repository\junit\junit\4.8.1\junit-4.8.1.jar;C:\Users\jkr\.m2\repository\javassist\javassist\3.8.0.GA\javassist-3.8.0.GA.jar;C:\Users\jkr\.m2\repository\javax\servlet\servlet-api\2.5\servlet-api-2.5.jar;C:\Users\jkr\.m2\repository\org\slf4j\slf4j-api\1.5.10\slf4j-api-1.5.10.jar;C:\Users\jkr\.m2\repository\org\slf4j\jcl-over-slf4j\1.5.10\jcl-over-slf4j-1.5.10.jar;C:\Users\jkr\.m2\repository\org\slf4j\slf4j-simple\1.5.10\slf4j-simple-1.5.10.jar;C:\Users\jkr\.m2\repository\mysql\mysql-connector-java\5.1.10\mysql-connector-java-5.1.10.jar;C:\Users\jkr\.m2\repository\javalite\javalite-common\1.1-SNAPSHOT\javalite-common-1.1-SNAPSHOT.jar;C:\Users\jkr\.m2\repository\dom4j\dom4j\1.6.1\dom4j-1.6.1.jar;C:\Users\jkr\.m2\repository\xml-apis\xml-apis\1.0.b2\xml-apis-1.0.b2.jar;C:\Users\jkr\.m2\repository\jaxen\jaxen\1.1.1\jaxen-1.1.1.jar;C:\Users\jkr\.m2\repository\jdom\jdom\1.0\jdom-1.0.jar;C:\Users\jkr\.m2\repository\xerces\xercesImpl\2.6.2\xercesImpl-2.6.2.jar;C:\Users\jkr\.m2\repository\xom\xom\1.0\xom-1.0.jar;C:\Users\jkr\.m2\repository\xerces\xmlParserAPIs\2.6.2\xmlParserAPIs-2.6.2.jar;C:\Users\jkr\.m2\repository\xalan\xalan\2.6.0\xalan-2.6.0.jar;C:\Users\jkr\.m2\repository\com\ibm\icu\icu4j\2.6.1\icu4j-2.6.1.jar;C:\Users\jkr\.m2\repository\opensymphony\oscache\2.4\oscache-2.4.jar;C:\Users\jkr\.m2\repository\org\slf4j\slf4j-log4j12\1.4.3\slf4j-log4j12-1.4.3.jar;C:\Users\jkr\.m2\repository\log4j\log4j\1.2.13\log4j-1.2.13.jar;"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="java.class.version" value="50.0"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Server Compiler"/>
+    <property name="os.version" value="6.1"/>
+    <property name="user.home" value="C:\Users\jkr"/>
+    <property name="user.timezone" value="America/New_York"/>
+    <property name="java.awt.printerjob" value="sun.awt.windows.WPrinterJob"/>
+    <property name="java.specification.version" value="1.6"/>
+    <property name="file.encoding" value="Cp1252"/>
+    <property name="user.name" value="jkr"/>
+    <property name="java.class.path" value="C:\My Dropbox\Development\helios_workspace\activejdbc_svn\target\test-classes;C:\My Dropbox\Development\helios_workspace\activejdbc_svn\target\classes;C:\Users\jkr\.m2\repository\junit\junit\4.8.1\junit-4.8.1.jar;C:\Users\jkr\.m2\repository\javassist\javassist\3.8.0.GA\javassist-3.8.0.GA.jar;C:\Users\jkr\.m2\repository\javax\servlet\servlet-api\2.5\servlet-api-2.5.jar;C:\Users\jkr\.m2\repository\org\slf4j\slf4j-api\1.5.10\slf4j-api-1.5.10.jar;C:\Users\jkr\.m2\repository\org\slf4j\jcl-over-slf4j\1.5.10\jcl-over-slf4j-1.5.10.jar;C:\Users\jkr\.m2\repository\org\slf4j\slf4j-simple\1.5.10\slf4j-simple-1.5.10.jar;C:\Users\jkr\.m2\repository\mysql\mysql-connector-java\5.1.10\mysql-connector-java-5.1.10.jar;C:\Users\jkr\.m2\repository\javalite\javalite-common\1.1-SNAPSHOT\javalite-common-1.1-SNAPSHOT.jar;C:\Users\jkr\.m2\repository\dom4j\dom4j\1.6.1\dom4j-1.6.1.jar;C:\Users\jkr\.m2\repository\xml-apis\xml-apis\1.0.b2\xml-apis-1.0.b2.jar;C:\Users\jkr\.m2\repository\jaxen\jaxen\1.1.1\jaxen-1.1.1.jar;C:\Users\jkr\.m2\repository\jdom\jdom\1.0\jdom-1.0.jar;C:\Users\jkr\.m2\repository\xerces\xercesImpl\2.6.2\xercesImpl-2.6.2.jar;C:\Users\jkr\.m2\repository\xom\xom\1.0\xom-1.0.jar;C:\Users\jkr\.m2\repository\xerces\xmlParserAPIs\2.6.2\xmlParserAPIs-2.6.2.jar;C:\Users\jkr\.m2\repository\xalan\xalan\2.6.0\xalan-2.6.0.jar;C:\Users\jkr\.m2\repository\com\ibm\icu\icu4j\2.6.1\icu4j-2.6.1.jar;C:\Users\jkr\.m2\repository\opensymphony\oscache\2.4\oscache-2.4.jar;C:\Users\jkr\.m2\repository\org\slf4j\slf4j-log4j12\1.4.3\slf4j-log4j12-1.4.3.jar;C:\Users\jkr\.m2\repository\log4j\log4j\1.2.13\log4j-1.2.13.jar;"/>
+    <property name="java.vm.specification.version" value="1.0"/>
+    <property name="oracle.jdbc.J2EE13Compliant" value="true"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="java.home" value="C:\My Dropbox\Development\jdk6u22\jre"/>
+    <property name="java.specification.vendor" value="Sun Microsystems Inc."/>
+    <property name="user.language" value="en"/>
+    <property name="awt.toolkit" value="sun.awt.windows.WToolkit"/>
+    <property name="java.vm.info" value="mixed mode"/>
+    <property name="java.version" value="1.6.0_22"/>
+    <property name="java.ext.dirs" value="C:\My Dropbox\Development\jdk6u22\jre\lib\ext;C:\Windows\Sun\Java\lib\ext"/>
+    <property name="sun.boot.class.path" value="C:\My Dropbox\Development\jdk6u22\jre\lib\resources.jar;C:\My Dropbox\Development\jdk6u22\jre\lib\rt.jar;C:\My Dropbox\Development\jdk6u22\jre\lib\sunrsasign.jar;C:\My Dropbox\Development\jdk6u22\jre\lib\jsse.jar;C:\My Dropbox\Development\jdk6u22\jre\lib\jce.jar;C:\My Dropbox\Development\jdk6u22\jre\lib\charsets.jar;C:\My Dropbox\Development\jdk6u22\jre\classes"/>
+    <property name="java.vendor" value="Sun Microsystems Inc."/>
+    <property name="localRepository" value="C:\Users\jkr\.m2\repository"/>
+    <property name="file.separator" value="\"/>
+    <property name="java.vendor.url.bug" value="http://java.sun.com/cgi-bin/bugreport.cgi"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="sun.desktop" value="windows"/>
+    <property name="sun.cpu.isalist" value="amd64"/>
+  </properties>
+  <testcase time="2.503" classname="activejdbc.CacheEventListenerTest" name="shouldDelegateCachePurgeEventsToListener">
+    <error message="com.mysql.jdbc.exceptions.jdbc4.CommunicationsException: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server." type="activejdbc.InitException">activejdbc.InitException: com.mysql.jdbc.exceptions.jdbc4.CommunicationsException: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+	at activejdbc.DB.open(DB.java:49)
+	at activejdbc.Base.open(Base.java:31)
+	at activejdbc.test.ActiveJDBCTest.before(ActiveJDBCTest.java:45)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:44)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:15)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:41)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:27)
+	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:31)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:76)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:50)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:193)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:52)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:191)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:42)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:184)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:236)
+	at org.apache.maven.surefire.junit4.JUnit4TestSet.execute(JUnit4TestSet.java:59)
+	at org.apache.maven.surefire.suite.AbstractDirectoryTestSuite.executeTestSet(AbstractDirectoryTestSuite.java:115)
+	at org.apache.maven.surefire.suite.AbstractDirectoryTestSuite.execute(AbstractDirectoryTestSuite.java:102)
+	at org.apache.maven.surefire.Surefire.run(Surefire.java:180)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.apache.maven.surefire.booter.SurefireBooter.runSuitesInProcess(SurefireBooter.java:350)
+	at org.apache.maven.surefire.booter.SurefireBooter.main(SurefireBooter.java:1021)
+Caused by: com.mysql.jdbc.exceptions.jdbc4.CommunicationsException: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:39)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:27)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:513)
+	at com.mysql.jdbc.Util.handleNewInstance(Util.java:406)
+	at com.mysql.jdbc.SQLError.createCommunicationsException(SQLError.java:1074)
+	at com.mysql.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:2214)
+	at com.mysql.jdbc.ConnectionImpl.&lt;init&gt;(ConnectionImpl.java:781)
+	at com.mysql.jdbc.JDBC4Connection.&lt;init&gt;(JDBC4Connection.java:46)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:39)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:27)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:513)
+	at com.mysql.jdbc.Util.handleNewInstance(Util.java:406)
+	at com.mysql.jdbc.ConnectionImpl.getInstance(ConnectionImpl.java:352)
+	at com.mysql.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:284)
+	at java.sql.DriverManager.getConnection(DriverManager.java:582)
+	at java.sql.DriverManager.getConnection(DriverManager.java:185)
+	at activejdbc.DB.open(DB.java:46)
+	... 29 more
+Caused by: com.mysql.jdbc.exceptions.jdbc4.CommunicationsException: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:39)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:27)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:513)
+	at com.mysql.jdbc.Util.handleNewInstance(Util.java:406)
+	at com.mysql.jdbc.SQLError.createCommunicationsException(SQLError.java:1074)
+	at com.mysql.jdbc.MysqlIO.&lt;init&gt;(MysqlIO.java:343)
+	at com.mysql.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:2137)
+	... 41 more
+Caused by: java.net.ConnectException: Connection refused: connect
+	at java.net.PlainSocketImpl.socketConnect(Native Method)
+	at java.net.PlainSocketImpl.doConnect(PlainSocketImpl.java:333)
+	at java.net.PlainSocketImpl.connectToAddress(PlainSocketImpl.java:195)
+	at java.net.PlainSocketImpl.connect(PlainSocketImpl.java:182)
+	at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:366)
+	at java.net.Socket.connect(Socket.java:529)
+	at java.net.Socket.connect(Socket.java:478)
+	at java.net.Socket.&lt;init&gt;(Socket.java:375)
+	at java.net.Socket.&lt;init&gt;(Socket.java:218)
+	at com.mysql.jdbc.StandardSocketFactory.connect(StandardSocketFactory.java:253)
+	at com.mysql.jdbc.MysqlIO.&lt;init&gt;(MysqlIO.java:292)
+	... 42 more
+</error>
+    <system-err>SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/C:/Users/jkr/.m2/repository/org/slf4j/slf4j-simple/1.5.10/slf4j-simple-1.5.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/C:/Users/jkr/.m2/repository/org/slf4j/slf4j-log4j12/1.4.3/slf4j-log4j12-1.4.3.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+2453 [main] ERROR activejdbc.DB - Could not close connection
+activejdbc.DBException: there is no connection &apos;default&apos; on this thread, are you sure you opened it?
+	at activejdbc.ConnectionsAccess.getConnection(ConnectionsAccess.java:47)
+	at activejdbc.DB.close(DB.java:143)
+	at activejdbc.Base.close(Base.java:61)
+	at activejdbc.test.ActiveJDBCTest.after(ActiveJDBCTest.java:56)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:44)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:15)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:41)
+	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:37)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:76)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:50)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:193)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:52)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:191)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:42)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:184)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:236)
+	at org.apache.maven.surefire.junit4.JUnit4TestSet.execute(JUnit4TestSet.java:59)
+	at org.apache.maven.surefire.suite.AbstractDirectoryTestSuite.executeTestSet(AbstractDirectoryTestSuite.java:115)
+	at org.apache.maven.surefire.suite.AbstractDirectoryTestSuite.execute(AbstractDirectoryTestSuite.java:102)
+	at org.apache.maven.surefire.Surefire.run(Surefire.java:180)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.apache.maven.surefire.booter.SurefireBooter.runSuitesInProcess(SurefireBooter.java:350)
+	at org.apache.maven.surefire.booter.SurefireBooter.main(SurefireBooter.java:1021)
+</system-err>
+  </testcase>
+</testsuite>
