@@ -18,6 +18,7 @@ limitations under the License.
 package javalite.common;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.*;
 
 /**
@@ -25,6 +26,20 @@ import java.util.*;
  */
 public class Util {
 
+    /**
+     * Reads contents of resource fully into a byte array.
+     *
+     * @param resourceName resource name.
+     * @return entire contents of resource as byte array.
+     */
+    public static byte[] readResourceBytes(String resourceName) {
+        try {
+            return bytes(Util.class.getResourceAsStream(resourceName));
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
 
     /**
      * Reads contents of resource fully into a string.
@@ -63,8 +78,11 @@ public class Util {
      *
      * @param in InputStream to read from.
      * @return contents of the input stream fully as String.
+     * @throws IOException in case of IO error
      */
     public static String read(InputStream in) throws IOException {
+        if(in == null) throw new IllegalArgumentException("input stream cannot be null");
+
         StringBuilder sb = new StringBuilder();
         for (int x = in.read(); x != -1; x = in.read()) sb.append((char) x);
 
@@ -78,13 +96,16 @@ public class Util {
      *
      * @param in InputStream to read from.
      * @return contents of the input stream fully as byte array
+     * @throws IOException in case of IO error
      */
     public static byte[] bytes(InputStream in) throws IOException {
+        if(in == null) throw new IllegalArgumentException("input stream cannot be null");
+
 
         ByteArrayOutputStream bout = new ByteArrayOutputStream(1024);
         byte[] bytes = new byte[128];
 
-        for (int x = in.read(bytes); x != -1; x = in.read())
+        for (int x = in.read(bytes); x != -1; x = in.read(bytes))
             bout.write(bytes, 0, x);
 
         return bout.toByteArray();
@@ -92,9 +113,9 @@ public class Util {
     /**
      * Returns lines of text of a resource as list.
      *
-     * @param resourceName
-     * @return
-     * @throws java.io.IOException
+     * @param resourceName name of resource
+     * @return list of text lines
+     * @throws java.io.IOException in case of IO error
      */
     public static List<String> getResourceLines(String resourceName) throws IOException {
 
