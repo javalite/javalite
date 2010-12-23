@@ -50,4 +50,12 @@ public class UtilTest extends JSpecSupport {
         byte[] bytes = Util.bytes(UtilTest.class.getResourceAsStream("/text.txt"));
         a(new String(bytes)).shouldBeEqual("hello");
     }
+
+
+    @Test
+    public void shouldReadBytesFromResource() throws IOException {
+
+        byte[] bytes = Util.readResourceBytes("/pdf_implementation.pdf");
+        a(bytes.length).shouldBeEqual(174230);
+    }
 }
