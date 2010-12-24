@@ -21,7 +21,7 @@ package javalite.http;
  *
  * @author Igor Polevoy
  */
-public class Delete extends Http<Delete> {
+public class Delete extends Request<Delete> {
 
     /**
      * Constructor for making DELETE requests.
