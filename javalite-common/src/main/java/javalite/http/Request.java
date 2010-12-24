@@ -133,6 +133,7 @@ public abstract class Request<T extends Request> {
         } catch (Exception e) {
             throw new HttpException(e);
         }
+        dispose();
         return bout.toByteArray();
     }
 
@@ -144,14 +145,23 @@ public abstract class Request<T extends Request> {
     public String text() {
         try {
             connect();
-            return Util.read(connection.getInputStream());
+            String result = Util.read(connection.getInputStream());
+            dispose();
+            return result;
         } catch (IOException e) {
             throw new HttpException(e);
         }
     }
 
     /**
-     * Always call this method to clear all remaining data in connections after reading a response.
+     * This method is already called from {@link #text()} and {@link #bytes()}, you do not have to call it if you use
+     * those methods.
+     * <p/> 
+     * However, if you use {@link #getInputStream()}, call this method in those cases when you think you did
+     * not read entire content from the stream.
+     *
+     * <p/>
+     * This method clears all remaining data in connections after reading a response.
      * This will help keep-alive work smoothly.
      */
     public void dispose() {

@@ -52,6 +52,5 @@ public class Get extends Request<Get> {
         System.out.println(get.text());
         System.out.println(get.headers());
         System.out.println(get.responseCode());
-        get.dispose();
     }
 }
