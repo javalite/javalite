@@ -23,7 +23,7 @@ import java.io.OutputStream;
  *
  * @author Igor Polevoy
  */
-public class Post extends Http<Post> {
+public class Post extends Request<Post> {
     
     private byte[] content;
 

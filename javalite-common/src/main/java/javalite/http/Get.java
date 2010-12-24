@@ -21,7 +21,7 @@ package javalite.http;
  *
  * @author Igor Polevoy
  */
-public class Get extends Http<Get> {
+public class Get extends Request<Get> {
 
     /**
      * Constructor for making GET requests.

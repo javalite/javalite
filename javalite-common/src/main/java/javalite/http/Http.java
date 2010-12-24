@@ -16,22 +16,12 @@ limitations under the License.
 
 package javalite.http;
 
-import javalite.common.Util;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.List;
-import java.util.Map;
-
 /**
- * This class provides static convenience methods for simple HTTP requests.
- *
+ * This is a convenience class to allow creation of request objects on one line with some pre-defined values.
+ * 
  * @author Igor Polevoy
  */
-public abstract class Http<T extends Http> {
+public class Http {
 
     /**
      * Connection timeout in milliseconds. Set this value to what you like to override default.
@@ -44,200 +34,7 @@ public abstract class Http<T extends Http> {
     public static int READ_TIMEOUT = 5000;
 
 
-    protected HttpURLConnection connection;
-    private boolean connected;
 
-
-    public Http(String uri, int connectTimeout, int readTimeout) {
-        try {
-            connection = (HttpURLConnection) new URL(uri).openConnection();
-            connection.setConnectTimeout(connectTimeout);
-            connection.setReadTimeout(readTimeout);
-        } catch (Exception e) {
-            throw new HttpException(e);
-        }
-    }
-
-
-    /**
-     * Sets an HTTP header - call before making a request.
-     *
-     * @param name  header name
-     * @param value header value.
-     * @return self.
-     */
-    public T header(String name, String value) {
-        connection.setRequestProperty(name, value);
-        return (T) this;
-    }
-
-
-    /**
-     * Returns input stream to read server response from.
-     *
-     * @return input stream to read server response from.
-     */
-    public InputStream getInputStream() {
-        try {
-            return connection.getInputStream();
-        } catch (Exception e) {
-            throw new HttpException(e);
-        }
-    }
-
-    /**
-     * Returns HTTP headers as sent by server.
-     *
-     * @return HTTP headers as sent by server.
-     */
-    public Map<String, List<String>> headers() {
-        connect();
-        return connection.getHeaderFields();
-    }
-
-    /**
-     * Returns HTTP response code.
-     *
-     * @return HTTP response code.
-     */
-    public int responseCode() {
-        try {
-            connect();
-            return connection.getResponseCode();
-        } catch (Exception e) {
-            throw new HttpException(e);
-        }
-    }
-
-    /**
-     * Returns response message from server, such as "OK", or "Created", etc.
-     *
-     * @return response message from server, such as "OK", or "Created", etc.
-     */
-    public String responseMessage() {
-        try {
-            connect();
-            return connection.getResponseMessage();
-        } catch (Exception e) {
-            throw new HttpException(e);
-        }
-    }
-
-    /**
-     * Fetches response content from server as bytes.
-     *
-     * @return response content from server as bytes.
-     */
-    public byte[] bytes() {
-
-        connect();
-
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-
-        byte[] bytes = new byte[1024];
-        int count;
-        try {
-            InputStream in = connection.getInputStream();
-            while ((count = in.read(bytes)) != -1) {
-                bout.write(bytes, 0, count);
-            }
-        } catch (Exception e) {
-            throw new HttpException(e);
-        }
-        return bout.toByteArray();
-    }
-
-    /**
-     * Fetches response content from server as String.
-     *
-     * @return response content from server as String.
-     */
-    public String text() {
-        try {
-            connect();
-            return Util.read(connection.getInputStream());
-        } catch (IOException e) {
-            throw new HttpException(e);
-        }
-    }
-
-    /**
-     * Always call this method to clear all remaining data in connections after reading a response.
-     * This will help keep-alive work smoothly.
-     */
-    public void dispose() {
-
-        //according to this: http://download.oracle.com/javase/1.5.0/docs/guide/net/http-keepalive.html
-        //should read all data from connection to make it happy.
-
-        byte[] bytes = new byte[1024];
-        try {
-            int count = 0;
-            InputStream in = connection.getInputStream();
-            while ((count = in.read(bytes)) > 0) {
-            }//nothing
-
-            in.close();
-        } catch (Exception ignore) {
-            try {
-                InputStream errorStream = connection.getErrorStream();
-                int ret = 0;
-
-                while ((ret = errorStream.read(bytes)) > 0) {
-                }//nothing
-
-                errorStream.close();
-            } catch (IOException ignoreToo) {
-            }
-        }
-    }
-
-
-    protected T connect() {
-        if (!connected) {
-            T t = doConnect();
-            connected = true;
-            return t;
-        } else {
-            return (T) this;
-        }
-    }
-
-
-    /**
-     * Makes a connection to the remote resource.
-     *
-     * @return self.
-     */
-    protected abstract T doConnect();
-
-
-    /**
-     * Executes a GET request.
-     *
-     * @param url url of the resource.
-     * @return {@link Get} object.
-     */
-    public static Get get(String url) {
-        return get(url, CONNECTION_TIMEOUT, READ_TIMEOUT);
-    }
-
-    /**
-     * Executes a GET request
-     *
-     * @param uri            url of resource.
-     * @param connectTimeout connection timeout in milliseconds.
-     * @param readTimeout    read timeout in milliseconds.
-     * @return {@link Get} object.
-     */
-    public static Get get(String uri, int connectTimeout, int readTimeout) {
-
-        try {
-            return new Get(uri, connectTimeout, readTimeout);
-        } catch (Exception e) {
-            throw new HttpException(e);
-        }
-    }
 
     /**
      * Executes a POST request.
@@ -274,6 +71,35 @@ public abstract class Http<T extends Http> {
 
         try {
             return new Post(uri, content, connectTimeout, readTimeout);
+        } catch (Exception e) {
+            throw new HttpException(e);
+        }
+    }
+
+
+
+    /**
+     * Executes a GET request.
+     *
+     * @param url url of the resource.
+     * @return {@link Get} object.
+     */
+    public static Get get(String url) {
+        return get(url, CONNECTION_TIMEOUT, READ_TIMEOUT);
+    }
+
+    /**
+     * Executes a GET request
+     *
+     * @param uri            url of resource.
+     * @param connectTimeout connection timeout in milliseconds.
+     * @param readTimeout    read timeout in milliseconds.
+     * @return {@link Get} object.
+     */
+    public static Get get(String uri, int connectTimeout, int readTimeout) {
+
+        try {
+            return new Get(uri, connectTimeout, readTimeout);
         } catch (Exception e) {
             throw new HttpException(e);
         }
@@ -345,4 +171,5 @@ public abstract class Http<T extends Http> {
             throw new HttpException(e);
         }
     }
+
 }
