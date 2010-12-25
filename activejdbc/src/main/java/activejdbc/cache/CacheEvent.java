@@ -86,4 +86,13 @@ public class CacheEvent {
     public String getGroup() {
         return group;
     }
+
+    @Override
+    public String toString() {
+        return "CacheEvent{" +
+                "source='" + source + '\'' +
+                ", group='" + group + '\'' +
+                ", type=" + type +
+                '}';
+    }
 }
