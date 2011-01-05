@@ -17,12 +17,12 @@ limitations under the License.
 
 package activejdbc;
 
+import activejdbc.cache.CacheEvent;
+import activejdbc.cache.CacheEventListener;
+import activejdbc.cache.QueryCache;
 import activejdbc.statistics.QueryStats;
 import activejdbc.test.ActiveJDBCTest;
-import activejdbc.test_models.Book;
-import activejdbc.test_models.Doctor;
-import activejdbc.test_models.Library;
-import activejdbc.test_models.Person;
+import activejdbc.test_models.*;
 import org.junit.Test;
 
 import java.util.List;
@@ -135,7 +135,7 @@ public class CacheTest extends ActiveJDBCTest {
         try{
             Thread.sleep(1000);
         }catch(Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         Registry.instance().getStatisticsQueue().reset();
         
@@ -151,4 +151,26 @@ public class CacheTest extends ActiveJDBCTest {
         List<QueryStats> queryStats = Registry.instance().getStatisticsQueue().getReportSortedBy("total");
         a(queryStats.get(0).getCount()).shouldEqual(1);
     }
+
+    int count = 0;
+    @Test
+    public void shouldNotPropagateCacheEventForNonCachedModels(){
+
+        CacheEventListener cl = new CacheEventListener() {
+            public void onFlush(CacheEvent event) {
+                count++;
+            }
+        };
+
+        QueryCache.instance().getCacheManager().addCacheEventListener(cl);
+        Person.deleteAll();
+        a(count).shouldBeEqual(1);
+
+
+        Account.deleteAll();
+
+        a(count).shouldBeEqual(1);
+
+    }
+
 }
