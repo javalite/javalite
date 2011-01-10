@@ -152,7 +152,7 @@ public class DB {
             }
 
         } catch (Exception e) {
-            logException("Could not close connection", e);
+            logger.warn("Could not close connection: " + e);
         }
     }
 
