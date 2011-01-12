@@ -32,6 +32,9 @@ import java.io.StringWriter;
 import java.util.*;
 
 /**
+ * While this class is public, it is never instantiated directly. This class provides
+ * a number of APIs for augmenting the query. 
+ *
  * @author Igor Polevoy
  */
 public class LazyList<T extends Model> extends AbstractList<T>{

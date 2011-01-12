@@ -17,6 +17,7 @@ limitations under the License.
 
 package activejdbc;
 
+import activejdbc.annotations.DbName;
 import activejdbc.associations.Many2ManyAssociation;
 import activejdbc.associations.OneToManyAssociation;
 import activejdbc.associations.OneToManyPolymorphicAssociation;
@@ -289,5 +290,10 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
             throw new IllegalArgumentException("Attribute: '" + attribute + "' is not defined in model: '"
                     + getModelClass() + "', available attributes: " + attributeNames + "\nAvailable associations: " + message);
         }
+    }
+
+    protected static String getDbName(Class<? extends Model> modelClass) {
+        DbName dbNameAnnotation = modelClass.getAnnotation(DbName.class);
+        return dbNameAnnotation == null ? "default" : dbNameAnnotation.value();
     }
 }

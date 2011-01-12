@@ -48,16 +48,13 @@ public abstract class Model extends CallbackSupport{
     private Map<Class, Model> cachedParents = new HashMap<Class, Model>();
 
     protected Errors errors;
-    
-    static{
-        Registry.instance().init();
-    }
 
     protected Model() {
         errors = new Errors();
     }
 
     public static MetaModel getMetaModel() {
+        Registry.instance().init(MetaModel.getDbName(getDaClass()));
         return Registry.instance().getMetaModel(getTableName());
     }
 
@@ -599,6 +596,11 @@ public abstract class Model extends CallbackSupport{
         other.copyTo(this);
     }
 
+    /**
+     * This method should be called from all instance methods for performance.
+     *
+     * @return
+     */
     private MetaModel getMetaModelLocal(){
         if(metaModelLocal == null)
             metaModelLocal = getMetaModel();
@@ -608,9 +610,10 @@ public abstract class Model extends CallbackSupport{
 
     /**
      * Re-reads all attribute values from DB.
-     * //TODO: test!
+     *
      */
     public void refresh() {
+        //TODO: test!
         Model fresh = findById(getId());
         fresh.copyTo(this);
     }
@@ -1684,20 +1687,20 @@ public abstract class Model extends CallbackSupport{
 
         //TODO: need to invoke checkAttributes here too, and maybe rely on MetaModel for this.
 
-        List<String> attrs = metaModelLocal.getAttributeNamesSkip("record_version", metaModelLocal.getIdName());
+        List<String> attrs = getMetaModelLocal().getAttributeNamesSkip("record_version", getMetaModelLocal().getIdName());
 
         List<Object> values = new ArrayList<Object>();
         for (String attribute : attrs) {
             values.add(this.attributes.get(attribute));
         }
-        String query = metaModelLocal.getDialect().createParametrizedInsert(metaModelLocal);
+        String query = getMetaModelLocal().getDialect().createParametrizedInsert(getMetaModelLocal());
         try {
-            long id = new DB(metaModelLocal.getDbName()).execInsert(query, metaModelLocal.getIdName(), values.toArray());
-            if(metaModelLocal.cached()){
-                QueryCache.instance().purgeTableCache(metaModelLocal.getTableName());
+            long id = new DB(getMetaModelLocal().getDbName()).execInsert(query, getMetaModelLocal().getIdName(), values.toArray());
+            if(getMetaModelLocal().cached()){
+                QueryCache.instance().purgeTableCache(getMetaModelLocal().getTableName());
             }
             
-            attributes.put(metaModelLocal.getIdName(), id);
+            attributes.put(getMetaModelLocal().getIdName(), id);
 
             fireAfterCreate(this);
             return true;
@@ -1779,15 +1782,10 @@ public abstract class Model extends CallbackSupport{
         return values;
     }
 
-
-    protected void setMetaModel(MetaModel metaModel){
-        this.metaModelLocal = metaModel;
-    }
-
     static <T extends Model> T instance(Map m, MetaModel metaModel) {
         try {
             T instance = (T) metaModel.getModelClass().newInstance();
-            instance.setMetaModel(metaModel);
+            instance.metaModelLocal = metaModel;
             instance.hydrate(m);
             return instance;
         }

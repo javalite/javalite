@@ -49,10 +49,6 @@ public class ModelFinder {
         }
     }
 
-    public String[] getDbNames(){
-        return modelClasses.keySet().toArray(new String[]{});
-
-    }
 
     List<Class<? extends Model>> getModelsForDb(String dbName) {
         return modelClasses.get(dbName);
@@ -185,16 +181,11 @@ public class ModelFinder {
     protected void classFound(String className) throws IOException, ClassNotFoundException {
         Class clazz = Class.forName(className);
         if (Model.class==clazz.getSuperclass()) {
-            String dbName = getDbName(clazz);
+            String dbName = MetaModel.getDbName(clazz);
             if (modelClasses.get(dbName) == null) {
                 modelClasses.put(dbName, new ArrayList<Class<? extends Model>>());
             }
             modelClasses.get(dbName).add(clazz);
         }
-    }
-
-    private String getDbName(Class<? extends Model> modelClass) {
-        DbName dbNameAnnotation = modelClass.getAnnotation(DbName.class);
-        return dbNameAnnotation == null ? "default" : dbNameAnnotation.value();
     }
 }

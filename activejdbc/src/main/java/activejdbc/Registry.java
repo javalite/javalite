@@ -38,23 +38,28 @@ import org.slf4j.LoggerFactory;
  */
 public class Registry {
 
-    private final static Logger logger = LoggerFactory.getLogger("ActiveJDBC Registry");
-    private final static Registry instance = new Registry();
+    private final static Logger logger = LoggerFactory.getLogger(Registry.class);
+    private static Registry instance;
     private final static HashMap<Class, List<Validator>> validators = new HashMap<Class, List<Validator>>();
     private final static HashMap<Class, List<CallbackListener>> listeners = new HashMap<Class, List<CallbackListener>>();
     private MetaModels metaModels = new MetaModels();
-    private boolean inited = false;
     private Configuration configuration = new Configuration();
     private StatisticsQueue statisticsQueue;
+    private static ModelFinder mf = new ModelFinder();
+    private List<String> initedDbs = new ArrayList<String>();
 
     private Registry() {
         if(configuration.collectStatistics()){
             statisticsQueue = new StatisticsQueue();
             statisticsQueue.start();
         }
+
     }
 
     public static Registry instance() {
+        if(instance == null){
+            instance = new Registry();
+        }
         return instance;
     }
 
@@ -74,45 +79,65 @@ public class Registry {
     }
 
     /**
+     * Provides a MetaModel of a model representing a table. 
+     *
      * @param table name of table represented by this MetaModel.
-     * @return
+     * @return MetaModel of a model representing a table.
      */
     public MetaModel getMetaModel(String table) {
         return metaModels.getMetaModel(table);
     }
 
+    /**
+     * Returns MetaModel associated with a model class.
+     *
+     * @param className class name of a model.
+     * @return MetaModel associated with a model class, null if not found.
+     */
     public MetaModel getMetaModelByClassName(String className) {
+
+        String dbName;
+        try {
+            dbName = MetaModel.getDbName((Class<? extends Model>) Class.forName(className));
+        } catch (Exception e) {
+            throw new InitException(e);
+        }
+        init(dbName);
+
         return metaModels.getMetaModelByClassName(className);
     }
 
+
     public MetaModel getMetaModel(Class<? extends Model> modelClass) {
+
+        String dbName = MetaModel.getDbName(modelClass);
+        init(dbName);
+
         return metaModels.getMetaModel(modelClass);
     }
 
-     void init() {
-        if (inited) return;
+
+     void init(String dbName) {
+        if (initedDbs.contains(dbName)) return;
+
+         initedDbs.add(dbName);
 
         try {
-            ModelFinder mf = new ModelFinder();
             mf.findModels();
-            String[] dbNames = mf.getDbNames();
-            for (String dbName : dbNames) {
-                String dbType = ConnectionsAccess.getConnection(dbName).getMetaData().getDatabaseProductName();
-                registerModels(dbName, mf.getModelsForDb(dbName), dbType);
-                String[] tables = metaModels.getTableNames(dbName);
+            String dbType = ConnectionsAccess.getConnection(dbName).getMetaData().getDatabaseProductName();
+            registerModels(dbName, mf.getModelsForDb(dbName), dbType);
+            String[] tables = metaModels.getTableNames(dbName);
 
-                for (String table : tables) {
-                    Map<String, ColumnMetadata> metaParams = fetchMetaParams(table, dbName);
-                    registerColumnMetadata(table, metaParams);
-                }
-
-                processOverrides(mf.getModelsForDb(dbName));
-
-                for (String table : tables) {
-                    discoverAssociationsFor(table, dbName);
-                }
+            for (String table : tables) {
+                Map<String, ColumnMetadata> metaParams = fetchMetaParams(table, dbName);
+                registerColumnMetadata(table, metaParams);
             }
-            inited = true;
+
+            processOverrides(mf.getModelsForDb(dbName));
+
+            for (String table : tables) {
+                discoverAssociationsFor(table, dbName);
+            }
         } catch (Exception e) {
             if (e instanceof InitException) throw (InitException) e;
             else throw new InitException(e);
@@ -236,7 +261,7 @@ public class Registry {
         return columns;
     }
 
-    protected void discoverAssociationsFor(String source, String dbName) {
+    private void discoverAssociationsFor(String source, String dbName) {
         discoverOne2ManyAssociationsFor(source, dbName);
         discoverMany2ManyAssociationsFor(source, dbName);
     }
@@ -362,7 +387,6 @@ public class Registry {
     private void registerColumnMetadata(String table, Map<String, ColumnMetadata> metaParams) {
         metaModels.setColumnMetadata(table, metaParams);
     }
-
 
     protected List<CallbackListener> getListeners(Class modelClass){
         if(listeners.get(modelClass) == null){

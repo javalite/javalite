@@ -18,6 +18,8 @@ limitations under the License.
 package activejdbc;
 
 import activejdbc.associations.Many2ManyAssociation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -26,6 +28,8 @@ import java.util.*;
  */
 public class MetaModels {
 
+    private final static Logger logger = LoggerFactory.getLogger(MetaModels.class);
+
     Map<String, MetaModel> metaModelsByTableName = new HashMap<String, MetaModel>();
     Map<Class<? extends Model>, MetaModel> metaModelsByClass = new HashMap<Class<? extends Model>, MetaModel>();
     Map<String, MetaModel> metaModelsByClassName = new HashMap<String, MetaModel>();
@@ -33,11 +37,11 @@ public class MetaModels {
     void addMetaModel(MetaModel mm, String tableName, Class<? extends Model> modelClass) {
         Object o = metaModelsByClass.put(modelClass, mm);
         if (o != null) {
-            System.out.println("Double-register: " + modelClass + ": " + o);
+            logger.warn("Double-register: " + modelClass + ": " + o);
         }
         o = metaModelsByTableName.put(tableName, mm);
         if (o != null) {
-            System.out.println("Double-register: " + tableName + ": " + o);
+            logger.warn("Double-register: " + tableName + ": " + o);
         }
 
         metaModelsByClassName.put(modelClass.getName(), mm);
