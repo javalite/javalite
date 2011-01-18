@@ -2,15 +2,25 @@ package activejdbc;
 
 import activejdbc.cache.CacheEvent;
 import activejdbc.cache.CacheEventListener;
-import activejdbc.cache.QueryCache;
 import activejdbc.test.ActiveJDBCTest;
 import activejdbc.test_models.Person;
+import org.junit.After;
 import org.junit.Test;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 
 /**
  * @author Igor Polevoy
  */
 public class CacheEventListenerTest extends ActiveJDBCTest {
+
+    @After
+    public void after(){
+        super.after();
+        Registry.cacheManager().removeAllCacheEventListeners();
+    }
 
     @Test
     public void shouldDelegateCachePurgeEventsToListener(){
@@ -44,5 +54,33 @@ public class CacheEventListenerTest extends ActiveJDBCTest {
         //flush all
         Registry.cacheManager().flush(CacheEvent.ALL);
         a(listener.allCount).shouldBeEqual(1);
+    }
+
+
+    @Test
+    public void shouldNotBreakIfListenerThrowsException() throws IOException {
+        class BadEventListener implements CacheEventListener {
+            public void onFlush(CacheEvent event) {
+                throw new RuntimeException("I'm a bad, baaad listener...."); 
+            }
+        }
+        BadEventListener listener = new BadEventListener();
+        Registry.cacheManager().addCacheEventListener(listener);
+
+        PrintStream errOrig = System.err;
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        PrintStream err = new PrintStream(bout);
+        System.setErr(err);
+
+        Person.createIt("name", "Matt", "last_name", "Diamont", "dob", "1962-01-01");
+
+        err.flush();
+        bout.flush();
+        String exception = bout.toString();
+
+        a(exception.contains(" I'm a bad, baaad listener")).shouldBeTrue();
+
+        System.setErr(errOrig);
+
     }
 }

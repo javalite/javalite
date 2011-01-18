@@ -140,6 +140,7 @@ public class Registry {
             }
         } catch (Exception e) {
             if (e instanceof InitException) throw (InitException) e;
+            if (e instanceof DBException) throw (DBException) e;
             else throw new InitException(e);
         }
     }

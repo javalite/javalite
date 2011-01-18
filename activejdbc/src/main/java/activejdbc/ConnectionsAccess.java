@@ -44,7 +44,8 @@ public class ConnectionsAccess {
      */
     static Connection getConnection(String dbName){
         
-        if(getConnectionMap().get(dbName) == null) throw new DBException("there is no connection '" + dbName + "' on this thread, are you sure you opened it?");
+        if(getConnectionMap().get(dbName) == null)
+            throw new DBException("there is no connection '" + dbName + "' on this thread, are you sure you opened it?");
         return getConnectionMap().get(dbName);
     }
 

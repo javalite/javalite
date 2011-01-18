@@ -63,7 +63,11 @@ public abstract class CacheManager {
     public final void flush(CacheEvent event){        
         doFlush(event);
         for(CacheEventListener listener: listeners){
-            listener.onFlush(event);
+            try{
+                listener.onFlush(event);
+            }catch(Exception e){
+                logger.warn("failed to propagate cache event: " + event + "  to listener: " + listener, e);
+            }
         }
         String message = event.getType() == CacheEvent.CacheEventType.ALL? "all caches": "table: " + event.getGroup(); 
         LogFilter.log(logger, "Cache purged: " + message);
@@ -75,5 +79,9 @@ public abstract class CacheManager {
     
     public final void removeCacheEventListener(CacheEventListener listener){
         listeners.remove(listener);
+    }
+
+    public final void removeAllCacheEventListeners(){
+        listeners = new ArrayList<CacheEventListener>();
     }
 }
