@@ -65,7 +65,7 @@ public abstract class CacheManager {
         for(CacheEventListener listener: listeners){
             try{
                 listener.onFlush(event);
-            }catch(Exception e){
+            }catch(Throwable e){
                 logger.warn("failed to propagate cache event: " + event + "  to listener: " + listener, e);
             }
         }
