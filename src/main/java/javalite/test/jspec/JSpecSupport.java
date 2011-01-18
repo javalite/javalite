@@ -24,11 +24,11 @@ package javalite.test.jspec;
  */
 public class JSpecSupport {
 
-    public Expectation a(Object o1){
+    public Expectation<Object> a(Object o1){
         return JSpec.a(o1);
     }
 
-    public Expectation the(Object o1){
+    public Expectation<Object> the(Object o1){
         return JSpec.the(o1);
     }
 

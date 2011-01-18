@@ -19,16 +19,16 @@ package javalite.test.jspec;
 
 public final class JSpec{
     
-    public static Expectation a(Object o1){
-        return new Expectation(o1);
+    public static Expectation<Object> a(Object o1){
+        return new Expectation<Object>(o1);
     }
 
-    public static Expectation the(Object o1){
+    public static Expectation<Object> the(Object o1){
         return a(o1);
     }
 
     /**
-     * Works in the same way as methods {@link JSpec#the(Object)} or {@link JSpec#a(Object)}, but takes generalized instance as parameter. <br/>
+     * Works the same way as methods {@link JSpec#the(Object)} or {@link JSpec#a(Object)}, but takes generalized instance as parameter. <br/>
      * For example you can't use it(12345).shouldBeEqual("12345"); you will get compilation error. <br/>
      * You can perform checking only for the same type instances. <br/>
      *
@@ -41,7 +41,7 @@ public final class JSpec{
      * 
      * Not valid examples:
      * <ul>
-     *   <li><code>it(1l).shouldNotBeEqual(2)</code></li>
+     *   <li><code>it(1L).shouldNotBeEqual(2)</code></li>
      *   <li><code>it("aaa").shouldNotBeEqual(1)</code></li>
      * </ul>
      * 

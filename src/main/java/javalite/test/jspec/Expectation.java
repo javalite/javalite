@@ -86,7 +86,7 @@ public class Expectation<T> {
         if (actual == null) throw new TestException("Object is null, while it is not expected");
     }
 
-    public void shouldBeType(Class<T> clazz) {
+    public void shouldBeType(Class clazz) {
         if (!actual.getClass().equals(clazz)) throw new TestException(actual.getClass() + " is not " + clazz);
     }
 
