@@ -1,5 +1,9 @@
 package activejdbc;
 
+import static activejdbc.test.JdbcProperties.driver;
+import static activejdbc.test.JdbcProperties.password;
+import static activejdbc.test.JdbcProperties.url;
+import static activejdbc.test.JdbcProperties.user;
 import javalite.test.jspec.JSpecSupport;
 import org.junit.Test;
 
@@ -11,9 +15,9 @@ public class CloseConnectionsTest extends JSpecSupport {
     @Test
     public void shouldCloseAllConnections(){
 
-
-        new DB("conection1").open("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/test", "root", "p@ssw0rd");
-        new DB("conection2").open("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/test", "root", "p@ssw0rd");
+    	
+        new DB("conection1").open(driver(), url(), user(), password());
+        new DB("conection2").open(driver(), url(), user(), password());
 
         a(DB.getCurrrentConnectionNames().size()).shouldBeEqual(2);
 

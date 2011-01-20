@@ -171,16 +171,13 @@ public class Registry {
         for(Class<? extends Model> modelClass : models){
 
             BelongsTo belongsToAnnotation = modelClass.getAnnotation(BelongsTo.class);
-            if(belongsToAnnotation != null){
-                Class<? extends Model> parentClass = belongsToAnnotation.parent();
-                String foreignKeyName = belongsToAnnotation.foreignKeyName();
-                Association hasMany = new OneToManyAssociation(getTableName(parentClass), getTableName(modelClass), foreignKeyName);
-                Association belongsTo = new BelongsToAssociation(getTableName(modelClass), getTableName(parentClass), foreignKeyName);
-
-                metaModels.getMetaModel(parentClass).addAssociation(hasMany);
-                metaModels.getMetaModel(modelClass).addAssociation(belongsTo);
-            }
-
+            processOverridesBelongsTo(modelClass, belongsToAnnotation);
+            
+            BelongsToParents belongsToCollectionAnotation = modelClass.getAnnotation(BelongsToParents.class);
+            if (belongsToCollectionAnotation != null) 
+            	for (BelongsTo belongsTo : belongsToCollectionAnotation.value())
+            		processOverridesBelongsTo(modelClass, belongsTo);
+            
             Many2Many many2manyAnnotation = modelClass.getAnnotation(Many2Many.class);
 
             if(many2manyAnnotation != null){
@@ -219,6 +216,18 @@ public class Registry {
             }
         }
     }
+    
+    private void processOverridesBelongsTo(Class<? extends Model> modelClass, BelongsTo belongsToAnnotation) {
+        if(belongsToAnnotation != null){
+            Class<? extends Model> parentClass = belongsToAnnotation.parent();
+            String foreignKeyName = belongsToAnnotation.foreignKeyName();
+            Association hasMany = new OneToManyAssociation(getTableName(parentClass), getTableName(modelClass), foreignKeyName);
+            Association belongsTo = new BelongsToAssociation(getTableName(modelClass), getTableName(parentClass), foreignKeyName);
+
+            metaModels.getMetaModel(parentClass).addAssociation(hasMany);
+            metaModels.getMetaModel(modelClass).addAssociation(belongsTo);
+        }
+	}
 
     /**
      * Returns a hash keyed off a column name.
