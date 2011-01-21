@@ -597,18 +597,18 @@ public abstract class Model extends CallbackSupport{
         }
         List<Association> associations = getMetaModelLocal().getAssociations();
         for (Association association : associations) {
-            if (association instanceof BelongsToAssociation) {
+            if (association instanceof BelongsToAssociation && association.getTarget().equals(parent.getMetaModelLocal().getTableName())) {
                 set(((BelongsToAssociation)association).getFkName(), parent.getId());
                 return;
             }
-            if(association instanceof BelongsToPolymorphicAssociation){
+            if(association instanceof BelongsToPolymorphicAssociation && association.getTarget().equals(parent.getMetaModelLocal().getTableName())){
                 set("parent_id", parent.getId());
                 set("parent_type", ((BelongsToPolymorphicAssociation)association).getParentType());
                 return;
             }
         }
         throw new IllegalArgumentException("Class: " + parent.getClass() + " is not associated with " + this.getClass()
-                + ", list of existing associations: " + getMetaModelLocal().getAssociations());
+                + ", list of existing associations: \n" + Util.join(getMetaModelLocal().getAssociations(), "\n"));
     }
 
     /**

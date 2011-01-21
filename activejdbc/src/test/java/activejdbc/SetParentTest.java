@@ -20,6 +20,7 @@ import activejdbc.test.ActiveJDBCTest;
 import activejdbc.test_models.Computer;
 import activejdbc.test_models.Keyboard;
 import activejdbc.test_models.Motherboard;
+import activejdbc.test_models.Person;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,6 +46,15 @@ public class SetParentTest extends ActiveJDBCTest {
         Computer c = new Computer();
         c.setParent(new Motherboard());
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldRejectUnrelatedParent(){
+
+        resetTable("people");
+        Computer c= new Computer();
+        c.setParent(Person.findById(1));// must fail because Person and Computer are not related
+    }
+
 
     @Test
     public void shouldAcceptTwoParents(){
