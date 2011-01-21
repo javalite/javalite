@@ -529,3 +529,57 @@ CREATE OR REPLACE TRIGGER programmers_projects_trigger
 select coalesce(:new.id, programmers_projects_seq.nextval) into :new.id from dual;
 end;
 
+
+
+-- BREAK
+CREATE TABLE keyboards ( id NUMBER NOT NULL, description VARCHAR(56))
+-- BREAK
+ALTER TABLE keyboards ADD CONSTRAINT keyboards_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE keyboards_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER keyboards_trigger
+    BEFORE INSERT ON keyboards REFERENCING
+    NEW AS new
+    OLD AS old
+    FOR EACH ROW
+    begin
+select coalesce(:new.id, keyboards_seq.nextval) into :new.id from dual;
+end;
+
+
+-- BREAK
+CREATE TABLE motherboards ( id NUMBER NOT NULL, description VARCHAR(56))
+-- BREAK
+ALTER TABLE motherboards ADD CONSTRAINT motherboards_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE motherboards_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER motherboards_trigger
+    BEFORE INSERT ON motherboards REFERENCING
+    NEW AS new
+    OLD AS old
+    FOR EACH ROW
+    begin
+select coalesce(:new.id, motherboards_seq.nextval) into :new.id from dual;
+end;
+
+-- BREAK
+CREATE TABLE computers (
+  id NUMBER NOT NULL,
+  description VARCHAR(56),
+  mother_id NUMBER(11),
+  key_id NUMBER(11))
+-- BREAK
+ALTER TABLE computers ADD CONSTRAINT computers_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE computers_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER computers_trigger
+    BEFORE INSERT ON computers REFERENCING
+    NEW AS new
+    OLD AS old
+    FOR EACH ROW
+    begin
+select coalesce(:new.id, computers_seq.nextval) into :new.id from dual;
+end;

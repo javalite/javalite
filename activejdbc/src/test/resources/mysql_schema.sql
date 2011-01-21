@@ -90,3 +90,12 @@ CREATE TABLE projects ( id int(11) NOT NULL  auto_increment PRIMARY KEY, project
 
 DROP TABLE IF EXISTS programmers_projects;
 CREATE TABLE programmers_projects ( id int(11) NOT NULL  auto_increment PRIMARY KEY, duration_weeks int(3), project_id int(11), programmer_id int(11), created_at DATETIME, updated_at DATETIME);
+
+DROP TABLE IF EXISTS keyboards;
+CREATE TABLE keyboards ( id int(11) NOT NULL  auto_increment PRIMARY KEY, description VARCHAR(56));
+
+DROP TABLE IF EXISTS motherboards;
+CREATE TABLE motherboards ( id int(11) NOT NULL  auto_increment PRIMARY KEY, description VARCHAR(56));
+
+DROP TABLE IF EXISTS computers;
+CREATE TABLE computers ( id int(11) NOT NULL  auto_increment PRIMARY KEY, description VARCHAR(56), mother_id int(11), key_id int(11), constraint fk_computer_mother foreign key (mother_id) references motherboards(id), constraint fk_computer_key foreign key (key_id) references keyboards(id) );

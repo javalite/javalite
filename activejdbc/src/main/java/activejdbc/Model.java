@@ -567,8 +567,48 @@ public abstract class Model extends CallbackSupport{
         }
     }
 
-    protected void setParent(Model parent) {
+    protected void setCachedParent(Model parent) {
         cachedParents.put(parent.getClass(), parent);
+    }
+
+
+    /**
+     * Sets multiple parents on this instance. Basically this sets a correct value of a foreign keys in a
+     * parent/child relationship. This only works for one to many and polymorphic associations.
+     *
+     * @param parents - collection of potential parents of this instance. Its ID values must not be null.
+     */
+    public void setParents(Model... parents){
+        for (Model parent : parents) {
+            setParent(parent);
+        }
+    }
+
+
+    /**
+     * Sets a parent on this instance. Basically this sets a correct value of a foreign key in a
+     * parent/child relationship. This only works for one to many and polymorphic associations.
+     *
+     * @param parent potential parent of this instance. Its ID value must not be null.
+     */
+    public void setParent(Model parent) {
+        if (parent == null || parent.getId() == null) {
+            throw new IllegalArgumentException("parent cannot ne null and parent ID cannot be null");
+        }
+        List<Association> associations = getMetaModelLocal().getAssociations();
+        for (Association association : associations) {
+            if (association instanceof BelongsToAssociation && association.getTarget().equals(parent.getMetaModelLocal().getTableName())) {
+                set(((BelongsToAssociation)association).getFkName(), parent.getId());
+                return;
+            }
+            if(association instanceof BelongsToPolymorphicAssociation && association.getTarget().equals(parent.getMetaModelLocal().getTableName())){
+                set("parent_id", parent.getId());
+                set("parent_type", ((BelongsToPolymorphicAssociation)association).getParentType());
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Class: " + parent.getClass() + " is not associated with " + this.getClass()
+                + ", list of existing associations: \n" + Util.join(getMetaModelLocal().getAssociations(), "\n"));
     }
 
     /**
@@ -576,7 +616,7 @@ public abstract class Model extends CallbackSupport{
      *
      * @param other target model.
      */
-    public void copyTo(Model other) {
+    public <T extends Model> void copyTo(T other) {
         if (!getMetaModelLocal().getTableName().equals(other.getMetaModelLocal().getTableName())) {
             throw new IllegalArgumentException("can only copy between the same types");
         }

@@ -139,8 +139,8 @@ public class Errors implements Map<String, String> {
 
     public Collection<String> values() {
         List<String> messageList = new ArrayList<String>();
-        for(Object v: validators.entrySet()){
-            messageList.add(((Validator)v).formatMessage(locale));
+        for(java.util.Map.Entry<String, Validator> v: validators.entrySet()){
+            messageList.add(((Validator)v.getValue()).formatMessage(locale));
         }
         return messageList;
     }

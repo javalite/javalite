@@ -136,7 +136,18 @@ public class MySQLStatementProvider {
             statements =  Arrays.asList();
         } else if (table.equals("programmers_projects")) {
             statements =  Arrays.asList();
-
+        } else if (table.equals("motherboards")){ 
+        	statements =  Arrays.asList(
+                    "INSERT INTO motherboards VALUES(1,'motherboardOne');"
+            );
+        } else if (table.equals("keyboards")){ 
+        	statements =  Arrays.asList(
+                    "INSERT INTO keyboards VALUES(1,'keyboard-us');"
+            );
+        } else if (table.equals("computers")){ 
+        	statements =  Arrays.asList(
+                    "INSERT INTO computers VALUES(1,'ComputerX',1,1);"
+            );
         }else{
             throw new IllegalArgumentException("no statements for: " + table);
         }
