@@ -173,9 +173,9 @@ public class Registry {
             BelongsTo belongsToAnnotation = modelClass.getAnnotation(BelongsTo.class);
             processOverridesBelongsTo(modelClass, belongsToAnnotation);
             
-            BelongsToParents belongsToCollectionAnotation = modelClass.getAnnotation(BelongsToParents.class);
-            if (belongsToCollectionAnotation != null) 
-            	for (BelongsTo belongsTo : belongsToCollectionAnotation.value())
+            BelongsToParents belongsToParentAnnotation = modelClass.getAnnotation(BelongsToParents.class);
+            if (belongsToParentAnnotation != null)
+            	for (BelongsTo belongsTo : belongsToParentAnnotation.value())
             		processOverridesBelongsTo(modelClass, belongsTo);
             
             Many2Many many2manyAnnotation = modelClass.getAnnotation(Many2Many.class);

@@ -7,6 +7,7 @@ import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
 
+import static javalite.test.jspec.JSpec.a;
 import static org.junit.Assert.*;
 import activejdbc.validation.AttributePresenceValidator;
 
@@ -24,6 +25,6 @@ public class ErrorsTest {
 	@Test
 	public void shouldReturnCollectionsWithAllValuesOfTheErrors() { 
 		Collection<String> expected = Arrays.asList("value is missing","value is missing");
-		assertEquals(expected, errors.values());
+		a(expected).shouldBeEqual(errors.values());
 	}
 }

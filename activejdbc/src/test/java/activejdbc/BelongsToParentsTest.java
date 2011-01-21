@@ -13,13 +13,13 @@ public class BelongsToParentsTest extends ActiveJDBCTest {
 
 	public void before() throws Exception { 
 		super.before();
-		resetTables("computers","motherboards","keyboards");
+		resetTables("motherboards","keyboards", "computers");
 	}
 	
 	@Test
-	public void shouldReturnTwoBelongToRelationWithDifencesKeys() { 
+	public void shouldCheckThatComputerBelongsTo2DifferentParents() { 
 		Computer computer = Computer.findById(1);
-		assertNotNull(computer.parent(Motherboard.class));
-		assertNotNull(computer.parent(Keyboard.class));
+		a(computer.parent(Motherboard.class)).shouldNotBeNull();
+		a(computer.parent(Keyboard.class)).shouldNotBeNull();
 	}
 }

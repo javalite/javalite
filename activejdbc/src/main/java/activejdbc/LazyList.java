@@ -290,7 +290,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
         for(Model child: delegate){
             Object fk = child.get(fkName);
             Model parent = parentsHasByIds.get(fk);
-            child.setParent(parent);
+            child.setCachedParent(parent);
         }
     }
 

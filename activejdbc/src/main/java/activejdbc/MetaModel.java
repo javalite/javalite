@@ -206,7 +206,6 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
                     association.getClass().equals(associationClass)) return true;
         }
         return false;
-
     }
 
     public String toString() {
@@ -262,7 +261,6 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
         return many2Manies ;
     }
 
-
     public String getDbType(){
         return dbType;
     }
@@ -275,20 +273,26 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
         return Collections.unmodifiableList(associations);
     }
 
-    protected void checkAttributeOrAssociation(String attribute) {
+    /**
+     * Checks if this model has a named attribute or association whose target has the same name as argument.
+     * Throws <code>IllegalArgumentException</code> in case it does not find either one.
+     *
+     * @param attributeOrAssociation name  of attribute or association target.
+     */
+    protected void checkAttributeOrAssociation(String attributeOrAssociation) {
 
         List<Association> associations = getAssociations();
+        List<String> associationTargets = new ArrayList<String>();
 
         String message = "\n";
         for(Association association: associations){
             message +=association + "\n";
+            associationTargets.add(association.getTarget());
         }
-
-        if (!(getAttributeNames().contains(attribute.toUpperCase()) ||
-                getAttributeNames().contains(attribute.toLowerCase())) && !associations.contains(attribute)) {
-            List<String> attributeNames = getAttributeNames();
-            throw new IllegalArgumentException("Attribute: '" + attribute + "' is not defined in model: '"
-                    + getModelClass() + "', available attributes: " + attributeNames + "\nAvailable associations: " + message);
+        if (!hasAttribute(attributeOrAssociation) && !associationTargets.contains(attributeOrAssociation)) {
+            throw new IllegalArgumentException("Attribute: '" + attributeOrAssociation + "' is not defined in model: '"
+                    + getModelClass() + " and also, did not find an association by the same name, available attributes: "
+                    + getAttributeNames() + "\nAvailable associations: " + message);
         }
     }
 

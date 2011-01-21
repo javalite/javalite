@@ -16,9 +16,9 @@
     <!--Default to MySQL if no profile provided-->
     <properties>
         <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
-        <jdbc.url>jdbc:mysql://localhost/activejdbc</jdbc.url>
-        <jdbc.user>aj</jdbc.user>
-        <jdbc.password>aj</jdbc.password>
+        <jdbc.url>jdbc:mysql://localhost/test</jdbc.url>
+        <jdbc.user>root</jdbc.user>
+        <jdbc.password>p@ssw0rd</jdbc.password>
         <db>mysql</db>
     </properties>
     
@@ -30,9 +30,9 @@
             </activation>
             <properties>
                 <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
-                <jdbc.url>jdbc:mysql://localhost/activejdbc</jdbc.url>
-                <jdbc.user>aj</jdbc.user>
-                <jdbc.password>aj</jdbc.password>
+                <jdbc.url>jdbc:mysql://localhost/test</jdbc.url>
+                <jdbc.user>root</jdbc.user>
+                <jdbc.password>p@ssw0rd</jdbc.password>
                 <db>mysql</db>
             </properties>
             <dependencies>
