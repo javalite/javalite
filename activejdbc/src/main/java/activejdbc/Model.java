@@ -527,10 +527,13 @@ public abstract class Model extends CallbackSupport{
                 .getAssociationForTarget(parentTable, BelongsToPolymorphicAssociation.class);
 
         String fkValue;
+        String fkName;
         if(ass != null){
             fkValue = getString(ass.getFkName());
+            fkName = ass.getFkName();
         }else if(assP != null){
             fkValue = getString("parent_id");
+            fkName = "parent_id";
             MetaModel trueMM = Registry.instance().getMetaModelByClassName(getString("parent_type"));
             if(trueMM != parentMM)
                 throw new IllegalArgumentException("Wrong parent: '" + parentClass + "'. Actual parent type of this record is: '" + getString("parent_type") + "'");
@@ -538,6 +541,9 @@ public abstract class Model extends CallbackSupport{
             throw new DBException("there is no association with table: " + parentTable);
         }
 
+        if(fkValue == null){
+            throw new InternalException("Attribute:  "  + fkName + " is null, cannot determine parent.");
+        }
         String parentIdName = parentMM.getIdName();
         String query = getMetaModelLocal().getDialect().selectStarParametrized(parentTable, parentIdName);
 
