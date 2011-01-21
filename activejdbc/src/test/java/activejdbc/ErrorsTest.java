@@ -23,7 +23,7 @@ public class ErrorsTest {
 	
 	@Test
 	public void shouldReturnCollectionsWithAllValuesOfTheErrors() { 
-		Collection<String> expected = new ArrayList<String>(Arrays.asList("value is missing","value is missing"));
+		Collection<String> expected = Arrays.asList("value is missing","value is missing");
 		assertEquals(expected, errors.values());
 	}
 }
