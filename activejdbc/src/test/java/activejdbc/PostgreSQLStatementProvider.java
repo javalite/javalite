@@ -132,15 +132,15 @@ public class PostgreSQLStatementProvider {
             statements = Arrays.asList();
         } else if (table.equals("motherboards")) {
             statements = Arrays.asList(
-                    "INSERT INTO motherboards VALUES(1,'motherboardOne');"
+                    "INSERT INTO motherboards (description) VALUES('motherboardOne');"
             );
         } else if (table.equals("keyboards")) {
             statements = Arrays.asList(
-                    "INSERT INTO keyboards VALUES(1,'keyboard-us');"
+                    "INSERT INTO keyboards (description) VALUES('keyboard-us');"
             );
         } else if (table.equals("computers")) {
             statements = Arrays.asList(
-                    "INSERT INTO computers VALUES(1,'ComputerX',1,1);"
+                    "INSERT INTO computers (description, mother_id, key_id) VALUES('ComputerX',1,1);"
             );
         } else {
             throw new IllegalArgumentException("no statements for: " + table);

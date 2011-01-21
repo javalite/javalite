@@ -103,4 +103,4 @@ DROP TABLE IF EXISTS motherboards;
 CREATE TABLE motherboards ( id serial PRIMARY KEY, description VARCHAR(56));
 
 DROP TABLE IF EXISTS computers;
-CREATE TABLE computers ( id serial PRIMARY KEY, description VARCHAR(56), mother_id INT, key_id INT, constraint fk_computer_mother foreign key (mother_id) references motherboards(id), constraint fk_computer_key foreign key (key_id) references keyboards(id) );
+CREATE TABLE computers ( id serial PRIMARY KEY, description VARCHAR(56), mother_id INT, key_id INT);
