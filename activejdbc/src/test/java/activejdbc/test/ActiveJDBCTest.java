@@ -73,6 +73,8 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
      */
     public String[] getStatements(String delimiter, String file) {
         try {
+
+            System.out.println("Getting statements from file: " + file);
             InputStreamReader isr = new InputStreamReader(ActiveJDBCTest.class.getClassLoader().getResourceAsStream(file));
             BufferedReader reader = new BufferedReader(isr);
             StringBuffer text = new StringBuffer();
