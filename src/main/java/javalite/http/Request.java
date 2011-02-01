@@ -21,7 +21,9 @@ import javalite.common.Util;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Authenticator;
 import java.net.HttpURLConnection;
+import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -210,4 +212,27 @@ public abstract class Request<T extends Request> {
      */
     protected abstract T doConnect();
 
+
+    /**
+     * Sets a user and password for basic authentication.
+     *
+     * @param user user.
+     * @param password password.
+     * @return self.
+     */
+    public T basic(String user, String password){
+        Authenticator.setDefault(new BasicAuthenticator(user, password));
+        return (T) this;
+    }
+
+    class BasicAuthenticator extends Authenticator {
+        private String user, password;
+        BasicAuthenticator(String user, String password) {
+            this.user = user;
+            this.password = password;
+        }        
+        public PasswordAuthentication getPasswordAuthentication() {
+                return (new PasswordAuthentication(user, password.toCharArray()));
+            }
+        }
 }
