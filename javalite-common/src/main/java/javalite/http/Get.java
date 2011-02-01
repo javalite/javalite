@@ -16,6 +16,11 @@ limitations under the License.
 
 package javalite.http;
 
+import com.sun.org.apache.xml.internal.security.utils.Base64;
+
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
+
 /**
  * Executes a GET request.
  *
@@ -26,9 +31,9 @@ public class Get extends Request<Get> {
     /**
      * Constructor for making GET requests.
      *
-     * @param uri URI of resource.
+     * @param uri            URI of resource.
      * @param connectTimeout connection timeout.
-     * @param readTimeout read timeout.
+     * @param readTimeout    read timeout.
      */
     public Get(String uri, int connectTimeout, int readTimeout) {
         super(uri, connectTimeout, readTimeout);
@@ -36,7 +41,7 @@ public class Get extends Request<Get> {
 
     @Override
     public Get doConnect() {
-        try {            
+        try {
             connection.setDoInput(true);
             connection.setDoOutput(true);
             connection.setUseCaches(false);
@@ -48,7 +53,8 @@ public class Get extends Request<Get> {
     }
 
     public static void main(String[] args) {
-        Get get = Http.get("http://localhost:8080/kitchensink/http/get");
+        
+        Get get = Http.get("http://localhost:8080/manager/html").basic("tomcat", "tomcat");
         System.out.println(get.text());
         System.out.println(get.headers());
         System.out.println(get.responseCode());

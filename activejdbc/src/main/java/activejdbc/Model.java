@@ -934,7 +934,7 @@ public abstract class Model extends CallbackSupport{
     }
 
     /**
-     * This methods supports one to man, many to many relationships as well as plymorhic accosiations.
+     * This methods supports one to many, many to many relationships as well as polymorphic associations.
      * <p/>
      * In case of one to many, the <code>clazz</code>  must be a class of a child model, and it will return a
      * collection of all children.
