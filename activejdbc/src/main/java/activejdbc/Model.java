@@ -2003,7 +2003,7 @@ public abstract class Model extends CallbackSupport{
 
         //Purge associated targets
         MetaModel metaModel = getMetaModel();
-        List<Association> associations = metaModel.getOneToManyAssociations();
+        List<Association> associations = metaModel.getAssociations();
         for(Association association: associations){
             QueryCache.instance().purgeTableCache(association.getTarget());
         }
