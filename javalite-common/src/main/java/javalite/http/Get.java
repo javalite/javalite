@@ -16,10 +16,6 @@ limitations under the License.
 
 package javalite.http;
 
-import com.sun.org.apache.xml.internal.security.utils.Base64;
-
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
 
 /**
  * Executes a GET request.
