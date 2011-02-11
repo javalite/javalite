@@ -1,25 +1,28 @@
 package activejdbc.examples.simple;
 
 import activejdbc.Base;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SimpleExample {
+    final static Logger logger = LoggerFactory.getLogger(SimpleExample.class);
     public static void main(String[] args) {
         Base.open("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/test", "root", "p@ssw0rd");
 
         createEmployee();
-        System.out.println("=========> Created employee:");
+        logger.info("=========> Created employee:");
         selectEmployee();
         updateEmployee();
-        System.out.println("=========> Updated employee:");
+        logger.info("=========> Updated employee:");
         selectAllEmployees();
         deleteEmployee();
-        System.out.println("=========> Deleted employee:");
+        logger.info("=========> Deleted employee:");
         selectAllEmployees();
         createEmployee();
-        System.out.println("=========> Created employee:");
+        logger.info("=========> Created employee:");
         selectEmployee();
         deleteAllEmployees();
-        System.out.println("=========> Deleted all employees:");
+        logger.info("=========> Deleted all employees:");
         selectAllEmployees();
 
         Base.close();
@@ -33,17 +36,17 @@ public class SimpleExample {
     }
 
     private static void selectEmployee() {
-        Employee e = Employee.findFirst("first_name = ?", "John");
-        System.out.println(e);
+        Employee e = (Employee)Employee.findFirst("first_name = ?", "John");
+        logger.info(e.toString());
     }
 
     private static void updateEmployee() {
-        Employee e = Employee.findFirst("first_name = ?", "John");
+        Employee e = (Employee)Employee.findFirst("first_name = ?", "John");
         e.set("last_name", "Steinbeck").saveIt();
     }
 
     private static void deleteEmployee() {
-        Employee e = Employee.findFirst("first_name = ?", "John");
+        Employee e = (Employee)Employee.findFirst("first_name = ?", "John");
         e.delete();
     }
 
@@ -52,6 +55,6 @@ public class SimpleExample {
     }
 
     private static void selectAllEmployees() {
-            System.out.println("Employees list: " + Employee.findAll());
+            logger.info("Employees list: " + Employee.findAll());
     }
 }

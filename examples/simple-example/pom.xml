@@ -55,6 +55,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -68,9 +69,7 @@
         </dependency>
     </dependencies>
 
-
     <pluginRepositories>
-
         <pluginRepository>
             <id>ipsolutionsdev-plugin-snapshots</id>
             <name>IP Solutions Dev Snapshot Repo</name>
@@ -81,13 +80,10 @@
                 <checksumPolicy>warn</checksumPolicy>
                 <updatePolicy>always</updatePolicy>
             </snapshots>
-
         </pluginRepository>
-
-
     </pluginRepositories>
+    
     <repositories>
-
         <repository>
             <id>ipsolutionsdev-snapshots</id>
             <name>IP Solutions Dev Snapshot Repo</name>
@@ -101,6 +97,3 @@
         </repository>
     </repositories>
 </project>
-
-
-

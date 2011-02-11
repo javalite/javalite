@@ -27,6 +27,7 @@
         <module>activejdbc-instrumentation</module>
         <module>javalite-common</module>
         <module>activejdbc-cluster-test</module>
+        <module>examples/simple-example</module>
     </modules>
     <dependencyManagement>
         <dependencies>
