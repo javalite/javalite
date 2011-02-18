@@ -43,7 +43,6 @@ public class Put extends Request<Put> {
     @Override
     public Put doConnect() {
         try {
-            connection.setRequestProperty("Content-Type", "text/plain");
             connection.setDoOutput(true);
             connection.setDoInput(true);
             connection.setRequestMethod("PUT");
