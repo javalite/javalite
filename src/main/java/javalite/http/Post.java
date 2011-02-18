@@ -43,7 +43,6 @@ public class Post extends Request<Post> {
     @Override
     public Post doConnect() {
         try {
-            connection.setRequestProperty("Content-Type", "text/plain");
             connection.setDoInput(true);
             connection.setDoOutput(true);
             connection.setUseCaches(false);
@@ -58,9 +57,9 @@ public class Post extends Request<Post> {
     }
 
     public static void main(String[] args) {
-        Post post = Http.post("http://localhost:8080/kitchensink/http/post", "this is a post content");
-        System.out.println(post.text());
-        System.out.println(post.headers());
+        Post post = Http.post("http://localhost:8080/kitchensink/http/post", "this is a post content").header("Content-type", "text/json");
+        //System.out.println(post.text());
+        //System.out.println(post.headers());
         System.out.println(post.responseCode());
         System.out.println(post.responseMessage());
     }
