@@ -76,7 +76,7 @@ public class Collections {
      * @return list with values.
      */
     public static <T> List<T> li(T... values) {
-        return Arrays.asList(values);
+        return list(values);
     }
 
     /**
@@ -86,6 +86,10 @@ public class Collections {
      * @return list with values.
      */
     public static <T> List<T> list(T... values) {
-        return Arrays.asList(values);
+        List result = new ArrayList<T>();
+        for (T value : values) {
+            result.add(value);
+        }
+        return result;
     }
 }

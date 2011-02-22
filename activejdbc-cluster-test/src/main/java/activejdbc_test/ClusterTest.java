@@ -65,7 +65,7 @@ public class ClusterTest {
     }
 
     public void insert() {
-        Base.open("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/test", "root", "p@ssw0rd");
+        Base.open("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/activejdbc", "root", "p@ssw0rd");
 
         Account account = new Account();
         account.set("account", "account: " + String.valueOf(System.currentTimeMillis()));
@@ -78,7 +78,7 @@ public class ClusterTest {
 
     public void select() {
 
-        Base.open("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/test", "root", "p@ssw0rd");
+        Base.open("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/activejdbc", "root", "p@ssw0rd");
 
         System.out.println("Total accounts: " + Account.count());
         Base.close();

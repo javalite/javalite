@@ -9,7 +9,7 @@ import java.sql.SQLException;
  */
 public class InsertAll {
     public static void main(String[] args) throws SQLException {
-        Base.open("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/test", "root", "p@ssw0rd");
+        Base.open("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/activejdbc", "root", "p@ssw0rd");
         Base.connection().setAutoCommit(false);
 
         long start = System.currentTimeMillis();

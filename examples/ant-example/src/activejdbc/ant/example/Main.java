@@ -23,7 +23,7 @@ import activejdbc.Base;
  */
 public class Main {
     public static void main(String[] args) {
-        Base.open("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/test", "root", "p@ssw0rd");
+        Base.open("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/activejdbc", "root", "p@ssw0rd");
 
         createEmployee();
         System.out.println("=========> Created employee:");
