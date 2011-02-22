@@ -51,7 +51,9 @@ public class CollectionsTest {
     @Test
     public void shouldCreateList(){
         List<String> list = Collections.list("John", "James", "Mary", "Keith");
-        a(list.size()).shouldBeEqual(4);
+
+        list.add("hello");
+        a(list.size()).shouldBeEqual(5);
         a(list.get(0)).shouldBeEqual("John");
         a(list.get(1)).shouldBeEqual("James");
         a(list.get(2)).shouldBeEqual("Mary");
