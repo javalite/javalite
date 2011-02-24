@@ -454,6 +454,9 @@ public abstract class Model extends CallbackSupport{
         return retVal;
     }
 
+
+
+
     /**
      * Generates a XML document from content of this model.
      *
@@ -463,7 +466,6 @@ public abstract class Model extends CallbackSupport{
      * @return generated XML.
      */
     public String toXml(int spaces, boolean declaration, String ... attrs){
-
 
         Map<String, Object> modelMap = toMap();
 
@@ -480,7 +482,6 @@ public abstract class Model extends CallbackSupport{
         String topTag = Inflector.underscore(getClass().getSimpleName());
 
         sw.write(indent + "<" + topTag + ">" + (spaces > 0?"\n":""));
-
 
         for(String name: modelMap.keySet()){
             Object value  = modelMap.get(name);
@@ -499,11 +500,59 @@ public abstract class Model extends CallbackSupport{
                 sw.write(indent + indent + "</" + name + ">" + (spaces > 0?"\n":""));
             }
         }
-        sw.write(indent + "</" + topTag + ">"+ (spaces > 0?"\n":""));
+        sw.write(indent + "</" + topTag + ">" + (spaces > 0?"\n":""));
         return sw.toString();
     }
 
 
+
+    /**
+     * Generates a JSON document from content of this model.
+     *
+     * @param pretty pretty format (human readable), or one line text.
+     * @param attrs  list of attributes to include. No arguments == include all attributes.
+     * @return generated JSON.
+     */
+    public String toJson(boolean pretty, String... attrs) {        
+        return toJsonP(pretty, "", attrs);
+    }
+    
+    protected  String toJsonP(boolean pretty, String indent, String... attrs) {
+
+        List<String> attrList = Arrays.asList(attrs);
+
+                StringWriter sw = new StringWriter();
+
+                sw.write(indent  +  "{"  + (pretty?"\n  " + indent: "") + "\"type\":\"" + getClass().getName() + "\",");
+
+                List<String> attributeStrings = new ArrayList<String>();
+
+                for (String name : attributes.keySet()) {
+                    if (attrList.contains(name) || attrList.size() == 0)
+                        attributeStrings.add((pretty?"\n  " + indent: "") + "\"" + name + "\":\"" + attributes.get(name) + "\"" );
+                }
+                sw.write(Util.join(attributeStrings,  ","  ));
+
+                if(cachedChildren != null  && cachedChildren.size() > 0){
+
+                    sw.write("," + (pretty? "\n  " + indent :"") + "\"children\" : {");
+
+                    for(Class childClass :cachedChildren.keySet()){
+                        String name = Inflector.pluralize(childClass.getSimpleName()).toLowerCase();
+                        sw.write((pretty?"\n" + indent + "    ":"") + name  + " : [");
+                        List<String> childrenList = new ArrayList<String>();
+                        for(Model child: cachedChildren.get(childClass)){
+                            childrenList.add((pretty?"\n" + indent:"")  + child.toJsonP(pretty, (pretty?indent + "    ":"")));
+                        }
+                        sw.write(Util.join(childrenList, ","));
+                        sw.write((pretty?"\n" + indent + indent :"")  + "]");
+                    }
+                    sw.write((pretty?"\n" + indent + indent :"")  + "}");
+                }
+
+                sw.write((pretty?"\n" + indent: "")  + "}");
+                return sw.toString();
+    }
 
 
 

@@ -69,6 +69,7 @@ public class ToXmlSpec extends ActiveJDBCTest {
         LazyList<User> personList = User.findAll().orderBy("id").include(Address.class);
 
         String xml = personList.toXml(2, true);
+        System.out.println(xml);
 
         a(XPathHelper.count("//user", xml)).shouldEqual(2);
         a(XPathHelper.count("//address", xml)).shouldEqual(7);

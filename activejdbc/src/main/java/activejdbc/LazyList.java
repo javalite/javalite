@@ -201,6 +201,26 @@ public class LazyList<T extends Model> extends AbstractList<T>{
         return sw.toString();
     }
 
+    /**
+     * Generates JSON from content of this list
+     *
+     * @param pretty true if you want pretty format, false if not
+     * @param attrs attributes to include, not providing any will include all.
+     * @return generated JSON
+     */
+    public String toJson(boolean pretty, String ... attrs) {
+        hydrate();
+        StringWriter sw = new StringWriter();
+        sw.write("[" + (pretty? "\n":""));
+        List<String> items = new ArrayList<String>();
+        for (T t : delegate) {
+            items.add(t.toJsonP(pretty, (pretty?"  ":""), attrs));
+        }
+        sw.write(Util.join(items, "," + (pretty?"\n":"")));
+        sw.write((pretty? "\n":"") + "]" );
+        return sw.toString();
+    }
+
 
     /**
      * This method exists to force immediate load from DB. Example;

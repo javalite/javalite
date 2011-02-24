@@ -193,13 +193,23 @@
             <exclusions>
                 <exclusion>
                     <groupId>dom4j</groupId>
-                    <artifactId>dom4j</artifactId>
+                    <artifactId>dom4j</artifactId>                    
                 </exclusion>
                 <exclusion>
                     <groupId>jaxen</groupId>
                     <artifactId>jaxen</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>jaxen</groupId>
+            <artifactId>jaxen</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency><groupId>opensymphony</groupId> <artifactId>oscache</artifactId> <scope>provided</scope></dependency>
     </dependencies>
