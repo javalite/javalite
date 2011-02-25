@@ -1,17 +1,17 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2010 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
 
 
@@ -46,7 +46,7 @@ public class Registry {
     private Configuration configuration = new Configuration();
     private StatisticsQueue statisticsQueue;
     private static ModelFinder mf = new ModelFinder();
-    private List<String> initedDbs = new ArrayList<String>();
+    private Set<String> initedDbs = new HashSet<String>();
 
     private Registry() {
         if(configuration.collectStatistics()){
@@ -79,7 +79,7 @@ public class Registry {
     }
 
     /**
-     * Provides a MetaModel of a model representing a table. 
+     * Provides a MetaModel of a model representing a table.
      *
      * @param table name of table represented by this MetaModel.
      * @return MetaModel of a model representing a table.
@@ -118,30 +118,43 @@ public class Registry {
 
 
      void init(String dbName) {
-        if (initedDbs.contains(dbName)) return;
+        if (initedDbs.contains(dbName)) {
+            return;
+        }
 
-         initedDbs.add(dbName);
-
-        try {
-            mf.findModels();
-            String dbType = ConnectionsAccess.getConnection(dbName).getMetaData().getDatabaseProductName();
-            registerModels(dbName, mf.getModelsForDb(dbName), dbType);
-            String[] tables = metaModels.getTableNames(dbName);
-
-            for (String table : tables) {
-                Map<String, ColumnMetadata> metaParams = fetchMetaParams(table, dbName);
-                registerColumnMetadata(table, metaParams);
+        synchronized (this) {
+            if (initedDbs.contains(dbName)) {
+                return;
+            } else {
+                initedDbs.add(dbName);
             }
 
-            processOverrides(mf.getModelsForDb(dbName));
+            try {
+                mf.findModels();
+                String dbType = ConnectionsAccess.getConnection(dbName).getMetaData().getDatabaseProductName();
+                registerModels(dbName, mf.getModelsForDb(dbName), dbType);
+                String[] tables = metaModels.getTableNames(dbName);
 
-            for (String table : tables) {
-                discoverAssociationsFor(table, dbName);
+                for (String table : tables) {
+                    Map<String, ColumnMetadata> metaParams = fetchMetaParams(table, dbName);
+                    registerColumnMetadata(table, metaParams);
+                }
+
+                processOverrides(mf.getModelsForDb(dbName));
+
+                for (String table : tables) {
+                    discoverAssociationsFor(table, dbName);
+                }
+            } catch (Exception e) {
+                if (e instanceof InitException) {
+                    throw (InitException) e;
+                }
+                if (e instanceof DBException) {
+                    throw (DBException) e;
+                } else {
+                    throw new InitException(e);
+                }
             }
-        } catch (Exception e) {
-            if (e instanceof InitException) throw (InitException) e;
-            if (e instanceof DBException) throw (DBException) e;
-            else throw new InitException(e);
         }
     }
 
@@ -151,7 +164,7 @@ public class Registry {
      * @param dbType this is a name of a DBMS as returned by JDBC driver, such as Oracle, MySQL, etc.
      */
     private void registerModels(String dbName, List<Class<? extends Model>> modelClasses, String dbType) {
-        
+
         for (Class<? extends Model> modelClass : modelClasses) {
             String idName = findIdName(modelClass);
             String tableName = findTableName(modelClass);
@@ -163,7 +176,7 @@ public class Registry {
     }
 
     private boolean isCached(Class<? extends Model> modelClass) {
-        return null != modelClass.getAnnotation(Cached.class);  
+        return null != modelClass.getAnnotation(Cached.class);
     }
 
     private void processOverrides(List<Class<? extends Model>> models) {
@@ -172,12 +185,12 @@ public class Registry {
 
             BelongsTo belongsToAnnotation = modelClass.getAnnotation(BelongsTo.class);
             processOverridesBelongsTo(modelClass, belongsToAnnotation);
-            
+
             BelongsToParents belongsToParentAnnotation = modelClass.getAnnotation(BelongsToParents.class);
             if (belongsToParentAnnotation != null)
             	for (BelongsTo belongsTo : belongsToParentAnnotation.value())
             		processOverridesBelongsTo(modelClass, belongsTo);
-            
+
             Many2Many many2manyAnnotation = modelClass.getAnnotation(Many2Many.class);
 
             if(many2manyAnnotation != null){
@@ -216,7 +229,7 @@ public class Registry {
             }
         }
     }
-    
+
     private void processOverridesBelongsTo(Class<? extends Model> modelClass, BelongsTo belongsToAnnotation) {
         if(belongsToAnnotation != null){
             Class<? extends Model> parentClass = belongsToAnnotation.parent();
@@ -282,7 +295,7 @@ public class Registry {
             if (other == null || getMetaModel(other) == null || !hasForeignKeys(join, source, other))
                 continue;
 
-            Association associationSource = new Many2ManyAssociation(source, other, join, 
+            Association associationSource = new Many2ManyAssociation(source, other, join,
                     getMetaModel(source).getFKName(), getMetaModel(other).getFKName());
             getMetaModel(source).addAssociation(associationSource);
         }
@@ -345,7 +358,7 @@ public class Registry {
     public Class<? extends Model> getModelClass(String table) {
         Class modelClass = metaModels.getModelClass(table);
 
-        if(modelClass == null)        
+        if(modelClass == null)
             throw new InitException("failed to locate meta model for: " + table + ", are you sure this is correct table name?");
 
         return modelClass;
@@ -402,7 +415,7 @@ public class Registry {
         if(listeners.get(modelClass) == null){
             listeners.put(modelClass, new ArrayList<CallbackListener>());
         }
-        return listeners.get(modelClass); 
+        return listeners.get(modelClass);
     }
     public void addListener(Class modelClass, CallbackListener listener) {
         getListeners(modelClass).add(listener);
