@@ -251,15 +251,13 @@ public class Registry {
     private Map<String, ColumnMetadata> fetchMetaParams(String table, String dbName) throws SQLException {
         Connection con = ConnectionsAccess.getConnection(dbName);
 
-        String schemaName = System.getProperty("activejdbc.schema.name");
-
         //try upper case table name first - Oracle uses upper case
-        ResultSet rs = con.getMetaData().getColumns(null, schemaName != null?schemaName:null, table.toUpperCase(), null);
+        ResultSet rs = con.getMetaData().getColumns(null, null, table.toUpperCase(), null);
         Map<String, ColumnMetadata> columns = getColumns(rs);
         rs.close();
         //if upper case not found, try lower case.
         if(columns.size() == 0){
-            rs = con.getMetaData().getColumns(null, schemaName != null?schemaName:null, table.toLowerCase(), null);
+            rs = con.getMetaData().getColumns(null, null, table.toLowerCase(), null);
             columns = getColumns(rs);
             rs.close();
         }
