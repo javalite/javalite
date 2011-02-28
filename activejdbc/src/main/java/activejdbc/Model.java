@@ -109,6 +109,18 @@ public abstract class Model extends CallbackSupport{
         }
     }
 
+
+    /**
+     * Convenience method, sets ID value on this model, equivalent to <code>set(getIdName(), id)</code>.
+     *
+     * @param id value of ID
+     * @return reference to self for chaining.
+     */
+    public <T extends Model> T setId(Object id){
+        set(getIdName(), id);        
+        return (T) this;
+    }
+
     //TODO: add typed setters corresponding to typed getters    
     public void setDate(String name, java.util.Date date) {
         if (date == null) {

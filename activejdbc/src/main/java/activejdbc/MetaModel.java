@@ -291,7 +291,7 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
         }
         if (!hasAttribute(attributeOrAssociation) && !associationTargets.contains(attributeOrAssociation)) {
             throw new IllegalArgumentException("Attribute: '" + attributeOrAssociation + "' is not defined in model: '"
-                    + getModelClass() + " and also, did not find an association by the same name, available attributes: "
+                    + getModelClass() + "' and also, did not find an association by the same name, available attributes: "
                     + getAttributeNames() + "\nAvailable associations: " + message);
         }
     }
