@@ -31,14 +31,14 @@ import org.slf4j.Logger;
 
  * <pre>
 
-     <filter>
-        <filter-name>activeJdbcFilter</filter-name>
-        <filter-class>activejdbc.web.ActiveJdbcFilter</filter-class>
-        <init-param>
-            <param-name>jndi.url</param-name>
-            <param-value>jdbc/test_jndi_url</param-value>
-        </init-param>        
-    </filter>
+     &lt;filter&gt;
+        &lt;filter-name&gt;activeJdbcFilter&lt;/filter-name&gt;
+        &lt;filter-class&gt;activejdbc.web.ActiveJdbcFilter&lt;/filter-class&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;jndiName&lt;/param-name&gt;
+            &lt;param-value&gt;jdbc/test_jndi&lt;/param-value&gt;
+        &lt;/init-param&gt;        
+    &lt;/filter&gt;
  * </pre>
  * @author Igor Polevoy
  */
