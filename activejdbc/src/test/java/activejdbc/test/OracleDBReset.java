@@ -24,7 +24,19 @@ public class OracleDBReset {
                 if(Util.blank(statement)) continue;
                 Statement st = null;
                 st = Base.connection().createStatement();
-                st.executeUpdate(statement);
+                try{
+                    st.executeUpdate(statement);
+
+                    if(statement.contains("ingredients_trigger")){
+                        System.out.println("STATEMENT:");
+                        System.out.println(statement);
+                    }
+
+                }catch(SQLException e){
+                    System.out.println("Problem statement: " + statement);
+                    throw e;
+                }
+
                 st.close();
             }
     }

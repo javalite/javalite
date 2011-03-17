@@ -25,13 +25,27 @@ import activejdbc.Association;
 public class Many2ManyAssociation extends Association {
 
     private String sourceFkName, targetFkName;
-    private String join;
+    private String join, targetPk;
 
-    public Many2ManyAssociation(String source, String target, String join, String sourceFkName, String targetFkName) {
+    /**
+     *
+     * @param source name of source table in relationship
+     * @param target name of target table in relationship
+     * @param join name of join table in relationship
+     * @param sourceFkName name of a foreign key in the join table pointing to the source table PK.
+     * @param targetFkName  name of a foreign key in the join table pointing to the target table PK.
+     * @param targetPk name of a PK of a target table
+     */
+    public Many2ManyAssociation(String source, String target, String join, String sourceFkName, String targetFkName, String targetPk) {
         super(source, target);
         this.targetFkName = targetFkName;
         this.sourceFkName = sourceFkName;
         this.join = join;
+        this.targetPk = targetPk;
+    }
+
+    public Many2ManyAssociation(String source, String target, String join, String sourceFkName, String targetFkName) {
+        this(source, target, join, sourceFkName, targetFkName, "id");
     }
 
     public String getSourceFkName() {
@@ -46,12 +60,15 @@ public class Many2ManyAssociation extends Association {
         return join;
     }
 
+    public String getTargetPk() {
+        return targetPk;
+    }
+
     @Override
     public String toString() {
         return new StringBuffer().append(getSource()).append("  >---------<  ").append(getTarget())
-                .append(", type: ").append("many-to-many").toString();
+                .append(", type: ").append("many-to-many").append(", join: ").append(join).toString();
     }
-
 
     public boolean equals(Object other) {
 

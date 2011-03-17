@@ -25,14 +25,33 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Use this annotation to override conventions in cases where they are impossible to follow.
+ * This annotation does not have to be placed on two models, one is sufficient.
+ *
  * @author Igor Polevoy
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Many2Many {
+    /**
+     * This is a type of a model that is the "other" end of the relationship.
+     */
     public Class<? extends Model> other();
-    public String join();
+
+    /**
+     * Name of a table used for joining records from other tables.
+     */
+    public String join() ;
+
+    /**
+     * Foreign key name of a source table in the join. A "source" table is a table that backs the model
+     * on which this annotation is used.
+     */
     public String sourceFKName();
+
+    /**
+     * Foreign key name of a target table in the join table. A "target" table is a table that backs the "other" model.
+     */
     public String targetFKName();
 }
 

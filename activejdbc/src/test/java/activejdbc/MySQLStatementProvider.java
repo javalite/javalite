@@ -148,6 +148,12 @@ public class MySQLStatementProvider {
         	statements =  Arrays.asList(
                     "INSERT INTO computers VALUES(1,'ComputerX',1,1);"
             );
+        }else if (table.equals("ingredients_recipes")) {
+            statements = Arrays.asList();
+        } else if (table.equals("ingredients")) {
+            statements = Arrays.asList();
+        } else if (table.equals("recipes")) {
+            statements = Arrays.asList();
         }else{
             throw new IllegalArgumentException("no statements for: " + table);
         }

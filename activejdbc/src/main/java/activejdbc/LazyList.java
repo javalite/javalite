@@ -380,7 +380,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
         List ids = collect(metaModel.getIdName());
         
         String sql =  "SELECT " + association.getTarget() + ".*, t." + association.getSourceFkName() + " AS the_parent_record_id FROM " + association.getTarget() +
-        " INNER JOIN " + association.getJoin() + " t ON " + association.getTarget() + " .id = t." + association.getTargetFkName() + " WHERE (t." + association.getSourceFkName()
+        " INNER JOIN " + association.getJoin() + " t ON " + association.getTarget() + "." + association.getTargetPk() + " = t." + association.getTargetFkName() + " WHERE (t." + association.getSourceFkName()
                 + "  IN (" + Util.join(ids, ", ") + "))";
 
 

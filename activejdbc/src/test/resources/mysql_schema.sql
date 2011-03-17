@@ -99,3 +99,12 @@ CREATE TABLE motherboards ( id int(11) NOT NULL  auto_increment PRIMARY KEY, des
 
 DROP TABLE IF EXISTS computers;
 CREATE TABLE computers ( id int(11) NOT NULL  auto_increment PRIMARY KEY, description VARCHAR(56), mother_id int(11), key_id int(11), constraint fk_computer_mother foreign key (mother_id) references motherboards(id), constraint fk_computer_key foreign key (key_id) references keyboards(id) );
+
+DROP TABLE IF EXISTS ingredients;
+CREATE TABLE ingredients (ingredient_id  int(11) NOT NULL  auto_increment PRIMARY KEY, ingredient_name VARCHAR(56));
+
+DROP TABLE IF EXISTS recipes;
+CREATE TABLE recipes (recipe_id  int(11) NOT NULL  auto_increment PRIMARY KEY, recipe_name VARCHAR(56));
+
+DROP TABLE IF EXISTS ingredients_recipes;
+CREATE TABLE ingredients_recipes (the_id  int(11) NOT NULL  auto_increment PRIMARY KEY, recipe_id int(11), ingredient_id int(11));

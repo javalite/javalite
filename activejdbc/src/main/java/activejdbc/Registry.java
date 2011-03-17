@@ -24,6 +24,7 @@ import activejdbc.cache.QueryCache;
 import activejdbc.statistics.StatisticsQueue;
 import activejdbc.validation.Validator;
 
+import java.lang.reflect.Method;
 import java.util.*;
 import java.sql.SQLException;
 import java.sql.Connection;
@@ -202,11 +203,23 @@ public class Registry {
                 String join = many2manyAnnotation.join();
                 String sourceFKName = many2manyAnnotation.sourceFKName();
                 String targetFKName = many2manyAnnotation.targetFKName();
+                String otherPk;
+                String thisPk;
+                try {
+                    Method m = modelClass.getMethod("getMetaModel");
+                    MetaModel mm = (MetaModel) m.invoke(modelClass);
+                    thisPk = mm.getIdName();
+                    m = otherClass.getMethod("getMetaModel");
+                    mm = (MetaModel) m.invoke(otherClass);
+                    otherPk = mm.getIdName();
+                } catch (Exception e) {
+                    throw new InitException("failed to determine PK name in many to many relationship", e);
+                }
 
-                Association many2many1 = new Many2ManyAssociation(source, target, join, sourceFKName, targetFKName);
+                Association many2many1 = new Many2ManyAssociation(source, target, join, sourceFKName, targetFKName, otherPk);
                 metaModels.getMetaModel(source).addAssociation(many2many1);
 
-                Association many2many2 = new Many2ManyAssociation(target, source, join, targetFKName, sourceFKName);
+                Association many2many2 = new Many2ManyAssociation(target, source, join, targetFKName, sourceFKName, thisPk);
                 metaModels.getMetaModel(target).addAssociation(many2many2);
             }
 

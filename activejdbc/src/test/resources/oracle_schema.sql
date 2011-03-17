@@ -583,3 +583,62 @@ CREATE OR REPLACE TRIGGER computers_trigger
     begin
 select coalesce(:new.id, computers_seq.nextval) into :new.id from dual;
 end;
+
+
+
+
+-- BREAK
+CREATE TABLE ingredients (
+  ingredient_id NUMBER NOT NULL,
+  ingredient_name VARCHAR(56))
+-- BREAK
+ALTER TABLE ingredients ADD CONSTRAINT ingredients_pk PRIMARY KEY ( ingredient_id )
+-- BREAK
+CREATE SEQUENCE ingredients_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER ingredients1_trigger
+    BEFORE INSERT ON ingredients REFERENCING
+    NEW AS new
+    OLD AS old
+    FOR EACH ROW
+    begin
+select coalesce(:new.ingredient_id, ingredients_seq.nextval) into :new.ingredient_id from dual;
+end;
+
+-- BREAK
+CREATE TABLE recipes (
+  recipe_id NUMBER NOT NULL,
+  recipe_name VARCHAR(56))
+-- BREAK
+ALTER TABLE recipes ADD CONSTRAINT recipes_pk PRIMARY KEY ( recipe_id )
+-- BREAK
+CREATE SEQUENCE recipes_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER recipes_trigger
+    BEFORE INSERT ON recipes REFERENCING
+    NEW AS new
+    OLD AS old
+    FOR EACH ROW
+    begin
+select coalesce(:new.recipe_id, recipes_seq.nextval) into :new.recipe_id from dual;
+end;
+
+
+-- BREAK
+CREATE TABLE ingredients_recipes (
+  the_id NUMBER NOT NULL,
+  recipe_id NUMBER,
+  ingredient_id NUMBER)
+-- BREAK
+ALTER TABLE ingredients_recipes ADD CONSTRAINT ingredients_recipes_pk PRIMARY KEY ( the_id )
+-- BREAK
+CREATE SEQUENCE ingredients_recipes_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER ingredients_recipes_trigger
+    BEFORE INSERT ON ingredients_recipes REFERENCING
+    NEW AS new
+    OLD AS old
+    FOR EACH ROW
+    begin
+select coalesce(:new.the_id, ingredients_recipes_seq.nextval) into :new.the_id from dual;
+end;

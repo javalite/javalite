@@ -46,6 +46,7 @@ public abstract class Model extends CallbackSupport{
     private boolean frozen = false;
     private MetaModel metaModelLocal;
     private Map<Class, Model> cachedParents = new HashMap<Class, Model>();
+    private Map<Class, List<Model>> cachedChildren = new HashMap<Class, List<Model>>();
 
     protected Errors errors;
 
@@ -466,8 +467,23 @@ public abstract class Model extends CallbackSupport{
         return retVal;
     }
 
+    @Override
+    public String toString() {
 
+        StringBuilder sb = new StringBuilder();
+        sb.append("Model: ").append(getClass().getName())
+          .append(", table: '").append(getMetaModelLocal().getTableName())
+          .append("', attributes: ").append(attributes);
 
+        if (cachedParents.size() > 0) {
+            sb.append(", parents: ").append(cachedParents);
+        }
+
+        if (cachedChildren.size() > 0) {
+            sb.append(", children: ").append(cachedChildren);
+        }
+        return sb.toString();
+    }
 
     /**
      * Generates a XML document from content of this model.
@@ -1079,11 +1095,6 @@ public abstract class Model extends CallbackSupport{
             throw new NotAssociatedException(getMetaModelLocal().getTableName(), targetTable);
         }
         return new LazyList<T>(subQuery, params,Registry.instance().getMetaModel(targetTable));
-    }
-
-    @Override
-    public String toString() {
-        return "Model: " + getClass().getName() + ", Table: '" + getMetaModelLocal().getTableName() + "', attributes: " + attributes.toString();
     }
 
     protected static NumericValidationBuilder validateNumericalityOf(String... attributes) {
@@ -1934,9 +1945,6 @@ public abstract class Model extends CallbackSupport{
     public String getIdName() {
         return getMetaModelLocal().getIdName();
     }
-
-    private Map<Class, List<Model>> cachedChildren = new HashMap<Class, List<Model>>();
-
 
     protected void setChildren(Class childClass, List<Model> children) {
         cachedChildren.put(childClass, children);

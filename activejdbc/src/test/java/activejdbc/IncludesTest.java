@@ -30,7 +30,7 @@ import java.util.Map;
 public class IncludesTest extends ActiveJDBCTest{
 
     @Test
-    public void shouldBeAbleToIncludeParent() {
+    public void shouldBeAbleToIncludeParentOne2Many() {
         resetTables("users", "addresses");
         List<Address> addresses = Address.findAll().orderBy("id").include(User.class);
         a(addresses.get(0).toMap().get("user")).shouldNotBeNull();
@@ -43,7 +43,7 @@ public class IncludesTest extends ActiveJDBCTest{
     
 
     @Test
-    public void shouldBeAbleToIncludeChildren() {
+    public void shouldBeAbleToIncludeChildrenOne2Many() {
         resetTables("users", "addresses");
         LazyList<User> users = User.findAll().orderBy("id").include(Address.class);
         List<Map> maps = users.toMaps();
@@ -95,7 +95,7 @@ public class IncludesTest extends ActiveJDBCTest{
 
 
     @Test
-    public void shouldCacheIncludes() {
+    public void shouldCacheIncludesMany2Many() {
         resetTables("doctors", "patients", "doctors_patients");
         LazyList<Doctor> doctors = Doctor.findAll().orderBy("id").include(Patient.class);
 
@@ -117,4 +117,23 @@ public class IncludesTest extends ActiveJDBCTest{
         Map library = (Map)book.get("library");
         a(library.get("address")).shouldBeEqual("124 Pine Street");
     }
+
+    @Test
+    public void shouldIncludeMany2ManyInCaseJoinTableHasUnconventionalPKName() {
+        Ingredient sugar = (Ingredient)Ingredient.createIt("ingredient_name", "sugar");
+        sugar.add(Recipe.create("recipe_name", "pie"));
+
+        //test data:
+        List<Ingredient> ingredients  = Ingredient.findAll().include(Recipe.class);
+        List<Recipe> recipes = ingredients.get(0).getAll(Recipe.class);
+        a(recipes.size()).shouldBeEqual(1);
+        a(recipes.get(0).get("recipe_name")).shouldBeEqual("pie");
+
+
+        //test caching (no more trips to DB):
+        Recipe recipe1 = ingredients.get(0).getAll(Recipe.class).get(0);
+        Recipe recipe2 = ingredients.get(0).getAll(Recipe.class).get(0);
+        a(recipe1).shouldBeTheSameAs(recipe2);
+    }
+
 }

@@ -104,3 +104,15 @@ CREATE TABLE keyboards ( id serial PRIMARY KEY, description VARCHAR(56));
 
 DROP TABLE IF EXISTS motherboards;
 CREATE TABLE motherboards ( id serial PRIMARY KEY, description VARCHAR(56));
+
+
+
+DROP TABLE IF EXISTS ingredients;
+CREATE TABLE ingredients (ingredient_id  serial PRIMARY KEY, ingredient_name VARCHAR(56));
+
+DROP TABLE IF EXISTS recipes;
+CREATE TABLE recipes (recipe_id  serial PRIMARY KEY, recipe_name VARCHAR(56));
+
+DROP TABLE IF EXISTS ingredients_recipes;
+CREATE TABLE ingredients_recipes (the_id  serial PRIMARY KEY, recipe_id int(11), ingredient_id int(11));
+
