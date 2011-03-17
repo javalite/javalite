@@ -114,5 +114,5 @@ DROP TABLE IF EXISTS recipes;
 CREATE TABLE recipes (recipe_id  serial PRIMARY KEY, recipe_name VARCHAR(56));
 
 DROP TABLE IF EXISTS ingredients_recipes;
-CREATE TABLE ingredients_recipes (the_id  serial PRIMARY KEY, recipe_id int(11), ingredient_id int(11));
+CREATE TABLE ingredients_recipes (the_id  serial PRIMARY KEY, recipe_id INT, ingredient_id INT);
 
