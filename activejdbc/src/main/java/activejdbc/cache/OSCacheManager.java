@@ -35,7 +35,12 @@ public class OSCacheManager extends CacheManager{
         try {
             return administrator.getFromCache(key);
         } catch (NeedsRefreshException nre) {
-            administrator.cancelUpdate(key);
+            try{
+                administrator.cancelUpdate(key);
+            }catch(Exception e){
+                return null;
+            }
+
         }
         return null; 
     }

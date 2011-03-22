@@ -2,14 +2,6 @@
 <project version="4">
   <component name="AntConfiguration">
     <defaultAnt bundledAnt="true" />
-    <buildFile url="file://$PROJECT_DIR$/examples/ant-example/build.xml">
-      <additionalClassPath />
-      <antReference projectDefault="true" />
-      <customJdkName value="" />
-      <maximumHeapSize value="128" />
-      <maximumStackSize value="2" />
-      <properties />
-    </buildFile>
   </component>
   <component name="CompilerConfiguration">
     <option name="DEFAULT_COMPILER" value="Javac" />
@@ -251,15 +243,25 @@
       <module fileurl="file://$PROJECT_DIR$/activejdbc-cluster-test/activejdbc-cluster-test.iml" filepath="$PROJECT_DIR$/activejdbc-cluster-test/activejdbc-cluster-test.iml" />
       <module fileurl="file://$PROJECT_DIR$/activejdbc-instrumentation/activejdbc-instrumentation.iml" filepath="$PROJECT_DIR$/activejdbc-instrumentation/activejdbc-instrumentation.iml" />
       <module fileurl="file://$PROJECT_DIR$/activejdbc-root.iml" filepath="$PROJECT_DIR$/activejdbc-root.iml" />
-      <module fileurl="file://$PROJECT_DIR$/examples/ant-example/ant-example.iml" filepath="$PROJECT_DIR$/examples/ant-example/ant-example.iml" />
       <module fileurl="file://$PROJECT_DIR$/javalite-common/javalite-common.iml" filepath="$PROJECT_DIR$/javalite-common/javalite-common.iml" />
     </modules>
   </component>
   <component name="ProjectReloadState">
     <option name="STATE" value="0" />
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.5" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/classes" />
+  </component>
+  <component name="Regex">
+    <option name="pos1" value="218" />
+    <option name="pos2" value="218" />
+    <option name="pos3" value="162" />
+    <option name="pos4" value="444" />
+    <option name="pos5" value="162" />
+    <option name="autoUpdate" value="true" />
+    <option name="referenceOn" value="false" />
+    <option name="referencePos" value="0" />
+    <option name="showLabels" value="true" />
   </component>
   <component name="RunManager">
     <configuration default="true" type="Remote" factoryName="Remote">
@@ -417,6 +419,17 @@
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
   <component name="libraryTable">
+    <library name="Maven: junit:junit:4.8.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.8.1/junit-4.8.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.8.1/junit-4.8.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.8.1/junit-4.8.1-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Maven: javassist:javassist:3.8.0.GA">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/javassist/javassist/3.8.0.GA/javassist-3.8.0.GA.jar!/" />
@@ -426,18 +439,17 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/javassist/javassist/3.8.0.GA/javassist-3.8.0.GA-sources.jar!/" />
-        <root url="file://$PROJECT_DIR$/../../programs/javassist/src/main" />
       </SOURCES>
     </library>
-    <library name="Maven: junit:junit:3.8.1">
+    <library name="Maven: javax.servlet:servlet-api:2.5">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/3.8.1/junit-3.8.1.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/javax/servlet/servlet-api/2.5/servlet-api-2.5.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/3.8.1/junit-3.8.1-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/javax/servlet/servlet-api/2.5/servlet-api-2.5-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/3.8.1/junit-3.8.1-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/javax/servlet/servlet-api/2.5/servlet-api-2.5-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: org.slf4j:slf4j-api:1.5.10">
@@ -451,17 +463,6 @@
         <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.5.10/slf4j-api-1.5.10-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.slf4j:slf4j-simple:1.5.10">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-simple/1.5.10/slf4j-simple-1.5.10.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-simple/1.5.10/slf4j-simple-1.5.10-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-simple/1.5.10/slf4j-simple-1.5.10-sources.jar!/" />
-      </SOURCES>
-    </library>
     <library name="Maven: org.slf4j:jcl-over-slf4j:1.5.10">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/jcl-over-slf4j/1.5.10/jcl-over-slf4j-1.5.10.jar!/" />
@@ -473,115 +474,15 @@
         <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/jcl-over-slf4j/1.5.10/jcl-over-slf4j-1.5.10-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: dom4j:dom4j:1.6.1">
+    <library name="Maven: org.slf4j:slf4j-simple:1.5.10">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-simple/1.5.10/slf4j-simple-1.5.10.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/dom4j/dom4j/1.6.1/dom4j-1.6.1-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-simple/1.5.10/slf4j-simple-1.5.10-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/dom4j/dom4j/1.6.1/dom4j-1.6.1-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: xml-apis:xml-apis:1.0.b2">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: jaxen:jaxen:1.1.1">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/jaxen/jaxen/1.1.1/jaxen-1.1.1.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/jaxen/jaxen/1.1.1/jaxen-1.1.1-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/jaxen/jaxen/1.1.1/jaxen-1.1.1-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: jdom:jdom:1.0">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/jdom/jdom/1.0/jdom-1.0.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/jdom/jdom/1.0/jdom-1.0-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/jdom/jdom/1.0/jdom-1.0-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: xerces:xercesImpl:2.6.2">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/xerces/xercesImpl/2.6.2/xercesImpl-2.6.2.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/xerces/xercesImpl/2.6.2/xercesImpl-2.6.2-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/xerces/xercesImpl/2.6.2/xercesImpl-2.6.2-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: xom:xom:1.0">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/xom/xom/1.0/xom-1.0.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/xom/xom/1.0/xom-1.0-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/xom/xom/1.0/xom-1.0-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: xerces:xmlParserAPIs:2.6.2">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/xerces/xmlParserAPIs/2.6.2/xmlParserAPIs-2.6.2.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/xerces/xmlParserAPIs/2.6.2/xmlParserAPIs-2.6.2-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/xerces/xmlParserAPIs/2.6.2/xmlParserAPIs-2.6.2-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: xalan:xalan:2.6.0">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/xalan/xalan/2.6.0/xalan-2.6.0.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/xalan/xalan/2.6.0/xalan-2.6.0-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/xalan/xalan/2.6.0/xalan-2.6.0-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: com.ibm.icu:icu4j:2.6.1">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/ibm/icu/icu4j/2.6.1/icu4j-2.6.1.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/com/ibm/icu/icu4j/2.6.1/icu4j-2.6.1-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/ibm/icu/icu4j/2.6.1/icu4j-2.6.1-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: opensymphony:oscache:2.4">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/opensymphony/oscache/2.4/oscache-2.4.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/opensymphony/oscache/2.4/oscache-2.4-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/opensymphony/oscache/2.4/oscache-2.4-sources.jar!/" />
-        <root url="file://$PROJECT_DIR$/../../programs/oscache/src/java" />
+        <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-simple/1.5.10/slf4j-simple-1.5.10-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: mysql:mysql-connector-java:5.0.4">
@@ -593,6 +494,28 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/mysql/mysql-connector-java/5.0.4/mysql-connector-java-5.0.4-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: opensymphony:oscache:2.4">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/opensymphony/oscache/2.4/oscache-2.4.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/opensymphony/oscache/2.4/oscache-2.4-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/opensymphony/oscache/2.4/oscache-2.4-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: junit:junit:3.8.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/3.8.1/junit-3.8.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/3.8.1/junit-3.8.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/3.8.1/junit-3.8.1-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: jgroups:jgroups-all:2.4.1">
@@ -626,17 +549,6 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/log4j/log4j/1.2.6/log4j-1.2.6-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: junit:junit:4.8.1">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.8.1/junit-4.8.1.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.8.1/junit-4.8.1-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.8.1/junit-4.8.1-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: org.apache.maven:maven-plugin-api:2.0">
@@ -804,15 +716,103 @@
         <root url="jar://$MAVEN_REPOSITORY$/org/apache/maven/maven-plugin-registry/2.2.1/maven-plugin-registry-2.2.1-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: javax.servlet:servlet-api:2.5">
+    <library name="Maven: dom4j:dom4j:1.6.1">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/javax/servlet/servlet-api/2.5/servlet-api-2.5.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/javax/servlet/servlet-api/2.5/servlet-api-2.5-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/dom4j/dom4j/1.6.1/dom4j-1.6.1-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/javax/servlet/servlet-api/2.5/servlet-api-2.5-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/dom4j/dom4j/1.6.1/dom4j-1.6.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: xml-apis:xml-apis:1.0.b2">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: jaxen:jaxen:1.1.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/jaxen/jaxen/1.1.1/jaxen-1.1.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/jaxen/jaxen/1.1.1/jaxen-1.1.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/jaxen/jaxen/1.1.1/jaxen-1.1.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: jdom:jdom:1.0">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/jdom/jdom/1.0/jdom-1.0.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/jdom/jdom/1.0/jdom-1.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/jdom/jdom/1.0/jdom-1.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: xerces:xercesImpl:2.6.2">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/xerces/xercesImpl/2.6.2/xercesImpl-2.6.2.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/xerces/xercesImpl/2.6.2/xercesImpl-2.6.2-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/xerces/xercesImpl/2.6.2/xercesImpl-2.6.2-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: xom:xom:1.0">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/xom/xom/1.0/xom-1.0.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/xom/xom/1.0/xom-1.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/xom/xom/1.0/xom-1.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: xerces:xmlParserAPIs:2.6.2">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/xerces/xmlParserAPIs/2.6.2/xmlParserAPIs-2.6.2.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/xerces/xmlParserAPIs/2.6.2/xmlParserAPIs-2.6.2-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/xerces/xmlParserAPIs/2.6.2/xmlParserAPIs-2.6.2-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: xalan:xalan:2.6.0">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/xalan/xalan/2.6.0/xalan-2.6.0.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/xalan/xalan/2.6.0/xalan-2.6.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/xalan/xalan/2.6.0/xalan-2.6.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: com.ibm.icu:icu4j:2.6.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/ibm/icu/icu4j/2.6.1/icu4j-2.6.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/com/ibm/icu/icu4j/2.6.1/icu4j-2.6.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/ibm/icu/icu4j/2.6.1/icu4j-2.6.1-sources.jar!/" />
       </SOURCES>
     </library>
   </component>
