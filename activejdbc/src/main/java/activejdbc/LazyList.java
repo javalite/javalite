@@ -143,8 +143,6 @@ public class LazyList<T extends Model> extends AbstractList<T>{
      * relationship.
      * @return instance of this <code>LazyList</code>
      */
-
-    //public <T extends Model> LazyList<T> getAll(Class<T> clazz) {
     public <E extends Model>  LazyList<E>  include(Class<? extends Model> ... classes){
         if(includes.size() != 0) throw new IllegalArgumentException("Can't call include() more than once!");
 
