@@ -1059,7 +1059,7 @@ public abstract class Model extends CallbackSupport{
      * <pre>
      * List<Project> threeWeekProjects = programmer.get(Project.class, "duration_weeks = ?", 3);
      * </pre>
-     * where this list wil contain all projects to which this programmer is assigned for 3 weeks.
+     * where this list will contain all projects to which this programmer is assigned for 3 weeks.
      *
      * @param clazz related type
      * @param query sub-query for join table.
