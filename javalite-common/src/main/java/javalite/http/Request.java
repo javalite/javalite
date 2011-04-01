@@ -16,8 +16,6 @@ limitations under the License.
 
 package javalite.http;
 
-import javalite.common.Util;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +25,8 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+
+import static javalite.common.Util.read;
 
 /**
  * This class provides static convenience methods for simple HTTP requests.
@@ -147,7 +147,7 @@ public abstract class Request<T extends Request> {
     public String text() {
         try {
             connect();
-            String result = Util.read(connection.getInputStream());
+            String result = responseCode() >= 400 ? read(connection.getErrorStream()) : read(connection.getInputStream());
             dispose();
             return result;
         } catch (IOException e) {
