@@ -265,4 +265,19 @@
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
+
+
+ <distributionManagement>
+        <repository>
+            <id>ipsolutions-repo</id>
+            <name>IPSolutions Repository</name>
+            <url>scp://localhost/opt/maven/repository</url>
+        </repository>
+        <snapshotRepository>
+            <id>ipsolutions-repo</id>
+            <name>IPSolutions Repository</name>
+            <url>scp://localhost/opt/maven/repository</url>
+        </snapshotRepository>
+    </distributionManagement>
+
 </project>
