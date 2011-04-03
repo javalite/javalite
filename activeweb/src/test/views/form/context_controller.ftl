@@ -1,0 +1,1 @@
+<@form action="blah_action"/>

@@ -1,0 +1,1 @@
+<@wrap with="/wrap/wrapper_with_placeholder_and_param" test_param="simple value">inner content</@wrap>

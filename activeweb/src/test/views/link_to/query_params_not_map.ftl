@@ -1,0 +1,1 @@
+<@link_to controller="home" query_params="I'm a string, not map">this is a body</@link_to>

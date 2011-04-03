@@ -1,0 +1,1 @@
+<@link_to controller="/admin/special2/special2" action="read" id=2 query_string="first_name=John" class="red_button">Click here to read book 2</@>

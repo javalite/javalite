@@ -1,0 +1,44 @@
+
+========1. Story:
+
+(09:14:45 PM) ipolevoy@gmail.com/102ED2CB: ...I should probably think it over
+(09:14:55 PM) ipolevoy@gmail.com/102ED2CB: maybe a better solution is necessary
+(09:15:13 PM) ipolevoy@gmail.com/102ED2CB: something like a FreeMarkerConfig.init()   - in tests  this needs to be called automatically in cases where integrateViews() is set.
+(09:15:21 PM) ipolevoy@gmail.com/102ED2CB: where you register all your tags
+(09:15:28 PM) ipolevoy@gmail.com/102ED2CB: and this is called in SpecHelper
+(09:15:31 PM) ipolevoy@gmail.com/102ED2CB: always
+(09:15:58 PM) ipolevoy@gmail.com/102ED2CB: do that you had the same tags available in tests, as at runtime, even if you do not have filters
+(09:16:09 PM) ipolevoy@gmail.com/102ED2CB: this is because pages can/do have tags
+
+
+========2. Story:
+Implement getLastModified():
+
+MyController extends AppController{
+
+public void index(){...}
+public long indexLastModified(){...}
+
+it is up to application logic  to tell server when it was last modified ...:
+see this: http://docstore.mik.ua/orelly/java-ent/servlet/ch03_06.htm
+
+
+
+
+========7. Story:
+implement addGlobalFilters(new TimingFilter()).except(MyController.class, BooksController.class, etc.);
+
+
+========9. Story:
+Implement FreeMarker exception handler
+
+
+========10. Bug:
+Prevent view(), assign(), render(), redirect(), etc. inside ControllerFilter.after() this is because the controller already
+rendered.
+
+========10. Story:
+Add HttpSupport.println() with this implementaiton: System.out.println()
+
+========11. Bug:
+WARN ParamCopy - found 'session' value set by controller. It is reserved by ActiveWeb and will be overwritten

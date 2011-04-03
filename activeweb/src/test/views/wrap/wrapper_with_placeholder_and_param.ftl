@@ -1,0 +1,1 @@
+[HEADER]${page_content}[FOOTER]${test_param}

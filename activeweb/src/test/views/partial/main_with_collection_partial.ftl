@@ -1,0 +1,1 @@
+<@render partial="fruit" collection=fruits/>
