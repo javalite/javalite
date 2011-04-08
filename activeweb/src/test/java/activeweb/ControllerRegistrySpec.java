@@ -18,6 +18,8 @@ package activeweb;
 
 import activeweb.controller_filters.ControllerFilterAdapter;
 import org.junit.Test;
+import org.springframework.mock.web.MockFilterConfig;
+
 import static javalite.test.jspec.JSpec.a;
 
 /**
@@ -31,7 +33,7 @@ public class ControllerRegistrySpec {
 
     @Test
     public void test(){
-        ControllerRegistry r = new ControllerRegistry();
+        ControllerRegistry r = new ControllerRegistry(new MockFilterConfig());
         ControllerMetaData cmd = r.getMetaData(MockController.class);
         a(cmd).shouldNotBeNull();
         r.addGlobalFilters(new MockFilter1(), new MockFilter2());

@@ -18,6 +18,7 @@ package activeweb;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockFilterConfig;
 
 import static javalite.test.jspec.JSpec.a;
 
@@ -31,7 +32,7 @@ public class RouterStandardSpec {
 
     @Before
     public void before() {
-        ContextAccess.setControllerRegistry(new ControllerRegistry());
+        ContextAccess.setControllerRegistry(new ControllerRegistry(new MockFilterConfig()));
     }
 
     @Test

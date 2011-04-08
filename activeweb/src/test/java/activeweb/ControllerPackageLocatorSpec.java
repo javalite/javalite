@@ -17,6 +17,7 @@ limitations under the License.
 package activeweb;
 
 import org.junit.Test;
+import org.springframework.mock.web.MockFilterConfig;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class ControllerPackageLocatorSpec {
 
     @Test
     public void shouldDiscoverPackagesInDirectories(){
-        List<String> controllerPackages =  ControllerPackageLocator.locateControllerPackages();
+        List<String> controllerPackages =  ControllerPackageLocator.locateControllerPackages(new MockFilterConfig());
         a(controllerPackages.contains("admin")).shouldBeTrue();
         a(controllerPackages.contains("admin.special2")).shouldBeTrue();
         a(controllerPackages.contains("admin.special2.special3")).shouldBeTrue();

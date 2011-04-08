@@ -16,34 +16,34 @@ limitations under the License.
 
 package activeweb;
 
+import javax.servlet.FilterConfig;
 import java.io.File;
-import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /**
  * This is a utility class to discover controller packages under "app.controllers" package in Jar files and directories
  * on classpath.
- * 
+ *
  * @author Igor Polevoy
  */
-public class ControllerPackageLocator {
-    public static List<String> locateControllerPackages()  {
+class ControllerPackageLocator {
+    public static List<String> locateControllerPackages(FilterConfig config) {
         String controllerPath = System.getProperty("file.separator") + Configuration.getRootPackage() + System.getProperty("file.separator") + "controllers";
         List<String> controllerPackages = new ArrayList<String>();
-        URL[] urls =  ((URLClassLoader)Thread.currentThread().getContextClassLoader()).getURLs();
+        List<URL> urls = getUrls(config);
         for (URL url : urls) {
             File f = new File(url.getFile());
             if (f.isDirectory()) {
-                try{
+                try {
                     discoverInDirectory(f.getCanonicalPath() + controllerPath, controllerPackages, "");
-                }catch(Exception ignore){}
-            }else{//assuming jar file
+                } catch (Exception ignore) {
+                }
+            } else {//assuming jar file
                 discoverInJar(f, controllerPackages);
             }
         }
@@ -51,25 +51,26 @@ public class ControllerPackageLocator {
     }
 
     private static void discoverInDirectory(String directoryPath, List<String> controllerPackages, String parent) {
-        try{
+        try {
             File directory = new File(directoryPath);
-            if(!directory.exists()){
+            if (!directory.exists()) {
                 //nothing
-            }else{
-                File[]  files = directory.listFiles();
+            } else {
+                File[] files = directory.listFiles();
                 for (File file : files) {
-                    if(file.isDirectory()){
-                        controllerPackages.add(parent + (parent.equals("")? "" :".") + file.getName());
-                        discoverInDirectory(file.getCanonicalPath(), controllerPackages, parent + (parent.equals("")? "" :".") + file.getName());
+                    if (file.isDirectory()) {
+                        controllerPackages.add(parent + (parent.equals("") ? "" : ".") + file.getName());
+                        discoverInDirectory(file.getCanonicalPath(), controllerPackages, parent + (parent.equals("") ? "" : ".") + file.getName());
                     }
                 }
             }
-        }catch(Exception ignore){}
+        } catch (Exception ignore) {
+        }
     }
 
     protected static void discoverInJar(File file, List<String> controllerPackages) {
         String base = "app/controllers/";
-        try{
+        try {
             JarFile jarFile = new JarFile(file);
 
             Enumeration<JarEntry> entries = jarFile.entries();
@@ -77,10 +78,54 @@ public class ControllerPackageLocator {
                 JarEntry jarEntry = entries.nextElement();
 
                 String path = jarEntry.toString();
-                if(path.startsWith(base) && !path.endsWith(".class") &&  !path.equals(base)){
-                         controllerPackages.add(path.substring(base.length(), path.length() - 1).replace("/", "."));
+                if (path.startsWith(base) && !path.endsWith(".class") && !path.equals(base)) {
+                    controllerPackages.add(path.substring(base.length(), path.length() - 1).replace("/", "."));
                 }
             }
-        }catch(Exception ignore){}
+        } catch (Exception ignore) {
+        }
+    }
+
+    private static List<URL> getUrls(FilterConfig config) {
+        URL[] urls;
+        try {
+            urls = ((URLClassLoader) Thread.currentThread().getContextClassLoader()).getURLs();
+            return Arrays.asList(urls);
+        } catch (ClassCastException e) {
+            return hackForWeblogic(config);
+        }
+    }
+
+    private static List<URL> hackForWeblogic(FilterConfig config) {
+        List<URL> urls = new ArrayList<URL>();
+        Set libJars = config.getServletContext().getResourcePaths("/WEB-INF/lib");
+        for (Object jar : libJars) {
+            try {
+                urls.add(config.getServletContext().getResource((String) jar));
+            }
+            catch (MalformedURLException e) {
+                //TODO: need to log warning
+            }
+        }
+        addClassesUrl(config, urls);
+        return urls;
+    }
+
+    private static void addClassesUrl(FilterConfig config, List<URL> urls) {
+
+        Set resources = config.getServletContext().getResourcePaths("/WEB-INF/classes/");
+        System.out.println(resources);
+        if (!resources.isEmpty()) {
+            try {
+                String first = resources.iterator().next().toString();
+                String urlString = config.getServletContext().getResource(first).toString();
+                //example:
+                // zip:/home/igor/projects/domains/vrs/domain/vrs/servers/vrs_web/tmp/_WL_user/_appsdir_vrs-ear-4.0.1-SNAPSHOT_ear/tr9ese/war/WEB-INF/lib/_wl_cls_gen.jar!/com/
+                String url = urlString.substring(urlString.indexOf(":") + 2, urlString.indexOf("!"));
+                urls.add(new URL("file:/" + url));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

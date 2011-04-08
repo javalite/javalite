@@ -53,7 +53,7 @@ public abstract class RequestSpec extends JSpecSupport {
         response = new MockHttpServletResponse();
         config = new MockFilterConfig();
         ContextAccess.clear();
-        ContextAccess.setTLs(request, response, config, new ControllerRegistry());
+        ContextAccess.setTLs(request, response, config, new ControllerRegistry(new MockFilterConfig()));
         ContextAccess.setRoute(new MatchedRoute(new HomeController(), "index"));
         Bootstrap.initTemplateManager("src/test/views");
     }

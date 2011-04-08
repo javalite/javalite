@@ -21,6 +21,7 @@ import app.controllers.admin.special2.special3.Special3Controller;
 import javalite.test.jspec.JSpecSupport;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockFilterConfig;
 
 import java.util.HashMap;
 
@@ -33,7 +34,7 @@ public class RouteGenerationSpec extends JSpecSupport {
 
     @Before
     public void before(){
-        ContextAccess.setControllerRegistry(new ControllerRegistry()); 
+        ContextAccess.setControllerRegistry(new ControllerRegistry(new MockFilterConfig())); 
     }
     
 

@@ -21,6 +21,7 @@ import activeweb.mock.*;
 import static javalite.test.jspec.JSpec.*;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockFilterConfig;
 
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class AbstractControllerConfigSpec {
 
     @Before
     public void setUp() throws Exception {
-        ContextAccess.setControllerRegistry(new ControllerRegistry());
+        ContextAccess.setControllerRegistry(new ControllerRegistry(new MockFilterConfig()));
     }
 
     @Test

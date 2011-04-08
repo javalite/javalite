@@ -18,6 +18,7 @@ package activeweb;
 import activeweb.controller_filters.ControllerFilter;
 import com.google.inject.Injector;
 
+import javax.servlet.FilterConfig;
 import java.util.*;
 
 /**
@@ -36,8 +37,8 @@ class ControllerRegistry {
 
     private final Object token = new Object();
 
-    protected ControllerRegistry() {
-        controllerPackages = ControllerPackageLocator.locateControllerPackages();
+    protected ControllerRegistry(FilterConfig config) {
+        controllerPackages = ControllerPackageLocator.locateControllerPackages(config);
     }
 
 

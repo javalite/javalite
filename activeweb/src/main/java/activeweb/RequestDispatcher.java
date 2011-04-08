@@ -41,8 +41,8 @@ public class RequestDispatcher implements Filter {
     private Router router;
 
     public void init(FilterConfig filterConfig) throws ServletException {
-        this.filterConfig = filterConfig;
-        ControllerRegistry registry = new ControllerRegistry();
+        this.filterConfig = filterConfig;        
+        ControllerRegistry registry = new ControllerRegistry(filterConfig);
         filterConfig.getServletContext().setAttribute("controllerRegistry", registry);
         Bootstrap.initTemplateManager(filterConfig.getServletContext());
         ContextAccess.setControllerRegistry(registry);//bootstrap below requires it
