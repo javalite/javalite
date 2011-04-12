@@ -29,7 +29,7 @@ import static javalite.common.Collections.map;
  * @author Igor Polevoy
  */
 class ParamCopy {
-    private static Logger logger = LoggerFactory.getLogger(ParamCopy.class);
+    private static Logger logger = LoggerFactory.getLogger(ParamCopy.class.getName());
 
 
     static void copyInto(Map assigns){

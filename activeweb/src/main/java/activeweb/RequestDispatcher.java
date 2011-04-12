@@ -33,7 +33,7 @@ import static activeweb.ControllerFactory.getControllerClassName;
  * @author Igor Polevoy
  */
 public class RequestDispatcher implements Filter {
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass().getName());
     private FilterConfig filterConfig;
     private List<String> exclusions = new ArrayList<String>();
     private ControllerRunner runner = new ControllerRunner();

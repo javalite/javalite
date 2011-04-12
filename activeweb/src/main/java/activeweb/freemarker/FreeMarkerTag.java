@@ -34,7 +34,7 @@ import java.util.*;
  */
 public abstract class FreeMarkerTag implements TemplateDirectiveModel {
     
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass().getName());
 
     /**
      * Provides a logger to a subclass.

@@ -36,7 +36,7 @@ import static javalite.common.Collections.map;
 public class HttpSupport {
 
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass().getName());
 
     protected void logInfo(String info){
         logger.info(info);

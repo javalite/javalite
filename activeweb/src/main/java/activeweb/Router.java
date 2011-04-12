@@ -35,7 +35,7 @@ import static javalite.common.Collections.map;
  */
 public class Router {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(Router.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(Router.class.getName());
 
     public static final String CONTROLLER_NAME = "controller_name";
     public static final String PACKAGE_SUFFIX = "package_suffix";

@@ -36,7 +36,7 @@ import javax.servlet.http.HttpSession;
  */
 class ControllerRunner {
 
-    private static Logger logger = LoggerFactory.getLogger(ControllerRunner.class);
+    private static Logger logger = LoggerFactory.getLogger(ControllerRunner.class.getName());
 
     protected void run(MatchedRoute route, boolean ignoreConnections, boolean integrateViews) throws Exception {
         ControllerRegistry controllerRegistry = ContextAccess.getControllerRegistry();

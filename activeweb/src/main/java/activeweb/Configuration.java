@@ -16,6 +16,8 @@ limitations under the License.
 package activeweb;
 
 import activeweb.freemarker.FreeMarkerConfigurer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ import java.util.Properties;
  * @author Igor Polevoy
  */
 public class Configuration {
+    private Logger logger = LoggerFactory.getLogger(getClass().getName());
 
     enum Params{templateManager, bootstrap, defaultLayout, targetDir, rootPackage, dbconfig, rollback, freemarkerConfigurer}
 
@@ -71,8 +74,9 @@ public class Configuration {
     public String getEnv(){
         if(ENV == null){
             ENV = System.getenv().get("ACTIVE_ENV");
-            if(ENV == null){
+            if(ENV == null){                
                 ENV = "development";
+                logger.warn("Environment variable ACTIVE_ENV not provided, defaulting to '" + ENV + "'");
             }
         }
         return ENV;
