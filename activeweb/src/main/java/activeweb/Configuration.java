@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
+import static javalite.common.Util.blank;
+
 /**
  * @author Igor Polevoy
  */
@@ -74,7 +76,7 @@ public class Configuration {
     public String getEnv(){
         if(ENV == null){
             ENV = System.getenv().get("ACTIVE_ENV");
-            if(ENV == null){                
+            if(blank(ENV)){                
                 ENV = "development";
                 logger.warn("Environment variable ACTIVE_ENV not provided, defaulting to '" + ENV + "'");
             }
