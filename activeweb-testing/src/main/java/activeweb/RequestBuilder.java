@@ -190,6 +190,9 @@ public class RequestBuilder {
         if (content != null) request.setContent(content);
 
         String path = controllerPath + (realAction != null? "/" + realAction: "");
+        if(!path.startsWith("/")){
+            path = "/" + path;
+        }
         request.setServletPath(path);
         request.setRequestURI(path);
 

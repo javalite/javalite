@@ -33,7 +33,7 @@ import java.util.Map;
 import org.springframework.mock.web.MockFilterConfig;
 
 /**
- * This class is not used directly ion applications.
+ * This class is not used directly in applications.
  * 
  * @author Igor Polevoy
  */

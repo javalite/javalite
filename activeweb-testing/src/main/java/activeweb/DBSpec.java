@@ -23,7 +23,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 
 /**
- * Super class of a general spec that requires a connection to a text DB.
+ * Super class of a general spec that requires a connection to a test DB.
  * Before each test, a connection is opened to a test DB and transaction is started.
  * After each test, a connection is closed and a transaction is rolled back.
  * 
