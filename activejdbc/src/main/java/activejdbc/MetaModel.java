@@ -36,7 +36,7 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
     private final static Logger logger = LoggerFactory.getLogger(MetaModel.class);
     private Map<String, ColumnMetadata> columnMetadata;
     private List<Association> associations = new ArrayList<Association>();
-    private String idName, idNameUpper, idNameLower;
+    private String idName;
     private String tableName, dbType, dbName;
     private Class<T> modelClass;
     private boolean cached;

@@ -97,7 +97,7 @@ public abstract class Model extends CallbackSupport{
                 value = attributesMap.get(attrName.toUpperCase());
             }
 
-            //it is necessary to cache contents of a clob, because if a clob instance itself s cached, and accessed later,
+            //it is necessary to cache contents of a clob, because if a clob instance itself is cached, and accessed later,
             //it will not be able to connect back to that same connection from which it came.
             //This is only important for cached models. This will allocate a ton of memory if Clobs are large.
             //Should the Blob behavior be the same?
