@@ -90,6 +90,15 @@ public class Expectation<T> {
         if (!actual.getClass().equals(clazz)) throw new TestException(actual.getClass() + " is not " + clazz);
     }
 
+    /**
+     * Synonym for {@link #shouldBeType(Class)}.
+     * 
+     * @param clazz
+     */
+    public void shouldBeA(Class clazz) {
+        shouldBeType(clazz);
+    }
+
     public void shouldBeFalse() {
         if ((Boolean) actual) throw new TestException("should not be true, but it is");
     }
@@ -97,7 +106,6 @@ public class Expectation<T> {
     public void shouldBeTrue() {
         if (!(Boolean) actual) throw new TestException("should be true, but it is not");
     }
-
 
     public void shouldBeNull() {
         if (actual != null) throw new TestException("argument is not null, but it should be");
@@ -111,7 +119,7 @@ public class Expectation<T> {
         if (actual == expected) throw new TestException("references are the same, but they should not be");
     }
 
-    public String capitalize(String s) {
+    private String capitalize(String s) {
         if (s.length() == 0) return s;
         return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
     }
