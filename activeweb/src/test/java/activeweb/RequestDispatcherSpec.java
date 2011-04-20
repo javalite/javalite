@@ -35,14 +35,21 @@ import java.io.PrintStream;
 public class RequestDispatcherSpec extends RequestSpec {
 
     private boolean fellThrough = false;
-
-    ByteArrayOutputStream bout;
+    private ByteArrayOutputStream bout;
+    private FilterChain badFilterChain;
 
     @Before
     public void beforeStart() {
         filterChain = new FilterChain() {
             public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse) throws IOException, ServletException {
                 fellThrough = true;
+            }
+        };
+
+
+        badFilterChain = new FilterChain() {
+            public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse) throws IOException, ServletException {
+                throw new RuntimeException("I'm a bad... bad exception!");
             }
         };
 
@@ -85,6 +92,24 @@ public class RequestDispatcherSpec extends RequestSpec {
         dispatcher.doFilter(request, response, filterChain);
 
         a(fellThrough).shouldBeTrue();
+    }
+
+
+    /**
+     * If there is exception in the FilterChain below RequestDispatcher, it should not
+     * attempt to do anything to it. 
+     *
+     * @throws IOException
+     * @throws ServletException
+     */
+    @Test
+    public void shouldPassExternalExceptionUpTheStack() throws IOException, ServletException {
+        request.setServletPath("/css/main.css");
+        request.setMethod("GET");
+        config.addInitParameter("exclusions", "css,images,js");
+        dispatcher.init(config);
+        dispatcher.doFilter(request, response, badFilterChain);
+        a(response.getContentAsString()).shouldBeEqual("I'm a bad... bad exception!");
     }
 
     @Test

@@ -78,6 +78,8 @@ public class RequestDispatcher implements Filter {
 
             HttpServletRequest request = (HttpServletRequest) req;
             HttpServletResponse response = (HttpServletResponse) resp;
+            ContextAccess.setTLs(request, response, filterConfig, getControllerRegistry());
+            
             String uri = request.getServletPath();
             if (Util.blank(uri)) {
                 uri = "/";//different servlet implementations, damn.
@@ -89,7 +91,6 @@ public class RequestDispatcher implements Filter {
                 return;
             }
 
-            ContextAccess.setTLs(request, response, filterConfig, getControllerRegistry());
             MatchedRoute route = router.recognize(uri, HttpMethod.getMethod(request));
 
             if (route != null) {
@@ -97,7 +98,7 @@ public class RequestDispatcher implements Filter {
                 logger.info("================ New request: " + new Date() + " ================");
                 if (Configuration.logRequestParams()) {
                     logRequestHeaders((HttpServletRequest) req);
-                    logRequestProperties((HttpServletRequest) req);
+                    logRequestProperties();
                     logParameters((HttpServletRequest) req);
                 }
 
@@ -107,6 +108,8 @@ public class RequestDispatcher implements Filter {
 
                 runner.run(route, false, true);
             } else {
+                //TODO: theoretically this will never happen, because if the route was not excluded, the router.recognize() would throw some kind
+                // of exception, leading to the a system error page.
                 logger.warn("No matching route for servlet path: " + request.getServletPath() + ", passing down to container.");
                 chain.doFilter(req, resp);//let it fall through
             }
@@ -167,7 +170,7 @@ public class RequestDispatcher implements Filter {
     }
 
     private void renderSystemError(String template, String layout, int status, Throwable e) {        
-        logger.error("ActiveWeb ERROR: " + e.toString(), e);
+        logger.error("ActiveWeb ERROR: \n" + getRequestProperties(), e);
         RenderTemplateResponse resp = new RenderTemplateResponse(getMapWithExceptionDataAndSession(e), template);
         resp.setLayout(layout);
         resp.setStatus(status);
@@ -176,13 +179,20 @@ public class RequestDispatcher implements Filter {
         resp.process();
     }
 
-    private void logRequestProperties(HttpServletRequest request) {
-        logger.info("Request URL: " + request.getRequestURL());
-        logger.info("ContextPath: " + request.getContextPath());
-        logger.info("Query String: " + request.getQueryString());
-        logger.info("URI Full Path: " + request.getRequestURI());
-        logger.info("URI Path: " + request.getServletPath());
-        logger.info("Method: " + request.getMethod());
+    private void logRequestProperties() {
+        logger.info(getRequestProperties());
+    }
+
+    private String getRequestProperties(){
+        StringBuffer sb = new StringBuffer();
+        HttpServletRequest request = ContextAccess.getHttpRequest();
+        sb.append("Request URL: ").append(request.getRequestURL()).append("\n");
+        sb.append("ContextPath: ").append(request.getContextPath()).append("\n");
+        sb.append("Query String: ").append(request.getQueryString()).append("\n");
+        sb.append("URI Full Path: ").append(request.getRequestURI()).append("\n");
+        sb.append("URI Path: ").append(request.getServletPath()).append("\n");
+        sb.append("Method: ").append(request.getMethod()).append("\n");
+        return sb.toString();
     }
     
     private void logParameters(HttpServletRequest request) {
