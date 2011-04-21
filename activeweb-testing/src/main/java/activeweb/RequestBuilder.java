@@ -36,6 +36,7 @@ public class RequestBuilder {
 
     private boolean integrateViews = false;
     private Map<String, String> values = new HashMap<String, String>();
+    private Map<String, String> headers = new HashMap<String, String>();
     private String contentType;
     private byte[] content;
     private String controllerPath;
@@ -105,6 +106,25 @@ public class RequestBuilder {
         return this;
     }
 
+
+    public RequestBuilder header(String name, String value) {
+        headers.put(name, value);
+        return this;
+    }
+
+    public RequestBuilder headers(String ... namesAndValues) {
+
+        if(namesAndValues.length % 2 != 0)
+            throw new IllegalArgumentException("number of arguments must be even");
+
+        for (int i = 0; i < namesAndValues.length - 1; i += 2) {
+            if (namesAndValues[i] == null || namesAndValues[i + 1] == null)
+                throw new IllegalArgumentException("header names or values cannot be null");
+            header(namesAndValues[i], namesAndValues[i + 1]);
+        }
+        return this;
+    }
+
     public RequestBuilder params(String ... namesAndValues){
 
         if(namesAndValues.length % 2 != 0)
@@ -112,7 +132,7 @@ public class RequestBuilder {
 
 
         for (int i = 0; i < namesAndValues.length - 1; i += 2) {
-            if (namesAndValues[i] == null) throw new IllegalArgumentException("attribute names cannot be nulls");
+            if (namesAndValues[i] == null) throw new IllegalArgumentException("parameter names cannot be nulls");
             param(namesAndValues[i], namesAndValues[i + 1]);
         }
         return this;
@@ -206,6 +226,7 @@ public class RequestBuilder {
             request.setMethod(method.toString());
         }
 
+        addHeaders(request);
         addParameterValues(request);
         try{
             AppController controller = createControllerInstance(getControllerClassName(controllerPath));
@@ -229,6 +250,12 @@ public class RequestBuilder {
         }
     }
 
+    private void addHeaders(MockHttpServletRequest request) {        
+        for(String header: headers.keySet()){
+            request.addHeader(header, headers.get(header));
+        }
+    }
+
     private void addCookiesInternal(MockHttpServletRequest request) {
         List<javax.servlet.http.Cookie> servletCookieList = new ArrayList<javax.servlet.http.Cookie>();
         for(Cookie cookie: cookies){
@@ -239,8 +266,7 @@ public class RequestBuilder {
     }
 
     private void addParameterValues(MockHttpServletRequest httpServletRequest) {
-        String[] keys = values.keySet().toArray(new String[]{});
-        for (String key : keys) {
+        for (String key : values.keySet()) {
             httpServletRequest.addParameter(key, values.get(key));
         }
     }

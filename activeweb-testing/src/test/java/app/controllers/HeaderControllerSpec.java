@@ -16,33 +16,26 @@ limitations under the License.
 
 package app.controllers;
 
-import activeweb.AppController;
-import activeweb.annotations.DELETE;
-import activeweb.annotations.POST;
-import activeweb.annotations.PUT;
+import activeweb.ControllerSpec;
+import org.junit.Test;
 
 /**
  * @author Igor Polevoy
  */
-public class UnobtrusiveController extends AppController {
-    public void index() {}
+public class HeaderControllerSpec extends ControllerSpec {
 
-    public void doGet() {
-        respond("this is  GET, data: " + params());
+    @Test
+    public void shouldPassHeaderFromTest(){
+        request().header("X-Requested-With", "XMLHttpRequest").get("index");
+        a(assigns().get("isAjax").toString()).shouldBeEqual("true");
     }
 
-    @POST
-    public void doPost() {
-        respond("this is  POST, data: " + params());
-    }
 
-    @DELETE
-    public void doDelete() {
-        respond("this is  DELETE, data: " + params());
-    }
+    @Test
+    public void shouldPassMultipleHeadersFromTest(){
+        request().headers("header1", "h1val", "header2", "h2val").get("test");
 
-    @PUT
-    public void doPut() {
-        respond("this is  PUT, data: " + params());
+        a(assigns().get("val1")).shouldBeEqual("h1val");
+        a(assigns().get("val2")).shouldBeEqual("h2val");
     }
 }

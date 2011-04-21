@@ -933,4 +933,20 @@ public class HttpSupport {
         return false;
     }
 
+
+    /**
+     * Returns true if this request is Ajax.
+     *
+     * @return true if this request is Ajax.
+     */
+    protected boolean isXhr(){
+        return header("X-Requested-With") != null || header("x-requested-with") != null;
+    }
+
+    /**
+     * Synonym for {@link #isXhr()}.
+     */
+    protected boolean xhr(){
+        return isXhr();
+    }
 }

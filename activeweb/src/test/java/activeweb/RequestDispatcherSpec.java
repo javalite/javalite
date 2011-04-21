@@ -261,11 +261,23 @@ public class RequestDispatcherSpec extends RequestSpec {
         request.setMethod("GET");
         dispatcher.doFilter(request, response, filterChain);
         String html = response.getContentAsString();
+        System.out.println(html);
         a(XPathHelper.selectText("//title", html)).shouldBeEqual("custom layout");
         a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("different");
     }
 
 
+    @Test
+    public void shouldRenderErrorWithoutLayoutIfRequestIsAjax() throws ServletException, IOException {
+        request.setServletPath("/ajax");
+        request.setMethod("GET");
+        request.addHeader("X-Requested-With", "XMLHttpRequest");
+        dispatcher.doFilter(request, response, filterChain);
+        String out = response.getContentAsString();
+        the(out.contains("activeweb.ControllerException: java.lang.ArithmeticException: / by zero; / by zero\n" +
+                "\tat activeweb.ControllerRunner.executeAction(ControllerRunner.java:208)\n" +
+                "\tat activeweb.ControllerRunner.run(ControllerRunner.java:57)")).shouldBeTrue();
+    }
 
 
     PrintStream err;

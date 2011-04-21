@@ -169,18 +169,34 @@ public class RequestDispatcher implements Filter {
         return sw.toString();
     }
 
-    private void renderSystemError(String template, String layout, int status, Throwable e) {        
+    private void renderSystemError(String template, String layout, int status, Throwable e) {
         logger.error("ActiveWeb ERROR: \n" + getRequestProperties(), e);
-        RenderTemplateResponse resp = new RenderTemplateResponse(getMapWithExceptionDataAndSession(e), template);
-        resp.setLayout(layout);
-        resp.setStatus(status);
-        resp.setTemplateManager(Configuration.getTemplateManager());
-        ParamCopy.copyInto(resp.values());
-        resp.process();
+        if(ContextAccess.getHttpRequest().getHeader("x-requested-with")!= null
+                || ContextAccess.getHttpRequest().getHeader("X-Requested-With") != null){
+
+            try{
+                ContextAccess.getHttpResponse().getWriter().write(getStackTraceString(e));
+            }catch(Exception ex){
+                logger.error("Failed to send error response to client", ex);
+            }                        
+        }else{
+            RenderTemplateResponse resp = new RenderTemplateResponse(getMapWithExceptionDataAndSession(e), template);
+            resp.setLayout(layout);
+            resp.setStatus(status);
+            resp.setTemplateManager(Configuration.getTemplateManager());
+            ParamCopy.copyInto(resp.values());
+            resp.process();            
+        }
     }
 
     private void logRequestProperties() {
-        logger.info(getRequestProperties());
+        HttpServletRequest request = ContextAccess.getHttpRequest();
+        logger.info("Request URL: " + request.getRequestURL());
+        logger.info("ContextPath: " + request.getContextPath());
+        logger.info("Query String: " + request.getQueryString());
+        logger.info("URI Full Path: " + request.getRequestURI());
+        logger.info("URI Path: " + request.getServletPath());
+        logger.info("Method: " + request.getMethod());
     }
 
     private String getRequestProperties(){

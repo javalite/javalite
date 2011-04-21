@@ -17,32 +17,17 @@ limitations under the License.
 package app.controllers;
 
 import activeweb.AppController;
-import activeweb.annotations.DELETE;
-import activeweb.annotations.POST;
-import activeweb.annotations.PUT;
 
 /**
  * @author Igor Polevoy
  */
-public class UnobtrusiveController extends AppController {
-    public void index() {}
-
-    public void doGet() {
-        respond("this is  GET, data: " + params());
+public class HeaderController extends AppController {
+    public void index(){
+        view("isAjax", xhr());
     }
 
-    @POST
-    public void doPost() {
-        respond("this is  POST, data: " + params());
-    }
-
-    @DELETE
-    public void doDelete() {
-        respond("this is  DELETE, data: " + params());
-    }
-
-    @PUT
-    public void doPut() {
-        respond("this is  PUT, data: " + params());
+    public void test(){
+        view("val1", header("header1"));
+        view("val2", header("header2"));
     }
 }
