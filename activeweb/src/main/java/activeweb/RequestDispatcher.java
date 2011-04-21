@@ -175,7 +175,8 @@ public class RequestDispatcher implements Filter {
                 || ContextAccess.getHttpRequest().getHeader("X-Requested-With") != null){
 
             try{
-                ContextAccess.getHttpResponse().getWriter().write(getStackTraceString(e));
+                ContextAccess.getHttpResponse().setStatus(status);
+                ContextAccess.getHttpResponse().getWriter().write(getStackTraceString(e));                
             }catch(Exception ex){
                 logger.error("Failed to send error response to client", ex);
             }                        
