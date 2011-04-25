@@ -46,4 +46,17 @@ public class UploadController extends AppController {
         }
         view("items", items);
     }
+
+
+    @POST
+    public void withId(){
+        view("id", getId());
+        Iterator<FormItem> iterator =  uploadedFiles();
+        List<Map> items = new ArrayList<Map>();
+        while (iterator.hasNext()) {
+            FormItem item = iterator.next();
+            items.add(map("name", item.getName(), "content", new String(item.getBytes())));
+        }
+        view("items", items);
+    }
 }

@@ -73,4 +73,23 @@ public class UploadControllerSpec extends IntegrationSpec{
         a(XPathHelper.selectText("/html/div[2]/div[1]", html)).shouldBeEqual("hello2.txt");
         a(XPathHelper.selectText("/html/div[2]/div[2]", html)).shouldBeEqual(".. and salutations!");
     }
+
+    @Test
+    public void shouldUploadFileWithId(){
+
+        controller("upload").contentType("multipart/form-data")
+                .id("123")
+                .formItem(new FileItem("hello2.txt", "hello2", "text/plain", ".. and salutations!".getBytes()))
+                .integrateViews()
+                .post("with-id");
+
+        a(assigns().get("id")).shouldNotBeNull();
+
+        a(responseContent()).shouldBeEqual("<html>\n" +
+                "    <div>\n" +
+                "        <div>hello2.txt</div>\n" +
+                "        <div>.. and salutations!</div>\n" +
+                "    </div>\n" +
+                "</html>");
+    }
 }

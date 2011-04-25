@@ -45,6 +45,7 @@ public class RequestBuilder {
     private MockHttpServletRequest request;
     private String realAction;
     private List<FormItem> formItems =  new ArrayList<FormItem>();
+    private String id;
 
     public RequestBuilder(String controllerPath, HttpSession session) {
         this.controllerPath = controllerPath;
@@ -215,6 +216,7 @@ public class RequestBuilder {
         }
         request.setServletPath(path);
         request.setRequestURI(path);
+        request.setAttribute("id", id);
 
         addCookiesInternal(request);
 
@@ -269,5 +271,10 @@ public class RequestBuilder {
         for (String key : values.keySet()) {
             httpServletRequest.addParameter(key, values.get(key));
         }
+    }
+
+    public RequestBuilder id(String id) {
+        this.id = id;
+        return this;
     }
 }
