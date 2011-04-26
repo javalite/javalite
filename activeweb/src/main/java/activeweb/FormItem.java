@@ -18,13 +18,11 @@ package activeweb;
 
 import javalite.common.Util;
 import org.apache.commons.fileupload.FileItemHeaders;
-import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 
 /**
  * Represents an form item from a multi-part form.
@@ -179,4 +177,14 @@ public class FormItem {
         }
     }
 
+
+    /**
+     * Saves content of this item to a file.
+     *
+     * @param path to file
+     * @throws IOException
+     */
+    public void saveTo(String path) throws IOException {
+        Util.saveTo(path, getInputStream());
+    }
 }
