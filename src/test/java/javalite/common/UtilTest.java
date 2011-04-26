@@ -22,6 +22,7 @@ import javalite.test.jspec.JSpecSupport;
 import junit.framework.TestCase;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -57,5 +58,14 @@ public class UtilTest extends JSpecSupport {
 
         byte[] bytes = Util.readResourceBytes("/pdf_implementation.pdf");
         a(bytes.length).shouldBeEqual(174230);
+    }
+
+    @Test
+    public void shouldStreamIntoFile() throws IOException {
+        String hello = "hello world";
+        ByteArrayInputStream bin = new ByteArrayInputStream(hello.getBytes());
+
+        Util.saveTo("target/test.txt", bin);
+        a(Util.readFile("target/test.txt")).shouldBeEqual(hello);
     }
 }
