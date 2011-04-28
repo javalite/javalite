@@ -41,15 +41,14 @@ final class RPCControllerUtils {
      */
     static final int BUFFER_SIZE = 4096;
     private static final String ACCEPT_ENCODING = "Accept-Encoding";
-    private static final String ATTACHMENT = "attachment";
+
     /**
      * Used both as expected request charset and encoded response charset.
      */
     private static final String CHARSET_UTF8 = "UTF-8";
-    private static final String CONTENT_DISPOSITION = "Content-Disposition";
     private static final String CONTENT_ENCODING = "Content-Encoding";
     private static final String CONTENT_ENCODING_GZIP = "gzip";
-    private static final String CONTENT_TYPE_APPLICATION_JSON_UTF8 = "application/json; charset=utf-8";
+
     private static final String GENERIC_FAILURE_MSG = "The call failed on the server; see server log for details";
     private static final String GWT_RPC_CONTENT_TYPE = "text/x-gwt-rpc";
     /**
@@ -181,8 +180,7 @@ final class RPCControllerUtils {
     /**
      * Returns the content of an {@link HttpServletRequest}, after verifying a
      * <code>gwt/x-gwt-rpc; charset=utf-8</code> content type.
-     * 
-     * @param request the servlet request whose content we want to read
+     *
      * @return the content of an {@link HttpServletRequest} by decoding it using
      *         <code>UTF-8</code>
      * @throws IOException if the request's input stream cannot be accessed, read
@@ -205,8 +203,7 @@ final class RPCControllerUtils {
     /**
      * Returns <code>true</code> if the request accepts gzip encoding and the the
      * response content's estimated UTF-8 byte length exceeds 256 bytes.
-     * 
-     * @param request the request associated with the response content
+     *
      * @param responseContent a string that will be
      * @return <code>true</code> if the request accepts gzip encoding and the the
      *         response content's estimated UTF-8 byte length exceeds 256 bytes
@@ -221,8 +218,6 @@ final class RPCControllerUtils {
      * <code>gzipResponse</code> is <code>true</code>, the response content will
      * be gzipped prior to being written into the response.
      * 
-     * @param servletContext servlet context for this response
-     * @param response response instance
      * @param responseContent a string containing the response content
      * @param gzipResponse if <code>true</code> the response content will be gzip
      *          encoded before being written into the response
@@ -274,8 +269,6 @@ final class RPCControllerUtils {
      * Called when the servlet itself has a problem, rather than the invoked
      * third-party method. It writes a simple 500 message back to the client.
      * 
-     * @param servletContext
-     * @param response
      * @param failure
      */
     static void writeResponseForUnexpectedFailure(Throwable failure) {
@@ -287,8 +280,7 @@ final class RPCControllerUtils {
 
     /**
      * Performs validation of the character encoding, ignoring case.
-     * 
-     * @param request the incoming request
+     *
      * @param expectedCharSet the expected charset of the request
      * @throws RPCException if requests encoding is not <code>null</code> and
      *         does not equal, ignoring case, <code>expectedCharSet</code>
@@ -321,8 +313,6 @@ final class RPCControllerUtils {
      * Performs Content-Type validation of the incoming request, ignoring case
      * and any <code>charset</code> parameter.
      *
-     * @see   #checkCharacterEncodingIgnoreCase(HttpServletRequest, String)
-     * @param request the incoming request
      * @param expectedContentType the expected Content-Type for the incoming
      *        request
      * @throws RPCException if the request's content type is not

@@ -31,6 +31,5 @@ public class InternalErrorResponse extends ControllerResponse {
         } catch(IOException ioe) {
             throw new WebException(ioe);
         }        
-    }
-    
+    }    
 }
