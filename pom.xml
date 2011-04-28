@@ -19,6 +19,7 @@
     <modules>
         <module>activeweb</module>
         <module>activeweb-testing</module>
+        <module>activeweb-gwt</module>
         <module>webapp-root</module>
         <module>kitchensink</module>
     </modules>
@@ -128,6 +129,16 @@
                 <artifactId>guice</artifactId>
                 <version>2.0</version>
             </dependency>
+	    <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice</artifactId>
+                <version>2.0</version>
+            </dependency>
+	    <dependency>
+		<groupId>com.google.gwt</groupId>
+		<artifactId>gwt-user</artifactId>
+		<version>2.2.0</version>
+	    </dependency>        
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
@@ -142,7 +153,7 @@
         </dependencies>
     </dependencyManagement>
 
-<repositories>
+    <repositories>
         <repository>
             <id>ip-solutions</id>
             <name>IP Solutions</name>
@@ -162,7 +173,7 @@
             </releases>
         </repository>
     </repositories>
- <distributionManagement>
+    <distributionManagement>
         <repository>
             <id>ipsolutions-repo</id>
             <name>IPSolutions Repository</name>

@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>activeweb</groupId>
+    <artifactId>activeweb-gwt</artifactId>
+    <packaging>jar</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <name>ActiveWeb - GWT</name>
+    <description>Integration between activeweb and gwt rpc services</description>
+    
+    <developers>
+        <developer>
+            <name>Igor Polevoy</name>
+            <email>igor at polevoy.org</email>
+        </developer>
+	<developer>
+            <name>Max Artyukhov</name>
+            <email>brokenmax at gmail.com</email>
+        </developer>
+    </developers>
+
+    <parent>
+        <groupId>activeweb</groupId>
+        <artifactId>activeweb-root</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <dependencies>                
+        <dependency>
+            <groupId>activeweb</groupId>
+            <artifactId>activeweb</artifactId>
+            <version>${project.version}</version>
+        </dependency>      
+	<dependency>
+	    <groupId>com.google.gwt</groupId>
+	    <artifactId>gwt-user</artifactId>	    
+	</dependency>        
+    </dependencies>
+
+</project>
