@@ -26,18 +26,18 @@ public class GWTByteArrayResponse extends StreamResponse {
     
     private static final String CONTENT_TYPE_APPLICATION_JSON_UTF8 = "application/json; charset=utf-8";
     private static final String CONTENT_DISPOSITION = "Content-Disposition";
-    private static final String ATTACHMENT = "attachment";
+    private static final String ATTACHMENT = "attachment";    
     
-    private byte[] responseBytes;
+    private int contentLenght;
     
     public GWTByteArrayResponse(byte[] responseBytes) {
         super(new ByteArrayInputStream(responseBytes));
-        this.responseBytes = responseBytes;
+        contentLenght = responseBytes.length;        
     }
 
     @Override
     void doProcess() {
-        ContextAccess.getHttpResponse().setContentLength(responseBytes.length);
+        ContextAccess.getHttpResponse().setContentLength(contentLenght);
         setContentType(CONTENT_TYPE_APPLICATION_JSON_UTF8);
         setStatus(HttpServletResponse.SC_OK);
         ContextAccess.getHttpResponse().setHeader(CONTENT_DISPOSITION, ATTACHMENT);
