@@ -26,7 +26,7 @@ public class ControllerClassLoaderSpec {
     @Test
     public void test() throws ClassNotFoundException {
 
-        String className = "activeweb.mock.MockController";
+        String className = "app.controllers.BlahController";
 
         ControllerClassLoader cl1 = new ControllerClassLoader(ControllerClassLoaderSpec.class.getClassLoader(), "target/test-classes");
         ControllerClassLoader cl2 = new ControllerClassLoader(ControllerClassLoaderSpec.class.getClassLoader(), "target/test-classes");
