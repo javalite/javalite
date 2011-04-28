@@ -31,8 +31,9 @@ class ControllerClassLoader extends ClassLoader {
     }
 
     public Class<?> loadClass(String name) throws ClassNotFoundException {
+        //TODO - improve/refactor classloading
 
-        if("activeweb.AppController".equals(name)){
+        if(name.startsWith("activeweb.")){
             return Thread.currentThread().getContextClassLoader().loadClass(name);
         }
 
