@@ -18,20 +18,44 @@ limitations under the License.
 package activejdbc.validation;
 
 import activejdbc.DBException;
+import activejdbc.Errors;
 import activejdbc.Model;
+
+import java.util.Locale;
 
 /**
  * @author Igor Polevoy
  */
 public class ValidationException extends DBException {
     private String message = "";
+    private Model source;
 
     public ValidationException(Model m){
-            message += m.errors().toString();
+        message += m.errors().toString();
     }
 
     @Override
     public String getMessage() {
         return message;
+    }
+
+    /**
+     * Convenience method, returns the same object with errors that is attached to a model generated this exception.
+     *
+     * @return the same object wit errors that is attached to a model generated this exception
+     */
+    public Errors errors(){
+        return source.errors();
+    }
+
+
+    /**
+     * Convenience method, returns the same object with errors that is attached to a model generated this exception.
+     *
+     * @param locale locale in case messages are localized.
+     * @return the same object wit errors that is attached to a model generated this exception
+     */
+    public Errors errors(Locale locale){
+        return source.errors(locale);
     }
 }
