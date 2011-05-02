@@ -32,6 +32,7 @@ public class ValidationException extends DBException {
 
     public ValidationException(Model m){
         message += m.errors().toString();
+        this.source = m;svn s
     }
 
     @Override
