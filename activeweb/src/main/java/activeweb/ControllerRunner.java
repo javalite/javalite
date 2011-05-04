@@ -190,7 +190,7 @@ class ControllerRunner {
         try {
             for (List<ControllerFilter> filterGroup : filters) {
                 for (int i = filterGroup.size() - 1; i >= 0; i--) {
-                    logger.info("======>>>> Executing filter: " + filterGroup.get(i).getClass().getName() + "#before" );
+                    logger.info("======>>>> Executing filter: " + filterGroup.get(i).getClass().getName() + "#after" );
                     filterGroup.get(i).after();
                 }
             }
