@@ -88,6 +88,7 @@ public class RequestDispatcher implements Filter {
             boolean excluded = excluded(uri);
             if(excluded){
                 chain.doFilter(req, resp);
+                logger.info("URI excluded: " + uri);
                 return;
             }
 
