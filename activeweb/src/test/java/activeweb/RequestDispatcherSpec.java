@@ -274,9 +274,8 @@ public class RequestDispatcherSpec extends RequestSpec {
         request.addHeader("X-Requested-With", "XMLHttpRequest");
         dispatcher.doFilter(request, response, filterChain);
         String out = response.getContentAsString();
-        the(out.contains("activeweb.ControllerException: java.lang.ArithmeticException: / by zero; / by zero\n" +
-                "\tat activeweb.ControllerRunner.executeAction(ControllerRunner.java:208)\n" +
-                "\tat activeweb.ControllerRunner.run(ControllerRunner.java:57)")).shouldBeTrue();
+        System.out.println(out);
+        the(out.contains("activeweb.ControllerException: java.lang.ArithmeticException: / by zero; / by zero\n")).shouldBeTrue();
     }
 
 
