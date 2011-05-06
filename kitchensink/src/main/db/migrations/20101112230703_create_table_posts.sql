@@ -5,4 +5,4 @@ CREATE TABLE posts (
   content TEXT,
   created_at DATETIME,
   updated_at DATETIME
-)TYPE=InnoDB;;
+)ENGINE=InnoDB;
