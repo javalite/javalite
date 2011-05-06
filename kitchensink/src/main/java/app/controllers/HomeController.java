@@ -23,13 +23,7 @@ import activeweb.AppController;
  */
 public class HomeController extends AppController {
 
-    public void index(){
-
-        logInfo("protocol: " + protocol());
-        logInfo("host: " + host());
-        logInfo("port: " + port());
-
-    }
+    public void index(){}
 
     public void wrapped() {
         render("index").layout("/layouts/wrapped_layout");        
