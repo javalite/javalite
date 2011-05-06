@@ -92,7 +92,7 @@ public class ControllerFactory {
 
         String classpath = "";
         for (URL url : urls) {
-            classpath += url.toString().split(":")[1] + System.getProperty("path.separator");
+            classpath += url.getPath() + System.getProperty("path.separator");
         }
 
         StringWriter writer = new StringWriter();
