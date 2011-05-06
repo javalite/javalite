@@ -24,6 +24,9 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 
+import static javalite.common.Collections.list;
+import static javalite.common.Util.join;
+
 /**
  * @author Igor Polevoy
  */
@@ -94,8 +97,10 @@ public class ControllerFactory {
 
         StringWriter writer = new StringWriter();
         PrintWriter out = new PrintWriter(writer);
-        //TODO: un-hardcode these paths
-        String[] args = {"-d", "./target/classes", "-cp", classpath, "src/main/java" + System.getProperty("file.separator") + controllerFileName};
+        String targetClasses = join(list("target", "classes"), System.getProperty("file.separator"));
+        String srcMainJava = join(list("src", "main", "java"), System.getProperty("file.separator"));
+
+        String[] args = {"-d", targetClasses, "-cp", classpath, srcMainJava + System.getProperty("file.separator") + controllerFileName};
 
         Class cl = Class.forName("com.sun.tools.javac.Main");
         Method compile = cl.getMethod("compile", String[].class, PrintWriter.class);
