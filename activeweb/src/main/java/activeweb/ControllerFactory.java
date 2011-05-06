@@ -1,17 +1,17 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2010 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
 package activeweb;
 
@@ -21,8 +21,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.net.*;
 
 import static javalite.common.Collections.list;
 import static javalite.common.Util.join;
@@ -31,7 +30,7 @@ import static javalite.common.Util.join;
  * @author Igor Polevoy
  */
 public class ControllerFactory {
-    
+
     static <T extends AppController> Class<T> getControllerClass(String controllerClassName) throws ControllerLoadException {
         Class controllerClass;
         try {
@@ -74,15 +73,7 @@ public class ControllerFactory {
         }
     }
 
-    /**
-         *
-         * @param controllerClassName
-         * @return
-         * @throws ClassNotFoundException
-         * @throws NoSuchMethodException
-         * @throws InvocationTargetException
-         * @throws IllegalAccessException
-         */
+
     private static String compileController(String controllerClassName) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
         String controllerFileName = controllerClassName.replace(".", System.getProperty("file.separator")) + ".java";
@@ -90,11 +81,8 @@ public class ControllerFactory {
         URLClassLoader loader = ((URLClassLoader) Thread.currentThread().getContextClassLoader());
         URL[] urls = loader.getURLs();
 
-        String classpath = "";
-        for (URL url : urls) {
-            classpath += url.getPath() + System.getProperty("path.separator");
-        }
-
+        String classpath = getClasspath(urls);
+        
         StringWriter writer = new StringWriter();
         PrintWriter out = new PrintWriter(writer);
         String targetClasses = join(list("target", "classes"), System.getProperty("file.separator"));
@@ -107,6 +95,25 @@ public class ControllerFactory {
         compile.invoke(null, args, out);
         out.flush();
         return writer.toString();
+    }
+
+    private static String getClasspath(URL[] urls) {
+        String classpath = "";
+        for (URL url : urls) {
+            String path = url.getPath();
+            if(System.getProperty("os.name").contains("Windows")){
+                if(path.startsWith("/")){
+                    path = path.substring(1);//loose leading slash
+                }
+                try{
+                    path = URLDecoder.decode(path, "UTF-8");// fill in the spaces
+                }catch(java.io.UnsupportedEncodingException e){/*ignore*/}
+                path = path.replace("/", "\\");//boy, do I dislike windoz!
+            }
+            classpath += path + System.getProperty("path.separator");
+        }
+
+        return classpath;
     }
 
     static String getControllerClassName(String controllerName, String packageSuffix) {
