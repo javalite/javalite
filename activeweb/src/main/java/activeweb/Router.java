@@ -183,7 +183,7 @@ public class Router {
         if (restful) {
             if (action != null && !(action.equals("new_form") || action.equals("edit_form"))) {
                 throw new IllegalArgumentException("Illegal action name: '" + action +
-                        ", allowed names for restful controllers: 'new_form' and 'edit_form'");
+                        "', allowed names for restful controllers: 'new_form' and 'edit_form'");
             }
 
             if (action != null && action.equals("new_form") && id != null) {
