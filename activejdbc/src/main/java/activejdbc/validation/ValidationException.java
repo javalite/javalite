@@ -35,6 +35,11 @@ public class ValidationException extends DBException {
         this.source = m;
     }
 
+    public ValidationException(String message) {
+        super(message);
+        this.message = message;
+    }
+
     @Override
     public String getMessage() {
         return message;

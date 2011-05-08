@@ -19,6 +19,7 @@ package activejdbc;
 
 import activejdbc.test.ActiveJDBCTest;
 import activejdbc.test_models.Account;
+import activejdbc.test_models.Page;
 import org.junit.Test;
 
 /**
@@ -72,5 +73,15 @@ public class NumericValidationBuilderTest extends ActiveJDBCTest {
         account.set("amount", 1);
         account.set("total", 1.1);
         a(account).shouldNotBe("valid");
+    }
+
+    @Test
+    public void shouldFixDefect66() {
+
+        Page page = new Page();
+		a(page).shouldNotBe("valid");
+
+        a(page.errors().size()).shouldBeEqual(1);
+        a(page.errors().get("word_count")).shouldBeEqual("value is missing");
     }
 }

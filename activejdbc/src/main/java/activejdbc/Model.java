@@ -671,6 +671,7 @@ public abstract class Model extends CallbackSupport{
     /**
      * Sets a parent on this instance. Basically this sets a correct value of a foreign key in a
      * parent/child relationship. This only works for one to many and polymorphic associations.
+     * The act of setting a parent does not result in saving to a database.
      *
      * @param parent potential parent of this instance. Its ID value must not be null.
      */

@@ -42,6 +42,10 @@ public class NumericValidator extends ValidatorAdapter {
     public void validate(Model m) {
         Object value = m.get(attribute);
 
+        if(!present(value, m)){
+            return;
+        }
+
         if(convertNullIfEmpty && "".equals(value)){
             m.set(attribute, null);
             value = null;
@@ -80,8 +84,24 @@ public class NumericValidator extends ValidatorAdapter {
     }
 
     private void validateMin(Double value, Model m){
+
         if(value <= min){
             m.addValidator(attribute, this);
+        }
+    }
+
+    private boolean present(Object value, Model m){
+
+        if(allowNull){
+            return true;
+        }
+
+        if(value == null){
+            setMessage("value is missing");
+            m.addValidator(attribute, this);
+            return false;
+        }else{
+            return true;
         }
     }
 

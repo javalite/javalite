@@ -34,7 +34,7 @@ public class OffsetLimitTest extends ActiveJDBCTest {
         super.before();
         resetTable("pages");
         for (int i = 1; i <= 1000; i++) {
-            Page.<Model>create("description", "description: " + i).saveIt();
+            Page.<Model>create("description", "description: " + i, "word_count", 11).saveIt();
         }
     }
 
