@@ -24,6 +24,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
+ * This is an abstract class designed to be overridden in the application. The name for a subclass is:
+ * <code>app.config.AppBootstrap</code>. This class is called by the framework during initialization and also executes two
+ * other application level classes: <code>app.config.AppControllerConfig</code> and <code>app.config.DbConfig</code>.
+ *
+ * @see activeweb.AbstractDBConfig
+ * @see activeweb.AbstractControllerConfig 
+ *
  * @author Igor Polevoy
  */
 public abstract class Bootstrap {

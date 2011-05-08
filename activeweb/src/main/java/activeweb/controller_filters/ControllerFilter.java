@@ -17,8 +17,14 @@ package activeweb.controller_filters;
 
 
 /**
- * Instances are totally not thread safe. The same object will be reused across many threads at the same time.
- * Do NOT create instance variables.
+ *
+ * Controller filters are similar to that of Servlet filters, but designed to wrap execution of controllers.
+ * They can be used for many tasks that need to trigger before and after execution of a controller, such as login in, loggin,
+ * opening a DB connection, timing, etc.
+ *
+ *  <p/><p/>
+ * Instances of filters are <font color="red"><em>not thread safe</em></font>.
+ * The same object will be reused across many threads at the same time. Create instance variables at your own peril.
  * 
  * @author Igor Polevoy
  */

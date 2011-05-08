@@ -18,6 +18,35 @@ package activeweb;
 import activeweb.controller_filters.ControllerFilter;
 
 /**
+ * This class is to be sub-classed by the application level class called <code>app.config.AppControllerConfig</code>.
+ * This class provides ways to bind filters to controllers. It has coarse grain methods for binding as well as
+ * fine grained.
+ *
+ * <p/><p/>
+ * See {@link activeweb.controller_filters.ControllerFilter}. 
+ *
+ * <p/><p/>
+ * <strong>Filters before() methods are executed in the same order as filters are registered.</strong>
+ *
+ * <ul>
+ *      <li> Adding global filters:{@link #addGlobalFilters(activeweb.controller_filters.ControllerFilter...)}
+ *      <li> Adding controller filters:{@link #add(activeweb.controller_filters.ControllerFilter...)} )}
+ * </ul>
+ * Adding a global filter adds it to all controllers. It makes sense to use this to add timing filters, logging filters,
+ * etc.
+ *
+ * <p/><p/>
+ * <strong>Filters' after() methods are executed in the opposite order as filters are registered.</strong>
+ *
+ *
+ * <p/><p/>
+ * Here is an example of adding a filter to specific actions:
+ *
+ * <pre>
+ * add(mew TimingFilter(), new DBConnectionFilter()).to(PostsController.class).forActions("index", "show");
+ * </pre>
+ *
+ *
  * @author Igor Polevoy
  */
 public abstract class AbstractControllerConfig {
@@ -46,6 +75,12 @@ public abstract class AbstractControllerConfig {
 
         /**
          * Adds a list of actions for which filters are configured.
+         * <p/>
+         * Example:
+         * <pre>
+         * add(mew TimingFilter(), new DBConnectionFilter()).to(PostsController.class).forActions("index", "show");
+         * </pre>
+         *
          *
          * @param actionNames list of action names for which filters are configured.
          */
