@@ -40,7 +40,8 @@ public class Configuration {
     private static TemplateManager templateManager;    
     private HashMap<String, List<ConnectionSpecWrapper>> connectionWrappers = new HashMap<String, List<ConnectionSpecWrapper>>();
     private boolean testing = false;
-    private static String ENV;    
+    private static String ENV;
+    private static boolean activeReload = !blank(System.getProperty("active_reload")) && System.getProperty("active_reload").equals("true");
 
     static{
         try {
@@ -83,11 +84,7 @@ public class Configuration {
         }
         return ENV;
     }
-
-    public void setEnv(String env){
-        ENV = env;
-    }
-
+    
     public boolean isTesting() {
         return testing;
     }
@@ -177,8 +174,7 @@ public class Configuration {
             connectionWrappers.get(env).clear();
     }
 
-    private static boolean activeReload = System.getenv("ACTIVE_RELOAD") != null && System.getenv("ACTIVE_RELOAD").equals("true")
-                ||System.getProperty("active_reload") != null && System.getProperty("active_reload").equals("true");
+
 
     public static boolean activeReload(){
         return activeReload;
