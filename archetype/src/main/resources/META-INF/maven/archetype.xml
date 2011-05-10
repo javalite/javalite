@@ -1,9 +1,12 @@
 <archetype>
-  <id>activeweb-archetype</id>
-  <sources>
-    <source>src/main/java/App.java</source>
-  </sources>
-  <testSources>
-    <source>src/test/java/AppTest.java</source>
-  </testSources>
+    <id>activeweb-archetype</id>
+    <sources>
+        <source>src/main/java/App.java</source>
+    </sources>
+    <resources>
+        <resource filtered="false">src/main/webapp</resource>
+    </resources>
+    <testSources>
+        <source>src/test/java/AppTest.java</source>
+    </testSources>
 </archetype>
