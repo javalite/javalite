@@ -53,7 +53,10 @@ class ControllerRunner {
                 String methodName = Inflector.camelize(route.getActionName().replace('-', '_'), false);
                 checkActionMethod(route.getController(), methodName);
                 inject(route.getController());
-                logger.info("Executing controller: " + route.getController().getClass().getName() + "." + methodName);
+                if(Configuration.logRequestParams()){
+                    logger.info("Executing controller: " + route.getController().getClass().getName() + "." + methodName);
+                }
+
                 executeAction(route.getController(), methodName);
             }
             renderResponse(route, integrateViews);
@@ -176,7 +179,9 @@ class ControllerRunner {
         try{
             for(List<ControllerFilter> filterGroup: filters){
             for (ControllerFilter controllerFilter : filterGroup) {
-                logger.info("Executing filter: " + controllerFilter.getClass().getName() + "#before" );
+                if(Configuration.logRequestParams()){
+                    logger.debug("Executing filter: " + controllerFilter.getClass().getName() + "#before" );
+                }
                 controllerFilter.before();
                 if(ContextAccess.getControllerResponse() != null) return;//a filter responded!
             }
@@ -190,7 +195,9 @@ class ControllerRunner {
         try {
             for (List<ControllerFilter> filterGroup : filters) {
                 for (int i = filterGroup.size() - 1; i >= 0; i--) {
-                    logger.info("Executing filter: " + filterGroup.get(i).getClass().getName() + "#after" );
+                    if(Configuration.logRequestParams()){
+                        logger.debug("Executing filter: " + filterGroup.get(i).getClass().getName() + "#after" );
+                    }
                     filterGroup.get(i).after();
                 }
             }

@@ -17,13 +17,22 @@ limitations under the License.
 package app.controllers;
 
 import activeweb.AppController;
+import activeweb.controller_filters.HeadersLogFilter;
+import activeweb.controller_filters.RequestParamsLogFilter;
+import activeweb.controller_filters.RequestPropertiesLogFilter;
 
 /**
  * @author Igor Polevoy
  */
 public class HomeController extends AppController {
 
-    public void index(){}
+    public void index(){
+
+        HeadersLogFilter.logAtLevel(HeadersLogFilter.Level.DISABLED);
+        RequestPropertiesLogFilter.logAtLevel(RequestPropertiesLogFilter.Level.DISABLED);
+        RequestParamsLogFilter.logAtLevel(RequestParamsLogFilter.Level.DISABLED);
+
+    }
 
     public void wrapped() {
         render("index").layout("/layouts/wrapped_layout");        

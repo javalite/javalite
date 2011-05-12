@@ -79,7 +79,7 @@ public class RequestDispatcher implements Filter {
             HttpServletRequest request = (HttpServletRequest) req;
             HttpServletResponse response = (HttpServletResponse) resp;
             ContextAccess.setTLs(request, response, filterConfig, getControllerRegistry());
-            
+
             String uri = request.getServletPath();
             if (Util.blank(uri)) {
                 uri = "/";//different servlet implementations, damn.
@@ -88,7 +88,7 @@ public class RequestDispatcher implements Filter {
             boolean excluded = excluded(uri);
             if(excluded){
                 chain.doFilter(req, resp);
-                logger.info("URI excluded: " + uri);
+                logger.debug("URI excluded: " + uri);
                 return;
             }
 
@@ -96,11 +96,9 @@ public class RequestDispatcher implements Filter {
 
             if (route != null) {
                 ContextAccess.setRoute(route);
-                logger.info("================ New request: " + new Date() + " ================");
+
                 if (Configuration.logRequestParams()) {
-                    logRequestHeaders((HttpServletRequest) req);
-                    logRequestProperties();
-                    logParameters((HttpServletRequest) req);
+                    logger.info("================ New request: " + new Date() + " ================");
                 }
 
                 if (route.getId() != null) {
@@ -126,15 +124,6 @@ public class RequestDispatcher implements Filter {
             renderSystemError(e);
         }finally {
            ContextAccess.clear();
-        }
-    }
-
-    private void logRequestHeaders(HttpServletRequest request) {
-        Enumeration headers = request.getHeaderNames();
-        while (headers.hasMoreElements()) {
-            Object header = headers.nextElement();
-            Object value = request.getHeader(header.toString());
-            logger.info("Header: " + header + "=" + value);
         }
     }
 
@@ -191,15 +180,6 @@ public class RequestDispatcher implements Filter {
         }
     }
 
-    private void logRequestProperties() {
-        HttpServletRequest request = ContextAccess.getHttpRequest();
-        logger.info("Request URL: " + request.getRequestURL());
-        logger.info("ContextPath: " + request.getContextPath());
-        logger.info("Query String: " + request.getQueryString());
-        logger.info("URI Full Path: " + request.getRequestURI());
-        logger.info("URI Path: " + request.getServletPath());
-        logger.info("Method: " + request.getMethod());
-    }
 
     private String getRequestProperties(){
         StringBuffer sb = new StringBuffer();
@@ -213,13 +193,5 @@ public class RequestDispatcher implements Filter {
         return sb.toString();
     }
     
-    private void logParameters(HttpServletRequest request) {
-        Map<String, Object> params = (Map<String, Object>) request.getParameterMap();
-        for (String key : params.keySet()) {
-            String[] values = (String[]) params.get(key);
-            logger.info("Param: " + key + " = " + Arrays.asList(values));
-        }
-    }
-
     public void destroy() {}
 }

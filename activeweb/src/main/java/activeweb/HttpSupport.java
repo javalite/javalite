@@ -42,6 +42,10 @@ public class HttpSupport {
         logger.info(info);
     }
 
+    protected void logDebug(String info){
+        logger.info(info);
+    }
+
     protected void logWarning(String info){
         logger.warn(info);
     }
@@ -736,6 +740,21 @@ public class HttpSupport {
         return ContextAccess.getHttpRequest().getHeader(name);
     }
 
+    /**
+     * Returns all headers from a request keyed by header name.
+     *
+     * @return all headers from a request keyed by header name.
+     */
+    public Map<String, String> headers(){
+
+        Map<String, String> headers = new HashMap<String, String>();
+        Enumeration<String> names = ContextAccess.getHttpRequest().getHeaderNames();
+        while (names.hasMoreElements()) {
+            String name = names.nextElement();
+            headers.put(name, ContextAccess.getHttpRequest().getHeader(name));
+        }
+        return headers;
+    }
 
     /**
      * Adds a header to response.
