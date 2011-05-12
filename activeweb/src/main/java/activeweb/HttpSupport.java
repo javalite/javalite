@@ -43,7 +43,7 @@ public class HttpSupport {
     }
 
     protected void logDebug(String info){
-        logger.info(info);
+        logger.debug(info);
     }
 
     protected void logWarning(String info){
