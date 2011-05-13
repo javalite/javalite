@@ -14,17 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License. 
 */
 
-package app.config;
-
-import activeweb.AppContext;
-import activeweb.Bootstrap;
+package activeweb;
 
 /**
  * @author Igor Polevoy
  */
-public class AppBootstrap extends Bootstrap {
-    @Override
-    public void init(AppContext context) {
-        new AppControllerConfig().init(context);
-    }
+public interface AppConfig {
+    void init(AppContext appContext);
 }

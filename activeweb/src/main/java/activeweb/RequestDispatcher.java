@@ -37,6 +37,7 @@ public class RequestDispatcher implements Filter {
     private FilterConfig filterConfig;
     private List<String> exclusions = new ArrayList<String>();
     private ControllerRunner runner = new ControllerRunner();
+    private AppContext appContext;
 
     private Router router;
 
@@ -44,17 +45,14 @@ public class RequestDispatcher implements Filter {
         this.filterConfig = filterConfig;        
         ControllerRegistry registry = new ControllerRegistry(filterConfig);
         filterConfig.getServletContext().setAttribute("controllerRegistry", registry);
-        Bootstrap.initTemplateManager(filterConfig.getServletContext());
+        
+        activeweb.Configuration.getTemplateManager().setServletContext(filterConfig.getServletContext());
         ContextAccess.setControllerRegistry(registry);//bootstrap below requires it
-        try {
-            Bootstrap.initApp();
-        }
-        catch(InitException e){
-            throw e;
-        }
-        catch (Exception e) {
-            throw new ServletException(e);
-        }
+        appContext = new AppContext();
+        filterConfig.getServletContext().setAttribute("appContext", appContext);
+
+        initApp(appContext);
+
         String exclusionsParam = filterConfig.getInitParameter("exclusions");
         if (exclusionsParam != null) {
             exclusions.addAll(Arrays.asList(exclusionsParam.split(",")));
@@ -65,8 +63,29 @@ public class RequestDispatcher implements Filter {
 
         router = new Router(filterConfig.getInitParameter("root_controller"));
 
-        logger.info("ActiveWeb: starting the app in environment: " + Configuration.instance().getEnv());        
+        logger.info("ActiveWeb: starting the app in environment: " + Configuration.instance().getEnv());
     }
+
+
+
+    static void initApp(AppContext context){
+
+        Bootstrap appBootstrap;
+        String initClass = "";
+        try {
+            initClass = activeweb.Configuration.getBootstrapClassName();
+            Class c = Class.forName(initClass);
+            appBootstrap = (Bootstrap) c.newInstance();
+            appBootstrap.init(context);
+        }
+        catch (Throwable e) {
+            throw new InitException("failed to create a new instance of class: " + initClass
+                    + ", are you sure class exists and it has a default constructor?", e);
+        }
+        context.set("appBootstrap", appBootstrap);
+    }
+
+
 
 
     protected ControllerRegistry getControllerRegistry() {
@@ -78,7 +97,7 @@ public class RequestDispatcher implements Filter {
 
             HttpServletRequest request = (HttpServletRequest) req;
             HttpServletResponse response = (HttpServletResponse) resp;
-            ContextAccess.setTLs(request, response, filterConfig, getControllerRegistry());
+            ContextAccess.setTLs(request, response, filterConfig, getControllerRegistry(), appContext);
 
             String uri = request.getServletPath();
             if (Util.blank(uri)) {
@@ -193,5 +212,7 @@ public class RequestDispatcher implements Filter {
         return sb.toString();
     }
     
-    public void destroy() {}
+    public void destroy() {
+        ((Bootstrap) appContext.get("appBootstrap")).destroy(appContext);
+    }
 }

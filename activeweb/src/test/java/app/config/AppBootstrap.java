@@ -16,6 +16,7 @@ limitations under the License.
 
 package app.config;
 
+import activeweb.AppContext;
 import activeweb.Bootstrap;
 
 /**
@@ -23,7 +24,12 @@ import activeweb.Bootstrap;
  */
 public class AppBootstrap extends Bootstrap {
     @Override
-    public void init() {
+    public void init(AppContext context) {
         
+    }
+
+    @Override
+    public void destroy(AppContext context) {
+        System.err.print("ahrrr! destroyed!");
     }
 }

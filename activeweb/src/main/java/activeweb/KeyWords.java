@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * @author Igor Polevoy
  */
-public class KeyWords {
+class KeyWords {
     public static List<String> ACTIVEWEB_KEYWORDS = Arrays.asList("controller", "action", "request", "session");    
     static void check(String name){
         if(ACTIVEWEB_KEYWORDS.contains(name))

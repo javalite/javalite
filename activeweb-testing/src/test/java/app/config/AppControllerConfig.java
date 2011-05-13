@@ -17,6 +17,7 @@ limitations under the License.
 package app.config;
 
 import activeweb.AbstractControllerConfig;
+import activeweb.AppContext;
 import activeweb.controller_filters.TimingFilter;
 import app.filters.InjectionRedirectFilter;
 
@@ -25,8 +26,7 @@ import app.filters.InjectionRedirectFilter;
  */
 public class AppControllerConfig extends AbstractControllerConfig {
 
-    @Override
-    public void init() {
+    public void init(AppContext context) {
         addGlobalFilters(new TimingFilter(), new InjectionRedirectFilter());
     }
 }

@@ -24,46 +24,26 @@ package activeweb.controller_filters;
  *
  * @author Igor Polevoy
  */
-public class RequestPropertiesLogFilter extends HttpSupportFilter {
-
-    public enum Level {
-        INFO, WARNING, DEBUG, ERROR, DISABLED
-    }
-
-    private static Level level = Level.INFO;
+public class RequestPropertiesLogFilter extends AbstractLoggingFilter{
 
     /**
-     * Sets a log level at run time if needed.
+     * Creates a filter with preset log level.
      *
      * @param level log level
      */
-    public static void logAtLevel(Level level) {
-        RequestPropertiesLogFilter.level = level;
+    
+    public RequestPropertiesLogFilter(Level level) {
+        super(level);
     }
 
-    @Override
-    public void before() {
-        if (level.equals(RequestPropertiesLogFilter.Level.DISABLED)) {
-            return;
-        }
-
-        String message = getMessage();
-        if (level.equals(RequestPropertiesLogFilter.Level.INFO)) {
-            logInfo(message);
-        }
-        if (level.equals(RequestPropertiesLogFilter.Level.WARNING)) {
-            logWarning(message);
-        }
-        if (level.equals(RequestPropertiesLogFilter.Level.DEBUG)) {
-            logDebug(message);
-        }
-        if (level.equals(RequestPropertiesLogFilter.Level.ERROR)) {
-            logError(message);
-        }
-
+    /**
+     * Creates a filter with default "INFO" level.
+     */
+    public RequestPropertiesLogFilter() {
+        super();    
     }
 
-    private String getMessage() {
+    protected String getMessage() {
         StringBuffer sb = new StringBuffer("\n");
         sb.append("Request URL: ").append(url()).append("\n");
         sb.append("ContextPath: ").append(context()).append("\n");

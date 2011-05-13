@@ -23,45 +23,26 @@ import java.util.Map;
  *
  * @author Igor Polevoy
  */
-public class HeadersLogFilter extends HttpSupportFilter {
-
-    public enum Level {
-        INFO, WARNING, DEBUG, ERROR, DISABLED
-    }
-
-    private static Level level = Level.INFO;
+public class HeadersLogFilter extends AbstractLoggingFilter {
 
     /**
-     * Sets a log level at run time if needed.
+     * Creates a filter with preset log level.
      *
      * @param level log level
      */
-    public static void logAtLevel(Level level) {
-        HeadersLogFilter.level = level;
+    
+    public HeadersLogFilter(Level level) {
+        super(level);
     }
 
-    @Override
-    public void before() {
-        if (level.equals(HeadersLogFilter.Level.DISABLED)) {
-            return;
-        }
-        
-        if (level.equals(HeadersLogFilter.Level.INFO)) {
-            logInfo(getMessage());
-        }
-        if (level.equals(HeadersLogFilter.Level.WARNING)) {
-            logWarning(getMessage());
-        }
-        if (level.equals(HeadersLogFilter.Level.DEBUG)) {
-            logDebug(getMessage());
-        }
-        if (level.equals(HeadersLogFilter.Level.ERROR)) {
-            logError(getMessage());
-        }
+    /**
+     * Creates a filter with default "INFO" level.
+     */
+    public HeadersLogFilter() {
+        super();    
     }
 
-    private String getMessage() {
-
+    protected String getMessage() {
         Map<String, String> headers = headers();
         StringBuffer sb = new StringBuffer("\n");
 

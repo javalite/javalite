@@ -16,7 +16,6 @@ limitations under the License.
 
 package app.controllers;
 
-import activejdbc.Model;
 import activeweb.DBControllerSpec;
 import app.models.Post;
 import javalite.test.XPathHelper;

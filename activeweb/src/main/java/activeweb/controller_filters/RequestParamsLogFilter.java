@@ -16,8 +16,6 @@ limitations under the License.
 
 package activeweb.controller_filters;
 
-import javalite.common.Util;
-
 import java.util.Map;
 
 import static javalite.common.Util.join;
@@ -27,44 +25,26 @@ import static javalite.common.Util.join;
  *
  * @author Igor Polevoy
  */
-public class RequestParamsLogFilter extends HttpSupportFilter {
-
-    public enum Level {
-        INFO, WARNING, DEBUG, ERROR, DISABLED
-    }
-
-    private static Level level = Level.INFO;
+public class RequestParamsLogFilter extends AbstractLoggingFilter {
 
     /**
-     * Sets a log level at run time if needed.
+     * Creates a filter with preset log level.
      *
      * @param level log level
      */
-    public static void logAtLevel(Level level) {
-        RequestParamsLogFilter.level = level;
+    
+    public RequestParamsLogFilter(Level level) {
+        super(level);
     }
 
-    @Override
-    public void before() {
-        if (level.equals(RequestParamsLogFilter.Level.DISABLED)) {
-            return;
-        }
-
-        if (level.equals(RequestParamsLogFilter.Level.INFO)) {
-            logInfo(getMessage());
-        }
-        if (level.equals(RequestParamsLogFilter.Level.WARNING)) {
-            logWarning(getMessage());
-        }
-        if (level.equals(RequestParamsLogFilter.Level.DEBUG)) {
-            logDebug(getMessage());
-        }
-        if (level.equals(RequestParamsLogFilter.Level.ERROR)) {
-            logError(getMessage());
-        }
+    /**
+     * Creates a filter with default "INFO" level.
+     */
+    public RequestParamsLogFilter() {
+        super();    
     }
 
-    private String getMessage() {
+    protected String getMessage() {
         StringBuffer sb = new StringBuffer("\n");
         Map<String, String[]> params = params();
 

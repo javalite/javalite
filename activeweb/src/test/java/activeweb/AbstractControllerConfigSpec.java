@@ -33,10 +33,6 @@ public class AbstractControllerConfigSpec {
 
     AbstractControllerConfig config;
 
-    //controllers
-
-    //filters
-
 
 
     @Before
@@ -49,13 +45,13 @@ public class AbstractControllerConfigSpec {
 
         //create mock config
         config = new AbstractControllerConfig() {
-            public void init() {
+            public void init(AppContext config) {
                 addGlobalFilters(new AbcFilter());
             }
         };
 
         //init config.
-        config.init();
+        config.init(new AppContext());
 
 
         List<ControllerFilter> filters = ContextAccess.getControllerRegistry().getGlobalFilters();
@@ -72,14 +68,14 @@ public class AbstractControllerConfigSpec {
 
         //create mock config
         config = new AbstractControllerConfig() {
-            public void init() {
+            public void init(AppContext context) {
                 add(filter1, filter2).to(PersonController.class, BookController.class);
                 add(logFilter).to(LibraryController.class);
             }
         };
 
         //init config.
-        config.init();
+        config.init(new AppContext());
         
 
         List<ControllerFilter> filters;
@@ -107,13 +103,13 @@ public class AbstractControllerConfigSpec {
 
         //create mock config
         config = new AbstractControllerConfig() {
-            public void init() {
+            public void init(AppContext context) {
                 add(logFilter).to(LibraryController.class).forActions("index");
             }
         };
 
         //init config.
-        config.init();
+        config.init(new AppContext());
 
         List<ControllerFilter> filters = ContextAccess.getControllerRegistry().getMetaData(LibraryController.class).getFilters("show");
         a(filters.size()).shouldBeEqual(0);
@@ -130,14 +126,14 @@ public class AbstractControllerConfigSpec {
 
         //create mock config
         config = new AbstractControllerConfig() {
-            public void init() {
+            public void init(AppContext context) {
                 add(logFilter, new XyzFilter()).to(LibraryController.class, BookController.class).forActions("index", "show");
                 add(logFilter).to(BookController.class).forActions("list");
             }
         };
 
         //init config.
-        config.init();
+        config.init(new AppContext());
 
         List<ControllerFilter> filters;
         //LibraryController

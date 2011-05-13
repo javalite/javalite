@@ -20,7 +20,7 @@ package activeweb;
 /**
  * @author Igor Polevoy
  */
-public class MatchedRoute<T extends AppController> {
+class MatchedRoute<T extends AppController> {
     private String actionName, id;
     private T controller;
 
@@ -43,11 +43,11 @@ public class MatchedRoute<T extends AppController> {
         return id;
     }
 
-    public T getController() {
+    protected T getController() {
         return controller;
     }
 
-    public String getControllerClassName(){
+    protected String getControllerClassName(){
         return controller.getClass().getName();
     }
 }

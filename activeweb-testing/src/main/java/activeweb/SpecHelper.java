@@ -50,7 +50,7 @@ public class SpecHelper extends JSpecSupport{
         session = new MockHttpSession();
 
         MatchedRoute route = new MatchedRoute(new SimpleController(), "index");
-        ContextAccess.setTLs(null, new MockHttpServletResponse(), new MockFilterConfig(), new ControllerRegistry(new MockFilterConfig()));
+        ContextAccess.setTLs(null, new MockHttpServletResponse(), new MockFilterConfig(), new ControllerRegistry(new MockFilterConfig()), new AppContext());
 
         ContextAccess.setRoute(route);
         setTemplateLocation("src/main/webapp/WEB-INF/views");//default location of all views
@@ -64,8 +64,8 @@ public class SpecHelper extends JSpecSupport{
     /**
      * @param location this is a relative location starting from the module root, intended for testing. 
      */
-    protected void setTemplateLocation(String location){
-        Bootstrap.initTemplateManager(location);
+    protected void setTemplateLocation(String location){        
+        activeweb.Configuration.getTemplateManager().setTemplateLocation(location);
     }
 
     /**

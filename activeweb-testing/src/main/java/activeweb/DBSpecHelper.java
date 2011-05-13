@@ -30,7 +30,7 @@ public class DBSpecHelper {
         String dbConfigClassName = Configuration.get("dbconfig");
         try {
             Object dbconfig = Class.forName(dbConfigClassName).newInstance();
-            dbconfig.getClass().getMethod("init").invoke(dbconfig);
+            dbconfig.getClass().getMethod("init", AppContext.class).invoke(dbconfig, new AppContext());
         } catch (Exception e) {
             throw new RuntimeException("failed to initialize class " + dbConfigClassName
                     + " are you sure you defined this class?", e);

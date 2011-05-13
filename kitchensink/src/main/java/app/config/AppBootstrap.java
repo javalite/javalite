@@ -15,6 +15,7 @@ limitations under the License.
 */
 package app.config;
 
+import activeweb.AppContext;
 import activeweb.Bootstrap;
 import app.services.GreeterModule;
 import com.google.inject.Guice;
@@ -23,10 +24,10 @@ import com.google.inject.Guice;
  * @author Igor Polevoy
  */
 public class AppBootstrap extends Bootstrap {
-    public void init() {
+    public void init(AppContext context) {
         
-        new AppControllerConfig().init();
-        new DbConfig().init();
+        new AppControllerConfig().init(context);
+        new DbConfig().init(context);
         
         setInjector(Guice.createInjector(new GreeterModule()));
     }

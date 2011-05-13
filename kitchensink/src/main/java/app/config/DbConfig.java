@@ -16,13 +16,14 @@ limitations under the License.
 package app.config;
 
 import activeweb.AbstractDBConfig;
+import activeweb.AppContext;
 
 /**
  * @author Igor Polevoy
  */
 public class DbConfig extends AbstractDBConfig {
 
-    public void init() {
+    public void init(AppContext context) {
 
         environment("development").jndi("jdbc/kitchensink_development");
         

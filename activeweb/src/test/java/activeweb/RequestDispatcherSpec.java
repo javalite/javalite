@@ -273,12 +273,18 @@ public class RequestDispatcherSpec extends RequestSpec {
         request.setMethod("GET");
         request.addHeader("X-Requested-With", "XMLHttpRequest");
         dispatcher.doFilter(request, response, filterChain);
-        String out = response.getContentAsString();
-        System.out.println(out);
+        String out = response.getContentAsString();        
         the(out.contains("activeweb.ControllerException: java.lang.ArithmeticException: / by zero; / by zero\n")).shouldBeTrue();
     }
 
 
+    @Test
+    public void shouldCallDestroyOnAppBootstrap() throws ServletException, IOException {
+        replaceErrorOut();
+        dispatcher.destroy();
+        a(getSystemErrContent()).shouldBeEqual("ahrrr! destroyed!");
+    }
+    
     PrintStream err;
 
     void replaceErrorOut() {

@@ -968,4 +968,13 @@ public class HttpSupport {
     protected boolean xhr(){
         return isXhr();
     }
+
+    /**
+     * Returns instance of {@link activeweb.AppContext}.
+     *
+     * @return
+     */
+    protected AppContext appContext(){
+        return ContextAccess.getAppContext();
+    }
 }
