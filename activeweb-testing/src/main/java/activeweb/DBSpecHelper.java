@@ -36,18 +36,18 @@ public class DBSpecHelper {
                     + " are you sure you defined this class?", e);
         }
 
-        Configuration.instance().setTesting(true);
+        Configuration.setTesting(true);
     }
 
     public static void clearConnectionWrappers() {
-        Configuration.instance().clearConnectionWrappers();
+        Configuration.clearConnectionWrappers();
     }
 
 
     public static void openTestConnections(){
         List<ConnectionSpecWrapper> connectionWrappers = getTestConnectionWrappers();
         if(connectionWrappers.isEmpty())
-            throw new InitException("There are no connection specs for testing in " + Configuration.instance().getEnv() + " environment");
+            throw new InitException("There are no connection specs for testing in " + Configuration.getEnv() + " environment");
 
         for (ConnectionSpecWrapper connectionWrapper : connectionWrappers) {
             DB db = new DB(connectionWrapper.getDbName());
@@ -71,7 +71,7 @@ public class DBSpecHelper {
     }
 
     private static List<ConnectionSpecWrapper> getTestConnectionWrappers() {
-        List<ConnectionSpecWrapper> allConnections = Configuration.instance().getConnectionWrappers();
+        List<ConnectionSpecWrapper> allConnections = Configuration.getConnectionWrappers();
         List<ConnectionSpecWrapper> result = new LinkedList<ConnectionSpecWrapper>();
 
         for (ConnectionSpecWrapper connectionWrapper : allConnections) {

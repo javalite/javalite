@@ -21,9 +21,32 @@ import freemarker.template.Configuration;
 /**
  * @author Igor Polevoy
  */
-public class FreeMarkerConfigurerImpl implements FreeMarkerConfigurer{
-    
-    public void configure(Configuration config) {
-        config.setNumberFormat("0.##");
+public abstract class AbstractFreeMarkerConfig {
+
+    private Configuration configuration;
+
+    public void setConfiguration(Configuration config){
+        this.configuration = config;
     }
+
+    public Configuration getConfiguration() {
+        return configuration;
+    }
+
+    /**
+     * Registers an application-specific tag.
+     *
+     * @param name name of tag.
+     * @param tag tag instance.
+     */
+    public void registerTag(String name, FreeMarkerTag tag){
+        configuration.setSharedVariable(name, tag);
+    }
+
+    /**
+     * Called by framework during initialization.
+     */
+    public abstract void init();
+
+
 }

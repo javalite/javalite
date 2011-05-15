@@ -63,7 +63,7 @@ public class RequestDispatcher implements Filter {
 
         router = new Router(filterConfig.getInitParameter("root_controller"));
 
-        logger.info("ActiveWeb: starting the app in environment: " + Configuration.instance().getEnv());
+        logger.info("ActiveWeb: starting the app in environment: " + Configuration.getEnv());
     }
 
 
@@ -84,8 +84,6 @@ public class RequestDispatcher implements Filter {
         }
         context.set("appBootstrap", appBootstrap);
     }
-
-
 
 
     protected ControllerRegistry getControllerRegistry() {
@@ -169,6 +167,7 @@ public class RequestDispatcher implements Filter {
     private void renderSystemError(Throwable e) {
         renderSystemError("/system/error", null, 500, e);
     }
+
 
     private String getStackTraceString(Throwable e) {
         StringWriter sw = new StringWriter();

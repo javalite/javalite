@@ -52,7 +52,12 @@ public class FreeMarkerTemplateManager implements TemplateManager {
         config.setSharedVariable("render", new RenderTag());
         config.setSharedVariable("confirm", new ConfirmationTag());
         config.setSharedVariable("wrap", new WrapTag());
-        activeweb.Configuration.getFreemarkerConfigurer().configure(config);
+
+        AbstractFreeMarkerConfig freeMarkerConfig = activeweb.Configuration.getFreeMarkerConfig();
+        if(freeMarkerConfig != null){
+            freeMarkerConfig.setConfiguration(config);
+            freeMarkerConfig.init();
+        }
     }
 
     public void merge(Map values, String template, Writer writer) {
@@ -66,7 +71,7 @@ public class FreeMarkerTemplateManager implements TemplateManager {
 
         try {
 
-            if(activeweb.Configuration.instance().getEnv().equals("development")){
+            if(activeweb.Configuration.getEnv().equals("development")){
                 config.clearTemplateCache();
             }
             

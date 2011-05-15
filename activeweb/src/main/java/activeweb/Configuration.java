@@ -15,7 +15,7 @@ limitations under the License.
 */
 package activeweb;
 
-import activeweb.freemarker.FreeMarkerConfigurer;
+import activeweb.freemarker.AbstractFreeMarkerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,17 +31,18 @@ import static javalite.common.Util.blank;
  * @author Igor Polevoy
  */
 public class Configuration {
-    private Logger logger = LoggerFactory.getLogger(getClass().getName());
+    private static Logger LOGGER = LoggerFactory.getLogger(Configuration.class.getName());
 
-    enum Params{templateManager, bootstrap, defaultLayout, targetDir, rootPackage, dbconfig, rollback, freemarkerConfigurer}
+    enum Params{templateManager, bootstrap, defaultLayout, targetDir, rootPackage, dbconfig, rollback, freeMarkerConfig}
 
     private static final Configuration instance = new Configuration();
     private static Properties props = new Properties();
-    private static TemplateManager templateManager;    
-    private HashMap<String, List<ConnectionSpecWrapper>> connectionWrappers = new HashMap<String, List<ConnectionSpecWrapper>>();
-    private boolean testing = false;
+    private static TemplateManager templateManager;
+    private static HashMap<String, List<ConnectionSpecWrapper>> connectionWrappers = new HashMap<String, List<ConnectionSpecWrapper>>();
+    private static boolean testing = false;
     private static String ENV;
     private static boolean activeReload = !blank(System.getProperty("active_reload")) && System.getProperty("active_reload").equals("true");
+    private static AbstractFreeMarkerConfig freeMarkerConfig;
 
     static{
         try {
@@ -74,28 +75,25 @@ public class Configuration {
         return logRequest != null && logRequest.equals("true");
     }
     
-    public String getEnv(){
+    public static String getEnv(){
         if(ENV == null){
             ENV = System.getenv().get("ACTIVE_ENV");
             if(blank(ENV)){                
                 ENV = "development";
-                logger.warn("Environment variable ACTIVE_ENV not provided, defaulting to '" + ENV + "'");
+                LOGGER.warn("Environment variable ACTIVE_ENV not provided, defaulting to '" + ENV + "'");
             }
         }
         return ENV;
     }
     
-    public boolean isTesting() {
+    public static boolean isTesting() {
         return testing;
     }
 
-    protected void setTesting(boolean testing) {
-        this.testing = testing;
+    protected static void setTesting(boolean testing) {
+        Configuration.testing = testing;
     }
 
-    public static Configuration instance(){
-        return instance;
-    }
 
     private static void checkInitProperties(){
         for(Params param: Params.values()){
@@ -110,13 +108,15 @@ public class Configuration {
     }
 
 
-    public static FreeMarkerConfigurer getFreemarkerConfigurer(){
-        try{
-            String className = get(Params.freemarkerConfigurer.toString());
-            return (FreeMarkerConfigurer)Class.forName(className).newInstance();
+    public synchronized static AbstractFreeMarkerConfig getFreeMarkerConfig(){
+        if(freeMarkerConfig != null) return freeMarkerConfig;
 
+        try{
+            String className = get(Params.freeMarkerConfig.toString());
+            return freeMarkerConfig = (AbstractFreeMarkerConfig)Class.forName(className).newInstance();
         }catch(Exception e){
-            throw new InitException("failed to create an instance of FreeMarkerConfigurer...", e);
+            LOGGER.warn("Failed to find implementation of 'activeweb.freemarker.FreeMarkerConfig' , proceeding without custom configuration of FreeMarker");
+            return null;
         }
     }
 
@@ -147,7 +147,7 @@ public class Configuration {
         return Boolean.parseBoolean(get(Params.rollback.toString().trim()));  
     }    
 
-    protected void addConnectionWrapper(ConnectionSpecWrapper connectionWrapper) {
+    protected static void addConnectionWrapper(ConnectionSpecWrapper connectionWrapper) {
         String connectionWrapperEnv = connectionWrapper.getEnvironment();
         List<ConnectionSpecWrapper> envConnectionWrappers = connectionWrappers.get(connectionWrapperEnv);
         if(envConnectionWrappers == null) {
@@ -157,24 +157,22 @@ public class Configuration {
         envConnectionWrappers.add(connectionWrapper);
     }
 
-    public List<ConnectionSpecWrapper> getConnectionWrappers() {
+    public static List<ConnectionSpecWrapper> getConnectionWrappers() {
         return getConnectionSpecWrappers(getEnv());
     }
 
-    public List<ConnectionSpecWrapper> getConnectionSpecWrappers(String env) {
+    public static List<ConnectionSpecWrapper> getConnectionSpecWrappers(String env) {
         return connectionWrappers.get(env) == null? new ArrayList<ConnectionSpecWrapper>() :connectionWrappers.get(env);
     }
 
-    protected void clearConnectionWrappers() {
+    protected static void clearConnectionWrappers() {
         clearConnectionWrappers(getEnv());
     }
 
-    protected void clearConnectionWrappers(String env) {
+    protected static void clearConnectionWrappers(String env) {
         if(connectionWrappers.get(env) != null)
             connectionWrappers.get(env).clear();
     }
-
-
 
     public static boolean activeReload(){
         return activeReload;

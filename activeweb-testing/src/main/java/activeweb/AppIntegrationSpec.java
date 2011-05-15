@@ -40,7 +40,7 @@ public abstract class AppIntegrationSpec extends IntegrationSpec{
         RequestDispatcher.initApp(context);
 
         if(!suppressDb){
-            Configuration.instance().setTesting(true);
+            Configuration.setTesting(true);
             DBSpecHelper.openTestConnections();
         }
     }

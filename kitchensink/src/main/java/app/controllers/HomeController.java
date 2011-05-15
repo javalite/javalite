@@ -29,6 +29,8 @@ public class HomeController extends AppController {
         
         //how to disable logging of headers at run time:
         appContext().get("headersLogger", HeadersLogFilter.class).logAtLevel(AbstractLoggingFilter.Level.DISABLED);
+
+        view("anumber", 1234456);
     }
 
     public void wrapped() {

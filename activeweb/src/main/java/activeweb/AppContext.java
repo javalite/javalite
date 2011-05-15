@@ -28,7 +28,6 @@ public class AppContext {
 
     private Map context = new HashMap();
 
-
     /**
      * Retrieves object by name
      *
@@ -47,7 +46,8 @@ public class AppContext {
      * @return object by name
      */
     public <T>  T get(String name, Class<T> type){
-        return (T) context.get(name);
+        Object o = context.get(name);
+        return o == null? null : (T) o;
     }
 
     /**

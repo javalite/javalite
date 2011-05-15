@@ -50,13 +50,13 @@ public class DBConnectionFilter extends ControllerFilterAdapter {
     @Override
     public void before() {
 
-        if(Configuration.instance().isTesting())
+        if(Configuration.isTesting())
             return;
 
         List<ConnectionSpecWrapper> connectionWrappers = getConnectionWrappers();
 
         if (connectionWrappers == null || connectionWrappers.isEmpty()) {
-            throw new InitException("There are no connection specs in '" + Configuration.instance().getEnv() + "' environment");
+            throw new InitException("There are no connection specs in '" + Configuration.getEnv() + "' environment");
         }
 
         for (ConnectionSpecWrapper connectionWrapper : connectionWrappers) {
@@ -67,7 +67,7 @@ public class DBConnectionFilter extends ControllerFilterAdapter {
 
     @Override
     public void after() {
-        if(Configuration.instance().isTesting())
+        if(Configuration.isTesting())
             return;
         
         List<ConnectionSpecWrapper> connectionWrappers = getConnectionWrappers();
@@ -81,7 +81,7 @@ public class DBConnectionFilter extends ControllerFilterAdapter {
 
     @Override
     public void onException(Exception e) {        
-        if(Configuration.instance().isTesting())
+        if(Configuration.isTesting())
             return;
 
         List<ConnectionSpecWrapper> connectionWrappers = getConnectionWrappers();
@@ -99,7 +99,7 @@ public class DBConnectionFilter extends ControllerFilterAdapter {
      * If dbName not provided, returns all connections which are not for testing.  
      */
     private List<ConnectionSpecWrapper> getConnectionWrappers() {
-        List<ConnectionSpecWrapper> allConnections = Configuration.instance().getConnectionWrappers();
+        List<ConnectionSpecWrapper> allConnections = Configuration.getConnectionWrappers();
         List<ConnectionSpecWrapper> result = new LinkedList<ConnectionSpecWrapper>();
 
         for (ConnectionSpecWrapper connectionWrapper : allConnections) {
