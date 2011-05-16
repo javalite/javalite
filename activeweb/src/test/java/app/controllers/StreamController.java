@@ -32,7 +32,7 @@ public class StreamController extends AppController{
 
     public void file() throws FileNotFoundException {
         File file = new File("src/test/resources/hello.pdf");        
-        sendFile(file, "application/pdf");
+        sendFile(file).contentType("application/pdf");
     }
 
     public void write() throws IOException {

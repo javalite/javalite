@@ -115,7 +115,7 @@ public class Configuration {
             String className = get(Params.freeMarkerConfig.toString());
             return freeMarkerConfig = (AbstractFreeMarkerConfig)Class.forName(className).newInstance();
         }catch(Exception e){
-            LOGGER.warn("Failed to find implementation of 'activeweb.freemarker.FreeMarkerConfig' , proceeding without custom configuration of FreeMarker");
+            LOGGER.warn("Failed to find implementation of 'activeweb.freemarker.AbstractFreeMarkerConfig' , proceeding without custom configuration of FreeMarker");
             return null;
         }
     }
