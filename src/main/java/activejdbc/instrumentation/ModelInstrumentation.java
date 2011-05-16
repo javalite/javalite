@@ -43,6 +43,7 @@ public class ModelInstrumentation{
             modelClass.removeMethod(getClassNameMethod);
             modelClass.addMethod(m);
             String out = getOutputDirectory(modelClass);
+            //addSerializationSupport(modelClass);
             System.out.println("Instrumented class: " + modelClass.getName() + " in directory: " + out);
             modelClass.writeFile(out);
         }
@@ -70,22 +71,43 @@ public class ModelInstrumentation{
         CtMethod[] modelMethods = modelClass.getDeclaredMethods();
         CtMethod[] targetMethods = target.getDeclaredMethods();
         for (CtMethod method : modelMethods) {
+
+            if(Modifier.PRIVATE == method.getModifiers()){
+                continue;
+            }
+
             CtMethod newMethod = CtNewMethod.delegator(method, target);
 
             if (!targetHasMethod(targetMethods, newMethod)) {
-//
-//                if(newMethod.getName().equals("find")){
-//                    String code = "System.out.println(\"\\n\\n8888888888888888888888888  instrumented method called!!! 888888888888888888 , signature: \" + \"" + newMethod.getLongName() + "\");";
-//                    System.out.println("Code: " + code);
-//                    newMethod.insertBefore(code);
-//                }
-//
                 target.addMethod(newMethod);
             }
             else{
                 System.out.println("Detected method: " + newMethod.getName() + ", skipping delegate.");
             }
         }
+
+    }
+
+    //TODO: remove unused methods later
+    private void addSerializationSupport(CtClass target) throws CannotCompileException, NotFoundException {
+
+        CtMethod m = CtNewMethod.make(
+                "private void writeObject(java.io.ObjectOutputStream out)  {\n" +
+                "        out.writeObject(toMap());\n" +
+                "}", target);
+
+        CtClass ioException = ClassPool.getDefault().get("java.io.IOException");
+        CtClass classNotFoundException = ClassPool.getDefault().get("java.lang.ClassNotFoundException");
+
+        m.setExceptionTypes(new CtClass[]{ioException});
+        target.addMethod(m);
+
+        m = CtNewMethod.make(
+                "private void readObject(java.io.ObjectInputStream in) {\n" +
+                        "        fromMap((java.util.Map)in.readObject());\n" +
+                        "    }", target);
+        m.setExceptionTypes(new CtClass[]{ioException, classNotFoundException});
+        target.addMethod(m);
     }
 
     private CtMethod createFindById(CtClass clazz) throws CannotCompileException {
@@ -112,6 +134,4 @@ public class ModelInstrumentation{
         }
         return false;
     }
-
-
 }
