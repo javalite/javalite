@@ -289,6 +289,7 @@ public class Registry {
     private Map<String, ColumnMetadata> getColumns(ResultSet rs) throws SQLException {
          Map<String, ColumnMetadata> columns = new HashMap<String, ColumnMetadata>();
         while (rs.next()) {
+        	if ("INFORMATION_SCHEMA".equals(rs.getString("TABLE_SCHEMA"))) continue; //skip h2 INFORMATION_SCHEMA table columns.
             ColumnMetadata cm = new ColumnMetadata(rs.getString("COLUMN_NAME").toLowerCase(), rs.getString("TYPE_NAME"), rs.getInt("COLUMN_SIZE"));
             columns.put(cm.getColumnName(), cm);
         }

@@ -25,6 +25,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import activejdbc.Base;
+import activejdbc.H2StatementProvider;
 import activejdbc.MySQLStatementProvider;
 import activejdbc.OracleStatementProvider;
 import activejdbc.PostgreSQLStatementProvider;
@@ -61,6 +62,8 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
             DefaultDBReset.resetSchema(getStatements(";", "mysql_schema.sql"));
         }else if (db().equals("postgresql")) {
             DefaultDBReset.resetSchema(getStatements(";", "postgres_schema.sql"));
+        }else if (db().equals("h2")) {
+            DefaultDBReset.resetSchema(getStatements(";", "h2_schema.sql"));
         } else if (db().equals("oracle")) {
             OracleDBReset.resetOracle(getStatements("-- BREAK", "oracle_schema.sql"));
         }
@@ -141,6 +144,8 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
             statements = new OracleStatementProvider().getStatements(table);
         } else if (db().equals("postgresql")) {
             statements = new PostgreSQLStatementProvider().getStatements(table);
+        } else if (db().equals("h2")) {
+            statements = new H2StatementProvider().getStatements(table);
         }
         executeStatements(statements);
     }

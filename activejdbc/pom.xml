@@ -81,6 +81,24 @@
             </dependencies>
         </profile>
         <profile>
+            <id>h2</id>
+            <properties>
+                <jdbc.driver>org.h2.Driver</jdbc.driver>
+                <jdbc.url>jdbc:h2:tcp://localhost/~/test</jdbc.url>
+                <jdbc.user>sa</jdbc.user>
+                <jdbc.password></jdbc.password>
+                <db>h2</db>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                    <version>1.3.154</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <id>instrument</id>
             
             <build>
@@ -212,5 +230,12 @@
             <scope>test</scope>
         </dependency>
         <dependency><groupId>opensymphony</groupId> <artifactId>oscache</artifactId> <scope>provided</scope></dependency>
+        <dependency>
+        	<groupId>com.h2database</groupId>
+        	<artifactId>h2</artifactId>
+        	<version>1.3.154</version>
+        	<type>jar</type>
+        	<scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
