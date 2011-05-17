@@ -25,6 +25,7 @@ import activejdbc.test_models.*;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.*;
 import java.util.*;
 
 import static javalite.common.Collections.map;
@@ -531,12 +532,33 @@ public class ModelTest extends ActiveJDBCTest {
         System.out.println(p);
 
         p.fromMap(map("name", "Jack"));
-        System.out.println(p);
+        
         a(p.get("name")).shouldBeEqual("Jack");
         a(p.get("last_name")).shouldBeEqual("Deer");
         a(p.getId()).shouldBeEqual(id);
     }
 
+
+    @Test
+    public void shouldSerializeModel() throws IOException, ClassNotFoundException {
+        resetTable("people");
+        Person p = (Person)Person.findById(1);
+
+        //write model
+        ByteArrayOutputStream bout =  new ByteArrayOutputStream();
+        ObjectOutputStream  out = new ObjectOutputStream(bout);
+        out.writeObject(p);
+        out.flush();
+
+        //read model
+        ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bout.toByteArray()));
+        Person p1 = (Person) in.readObject();
+        
+        //validate models
+        a(p1.get("name")).shouldBeEqual(p.get("name"));
+        a(p1.get("last_name")).shouldBeEqual(p.get("last_name"));
+        a(p1.get("dob")).shouldBeEqual(p.get("dob"));
+    }
 }
 
 

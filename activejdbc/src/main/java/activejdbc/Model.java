@@ -22,7 +22,7 @@ import activejdbc.cache.QueryCache;
 import activejdbc.validation.*;
 import static javalite.common.Util.blank;
 
-import java.io.StringWriter;
+import java.io.*;
 import java.sql.*;
 import java.math.BigDecimal;
 import java.util.*;
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * This class is a super class of all "models" and provides most functionality
  * necessary for implementation of Active Record pattern.
  */
-public abstract class Model extends CallbackSupport{
+public abstract class Model extends CallbackSupport implements Externalizable {
 
     private final static Logger logger = LoggerFactory.getLogger(Model.class);
     private Map<String, Object> attributes = new HashMap<String, Object>();
@@ -79,7 +79,7 @@ public abstract class Model extends CallbackSupport{
     protected  void hydrate(Map attributesMap) {
 
         List<String> attributeNames = getMetaModelLocal().getAttributeNamesSkipId();
-        
+
         String idName = getMetaModelLocal().getIdName();
         Object id = attributesMap.get(idName);
 
@@ -118,7 +118,7 @@ public abstract class Model extends CallbackSupport{
      * @return reference to self for chaining.
      */
     public <T extends Model> T setId(Object id){
-        set(getIdName(), id);        
+        set(getIdName(), id);
         return (T) this;
     }
 
@@ -182,7 +182,7 @@ public abstract class Model extends CallbackSupport{
     public static List<String>  attributes(){
         return getMetaModel().getAttributeNames();
     }
-    
+
     /**
      * Returns all associations of this model.
      * @return all associations of this model.
@@ -214,7 +214,7 @@ public abstract class Model extends CallbackSupport{
      * Deletes a single table record represented by this instance. This method assumes that a corresponding table
      * has only one record whose PK is the ID of this instance.
      * After deletion, this instance becomes {@link #frozen()} and cannot be used anymore until {@link #thaw()} is called.
-     * 
+     *
      * @return true if a record was deleted, false if not.
      */
     public boolean delete() {
@@ -240,7 +240,7 @@ public abstract class Model extends CallbackSupport{
 
     /**
      * Convenience method, will call {@link #delete()} or {@link #deleteCascade()}.
-     * 
+     *
      * @param cascade true to call {@link #deleteCascade()}, false to call {@link #delete()}.
      */
     public void delete(boolean cascade){
@@ -266,7 +266,7 @@ public abstract class Model extends CallbackSupport{
      * SQL DELETE.
      * <h4>One to many polymorphic relationship:</h4>
      * Deletes current model and all polymorphic children. This is a high performance call because links are cleared with one
-     * SQL DELETE. 
+     * SQL DELETE.
      */
     public void deleteCascade(){
         deleteOneToManyChildren();
@@ -287,7 +287,7 @@ public abstract class Model extends CallbackSupport{
 
     private void deletePolymorphicChildren() {
         List<OneToManyPolymorphicAssociation> polymorphics = getMetaModelLocal().getPolymorphicAssociations();
-        for (OneToManyPolymorphicAssociation association : polymorphics) {            
+        for (OneToManyPolymorphicAssociation association : polymorphics) {
             String  target = association.getTarget();
             String parentType = association.getParentType();
             String query = "DELETE FROM " + target + " WHERE parent_id = ? AND parent_type = ?";
@@ -322,7 +322,7 @@ public abstract class Model extends CallbackSupport{
      * in one shot, without pre-loading them.
      * This method also has a side-effect: it will not mark loaded instances corresponding to deleted records as "frozen".
      * This means that such an instance would allow calling save() and saveIt() methods resulting DB errors, as you
-     * would be attempting to update phantom records. 
+     * would be attempting to update phantom records.
      *
      *
      * @param query narrows which records to delete. Example: <pre>"last_name like '%sen%'"</pre>.
@@ -353,7 +353,7 @@ public abstract class Model extends CallbackSupport{
     }
 
     /**
-     * Deletes all records from associated table. This methods does not take associations into account. 
+     * Deletes all records from associated table. This methods does not take associations into account.
      *
      * @return number of records deleted.
      */
@@ -541,10 +541,10 @@ public abstract class Model extends CallbackSupport{
      * @param attrs  list of attributes to include. No arguments == include all attributes.
      * @return generated JSON.
      */
-    public String toJson(boolean pretty, String... attrs) {        
+    public String toJson(boolean pretty, String... attrs) {
         return toJsonP(pretty, "", attrs);
     }
-    
+
     protected  String toJsonP(boolean pretty, String indent, String... attrs) {
 
         List<String> attrList = Arrays.asList(attrs);
@@ -751,7 +751,7 @@ public abstract class Model extends CallbackSupport{
      * User user = (User)address.get("user");
      * </pre>
      * Conversely, this will also work:
-     * <pre> 
+     * <pre>
      * List<Address> addresses = (List<Address>)user.get("addresses");
      * </pre>
      *
@@ -839,7 +839,7 @@ public abstract class Model extends CallbackSupport{
             return getMetaModelLocal().hasAssociation(childMM.getTableName(), OneToManyAssociation.class) ?
                 getAll(childMM.getModelClass()): null;
     }
-    
+
     private Object tryOther(String otherTable){
         MetaModel otherMM = inferTargetMetaModel(otherTable);
         if(otherMM == null){
@@ -1091,7 +1091,7 @@ public abstract class Model extends CallbackSupport{
                 manyToManyAssociation.getSourceFkName() + " = " + getId() + additionalCriteria + ")"   ;
 
         } else if (oneToManyPolymorphicAssociation != null) {
-            subQuery = "parent_id = " + getId() + " AND " + " parent_type = '" + getClass().getName() + "'" + additionalCriteria;  
+            subQuery = "parent_id = " + getId() + " AND " + " parent_type = '" + getClass().getName() + "'" + additionalCriteria;
         } else {
             throw new NotAssociatedException(getMetaModelLocal().getTableName(), targetTable);
         }
@@ -1144,7 +1144,7 @@ public abstract class Model extends CallbackSupport{
      * Validates an attribite format with a ree hand regular expression.
      *
      * @param attribute attribute to validate.
-     * @param pattern regexp pattern which must match  the value. 
+     * @param pattern regexp pattern which must match  the value.
      * @return
      */
     protected static ValidationBuilder validateRegexpOf(String attribute, String pattern) {
@@ -1154,7 +1154,7 @@ public abstract class Model extends CallbackSupport{
     /**
      * Validates email format.
      *
-     * @param attribute name of atribute that holds email value. 
+     * @param attribute name of atribute that holds email value.
      * @return
      */
     protected static ValidationBuilder validateEmailOf(String attribute) {
@@ -1163,7 +1163,7 @@ public abstract class Model extends CallbackSupport{
 
     /**
      * Validates range. Accepted types are all java.lang.Number subclasses:
-     * Byte, Short, Integer, Long, Float, Double BigDecimal.  
+     * Byte, Short, Integer, Long, Float, Double BigDecimal.
      *
      * @param attribute attribute to validate - should be within range.
      * @param min min value of range.
@@ -1177,7 +1177,7 @@ public abstract class Model extends CallbackSupport{
     /**
      * The validation will not pass if the value is either an empty string "", or null.
      *
-     * @param attributes list of attributes to validate. 
+     * @param attributes list of attributes to validate.
      * @return
      */
     protected static ValidationBuilder validatePresenceOf(String... attributes) {
@@ -1186,7 +1186,7 @@ public abstract class Model extends CallbackSupport{
 
     /**
      * Add a custom validator to the model.
-     * 
+     *
      * @param validator  custom validator.
      */
     protected static ValidationBuilder validateWith(Validator validator) {
@@ -1365,7 +1365,7 @@ public abstract class Model extends CallbackSupport{
      *
      * @param namesAndValues names and values. elements at indexes 0, 2, 4, 8... are attribute names, and elements at
      * indexes 1, 3, 5... are values. Element at index 1 is a value for attribute at index 0 and so on.
-     * @return newly instantiated model which also has been saved to DB.     
+     * @return newly instantiated model which also has been saved to DB.
      */
     public static <T extends Model> T createIt(Object ... namesAndValues){
         T m = (T)create(namesAndValues);
@@ -1504,7 +1504,7 @@ public abstract class Model extends CallbackSupport{
 
 
     /**
-     * This method is for processing really large result sets. Results found by this method are never cached. 
+     * This method is for processing really large result sets. Results found by this method are never cached.
      *
      * @param listener this is a call back implementation which will receive instances of models found.
      * @param query sub-query (content after "WHERE" clause)
@@ -1604,7 +1604,7 @@ public abstract class Model extends CallbackSupport{
                     }
                     catch(InstantiationException e){
                         throw new InitException("failed to create a new instance of class: " + joinMM.getClass()
-                                + ", are you sure this class has a default constructor?", e); 
+                                + ", are you sure this class has a default constructor?", e);
                     }
                     catch(IllegalAccessException e){throw new InitException(e);}
                     finally {
@@ -1648,7 +1648,7 @@ public abstract class Model extends CallbackSupport{
     public void remove(Model child){
 
         if(child == null) throw new IllegalArgumentException("cannot remove what is null");
-        
+
         if(child.frozen() || child.getId() == null) throw new IllegalArgumentException("Cannot remove a child that does " +
                 "not exist in DB (either frozen, or ID not set)");
 
@@ -1682,7 +1682,7 @@ public abstract class Model extends CallbackSupport{
     public boolean saveIt() {
         boolean result = save();
         purgeEdges();
-        if(errors.size() > 0){                
+        if(errors.size() > 0){
             throw new ValidationException(this);
         }
         return result;
@@ -1818,7 +1818,7 @@ public abstract class Model extends CallbackSupport{
             if(getMetaModelLocal().cached()){
                 QueryCache.instance().purgeTableCache(getMetaModelLocal().getTableName());
             }
-            
+
             attributes.put(getMetaModelLocal().getIdName(), id);
 
             fireAfterCreate(this);
@@ -1923,7 +1923,7 @@ public abstract class Model extends CallbackSupport{
     }
 
     private static <T extends Model> Class<T> getDaClass() {
-        try {            
+        try {
             MetaModel mm = Registry.instance().getMetaModelByClassName(getClassName());
             return mm == null? (Class<T>) Class.forName(getClassName()) : mm.getModelClass();
         } catch (Exception e) {
@@ -1935,7 +1935,7 @@ public abstract class Model extends CallbackSupport{
         return new ClassGetter().getClassName();
     }
 
-    public static String getTableName() {        
+    public static String getTableName() {
         return Registry.instance().getTableName(getDaClass());
     }
 
@@ -2041,7 +2041,7 @@ public abstract class Model extends CallbackSupport{
     }
 
     /**
-     * Use to force-purge cache associated with this table. If this table is not cached, this method has no side effect. 
+     * Use to force-purge cache associated with this table. If this table is not cached, this method has no side effect.
      */
     public static void purgeCache(){
         MetaModel mm = getMetaModel();
@@ -2053,7 +2053,7 @@ public abstract class Model extends CallbackSupport{
 
     /**
      * Convenience method: converts ID value to Long and returns it.
-     * 
+     *
      * @return value of attribute corresponding to <code>getIdName()</code>, converted to Long.
      */
     public Long getLongId() {
@@ -2083,6 +2083,15 @@ public abstract class Model extends CallbackSupport{
         for(String edge: edges){
             QueryCache.instance().purgeTableCache(edge);
         }
+    }
+
+
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeObject(attributes);
+    }
+
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        attributes = (Map<String, Object>) in.readObject();
     }
 }
 
