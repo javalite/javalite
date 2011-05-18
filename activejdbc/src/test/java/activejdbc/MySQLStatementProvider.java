@@ -136,18 +136,19 @@ public class MySQLStatementProvider {
             statements =  Arrays.asList();
         } else if (table.equals("programmers_projects")) {
             statements =  Arrays.asList();
-        } else if (table.equals("motherboards")){ 
+        } else if (table.equals("computers-motherboards-keyboards")){ 
         	statements =  Arrays.asList(
-                    "INSERT INTO motherboards VALUES(1,'motherboardOne');"
-            );
-        } else if (table.equals("keyboards")){ 
-        	statements =  Arrays.asList(
-                    "INSERT INTO keyboards VALUES(1,'keyboard-us');"
-            );
-        } else if (table.equals("computers")){ 
-        	statements =  Arrays.asList(
+        			"DELETE FROM computers;",
+        			"DELETE FROM motherboards;",
+        			"DELETE FROM keyboards;",
+        			"ALTER TABLE computers AUTO_INCREMENT=1;",
+        			"ALTER TABLE motherboards AUTO_INCREMENT=1;",
+        			"ALTER TABLE keyboards AUTO_INCREMENT=1;",
+                    "INSERT INTO keyboards VALUES(1,'keyboard-us');",
+                    "INSERT INTO motherboards VALUES(1,'motherboardOne');",
                     "INSERT INTO computers VALUES(1,'ComputerX',1,1);"
             );
+        	return statements;
         }else if (table.equals("ingredients_recipes")) {
             statements = Arrays.asList();
         } else if (table.equals("ingredients")) {

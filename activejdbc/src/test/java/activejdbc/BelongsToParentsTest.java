@@ -13,7 +13,7 @@ public class BelongsToParentsTest extends ActiveJDBCTest {
 
 	public void before() throws Exception { 
 		super.before();
-		resetTables("motherboards","keyboards", "computers");
+        resetTable("computers-motherboards-keyboards");
 	}
 	
 	@Test

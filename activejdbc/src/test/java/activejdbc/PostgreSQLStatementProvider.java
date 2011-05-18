@@ -130,18 +130,20 @@ public class PostgreSQLStatementProvider {
             statements = Arrays.asList();
         } else if (table.equals("watermelons")) {
             statements = Arrays.asList();
-        } else if (table.equals("motherboards")) {
-            statements = Arrays.asList(
-                    "INSERT INTO motherboards (description) VALUES('motherboardOne');"
+        } else if (table.equals("computers-motherboards-keyboards")){ 
+        	statements =  Arrays.asList(
+        			"DELETE FROM computers;",
+        			"DELETE FROM motherboards;",
+        			"DELETE FROM keyboards;",
+                    "UPDATE dual SET next_val = SETVAL('keyboards_id_seq', 1, FALSE);",
+                    "UPDATE dual SET next_val = SETVAL('motherboards_id_seq', 1, FALSE);",
+                    "UPDATE dual SET next_val = SETVAL('computers_id_seq', 1, FALSE);",
+                    "INSERT INTO keyboards VALUES(1,'keyboard-us');",
+                    "INSERT INTO motherboards VALUES(1,'motherboardOne');",
+                    "INSERT INTO computers VALUES(1,'ComputerX',1,1);"
+
             );
-        } else if (table.equals("keyboards")) {
-            statements = Arrays.asList(
-                    "INSERT INTO keyboards (description) VALUES('keyboard-us');"
-            );
-        } else if (table.equals("computers")) {
-            statements = Arrays.asList(
-                    "INSERT INTO computers (description, mother_id, key_id) VALUES('ComputerX',1,1);"
-            );
+        	return statements;
         } else if (table.equals("ingredients_recipes")) {
             statements = Arrays.asList();
         } else if (table.equals("ingredients")) {

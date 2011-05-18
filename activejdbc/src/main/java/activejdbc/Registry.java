@@ -266,12 +266,13 @@ public class Registry {
 
         //try upper case table name first - Oracle uses upper case
         ResultSet rs = con.getMetaData().getColumns(null, null, table.toUpperCase(), null);
-        Map<String, ColumnMetadata> columns = getColumns(rs);
+        String dbProduct = con.getMetaData().getDatabaseProductName().toLowerCase();
+        Map<String, ColumnMetadata> columns = getColumns(rs, dbProduct);
         rs.close();
         //if upper case not found, try lower case.
         if(columns.size() == 0){
             rs = con.getMetaData().getColumns(null, null, table.toLowerCase(), null);
-            columns = getColumns(rs);
+            columns = getColumns(rs, dbProduct);
             rs.close();
         }
 
@@ -286,10 +287,11 @@ public class Registry {
         return columns;
     }
 
-    private Map<String, ColumnMetadata> getColumns(ResultSet rs) throws SQLException {
+    private Map<String, ColumnMetadata> getColumns(ResultSet rs, String dbProduct) throws SQLException {
          Map<String, ColumnMetadata> columns = new HashMap<String, ColumnMetadata>();
         while (rs.next()) {
-        	if ("INFORMATION_SCHEMA".equals(rs.getString("TABLE_SCHEMA"))) continue; //skip h2 INFORMATION_SCHEMA table columns.
+        	
+        	if (dbProduct.equals("h2") && "INFORMATION_SCHEMA".equals(rs.getString("TABLE_SCHEMA"))) continue; //skip h2 INFORMATION_SCHEMA table columns.
             ColumnMetadata cm = new ColumnMetadata(rs.getString("COLUMN_NAME").toLowerCase(), rs.getString("TYPE_NAME"), rs.getInt("COLUMN_SIZE"));
             columns.put(cm.getColumnName(), cm);
         }
