@@ -15,25 +15,53 @@
     <option name="historyRevisionsNumber" value="4" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" readonly="true" id="f89d737e-43a7-47cc-858d-571c5b209076" name="Default" comment="removed">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/examples/simple-example/activeJdbc-simple-example.iml" afterPath="" />
+    <list default="true" readonly="true" id="f89d737e-43a7-47cc-858d-571c5b209076" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/IsModelValidTest.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/IsModelValidTest.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/StatementProvider.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/DeleteCascadeTest.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/DeleteCascadeTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/NumericValidationBuilderTest.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/NumericValidationBuilderTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/PostgreSQLStatementProvider.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/PostgreSQLStatementProvider.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/ValidatorsTest.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/ValidatorsTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/ToXmlSpec.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/ToXmlSpec.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/CreatedAtUpdatedAtTest.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/CreatedAtUpdatedAtTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/OptimisticLockingTest.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/OptimisticLockingTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/CacheTest.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/CacheTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/ModelTest.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/ModelTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/BaseTest.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/BaseTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/ModelExistsTest.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/ModelExistsTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/MySQLStatementProvider.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/MySQLStatementProvider.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/CallbackSupportTest.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/CallbackSupportTest.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc-root.iws" afterPath="$PROJECT_DIR$/activejdbc-root.iws" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/Many2ManyOverrideConventionsTest.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/Many2ManyOverrideConventionsTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/OracleStatementProvider.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/OracleStatementProvider.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/BelongsToParentsTest.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/BelongsToParentsTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/CreateModelTest.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/CreateModelTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/SetParentTest.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/SetParentTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/ToJsonSpec.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/ToJsonSpec.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/OffsetLimitTest.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/OffsetLimitTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/AttributeConverterTest.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/AttributeConverterTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/LongIdTest.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/LongIdTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/test/ActiveJDBCTest.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/test/ActiveJDBCTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/PolymorphicAssociationsTest.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/PolymorphicAssociationsTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/Many2ManyRelationshipTest.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/Many2ManyRelationshipTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/RemoveAssociatedChildTest.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/RemoveAssociatedChildTest.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc-instrumentation/activejdbc-instrumentation.iml" afterPath="$PROJECT_DIR$/activejdbc-instrumentation/activejdbc-instrumentation.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/main/java/activejdbc/cache/OSCacheManager.java" afterPath="$PROJECT_DIR$/activejdbc/src/main/java/activejdbc/cache/OSCacheManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/IncludesTest.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/IncludesTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/PaginatorTest.java" afterPath="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/PaginatorTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/javalite-common/javalite-common.iml" afterPath="$PROJECT_DIR$/javalite-common/javalite-common.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc-root.ipr" afterPath="$PROJECT_DIR$/activejdbc-root.ipr" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/activejdbc/activejdbc.iml" afterPath="$PROJECT_DIR$/activejdbc/activejdbc.iml" />
     </list>
+    <ignored path="activejdbc-root.iws" />
+    <ignored path=".idea/workspace.xml" />
     <ignored path="$USER_HOME_GRIFFON$/" />
     <ignored path="$USER_HOME_GRAILS$/" />
-    <ignored path=".idea/workspace.xml" />
-    <ignored path="activejdbc-root.iws" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
+  <component name="ChangesViewManager" flattened_view="false" show_ignored="false" />
   <component name="Commander">
     <leftPanel />
     <rightPanel />
@@ -78,7 +106,7 @@
         <option name="CONDITION" value="" />
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/IncludesTest.java" line="62" class="activejdbc.IncludesTest" package="activejdbc">
+      <breakpoint url="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/IncludesTest.java" line="61" class="activejdbc.IncludesTest" package="activejdbc">
         <option name="ENABLED" value="true" />
         <option name="LOG_ENABLED" value="false" />
         <option name="LOG_EXPRESSION_ENABLED" value="false" />
@@ -91,7 +119,7 @@
         <option name="CONDITION" value="" />
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
-      <breakpoint url="jar://$PROJECT_DIR$/../../programs/jdk1.6.0_21/src.zip!/java/sql/Timestamp.java" line="184" class="java.sql.Timestamp" package="java.sql">
+      <breakpoint url="jar://$USER_HOME$/programs/jdk1.6.0_21/src.zip!/java/sql/Timestamp.java" line="184" class="java.sql.Timestamp" package="java.sql">
         <option name="ENABLED" value="true" />
         <option name="LOG_ENABLED" value="false" />
         <option name="LOG_EXPRESSION_ENABLED" value="false" />
@@ -105,6 +133,71 @@
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
       <breakpoint url="file://$PROJECT_DIR$/javalite-common/src/main/java/javalite/common/Convert.java" line="174" class="javalite.common.Convert" package="javalite.common">
+        <option name="ENABLED" value="true" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="false" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+      <breakpoint url="file://$PROJECT_DIR$/javalite-common/src/main/java/javalite/common/Convert.java" line="120" class="javalite.common.Convert" package="javalite.common">
+        <option name="ENABLED" value="true" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="false" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+      <breakpoint url="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/ModelTest.java" line="549" class="activejdbc.ModelTest" package="activejdbc">
+        <option name="ENABLED" value="true" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="false" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+      <breakpoint url="file://$PROJECT_DIR$/activejdbc-instrumentation/src/main/java/activejdbc/instrumentation/ModelInstrumentation.java" line="102" class="activejdbc.instrumentation.ModelInstrumentation" package="activejdbc.instrumentation">
+        <option name="ENABLED" value="true" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="false" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+      <breakpoint url="file://$USER_HOME$/programs/javassist-3.8.0/src/main/javassist/CtClass.java" line="277" class="javassist.CtClass" package="javassist">
+        <option name="ENABLED" value="true" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="false" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+      <breakpoint url="file://$PROJECT_DIR$/activejdbc-instrumentation/src/main/java/activejdbc/instrumentation/ModelInstrumentation.java" line="71" class="activejdbc.instrumentation.ModelInstrumentation" package="activejdbc.instrumentation">
         <option name="ENABLED" value="true" />
         <option name="LOG_ENABLED" value="false" />
         <option name="LOG_EXPRESSION_ENABLED" value="false" />
@@ -176,46 +269,10 @@
   <component name="FileColors" enabled="true" enabledForTabs="true" />
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ModelInstrumentation.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/activejdbc-instrumentation/src/main/java/activejdbc/instrumentation/ModelInstrumentation.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="87" column="98" selection-start="3280" selection-end="3280" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="CreatedAtUpdatedAtTest.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/CreatedAtUpdatedAtTest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="66" column="47" selection-start="1898" selection-end="1915" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="Model.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/activejdbc/src/main/java/activejdbc/Model.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="1697" column="15" selection-start="69487" selection-end="69487" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="OSCacheManager.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/activejdbc/src/main/java/activejdbc/cache/OSCacheManager.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="40" column="28" selection-start="1237" selection-end="1237" vertical-scroll-proportion="0.62086093">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DefaultDBReset.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/test/DefaultDBReset.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="12" column="13" selection-start="211" selection-end="211" vertical-scroll-proportion="0.0">
+            <state line="1906" column="21" selection-start="77356" selection-end="77356" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -224,43 +281,63 @@
       <file leaf-file-name="ActiveJDBCTest.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/test/ActiveJDBCTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="44" column="36" selection-start="1265" selection-end="1265" vertical-scroll-proportion="0.0">
+            <state line="143" column="19" selection-start="4270" selection-end="4270" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="mysql_schema.sql" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/activejdbc/src/test/resources/mysql_schema.sql">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="96" column="21" selection-start="5430" selection-end="5436" vertical-scroll-proportion="-24.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="JdbcProperties.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/test/JdbcProperties.java">
+      <file leaf-file-name="SetParentTest.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/SetParentTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="55" column="25" selection-start="1570" selection-end="1570" vertical-scroll-proportion="0.0">
+            <state line="34" column="8" selection-start="1014" selection-end="1014" vertical-scroll-proportion="0.24475524">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="activejdbc.properties" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/activejdbc/src/test/resources/activejdbc.properties">
+      <file leaf-file-name="MySQLStatementProvider.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/MySQLStatementProvider.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+            <state line="10" column="24" selection-start="220" selection-end="220" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="jdbc.properties" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/activejdbc/src/test/resources/jdbc.properties">
+      <file leaf-file-name="StatementProvider.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/StatementProvider.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+            <state line="24" column="17" selection-start="703" selection-end="724" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/activejdbc/pom.xml">
+      <file leaf-file-name="OracleStatementProvider.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/OracleStatementProvider.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="70" column="39" selection-start="2686" selection-end="2692" vertical-scroll-proportion="0.0">
+            <state line="10" column="0" selection-start="197" selection-end="197" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PostgreSQLStatementProvider.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/PostgreSQLStatementProvider.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="165" column="0" selection-start="9356" selection-end="9356" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -280,22 +357,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/test_models/Recipe.java" />
-        <option value="$PROJECT_DIR$/activejdbc/src/test/resources/mysql_schema.sql" />
-        <option value="$PROJECT_DIR$/activejdbc/src/main/java/activejdbc/associations/Many2ManyAssociation.java" />
-        <option value="$PROJECT_DIR$/activejdbc/src/main/java/activejdbc/LazyList.java" />
-        <option value="$PROJECT_DIR$/activejdbc/src/main/java/activejdbc/Registry.java" />
+        <option value="$PROJECT_DIR$/activejdbc/src/main/java/activejdbc/validation/ValidationException.java" />
+        <option value="$PROJECT_DIR$/activejdbc/src/main/java/activejdbc/validation/NumericValidator.java" />
+        <option value="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/NumericValidationBuilderTest.java" />
+        <option value="$PROJECT_DIR$/activejdbc/src/test/resources/oracle_schema.sql" />
+        <option value="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/test_models/Page.java" />
+        <option value="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/OffsetLimitTest.java" />
+        <option value="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/ModelTest.java" />
+        <option value="$PROJECT_DIR$/activejdbc/src/main/java/activejdbc/Model.java" />
+        <option value="$PROJECT_DIR$/activejdbc-instrumentation/src/main/java/activejdbc/instrumentation/ModelInstrumentation.java" />
+        <option value="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/test_models/Person.java" />
+        <option value="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/MySQLStatementProvider.java" />
         <option value="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/OracleStatementProvider.java" />
         <option value="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/PostgreSQLStatementProvider.java" />
-        <option value="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/test/OracleDBReset.java" />
-        <option value="$PROJECT_DIR$/activejdbc/src/test/resources/oracle_schema.sql" />
-        <option value="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/IncludesTest.java" />
-        <option value="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/CreatedAtUpdatedAtTest.java" />
-        <option value="$PROJECT_DIR$/activejdbc/src/main/java/activejdbc/Model.java" />
-        <option value="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/Many2ManyOverrideConventionsTest.java" />
-        <option value="$PROJECT_DIR$/activejdbc/src/test/resources/postgres_schema.sql" />
-        <option value="$PROJECT_DIR$/activejdbc/src/main/java/activejdbc/cache/OSCacheManager.java" />
-        <option value="$PROJECT_DIR$/activejdbc-instrumentation/src/main/java/activejdbc/instrumentation/ModelInstrumentation.java" />
+        <option value="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/StatementProvider.java" />
+        <option value="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/test/ActiveJDBCTest.java" />
+        <option value="$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/SetParentTest.java" />
       </list>
     </option>
   </component>
@@ -305,16 +382,6 @@
         <PATH_ELEMENT>
           <option name="myItemId" value="" />
           <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
-        </PATH_ELEMENT>
-      </PATH>
-      <PATH>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="" />
-          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="Profiles" />
-          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProfilesNode" />
         </PATH_ELEMENT>
       </PATH>
     </treeState>
@@ -738,13 +805,16 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Favorites" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
             <PATH_ELEMENT>
               <option name="myItemId" value="activejdbc-root" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="External Libraries" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
@@ -845,39 +915,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="activejdbc" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="activejdbc-root" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="activejdbc" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="activejdbc" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="activejdbc-root" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="activejdbc" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="activejdbc" />
+              <option name="myItemId" value="activejdbc-instrumentation" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -888,6 +926,66 @@
               <option name="myItemId" value="main" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="instrumentation" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="InstrumentationModelFinder" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ClassTreeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc-root" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc-instrumentation" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="instrumentation" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Instrumentation" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ClassTreeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc-root" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -907,7 +1005,33 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="resources" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc-root" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -937,7 +1061,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
+              <option name="myItemId" value="test" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -949,7 +1073,249 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="Model" />
+              <option name="myItemId" value="StatementProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ClassTreeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc-root" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="SetParentTest" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ClassTreeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc-root" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="PostgreSQLStatementProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ClassTreeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc-root" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OracleStatementProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ClassTreeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc-root" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OffsetLimitTest" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ClassTreeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc-root" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MySQLStatementProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ClassTreeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc-root" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc-root" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="activejdbc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ActiveJDBCTest" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ClassTreeNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -973,78 +1339,30 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="main" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="activejdbc" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cache" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="activejdbc-root" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="activejdbc" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="activejdbc" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="activejdbc" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cache" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="OSCacheManager" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ClassTreeNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
       <pane id="Scope" />
       <pane id="PackagesPane" />
+      <pane id="Favorites" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatWidth1" value="179" />
-    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.last.edited" value="Modules" />
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatWidth0" value="137" />
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatWidth3" value="36" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatWidth2" value="196" />
+    <property name="OverrideImplement.combined" value="true" />
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatOrder1" value="1" />
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatOrder0" value="0" />
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatOrder3" value="3" />
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatOrder2" value="2" />
-    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_treeWidth2" value="140" />
     <property name="recentsLimit" value="5" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_treeWidth2" value="140" />
     <property name="MemberChooser.sorted" value="false" />
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_treeWidth1" value="153" />
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatOrder4" value="4" />
@@ -1092,43 +1410,38 @@
     </key>
   </component>
   <component name="Regex">
-    <option name="pos1" value="543" />
-    <option name="pos2" value="543" />
-    <option name="pos3" value="140" />
-    <option name="pos4" value="1086" />
-    <option name="pos5" value="140" />
+    <option name="pos1" value="540" />
+    <option name="pos2" value="540" />
+    <option name="pos3" value="139" />
+    <option name="pos4" value="1080" />
+    <option name="pos5" value="139" />
     <option name="autoUpdate" value="true" />
     <option name="referenceOn" value="false" />
     <option name="referencePos" value="0" />
     <option name="showLabels" value="true" />
   </component>
-  <component name="RunManager" selected="JUnit.CreatedAtUpdatedAtTest.shouldResetUpdatedAtByBatchClassMethods">
-    <configuration default="false" name="IncludesTest.shouldBeAbleToIncludeOtherInManyToMany" type="JUnit" factoryName="JUnit" temporary="true">
+  <component name="RunManager" selected="Application.Main">
+    <configuration default="false" name="Main" type="Application" factoryName="Application" temporary="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="emma">
         <pattern>
-          <option name="PATTERN" value="activejdbc.*" />
+          <option name="PATTERN" value="activejdbc.instrumentation.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
       <extension name="snapshooter" />
-      <module name="activejdbc" />
+      <option name="MAIN_CLASS_NAME" value="activejdbc.instrumentation.Main" />
+      <option name="VM_PARAMETERS" value="-DoutputDirectory=target/test-classes" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/activejdbc" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" value="" />
-      <option name="PACKAGE_NAME" value="activejdbc" />
-      <option name="MAIN_CLASS_NAME" value="activejdbc.IncludesTest" />
-      <option name="METHOD_NAME" value="shouldBeAbleToIncludeOtherInManyToMany" />
-      <option name="TEST_OBJECT" value="method" />
-      <option name="VM_PARAMETERS" value="-Dactivejdbc.log" />
-      <option name="PARAMETERS" value="" />
-      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
       <option name="ENV_VARIABLES" />
       <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="moduleWithDependencies" />
-      </option>
+      <module name="activejdbc-instrumentation" />
       <envs />
       <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="45853" />
+        <option name="DEBUG_PORT" value="49176" />
         <option name="TRANSPORT" value="0" />
         <option name="LOCAL" value="true" />
       </RunnerSettings>
@@ -1137,7 +1450,7 @@
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
-    <configuration default="false" name="IncludesTest.shouldBeAbleToIncludeChildren" type="JUnit" factoryName="JUnit" temporary="true">
+    <configuration default="false" name="NumericValidationBuilderTest.shouldFixDefect66" type="JUnit" factoryName="JUnit" temporary="true">
       <extension name="coverage" enabled="false" merge="false" runner="emma">
         <pattern>
           <option name="PATTERN" value="activejdbc.*" />
@@ -1149,8 +1462,8 @@
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
       <option name="PACKAGE_NAME" value="activejdbc" />
-      <option name="MAIN_CLASS_NAME" value="activejdbc.IncludesTest" />
-      <option name="METHOD_NAME" value="shouldBeAbleToIncludeChildren" />
+      <option name="MAIN_CLASS_NAME" value="activejdbc.NumericValidationBuilderTest" />
+      <option name="METHOD_NAME" value="shouldFixDefect66" />
       <option name="TEST_OBJECT" value="method" />
       <option name="VM_PARAMETERS" />
       <option name="PARAMETERS" />
@@ -1165,75 +1478,7 @@
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
-    <configuration default="false" name="IncludesTest.shouldIncludeMany2ManyInCaseJoinTableHasUnconventionalPKName" type="JUnit" factoryName="JUnit" temporary="true">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="emma">
-        <pattern>
-          <option name="PATTERN" value="activejdbc.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <extension name="snapshooter" />
-      <module name="activejdbc" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" value="" />
-      <option name="PACKAGE_NAME" value="activejdbc" />
-      <option name="MAIN_CLASS_NAME" value="activejdbc.IncludesTest" />
-      <option name="METHOD_NAME" value="shouldIncludeMany2ManyInCaseJoinTableHasUnconventionalPKName" />
-      <option name="TEST_OBJECT" value="method" />
-      <option name="VM_PARAMETERS" value="-Dactivejdbc.log" />
-      <option name="PARAMETERS" value="" />
-      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="moduleWithDependencies" />
-      </option>
-      <envs />
-      <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="41972" />
-        <option name="TRANSPORT" value="0" />
-        <option name="LOCAL" value="true" />
-      </RunnerSettings>
-      <RunnerSettings RunnerId="Run" />
-      <ConfigurationWrapper RunnerId="Debug" />
-      <ConfigurationWrapper RunnerId="Run" />
-      <method />
-    </configuration>
-    <configuration default="false" name="CreatedAtUpdatedAtTest.shouldResetUpdatedAtByBatchClassMethods" type="JUnit" factoryName="JUnit" temporary="true">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="emma">
-        <pattern>
-          <option name="PATTERN" value="activejdbc.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <extension name="snapshooter" />
-      <module name="activejdbc" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" value="" />
-      <option name="PACKAGE_NAME" value="activejdbc" />
-      <option name="MAIN_CLASS_NAME" value="activejdbc.CreatedAtUpdatedAtTest" />
-      <option name="METHOD_NAME" value="shouldResetUpdatedAtByBatchClassMethods" />
-      <option name="TEST_OBJECT" value="method" />
-      <option name="VM_PARAMETERS" value="-Dactivejdbc.log -Doracle.jdbc.J2EE13Compliant=true" />
-      <option name="PARAMETERS" value="" />
-      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="moduleWithDependencies" />
-      </option>
-      <envs />
-      <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="45724" />
-        <option name="TRANSPORT" value="0" />
-        <option name="LOCAL" value="true" />
-      </RunnerSettings>
-      <RunnerSettings RunnerId="Run" />
-      <ConfigurationWrapper RunnerId="Debug" />
-      <ConfigurationWrapper RunnerId="Run" />
-      <method />
-    </configuration>
-    <configuration default="false" name="BaseTest.testFindParametrized" type="JUnit" factoryName="JUnit" temporary="true">
+    <configuration default="false" name="NumericValidationBuilderTest" type="JUnit" factoryName="JUnit" temporary="true">
       <extension name="coverage" enabled="false" merge="false" runner="emma">
         <pattern>
           <option name="PATTERN" value="activejdbc.*" />
@@ -1245,8 +1490,70 @@
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
       <option name="PACKAGE_NAME" value="activejdbc" />
-      <option name="MAIN_CLASS_NAME" value="activejdbc.BaseTest" />
-      <option name="METHOD_NAME" value="testFindParametrized" />
+      <option name="MAIN_CLASS_NAME" value="activejdbc.NumericValidationBuilderTest" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="37122" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="OffsetLimitTest" type="JUnit" factoryName="JUnit" temporary="true">
+      <extension name="coverage" enabled="false" merge="false" runner="emma">
+        <pattern>
+          <option name="PATTERN" value="activejdbc.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <extension name="snapshooter" />
+      <module name="activejdbc" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="activejdbc" />
+      <option name="MAIN_CLASS_NAME" value="activejdbc.OffsetLimitTest" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="ModelTest.shouldSerializeModel" type="JUnit" factoryName="JUnit" temporary="true">
+      <extension name="coverage" enabled="false" merge="false" runner="emma">
+        <pattern>
+          <option name="PATTERN" value="activejdbc.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <extension name="snapshooter" />
+      <module name="activejdbc" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="activejdbc" />
+      <option name="MAIN_CLASS_NAME" value="activejdbc.ModelTest" />
+      <option name="METHOD_NAME" value="shouldSerializeModel" />
       <option name="TEST_OBJECT" value="method" />
       <option name="VM_PARAMETERS" />
       <option name="PARAMETERS" />
@@ -1258,7 +1565,7 @@
       </option>
       <envs />
       <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="39690" />
+        <option name="DEBUG_PORT" value="55006" />
         <option name="TRANSPORT" value="0" />
         <option name="LOCAL" value="true" />
       </RunnerSettings>
@@ -1621,11 +1928,11 @@
       <method />
     </configuration>
     <list size="10">
-      <item index="0" class="java.lang.String" itemvalue="JUnit.IncludesTest.shouldBeAbleToIncludeOtherInManyToMany" />
-      <item index="1" class="java.lang.String" itemvalue="JUnit.IncludesTest.shouldBeAbleToIncludeChildren" />
-      <item index="2" class="java.lang.String" itemvalue="JUnit.IncludesTest.shouldIncludeMany2ManyInCaseJoinTableHasUnconventionalPKName" />
-      <item index="3" class="java.lang.String" itemvalue="JUnit.CreatedAtUpdatedAtTest.shouldResetUpdatedAtByBatchClassMethods" />
-      <item index="4" class="java.lang.String" itemvalue="JUnit.BaseTest.testFindParametrized" />
+      <item index="0" class="java.lang.String" itemvalue="Application.Main" />
+      <item index="1" class="java.lang.String" itemvalue="JUnit.NumericValidationBuilderTest.shouldFixDefect66" />
+      <item index="2" class="java.lang.String" itemvalue="JUnit.NumericValidationBuilderTest" />
+      <item index="3" class="java.lang.String" itemvalue="JUnit.OffsetLimitTest" />
+      <item index="4" class="java.lang.String" itemvalue="JUnit.ModelTest.shouldSerializeModel" />
       <item index="5" class="java.lang.String" itemvalue="Application.Get" />
       <item index="6" class="java.lang.String" itemvalue="JUnit.activejdbc in activejdbc" />
       <item index="7" class="java.lang.String" itemvalue="JUnit.ValidatorsTest.testPresenceValidator" />
@@ -1639,7 +1946,7 @@
   </component>
   <component name="ShelveChangesManager" show_recycled="false">
     <recycled_changelist date="1294858130522">
-      <option name="PATH" value="$PROJECT_DIR$/../../.IntelliJIdea90/config/shelf/temp_changes.patch" />
+      <option name="PATH" value="$USER_HOME$/.IntelliJIdea90/config/shelf/temp_changes.patch" />
       <option name="DESCRIPTION" value="temp changes" />
     </recycled_changelist>
   </component>
@@ -1681,7 +1988,7 @@
     <option name="CHECK_NESTED_FOR_QUICK_MERGE" value="false" />
     <option name="IGNORE_SPACES_IN_ANNOTATE" value="true" />
     <option name="SHOW_MERGE_SOURCES_IN_ANNOTATE" value="true" />
-    <configuration useDefault="true">$PROJECT_DIR$/../../.subversion_IDEA</configuration>
+    <configuration useDefault="true">$USER_HOME$/.subversion_IDEA</configuration>
     <myIsUseDefaultProxy>false</myIsUseDefaultProxy>
     <supportedVersion>125</supportedVersion>
   </component>
@@ -1736,24 +2043,24 @@
     <frame x="1436" y="0" width="1688" height="1053" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.27292818" sideWeight="0.0" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.17679559" sideWeight="0.0" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.22872928" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.19374616" sideWeight="0.6685083" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="DBHelper" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.40527284" sideWeight="0.6917127" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.6022099" sideWeight="0.99829495" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.34922394" sideWeight="0.99829495" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32982224" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39067703" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.47071823" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32928178" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3573629" sideWeight="0.7638581" order="1" side_tool="true" content_ui="combo" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3004292" sideWeight="0.6508287" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3292683" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24214418" sideWeight="0.46674058" order="1" side_tool="true" content_ui="combo" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32924587" sideWeight="0.0" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39975476" sideWeight="0.8232044" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.28142244" sideWeight="0.71933705" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32596686" sideWeight="0.832618" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="DBOutput" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.26548672" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Regex" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32928178" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32924587" sideWeight="0.8154696" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33592018" sideWeight="0.832618" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="DBOutput" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.26385808" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Regex" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3292683" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" x="479" y="391" width="690" height="242" />
       <window_info id="Statistic" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32928178" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Dataflow to this" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -1762,14 +2069,14 @@
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="SVN Properties" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32928178" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39889503" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.47006652" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Web Preview" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="VcsManagerConfiguration">
     <option name="OFFER_MOVE_TO_ANOTHER_CHANGELIST_ON_PARTIAL_COMMIT" value="true" />
-    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="PERFORM_UPDATE_IN_BACKGROUND" value="true" />
     <option name="PERFORM_COMMIT_IN_BACKGROUND" value="true" />
     <option name="PERFORM_EDIT_IN_BACKGROUND" value="true" />
@@ -1780,7 +2087,7 @@
     <option name="ENABLE_BACKGROUND_PROCESSES" value="false" />
     <option name="CHANGED_ON_SERVER_INTERVAL" value="60" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed postgresql SQL, http://code.google.com/p/activejdbc/issues/detail?id=57" />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented Externalizable interface, rferences: http://code.google.com/p/activejdbc/issues/detail?id=67" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -1800,6 +2107,17 @@
     <MESSAGE value="fixed javadoc" />
     <MESSAGE value="fixed improperly generated SQL, http://code.google.com/p/activejdbc/issues/detail?id=57" />
     <MESSAGE value="fixed postgresql SQL, http://code.google.com/p/activejdbc/issues/detail?id=57" />
+    <MESSAGE value="fixing OSCache concurrency problem, was getting this sometimes:&#10;java.lang.IllegalStateException: Cannot cancel cache update - current state (1) is not UPDATE_IN_PROGRESS at com.opensymphony.oscache.base.EntryUpdateState.cancelUpdate(EntryUpdateState.java:91) at com.opensymphony.oscache.base.Cache.cancelUpdate(Cache.java:410) at com.opensymphony.oscache.general.GeneralCacheAdministrator.cancelUpdate(GeneralCacheAdministrator.java:184) at activejdbc.cache.OSCacheManager.getCache(OSCacheManager.java:38) at activejdbc.cache.QueryCache.getItem(QueryCache.java:86) at activejdbc.LazyList.hydrate(LazyList.java:254) at activejdbc.LazyList.size(LazyList.java:412) at activejdbc.Model.findById(Model.java:1380) at" />
+    <MESSAGE value="convert java.util.Date to java.sql.Date in passed in parameters, references: http://code.google.com/p/activejdbc/issues/detail?id=59" />
+    <MESSAGE value="removed dead wood" />
+    <MESSAGE value="spelling" />
+    <MESSAGE value="added processing of error stream in case response code =&gt; 400" />
+    <MESSAGE value="removed transient deps, http://code.google.com/p/activejdbc/issues/detail?id=60" />
+    <MESSAGE value="Added synonym shouldBeA&#10;http://code.google.com/p/activejdbc/issues/detail?id=62" />
+    <MESSAGE value="Added Util.saveTo&#10;http://code.google.com/p/activejdbc/issues/detail?id=64" />
+    <MESSAGE value="added ValidationException.errors() for convenience" />
+    <MESSAGE value="fixed NPE in numeric validator, references  http://code.google.com/p/activejdbc/issues/detail?id=66" />
+    <MESSAGE value="implemented Externalizable interface, rferences: http://code.google.com/p/activejdbc/issues/detail?id=67" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -1813,90 +2131,100 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/activejdbc/src/main/java/activejdbc/Registry.java">
+    <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/ModelTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="221" column="0" selection-start="7850" selection-end="7850" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/javalite-common/src/main/java/javalite/common/Convert.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="174" column="0" selection-start="5852" selection-end="5852" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/Many2ManyOverrideConventionsTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="41" column="2" selection-start="1132" selection-end="1132" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/activejdbc/src/main/java/activejdbc/associations/Many2ManyAssociation.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="62" column="25" selection-start="1996" selection-end="2007" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/activejdbc/src/main/java/activejdbc/LazyList.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="387" column="48" selection-start="15793" selection-end="15793" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/activejdbc/src/test/resources/postgres_schema.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="99" column="31" selection-start="4640" selection-end="4640" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/CreatedAtUpdatedAtTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="66" column="47" selection-start="1898" selection-end="1915" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/test/DefaultDBReset.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="13" selection-start="211" selection-end="211" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/test/ActiveJDBCTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="44" column="36" selection-start="1265" selection-end="1265" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/test/JdbcProperties.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="55" column="25" selection-start="1570" selection-end="1570" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/activejdbc/src/test/resources/activejdbc.properties">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/activejdbc/src/test/resources/jdbc.properties">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/activejdbc/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="70" column="39" selection-start="2686" selection-end="2692" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/activejdbc/src/main/java/activejdbc/Model.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1697" column="15" selection-start="69487" selection-end="69487" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="564" column="8" selection-start="16219" selection-end="16219" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/activejdbc-instrumentation/src/main/java/activejdbc/instrumentation/ModelInstrumentation.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="87" column="98" selection-start="3280" selection-end="3280" vertical-scroll-proportion="0.0">
+        <state line="135" column="5" selection-start="5063" selection-end="5063" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/activejdbc-instrumentation/src/main/java/activejdbc/instrumentation/Instrumentation.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="58" column="0" selection-start="1915" selection-end="1915" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/activejdbc-instrumentation/src/main/java/activejdbc/instrumentation/InstrumentationModelFinder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="51" column="0" selection-start="1520" selection-end="1520" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/activejdbc/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="181" column="64" selection-start="6904" selection-end="6904" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/activejdbc-instrumentation/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="28" column="29" selection-start="1370" selection-end="1370" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="34" column="68" selection-start="1414" selection-end="1414" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/test_models/Person.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="22" column="26" selection-start="669" selection-end="669" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/activejdbc/src/main/java/activejdbc/Model.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1906" column="21" selection-start="77356" selection-end="77356" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/activejdbc/src/main/java/activejdbc/cache/OSCacheManager.java">
+    <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/PostgreSQLStatementProvider.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="40" column="28" selection-start="1237" selection-end="1237" vertical-scroll-proportion="0.62086093">
+        <state line="165" column="0" selection-start="9356" selection-end="9356" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/MySQLStatementProvider.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="10" column="24" selection-start="220" selection-end="220" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/OracleStatementProvider.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="10" column="0" selection-start="197" selection-end="197" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/StatementProvider.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="17" selection-start="703" selection-end="724" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/activejdbc/src/test/resources/mysql_schema.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="96" column="21" selection-start="5430" selection-end="5436" vertical-scroll-proportion="-24.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/test/ActiveJDBCTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="143" column="19" selection-start="4270" selection-end="4270" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/activejdbc/src/test/java/activejdbc/SetParentTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="34" column="8" selection-start="1014" selection-end="1014" vertical-scroll-proportion="0.24475524">
           <folding />
         </state>
       </provider>

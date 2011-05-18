@@ -11,7 +11,7 @@ public class OptimisticLockingTest extends ActiveJDBCTest {
 
     @Test
     public void shouldSetVersionToOneWhenCreatingNewRecord(){
-        resetTable("watermelons");
+        deleteAndPopulateTable("watermelons");
         Watermelon m = new Watermelon();
         m.set("melon_type", "dark_green");
         m.saveIt();
@@ -23,7 +23,7 @@ public class OptimisticLockingTest extends ActiveJDBCTest {
     @Test
     public void shouldAdvanceVersionWhenRecordIsUpdated(){
 
-        resetTable("watermelons");
+        deleteAndPopulateTable("watermelons");
         Watermelon m = new Watermelon();
         m.set("melon_type", "dark_green");
         m.saveIt();
@@ -47,7 +47,7 @@ public class OptimisticLockingTest extends ActiveJDBCTest {
 
     @Test(expected = StaleModelException.class)
     public void shouldThrowExceptionWhenVersionCollisionHappens(){
-        resetTable("watermelons");
+        deleteAndPopulateTable("watermelons");
         Watermelon m = new Watermelon();
         m.set("melon_type", "dark_green");
         m.saveIt();

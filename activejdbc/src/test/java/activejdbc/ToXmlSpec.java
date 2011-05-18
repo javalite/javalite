@@ -32,7 +32,7 @@ public class ToXmlSpec extends ActiveJDBCTest {
 
     @Test
     public void shouldGenerateSimpleXml(){
-        resetTable("people");
+        deleteAndPopulateTable("people");
         Person p  = (Person)Person.findById(1);
         String xml = p.toXml(2, true);
         System.out.println(xml);
@@ -42,7 +42,7 @@ public class ToXmlSpec extends ActiveJDBCTest {
 
     @Test
     public void shouldIncludeChildren(){
-        resetTables("users", "addresses");
+        deleteAndPopulateTables("users", "addresses");
         List<User> personList = User.findAll().orderBy("id").include(Address.class);
         User u = personList.get(0);
         String xml = u.toXml(2, true);
@@ -53,7 +53,7 @@ public class ToXmlSpec extends ActiveJDBCTest {
 
     @Test
     public void shouldIncludeOnlyProvidedAttributes(){
-        resetTables("users", "addresses");
+        deleteAndPopulateTables("users", "addresses");
 
         User u = (User)User.findById(1);
         String xml = u.toXml(2, true, "email", "last_name");
@@ -65,7 +65,7 @@ public class ToXmlSpec extends ActiveJDBCTest {
 
     @Test
     public void shouldGenerateFromList(){
-        resetTables("users", "addresses");
+        deleteAndPopulateTables("users", "addresses");
         LazyList<User> personList = User.findAll().orderBy("id").include(Address.class);
 
         String xml = personList.toXml(2, true);

@@ -28,7 +28,7 @@ public class ModelExistsTest extends ActiveJDBCTest {
 
     @Test
     public void test(){
-        resetTable("people");
+        deleteAndPopulateTable("people");
         a(Person.exists(10000)).shouldBeFalse();
         a(Person.exists(1)).shouldBeTrue();        
     }

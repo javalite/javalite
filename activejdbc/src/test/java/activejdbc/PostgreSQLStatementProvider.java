@@ -7,8 +7,8 @@ import java.util.List;
 /**
  * @author Igor Polevoy
  */
-public class PostgreSQLStatementProvider {
-    public List<String> getStatements(String table) {
+public class PostgreSQLStatementProvider implements StatementProvider{
+    public List<String> getPopulateStatements(String table) {
         
         List<String> statements = new ArrayList<String>();
         if (table.equals("people")) {
@@ -162,5 +162,9 @@ public class PostgreSQLStatementProvider {
 
         all.addAll(statements);
         return all;
+    }
+
+    public String getDeleteStatement(String table){
+        return "DELETE FROM " + table + ";";
     }
 }

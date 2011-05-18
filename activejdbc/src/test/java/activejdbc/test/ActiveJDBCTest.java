@@ -24,10 +24,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import activejdbc.Base;
-import activejdbc.MySQLStatementProvider;
-import activejdbc.OracleStatementProvider;
-import activejdbc.PostgreSQLStatementProvider;
+import activejdbc.*;
+import static javalite.common.Collections.list;
 import javalite.test.jspec.JSpecSupport;
 
 import org.junit.After;
@@ -128,25 +126,41 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
     }
 
 
-    protected void resetTables(String... tables)  {
+    protected void deleteAndPopulateTables(String... tables)  {
         for (String table : tables)
-            resetTable(table);
+            deleteAndPopulateTable(table);
     }
 
-    protected void resetTable(String table) {
-        List<String> statements = null;
-        if (db().equals("mysql")) {
-            statements = new MySQLStatementProvider().getStatements(table);
-        } else if (db().equals("oracle")) {
-            statements = new OracleStatementProvider().getStatements(table);
-        } else if (db().equals("postgresql")) {
-            statements = new PostgreSQLStatementProvider().getStatements(table);
-        }
-        executeStatements(statements);
+    protected void deleteAndPopulateTable(String table) {
+        deleteFromTable(table);
+        populateTable(table);
     }
+
+    
+    protected void deleteFromTable(String table){
+        executeStatements(list(getStatementProvider().getDeleteStatement(table)));
+    }
+
+    protected void populateTable(String table) {        
+        executeStatements(getStatementProvider().getPopulateStatements(table));
+    }
+
+    private StatementProvider getStatementProvider(){
+        StatementProvider statementProvider = null;
+        if (db().equals("mysql")) {
+            statementProvider = new MySQLStatementProvider();
+        } else if (db().equals("oracle")) {
+            statementProvider = new OracleStatementProvider();
+        } else if (db().equals("postgresql")) {
+            statementProvider = new PostgreSQLStatementProvider();
+        }
+        return statementProvider;
+    }
+
+
 
     private void executeStatements(List<String> statements) {
-        try {            
+        try {
             for (String statement : statements) {
                 Statement st;
                 st = Base.connection().createStatement();

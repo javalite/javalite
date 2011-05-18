@@ -35,7 +35,7 @@ public class Many2ManyRelationshipTest extends ActiveJDBCTest {
 
     @Test
     public void shouldSelectManyToManyWithGetAll(){
-        resetTables("doctors", "patients", "doctors_patients");
+        deleteAndPopulateTables("doctors", "patients", "doctors_patients");
         Doctor doctor = (Doctor)Doctor.findById(1);
         List<Patient> patients = doctor.getAll(Patient.class);
         a(2).shouldBeEqual(patients.size());
@@ -55,7 +55,7 @@ public class Many2ManyRelationshipTest extends ActiveJDBCTest {
 
     @Test
     public void shouldFindManyToManyViaGetter(){
-        resetTables("doctors", "patients", "doctors_patients");
+        deleteAndPopulateTables("doctors", "patients", "doctors_patients");
         Doctor doctor = (Doctor)Doctor.findById(1);
         List<Patient> patients = (List<Patient>)doctor.get("patients");
         a(2).shouldBeEqual(patients.size());
@@ -63,7 +63,7 @@ public class Many2ManyRelationshipTest extends ActiveJDBCTest {
 
     @Test
     public void shouldAddNewChildInManyToManyAssociation(){
-        resetTables("doctors", "patients", "doctors_patients");
+        deleteAndPopulateTables("doctors", "patients", "doctors_patients");
         Doctor doctor = (Doctor)Doctor.findById(1);
         Patient jimThePatient = (Patient)Patient.create("first_name", "Jim", "last_name", "Smith");
         //this will add a new patient record and a new record in the join table that connects a doctor and a new patient.
@@ -83,7 +83,7 @@ public class Many2ManyRelationshipTest extends ActiveJDBCTest {
 
     @Test(expected = NotAssociatedException.class)
      public void shouldRejectUnassociatedModel(){
-        resetTables("students");
+        deleteAndPopulateTable("students");
 
         Student bill = (Student)Student.createIt("dob", new Date(System.currentTimeMillis()), "first_name", "Bill", "last_name", "Jansen");
         bill.add(Plant.<Model>create("plant_name", "pine", "category", "trees"));
@@ -109,7 +109,7 @@ public class Many2ManyRelationshipTest extends ActiveJDBCTest {
 
     @Test
     public void shouldSelectManyToManyWithGet(){
-        resetTables("doctors", "patients", "doctors_patients");
+        deleteAndPopulateTables("doctors", "patients", "doctors_patients");
         Doctor doctor = (Doctor)Doctor.findById(1);
         List<Patient> patients = doctor.getAll(Patient.class);
         a(2).shouldBeEqual(patients.size());

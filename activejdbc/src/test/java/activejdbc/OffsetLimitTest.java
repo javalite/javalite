@@ -32,7 +32,7 @@ public class OffsetLimitTest extends ActiveJDBCTest {
     @Override
     public void before() throws Exception {
         super.before();
-        resetTable("pages");
+        deleteAndPopulateTable("pages");
         for (int i = 1; i <= 1000; i++) {
             Page.<Model>create("description", "description: " + i, "word_count", 11).saveIt();
         }

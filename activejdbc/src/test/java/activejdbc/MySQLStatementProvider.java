@@ -7,8 +7,8 @@ import java.util.List;
 /**
  * @author Igor Polevoy
  */
-public class MySQLStatementProvider {
-    public List<String> getStatements(String table) {
+public class MySQLStatementProvider implements StatementProvider{
+    public List<String> getPopulateStatements(String table) {
         
         List<String> statements = new ArrayList<String>();
         if (table.equals("people")) {
@@ -159,9 +159,14 @@ public class MySQLStatementProvider {
         }
 
         ArrayList<String> all = new ArrayList<String>();
-        all.add("DELETE FROM " + table + ";");
+        
         all.add("ALTER TABLE " + table + " AUTO_INCREMENT=1;");        
         all.addAll(statements);
         return all;
+    }
+
+
+    public String getDeleteStatement(String table){
+        return "DELETE FROM " + table + ";";
     }
 }

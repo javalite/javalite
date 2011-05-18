@@ -32,7 +32,14 @@ public class SetParentTest extends ActiveJDBCTest {
     @Before
     public void before() throws Exception {
         super.before();
-        resetTables("motherboards","keyboards", "computers");
+        
+        deleteFromTable("computers");
+        deleteFromTable("motherboards");
+        deleteFromTable("keyboards");
+        
+        populateTable("motherboards");
+        populateTable("keyboards");
+        populateTable("computers");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -50,7 +57,7 @@ public class SetParentTest extends ActiveJDBCTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldRejectUnrelatedParent(){
 
-        resetTable("people");
+        deleteAndPopulateTable("people");
         Computer c= new Computer();
         c.setParent(Person.findById(1));// must fail because Person and Computer are not related
     }

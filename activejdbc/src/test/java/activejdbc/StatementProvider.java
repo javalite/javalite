@@ -14,24 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License. 
 */
 
-
 package activejdbc;
 
-import activejdbc.test.ActiveJDBCTest;
-import activejdbc.test_models.Person;
-import org.junit.Test;
+import java.util.List;
 
 /**
  * @author Igor Polevoy
  */
-public class IsModelValidTest extends ActiveJDBCTest {
-
-    @Test
-    public void test(){
-        deleteAndPopulateTable("people");
-        Person p = (Person)Person.create("name", "Sam", "dob", "2001-01-07");
-        a(p).shouldNotBe("valid");
-        p.set("last_name", "Johnson");
-        a(p).shouldBe("valid");
-    }
+public interface  StatementProvider {
+    List<String> getPopulateStatements(String table);
+    String getDeleteStatement(String table);    
 }

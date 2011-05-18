@@ -7,8 +7,8 @@ import java.util.List;
 /**
  * @author Igor Polevoy
  */
-public class OracleStatementProvider {
-    public List<String> getStatements(String table) {
+public class OracleStatementProvider implements StatementProvider{
+    public List<String> getPopulateStatements(String table) {
 
         List<String> statements = new ArrayList<String>();
         if (table.equals("people")) {
@@ -153,7 +153,6 @@ public class OracleStatementProvider {
         }
 
         ArrayList<String> all = new ArrayList<String>();
-        all.add("DELETE FROM " + table);
         all.add("DROP TRIGGER " + table + "_trigger");
         all.add("DROP SEQUENCE " + table + "_seq");
         all.add("CREATE  SEQUENCE " + table + "_seq START WITH 1 INCREMENT BY 1" );
@@ -178,5 +177,9 @@ public class OracleStatementProvider {
         }
         all.addAll(statements);
         return all;
+    }
+
+    public String getDeleteStatement(String table){
+        return "DELETE FROM " + table;
     }
 }
