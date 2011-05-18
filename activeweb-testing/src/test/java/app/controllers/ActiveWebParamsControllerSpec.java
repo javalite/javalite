@@ -16,31 +16,30 @@ limitations under the License.
 
 package app.controllers;
 
+import activeweb.Configuration;
 import activeweb.ControllerSpec;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
- * This is additional test of the LinkToTag class, the original is in the activeweb module.
- *
  * @author Igor Polevoy
  */
-public class LinkToControllerSpec extends ControllerSpec {
+public class ActiveWebParamsControllerSpec extends ControllerSpec {
 
     @Before
-    public void before() {
+    public void before(){
         setTemplateLocation("src/test/views");
     }
-
+    
     @Test
-    public void shouldInferControllerNameFromContext(){
+    public void shouldAssignAWMapToView(){
+
         request().integrateViews().get("index");
-        a(responseContent()).shouldBeEqual("<a href=\"/test_context/link_to/index2\" data-link=\"aw\">Index 2 </a>");
-    }
+        String response = responseContent();
 
-    @Test
-    public void shouldOverrideContextControllerWithAttributeController(){
-        request().integrateViews().get("index2");
-        a(responseContent()).shouldBeEqual("<a href=\"/test_context/abc_person/index2\" data-link=\"aw\">Index 2 </a>");
+        a(response.contains("restful = false")).shouldBeTrue();
+        a(response.contains("action = index")).shouldBeTrue();
+        a(response.contains("controller = /active_web_params")).shouldBeTrue();
+        a(response.contains("environment = " + Configuration.getEnv())).shouldBeTrue();
     }
 }

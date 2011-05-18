@@ -48,11 +48,7 @@ public class SpecHelper extends JSpecSupport{
     @Before
     public void atStart() {
         session = new MockHttpSession();
-
-        MatchedRoute route = new MatchedRoute(new SimpleController(), "index");
         ContextAccess.setTLs(null, new MockHttpServletResponse(), new MockFilterConfig(), new ControllerRegistry(new MockFilterConfig()), new AppContext());
-
-        ContextAccess.setRoute(route);
         setTemplateLocation("src/main/webapp/WEB-INF/views");//default location of all views
     }
 

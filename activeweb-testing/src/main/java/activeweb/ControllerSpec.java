@@ -27,6 +27,14 @@ import javalite.test.jspec.TestException;
  */
 public class ControllerSpec extends SpecHelper {
 
+    private String controllerPath;
+
+    @Override
+    public void atStart() {
+        super.atStart();
+        controllerPath  = getControllerPath();
+    }
+
     /**
      * Use this DSL-ish method to send requests to controllers from specs.
      * <strong>Attention</strong>: this method always returns a new object, please string methods one after another - fluent interfaces
@@ -35,11 +43,21 @@ public class ControllerSpec extends SpecHelper {
      * @return instance of <code>RequestBuilder</code> with convenience methods.
      */
     protected RequestBuilder request() {
-        return new RequestBuilder(getControllerPath(), session());
+        return new RequestBuilder(controllerPath, session());
     }
 
+    protected String getControllerPath(){
+        String controllerClassName = getControllerClassName();
+        Class<? extends AppController> controllerClass;
+        try{
+            controllerClass = (Class<? extends AppController>) Class.forName(controllerClassName);
+        }catch(Exception e){
+            throw new SpecException("Failed to find a class for: " + controllerClassName, e);
+        }
+        return Router.getControllerPath(controllerClass);
+    }
     
-    protected final String getControllerPath() {
+    protected final String getControllerClassName() {
 
         String packageName = getClass().getPackage().getName();
         if(!packageName.startsWith("app.controllers")){
@@ -60,9 +78,9 @@ public class ControllerSpec extends SpecHelper {
         }
 
         String specClassName = getClass().getSimpleName();
-        String controllerName = specClassName.substring(0, specClassName.lastIndexOf("ControllerSpec"));
-        controllerName = Inflector.underscore(controllerName);
-        return "/" + (Util.blank(temp)? "": temp + "/") + controllerName;
+        String controllerName = specClassName.substring(0, specClassName.lastIndexOf("Spec"));
+        
+        return "app.controllers." + (Util.blank(temp)? "": temp + ".") + controllerName; 
     }
 }
 

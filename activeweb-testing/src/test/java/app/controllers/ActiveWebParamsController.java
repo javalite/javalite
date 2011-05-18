@@ -14,19 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License. 
 */
 
-package activeweb;
+package app.controllers;
 
-import org.junit.Test;
+import activeweb.AppController;
 
 /**
  * @author Igor Polevoy
  */
-public class BlahControllerSpec  extends ControllerSpec{
-    @Override
-    public void atStart() {
-        //nothing
-    }
-
-    @Test
-    public void ignore(){}
+public class ActiveWebParamsController extends AppController {
+    public void index(){}
 }
