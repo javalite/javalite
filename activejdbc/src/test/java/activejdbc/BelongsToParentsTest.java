@@ -1,7 +1,5 @@
 package activejdbc;
 
-import static org.junit.Assert.assertNotNull;
-
 import org.junit.Test;
 
 import activejdbc.test.ActiveJDBCTest;
@@ -13,7 +11,14 @@ public class BelongsToParentsTest extends ActiveJDBCTest {
 
 	public void before() throws Exception { 
 		super.before();
-		deleteAndPopulateTables("motherboards","keyboards", "computers");
+
+        deleteFromTable("computers");
+        deleteFromTable("motherboards");
+        deleteFromTable("keyboards");
+
+        populateTable("motherboards");
+        populateTable("keyboards");
+        populateTable("computers");
 	}
 	
 	@Test
