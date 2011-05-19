@@ -90,7 +90,6 @@ public class Util {
     }
 
 
-
     /**
      * Reads contents of the input stream fully and returns it as byte array.
      *
@@ -110,6 +109,18 @@ public class Util {
 
         return bout.toByteArray();
     }
+
+    /**
+     * Reads file into a byte array.
+     *
+     * @param file file to read.
+     * @return content of file.
+     * @throws java.io.IOException
+     */
+    public static byte[] read(File file) throws IOException {
+        return bytes(new FileInputStream(file));
+    }
+
     /**
      * Returns lines of text of a resource as list.
      *
