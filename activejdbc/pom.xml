@@ -15,6 +15,7 @@
 
     <!--Default to MySQL if no profile provided-->
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
         <jdbc.url>jdbc:mysql://localhost/activejdbc</jdbc.url>
         <jdbc.user>root</jdbc.user>

@@ -18,7 +18,6 @@ package activejdbc;
 import activejdbc.test.ActiveJDBCTest;
 import activejdbc.test_models.School;
 import org.junit.Test;
-import org.junit.Ignore;
 
 import java.util.Locale;
 
@@ -58,13 +57,13 @@ public class ValidationWithResourceBundlesTest extends ActiveJDBCTest{
                 .shouldBeEqual("Email format for school School of Computer Science is incorrect: computer#science.edu, a proper format would be something like this: computer@science.edu");
     }
 
-    @Test @Ignore
+    @Test
     public void shouldPullCorrectMessageWithParametersGerman(){
         School s = new School();
         s.set("school_name", "School of Computer Science");
         s.set("email", "computer#science.edu");
         s.validate();
         a(s.errors(new Locale("de", "DE")).get("email", s.get("school_name"), s.get("email"), "computer@science.edu"))
-                .shouldBeEqual("EMail Format fÃ¼r die Schule School of Computer Science ist falsch: computer#science.edu, ein geeignetes Format wÃ¤re so etwas wie dieses: computer@science.edu");
+                .shouldBeEqual("EMail Format f�r die Schule School of Computer Science ist falsch: computer#science.edu, ein geeignetes Format w�re so etwas wie dieses: computer@science.edu");
     }
 }
