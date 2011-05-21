@@ -24,11 +24,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import activejdbc.Base;
-import activejdbc.H2StatementProvider;
-import activejdbc.MySQLStatementProvider;
-import activejdbc.OracleStatementProvider;
-import activejdbc.PostgreSQLStatementProvider;
+import activejdbc.*;
+import static javalite.common.Collections.list;
 import javalite.test.jspec.JSpecSupport;
 
 import org.junit.After;
@@ -62,7 +59,7 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
             DefaultDBReset.resetSchema(getStatements(";", "mysql_schema.sql"));
         }else if (db().equals("postgresql")) {
             DefaultDBReset.resetSchema(getStatements(";", "postgres_schema.sql"));
-        }else if (db().equals("h2")) {
+        } else if (db().equals("h2")) {
             DefaultDBReset.resetSchema(getStatements(";", "h2_schema.sql"));
         } else if (db().equals("oracle")) {
             OracleDBReset.resetOracle(getStatements("-- BREAK", "oracle_schema.sql"));
@@ -131,27 +128,43 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
     }
 
 
-    protected void resetTables(String... tables)  {
+    protected void deleteAndPopulateTables(String... tables)  {
         for (String table : tables)
-            resetTable(table);
+            deleteAndPopulateTable(table);
     }
 
-    protected void resetTable(String table) {
-        List<String> statements = null;
-        if (db().equals("mysql")) {
-            statements = new MySQLStatementProvider().getStatements(table);
-        } else if (db().equals("oracle")) {
-            statements = new OracleStatementProvider().getStatements(table);
-        } else if (db().equals("postgresql")) {
-            statements = new PostgreSQLStatementProvider().getStatements(table);
-        } else if (db().equals("h2")) {
-            statements = new H2StatementProvider().getStatements(table);
-        }
-        executeStatements(statements);
+    protected void deleteAndPopulateTable(String table) {
+        deleteFromTable(table);
+        populateTable(table);
     }
+
+    
+    protected void deleteFromTable(String table){
+        executeStatements(list(getStatementProvider().getDeleteStatement(table)));
+    }
+
+    protected void populateTable(String table) {        
+        executeStatements(getStatementProvider().getPopulateStatements(table));
+    }
+
+    private StatementProvider getStatementProvider(){
+        StatementProvider statementProvider = null;
+        if (db().equals("mysql")) {
+            statementProvider = new MySQLStatementProvider();
+        } else if (db().equals("oracle")) {
+            statementProvider = new OracleStatementProvider();
+        } else if (db().equals("postgresql")) {
+            statementProvider = new PostgreSQLStatementProvider();
+        } else if (db().equals("h2")) {
+            statementProvider = new H2StatementProvider();
+        }
+        return statementProvider;
+    }
+
+
 
     private void executeStatements(List<String> statements) {
-        try {            
+        try {
             for (String statement : statements) {
                 Statement st;
                 st = Base.connection().createStatement();

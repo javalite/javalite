@@ -438,7 +438,7 @@
         <root url="jar://$MAVEN_REPOSITORY$/javassist/javassist/3.8.0.GA/javassist-3.8.0.GA-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/javassist/javassist/3.8.0.GA/javassist-3.8.0.GA-sources.jar!/" />
+        <root url="file://$USER_HOME$/programs/javassist-3.8.0/src/main" />
       </SOURCES>
     </library>
     <library name="Maven: javax.servlet:servlet-api:2.5">

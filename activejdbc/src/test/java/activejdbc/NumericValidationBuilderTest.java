@@ -30,12 +30,12 @@ public class NumericValidationBuilderTest extends ActiveJDBCTest {
     @Override
     public void before() throws Exception {
         super.before();
-        resetTable("accounts");
+        deleteAndPopulateTable("accounts");
     }
 
     @Test
     public void shouldAcceptCorrectValueForTotal(){
-        resetTable("accounts");
+        deleteAndPopulateTable("accounts");
         Account account = new Account();
         account.set("amount", 1);
         account.set("total", 1);

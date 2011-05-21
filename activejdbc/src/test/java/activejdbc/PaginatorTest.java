@@ -34,7 +34,7 @@ public class PaginatorTest extends ActiveJDBCTest {
     @Override
     public void before() throws Exception {
         super.before();
-        resetTable("items");
+        deleteAndPopulateTable("items");
         for(int i = 1; i <= 1000; i++){
             Item item = (Item)Item.create("item_number", i, "item_description", "this is item # " + i);
             item.saveIt();

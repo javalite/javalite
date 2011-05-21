@@ -11,7 +11,7 @@ public class AttributeConverterTest extends ActiveJDBCTest {
 
     @Test
     public void testDateConverter(){
-        resetTable("people");
+        deleteAndPopulateTable("people");
         Person p = new Person();
         p.set("name", "Marilyn");
         p.set("last_name", "Monroe");
@@ -27,7 +27,7 @@ public class AttributeConverterTest extends ActiveJDBCTest {
 
     @Test
     public void testTimestampConverter(){
-        resetTable("people");
+        deleteAndPopulateTable("people");
         Person p = new Person();
         p.set("name", "Marilyn");
         p.set("last_name", "Monroe");

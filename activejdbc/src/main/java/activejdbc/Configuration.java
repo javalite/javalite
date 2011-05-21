@@ -110,7 +110,7 @@ public class Configuration {
             else if(mm.getDbType().equalsIgnoreCase("PostgreSQL")){
                 dialects.put(mm.getDbType(), new PostgreSQLDialect());
             }
-            else if(mm.getDbType().equalsIgnoreCase("H2")){
+            else if(mm.getDbType().equalsIgnoreCase("h2")){
                 dialects.put(mm.getDbType(), new PostgreSQLDialect());
             }
             else{

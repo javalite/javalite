@@ -35,7 +35,7 @@ public class RemoveAssociatedChildTest extends ActiveJDBCTest {
 
     @Test
     public void testOne2many(){
-        resetTables("libraries", "books");
+        deleteAndPopulateTables("libraries", "books");
         Library l = (Library)Library.findById(1);
         List<Book> books = l.getAll(Book.class);
 
@@ -49,7 +49,7 @@ public class RemoveAssociatedChildTest extends ActiveJDBCTest {
 
     @Test
     public void testMany2Many(){
-        resetTables("doctors", "patients", "doctors_patients");
+        deleteAndPopulateTables("doctors", "patients", "doctors_patients");
         Doctor doctor = (Doctor)Doctor.findById(1);        
         List<Patient> patients = doctor.getAll(Patient.class);
         int initSize = patients.size();

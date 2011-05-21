@@ -16,7 +16,6 @@ limitations under the License.
 
 package activejdbc;
 
-import activejdbc.LazyList;
 import activejdbc.test.ActiveJDBCTest;
 import activejdbc.test_models.*;
 import org.junit.Test;
@@ -31,7 +30,7 @@ public class IncludesTest extends ActiveJDBCTest{
 
     @Test
     public void shouldBeAbleToIncludeParentOne2Many() {
-        resetTables("users", "addresses");
+        deleteAndPopulateTables("users", "addresses");
         List<Address> addresses = Address.findAll().orderBy("id").include(User.class);
         a(addresses.get(0).toMap().get("user")).shouldNotBeNull();
         Map user = (Map)addresses.get(0).toMap().get("user");
@@ -44,7 +43,7 @@ public class IncludesTest extends ActiveJDBCTest{
 
     @Test
     public void shouldBeAbleToIncludeChildrenOne2Many() {
-        resetTables("users", "addresses");
+        deleteAndPopulateTables("users", "addresses");
         LazyList<User> users = User.findAll().orderBy("id").include(Address.class);
         List<Map> maps = users.toMaps();
 
@@ -60,7 +59,7 @@ public class IncludesTest extends ActiveJDBCTest{
 
     @Test
     public void shouldBeAbleToIncludeOtherInManyToMany() {
-        resetTables("doctors", "patients", "doctors_patients");
+        deleteAndPopulateTables("doctors", "patients", "doctors_patients");
         LazyList<Doctor> doctors = Doctor.findAll().orderBy("id").include(Patient.class);
         List<Map> doctorsMaps = doctors.toMaps();
 
@@ -75,7 +74,7 @@ public class IncludesTest extends ActiveJDBCTest{
 
     @Test
     public void shouldNotCallDependentIfOriginatedModelQueryReturnsNoResultsForManyToMany() {
-        resetTables("doctors", "patients", "doctors_patients");
+        deleteAndPopulateTables("doctors", "patients", "doctors_patients");
 
         LazyList<Patient> patients = Doctor.find("last_name = ?", " does not exist").include(Patient.class);
 
@@ -85,7 +84,7 @@ public class IncludesTest extends ActiveJDBCTest{
 
     @Test
     public void shouldNotCallDependentIfOriginatedModelQueryReturnsNoResultsForOneToMany() {
-        resetTables("users", "addresses");
+        deleteAndPopulateTables("users", "addresses");
 
         LazyList<Address> addresses = User.find("email = ?", " does not exist").include(Address.class);
 
@@ -96,7 +95,7 @@ public class IncludesTest extends ActiveJDBCTest{
 
     @Test
     public void shouldCacheIncludesMany2Many() {
-        resetTables("doctors", "patients", "doctors_patients");
+        deleteAndPopulateTables("doctors", "patients", "doctors_patients");
         LazyList<Doctor> doctors = Doctor.findAll().orderBy("id").include(Patient.class);
 
         List<Patient> patients1 = doctors.get(0).getAll(Patient.class);
@@ -106,7 +105,7 @@ public class IncludesTest extends ActiveJDBCTest{
 
     @Test
     public void shouldBeAbleToIncludeParentAndChildren() {
-        resetTables("libraries", "books", "readers");
+        deleteAndPopulateTables("libraries", "books", "readers");
         List<Book> books = Book.findAll().orderBy(Book.getMetaModel().getIdName()).include(Reader.class, Library.class);
         Map book = books.get(0).toMap();
 

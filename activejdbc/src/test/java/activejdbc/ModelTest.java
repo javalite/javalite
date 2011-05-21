@@ -35,7 +35,7 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void testModelFinder() {
-        resetTable("people");
+        deleteAndPopulateTable("people");
 
         List<Person> list = Person.where("name = 'John'").orderBy("dob desc");
         a(1).shouldBeEqual(list.size());
@@ -44,14 +44,14 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void testModelFinderWithParams() {
 
-        resetTable("people");
+        deleteAndPopulateTable("people");
         List<Person> list = Person.where("name = ?", "John");
         a(1).shouldBeEqual(list.size());
     }
 
     @Test
     public void testModelFinderWithListener() {
-        resetTable("people");
+        deleteAndPopulateTable("people");
         Person.findWith(new ModelListener<Person>() {
             public void onModel(Person person) {
                 System.out.println("Found person: " + person);
@@ -81,28 +81,28 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void testModelFindOne() {
-        resetTable("people");
+        deleteAndPopulateTable("people");
         Person person = (Person)Person.findFirst("id = 2");
         a(person).shouldNotBeNull();
     }
 
     @Test
     public void testModelFindOneParametrized() {
-        resetTable("people");
+        deleteAndPopulateTable("people");
         Person person = (Person)Person.findFirst("id = ?", 2);
         a(person).shouldNotBeNull();
     }
 
     @Test
     public void testModelFinderAll() {
-        resetTable("people");
+        deleteAndPopulateTable("people");
         List<Person> list = Person.findAll();
         a(4).shouldBeEqual(list.size());
     }
 
     @Test
     public void testCreateNewAndSave() {
-        resetTable("people");
+        deleteAndPopulateTable("people");
         Person p = new Person();
         p.set("name", "Marilyn");
         p.set("last_name", "Monroe");
@@ -119,7 +119,7 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void testCreateNewAndSaveWithSomeNULLs() {
-        resetTable("people");
+        deleteAndPopulateTable("people");
         Person p = new Person();
         p.set("name", "Keith");
         p.set("last_name", "Emerson");
@@ -134,7 +134,7 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void testSetWrongAttribute() {
-        resetTable("people");
+        deleteAndPopulateTable("people");
         final Person p = new Person();
         expect(new ExceptionExpectation(IllegalArgumentException.class) {
             public void exec() {
@@ -145,7 +145,7 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void testAttemptSetId() {
-        resetTable("people");
+        deleteAndPopulateTable("people");
         final Person p = new Person();
 
         expect(new ExceptionExpectation(IllegalArgumentException.class) {
@@ -157,14 +157,14 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void testIdName() {
-        resetTables("people", "animals");
+        deleteAndPopulateTables("people", "animals");
         a(new Person().getIdName()).shouldBeEqual("id");
         a(new Animal().getIdName()).shouldBeEqual("animal_id");
     }
 
     @Test
     public void testLookupAndSave() {
-        resetTable("people");
+        deleteAndPopulateTable("people");
         List<Person> list = Person.find("id = 1");
         Person p = list.get(0);
         p.set("name", "Igor");
@@ -179,26 +179,26 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void testGetById() {
-        resetTable("people");
+        deleteAndPopulateTable("people");
         Person p = (Person)Person.findById(1);
         a(p).shouldNotBeNull();
     }
 
     @Test
     public void testCount() {
-        resetTable("people");
+        deleteAndPopulateTable("people");
         a(Person.count()).shouldBeEqual(4L);
     }
 
     @Test
     public void testLikeCondition() {
-        resetTable("people");
+        deleteAndPopulateTable("people");
         a(Person.find("name like ?", "%J%").size()).shouldBeEqual(2);
     }
 
     @Test
     public void testInstanceDelete() {
-        resetTable("people");
+        deleteAndPopulateTable("people");
         Person p = (Person)Person.findById(1);
         p.delete();
 
@@ -207,21 +207,21 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void testBatchDelete() {
-        resetTable("people");
+        deleteAndPopulateTable("people");
         Person.delete("name like ?", "%J%");
         a(Person.count()).shouldBeEqual(2L);
     }
 
     @Test
     public void testBatchUpdate() {
-        resetTable("people");
+        deleteAndPopulateTable("people");
         Person.update("name = ?, last_name = ?", "name like ?", "blank_name", "blank last name", "%J%");
         a(Person.find("name like ?", "%blank%").size()).shouldBeEqual(2);
     }
 
     @Test
     public void testBatchUpdateAll() {
-        resetTable("people");
+        deleteAndPopulateTable("people");
         expect(new DifferenceExpectation(Person.find("last_name like ?", "Smith").size()) {
             public Object exec() {
                 Person.updateAll("last_name = ?", "Smith");
@@ -232,7 +232,7 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void testValidatesPresenceOf() {
-        resetTable("people");
+        deleteAndPopulateTable("people");
         Person p = new Person();
         p.set("name", "");
         p.validate();
@@ -241,7 +241,7 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void testOverrideTableName() {
-        resetTable("legacy_universities");
+        deleteAndPopulateTable("legacy_universities");
         a("legacy_universities").shouldBeEqual(University.getTableName());
 
         List<University> universities = University.findAll();
@@ -250,7 +250,7 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void testOneToMany() {
-        resetTables("users", "addresses");
+        deleteAndPopulateTables("users", "addresses");
         User user = (User)User.findById(1);
         List<Address> addresses = user.getAll(Address.class);
 
@@ -259,7 +259,7 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void testOneToManyWrongAssociation() {
-        resetTables("users", "addresses");
+        deleteAndPopulateTables("users", "addresses");
         final User user = (User)User.findById(1);
         expect(new ExceptionExpectation(NotAssociatedException.class){
             public void exec() {
@@ -277,21 +277,21 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void testBelongsToConvention(){
-        resetTables("users", "addresses");
+        deleteAndPopulateTables("users", "addresses");
         a(Address.belongsTo(User.class)).shouldBeTrue();
 
     }
 
     @Test
     public void testCustomIdName(){
-        resetTables("animals");
+        deleteAndPopulateTable("animals");
        Animal a = (Animal)Animal.findById(1);
        a(a).shouldNotBeNull();
     }
 
     @Test
     public void testOneToManyOverrideConventionAssociation(){
-        resetTables("libraries", "books");
+        deleteAndPopulateTables("libraries", "books");
         Library l = (Library)Library.findById(1);
         List<Book> books = l.getAll(Book.class);
         Library lib = (Library)books.get(0).parent(Library.class);
@@ -303,20 +303,20 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void testBelongsToMany(){
-        resetTables("doctors", "patients", "doctors_patients");
+        deleteAndPopulateTables("doctors", "patients", "doctors_patients");
         a(Patient.belongsTo(Doctor.class)).shouldBeTrue();
     }
 
     @Test
     public void testFk(){
-        resetTables("libraries", "books");
+        deleteAndPopulateTables("libraries", "books");
         String fk = Library.getMetaModel().getFKName();
         a(fk).shouldBeEqual("library_id");
     }
 
     @Test
     public void testSaveOneToManyAssociation(){
-        resetTables("users", "addresses");
+        deleteAndPopulateTables("users", "addresses");
         User u = (User)User.findById(1);
         Address a = new Address();
 
@@ -341,7 +341,7 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void testCopyTo(){
-        resetTables("users", "addresses");
+        deleteAndPopulateTables("users", "addresses");
         User u = (User)User.findById(1);
         User u1 = new User();
         u.copyTo(u1);
@@ -350,7 +350,7 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void testCopyFrom(){
-        resetTables("users", "addresses");
+        deleteAndPopulateTables("users", "addresses");
         User u = (User)User.findById(1);
         User u1 = new User();
         u1.copyFrom(u);
@@ -359,14 +359,14 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void testFindBySQL(){
-        resetTables("libraries", "books");
+        deleteAndPopulateTables("libraries", "books");
         List<Book> books = Book.findBySQL("select books.*, address from books, libraries where books.lib_id = libraries.id order by address");
         a(books.size()).shouldBeEqual(2);
     }
 
     @Test
     public void testFrosen(){
-        resetTables("users", "addresses");
+        deleteAndPopulateTables("users", "addresses");
         final User u = (User)User.findById(1);
         final Address a = new Address();
 
@@ -405,7 +405,7 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void testDeleteCascade(){
-        resetTables("users", "addresses");
+        deleteAndPopulateTables("users", "addresses");
         final User u = new User();
         u.set("first_name", "Homer");
         u.set("last_name", "Simpson");
@@ -449,7 +449,7 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void shouldGenerateCorrectInsertSQL(){
-        resetTables("students", "courses", "registrations");
+        deleteAndPopulateTables("students", "courses", "registrations");
         Student s = (Student)Student.findById(1);
         String insertSQL = s.toInsert();
         System.out.println(insertSQL);
@@ -466,7 +466,7 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void shouldFindManyToOneViaGetter() {
-        resetTables("users", "addresses");
+        deleteAndPopulateTables("users", "addresses");
         Address address = Address.<Address>findById(1);
         User u = (User)address.get("user");
         a(u).shouldNotBeNull();
@@ -474,7 +474,7 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void shouldFindOneToManyViaGetter() {
-        resetTables("users", "addresses");
+        deleteAndPopulateTables("users", "addresses");
         User user = (User)User.findById(1);
         List<Address> addresses = (List<Address>)user.get("addresses");
         a(3).shouldBeEqual(addresses.size());
@@ -482,7 +482,7 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void shouldCreateModelWithSingleSetter(){
-        resetTables("people");
+        deleteAndPopulateTable("people");
         expect(new DifferenceExpectation(Person.count()) {
             public Object exec() {
                 new Person().set("name", "Marilyn", "last_name", "Monroe", "dob", "1935-12-06").saveIt();
@@ -493,14 +493,14 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void shouldCollectLastNames(){
-        resetTables("people");
+        deleteAndPopulateTable("people");
         List expected= javalite.common.Collections.li("Pesci", "Smith", "Jonston", "Ali");
         a(Person.findAll().orderBy("name").collect("last_name")).shouldBeEqual(expected);
     }
 
     @Test
     public void shouldFindChildrenWithCriteria(){
-        resetTables("users", "addresses");
+        deleteAndPopulateTables("users", "addresses");
         User user = (User)User.findById(1);
 
         a(user.get(Address.class, "address1 = ? or address2 = ?", "456 Brook St.", "apt 21").size()).shouldEqual(1);
@@ -541,7 +541,7 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void shouldSerializeModel() throws IOException, ClassNotFoundException {
-        resetTable("people");
+        deleteAndPopulateTable("people");
         Person p = (Person)Person.findById(1);
 
         //write model

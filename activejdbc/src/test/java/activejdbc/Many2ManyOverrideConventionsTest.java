@@ -33,7 +33,7 @@ public class Many2ManyOverrideConventionsTest extends ActiveJDBCTest {
     @Test
     public void test(){
 
-        resetTables("students", "courses", "registrations");
+        deleteAndPopulateTables("students", "courses", "registrations");
         
         Student student = (Student) Student.findById(1);
         List<Course> courses = student.getAll(Course.class);

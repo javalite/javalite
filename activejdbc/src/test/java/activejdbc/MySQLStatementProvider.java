@@ -7,8 +7,8 @@ import java.util.List;
 /**
  * @author Igor Polevoy
  */
-public class MySQLStatementProvider {
-    public List<String> getStatements(String table) {
+public class MySQLStatementProvider implements StatementProvider{
+    public List<String> getPopulateStatements(String table) {
         
         List<String> statements = new ArrayList<String>();
         if (table.equals("people")) {
@@ -136,19 +136,18 @@ public class MySQLStatementProvider {
             statements =  Arrays.asList();
         } else if (table.equals("programmers_projects")) {
             statements =  Arrays.asList();
-        } else if (table.equals("computers-motherboards-keyboards")){ 
+        } else if (table.equals("motherboards")){ 
         	statements =  Arrays.asList(
-        			"DELETE FROM computers;",
-        			"DELETE FROM motherboards;",
-        			"DELETE FROM keyboards;",
-        			"ALTER TABLE computers AUTO_INCREMENT=1;",
-        			"ALTER TABLE motherboards AUTO_INCREMENT=1;",
-        			"ALTER TABLE keyboards AUTO_INCREMENT=1;",
-                    "INSERT INTO keyboards VALUES(1,'keyboard-us');",
-                    "INSERT INTO motherboards VALUES(1,'motherboardOne');",
+                    "INSERT INTO motherboards VALUES(1,'motherboardOne');"
+            );
+        } else if (table.equals("keyboards")){ 
+        	statements =  Arrays.asList(
+                    "INSERT INTO keyboards VALUES(1,'keyboard-us');"
+            );
+        } else if (table.equals("computers")){ 
+        	statements =  Arrays.asList(
                     "INSERT INTO computers VALUES(1,'ComputerX',1,1);"
             );
-        	return statements;
         }else if (table.equals("ingredients_recipes")) {
             statements = Arrays.asList();
         } else if (table.equals("ingredients")) {
@@ -160,9 +159,14 @@ public class MySQLStatementProvider {
         }
 
         ArrayList<String> all = new ArrayList<String>();
-        all.add("DELETE FROM " + table + ";");
+        
         all.add("ALTER TABLE " + table + " AUTO_INCREMENT=1;");        
         all.addAll(statements);
         return all;
+    }
+
+
+    public String getDeleteStatement(String table){
+        return "DELETE FROM " + table + ";";
     }
 }

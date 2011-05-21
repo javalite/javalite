@@ -28,7 +28,7 @@ public class ValidatorsTest extends ActiveJDBCTest {
 
     @Test
     public void testPresenceValidator(){
-        resetTable("people");
+        deleteAndPopulateTable("people");
         Person p = new Person();
         p.validate();
         a(p.errors().size()).shouldBeEqual(2);
@@ -46,7 +46,7 @@ public class ValidatorsTest extends ActiveJDBCTest {
 
     @Test
     public void testNumericValidator(){
-        resetTable("accounts");
+        deleteAndPopulateTable("accounts");
         Account a = new Account();
         //try straight number
         a.set("amount", 1.2);
@@ -80,7 +80,7 @@ public class ValidatorsTest extends ActiveJDBCTest {
 
     @Test
     public void testRangeValidator(){
-        resetTable("temperatures");
+        deleteAndPopulateTable("temperatures");
         Temperature t = new Temperature();
 
         //specified value in range
@@ -106,7 +106,7 @@ public class ValidatorsTest extends ActiveJDBCTest {
 
     @Test
     public void testMessagePassing(){
-        resetTable("salaries");
+        deleteAndPopulateTable("salaries");
         Salary s = new Salary();
         s.validate();
         a(s.errors().get("salary")).shouldBeEqual("salary is missing!!!");
@@ -114,7 +114,7 @@ public class ValidatorsTest extends ActiveJDBCTest {
 
     @Test
     public void testRegexpValidator(){
-        resetTables("users", "addresses");
+        deleteAndPopulateTables("users", "addresses");
         User u = new User();
 
         //test good value
@@ -130,7 +130,7 @@ public class ValidatorsTest extends ActiveJDBCTest {
 
     @Test
     public void testSaveItMethod(){
-        resetTables("users", "addresses");
+        deleteAndPopulateTables("users", "addresses");
         final User u = new User();
 
         //cause exception
@@ -144,7 +144,7 @@ public class ValidatorsTest extends ActiveJDBCTest {
 
     @Test
     public void shouldConvertEmptyStringToNull(){
-        resetTables("items");
+        deleteAndPopulateTable("items");
 
         Item it = new Item();
         it.set("item_number", "");
@@ -155,7 +155,7 @@ public class ValidatorsTest extends ActiveJDBCTest {
 
     @Test
     public void shouldReturnNullIfRequestedErrorForAttributeWhichDidNotProduceOne(){
-        resetTables("items");
+        deleteAndPopulateTable("items");
 
         Item it = new Item();
         a(it.errors().get("blah")).shouldBeNull();
@@ -163,7 +163,7 @@ public class ValidatorsTest extends ActiveJDBCTest {
 
     @Test
     public void shouldNotOverwritePreviousValidation(){
-        resetTables("accounts");
+        deleteAndPopulateTable("accounts");
 
         //first validator
         Account account = new Account();

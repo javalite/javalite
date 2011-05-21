@@ -31,7 +31,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
 
     @Test
     public void shouldGenerateSimpleJson(){
-        resetTable("people");
+        deleteAndPopulateTable("people");
         Person p  = (Person)Person.findById(1);
         //test no indent
         String json = p.toJson(false, "name", "last_name", "dob");
@@ -49,7 +49,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
 
     @Test
     public void shouldIncludePrettyChildren(){
-        resetTables("users", "addresses");
+        deleteAndPopulateTables("users", "addresses");
         List<User> personList = User.findAll().orderBy("id").include(Address.class);
         User u = personList.get(0);
         String json = u.toJson(true);
@@ -98,7 +98,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
 
     @Test
     public void shouldIncludeUglyChildren(){
-        resetTables("users", "addresses");
+        deleteAndPopulateTables("users", "addresses");
         List<User> personList = User.findAll().orderBy("id").include(Address.class);
         User u = personList.get(0);
         String json = u.toJson(false);
@@ -107,7 +107,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
 
     @Test
     public void shouldIncludeOnlyProvidedAttributes(){
-        resetTables("users", "addresses");
+        deleteAndPopulateTables("users", "addresses");
 
         User u = (User)User.findById(1);
         String json = u.toJson(true, "email", "last_name");
@@ -120,7 +120,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
 
     @Test
     public void shouldGenerateFromList(){
-        resetTables("users", "addresses");
+        deleteAndPopulateTables("users", "addresses");
         LazyList<User> personList = User.findAll().orderBy("id").include(Address.class);
 
         String json = personList.toJson(false);

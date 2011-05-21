@@ -4,15 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javalite.common.Collections;
-
-
-
 /**
  * @author Igor Polevoy
  */
-public class OracleStatementProvider {
-    public List<String> getStatements(String table) {
+public class OracleStatementProvider implements StatementProvider{
+    public List<String> getPopulateStatements(String table) {
 
         List<String> statements = new ArrayList<String>();
         if (table.equals("people")) {
@@ -134,12 +130,18 @@ public class OracleStatementProvider {
             statements =  Arrays.asList();
         } else if (table.equals("watermelons")) {
             statements =  Arrays.asList();
-        } else if (table.equals("computers-motherboards-keyboards")){ 
-        	statements = getRelatedStatements(table);
-        	statements.add("INSERT INTO keyboards VALUES(1,'keyboard-us');");
-       		statements.add("INSERT INTO motherboards VALUES(1,'motherboardOne');");
-       		statements.add("INSERT INTO computers VALUES(1,'ComputerX',1,1);");
-        	return statements;
+        }else if (table.equals("motherboards")){
+        	statements =  Arrays.asList(
+                    "INSERT INTO motherboards VALUES(1,'motherboardOne')"
+            );
+        }else if (table.equals("keyboards")){
+        	statements =  Arrays.asList(
+                    "INSERT INTO keyboards VALUES(1,'keyboard-us')"
+            );
+        } else if (table.equals("computers")){
+        	statements =  Arrays.asList(
+                    "INSERT INTO computers VALUES(1,'ComputerX',1,1)"
+            );
         } else if (table.equals("ingredients_recipes")) {
             statements = Arrays.asList();
         } else if (table.equals("ingredients")) {
@@ -150,20 +152,12 @@ public class OracleStatementProvider {
             throw new IllegalArgumentException("no statements for: " + table);
         }
 
-        ArrayList<String> all = getResetTableSql(table);
-        all.addAll(statements);
-        return all;
-    }
-
-	private ArrayList<String> getResetTableSql(String table) {
-		ArrayList<String> sql = new ArrayList<String>();
-        
-		sql.add("DELETE FROM " + table);
-        sql.add("DROP TRIGGER " + table + "_trigger");
-        sql.add("DROP SEQUENCE " + table + "_seq");
-        sql.add("CREATE  SEQUENCE " + table + "_seq START WITH 1 INCREMENT BY 1" );
+        ArrayList<String> all = new ArrayList<String>();
+        all.add("DROP TRIGGER " + table + "_trigger");
+        all.add("DROP SEQUENCE " + table + "_seq");
+        all.add("CREATE  SEQUENCE " + table + "_seq START WITH 1 INCREMENT BY 1" );
         if(table.equals("animals")){
-            sql.add("CREATE OR REPLACE TRIGGER animals_trigger\n" +
+            all.add("CREATE OR REPLACE TRIGGER animals_trigger\n" +
                     "    BEFORE INSERT ON animals REFERENCING\n" +
                     "    NEW AS new\n" +
                     "    OLD AS old\n" +
@@ -172,7 +166,7 @@ public class OracleStatementProvider {
                     "select coalesce(:new.animal_id, animals_seq.nextval) into :new.animal_id from dual;\n" +
                     "end;");
         }else{
-        sql.add("CREATE OR REPLACE TRIGGER " + table + "_trigger\n" +
+        all.add("CREATE OR REPLACE TRIGGER " + table + "_trigger\n" +
                 "    BEFORE INSERT ON " + table + " REFERENCING\n" +
                 "    NEW AS new\n" +
                 "    OLD AS old\n" +
@@ -181,21 +175,11 @@ public class OracleStatementProvider {
                 "select coalesce(:new.id, " + table + "_seq.nextval) into :new.id from dual;\n" +
                 "end;");
         }
-        return sql;
-	}
-    
-    /**
-     * 
-     * @param tableList - String of table names separated by hyphens. "client-salesperson-product"
-     * @return
-     */
-    private ArrayList<String> getRelatedStatements(String tableList) {
-        List<String> tables = javalite.common.Collections.list(tableList.split("-"));    	
-    	ArrayList<String> sql = new ArrayList<String>();
-    	
-    	for (String t : tables) {
-    		sql.addAll(getResetTableSql(t));
-    	}
-        return sql;
+        all.addAll(statements);
+        return all;
+    }
+
+    public String getDeleteStatement(String table){
+        return "DELETE FROM " + table;
     }
 }

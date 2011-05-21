@@ -36,7 +36,7 @@ public class CacheTest extends ActiveJDBCTest {
     @Override
     public void before() throws Exception {
         super.before();
-        resetTable("people");
+        deleteAndPopulateTable("people");
         for (int i = 0; i < 100; i++) {
             Person p = new Person();
             p.set("name", "name: " + i);
@@ -52,7 +52,7 @@ public class CacheTest extends ActiveJDBCTest {
      */
     @Test
     public void testCache() {
-        resetTables("doctors", "patients", "doctors_patients");
+        deleteAndPopulateTables("doctors", "patients", "doctors_patients");
         //produces a cache miss
         List<Doctor> doctors = Doctor.findAll();
         //produces a cache hit
@@ -117,7 +117,7 @@ public class CacheTest extends ActiveJDBCTest {
 
     @Test
     public void testCachedParent(){
-        resetTables("libraries", "books");
+        deleteAndPopulateTables("libraries", "books");
         Book b = (Book)Book.findById(1);
         Library l1 = b.parent(Library.class);
 
@@ -130,7 +130,7 @@ public class CacheTest extends ActiveJDBCTest {
 
     @Test
     public void shouldNotAddInfoToStatisticsIfFoundResultInCache(){
-        resetTables("libraries", "books");
+        deleteAndPopulateTables("libraries", "books");
 
         try{
             Thread.sleep(1000);

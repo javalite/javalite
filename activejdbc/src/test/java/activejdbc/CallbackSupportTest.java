@@ -28,7 +28,7 @@ public class CallbackSupportTest extends ActiveJDBCTest {
 
     @Test
     public void shouldCallBeforeAfterSaveAndDelete(){
-        resetTables("fruits");
+        deleteAndPopulateTable("fruits");
         FruitCallbackChecker cc = new FruitCallbackChecker();
         Fruit f = new Fruit(cc);        
 
@@ -54,7 +54,7 @@ public class CallbackSupportTest extends ActiveJDBCTest {
 
     @Test
     public void shouldCallBeforeAfterValidate(){
-        resetTables("vegetables");
+        deleteAndPopulateTable("vegetables");
         VegetableCallbackChecker cc = new VegetableCallbackChecker();
         Vegetable v = new Vegetable(cc);
 
@@ -68,7 +68,7 @@ public class CallbackSupportTest extends ActiveJDBCTest {
 
     @Test
     public void shouldCallbackAllMethodsOnCallbackImplementation(){
-        resetTables("plants");
+        deleteAndPopulateTable("plants");
         Plant plant = new Plant();
 
         plant.set("plant_name", "Fern");

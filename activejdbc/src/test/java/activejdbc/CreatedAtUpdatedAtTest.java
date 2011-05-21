@@ -33,7 +33,7 @@ public class CreatedAtUpdatedAtTest extends ActiveJDBCTest {
     @Override
     public void before() throws Exception {
         super.before();
-        resetTable("people");
+        deleteAndPopulateTable("people");
     }
 
     @Test

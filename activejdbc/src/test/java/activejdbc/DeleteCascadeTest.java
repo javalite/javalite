@@ -4,8 +4,6 @@ import activejdbc.test.ActiveJDBCTest;
 import activejdbc.test_models.*;
 import org.junit.Test;
 
-import java.util.List;
-
 /**
  * @author Igor Polevoy
  */
@@ -13,7 +11,7 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
 
     @Test 
     public void shouldDeleteOneToManyChildren(){
-        resetTables("users", "addresses");
+        deleteAndPopulateTables("users", "addresses");
 
         //verify total count before delete
         a(Address.findAll().size()).shouldBeEqual(7);
@@ -30,7 +28,7 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
     @Test
     public void shouldDeletePolymorphicChildren(){
 
-        resetTables("articles", "posts", "comments");
+        deleteAndPopulateTables("articles", "posts", "comments");
         Article a = (Article) Article.findById(1);
         a.add(Comment.create("author", "ipolevoy", "content", "this is just a test comment text"));
         a.add(Comment.create("author", "rkinderman", "content", "this is another test comment text"));
@@ -52,7 +50,7 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
 
     @Test
     public void shouldRemoveJoinLinksWHenDeleted() {
-        resetTables("doctors", "patients", "doctors_patients");
+        deleteAndPopulateTables("doctors", "patients", "doctors_patients");
         Doctor doctorNumberOne = (Doctor)Doctor.findById(1);
         doctorNumberOne.deleteCascade();
         a(Base.findAll("select * from doctors_patients").size()).shouldBeEqual(1);
