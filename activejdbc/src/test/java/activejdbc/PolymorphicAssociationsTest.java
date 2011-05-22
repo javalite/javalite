@@ -77,7 +77,8 @@ public class PolymorphicAssociationsTest extends ActiveJDBCTest {
         a.add(Comment.create("author", "rkinderman", "content", "this is another test comment text"));
         List<Comment> comments = a.get(Comment.class, "author = ?", "ipolevoy");
         a(comments.size()).shouldBeEqual(1);
-        a(comments.get(0).get("content")).shouldBeEqual("this is just a test comment text");
+
+        a(comments.get(0).getString("content").contains("this is just a test comment text")).shouldBeTrue();
     }
 
     @Test

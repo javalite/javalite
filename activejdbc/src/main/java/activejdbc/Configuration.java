@@ -20,6 +20,7 @@ package activejdbc;
 import activejdbc.cache.CacheManager;
 import activejdbc.cache.OSCacheManager;
 import activejdbc.dialects.DefaultDialect;
+import activejdbc.dialects.H2Dialect;
 import activejdbc.dialects.MySQLDialect;
 import activejdbc.dialects.OracleDialect;
 import activejdbc.dialects.PostgreSQLDialect;
@@ -109,6 +110,9 @@ public class Configuration {
             }
             else if(mm.getDbType().equalsIgnoreCase("PostgreSQL")){
                 dialects.put(mm.getDbType(), new PostgreSQLDialect());
+            }
+            else if(mm.getDbType().equalsIgnoreCase("h2")){
+                dialects.put(mm.getDbType(), new H2Dialect());
             }
             else{
                 dialects.put(mm.getDbType(), new DefaultDialect());

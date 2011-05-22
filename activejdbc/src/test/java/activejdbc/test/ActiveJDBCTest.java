@@ -59,6 +59,8 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
             DefaultDBReset.resetSchema(getStatements(";", "mysql_schema.sql"));
         }else if (db().equals("postgresql")) {
             DefaultDBReset.resetSchema(getStatements(";", "postgres_schema.sql"));
+        } else if (db().equals("h2")) {
+            DefaultDBReset.resetSchema(getStatements(";", "h2_schema.sql"));
         } else if (db().equals("oracle")) {
             OracleDBReset.resetOracle(getStatements("-- BREAK", "oracle_schema.sql"));
         }
@@ -153,6 +155,8 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
             statementProvider = new OracleStatementProvider();
         } else if (db().equals("postgresql")) {
             statementProvider = new PostgreSQLStatementProvider();
+        } else if (db().equals("h2")) {
+            statementProvider = new H2StatementProvider();
         }
         return statementProvider;
     }
