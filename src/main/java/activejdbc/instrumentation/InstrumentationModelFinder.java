@@ -17,7 +17,6 @@ limitations under the License.
 
 package activejdbc.instrumentation;
 
-import activejdbc.Model;
 import activejdbc.ModelFinder;
 import javassist.ClassClassPath;
 import javassist.ClassPool;
@@ -25,8 +24,6 @@ import javassist.CtClass;
 import javassist.NotFoundException;
 
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
