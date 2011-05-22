@@ -18,8 +18,6 @@ limitations under the License.
 package activejdbc;
 
 
-import activejdbc.annotations.DbName;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -30,7 +28,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class ModelFinder {
-
 
     //this is a map of lists of model classes. Keys are names of databases as specified in the models' @DbName annotations.
     private Map<String, List<Class<? extends Model>>> modelClasses = new HashMap<String, List<Class<? extends Model>>>();
@@ -50,7 +47,7 @@ public class ModelFinder {
     }
 
 
-    List<Class<? extends Model>> getModelsForDb(String dbName) {
+    protected List<Class<? extends Model>> getModelsForDb(String dbName) {
         return modelClasses.get(dbName);
     }
 
