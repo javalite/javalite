@@ -66,17 +66,14 @@ public class RequestDispatcher implements Filter {
     }
 
     protected void initApp(AppContext context){
-        initAppConfig(Configuration.getBootstrapClassName(), context);
+        initAppConfig(Configuration.getBootstrapClassName(), context, true);
         //these are optional config classes:
-        try {
-            initAppConfig(Configuration.getControllerConfigClassName(), context);
-            initAppConfig(Configuration.getDbConfigClassName(), context);
-        } catch (Exception e) {
-            logger.warn("Did not find a config class, original message: " + e.getMessage());
-        }
+        initAppConfig(Configuration.getControllerConfigClassName(), context, false);
+        initAppConfig(Configuration.getDbConfigClassName(), context, false);
+
     }
 
-    private void initAppConfig(String configClassName, AppContext context){
+    private void initAppConfig(String configClassName, AppContext context, boolean fail){
 
         try {
             Class c = Class.forName(configClassName);
@@ -87,8 +84,13 @@ public class RequestDispatcher implements Filter {
             }
         }
         catch (Throwable e) {
-            throw new InitException("failed to create a new instance of class: " + configClassName
+            if(fail){
+                throw new InitException("failed to create a new instance of class: " + configClassName
                     + ", are you sure class exists and it has a default constructor?", e);
+            }else{
+                logger.debug("failed to create a new instance of class: " + configClassName
+                        + ", proceeding without it. " + e.getMessage());
+            }
         }
     }
 
