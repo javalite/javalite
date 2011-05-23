@@ -38,7 +38,7 @@ public class RequestDispatcher implements Filter {
     private List<String> exclusions = new ArrayList<String>();
     private ControllerRunner runner = new ControllerRunner();
     private AppContext appContext;
-
+    private Bootstrap appBootstrap;
     private Router router;
 
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -50,7 +50,6 @@ public class RequestDispatcher implements Filter {
         ContextAccess.setControllerRegistry(registry);//bootstrap below requires it
         appContext = new AppContext();
         filterConfig.getServletContext().setAttribute("appContext", appContext);
-
         initApp(appContext);
 
         String exclusionsParam = filterConfig.getInitParameter("exclusions");
@@ -66,23 +65,31 @@ public class RequestDispatcher implements Filter {
         logger.info("ActiveWeb: starting the app in environment: " + Configuration.getEnv());
     }
 
-
-
-    static void initApp(AppContext context){
-
-        Bootstrap appBootstrap;
-        String initClass = "";
+    protected void initApp(AppContext context){
+        initAppConfig(Configuration.getBootstrapClassName(), context);
+        //these are optional config classes:
         try {
-            initClass = activeweb.Configuration.getBootstrapClassName();
-            Class c = Class.forName(initClass);
-            appBootstrap = (Bootstrap) c.newInstance();
-            appBootstrap.init(context);
+            initAppConfig(Configuration.getControllerConfigClassName(), context);
+            initAppConfig(Configuration.getDbConfigClassName(), context);
+        } catch (Exception e) {
+            logger.warn("Did not find a config class, original message: " + e.getMessage());
+        }
+    }
+
+    private void initAppConfig(String configClassName, AppContext context){
+
+        try {
+            Class c = Class.forName(configClassName);
+            AppConfig appConfig= (AppConfig) c.newInstance();
+            appConfig.init(context);
+            if(appConfig instanceof  Bootstrap){
+                appBootstrap = (Bootstrap) appConfig;
+            }
         }
         catch (Throwable e) {
-            throw new InitException("failed to create a new instance of class: " + initClass
+            throw new InitException("failed to create a new instance of class: " + configClassName
                     + ", are you sure class exists and it has a default constructor?", e);
         }
-        context.set("appBootstrap", appBootstrap);
     }
 
 
@@ -212,6 +219,6 @@ public class RequestDispatcher implements Filter {
     }
     
     public void destroy() {
-        ((Bootstrap) appContext.get("appBootstrap")).destroy(appContext);
+        appBootstrap.destroy(appContext);
     }
 }

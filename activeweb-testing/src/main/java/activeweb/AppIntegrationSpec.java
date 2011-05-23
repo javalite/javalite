@@ -34,10 +34,11 @@ public abstract class AppIntegrationSpec extends IntegrationSpec{
 
     private boolean suppressDb = false;
     private AppContext context = new AppContext();
+    private RequestDispatcher requestDispatcher = new RequestDispatcher();
 
     @Before
     public void beforeAppIntegrationSpec(){
-        RequestDispatcher.initApp(context);
+        requestDispatcher.initApp(context);
 
         if(!suppressDb){
             Configuration.setTesting(true);

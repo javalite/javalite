@@ -25,6 +25,6 @@ import activeweb.Bootstrap;
 public class AppBootstrap extends Bootstrap {
     @Override
     public void init(AppContext context) {
-        new AppControllerConfig().init(context);
+
     }
 }

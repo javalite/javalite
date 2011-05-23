@@ -33,7 +33,7 @@ import static javalite.common.Util.blank;
 public class Configuration {
     private static Logger LOGGER = LoggerFactory.getLogger(Configuration.class.getName());
 
-    enum Params{templateManager, bootstrap, defaultLayout, targetDir, rootPackage, dbconfig, rollback, freeMarkerConfig}
+    enum Params{templateManager, bootstrap, defaultLayout, targetDir, rootPackage, dbconfig, controllerConfig, rollback, freeMarkerConfig}
 
     private static final Configuration instance = new Configuration();
     private static Properties props = new Properties();
@@ -133,6 +133,14 @@ public class Configuration {
 
     public static String getBootstrapClassName() {
         return get(Params.bootstrap.toString());
+    }
+
+    public static String getControllerConfigClassName(){
+        return get(Params.controllerConfig.toString());
+    }
+
+    public static String getDbConfigClassName(){
+        return get(Params.dbconfig.toString());
     }
 
     public static String getTargetDir() {
