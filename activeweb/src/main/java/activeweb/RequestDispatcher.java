@@ -75,10 +75,10 @@ public class RequestDispatcher implements Filter {
 
     private void initAppConfig(String configClassName, AppContext context, boolean fail){
 
+        AppConfig appConfig = null;
         try {
             Class c = Class.forName(configClassName);
-            AppConfig appConfig = (AppConfig) c.newInstance();
-            appConfig.init(context);
+            appConfig = (AppConfig) c.newInstance();
             if(appConfig instanceof  Bootstrap){
                 appBootstrap = (Bootstrap) appConfig;
             }
@@ -90,8 +90,11 @@ public class RequestDispatcher implements Filter {
             }else{
                 logger.debug("failed to create a new instance of class: " + configClassName
                         + ", proceeding without it. " + e.getMessage());
+                return;
             }
         }
+
+        appConfig.init(context);
     }
 
 
