@@ -93,7 +93,6 @@ public class RequestDispatcher implements Filter {
                 return;
             }
         }
-
         appConfig.init(context);
     }
 
