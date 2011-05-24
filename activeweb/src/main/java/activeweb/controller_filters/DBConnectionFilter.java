@@ -31,9 +31,10 @@ import java.util.List;
 public class DBConnectionFilter extends ControllerFilterAdapter {
 
     private String dbName;
+    private boolean manageTransaction = false;
 
     /**
-     * This constructor is used to open all configured connections for a current environment. 
+     * This constructor is used to open all configured connections for a current environment.
      */
     public DBConnectionFilter() {}
 
@@ -41,9 +42,28 @@ public class DBConnectionFilter extends ControllerFilterAdapter {
     /**
      * Use this constructor to only open a named DB connection for a given environment.
      *
-     * @param dbName
+     * @param dbName name of DB to open
      */
     public DBConnectionFilter(String dbName) {
+        this.dbName = dbName;
+    }
+
+    /**
+     * Use this constructor to only open a named DB connection for a given environment and specify
+     * if this filter needs to manage transactions.
+     *
+     * @param dbName name of DB to open
+     * @param manageTransaction if set to true, the filter will start a transaction inside {@link #before()} method,
+     * commit inside the {@link #after()} method, and rollback inside {@link #onException(Exception)} method. This applies to
+     * all connections managed by this filter. If set to false, transactions are not managed. Configuration of J2EE container transaction management
+     * for a given JNDI DataSource can interfere with this filter. This filter uses simple <code>java.sql.Connection</code> methods:
+     * <code>setAutocommit(boolean)</code>,  <code>commit()</code> and <code>rollback()</code>. If you configure XA transactions,
+     * this parameter could be completely ignored by the container itself. For this filter to manage transactions, the
+     * datasources should <em>not</em> be type of XA. Read container documentation.
+     *  
+     */
+    public DBConnectionFilter(String dbName, boolean manageTransaction) {
+        this.manageTransaction = manageTransaction;
         this.dbName = dbName;
     }
 
@@ -55,13 +75,16 @@ public class DBConnectionFilter extends ControllerFilterAdapter {
 
         List<ConnectionSpecWrapper> connectionWrappers = getConnectionWrappers();
 
-        if (connectionWrappers == null || connectionWrappers.isEmpty()) {
+        if (connectionWrappers.isEmpty()) {
             throw new InitException("There are no connection specs in '" + Configuration.getEnv() + "' environment");
         }
 
         for (ConnectionSpecWrapper connectionWrapper : connectionWrappers) {
             DB db = new DB(connectionWrapper.getDbName());
             db.open(connectionWrapper.getConnectionSpec());
+            if(manageTransaction){
+                db.openTransaction();
+            }
         }
     }
 
@@ -74,6 +97,9 @@ public class DBConnectionFilter extends ControllerFilterAdapter {
         if (connectionWrappers != null && !connectionWrappers.isEmpty()) {
             for (ConnectionSpecWrapper connectionWrapper : connectionWrappers) {
                 DB db = new DB(connectionWrapper.getDbName());
+                if(manageTransaction){
+                    db.commitTransaction();
+                }
                 db.close();
             }
         }
@@ -88,18 +114,22 @@ public class DBConnectionFilter extends ControllerFilterAdapter {
         if (connectionWrappers != null && !connectionWrappers.isEmpty()) {
             for (ConnectionSpecWrapper connectionWrapper : connectionWrappers) {
                 DB db = new DB(connectionWrapper.getDbName());
+                if(manageTransaction){
+                    db.rollbackTransaction();
+                }
                 db.close();
             }
         }
     }
 
-    //TODO: optimize - get on set and use across all methods.
     /**
-     * Returns all connections which are not for testing and correspond to provided dbName.
-     * If dbName not provided, returns all connections which are not for testing.  
+     * Returns all connections which correspond to provided dbName and not for testing and.
+     * If dbName not provided, returns all connections which are not for testing.
+     * 
+     * @return all connections which correspond to provided dbName and not for testing and.
      */
     private List<ConnectionSpecWrapper> getConnectionWrappers() {
-        List<ConnectionSpecWrapper> allConnections = Configuration.getConnectionWrappers();
+        List<ConnectionSpecWrapper> allConnections = Configuration.getConnectionSpecWrappers();
         List<ConnectionSpecWrapper> result = new LinkedList<ConnectionSpecWrapper>();
 
         for (ConnectionSpecWrapper connectionWrapper : allConnections) {

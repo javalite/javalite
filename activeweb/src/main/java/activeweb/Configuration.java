@@ -165,10 +165,22 @@ public class Configuration {
         envConnectionWrappers.add(connectionWrapper);
     }
 
-    public static List<ConnectionSpecWrapper> getConnectionWrappers() {
+    /**
+     * Provides a list of all connection wrappers corresponding to a current environment.
+     *
+     * @return  a list of all connection wrappers corresponding to a current environment.
+     */
+    public static List<ConnectionSpecWrapper> getConnectionSpecWrappers() {
         return getConnectionSpecWrappers(getEnv());
     }
 
+    /**
+     * Provides a list of all connection wrappers corresponding to a given environment.
+     *
+     * @param env name of environment, such as "development", "production", etc.
+     * 
+     * @return  a list of all connection wrappers corresponding to a given environment.
+     */
     public static List<ConnectionSpecWrapper> getConnectionSpecWrappers(String env) {
         return connectionWrappers.get(env) == null? new ArrayList<ConnectionSpecWrapper>() :connectionWrappers.get(env);
     }
