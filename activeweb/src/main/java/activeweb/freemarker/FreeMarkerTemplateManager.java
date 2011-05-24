@@ -18,6 +18,7 @@ package activeweb.freemarker;
 import activeweb.InitException;
 import activeweb.TemplateManager;
 import activeweb.ViewException;
+import activeweb.ViewMissingException;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
@@ -103,6 +104,10 @@ public class FreeMarkerTemplateManager implements TemplateManager {
 
             FreeMarkerTL.setEnvironment(null);
             writer.flush();
+
+        }
+        catch(FileNotFoundException e){
+            throw new ViewMissingException(e);
         }
         catch(ViewException e){
             throw e;

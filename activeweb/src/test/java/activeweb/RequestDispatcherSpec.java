@@ -223,6 +223,17 @@ public class RequestDispatcherSpec extends RequestSpec {
         a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("not found");
     }
 
+    @Test
+    public void shouldSend500IfTemplateIsNotParsable() throws ServletException, IOException {
+
+        request.setServletPath("/hello/bad-bad-template");
+        request.setMethod("GET");
+
+        dispatcher.doFilter(request, response, filterChain);
+        String html = response.getContentAsString();
+        a(XPathHelper.selectText("//div[@id='content']", html).contains("Unexpected end of file reached")).shouldBeTrue();
+    }
+
 
     @Test
     public void shouldRenderWithDefaultLayout() throws ServletException, IOException {

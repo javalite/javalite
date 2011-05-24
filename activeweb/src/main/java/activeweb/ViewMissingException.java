@@ -14,19 +14,22 @@ See the License for the specific language governing permissions and
 limitations under the License. 
 */
 
-package app.config;
-
-import activeweb.freemarker.AbstractFreeMarkerConfig;
-import freemarker.template.TemplateExceptionHandler;
+package activeweb;
 
 /**
  * @author Igor Polevoy
  */
-public class FreeMarkerConfig extends AbstractFreeMarkerConfig {
-    //TODO: write test for custom tag registration
-    public void init() {
-        //this is to override a strange FreeMarker default processing of numbers 
-        getConfiguration().setNumberFormat("0.##");
-        getConfiguration().setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+public class ViewMissingException extends ViewException{
+
+    public ViewMissingException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public ViewMissingException(Throwable cause) {
+        super(cause);
+    }
+
+    public ViewMissingException(String message) {
+        super(message);
     }
 }

@@ -17,6 +17,7 @@ limitations under the License.
 package app.config;
 
 import activeweb.freemarker.AbstractFreeMarkerConfig;
+import freemarker.template.TemplateExceptionHandler;
 
 /**
  * @author Igor Polevoy
@@ -24,5 +25,6 @@ import activeweb.freemarker.AbstractFreeMarkerConfig;
 public class FreeMarkerConfig extends AbstractFreeMarkerConfig {
     public void init() {
         getConfiguration().setNumberFormat("0.##");
+        getConfiguration().setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
     }
 }

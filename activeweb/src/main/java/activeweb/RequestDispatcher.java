@@ -77,7 +77,7 @@ public class RequestDispatcher implements Filter {
 
         try {
             Class c = Class.forName(configClassName);
-            AppConfig appConfig= (AppConfig) c.newInstance();
+            AppConfig appConfig = (AppConfig) c.newInstance();
             appConfig.init(context);
             if(appConfig instanceof  Bootstrap){
                 appBootstrap = (Bootstrap) appConfig;
@@ -144,8 +144,10 @@ public class RequestDispatcher implements Filter {
             renderSystemError("/system/404", Configuration.getDefaultLayout(), 404, e);
         }catch (ActionNotFoundException e) {
             renderSystemError("/system/404", Configuration.getDefaultLayout(), 404, e);
-        }catch(ViewException e){
+        }catch(ViewMissingException e){
             renderSystemError("/system/404", Configuration.getDefaultLayout(), 404, e);
+        }catch(ViewException e){
+            renderSystemError("/system/error", Configuration.getDefaultLayout(), 500, e);
         }catch (Throwable e) {
             renderSystemError(e);
         }finally {

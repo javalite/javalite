@@ -27,4 +27,7 @@ public class HelloController extends AppController{
     public void noLayout(){
         render().noLayout();
     }
+
+    public void badBadTemplate(){}
 }
+
