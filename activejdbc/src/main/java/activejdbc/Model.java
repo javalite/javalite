@@ -60,15 +60,28 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Overrides attribute values from map. The map may have attributes whose name do not match the
-     * attribute names (columns) of this model. Such attributes will be ignored. Thise values whose names are
-     * not present in the argument map, will stay untouched.
+     * Overrides attribute values from input map. The input map may have attributes whose name do not match the
+     * attribute names (columns) of this model. Such attributes will be ignored. Those values whose names are
+     * not present in the argument map, will stay untouched. The input map may have only partial list of attributes.
      *
-     * @param map map with attributes to overwrite this models'.
+     * @param input map with attributes to overwrite this models'. Keys are names of attributes of this model, values
+     * are new values for it.
      */
-    public void fromMap(Map map){
-        hydrate(map);
+    public void fromMap(Map input){
+
+        List<String> attributeNames = getMetaModelLocal().getAttributeNames();
+        
+        for (String attrName : attributeNames) {            
+            Object value = input.get(attrName.toLowerCase());
+            if (value == null) {
+                value = input.get(attrName.toUpperCase());
+            }
+            if(input.containsKey(attrName.toLowerCase()) || input.containsKey(attrName.toUpperCase()))
+                attributes.put(attrName.toLowerCase(), value);
+        }
     }
+
+
 
     /**
      * Hydrates a this instance of model from a map. Only picks values from a map that match
@@ -102,9 +115,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             //This is only important for cached models. This will allocate a ton of memory if Clobs are large.
             //Should the Blob behavior be the same?
             //TODO: write about this in future tutorial
-            if(value != null && value instanceof Clob && getMetaModelLocal().cached() ){
+            if( value instanceof Clob && getMetaModelLocal().cached() ){
                 this.attributes.put(attrName.toLowerCase(), Convert.toString(value));
-            }else if(value != null){
+            }else {
                 this.attributes.put(attrName.toLowerCase(), value);
             }
         }
@@ -586,6 +599,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     /**
      * Returns parent of this model, assuming that this table represents a child.
+     * This method may return <code>null</code> in cases when you have orphan record and
+     * referential integrity is not enforced in DBMS with a foreign key constraint. 
      *
      * @param parentClass   class of a parent model.
      * @return instance of a parent of this instance in the "belongs to"  relationship.
@@ -619,7 +634,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
 
         if(fkValue == null){
-            throw new InternalException("Attribute:  "  + fkName + " is null, cannot determine parent.");
+            throw new OrphanRecordException("Attribute:  "  + fkName + " is null, cannot determine parent. Child record: " + this);
         }
         String parentIdName = parentMM.getIdName();
         String query = getMetaModelLocal().getDialect().selectStarParametrized(parentTable, parentIdName);
