@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="Simple ActiveJDBC Example" default="clean" basedir=".">
 
-    <property name="target" value="target"/>
-    <property name="classes" value="${target}/classes"/>
 
+    <property name="classes" value="classes"/>
 
     <path id="run_classpath">
         <pathelement location="${classes}"/>
@@ -19,10 +18,8 @@
         </fileset>
     </path>
 
-
     <target name="clean">
-        <delete dir="target" failonerror="false"/>
-        <mkdir dir="${target}"/>
+        <delete dir="${classes}" failonerror="false"/>
         <mkdir dir="${classes}"/>
     </target>
 
