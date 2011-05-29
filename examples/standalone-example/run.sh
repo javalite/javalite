@@ -11,5 +11,4 @@ export CLASSPATH=$CLASSPATH:lib/mysql-connector-java-5.0.4.jar
 export CLASSPATH=$CLASSPATH:lib/slf4j-api-1.5.10.jar
 export CLASSPATH=$CLASSPATH:lib/slf4j-simple-1.5.10.jar
 
-echo $CLASSPATH
 java -cp $CLASSPATH -DoutputDirectory=$OUTDIR activejdbc.examples.simple.SimpleExample
