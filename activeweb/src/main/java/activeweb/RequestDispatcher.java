@@ -82,18 +82,16 @@ public class RequestDispatcher implements Filter {
             if(appConfig instanceof  Bootstrap){
                 appBootstrap = (Bootstrap) appConfig;
             }
+            appConfig.init(context);
         }
         catch (Throwable e) {
             if(fail){
-                throw new InitException("failed to create a new instance of class: " + configClassName
-                    + ", are you sure class exists and it has a default constructor?", e);
+                throw new InitException("Failed to create and init a new instance of class: " + configClassName, e);
             }else{
-                logger.debug("failed to create a new instance of class: " + configClassName
-                        + ", proceeding without it. " + e.getMessage());
-                return;
+                logger.warn("Failed to create and init a new instance of class: " + configClassName
+                        + ", proceeding without it. " + e);
             }
         }
-        appConfig.init(context);
     }
 
 

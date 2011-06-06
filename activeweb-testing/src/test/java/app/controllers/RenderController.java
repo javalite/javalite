@@ -26,4 +26,6 @@ public class RenderController extends AppController {
     public void useRender(){
         render().noLayout();
     }
+
+    public void doLayout(){}
 }

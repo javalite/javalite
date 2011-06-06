@@ -127,6 +127,19 @@ public class SpecHelper extends JSpecSupport{
         }
     }
 
+
+    protected String template(){
+        ControllerResponse resp = ContextAccess.getControllerResponse();
+        try{
+            if(!(resp instanceof RenderTemplateResponse))
+                throw new SpecException("failed to get layout, did you perform a render operation? I found a different " +
+                        " response: " + resp.getClass());
+            return ((RenderTemplateResponse)resp).getTemplate();
+        }catch(ClassCastException e){
+            return null;
+        }
+    }
+
     /**
      * Provides values assigned by controller during execution. These values will
      * 

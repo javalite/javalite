@@ -48,6 +48,16 @@ class RenderTemplateResponse extends ControllerResponse{
         this.template = template;
     }
 
+
+    /**
+     * Name of template to render.
+     *
+     * @return Name of template to render.
+     */
+    public String getTemplate() {
+        return template;
+    }
+
     public String getLayout() {
         return layout;
     }

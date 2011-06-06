@@ -34,5 +34,13 @@ public class RenderControllerSpec extends ControllerSpec {
     public void shouldCallCorrectTemplate(){
         request().integrateViews().get("use-render");
         a(responseContent()).shouldBeEqual("success");
+        a(template()).shouldBeEqual("/render/use-render");
+    }
+
+    @Test
+    public void shouldCallCorrectLayout(){        
+        request().get("do-layout");
+        a(template()).shouldBeEqual("/render/do-layout");
+        a(layout()).shouldBeEqual("/layouts/default_layout");
     }
 }
