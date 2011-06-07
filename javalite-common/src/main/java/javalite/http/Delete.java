@@ -42,7 +42,7 @@ public class Delete extends Request<Delete> {
             connection.connect();
             return this;
         } catch (Exception e) {
-            throw new HttpException(e);
+            throw new HttpException("Failed URL: " + url, e);
         }
     }
     

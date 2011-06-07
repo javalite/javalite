@@ -52,7 +52,7 @@ public class Post extends Request<Post> {
             out.flush();
             return this;
         } catch (Exception e) {
-            throw new HttpException(e);
+            throw new HttpException("Failed URL: " + url, e);
         }
     }
 

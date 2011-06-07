@@ -61,18 +61,18 @@ public class Http {
     /**
      * Executes a POST request.
      *
-     * @param uri            url of resource.
+     * @param url            url of resource.
      * @param content        content to be posted.
      * @param connectTimeout connection timeout in milliseconds.
      * @param readTimeout    read timeout in milliseconds.
      * @return {@link Post} object.
      */
-    public static Post post(String uri, byte[] content, int connectTimeout, int readTimeout) {
+    public static Post post(String url, byte[] content, int connectTimeout, int readTimeout) {
 
         try {
-            return new Post(uri, content, connectTimeout, readTimeout);
+            return new Post(url, content, connectTimeout, readTimeout);
         } catch (Exception e) {
-            throw new HttpException(e);
+            throw new HttpException("Failed URL: " + url, e);
         }
     }
 
@@ -91,17 +91,17 @@ public class Http {
     /**
      * Executes a GET request
      *
-     * @param uri            url of resource.
+     * @param url            url of resource.
      * @param connectTimeout connection timeout in milliseconds.
      * @param readTimeout    read timeout in milliseconds.
      * @return {@link Get} object.
      */
-    public static Get get(String uri, int connectTimeout, int readTimeout) {
+    public static Get get(String url, int connectTimeout, int readTimeout) {
 
         try {
-            return new Get(uri, connectTimeout, readTimeout);
+            return new Get(url, connectTimeout, readTimeout);
         } catch (Exception e) {
-            throw new HttpException(e);
+            throw new HttpException("Failed URL: " + url, e);
         }
     }
 
@@ -130,18 +130,18 @@ public class Http {
     /**
      * Executes a PUT request.
      *
-     * @param uri            uri of resource.
+     * @param url            url of resource.
      * @param content        content to be "put"
      * @param connectTimeout connection timeout in milliseconds.
      * @param readTimeout    read timeout in milliseconds.
      * @return {@link Put} object.
      */
-    public static Put put(String uri, byte[] content, int connectTimeout, int readTimeout) {
+    public static Put put(String url, byte[] content, int connectTimeout, int readTimeout) {
 
         try {
-            return new Put(uri, content, connectTimeout, readTimeout);
+            return new Put(url, content, connectTimeout, readTimeout);
         } catch (Exception e) {
-            throw new HttpException(e);
+            throw new HttpException("Failed URL: " + url, e);
         }
     }
 
@@ -159,16 +159,16 @@ public class Http {
     /**
      * Executes a DELETE request.
      *
-     * @param uri            uri of resource to delete
+     * @param url            url of resource to delete
      * @param connectTimeout connection timeout in milliseconds.
      * @param readTimeout    read timeout in milliseconds.
      * @return {@link Delete}
      */
-    public static Delete delete(String uri, int connectTimeout, int readTimeout) {
+    public static Delete delete(String url, int connectTimeout, int readTimeout) {
         try {
-            return new Delete(uri, connectTimeout, readTimeout);
+            return new Delete(url, connectTimeout, readTimeout);
         } catch (Exception e) {
-            throw new HttpException(e);
+            throw new HttpException("Failed URL: " + url, e);
         }
     }
 
