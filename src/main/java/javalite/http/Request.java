@@ -37,15 +37,18 @@ public abstract class Request<T extends Request> {
 
     protected HttpURLConnection connection;
     private boolean connected;
+    protected String url;
 
 
-    public Request(String uri, int connectTimeout, int readTimeout) {
+
+    public Request(String url, int connectTimeout, int readTimeout) {
         try {
-            connection = (HttpURLConnection) new URL(uri).openConnection();
+            this.url = url;
+            connection = (HttpURLConnection) new URL(url).openConnection();
             connection.setConnectTimeout(connectTimeout);
             connection.setReadTimeout(readTimeout);
         } catch (Exception e) {
-            throw new HttpException(e);
+            throw new HttpException("Failed URL: " + url, e);
         }
     }
 
@@ -72,7 +75,7 @@ public abstract class Request<T extends Request> {
         try {
             return connection.getInputStream();
         } catch (Exception e) {
-            throw new HttpException(e);
+            throw new HttpException("Failed URL: " + url, e);
         }
     }
 
@@ -96,7 +99,7 @@ public abstract class Request<T extends Request> {
             connect();
             return connection.getResponseCode();
         } catch (Exception e) {
-            throw new HttpException(e);
+            throw new HttpException("Failed URL: " + url, e);
         }
     }
 
@@ -110,7 +113,7 @@ public abstract class Request<T extends Request> {
             connect();
             return connection.getResponseMessage();
         } catch (Exception e) {
-            throw new HttpException(e);
+            throw new HttpException("Failed URL: " + url, e);
         }
     }
 
@@ -133,7 +136,7 @@ public abstract class Request<T extends Request> {
                 bout.write(bytes, 0, count);
             }
         } catch (Exception e) {
-            throw new HttpException(e);
+            throw new HttpException("Failed URL: " + url, e);
         }
         dispose();
         return bout.toByteArray();
@@ -151,7 +154,7 @@ public abstract class Request<T extends Request> {
             dispose();
             return result;
         } catch (IOException e) {
-            throw new HttpException(e);
+            throw new HttpException("Failed URL: " + url, e);
         }
     }
 

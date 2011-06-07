@@ -51,7 +51,7 @@ public class Put extends Request<Put> {
             os.flush();
             return this;
         } catch (Exception e) {
-            throw new HttpException(e);
+            throw new HttpException("Failed URL: " + url, e);
         }
     }
 
