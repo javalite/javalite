@@ -27,7 +27,7 @@
                 <version>1.1-SNAPSHOT</version>
                 <executions>
                     <execution>
-                        <phase>process-classes</phase>
+                        <phase>validate</phase>
                         <goals>
                             <goal>instrument</goal>
                         </goals>
@@ -40,7 +40,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>3.8.1</version>
+            <version>4.8.2</version>
             <scope>test</scope>
         </dependency>
 
@@ -55,7 +55,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        
+
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
