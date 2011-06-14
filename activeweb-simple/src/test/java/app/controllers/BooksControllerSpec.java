@@ -60,7 +60,9 @@ public class BooksControllerSpec extends DBControllerSpec {
 
     @Test
     public void shouldCreateNewBook() {
+        //create a fourth book
         request().param("isbn", "12345").param("author", "Author 1").param("title", "Title 1").post("create");
+        //get list of books
         request().get("index");
         List books = (List) assigns().get("books");
         a(books.size()).shouldBeEqual(4);
