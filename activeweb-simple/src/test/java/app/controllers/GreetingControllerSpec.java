@@ -16,23 +16,27 @@ limitations under the License.
 
 package app.controllers;
 
-import activeweb.AppController;
-import activeweb.controller_filters.AbstractLoggingFilter;
-import activeweb.controller_filters.HeadersLogFilter;
+import activeweb.ControllerSpec;
+import app.services.GreeterMockModule;
+import com.google.inject.Guice;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author Igor Polevoy
  */
-public class HomeController extends AppController {
+public class GreetingControllerSpec extends ControllerSpec {
 
-    public void index(){
-        //how to disable logging of headers at run time:
-        appContext().get("headersLogger", HeadersLogFilter.class).logAtLevel(AbstractLoggingFilter.Level.DISABLED);
+    @Before
+    public void before(){
+        setInjector(Guice.createInjector(new GreeterMockModule()));
     }
 
-    public void wrapped() {
-        render("index").layout("/layouts/wrapped_layout");        
+    @Test
+    public void shouldUseMockService(){
+        //call controller
+        request().get("index");
+        //verify value assigned from controller to view.
+        a(assigns().get("greeting")).shouldBeEqual("Hello from class app.services.GreeterMock");
     }
-
-    public void wrappedToo(){}
 }

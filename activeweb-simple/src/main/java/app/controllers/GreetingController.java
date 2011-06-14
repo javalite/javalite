@@ -17,22 +17,24 @@ limitations under the License.
 package app.controllers;
 
 import activeweb.AppController;
-import activeweb.controller_filters.AbstractLoggingFilter;
-import activeweb.controller_filters.HeadersLogFilter;
+import app.services.Greeter;
+import com.google.inject.Inject;
 
 /**
  * @author Igor Polevoy
  */
-public class HomeController extends AppController {
+
+public class GreetingController  extends AppController {
+
+    private Greeter greeter;
 
     public void index(){
-        //how to disable logging of headers at run time:
-        appContext().get("headersLogger", HeadersLogFilter.class).logAtLevel(AbstractLoggingFilter.Level.DISABLED);
+        view("greeting", greeter.greet());
     }
 
-    public void wrapped() {
-        render("index").layout("/layouts/wrapped_layout");        
-    }
 
-    public void wrappedToo(){}
+    @Inject
+    public void setGreeter(Greeter greeter){
+        this.greeter = greeter;
+    }
 }

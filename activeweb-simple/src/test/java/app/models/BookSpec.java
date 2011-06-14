@@ -14,25 +14,28 @@ See the License for the specific language governing permissions and
 limitations under the License. 
 */
 
-package app.controllers;
+package app.models;
 
-import activeweb.AppController;
-import activeweb.controller_filters.AbstractLoggingFilter;
-import activeweb.controller_filters.HeadersLogFilter;
+import activeweb.DBSpec;
+import org.junit.Test;
+
+import java.util.List;
 
 /**
  * @author Igor Polevoy
  */
-public class HomeController extends AppController {
+public class BookSpec extends DBSpec {
 
-    public void index(){
-        //how to disable logging of headers at run time:
-        appContext().get("headersLogger", HeadersLogFilter.class).logAtLevel(AbstractLoggingFilter.Level.DISABLED);
+    @Test
+    public void shouldValidateRequiredAttributes(){
+        Book book = new Book();
+        a(book).shouldNotBe("valid");
+
+        Book.where("isbn = ?", 123);
+
+        book.set("title", "fake title", "author", "fake author", "isbn", "12345");
+        a(book).shouldBe("valid");
     }
 
-    public void wrapped() {
-        render("index").layout("/layouts/wrapped_layout");        
-    }
-
-    public void wrappedToo(){}
 }
+

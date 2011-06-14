@@ -13,26 +13,18 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and 
 limitations under the License. 
 */
+package app.config;
 
-package app.controllers;
-
-import activeweb.AppController;
-import activeweb.controller_filters.AbstractLoggingFilter;
-import activeweb.controller_filters.HeadersLogFilter;
+import activeweb.AppContext;
+import activeweb.Bootstrap;
+import app.services.GreeterModule;
+import com.google.inject.Guice;
 
 /**
  * @author Igor Polevoy
  */
-public class HomeController extends AppController {
-
-    public void index(){
-        //how to disable logging of headers at run time:
-        appContext().get("headersLogger", HeadersLogFilter.class).logAtLevel(AbstractLoggingFilter.Level.DISABLED);
+public class AppBootstrap extends Bootstrap {
+    public void init(AppContext context) {        
+        setInjector(Guice.createInjector(new GreeterModule()));
     }
-
-    public void wrapped() {
-        render("index").layout("/layouts/wrapped_layout");        
-    }
-
-    public void wrappedToo(){}
 }

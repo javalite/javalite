@@ -22,6 +22,8 @@
         <module>activeweb-gwt</module>
         <module>webapp-root</module>
         <module>kitchensink</module>
+        <module>activeweb-simple</module>
+        <module>activeweb-example-zip</module>
     </modules>
 
     <build>

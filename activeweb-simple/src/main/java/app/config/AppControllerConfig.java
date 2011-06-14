@@ -13,26 +13,22 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and 
 limitations under the License. 
 */
+package app.config;
 
-package app.controllers;
+import activeweb.AbstractControllerConfig;
+import activeweb.AppContext;
+import activeweb.controller_filters.DBConnectionFilter;
+import activeweb.controller_filters.TimingFilter;
+import app.controllers.BooksController;
 
-import activeweb.AppController;
-import activeweb.controller_filters.AbstractLoggingFilter;
-import activeweb.controller_filters.HeadersLogFilter;
 
 /**
  * @author Igor Polevoy
  */
-public class HomeController extends AppController {
+public class AppControllerConfig extends AbstractControllerConfig {
 
-    public void index(){
-        //how to disable logging of headers at run time:
-        appContext().get("headersLogger", HeadersLogFilter.class).logAtLevel(AbstractLoggingFilter.Level.DISABLED);
+    public void init(AppContext context) {
+        addGlobalFilters(new TimingFilter());
+        add(new DBConnectionFilter()).to(BooksController.class);
     }
-
-    public void wrapped() {
-        render("index").layout("/layouts/wrapped_layout");        
-    }
-
-    public void wrappedToo(){}
 }

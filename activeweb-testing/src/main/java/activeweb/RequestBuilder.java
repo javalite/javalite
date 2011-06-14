@@ -204,11 +204,14 @@ public class RequestBuilder {
         ContextAccess.setHttpRequest(request);
 
 
-        if(session != null) request.setSession(session);
+        if(session != null)
+            request.setSession(session);
 
-        if (contentType != null) request.setContentType(contentType);
+        if (contentType != null)
+            request.setContentType(contentType);
 
-        if (content != null) request.setContent(content);
+        if (content != null)
+            request.setContent(content);
 
         String path = controllerPath + (realAction != null? "/" + realAction: "");
         if(!path.startsWith("/")){

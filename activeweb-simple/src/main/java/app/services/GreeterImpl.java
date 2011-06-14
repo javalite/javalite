@@ -14,25 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License. 
 */
 
-package app.controllers;
-
-import activeweb.AppController;
-import activeweb.controller_filters.AbstractLoggingFilter;
-import activeweb.controller_filters.HeadersLogFilter;
+package app.services;
 
 /**
  * @author Igor Polevoy
  */
-public class HomeController extends AppController {
-
-    public void index(){
-        //how to disable logging of headers at run time:
-        appContext().get("headersLogger", HeadersLogFilter.class).logAtLevel(AbstractLoggingFilter.Level.DISABLED);
+public class GreeterImpl implements Greeter{
+    
+    public String greet() {
+        return "Hello from real greeter";        
     }
-
-    public void wrapped() {
-        render("index").layout("/layouts/wrapped_layout");        
-    }
-
-    public void wrappedToo(){}
 }

@@ -14,25 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License. 
 */
 
-package app.controllers;
+package app.services;
 
-import activeweb.AppController;
-import activeweb.controller_filters.AbstractLoggingFilter;
-import activeweb.controller_filters.HeadersLogFilter;
+import com.google.inject.AbstractModule;
 
 /**
  * @author Igor Polevoy
  */
-public class HomeController extends AppController {
-
-    public void index(){
-        //how to disable logging of headers at run time:
-        appContext().get("headersLogger", HeadersLogFilter.class).logAtLevel(AbstractLoggingFilter.Level.DISABLED);
+public class GreeterModule extends AbstractModule {
+    @Override
+    protected void configure() {
+        bind(Greeter.class).to(GreeterImpl.class).asEagerSingleton();
     }
-
-    public void wrapped() {
-        render("index").layout("/layouts/wrapped_layout");        
-    }
-
-    public void wrappedToo(){}
 }

@@ -13,26 +13,22 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and 
 limitations under the License. 
 */
+package app.config;
 
-package app.controllers;
-
-import activeweb.AppController;
-import activeweb.controller_filters.AbstractLoggingFilter;
-import activeweb.controller_filters.HeadersLogFilter;
+import activeweb.AbstractDBConfig;
+import activeweb.AppContext;
 
 /**
  * @author Igor Polevoy
  */
-public class HomeController extends AppController {
+public class DbConfig extends AbstractDBConfig {
 
-    public void index(){
-        //how to disable logging of headers at run time:
-        appContext().get("headersLogger", HeadersLogFilter.class).logAtLevel(AbstractLoggingFilter.Level.DISABLED);
+    public void init(AppContext context) {
+
+        environment("development").jndi("jdbc/simple_development");
+        
+        environment("development").testing().jdbc("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/simple_test", "root", "p@ssw0rd");
+
+        environment("production").jndi("jdbc/simple_production");        
     }
-
-    public void wrapped() {
-        render("index").layout("/layouts/wrapped_layout");        
-    }
-
-    public void wrappedToo(){}
 }

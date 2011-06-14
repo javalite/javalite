@@ -14,25 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License. 
 */
 
-package app.controllers;
+package app.models;
 
-import activeweb.AppController;
-import activeweb.controller_filters.AbstractLoggingFilter;
-import activeweb.controller_filters.HeadersLogFilter;
+import activejdbc.Model;
 
 /**
  * @author Igor Polevoy
  */
-public class HomeController extends AppController {
-
-    public void index(){
-        //how to disable logging of headers at run time:
-        appContext().get("headersLogger", HeadersLogFilter.class).logAtLevel(AbstractLoggingFilter.Level.DISABLED);
+public class Book extends Model {
+    static {
+        validatePresenceOf("title", "isbn");
+        validatePresenceOf("author").message("Author must be provided");
     }
-
-    public void wrapped() {
-        render("index").layout("/layouts/wrapped_layout");        
-    }
-
-    public void wrappedToo(){}
 }
