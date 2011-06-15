@@ -34,7 +34,7 @@ public class IntegrationSpecSpec extends IntegrationSpec {
         controller("student").integrateViews().get("index");
         controller("student").get("register");
 
-        a(session().getAttribute("student_name")).shouldBeEqual("John");
-        a(session().getAttribute("student_id")).shouldBeEqual("123");
+        a(session().get("student_name")).shouldBeEqual("John");
+        a(session().get("student_id")).shouldBeEqual("123");
     }
 }

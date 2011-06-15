@@ -40,14 +40,17 @@ import org.springframework.mock.web.MockFilterConfig;
 public class SpecHelper extends JSpecSupport{
 
     private MockHttpSession session;
+    SessionTestFacade sessionFacade;
 
-    protected HttpSession session(){
-        return session;
+    protected SessionTestFacade session(){
+        return sessionFacade;
     }
 
     @Before
     public void atStart() {
-        session = new MockHttpSession();
+
+        sessionFacade = new SessionTestFacade(new MockHttpSession());
+
         ContextAccess.setTLs(null, new MockHttpServletResponse(), new MockFilterConfig(), new ControllerRegistry(new MockFilterConfig()), new AppContext());
         setTemplateLocation("src/main/webapp/WEB-INF/views");//default location of all views
     }
@@ -240,10 +243,10 @@ public class SpecHelper extends JSpecSupport{
      * @return flash value assigned to session by controller.
      */
     protected String flash(String name){
-        if(session().getAttribute("flasher") == null)
+        if(session().get("flasher") == null)
             return null;
 
-        Map flasher = (Map) session().getAttribute("flasher");
+        Map flasher = (Map) session().get("flasher");
         return flasher.get(name) == null? null :flasher.get(name).toString();
     }
 }

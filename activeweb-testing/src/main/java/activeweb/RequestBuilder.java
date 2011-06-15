@@ -40,16 +40,16 @@ public class RequestBuilder {
     private String contentType;
     private byte[] content;
     private String controllerPath;
-    private HttpSession session;
+    private SessionTestFacade sessionFacade;
     private List<Cookie> cookies = new ArrayList<Cookie>();
     private MockHttpServletRequest request;
     private String realAction;
     private List<FormItem> formItems =  new ArrayList<FormItem>();
     private String id;
 
-    public RequestBuilder(String controllerPath, HttpSession session) {
+    public RequestBuilder(String controllerPath, SessionTestFacade sessionFacade) {
         this.controllerPath = controllerPath;
-        this.session = session;
+        this.sessionFacade = sessionFacade;
 
     }
 
@@ -204,8 +204,8 @@ public class RequestBuilder {
         ContextAccess.setHttpRequest(request);
 
 
-        if(session != null)
-            request.setSession(session);
+        if(sessionFacade != null)
+            request.setSession(sessionFacade.getSession());
 
         if (contentType != null)
             request.setContentType(contentType);

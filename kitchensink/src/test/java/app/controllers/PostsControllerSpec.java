@@ -47,7 +47,7 @@ public class PostsControllerSpec extends DBControllerSpec {
     @Test
     public void shouldCreateNewPost(){
 
-        session().setAttribute("captcha", "ABC");
+        session().put("captcha", "ABC");
 
         request().params("author", "John", "content", "this is a content of a post", "title", "fake title", "captcha", "ABC").post("add");
         Post p = (Post)Post.findAll().get(0);
@@ -55,7 +55,7 @@ public class PostsControllerSpec extends DBControllerSpec {
         a(p.get("title")).shouldBeEqual("fake title");
         a(p.get("author")).shouldBeEqual("John");
 
-        Map flasher = (Map) session().getAttribute("flasher");
+        Map flasher = (Map) session().get("flasher");
         a(flasher.get("post_saved")).shouldEqual("Your post was saved");
 
         a(redirectValue()).shouldEqual("/test_context/posts");
@@ -70,7 +70,7 @@ public class PostsControllerSpec extends DBControllerSpec {
 
         a(Post.count()).shouldEqual(0);
         
-        Map flasher = (Map) session().getAttribute("flasher");
+        Map flasher = (Map) session().get("flasher");
         a(flasher.get("post_deleted")).shouldEqual("Your post was deleted");
 
         a(redirectValue()).shouldEqual("/test_context/posts");
