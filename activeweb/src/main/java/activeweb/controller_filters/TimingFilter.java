@@ -32,6 +32,6 @@ public class TimingFilter  extends HttpSupportFilter {
 
     @Override
     public void after() {
-        logInfo("Processed request in: " + (System.currentTimeMillis() - time.get() + " milliseconds"));
+        logInfo("Processed request in: " + (System.currentTimeMillis() - time.get() + " milliseconds, path: " + path() + ", method: " + method()));
     }
 }
