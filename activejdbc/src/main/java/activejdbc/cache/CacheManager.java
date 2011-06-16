@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Top interface to be implemented by various caching technologies.
+ * Abstract method to be sub-classed by various caching technologies.
  *
  * @author Igor Polevoy
  */
