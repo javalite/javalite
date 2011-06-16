@@ -23,8 +23,10 @@ import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 import org.dom4j.tree.DefaultAttribute;
 import org.dom4j.tree.DefaultElement;
+import org.dom4j.tree.DefaultText;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -147,4 +149,43 @@ public class XPathHelper {
     public static String attributeValue(String xpath, String xml) {
         return new XPathHelper(xml).attributeValue(xpath);
     }
+
+    /**
+     * Selects text nodes as list of strings
+     *
+     * @param xpath xpath expression, should end with text() function, example: "//name/text()"
+     * @param xml xml to get strings from.
+     * @return list of found strings matching expression, never null. If nothing matches, list will be empty.
+     */
+    public static List<String> selectStrings(String xpath, String xml) {
+        return new XPathHelper(xml).selectStrings(xpath);
+    }
+
+
+    /**
+     * Selects text nodes as list of strings
+     *
+     * @param xpath xpath expression, should end with text() function, example: "//name/text()"
+     * @return list of found strings matching expression, never null. If nothing matches, list will be empty.
+     */
+    private List<String> selectStrings(String xpath) {
+
+        Object res = doc.selectObject(xpath);
+        if(!(res instanceof List)){
+            throw new IllegalArgumentException("xpath expression must correspond to a list");
+        }
+        List defaultTextList = (List) res;
+
+        if(defaultTextList.size() > 0 && !(defaultTextList.get(0) instanceof DefaultText)){
+            throw new IllegalArgumentException("xpath expression must correspond to a list of text nodes, i.e. end with: text()");
+        }
+        List<String> stringsList = new ArrayList<String>();
+        for (Object textNode : defaultTextList) {
+            stringsList.add(((DefaultText)textNode).getText());
+        }
+
+        return stringsList;  
+    }
+
+
 }

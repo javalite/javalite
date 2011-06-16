@@ -44,4 +44,35 @@ public class XPathHelperTest {
         String xml = "<a> <b id=\"y\"></b></a>";
         a(XPathHelper.attributeValue("/a/b[1]/@id", xml)).shouldBeEqual("y");
     }
+
+
+    @Test
+    public void shouldSelectTextNodesAsStringList() {
+        String xml = "<people>" +
+                    "  <person>" +
+                    "   <name>John</name>" +
+                    "  </person>" +
+                    "  <person>" +
+                    "   <name>Jane</name>" +
+                    "  </person>" +
+                    "</people>\n";
+
+        a(XPathHelper.selectStrings("//name/text()", xml).get(0)).shouldBeEqual("John");
+        a(XPathHelper.selectStrings("//name/text()", xml).get(1)).shouldBeEqual("Jane");
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldFailSelectStringsIfXPathDoesNotPointToTextNodes() {
+        String xml = "<people>" +
+                    "  <person>" +
+                    "   <name>John</name>" +
+                    "  </person>" +
+                    "  <person>" +
+                    "   <name>Jane</name>" +
+                    "  </person>" +
+                    "</people>\n";
+
+        XPathHelper.selectStrings("//name", xml);
+    }
 }
+
