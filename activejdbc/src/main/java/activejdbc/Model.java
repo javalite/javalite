@@ -135,11 +135,18 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return (T) this;
     }
 
-    //TODO: add typed setters corresponding to typed getters    
+    /**
+     * Convenience method, does internal conversion to <code>java.sql.Date</code>.
+     *
+     * @param name name of attribute
+     * @param date value
+     */
     public void setDate(String name, java.util.Date date) {
         if (date == null) {
             set(name, null);
-        } else {
+        } else if(date instanceof java.sql.Date) {
+            set(name, date);
+        }else{
             set(name, new java.sql.Date(date.getTime()));
         }
     }
