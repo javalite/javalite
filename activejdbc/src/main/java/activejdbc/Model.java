@@ -142,9 +142,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * to conform with JDBC spec:  http://download.oracle.com/javase/6/docs/api/java/sql/Date.html.
      *
      * @param name name of attribute
-     * @param date value - argument that is possible to convert to java.sql.Date, such as:
-     *  <code>java.sql.Date</code>, <code>java.sql.Date</code>, <code>java.sql.Timestamp</code>,
-     * <code>java.sql.Time</code>, <code>java.util.Date</code>or any object with toString() == yyyy-mm-dd.
+     * @param date value - argument to be converted.
      */
     public void setDate(String name, java.util.Date date) {
         set(name, Convert.toSqlDate(date));
