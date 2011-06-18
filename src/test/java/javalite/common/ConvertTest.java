@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,6 +37,24 @@ public class ConvertTest extends JSpecSupport {
         Date d = new Date(new SimpleDateFormat("yyyy-MM-dd").parse("2001-01-01").getTime());
         Date d1 = Convert.toSqlDate("2001-01-01");
         a(d).shouldBeEqual(d1);
+
+        //util date
+        java.util.Date now = new java.util.Date();
+        java.sql.Date today = Convert.toSqlDate(now);
+        String string = new java.util.Date(today.getTime()).toString();   //format: Fri Jun 17 12:55:47 CDT 2011
+        a(string.contains("00:00:00")).shouldBeTrue();
+
+        //util Timestamp
+        Timestamp t = new Timestamp(System.currentTimeMillis());
+        today = Convert.toSqlDate(t);
+        string = new java.util.Date(today.getTime()).toString();   //format: Fri Jun 17 12:55:47 CDT 2011
+        a(string.contains("00:00:00")).shouldBeTrue();
+
+        //util TIme
+        Time tm = new Time(System.currentTimeMillis());
+        today = Convert.toSqlDate(tm);
+        string = new java.util.Date(today.getTime()).toString();   //format: Fri Jun 17 12:55:47 CDT 2011
+        a(string.contains("00:00:00")).shouldBeTrue();
     }
 
 
@@ -175,4 +194,6 @@ public class ConvertTest extends JSpecSupport {
         a(Convert.toBoolean(1)).shouldBeTrue();
         a(Convert.toBoolean(0)).shouldBeFalse();
     }
+
+
 }
