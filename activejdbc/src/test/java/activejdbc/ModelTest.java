@@ -559,6 +559,24 @@ public class ModelTest extends ActiveJDBCTest {
         a(p1.get("last_name")).shouldBeEqual(p.get("last_name"));
         a(p1.get("dob")).shouldBeEqual(p.get("dob"));
     }
+
+
+    @Test
+    public void shouldConvertUtilDate2SqlDate() {
+        Person p = new Person();
+        p.setDate("dob", new java.util.Date());
+        a(p.get("dob")).shouldBeA(java.sql.Date.class);
+
+        java.sql.Date date = p.getDate("dob");
+        Calendar c = new GregorianCalendar();
+        c.setTime(date);
+        
+        a(date.toString()).shouldBeEqual(new java.sql.Date(System.currentTimeMillis()).toString());
+        a(c.get(Calendar.HOUR_OF_DAY)).shouldBeEqual(0);
+        a(c.get(Calendar.MINUTE)).shouldBeEqual(0);
+        a(c.get(Calendar.SECOND)).shouldBeEqual(0);
+        a(c.get(Calendar.MILLISECOND)).shouldBeEqual(0);
+    }
 }
 
 

@@ -136,19 +136,18 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Convenience method, does internal conversion to <code>java.sql.Date</code>.
+     * Convenience method, does automatic conversion to <code>java.sql.Date</code>, uses
+     * {@link javalite.common.Convert#toSqlDate} internally.
+     * This method will also truncate hours, minutes, seconds and milliseconds to zeros,
+     * to conform with JDBC spec:  http://download.oracle.com/javase/6/docs/api/java/sql/Date.html.
      *
      * @param name name of attribute
-     * @param date value
+     * @param date value - argument that is possible to convert to java.sql.Date, such as:
+     *  <code>java.sql.Date</code>, <code>java.sql.Date</code>, <code>java.sql.Timestamp</code>,
+     * <code>java.sql.Time</code>, <code>java.util.Date</code>or any object with toString() == yyyy-mm-dd.
      */
     public void setDate(String name, java.util.Date date) {
-        if (date == null) {
-            set(name, null);
-        } else if(date instanceof java.sql.Date) {
-            set(name, date);
-        }else{
-            set(name, new java.sql.Date(date.getTime()));
-        }
+        set(name, Convert.toSqlDate(date));
     }
 
     public void setTS(String name, java.util.Date date) {
@@ -918,6 +917,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return Convert.toDouble(get(attribute));
     }
 
+    /**
+     * Performs a conversion to <code>java.sql.Date</code> if necessary,
+     * uses {@link Convert#toSqlDate(Object)}
+     * @param attribute attribute name
+     * @return instance of <code>java.sql.Date</code>
+     */
     public java.sql.Date getDate(String attribute) {
         return Convert.toSqlDate(get(attribute));
     }
@@ -1010,8 +1015,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Converts to <code>java.sql.Date</code>. Expects a <<code>java.sql.Date</code>, <code>java.sql.Timestamp</code>, <code>java.util.Date</code> or
+     * Converts to <code>java.sql.Date</code>. Expects a <code>java.sql.Date</code>,
+     * <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code> or
      * string with format: <code>yyyy-mm-dd</code>.
+     * This method will also truncate hours, minutes, seconds and milliseconds to zeros,
+     * to conform with JDBC spec:  http://download.oracle.com/javase/6/docs/api/java/sql/Date.html.
      *
      * @param attribute name of attribute.
      * @param value value to convert.

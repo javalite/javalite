@@ -320,7 +320,7 @@ public class DB {
             ps = connection().prepareStatement(query);
             for (int index = 0; index < params.length; index++) {
                 Object param = params[index];
-                ps.setObject(index + 1, convertToSqlDateIfUtilDate(param));
+                ps.setObject(index + 1, param);
             }
 
             rs = ps.executeQuery();
@@ -330,14 +330,6 @@ public class DB {
 
     }
 
-    private Object convertToSqlDateIfUtilDate(Object param){
-        if(param instanceof java.util.Date  && !(param instanceof Timestamp) && !(param instanceof Time)) {
-            java.sql.Date d = Convert.toSqlDate(param);
-            return d;
-        }else{
-            return param;
-        }        
-    }
 
     /**
      * Executes a raw query and calls instance of <code>RowListener</code> with every row found.
@@ -398,7 +390,7 @@ public class DB {
             ps = connection().prepareStatement(query);
             for (int index = 0; index < params.length; index++) {
                 Object param = params[index];
-                ps.setObject(index + 1, convertToSqlDateIfUtilDate(param));
+                ps.setObject(index + 1, param);
             }
             int count =  ps.executeUpdate();
             LogFilter.logQuery(logger, query, params, start);
@@ -436,7 +428,7 @@ public class DB {
             }
             for (int index = 0; index < params.length; index++) {
                 Object param = params[index];
-                ps.setObject(index + 1, convertToSqlDateIfUtilDate(param));
+                ps.setObject(index + 1, param);
             }
             ps.executeUpdate();
 

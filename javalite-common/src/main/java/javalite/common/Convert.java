@@ -23,8 +23,12 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.sql.Clob;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * @author Igor Polevoy
@@ -104,10 +108,13 @@ public class Convert {
 
 
     /**
-     * Expects a <<code>java.sql.Date</code>, <code>java.sql.Timestamp</code>, <code>java.util.Date</code> or
-     * string with format: <code>yyyy-mm-dd</code>.
+     * Expects a <code>java.sql.Date</code>, <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code> or
+     * string with format: <code>yyyy-mm-dd</code>. This method will also truncate hours, minutes, seconds and
+     * milliseconds to zeros, to conform with JDBC spec:
+     * <q href="http://download.oracle.com/javase/6/docs/api/java/sql/Date.html">http://download.oracle.com/javase/6/docs/api/java/sql/Date.html</a>.  
      *
-     * @param value
+     * @param value argument that is possible to convert to <code>java.sql.Date</code>: <code>java.sql.Date</code>,
+     * <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code> or any object with toString() == <code>yyyy-mm-dd</code>.  
      * @return <code>java.sql.Date</code> instance representing input value.
      */
     public static java.sql.Date toSqlDate(Object value){
@@ -116,10 +123,11 @@ public class Convert {
         } else if (value instanceof java.sql.Date) {
             return (java.sql.Date) value;
         } else if (value instanceof Timestamp) {
-            return new java.sql.Date(((Timestamp) value).getTime());
+            return utilDate2sqlDate(((Timestamp) value).getTime());
         } else if (value instanceof java.util.Date) {
-            return new java.sql.Date(((java.util.Date) value).getTime());
-
+            return utilDate2sqlDate(((Date) value).getTime());
+        } else if (value instanceof Time) {
+            return utilDate2sqlDate(((Time) value).getTime());
         } else {
             try {
                 return java.sql.Date.valueOf(value.toString());
@@ -127,6 +135,16 @@ public class Convert {
                 throw new ConversionException("failed to convert: '" + value + "' to java.sql.Date", e);
             }
         }
+    }
+
+    private static java.sql.Date utilDate2sqlDate(long time){
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTimeInMillis(time);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return new java.sql.Date(calendar.getTimeInMillis());
     }
 
     /**
