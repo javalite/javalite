@@ -4,7 +4,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>activeJdbc-example</groupId>
-    <artifactId>activeJdbc-simple-example</artifactId>
+    <artifactId>activeJdbc-multi-db-example</artifactId>
     <version>1.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -56,11 +56,19 @@
             </exclusions>
         </dependency>
 
+        <!--need both drivers: to connect to MySQL and Oracle-->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>5.0.4</version>
         </dependency>
+
+        <dependency>
+            <groupId>oracle</groupId>
+            <artifactId>ojdbc14</artifactId>
+            <version>10.2.0.1</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.slf4j</groupId>
