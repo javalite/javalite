@@ -300,4 +300,14 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
         DbName dbNameAnnotation = modelClass.getAnnotation(DbName.class);
         return dbNameAnnotation == null ? "default" : dbNameAnnotation.value();
     }
+
+    /**
+     * Provides column metadata map, keyed by attribute names.
+     * Table columns correspond to ActiveJDBC model attributes.
+     *
+     * @return Provides column metadata map, keyed by attribute names.
+     */
+    public Map<String, ColumnMetadata> getColumnMetadata() {
+        return Collections.unmodifiableMap(columnMetadata);
+    }
 }
