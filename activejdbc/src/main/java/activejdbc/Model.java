@@ -1025,8 +1025,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * Converts to <code>java.sql.Date</code>. Expects a <code>java.sql.Date</code>,
      * <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code> or
      * string with format: <code>yyyy-mm-dd</code>.
-     * This method will also truncate hours, minutes, seconds and milliseconds to zeros,
-     * to conform with JDBC spec:  http://download.oracle.com/javase/6/docs/api/java/sql/Date.html.
+     * In case <code>java.uti.Date</code> is passed, this method will truncate hours, minutes, seconds and
+     * milliseconds to zeros, to conform with JDBC spec:  http://download.oracle.com/javase/6/docs/api/java/sql/Date.html.
      *
      * @param attribute name of attribute.
      * @param value value to convert.
