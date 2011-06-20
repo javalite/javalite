@@ -148,6 +148,15 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         set(name, Convert.toSqlDate(date));
     }
 
+    /**
+     * Performs a primitive conversion of <code>java.util.Date</code> to <code>java.sql.Timestamp</code>
+     * based on the time value.
+     *
+     *
+     * @param name name of field.
+     * @param date date value.
+     * @deprecated  use {@link #setTimestamp(String, Object)} instead.
+     */
     public void setTS(String name, java.util.Date date) {
         if(date == null) {
             set(name, null);
@@ -157,7 +166,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Sets values for this model instance. The squence of values must correspond to sequence of names.
+     * Sets values for this model instance. The sequence of values must correspond to sequence of names.
      *
      * @param attributeNames names of attributes.
      * @param values values for this instance.
