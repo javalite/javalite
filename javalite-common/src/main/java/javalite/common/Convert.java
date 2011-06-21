@@ -109,15 +109,42 @@ public class Convert {
 
     /**
      * Expects a <code>java.sql.Date</code>, <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code> or
-     * string with format: <code>yyyy-mm-dd</code>. This method will also truncate hours, minutes, seconds and
-     * milliseconds to zeros, to conform with JDBC spec:
-     * <q href="http://download.oracle.com/javase/6/docs/api/java/sql/Date.html">http://download.oracle.com/javase/6/docs/api/java/sql/Date.html</a>.  
+     * any object whose toString method has this format: <code>yyyy-mm-dd</code>.
      *
-     * @param value argument that is possible to convert to <code>java.sql.Date</code>: <code>java.sql.Date</code>,
-     * <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code> or any object with toString() == <code>yyyy-mm-dd</code>.  
+     * @param value argument that is possible to convert to <code>java.sql.Date</code>.  
      * @return <code>java.sql.Date</code> instance representing input value.
      */
     public static java.sql.Date toSqlDate(Object value){
+        if (value == null) {
+            return null;
+        } else if (value instanceof java.sql.Date) {
+            return (java.sql.Date) value;
+        } else if (value instanceof Timestamp) {
+            return new java.sql.Date(((Timestamp) value).getTime());
+        } else if (value instanceof java.util.Date) {
+            return new java.sql.Date(((Date) value).getTime());
+        } else if (value instanceof Time) {
+            return new java.sql.Date(((Time) value).getTime());
+        } else {
+            try {
+                return java.sql.Date.valueOf(value.toString());
+            } catch (IllegalArgumentException e) {
+                throw new ConversionException("failed to convert: '" + value + "' to java.sql.Date", e);
+            }
+        }
+    }
+
+    /**
+     * Expects a <code>java.sql.Date</code>, <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code> or
+     * string with format: <code>yyyy-mm-dd</code>. This method will also truncate hours, minutes, seconds and
+     * milliseconds to zeros, to conform with JDBC spec:
+     * <q href="http://download.oracle.com/javase/6/docs/api/java/sql/Date.html">http://download.oracle.com/javase/6/docs/api/java/sql/Date.html</a>.
+     *
+     * @param value argument that is possible to convert to <code>java.sql.Date</code>: <code>java.sql.Date</code>,
+     * <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code> or any object with toString() == <code>yyyy-mm-dd</code>.
+     * @return <code>java.sql.Date</code> instance representing input value.
+     */
+    public static java.sql.Date truncateToSqlDate(Object value){
         if (value == null) {
             return null;
         } else if (value instanceof java.sql.Date) {

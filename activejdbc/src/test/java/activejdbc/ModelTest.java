@@ -19,6 +19,7 @@ package activejdbc;
 
 import activejdbc.associations.NotAssociatedException;
 import activejdbc.test.ActiveJDBCTest;
+import javalite.common.Convert;
 import javalite.test.jspec.DifferenceExpectation;
 import javalite.test.jspec.ExceptionExpectation;
 import activejdbc.test_models.*;
@@ -564,7 +565,7 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void shouldConvertUtilDate2SqlDate() {
         Person p = new Person();
-        p.setDate("dob", new java.util.Date());
+        p.setDate("dob", Convert.truncateToSqlDate(new java.util.Date()));
         a(p.get("dob")).shouldBeA(java.sql.Date.class);
 
         java.sql.Date date = p.getDate("dob");

@@ -136,16 +136,26 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Convenience method, does automatic conversion to <code>java.sql.Date</code>, uses
-     * {@link javalite.common.Convert#toSqlDate} internally.
-     * This method will also truncate hours, minutes, seconds and milliseconds to zeros,
-     * to conform with JDBC spec:  http://download.oracle.com/javase/6/docs/api/java/sql/Date.html.
+     * Converts to <code>java.sql.Date</code>. Expects a <code>java.sql.Date</code>,
+     * <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code> or
+     * any object with string with format: <code>yyyy-mm-dd</code>.
      *
-     * @param name name of attribute
-     * @param date value - argument to be converted.
+     * @param attribute name of attribute.
+     * @param value value to convert.
+     * @return  this model.
      */
-    public void setDate(String name, java.util.Date date) {
-        set(name, Convert.toSqlDate(date));
+    public Model setDate(String attribute, Object value) {
+        return set(attribute, Convert.toSqlDate(value));
+    }
+
+    /**
+     * Performs a conversion to <code>java.sql.Date</code> if necessary,
+     * uses {@link Convert#toSqlDate(Object)}
+     * @param attribute attribute name
+     * @return instance of <code>java.sql.Date</code>
+     */
+    public java.sql.Date getDate(String attribute) {
+        return Convert.toSqlDate(get(attribute));
     }
 
     /**
@@ -924,15 +934,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return Convert.toDouble(get(attribute));
     }
 
-    /**
-     * Performs a conversion to <code>java.sql.Date</code> if necessary,
-     * uses {@link Convert#toSqlDate(Object)}
-     * @param attribute attribute name
-     * @return instance of <code>java.sql.Date</code>
-     */
-    public java.sql.Date getDate(String attribute) {
-        return Convert.toSqlDate(get(attribute));
-    }
 
     public Boolean getBoolean(String attribute) {
         return Convert.toBoolean(get(attribute));
@@ -1021,20 +1022,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return set(attribute, Convert.toDouble(value));
     }
 
-    /**
-     * Converts to <code>java.sql.Date</code>. Expects a <code>java.sql.Date</code>,
-     * <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code> or
-     * string with format: <code>yyyy-mm-dd</code>.
-     * In case <code>java.uti.Date</code> is passed, this method will truncate hours, minutes, seconds and
-     * milliseconds to zeros, to conform with JDBC spec:  http://download.oracle.com/javase/6/docs/api/java/sql/Date.html.
-     *
-     * @param attribute name of attribute.
-     * @param value value to convert.
-     * @return  this model.
-     */
-    public Model setDate(String attribute, Object value) {
-        return set(attribute, Convert.toSqlDate(value));
-    }
+
 
     /**
      * Sets to <code>true</code> if the value is any numeric type and has a value of 1, or if string type has a
