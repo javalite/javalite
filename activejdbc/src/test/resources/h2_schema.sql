@@ -111,3 +111,13 @@ CREATE TABLE recipes (recipe_id  int(11) NOT NULL  auto_increment PRIMARY KEY, r
 
 DROP TABLE IF EXISTS ingredients_recipes;
 CREATE TABLE ingredients_recipes (the_id  int(11) NOT NULL  auto_increment PRIMARY KEY, recipe_id int(11), ingredient_id int(11));
+
+
+DROP TABLE IF EXISTS vehicles;
+CREATE TABLE vehicles (id  int(11) NOT NULL  auto_increment PRIMARY KEY, name VARCHAR(56));
+
+DROP TABLE IF EXISTS mammals;
+CREATE TABLE mammals (id  int(11) NOT NULL  auto_increment PRIMARY KEY, name VARCHAR(56));
+
+DROP TABLE IF EXISTS classifications;
+CREATE TABLE classifications (id  int(11) NOT NULL  auto_increment PRIMARY KEY, name VARCHAR(56), parent_id int(11), parent_type VARCHAR(56));
