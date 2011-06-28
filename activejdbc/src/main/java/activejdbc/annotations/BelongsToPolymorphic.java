@@ -31,5 +31,18 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface BelongsToPolymorphic {
+    
+    /**
+     * List of parent classes.
+     * @return list of parent classes.
+     */
     public abstract Class<? extends Model>[] parents();
+
+    /**
+     * List of type labels corresponding to parent classes. This is a value to be stored in the
+     * "parent_type" column of the child record. Use this to override default behavior (parent  full class name).
+     *
+     * @return list of type labels corresponding to parent classes. 
+     */
+    public String[] typeLabels() default {}; 
 }

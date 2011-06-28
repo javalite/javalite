@@ -25,17 +25,20 @@ import activejdbc.Association;
  */
 public class BelongsToPolymorphicAssociation extends Association {
 
-    private String parentType;
+    private String typeLabel, parentClassName;
 
-    public BelongsToPolymorphicAssociation(String source, String target, String parentType) {
+    public BelongsToPolymorphicAssociation(String source, String target, String typeLabel, String parentClassName) {
         super(source, target);
-
-        this.parentType = parentType;
+        this.typeLabel = typeLabel;
+        this.parentClassName = parentClassName;
     }
 
+    public String getParentClassName() {
+        return parentClassName;
+    }
 
-    public String getParentType() {
-        return parentType;
+    public String getTypeLabel() {
+        return typeLabel;
     }
 
     @Override
@@ -53,7 +56,7 @@ public class BelongsToPolymorphicAssociation extends Association {
 
         BelongsToPolymorphicAssociation otherAss =(BelongsToPolymorphicAssociation)other;
 
-        return otherAss.parentType.equals(parentType)
+        return otherAss.typeLabel.equals(typeLabel)
                 && otherAss.getSource().equals(getSource())
                 && otherAss.getTarget().equals(getTarget());
     }

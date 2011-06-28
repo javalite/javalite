@@ -325,7 +325,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         List<OneToManyPolymorphicAssociation> polymorphics = getMetaModelLocal().getPolymorphicAssociations();
         for (OneToManyPolymorphicAssociation association : polymorphics) {
             String  target = association.getTarget();
-            String parentType = association.getParentType();
+            String parentType = association.getTypeLabel();
             String query = "DELETE FROM " + target + " WHERE parent_id = ? AND parent_type = ?";
             new DB(getMetaModelLocal().getDbName()).exec(query, getId(), parentType);
         }
@@ -647,13 +647,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             fkValue = getString(ass.getFkName());
             fkName = ass.getFkName();
         }else if(assP != null){
-            fkValue = getString("parent_id");
+            fkValue = getString("parent_id");            
             fkName = "parent_id";
-            MetaModel trueMM = Registry.instance().getMetaModelByClassName(getString("parent_type"));
-            if(trueMM != parentMM)
-                throw new IllegalArgumentException("Wrong parent: '" + parentClass + "'. Actual parent type of this record is: '" + getString("parent_type") + "'");
+
+            if(!assP.getTypeLabel().equals(getString("parent_type"))){
+                throw new IllegalArgumentException("Wrong parent: '" + parentClass + "'. Actual parent type label of this record is: '" + getString("parent_type") + "'");
+            }
         }else{
-            throw new DBException("there is no association with table: " + parentTable);
+            throw new IllegalArgumentException("there is no association with table: " + parentTable);
         }
 
         if(fkValue == null){
@@ -725,7 +726,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             }
             if(association instanceof BelongsToPolymorphicAssociation && association.getTarget().equals(parent.getMetaModelLocal().getTableName())){
                 set("parent_id", parent.getId());
-                set("parent_type", ((BelongsToPolymorphicAssociation)association).getParentType());
+                set("parent_type", ((BelongsToPolymorphicAssociation)association).getTypeLabel());
                 return;
             }
         }
@@ -1116,7 +1117,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 manyToManyAssociation.getSourceFkName() + " = " + getId() + additionalCriteria + ")"   ;
 
         } else if (oneToManyPolymorphicAssociation != null) {
-            subQuery = "parent_id = " + getId() + " AND " + " parent_type = '" + getClass().getName() + "'" + additionalCriteria;
+            subQuery = "parent_id = " + getId() + " AND " + " parent_type = '" + oneToManyPolymorphicAssociation.getTypeLabel() + "'" + additionalCriteria;
         } else {
             throw new NotAssociatedException(getMetaModelLocal().getTableName(), targetTable);
         }
@@ -1640,9 +1641,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 }
              }else if(metaModel.hasAssociation(childTable, OneToManyPolymorphicAssociation.class)){
 
-                metaModel.getAssociationForTarget(childTable, OneToManyPolymorphicAssociation.class);
+                OneToManyPolymorphicAssociation ass = (OneToManyPolymorphicAssociation)metaModel
+                        .getAssociationForTarget(childTable, OneToManyPolymorphicAssociation.class);
                 child.set("parent_id", getId());
-                child.set("parent_type", this.getClass().getName());
+                child.set("parent_type", ass.getTypeLabel());
                 child.saveIt();
 
             }else

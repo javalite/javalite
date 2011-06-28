@@ -227,16 +227,24 @@ public class Registry {
             if(belongsToPolymorphic != null){
 
                 Class<? extends Model>[] parentClasses = belongsToPolymorphic.parents();
-                for (Class<? extends Model> parentClass: parentClasses) {
+                String[] typeLabels = belongsToPolymorphic.typeLabels();
+
+                if(typeLabels.length > 0 && typeLabels.length != parentClasses.length){
+                    throw new InitException("must provide all type labels for polymorphic associations");
+                }
+
+                for (int i = 0, parentClassesLength = parentClasses.length; i < parentClassesLength; i++) {
+                    Class<? extends Model> parentClass = parentClasses[i];
+
+                    String typeLabel = typeLabels.length > 0? typeLabels[i]: parentClass.getName();
+
                     BelongsToPolymorphicAssociation belongsToPolymorphicAssociation =
-                            new BelongsToPolymorphicAssociation(getTableName(modelClass),
-                                    getTableName(parentClass), parentClass.getName());
+                            new BelongsToPolymorphicAssociation(getTableName(modelClass), getTableName(parentClass), typeLabel, parentClass.getName());
                     metaModels.getMetaModel(modelClass).addAssociation(belongsToPolymorphicAssociation);
 
 
                     OneToManyPolymorphicAssociation oneToManyPolymorphicAssociation =
-                            new OneToManyPolymorphicAssociation(getTableName(parentClass),
-                                    getTableName(modelClass), parentClass.getName());
+                            new OneToManyPolymorphicAssociation(getTableName(parentClass), getTableName(modelClass), typeLabel);
                     metaModels.getMetaModel(parentClass).addAssociation(oneToManyPolymorphicAssociation);
                 }
             }

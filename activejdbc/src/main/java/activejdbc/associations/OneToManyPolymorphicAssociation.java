@@ -24,19 +24,19 @@ import activejdbc.Association;
  */
 public class OneToManyPolymorphicAssociation extends Association {
 
-    private String parentType;
+    private String typeLabel;
 
     /**
      * @param source source table, the one that has many targets
      * @param target target table - many targets belong to source.
      */
-    public OneToManyPolymorphicAssociation(String source, String target,  String parentType) {
+    public OneToManyPolymorphicAssociation(String source, String target,  String typeLabel) {
         super(source, target);
-        this.parentType = parentType;
+        this.typeLabel = typeLabel;
     }
 
-    public String getParentType() {
-        return parentType;
+    public String getTypeLabel() {
+        return typeLabel;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class OneToManyPolymorphicAssociation extends Association {
 
         OneToManyPolymorphicAssociation otherAss =(OneToManyPolymorphicAssociation)other;
 
-        return otherAss.parentType.equals(parentType)
+        return otherAss.typeLabel.equals(typeLabel)
                 && otherAss.getSource().equals(getSource())
                 && otherAss.getTarget().equals(getTarget());
     }

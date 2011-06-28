@@ -116,3 +116,13 @@ CREATE TABLE recipes (recipe_id  serial PRIMARY KEY, recipe_name VARCHAR(56));
 DROP TABLE IF EXISTS ingredients_recipes;
 CREATE TABLE ingredients_recipes (the_id  serial PRIMARY KEY, recipe_id INT, ingredient_id INT);
 
+
+DROP TABLE IF EXISTS vehicles;
+CREATE TABLE vehicles (id  serial PRIMARY KEY, name VARCHAR(56));
+
+DROP TABLE IF EXISTS mammals;
+CREATE TABLE mammals (id  serial PRIMARY KEY, name VARCHAR(56));
+
+DROP TABLE IF EXISTS classifications;
+CREATE TABLE classifications (id  serial PRIMARY KEY, name VARCHAR(56), parent_id INT, parent_type VARCHAR(56));
+

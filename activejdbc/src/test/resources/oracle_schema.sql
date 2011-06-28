@@ -642,3 +642,56 @@ CREATE OR REPLACE TRIGGER ingredients_recipes_trigger
     begin
 select coalesce(:new.the_id, ingredients_recipes_seq.nextval) into :new.the_id from dual;
 end;
+
+
+
+-- BREAK
+CREATE TABLE vehicles (id  NUMBER NOT NULL, name VARCHAR(56))
+-- BREAK
+ALTER TABLE vehicles ADD CONSTRAINT vehicles_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE vehicles_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER vehicles_trigger
+    BEFORE INSERT ON vehicles REFERENCING
+    NEW AS new
+    OLD AS old
+    FOR EACH ROW
+    begin
+select coalesce(:new.id, vehicles_seq.nextval) into :new.id from dual;
+end;
+
+
+
+-- BREAK
+CREATE TABLE mammals (id  NUMBER NOT NULL, name VARCHAR(56))
+-- BREAK
+ALTER TABLE mammals ADD CONSTRAINT mammals_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE mammals_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER mammals_trigger
+    BEFORE INSERT ON mammals REFERENCING
+    NEW AS new
+    OLD AS old
+    FOR EACH ROW
+    begin
+select coalesce(:new.id, mammals_seq.nextval) into :new.id from dual;
+end;
+
+
+-- BREAK
+CREATE TABLE classifications (id  NUMBER NOT NULL, name VARCHAR(56), parent_id NUMBER, parent_type VARCHAR(56))
+-- BREAK
+ALTER TABLE classifications ADD CONSTRAINT classifications_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE classifications_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER classifications_trigger
+    BEFORE INSERT ON classifications REFERENCING
+    NEW AS new
+    OLD AS old
+    FOR EACH ROW
+    begin
+select coalesce(:new.id, classifications_seq.nextval) into :new.id from dual;
+end;
