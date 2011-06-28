@@ -31,12 +31,15 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**
+ * Convenience class for type conversions. 
+ *
  * @author Igor Polevoy
  */
 public class Convert {
 
     /**
      * Returns string representation of an object, including {@link java.sql.Clob}.
+     * For large CLOBs, be careful because this will load an entire CLOB in memory as <code>java.lang.String</code>. 
      *
      * @param value value to convert.
      * @return string representation of an object, including {@link java.sql.Clob}.
