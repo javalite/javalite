@@ -18,10 +18,14 @@ package activejdbc;
 
 import activejdbc.test.ActiveJDBCTest;
 import activejdbc.test_models.Address;
+import activejdbc.test_models.Page;
 import activejdbc.test_models.Person;
 import activejdbc.test_models.User;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -126,4 +130,14 @@ public class ToJsonSpec extends ActiveJDBCTest {
         String json = personList.toJson(false);
         a(json).shouldBeEqual("[{\"type\":\"activejdbc.test_models.User\",\"id\":\"1\",\"first_name\":\"Marilyn\",\"email\":\"mmonroe@yahoo.com\",\"last_name\":\"Monroe\",\"children\" : {addresses : [{\"type\":\"activejdbc.test_models.Address\",\"id\":\"1\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"123 Pine St.\",\"address2\":\"apt 31\",\"user_id\":\"1\",\"city\":\"Springfield\"},{\"type\":\"activejdbc.test_models.Address\",\"id\":\"2\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"456 Brook St.\",\"address2\":\"apt 21\",\"user_id\":\"1\",\"city\":\"Springfield\"},{\"type\":\"activejdbc.test_models.Address\",\"id\":\"3\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"23 Grove St.\",\"address2\":\"apt 32\",\"user_id\":\"1\",\"city\":\"Springfield\"}]}},{\"type\":\"activejdbc.test_models.User\",\"id\":\"2\",\"first_name\":\"John\",\"email\":\"jdoe@gmail.com\",\"last_name\":\"Doe\",\"children\" : {addresses : [{\"type\":\"activejdbc.test_models.Address\",\"id\":\"4\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"143 Madison St.\",\"address2\":\"apt 34\",\"user_id\":\"2\",\"city\":\"Springfield\"},{\"type\":\"activejdbc.test_models.Address\",\"id\":\"5\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"153 Creek St.\",\"address2\":\"apt 35\",\"user_id\":\"2\",\"city\":\"Springfield\"},{\"type\":\"activejdbc.test_models.Address\",\"id\":\"6\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"163 Gorge St.\",\"address2\":\"apt 36\",\"user_id\":\"2\",\"city\":\"Springfield\"},{\"type\":\"activejdbc.test_models.Address\",\"id\":\"7\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"173 Far Side.\",\"address2\":\"apt 37\",\"user_id\":\"2\",\"city\":\"Springfield\"}]}}]");
     }
+
+    @Test
+    public void shouldEscapeDoubleQuote() throws IOException {
+        Page p = new Page();
+        p.set("description", "bad \" description");
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readTree(p.toJson(true));
+        a(node.get("description").toString()).shouldBeEqual("\"bad \\\" description\"");
+    }
 }
+

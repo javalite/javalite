@@ -592,8 +592,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 List<String> attributeStrings = new ArrayList<String>();
 
                 for (String name : attributes.keySet()) {
-                    if (attrList.contains(name) || attrList.size() == 0)
-                        attributeStrings.add((pretty?"\n  " + indent: "") + "\"" + name + "\":\"" + attributes.get(name) + "\"" );
+                    if (attrList.contains(name) || attrList.size() == 0){
+                        String before = getString(name);
+                        String after = before.replaceAll("\"", "\\\\\"");
+                        attributeStrings.add((pretty?"\n  " + indent: "") + "\"" + name + "\":\"" + after + "\"" );
+                    }
                 }
                 sw.write(Util.join(attributeStrings,  ","  ));
 
