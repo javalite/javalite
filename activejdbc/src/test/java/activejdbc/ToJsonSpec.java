@@ -138,6 +138,11 @@ public class ToJsonSpec extends ActiveJDBCTest {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(p.toJson(true));
         a(node.get("description").toString()).shouldBeEqual("\"bad \\\" description\"");
+
+        //ensure no NPE:
+        p = new Page();
+        p.set("description", null);
+        p.toJson(true);
     }
 }
 
