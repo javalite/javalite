@@ -587,7 +587,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
                 StringWriter sw = new StringWriter();
 
-                sw.write(indent  +  "{"  + (pretty?"\n  " + indent: "") + "\"type\":\"" + getClass().getName() + "\",");
+                sw.write(indent  +  "{"  + (pretty?"\n  " + indent: "") + "\"model_class\":\"" + getClass().getName() + "\",");
 
                 List<String> attributeStrings = new ArrayList<String>();
 
