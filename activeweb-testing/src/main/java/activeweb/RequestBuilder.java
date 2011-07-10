@@ -46,6 +46,7 @@ public class RequestBuilder {
     private String realAction;
     private List<FormItem> formItems =  new ArrayList<FormItem>();
     private String id;
+    private String queryString;
 
     public RequestBuilder(String controllerPath, SessionTestFacade sessionFacade) {
         this.controllerPath = controllerPath;
@@ -59,7 +60,7 @@ public class RequestBuilder {
      *
      * @param name name of file.
      * @param fieldName name of field name - this is typically a name of a HTML form field.
-     * @param isFile set tru for file, false for regular field. 
+     * @param isFile set true for file, false for regular field. 
      * @param contentType this is content type for this field, not the request. Set to a value reflecting the file
      * content, such as "image/png", "applicaiton/pdf", etc. 
      * @param content this is the binary content of the file.
@@ -220,6 +221,7 @@ public class RequestBuilder {
         request.setServletPath(path);
         request.setRequestURI(path);
         request.setAttribute("id", id);
+        request.setQueryString(queryString);
 
         addCookiesInternal(request);
 
@@ -279,6 +281,12 @@ public class RequestBuilder {
 
     public RequestBuilder id(String id) {
         this.id = id;
+        return this;
+    }
+
+
+    public RequestBuilder queryString(String queryString) {
+        this.queryString = queryString;
         return this;
     }
 }

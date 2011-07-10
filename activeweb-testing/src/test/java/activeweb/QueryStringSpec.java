@@ -14,20 +14,25 @@ See the License for the specific language governing permissions and
 limitations under the License. 
 */
 
-package app.controllers;
+package activeweb;
 
-
-import activeweb.IntegrationSpec;
 import org.junit.Test;
 
 /**
  * @author Igor Polevoy
  */
-public class XyzControllerSpec extends IntegrationSpec {
+public class QueryStringSpec extends AppIntegrationSpec {
+
+    public QueryStringSpec(){
+        suppressDb();
+    }
+
 
     @Test
-    public void shouldPrependControllerPathWithSlash(){
-        controller("xyz").get("index");
-        a(assigns().get("path").toString().startsWith("/")).shouldBeTrue();        
+    public void shouldPassQueryStringFromTest(){
+
+        controller("query_string").queryString("first_name=John&last_name=Travolta").integrateViews(false).get("index");
+        a(assigns().get("query_string")).shouldBeEqual("first_name=John&last_name=Travolta");
+
     }
 }

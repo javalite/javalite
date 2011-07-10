@@ -23,13 +23,13 @@ import app.models.Post;
 import static activeweb.Captcha.generateText;
 
 /**
-GET 	/photos 	            index 	        display a list of all photos
-GET 	/photos/new_form 	    new_form        return an HTML form for creating a new photo
-POST 	/photos 	            create 	        create a new photo
-GET 	/photos/:id 	        show            display a specific photo
-GET 	/photos/:id/edit_form   edit_form 	    return an HTML form for editing a photo
-PUT 	/photos/:id 	        update          update a specific photo
-DELETE 	/photos/:id 	        destroy         delete a specific photo
+    GET 	/photos 	            index 	        display a list of all photos
+    GET 	/photos/new_form 	    new_form        return an HTML form for creating a new photo
+    POST 	/photos 	            create 	        create a new photo
+    GET 	/photos/:id 	        show            display a specific photo
+    GET 	/photos/:id/edit_form   edit_form 	    return an HTML form for editing a photo
+    PUT 	/photos/:id 	        update          update a specific photo
+    DELETE 	/photos/:id 	        destroy         delete a specific photo
  * @author Igor Polevoy
  */
 @RESTful

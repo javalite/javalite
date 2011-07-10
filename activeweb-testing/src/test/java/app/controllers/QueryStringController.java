@@ -16,18 +16,15 @@ limitations under the License.
 
 package app.controllers;
 
-
-import activeweb.IntegrationSpec;
-import org.junit.Test;
+import activeweb.AppController;
 
 /**
  * @author Igor Polevoy
  */
-public class XyzControllerSpec extends IntegrationSpec {
+public class QueryStringController extends AppController {
 
-    @Test
-    public void shouldPrependControllerPathWithSlash(){
-        controller("xyz").get("index");
-        a(assigns().get("path").toString().startsWith("/")).shouldBeTrue();        
+    public void index(){
+
+        view("query_string", queryString());
     }
 }
