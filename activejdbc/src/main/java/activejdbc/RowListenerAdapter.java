@@ -21,13 +21,19 @@ import java.util.Map;
 
 
 /**
- * Use this class in cases where you need an entire result set. It returns true from "next()" method
+ * Use this class in cases where you need to process an entire result set. It returns true from "next()" method.
  */
 public abstract class RowListenerAdapter implements RowListener{
-    public boolean next(Map<String, Object> row) {
+    
+    public final boolean next(Map<String, Object> row) {
         onNext(row);
         return true;
     }
 
+    /**
+     * Called when a new row is encountered.
+     *
+     * @param row Map instance containing values for a row. Keys are names of columns and values are .. values.  
+     */
     public abstract void onNext(Map<String, Object> row);
 }

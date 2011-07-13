@@ -34,7 +34,7 @@ public class AttributePresenceValidator extends ValidatorAdapter {
     public void validate(Model m) {
         if (m.get(attribute) == null || m.get(attribute).equals("")) {
             //TODO: use resource bundles for messages
-            m.addValidator(attribute, this);
+            m.addValidator(this, attribute);
         }
     }
 

@@ -44,7 +44,7 @@ public class RangeValidator implements Validator{
 
     public void validate(Model m) {
         if(m.get(attribute) == null){
-            m.addValidator(attribute, this);
+            m.addValidator(this, attribute);
             return;
         }
         Object value = m.get(attribute);
@@ -58,7 +58,7 @@ public class RangeValidator implements Validator{
             try {
                 Method compareTo = value.getClass().getMethod("compareTo");
                 if(((Integer)compareTo.invoke(value, min)) == -1 || ((Integer)compareTo.invoke(value, max)) == 1){
-                    m.addValidator(attribute, this);
+                    m.addValidator(this, attribute);
                 }
             } catch (Exception e) {throw new RuntimeException(e);}
 
@@ -68,37 +68,37 @@ public class RangeValidator implements Validator{
                 Byte mn = (Byte)min;
                 Byte mx = (Byte)max;
                 if(v > mx || v < mn)
-                    m.addValidator(attribute, this);
+                    m.addValidator(this, attribute);
             }else if(value.getClass().equals(Double.class)){
                 Double v = (Double)value;
                 Double mn = (Double)min;
                 Double mx = (Double)max;
                 if(v > mx || v < mn)
-                    m.addValidator(attribute, this);
+                    m.addValidator(this, attribute);
             }else if(value.getClass().equals(Float.class)){
                 Float v = (Float)value;
                 Float mn = (Float)min;
                 Float mx = (Float)max;
                 if(v > mx || v < mn)
-                    m.addValidator(attribute, this);
+                    m.addValidator(this, attribute);
             }else if(value.getClass().equals(Integer.class)){
                 Integer v = (Integer)value;
                 Integer mn = (Integer)min;
                 Integer mx = (Integer)max;
                 if(v > mx || v < mn)
-                    m.addValidator(attribute, this);
+                    m.addValidator(this, attribute);
             }else if(value.getClass().equals(Long.class)){
                 Long v = (Long)value;
                 Long mn = (Long)min;
                 Long mx = (Long)max;
                 if(v > mx || v < mn)
-                    m.addValidator(attribute, this);
+                    m.addValidator(this, attribute);
             }else if(value.getClass().equals(Short.class)){
                 Short v = (Short)value;
                 Short mn = (Short)min;
                 Short mx = (Short)max;
                 if(v > mx || v < mn)
-                    m.addValidator(attribute, this);
+                    m.addValidator(this, attribute);
             }
         }
     }

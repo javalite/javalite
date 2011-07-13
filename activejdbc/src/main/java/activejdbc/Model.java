@@ -1290,14 +1290,16 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Binds a validator to an attribute after validation fails. This is an internal function, do not use.
+     * Binds a validator to an attribute if validation fails. 
      *
-     * @param attribute name of attribute to which an error pertains.
+     * @param errorKey key of error in errors map. Usually this is a name of attribute,
+     * but not limited to that, can be anything.
+     * 
      * @param validator -validator that failed validation.
      */
-    public void addValidator(String attribute, Validator validator) {
-        if(!errors.containsKey(attribute))
-            errors.addValidator(attribute, validator);
+    public void addValidator(Validator validator, String errorKey) {
+        if(!errors.containsKey(errorKey))
+            errors.addValidator(errorKey, validator);
     }
 
     /**

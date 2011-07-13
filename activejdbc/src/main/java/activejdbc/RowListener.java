@@ -27,7 +27,7 @@ public interface RowListener {
      * Immediately after returning "false", ActiveJDBC will close JDBC resources associated with this request:
      * Statement and ResultSet.
      *
-     * @param row
+     * @param row Map instance containing values for a row. Keys are names of columns and values are .. values.
      * @return false if this listener needs to stop processing (no more calls to this method)
      */
     boolean next(Map<String, Object> row);

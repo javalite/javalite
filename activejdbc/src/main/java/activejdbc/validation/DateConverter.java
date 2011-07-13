@@ -49,7 +49,7 @@ public class DateConverter extends Converter{
                 m.set(attributeName, d);
             }
             catch(Exception e){
-                m.addValidator(attributeName, this);
+                m.addValidator(this, attributeName);
             }
         }
     }

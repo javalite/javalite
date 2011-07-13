@@ -36,7 +36,7 @@ public class RegexpValidator extends ValidatorAdapter{
     }
     public void validate(Model m) {
         if(m.get(attribute) == null){
-            m.addValidator(attribute, this);
+            m.addValidator(this, attribute);
             return;
         }
         Object value = m.get(attribute);
@@ -46,7 +46,7 @@ public class RegexpValidator extends ValidatorAdapter{
         Pattern pattern = Pattern.compile(rule, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(value.toString());
         if(!matcher.matches()){
-           m.addValidator(attribute, this);
+           m.addValidator(this, attribute);
         }
     }
 }

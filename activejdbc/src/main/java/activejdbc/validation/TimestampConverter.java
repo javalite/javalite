@@ -50,7 +50,7 @@ public class TimestampConverter extends Converter{
                 m.set(attributeName, t);
             }
             catch(Exception e){
-                m.addValidator(attributeName, this);
+                m.addValidator(this, attributeName);
             }
         }
     }

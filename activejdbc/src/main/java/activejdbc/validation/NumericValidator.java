@@ -64,10 +64,10 @@ public class NumericValidator extends ValidatorAdapter {
                 if(pp.getIndex() != (input.length()))
                     throw new RuntimeException("");
             } catch (Exception e) {
-                m.addValidator(attribute, this);
+                m.addValidator(this, attribute);
             }
         } else {
-                m.addValidator(attribute, this);
+                m.addValidator(this, attribute);
         }
 
         if(min != null){
@@ -86,7 +86,7 @@ public class NumericValidator extends ValidatorAdapter {
     private void validateMin(Double value, Model m){
 
         if(value <= min){
-            m.addValidator(attribute, this);
+            m.addValidator(this, attribute);
         }
     }
 
@@ -98,7 +98,7 @@ public class NumericValidator extends ValidatorAdapter {
 
         if(value == null){
             setMessage("value is missing");
-            m.addValidator(attribute, this);
+            m.addValidator(this, attribute);
             return false;
         }else{
             return true;
@@ -110,7 +110,7 @@ public class NumericValidator extends ValidatorAdapter {
             Integer.valueOf(value.toString());
         }
         catch(Exception e){
-            m.addValidator(attribute, this);
+            m.addValidator(this, attribute);
         }
     }
 
@@ -118,7 +118,7 @@ public class NumericValidator extends ValidatorAdapter {
 
     private void validateMax(Double value, Model m){
         if(value >= max){
-            m.addValidator(attribute, this);
+            m.addValidator(this, attribute);
         }
     }
 
