@@ -23,7 +23,26 @@ import java.util.Locale;
 
 
 public interface Validator<T extends Model> {
+    /**
+     * Called by framework when a {@link Model#validate()} method called.
+     * 
+     * @param m model being validated. 
+     */
     void validate(T m);
+
+    /**
+     * Sets an message on this validator.
+     *
+     * @param message error message.
+     */
     void setMessage(String message);
+
+    /**
+     * Formats a message with locale.
+     *
+     * @param locale locale to use.
+     * @param params parameters in case a message is parametrized.
+     * @return formatted message
+     */
     String formatMessage(Locale locale, Object ... params);
 }
