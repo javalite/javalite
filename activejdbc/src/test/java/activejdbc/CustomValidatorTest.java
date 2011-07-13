@@ -20,7 +20,7 @@ public class CustomValidatorTest extends ActiveJDBCTest {
 
         class FutureBirthValidator extends ValidatorAdapter {
             FutureBirthValidator(){
-                setMessage("invalid.dob");
+                setMessage("invalid.dob.message");
             }
             @Override
             public void validate(Model m) {
