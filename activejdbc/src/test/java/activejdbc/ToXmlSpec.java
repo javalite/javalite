@@ -18,12 +18,14 @@ package activejdbc;
 
 import activejdbc.test.ActiveJDBCTest;
 import activejdbc.test_models.Address;
+import activejdbc.test_models.Article;
 import activejdbc.test_models.Person;
 import activejdbc.test_models.User;
 import javalite.test.XPathHelper;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Igor Polevoy
@@ -74,5 +76,13 @@ public class ToXmlSpec extends ActiveJDBCTest {
         a(XPathHelper.count("//user", xml)).shouldEqual(2);
         a(XPathHelper.count("//address", xml)).shouldEqual(7);
         a(XPathHelper.count("//address2", xml)).shouldEqual(7);
+    }
+
+    @Test
+    public void shouldConvertClobsToString(){
+        deleteAndPopulateTable("articles");
+
+        List<Map> maps = Article.findAll().toMaps();
+        a(maps.get(0).get("content")).shouldBeA(String.class);
     }
 }

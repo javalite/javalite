@@ -485,7 +485,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public Map<String, Object> toMap(){
         Map<String, Object> retVal = new HashMap<String, Object>();
         for (String key : attributes.keySet()) {
-            retVal.put(key.toLowerCase(), attributes.get(key));
+            if(attributes.get(key) instanceof Clob){
+                retVal.put(key.toLowerCase(), getString(key));
+            }else{
+                retVal.put(key.toLowerCase(), attributes.get(key));
+            }
         }
         for(Class parentClass: cachedParents.keySet()){
             retVal.put(underscore(shortName(parentClass.getName())), cachedParents.get(parentClass).toMap());

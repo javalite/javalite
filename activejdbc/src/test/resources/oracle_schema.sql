@@ -321,7 +321,7 @@ end;
 
 
 -- BREAK
-CREATE TABLE articles (id  NUMBER NOT NULL, title VARCHAR(56), content VARCHAR(1024))
+CREATE TABLE articles (id  NUMBER NOT NULL, title VARCHAR(56), content CLOB)
 -- BREAK
 ALTER TABLE articles ADD CONSTRAINT articles_pk PRIMARY KEY ( id )
 -- BREAK
