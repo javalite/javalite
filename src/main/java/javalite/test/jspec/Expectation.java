@@ -33,12 +33,17 @@ public class Expectation<T> {
     /**
      * Alias to {@link #shouldBeEqual(Object)}.
      *
-     * @param expected
+     * @param expected expected value.
      */
     public void shouldEqual(T expected){
         shouldBeEqual(expected);
     }
 
+    /**
+     * Tested value is  equal expected.
+     *
+     * @param expected expected value.
+     */
     public void shouldBeEqual(T expected) {
 
         String expectedName = expected == null? "null":expected.getClass().getName();
@@ -62,59 +67,119 @@ public class Expectation<T> {
     }
 
     /**
-     * This is for cases suh as: "hasErrors()": <code>a(p).shouldHave("errors")</code>
-     * @param booleanMethod
+     * This is for cases suh as: "hasErrors()": <code>a(p).shouldHave("errors")</code>.
+     * Invokes a boolean method and uses return value in comparison.
+     * @param booleanMethod name of boolean method as specified in Java Beans specification. Example: if method name
+     * is <code>hasChildren()</code>, then the string "children" needs to be passed. This results in readable  code
+     * such as:
+     * <pre>
+     * a(bean).shouldHave("children");
+     * </pre>
      */
     public void shouldHave(String booleanMethod) {
         shouldBe(booleanMethod);
     }
 
+    /**
+     * Invokes a boolean method and uses return value in comparison.
+     * 
+     * @param booleanMethod name of boolean method as specified in Java Beans specification. Example: if method name
+     * is <code>isValid()</code>, then the string "valid" needs to be passed. This results in readable  code
+     * such as:
+     * <pre>
+     * a(bean).shouldBe("valid");
+     * </pre>
+     */
     public void shouldBe(String booleanMethod) {
         invokeBoolean(booleanMethod, true);
     }
 
+    /**
+     * Invokes a boolean method and uses return value in comparison.
+     *
+     * @param booleanMethod name of boolean method as specified in Java Beans specification. Example: if method name
+     * is <code>isValid()</code>, then the string "valid" needs to be passed. This results in readable  code
+     * such as:
+     * <pre>
+     * a(bean).shouldNotBe("valid");
+     * </pre>
+     */
     public void shouldNotBe(String booleanMethod) {
         invokeBoolean(booleanMethod, false);
     }
 
+    /**
+     * Tested and expected values are not equal.
+     *
+     * @param expected expected value.
+     */
     public void shouldNotBeEqual(T expected) {
         if (actual.equals(expected))
             throw new TestException("Objects: '" + actual + "' and '" + expected + "' are equal, but they should not be");
     }
 
+    /**
+     * Tested reference should not be null.
+     */
     public void shouldNotBeNull() {
         if (actual == null) throw new TestException("Object is null, while it is not expected");
     }
 
+    /**
+     * Tests that the Tested value is a specific type.
+     *
+     * @param clazz type the the expected value should have.
+     */
     public void shouldBeType(Class clazz) {
         if (!actual.getClass().equals(clazz)) throw new TestException(actual.getClass() + " is not " + clazz);
     }
 
     /**
+     * Tests that the Tested value is a specific type.
+     *
      * Synonym for {@link #shouldBeType(Class)}.
      * 
-     * @param clazz
+     * @param clazz type the the expected value should have.
      */
     public void shouldBeA(Class clazz) {
         shouldBeType(clazz);
     }
 
+    /**
+     * Tested value should be false.
+     */
     public void shouldBeFalse() {
         if ((Boolean) actual) throw new TestException("should not be true, but it is");
     }
 
+    /**
+     * Tested value should be true.
+     */
     public void shouldBeTrue() {
         if (!(Boolean) actual) throw new TestException("should be true, but it is not");
     }
 
+    /**
+     * Tested value should be null.
+     */
     public void shouldBeNull() {
         if (actual != null) throw new TestException("argument is not null, but it should be");
     }
 
+    /**
+     * Tested value is the same reference value as expected.
+     *
+     * @param expected expected reference.
+     */
     public void shouldBeTheSameAs(T expected) {
         if (actual != expected) throw new TestException("references are not the same, but they should be");
     }
 
+    /**
+     * Tested value is not the same reference value as expected.
+     *
+     * @param expected expected reference.
+     */
     public void shouldNotBeTheSameAs(T expected) {
         if (actual == expected) throw new TestException("references are the same, but they should not be");
     }
@@ -125,8 +190,9 @@ public class Expectation<T> {
     }
 
     /**
+     * Invokes a boolean method.
      *
-     * @param booleanMethod
+     * @param booleanMethod name of method.
      * @param returnValue - if execution of boolean method should return true or false to pass the test.
      */
     private void invokeBoolean(String booleanMethod, boolean returnValue) {
