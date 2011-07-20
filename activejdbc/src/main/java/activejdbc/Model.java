@@ -301,7 +301,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * this model has, and clear links to other tables in join tables. This is a high performance call because links are cleared with one
      * SQL DELETE.
      * <h4>One to many polymorphic relationship:</h4>
-     * Deletes current model and all polymorphic children. This is a high performance call because links are cleared with one
+     * Deletes current model and all polymorphic children. This is a high performance call because children are cleared with one
      * SQL DELETE.
      */
     public void deleteCascade(){
@@ -1587,18 +1587,18 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Adds a new child dependency. The dependency model must be either in many to many relationship to this model or
-     * this model has to be in the one to many relationship with the added child model.
-     * <p/>
-     * In case of one to many relationship, this method will immediately set it's ID as a foreign key on the child and
-     * will then save the child.
+     * Adds a new child dependency. This method works for all three association types:
+     * <ul>
+     * <li>One to many - argument model should be a child in the relationship. This method will immediately set it's
+     * ID as a foreign key on the child and will then save the child.</li>
+     * <li>Many to many - argument model should be the other model in the relationship. This method will check if the
+     * added child already has an ID. If the child does have an ID, then the method will create a link in the join
+     * table. If the child does not have an ID, then this method saves the child first, then creates a record in the
+     * join table linking this model instance and the child instance.</li>
+     * <li>Polymorphic - argument model should be  a polymorphic child of this model. This method will set the
+     * <code>parent_id</code> and <code>parent_type</code> as appropriate and then will then save the child.</li>
+     * </ul>
      *
-     * <p/>
-     * In case many to many relationship, this method will check if the added child already has an ID. If the child does
-     * have an ID, then the method will create a link in the join table. If the child does not have an ID, then this method
-     * saves the child first, then creates a record in the join table linking this model instance and the child instance.
-     *
-     * <p/>
      * This method will throw a {@link NotAssociatedException} in case a model that has no relationship is passed.
      *
      * @param child instance of a model that has a relationship to the current model.
