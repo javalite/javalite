@@ -990,7 +990,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param value value
      * @return reference to this model.
      */
-    public Model getLong(String attribute, Object value) {
+    public Model setLong(String attribute, Object value) {
         return set(attribute, Convert.toLong(value));
     }
 
