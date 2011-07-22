@@ -610,7 +610,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
                     for(Class childClass :cachedChildren.keySet()){
                         String name = Inflector.pluralize(childClass.getSimpleName()).toLowerCase();
-                        sw.write((pretty?"\n" + indent + "    ":"") + name  + " : [");
+                        sw.write((pretty?"\n" + indent + "    ":"") +"\"" + name  + "\" : [");
                         List<String> childrenList = new ArrayList<String>();
                         for(Model child: cachedChildren.get(childClass)){
                             childrenList.add((pretty?"\n" + indent:"")  + child.toJsonP(pretty, (pretty?indent + "    ":"")));
