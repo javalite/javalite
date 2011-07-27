@@ -72,5 +72,9 @@ public abstract class AbstractLoggingFilter extends HttpSupportFilter{
         }
     }
 
+    public Level getLevel() {
+        return level;
+    }
+
     protected abstract String getMessage();
 }

@@ -324,7 +324,7 @@ public class HttpSupport {
      *
      *
      * @param controllerClass controller class
-     * @param params map with parameters.
+     * @param params map with request parameters.
      * @return {@link activeweb.HttpSupport.HttpBuilder}, to accept additional information.
      */
     protected <T extends AppController> HttpBuilder redirect(Class<T> controllerClass, Map params){
