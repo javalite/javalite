@@ -29,6 +29,11 @@ import java.util.*;
 import static activejdbc.LogFilter.*;
 
 /**
+ * This class provides a number of convenience methods for opening/closing database connections, running various 
+ * types of queries, and executing SQL statements. This class differs from {@link Base} such that in this class you
+ * can provide a logical name for a current connection. Use this class when you have more than one database in the system.
+ *  
+ *
  * @author Igor Polevoy
  */
 public class DB {
@@ -36,10 +41,23 @@ public class DB {
     private String dbName;
     final static Logger logger = LoggerFactory.getLogger(DB.class);
 
+    /**
+     * Creates a new DB object representing a connection to a DB.
+     *
+     * @param dbName logical name for a database.
+     */
     public DB(String dbName){
         this.dbName = dbName;
     }
 
+    /**
+     * Opens a new connection based on JDBC properties and attaches it to a current thread.
+     *
+     * @param driver class name of driver
+     * @param url URL connection to DB
+     * @param user user name.
+     * @param password password.
+     */
     public void open(String driver, String url, String user, String password) {
         try {
             Class.forName(driver);
@@ -51,7 +69,8 @@ public class DB {
     }
 
     /**
-     * Another way to open connection if we need to pass some driver-specific parameters
+     * Opens a new connection in case additional driver-specific parameters need to be passed in.
+     * 
      * @param driver driver class name
      * @param url JDBC URL
      * @param props connection properties
@@ -66,6 +85,12 @@ public class DB {
         }
     }
 
+    /**
+     * Opens a connection from JNDI based on a registered name. This assumes that there is a <code>jndi.properties</code>
+     * file with proper JNDI configuration in it.
+     *
+     * @param jndiName name of a configured data source. 
+     */
     public void open(String jndiName) {
         try {
             Context ctx = new InitialContext();
@@ -77,6 +102,12 @@ public class DB {
         }
     }
 
+
+    /**
+     * Opens a connection from a datasource. This methods gives a high level control while sourcing a DB connection.
+     *
+     * @param datasource datasource will be used to acquire a connection.
+     */
     public void open(DataSource datasource)
     {
         try {
@@ -88,6 +119,13 @@ public class DB {
     }
 
 
+    /**
+     * Opens a new connection from JNDI data source by name using explicit JNDI properties. This method can be used in cases
+     * when file <code>jndi.properties</code> cannot be easily updated.
+     *
+     * @param jndiName name of JNDI data source. 
+     * @param jndiProperties JNDI properties
+     */
     public void open(String jndiName, Properties jndiProperties) {
         try {
             Context ctx = new InitialContext(jndiProperties);
@@ -100,6 +138,11 @@ public class DB {
     }
 
 
+    /**
+     * This method is used internally by framework.
+     * 
+     * @param spec specification for a JDBC connection.
+     */
     public void open(ConnectionSpec spec){
         if(spec instanceof ConnectionJdbcSpec){
             openJdbc((ConnectionJdbcSpec)spec);
@@ -110,6 +153,11 @@ public class DB {
         }
     }
 
+    /**
+     * This method is used internally by framework.
+     *
+     * @param spec specification for a JDBC connection.
+     */
     private void openJdbc(ConnectionJdbcSpec spec) {
 
         if(spec.getProps()!= null){
@@ -119,6 +167,11 @@ public class DB {
         }
     }
 
+    /**
+     * This method is used internally by framework.
+     *
+     * @param spec specification for a JDBC connection.
+     */
     private void openJndi(ConnectionJndiSpec spec) {
         if(spec.getContext() != null){
             openContext(spec.getContext(), spec.getDataSourceJndiName());
@@ -127,6 +180,12 @@ public class DB {
         }
     }
 
+    /**
+     * This method is used internally by framework.
+     *
+     * @param context context.
+     * @param jndiName JNDI name. 
+     */
     private void openContext(InitialContext context, String jndiName) {
         try {         
             DataSource ds = (DataSource) context.lookup(jndiName);
@@ -138,6 +197,9 @@ public class DB {
     }
 
 
+    /**
+     * Closes connection.
+     */
     public void close() {
         try {
             Connection connection = ConnectionsAccess.getConnection(dbName);
@@ -156,7 +218,13 @@ public class DB {
         }
     }
 
-    
+
+    /**
+     * Returns count of rows in table.
+     *
+     * @param table name of table.
+     * @return count of rows in table.
+     */
     public Long count(String table){
         String sql = "SELECT COUNT(*) FROM " + table ;
         return Convert.toLong(firstCell(sql));
@@ -165,7 +233,7 @@ public class DB {
     /**
      * Runs a count query, returns a number of matching records.
      *
-     * @param table table in which to count rows. 
+     * @param table table in which to count rows.
      * @param query this is a filtering query for the count. If '*' provided, all records will be counted. Example:
      * <code>"age > 65 AND department = 'accounting'"</code>
      * @param params parameters for placeholder substitution.
@@ -233,8 +301,6 @@ public class DB {
         LogFilter.logQuery(logger, query, params, start);
         return results;
     }
-
-
 
 
     /**
@@ -377,7 +443,13 @@ public class DB {
     }
 
 
-
+    /**
+     * Executes parametrized DML - will contain question marks as placeholders.
+     *
+     * @param query query to execute - will contain question marks as placeholders.
+     * @param params  query parameters.
+     * @return number of records affected.
+     */
     public  int exec(String query, Object ... params){
 
         if(query.trim().toLowerCase().startsWith("select")) throw new IllegalArgumentException("expected DML, but got select...");
@@ -456,6 +528,9 @@ public class DB {
         logger.error(message, e);
     }
 
+    /**
+     * Opens local transaction.
+     */
     public  void openTransaction() {
         try {
             ConnectionsAccess.getConnection(dbName).setAutoCommit(false);
@@ -466,6 +541,9 @@ public class DB {
     }
 
 
+    /**
+     * Commits local transaction.
+     */
     public void commitTransaction() {
         try {
             ConnectionsAccess.getConnection(dbName).commit();
@@ -475,6 +553,9 @@ public class DB {
         }
     }
 
+    /**
+     * Rolls back local transaction.
+     */
     public void rollbackTransaction() {
         try {
             ConnectionsAccess.getConnection(dbName).rollback();
@@ -484,19 +565,37 @@ public class DB {
         }
     }
 
+    /**
+     * Provides connection from current thread.
+     *
+     * @return connection from current thread. 
+     */
     public Connection connection() {
         return ConnectionsAccess.getConnection(dbName);
     }
 
+    /**
+     * Synonym of {@link #connection()} for people who like getters.
+     *
+     * @return connection from current thread.
+     */
     public Connection getConnection(){        
         return connection();
     }
 
 
+    /**
+     * Provides a names' list of current connections.
+     * 
+     * @return a names' list of current connections.
+     */
     public static List<String> getCurrrentConnectionNames(){
         return new ArrayList<String>(ConnectionsAccess.getConnectionMap().keySet());
     }
 
+    /**
+     * Closes all current connections.
+     */
     public static void closeAllConnections(){
         List<String> names = getCurrrentConnectionNames();
         for(String name: names){
