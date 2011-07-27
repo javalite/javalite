@@ -9,12 +9,6 @@
     <version>1.0-SNAPSHOT</version>
     <name>ActiveWeb Example WebApp</name>
 
-    <parent>
-        <groupId>activeweb</groupId>
-        <artifactId>activeweb-root</artifactId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
-
     <properties>
         <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
         <jdbc.url>jdbc:mysql://localhost/simple_development</jdbc.url>
