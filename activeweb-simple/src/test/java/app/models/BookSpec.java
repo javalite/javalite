@@ -31,8 +31,6 @@ public class BookSpec extends DBSpec {
         Book book = new Book();
         a(book).shouldNotBe("valid");
 
-        Book.where("isbn = ?", 123);
-
         book.set("title", "fake title", "author", "fake author", "isbn", "12345");
         a(book).shouldBe("valid");
     }
