@@ -91,17 +91,4 @@
         </pluginRepository>
     </pluginRepositories>
     
-    <repositories>
-        <repository>
-            <id>ipsolutionsdev-snapshots</id>
-            <name>IP Solutions Dev Snapshot Repo</name>
-            <layout>default</layout>
-            <url>http://ipsolutionsdev.com/snapshots/</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <checksumPolicy>warn</checksumPolicy>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </repository>
-    </repositories>
 </project>
