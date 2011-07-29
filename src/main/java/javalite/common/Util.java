@@ -175,7 +175,7 @@ public class Util {
         while(st.hasMoreTokens()){
             tokens.add(st.nextToken().trim());
         }
-        return tokens.toArray(new String[0]);
+        return tokens.toArray(new String[tokens.size()]);
     }
 
 
