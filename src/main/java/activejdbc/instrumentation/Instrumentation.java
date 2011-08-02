@@ -18,7 +18,6 @@ limitations under the License.
 package activejdbc.instrumentation;
 
 import javassist.CtClass;
-import org.apache.maven.plugin.logging.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,7 +30,7 @@ import java.util.List;
 public class Instrumentation {
 
     private String outputDirectory;
-    private Log log;
+
 
     public void setOutputDirectory(String outputDirectory) {
         this.outputDirectory = outputDirectory;
@@ -43,18 +42,18 @@ public class Instrumentation {
         }
 
         try {
-            log.info("**************************** START INSTRUMENTATION ****************************");
-            log.info("Directory: " + outputDirectory);
-            InstrumentationModelFinder mf = new InstrumentationModelFinder(log);
+            System.out.println("**************************** START INSTRUMENTATION ****************************");
+            System.out.println("Directory: " + outputDirectory);
+            InstrumentationModelFinder mf = new InstrumentationModelFinder();
             File target = new File(outputDirectory);
             mf.processDirectoryPath(target);
-            ModelInstrumentation mi = new ModelInstrumentation(log);
+            ModelInstrumentation mi = new ModelInstrumentation();
 
             for (CtClass clazz : mf.getModels()) {
                 mi.instrument(clazz);
             }
             generateModelsFile(mf.getModels(), target);
-            log.info("**************************** END INSTRUMENTATION ****************************");
+            System.out.println("**************************** END INSTRUMENTATION ****************************");
         }
         catch (Exception e) {
             throw new RuntimeException(e);
@@ -71,7 +70,4 @@ public class Instrumentation {
         fout.close();
     }
 
-    public void setLog(Log log) {
-        this.log = log;
-    }
 }

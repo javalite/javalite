@@ -108,7 +108,6 @@ public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
         addUrlMethod.invoke(realmLoader, outDir);
         Instrumentation instrumentation = new Instrumentation();
         instrumentation.setOutputDirectory(instrumentationDirectory);
-        instrumentation.setLog(getLog());
         instrumentation.instrument();
     }
 }
