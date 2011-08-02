@@ -18,6 +18,7 @@ limitations under the License.
 package activejdbc.instrumentation;
 
 import javassist.*;
+import org.apache.maven.plugin.logging.Log;
 
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -26,12 +27,13 @@ import java.net.URL;
 public class ModelInstrumentation{
 
     private CtClass modelClass;
-    
-    public ModelInstrumentation() throws NotFoundException {
+    private Log log;
+
+    public ModelInstrumentation(Log log) throws NotFoundException {
         ClassPool cp = ClassPool.getDefault();
         cp.insertClassPath(new ClassClassPath(this.getClass()));
-
         modelClass = ClassPool.getDefault().get("activejdbc.Model");
+        this.log = log;
     }
 
     public void instrument(CtClass modelClass) throws InstrumentationException {
@@ -44,7 +46,7 @@ public class ModelInstrumentation{
             modelClass.addMethod(m);
             String out = getOutputDirectory(modelClass);
             //addSerializationSupport(modelClass);
-            System.out.println("Instrumented class: " + modelClass.getName() + " in directory: " + out);
+            log.info("Instrumented class: " + modelClass.getName() + " in directory: " + out);
             modelClass.writeFile(out);
         }
         catch (Exception e) {
@@ -82,7 +84,7 @@ public class ModelInstrumentation{
                 target.addMethod(newMethod);
             }
             else{
-                System.out.println("Detected method: " + newMethod.getName() + ", skipping delegate.");
+                log.info("Detected method: " + newMethod.getName() + ", skipping delegate.");
             }
         }
 
