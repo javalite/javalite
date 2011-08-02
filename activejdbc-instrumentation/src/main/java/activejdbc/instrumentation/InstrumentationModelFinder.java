@@ -22,6 +22,7 @@ import javassist.ClassClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.NotFoundException;
+import org.apache.maven.plugin.logging.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,11 +35,13 @@ public class InstrumentationModelFinder extends ModelFinder {
 
     private CtClass modelClass;
     private List<CtClass> models = new ArrayList<CtClass>();
+    private Log log;
 
-    InstrumentationModelFinder() throws NotFoundException {
+    InstrumentationModelFinder(Log log) throws NotFoundException {
         ClassPool pool = ClassPool.getDefault();
         pool.insertClassPath(new ClassClassPath(ModelFinder.class));
         modelClass = pool.get("activejdbc.Model");
+        this.log = log;
     }
 
     @Override
@@ -49,8 +52,8 @@ public class InstrumentationModelFinder extends ModelFinder {
             CtClass clazz = cp.get(className);
 
             if (clazz.subclassOf(modelClass) && !clazz.equals(modelClass)) {
-             models.add(clazz);
-                System.out.println("Found model: " + clazz.getName());
+                models.add(clazz);
+                log.info("Found model: " + clazz.getName());
             }
         }
         catch (Exception e) {

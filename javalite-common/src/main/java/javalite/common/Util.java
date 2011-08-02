@@ -218,4 +218,20 @@ public class Util {
         fout.flush();
         fout.close();
     }
+
+
+    /**
+     * Converts stack trace to string.
+     *
+     * @param throwable - throwable to convert.
+     * @return message and stack trace converted to string.
+     */
+    public static String getStackTraceString(Throwable throwable) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        pw.println(throwable.toString());
+        throwable.printStackTrace(pw);
+        pw.flush();
+        return sw.toString();
+    }
 }
