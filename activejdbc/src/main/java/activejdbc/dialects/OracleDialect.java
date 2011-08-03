@@ -55,7 +55,9 @@ public class OracleDialect extends DefaultDialect {
         if(!Util.blank(subQuery)){
             String where = " WHERE ";
             //this is only to support findFirst("order by..."), might need to revisit later
-            if(!subQuery.toLowerCase().trim().startsWith("order") && !subQuery.toLowerCase().trim().startsWith("group")){
+
+            if(!groupByPattern.matcher(subQuery.toLowerCase().trim()).find()  &&
+                   !orderByPattern.matcher(subQuery.toLowerCase().trim()).find() ){
                 fullQuery += where;
             }
             fullQuery += subQuery;

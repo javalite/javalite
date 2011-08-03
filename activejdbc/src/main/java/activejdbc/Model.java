@@ -1467,7 +1467,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public static <T extends Model> LazyList<T> find(String subquery, Object... params) {
 
-        if(subquery.equals("*") && params.length == 0){
+        if(subquery.trim().equals("*") && params.length == 0){
             return findAll();
         }
 

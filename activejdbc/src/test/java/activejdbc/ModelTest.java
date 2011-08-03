@@ -577,6 +577,7 @@ public class ModelTest extends ActiveJDBCTest {
         a(c.get(Calendar.MINUTE)).shouldBeEqual(0);
         a(c.get(Calendar.SECOND)).shouldBeEqual(0);
         a(c.get(Calendar.MILLISECOND)).shouldBeEqual(0);
+        
     }
 }
 

@@ -21,11 +21,15 @@ import activejdbc.MetaModel;
 import javalite.common.Util;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * @author Igor Polevoy
  */
 public class DefaultDialect {
+    
+    protected final Pattern orderByPattern = Pattern.compile("^order *by", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+    protected final Pattern groupByPattern = Pattern.compile("^group *by", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
     public String selectStar(String table, String query){        
         return query != null? "SELECT * FROM " + table + " WHERE " + query : "SELECT * FROM " + table;
@@ -82,13 +86,12 @@ public class DefaultDialect {
 
         if(!Util.blank(subQuery)){
             String where = " WHERE ";
-            //this is only to support findFirst("order by..."), nightneed to revisit later
-            if(!subQuery.toLowerCase().trim().startsWith("order") && !subQuery.toLowerCase().trim().startsWith("group")){
+            if(!groupByPattern.matcher(subQuery.toLowerCase().trim()).find() &&
+                   !orderByPattern.matcher(subQuery.toLowerCase().trim()).find() ){
                 fullQuery += where;
             }
             fullQuery += " " + subQuery;
         }
-
 
         if(orderBys.size() != 0){
             fullQuery += " ORDER BY " + Util.join(orderBys, ", ");

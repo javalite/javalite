@@ -695,3 +695,20 @@ CREATE OR REPLACE TRIGGER classifications_trigger
     begin
 select coalesce(:new.id, classifications_seq.nextval) into :new.id from dual;
 end;
+
+
+-- BREAK
+create table content_groups ( id  NUMBER NOT NULL, group_name NUMBER )
+-- BREAK
+ALTER TABLE content_groups ADD CONSTRAINT content_groups_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE content_groups_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER content_groups_trigger
+    BEFORE INSERT ON content_groups REFERENCING
+    NEW AS new
+    OLD AS old
+    FOR EACH ROW
+    begin
+select coalesce(:new.id, content_groups_seq.nextval) into :new.id from dual;
+end;

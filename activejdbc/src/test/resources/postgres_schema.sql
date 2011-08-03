@@ -126,3 +126,6 @@ CREATE TABLE mammals (id  serial PRIMARY KEY, name VARCHAR(56));
 DROP TABLE IF EXISTS classifications;
 CREATE TABLE classifications (id  serial PRIMARY KEY, name VARCHAR(56), parent_id INT, parent_type VARCHAR(56));
 
+
+DROP TABLE IF EXISTS content_groups;
+create table content_groups ( id  serial PRIMARY KEY, group_name INT);
