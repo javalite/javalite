@@ -121,3 +121,6 @@ CREATE TABLE mammals (id  int(11) NOT NULL  auto_increment PRIMARY KEY, name VAR
 
 DROP TABLE IF EXISTS classifications;
 CREATE TABLE classifications (id  int(11) NOT NULL  auto_increment PRIMARY KEY, name VARCHAR(56), parent_id int(11), parent_type VARCHAR(56));
+
+DROP TABLE IF EXISTS content_groups;
+create table content_groups ( id  int(11) NOT NULL  auto_increment PRIMARY KEY, group_name INT(11) );
