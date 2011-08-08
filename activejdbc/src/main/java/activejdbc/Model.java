@@ -685,65 +685,68 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param parentClass   class of a parent model.
      * @return instance of a parent of this instance in the "belongs to"  relationship.
      */
-    public <T extends Model> T parent(Class<T> parentClass) {
-
-        T cachedParent = (T)cachedParents.get(parentClass);
-        if(cachedParent != null){
-            return cachedParent;
-        }
-        MetaModel parentMM = Registry.instance().getMetaModel(parentClass);
-        String parentTable = parentMM.getTableName();
-
-        BelongsToAssociation ass = (BelongsToAssociation)getMetaModelLocal().getAssociationForTarget(parentTable, BelongsToAssociation.class);
-        BelongsToPolymorphicAssociation assP = (BelongsToPolymorphicAssociation)getMetaModelLocal()
-                .getAssociationForTarget(parentTable, BelongsToPolymorphicAssociation.class);
-
-        String fkValue;
-        String fkName;
-        if(ass != null){
-            fkValue = getString(ass.getFkName());
-            fkName = ass.getFkName();
-        }else if(assP != null){
-            fkValue = getString("parent_id");            
-            fkName = "parent_id";
-
-            if(!assP.getTypeLabel().equals(getString("parent_type"))){
-                throw new IllegalArgumentException("Wrong parent: '" + parentClass + "'. Actual parent type label of this record is: '" + getString("parent_type") + "'");
-            }
-        }else{
-            throw new IllegalArgumentException("there is no association with table: " + parentTable);
-        }
-
-        if(fkValue == null){
-            throw new OrphanRecordException("Attribute:  "  + fkName + " is null, cannot determine parent. Child record: " + this);
-        }
-        String parentIdName = parentMM.getIdName();
-        String query = getMetaModelLocal().getDialect().selectStarParametrized(parentTable, parentIdName);
-
-        T parent;
-        if(parentMM.cached()){
-            parent = (T)QueryCache.instance().getItem(parentTable, query, new Object[]{fkValue});
-            if(parent != null){
-                return parent;
-            }
-        }
-
-        List<Map> results = db().findAll(query, Integer.parseInt(fkValue));
-        //expect only one result here
-        if (results.size() == 0) { //ths could be covered by referential integrity constraint
-            return null;
-        } else {
-            try {
-                parent = parentClass.newInstance();
-                parent.hydrate(results.get(0));
-                if(parentMM.cached()){
-                    QueryCache.instance().addItem(parentTable, query, new Object[]{fkValue}, parent);
+    public <T extends Model> T parent(final Class<T> parentClass) {
+        return Model.transaction( new Callable<T>() {
+            public T call() throws Exception {
+                T cachedParent = (T)cachedParents.get(parentClass);
+                if(cachedParent != null){
+                    return cachedParent;
                 }
-                return parent;
-            } catch (Exception e) {
-                throw new InitException(e.getMessage(), e);
+                MetaModel parentMM = Registry.instance().getMetaModel(parentClass);
+                String parentTable = parentMM.getTableName();
+
+                BelongsToAssociation ass = (BelongsToAssociation)getMetaModelLocal().getAssociationForTarget(parentTable, BelongsToAssociation.class);
+                BelongsToPolymorphicAssociation assP = (BelongsToPolymorphicAssociation)getMetaModelLocal()
+                        .getAssociationForTarget(parentTable, BelongsToPolymorphicAssociation.class);
+
+                String fkValue;
+                String fkName;
+                if(ass != null){
+                    fkValue = getString(ass.getFkName());
+                    fkName = ass.getFkName();
+                }else if(assP != null){
+                    fkValue = getString("parent_id");
+                    fkName = "parent_id";
+
+                    if(!assP.getTypeLabel().equals(getString("parent_type"))){
+                        throw new IllegalArgumentException("Wrong parent: '" + parentClass + "'. Actual parent type label of this record is: '" + getString("parent_type") + "'");
+                    }
+                }else{
+                    throw new IllegalArgumentException("there is no association with table: " + parentTable);
+                }
+
+                if(fkValue == null){
+                    throw new OrphanRecordException("Attribute:  "  + fkName + " is null, cannot determine parent. Child record: " + this);
+                }
+                String parentIdName = parentMM.getIdName();
+                String query = getMetaModelLocal().getDialect().selectStarParametrized(parentTable, parentIdName);
+
+                T parent;
+                if(parentMM.cached()){
+                    parent = (T)QueryCache.instance().getItem(parentTable, query, new Object[]{fkValue});
+                    if(parent != null){
+                        return parent;
+                    }
+                }
+
+                List<Map> results = db().findAll(query, Integer.parseInt(fkValue));
+                //expect only one result here
+                if (results.size() == 0) { //ths could be covered by referential integrity constraint
+                    return null;
+                } else {
+                    try {
+                        parent = parentClass.newInstance();
+                        parent.hydrate(results.get(0));
+                        if(parentMM.cached()){
+                            QueryCache.instance().addItem(parentTable, query, new Object[]{fkValue}, parent);
+                        }
+                        return parent;
+                    } catch (Exception e) {
+                        throw new InitException(e.getMessage(), e);
+                    }
+                }
             }
-        }
+        });
     }
 
     protected void setCachedParent(Model parent) {
