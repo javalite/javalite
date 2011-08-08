@@ -63,7 +63,6 @@ public class Configuration {
         }
         if(modelsIndex.isEmpty()){
             LogFilter.log(logger, "ActiveJDBC Warning: Cannot locate any models, assuming project without models.");
-            return;
         }
         try{
             InputStream in = getClass().getResourceAsStream("/activejdbc.properties");

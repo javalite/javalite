@@ -29,11 +29,20 @@ import java.util.*;
 public class ConnectionsAccess {
     private final static Logger logger = LoggerFactory.getLogger(ConnectionsAccess.class);
     private static ThreadLocal<HashMap<String, Connection>> connectionsTL = new ThreadLocal<HashMap<String, Connection>>();
+    private static ThreadLocal<HashMap<String, Integer>> usagesTL = new ThreadLocal<HashMap<String, Integer>>();
+    private static HashMap<String, ConnectionProvider> connectionProviders = new HashMap<String, ConnectionProvider>();
 
     static Map<String, Connection> getConnectionMap(){
         if (connectionsTL.get() == null)
             connectionsTL.set(new HashMap<String, Connection>());
         return connectionsTL.get();
+    }
+
+
+    static Map<String, Integer> getUsageMap(){
+        if (usagesTL.get() == null)
+            usagesTL.set(new HashMap<String, Integer>());
+        return usagesTL.get();
     }
 
 
@@ -65,13 +74,40 @@ public class ConnectionsAccess {
         LogFilter.log(logger, "Opened connection:" + connection + " named: " +  dbName + " on thread: " + Thread.currentThread());
     }
 
-    static void detach(String dbName){
+    static Connection detach(String dbName){
         LogFilter.log(logger, "Detached connection: " + dbName);
-        getConnectionMap().remove(dbName);
+        return getConnectionMap().remove(dbName);
     }
 
 
     static List<Connection> getAllConnections(){
         return new ArrayList<Connection>(getConnectionMap().values());
+    }
+
+    public static void register(String dbName, ConnectionProvider provider) {
+//        attach(dbName, provider.getConnection());//put a connection in thread context, TODO when should it be closed?
+        connectionProviders.put(dbName, provider);
+    }
+
+    public static ConnectionProvider provider(String dbName){
+        ConnectionProvider provider = connectionProviders.get(dbName);
+        if( provider == null ){
+            throw new IllegalArgumentException("Can't find any registered connection provider named under: " + dbName);
+        }
+        return provider;
+    }
+
+    public static Integer increaseUsage(String dbName) {
+        Integer integer = getUsageMap().get(dbName);
+        if( integer == null ) integer = 0;
+        getUsageMap().put(dbName, integer + 1);
+        return getUsageMap().get(dbName);
+    }
+
+    public static Integer decreaseUsage(String dbName) {
+        Integer integer = getUsageMap().get(dbName);
+        if( integer == null ) integer = 1;
+        getUsageMap().put(dbName, integer - 1);
+        return getUsageMap().get(dbName);
     }
 }

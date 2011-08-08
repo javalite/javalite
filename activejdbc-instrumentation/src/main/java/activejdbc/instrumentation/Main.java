@@ -17,22 +17,13 @@ limitations under the License.
 
 package activejdbc.instrumentation;
 
-import activejdbc.Model;
-import activejdbc.ModelFinder;
-import javassist.CtClass;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.List;
-
 /**
  * @author Igor Polevoy
  */
 public class Main {    
     public static void main(String[] args) {
         String outputDirectory = System.getProperty("outputDirectory");
+        System.out.println(System.getProperties());
         
         Instrumentation instrumentation = new Instrumentation();
         instrumentation.setOutputDirectory(outputDirectory);

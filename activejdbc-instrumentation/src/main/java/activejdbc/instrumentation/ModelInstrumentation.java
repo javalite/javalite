@@ -18,18 +18,20 @@ limitations under the License.
 package activejdbc.instrumentation;
 
 import javassist.*;
+
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.concurrent.Callable;
 
 
 public class ModelInstrumentation{
 
     private CtClass modelClass;
-
-
+    
     public ModelInstrumentation() throws NotFoundException {
         ClassPool cp = ClassPool.getDefault();
         cp.insertClassPath(new ClassClassPath(this.getClass()));
+
         modelClass = ClassPool.getDefault().get("activejdbc.Model");
     }
 
@@ -41,6 +43,24 @@ public class ModelInstrumentation{
             CtMethod getClassNameMethod = modelClass.getDeclaredMethod("getClassName");
             modelClass.removeMethod(getClassNameMethod);
             modelClass.addMethod(m);
+
+            CtMethod m2 = CtNewMethod.make("public static Object transaction(java.util.concurrent.Callable callable, boolean readonly) { " +
+                                                   " try {" +
+                                                   "    String dbName = activejdbc.MetaModel.getDbName(" + modelClass.getName() + ".class);" +
+                                                   "    return activejdbc.MetaModel.transaction(dbName, callable, readonly);" +
+                                                   " } catch (ClassNotFoundException e) {" +
+                                                   "    throw new IllegalStateException(e);" +
+                                                   " }" +
+                                                   "}", modelClass);
+            try {
+                CtClass[] params = {ClassPool.getDefault().get("java.util.concurrent.Callable"), CtClass.booleanType};
+                CtMethod transactionMethod = modelClass.getDeclaredMethod("transaction", params);
+                modelClass.removeMethod(transactionMethod);
+            } catch (NotFoundException e) {
+                //not defined
+            }
+            modelClass.addMethod(m2);
+
             String out = getOutputDirectory(modelClass);
             //addSerializationSupport(modelClass);
             System.out.println("Instrumented class: " + modelClass.getName() + " in directory: " + out);
@@ -81,7 +101,7 @@ public class ModelInstrumentation{
                 target.addMethod(newMethod);
             }
             else{
-                System.out.println("Detected method: " + newMethod.getName() + ", skipping delegate.");
+//                System.out.println("Detected method: " + newMethod.getName() + ", skipping delegate.");
             }
         }
 

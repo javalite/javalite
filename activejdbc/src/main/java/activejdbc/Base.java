@@ -17,85 +17,130 @@ limitations under the License.
 
 package activejdbc;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 
-/**
- * This class provides a number of convenience methods for opening/closing database connections, running various
- * types of queries, and executing SQL statements. This class differs from {@link activejdbc.DB} such that
- * in this class you a logical name for a connection is hard-coded to be "default". Use this class when you have
- * only one database.
- * <p/>
- * This class is a convenience wrapper of {@link activejdbc.DB}
- *
- * @author Igor Polevoy
- */
 public class Base {
 
     private static final String DEFAULT_DB_NAME = "default";
 
-
-    /**
-     * Opens a new connection based on JDBC properties and attaches it to a current thread.
-     *
-     * @param driver class name of driver
-     * @param url URL connection to DB
-     * @param user user name.
-     * @param password password.
-     */
     public static void open(String driver, String url, String user, String password) {
-       new DB(DEFAULT_DB_NAME).open(driver, url, user, password);
+       establish(driver, url, user, password);
+       MetaModel.acquire(DEFAULT_DB_NAME, false);
     }
 
+    /**
+     * Establish(not real connect) a connection to target
+     *
+     * @param driver the driver
+     * @param url the url
+     * @param user the user name
+     * @param password the password
+     */
+    public static void establish(String driver, String url, String user, String password){
+        establish(DEFAULT_DB_NAME, driver, url, user, password);
+    }
+
+    public static void establish(String dbName, final String driver, final String url, final String user, final String password){
+        ConnectionsAccess.register(dbName, new ConnectionProvider(){
+            public Connection getConnection(){
+                try {
+                    Class.forName(driver);
+                    System.out.println("Establish connection to: " + url);
+                    return DriverManager.getConnection(url, user, password);
+                } catch (Exception e) {
+                    throw new InitException(e);
+                }
+            }
+        });
+    }
 
     /**
-     * Opens a new connection in case additional driver-specific parameters need to be passed in.
+     * Another way to open connection if we need to pass some driver-specific parameters
      *
      * @param driver driver class name
      * @param url JDBC URL
      * @param props connection properties
      */
     public static void open(String driver, String url, Properties props) {
-        new DB(DEFAULT_DB_NAME).open(driver, url, props);
+        establish(driver, url, props);
+        MetaModel.acquire(DEFAULT_DB_NAME, false);
     }
 
-    /**
-     * Opens a connection from JNDI based on a registered name. This assumes that there is a <code>jndi.properties</code>
-     * file with proper JNDI configuration in it.
-     *
-     * @param jndiName name of a configured data source.
-     */
+    public static void establish(final String driver, final String url, final Properties props) {
+        establish(DEFAULT_DB_NAME, driver, url, props);
+    }
+
+    public static void establish(String dbName, final String driver, final String url, final Properties props){
+        ConnectionsAccess.register(dbName, new ConnectionProvider(){
+            public Connection getConnection(){
+                try {
+                    Class.forName(driver);
+                    return DriverManager.getConnection(url, props);
+                } catch (Exception e) {
+                    throw new InitException(e);
+                }
+            }
+        });
+    }
+
     public static void open(String jndiName) {
-        new DB(DEFAULT_DB_NAME).open(jndiName);
+        establish(jndiName);
+        MetaModel.acquire(DEFAULT_DB_NAME, false);
     }
 
-    /**
-     * Opens a new connection from JNDI data source by name using explicit JNDI properties. This method can be used in cases
-     * when file <code>jndi.properties</code> cannot be easily modified.
-     *
-     * @param jndiName name of JNDI data source.
-     * @param jndiProperties JNDI properties
-     */
-    public static void open(String jndiName, Properties jndiProperties) {
-        new DB(DEFAULT_DB_NAME).open(jndiName, jndiProperties);
+    public static void establish(final String jndiName){
+        establish(DEFAULT_DB_NAME, jndiName);
     }
 
-    /**
-     * Opens a connection from a datasource. This methods gives a high level control while sourcing a DB connection.
-     *
-     * @param dataSource datasource will be used to acquire a connection.
-     */
-    public static void open(DataSource dataSource) {
-        new DB(DEFAULT_DB_NAME).open(dataSource);
+    public static void establish(String dbName, final String jndiName){
+        ConnectionsAccess.register(dbName, new ConnectionProvider() {
+
+            public Connection getConnection() {
+                try {
+                    Context ctx = new InitialContext();
+                    DataSource ds = (DataSource) ctx.lookup(jndiName);
+                    return ds.getConnection();
+                } catch (Exception e) {
+                    throw new InitException(e);
+                }
+            }
+        });
     }
 
+    public static void open(DataSource ds) {
+        establish(ds);
+        MetaModel.acquire(DEFAULT_DB_NAME, false);
+    }
+
+
+    public static Object establish(DataSource ds){
+        establish(DEFAULT_DB_NAME, ds);
+        return ds;
+    }
+
+    public static void establish(String dbName, final DataSource ds){
+        ConnectionsAccess.register(dbName, new ConnectionProvider() {
+            public Connection getConnection() {
+                try {
+                   return ds.getConnection();
+                } catch (Exception e) {
+                    throw new InitException(e);
+                }
+            }
+        });
+    }
 
     /**
      * Returns connection attached to a current thread and names "default".
+     *
      *
      * @return connection attached to a current thread and names "default".
      */
@@ -104,41 +149,27 @@ public class Base {
 
     }
 
-    /**
-     * Closes connection.
-     */
     public static void close() {
-      new DB(DEFAULT_DB_NAME).close();
+        MetaModel.release(DEFAULT_DB_NAME);
     }
 
 
-    /**
-     * Returns count of rows in table.
-     *
-     * @param table name of table.
-     * @return count of rows in table.
-     */
+
+
     public static Long count(String table){        
         return new DB(DEFAULT_DB_NAME).count(table);
     }
 
-    /**
-     * Runs a count query, returns a number of matching records.
-     *
-     * @param table table in which to count rows.
-     * @param query this is a filtering query for the count. If '*' provided, all records will be counted. Example:
-     * <code>"age > 65 AND department = 'accounting'"</code>
-     * @param params parameters for placeholder substitution.
-     * @return copunt number of records found in a table.
-     */
     public static Long count(String table, String query, Object... params) {
         return new DB(DEFAULT_DB_NAME).count(table, query, params);
     }
-    
+
+
     /**
-     * Returns a value of the first column of the first row.
+     * This method returns a value of the first column of the first row.
      * This query expects only one column selected in the select statement.
      * If more than one column returned, it will throw {@link IllegalArgumentException}.
+     *
      *
      * @param query query
      * @param params parameters
@@ -147,6 +178,7 @@ public class Base {
     public static Object firstCell(String query, Object... params) {
         return new DB(DEFAULT_DB_NAME).firstCell(query, params);
     }
+
 
     /**
      * This method returns entire resultset as one list. Do not use it for large result sets.
@@ -238,13 +270,6 @@ public class Base {
     }
 
 
-    /**
-     * Executes parametrized DML - will contain question marks as placeholders.
-     *
-     * @param query query to execute - will contain question marks as placeholders.
-     * @param params  query parameters.
-     * @return number of records affected.
-     */
     public static int exec(String query, Object ... params){
         return new DB(DEFAULT_DB_NAME).exec(query, params);
     }
@@ -263,24 +288,16 @@ public class Base {
         return new DB(DEFAULT_DB_NAME).execInsert(query, autoIncrementColumnName, params);
     }
 
-    /**
-     * Opens local transaction.
-     */
     public static void openTransaction() {
         new DB(DEFAULT_DB_NAME).openTransaction();
     }
 
-    /**
-     * Commits local transaction.
-     */
     public static void commitTransaction() {
         new DB(DEFAULT_DB_NAME).commitTransaction();
     }
 
-    /**
-     * Rolls back local transaction.
-     */
     public static void rollbackTransaction() {
         new DB(DEFAULT_DB_NAME).rollbackTransaction();
     }
+
 }

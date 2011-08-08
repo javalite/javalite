@@ -1,22 +1,23 @@
 /*
-Copyright 2009-2010 Igor Polevoy
+Copyright 2009-2010 Igor Polevoy 
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License"); 
+you may not use this file except in compliance with the License. 
+You may obtain a copy of the License at 
 
-http://www.apache.org/licenses/LICENSE-2.0
+http://www.apache.org/licenses/LICENSE-2.0 
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+Unless required by applicable law or agreed to in writing, software 
+distributed under the License is distributed on an "AS IS" BASIS, 
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+See the License for the specific language governing permissions and 
+limitations under the License. 
 */
 
 
 package activejdbc.instrumentation;
 
+import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -28,6 +29,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -42,8 +46,8 @@ public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
 
     /**
      * Output directory  - where to do instrumentation.
-     *
-     * @parameter
+     * 
+     * @parameter 
      */
     private String outputDirectory;
 
@@ -54,6 +58,10 @@ public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
      * @parameter
      */
     private String[] outputDirectories;
+
+    public void setOutputDirectories(String[] outputDirectories) {
+        this.outputDirectories = outputDirectories;
+    }
 
     /**
      * The enclosing project.
@@ -66,15 +74,20 @@ public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
 
 
     public void execute() throws MojoExecutionException, MojoFailureException {
+        //this is an unbelievable hack I had to do in order to add output directory to classpath.
+        //if anyone has a better idea, I will gladly listen...
+        //Basically, the plugin is running with a different classpath - I searched high and wide, wrote a lot of garbage code,
+        // but this is the only "solution" that works.
+        //Igor
         try {
             //TODO we should support set a filter for dependencies, and convert filtered dependency as Maven Project
             // But I don't how to convert, so I use a temp solution: developer set outputDirectories(target path)
             if( outputDirectories != null ){
                 for (String directory : outputDirectories) {
-                    instrument(directory);
+                    instructTargetPath(directory);
                 }
             } else if( outputDirectory != null ){
-                instrument(outputDirectory);
+                instructTargetPath(outputDirectory);
             } else{
                 String instrumentationDirectory =  project.getBuild().getOutputDirectory();
                 instrument(instrumentationDirectory);
@@ -88,19 +101,18 @@ public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
         }
     }
 
-
-
-    private void instrument(String instrumentationDirectory) throws MalformedURLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {//this is an unbelievable hack I had to do in order to add output directory to classpath.
-
-        if(!new File(instrumentationDirectory).exists()){
-            getLog().info("Instrumentation: directory " + instrumentationDirectory + " does not exist, skipping");
-            return;
+    private void instructTargetPath(String directory) throws MalformedURLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        String classesPath = directory + File.separator + "classes";
+        String testClassesPath = directory + File.separator + "test-classes";
+        if( FileUtils.fileExists(classesPath) &&  FileUtils.fileExists(classesPath)){
+            instrument(classesPath);
+            instrument(testClassesPath);
+        }else{
+            instrument(directory);
         }
+    }
 
-        //If anyone has a better idea, I will gladly listen...
-        //Basically, the plugin is running with a different classpath - I searched high and wide, wrote a lot of garbage code,
-        //but this is the only "solution" that works. Basically I need the instrumentationDirectory be on classpath
-        //Igor
+    private void instrument(String instrumentationDirectory) throws MalformedURLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         ClassLoader realmLoader = getClass().getClassLoader();
         URL outDir = new File(instrumentationDirectory).toURL();
         Method addUrlMethod = realmLoader.getClass().getSuperclass().getDeclaredMethod("addURL", URL.class);

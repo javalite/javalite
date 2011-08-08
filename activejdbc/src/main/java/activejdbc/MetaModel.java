@@ -26,13 +26,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
-import static javalite.common.Inflector.*;
-import static activejdbc.LogFilter.*;
+import static activejdbc.LogFilter.log;
+import static javalite.common.Inflector.singularize;
 
 public class MetaModel<T extends Model, E extends Association> implements Serializable {
 
+    private static final long serialVersionUID = 2346670088165585131L;
     private final static Logger logger = LoggerFactory.getLogger(MetaModel.class);
     private Map<String, ColumnMetadata> columnMetadata;
     private List<Association> associations = new ArrayList<Association>();
@@ -245,7 +252,7 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
         List<OneToManyPolymorphicAssociation> one2Manies = new ArrayList<OneToManyPolymorphicAssociation>();
         for (Association association : associations) {
             if(association.getClass().equals(OneToManyPolymorphicAssociation.class)){
-                one2Manies.add((OneToManyPolymorphicAssociation)association);
+                one2Manies.add((OneToManyPolymorphicAssociation) association);
             }
         }
         return one2Manies;
@@ -310,4 +317,126 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
     public Map<String, ColumnMetadata> getColumnMetadata() {
         return Collections.unmodifiableMap(columnMetadata);
     }
+
+    public Connection acquire(boolean readonly){
+        return acquire(dbName, readonly);
+    }
+
+    /**
+     * Acquire a connection from pool or spec
+     *
+     * @param dbName the db name
+     * @param readonly does this transaction readonly or not?
+     * @return acquired connection
+     */
+    public static Connection acquire(String dbName, boolean readonly) {
+        Connection connection;
+        Integer usage = ConnectionsAccess.increaseUsage(dbName);
+        try {
+            LogFilter.log(logger, usage + ". Acquire connection for `" + dbName + "` with readonly = " + readonly);
+            connection = ConnectionsAccess.getConnection(dbName);
+            return connection;
+        } catch (Exception e) {
+            ConnectionProvider provider = ConnectionsAccess.provider(dbName);
+            connection = provider.getConnection();
+            ConnectionsAccess.attach(dbName, connection);
+            try {
+                LogFilter.log(logger, "Real set connection's readonly property = " + readonly);
+                connection.setReadOnly(readonly);
+            } catch (SQLException e1) {
+                throw new InitException("Can't set connection's readonly property!");
+            }
+            return connection;
+        }
+
+    }
+
+    public void release(){
+        release(dbName);
+    }
+
+    /**
+     * Release the acquired connection back
+     *
+     * @param dbName the db name
+     */
+    public static void release(String dbName) {
+        try {
+            Integer usage = ConnectionsAccess.decreaseUsage(dbName);
+            LogFilter.log(logger, usage + ". Release connection to: " + dbName);
+            if( usage <= 0 ) {
+                LogFilter.log(logger, "Real close the connection for:" + dbName);
+                Connection connection = ConnectionsAccess.detach(dbName);
+                if(connection != null) connection.close();
+            }
+        } catch (SQLException e) {
+            //ignore
+        }
+    }
+
+    /**
+     * Perform a callable task in transaction scope(Not readonly)
+     *
+     * @param callable the task
+     * @param <T> the returned value type
+     * @return the result
+     */
+    public <T> T transaction(Callable<T> callable) {
+        return transaction(callable, false);
+    }
+
+    /**
+     * Perform a runnable task in transaction scope(Not readonly)
+     *
+     * @param runnable the task
+     */
+    public void transaction(final Runnable runnable) {
+        transaction(runnable, false);
+    }
+
+
+    public <T> T transaction(Callable<T> callable, boolean readonly) {
+        return transaction(dbName, callable, readonly);
+    }
+
+    /**
+     * Perform a runnable task in transaction scope(Not readonly)
+     *
+     * @param runnable the task
+     * @param readonly transaction readonly or not
+     */
+    public void transaction(final Runnable runnable, boolean readonly) {
+        transaction(new Callable<Object>() {
+            public Object call() throws Exception {
+                runnable.run();
+                return null;
+            }
+        }, readonly);
+    }
+
+    /**
+     * Perform a callable task in transaction scope with readonly setting
+     *
+     * @param dbName the database name
+     * @param callable the task
+     * @param readonly does the transaction should be readonly or not?
+     * @param <T> the returned value type
+     * @return the result
+     */
+    public static <T> T transaction(String dbName, Callable<T> callable, boolean readonly){
+        try {
+            acquire(dbName, readonly);
+            return callable.call();
+        } catch (Exception e) {
+            //TO AVOID WRAP the Exception Multiple times
+            if( e instanceof RuntimeException){
+                throw (RuntimeException)e;
+            }else{
+                throw new DBException(e);
+            }
+        } finally {
+            release(dbName);
+        }
+    }
+
 }

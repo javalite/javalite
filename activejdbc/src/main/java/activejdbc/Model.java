@@ -27,6 +27,7 @@ import java.sql.*;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.Collections;
+import java.util.concurrent.Callable;
 
 import static javalite.common.Inflector.*;
 
@@ -39,14 +40,16 @@ import org.slf4j.LoggerFactory;
  * This class is a super class of all "models" and provides most functionality
  * necessary for implementation of Active Record pattern.
  */
+@SuppressWarnings("unchecked")
 public abstract class Model extends CallbackSupport implements Externalizable {
 
+    private static final long serialVersionUID = -4215512578548314131L;
     private final static Logger logger = LoggerFactory.getLogger(Model.class);
     private Map<String, Object> attributes = new HashMap<String, Object>();
     private boolean frozen = false;
     private MetaModel metaModelLocal;
     private Map<Class, Model> cachedParents = new HashMap<Class, Model>();
-    private Map<Class, List<Model>> cachedChildren = new HashMap<Class, List<Model>>();
+    private Map<Class, List<? extends Model>> cachedChildren = new HashMap<Class, List<? extends Model>>();
 
     protected Errors errors;
 
@@ -55,10 +58,17 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     public static MetaModel getMetaModel() {
-        Registry.instance().init(MetaModel.getDbName(getDaClass()));
-        return Registry.instance().getMetaModel(getTableName());
+        return transaction(new Callable<MetaModel>() {
+            public MetaModel call() throws Exception {
+                return Registry.instance().getMetaModel(getTableName());
+            }
+        }, true);
     }
 
+    protected static DB db(){
+        return new DB(getMetaModel().getDbName());
+    }
+    
     /**
      * Overrides attribute values from input map. The input map may have attributes whose name do not match the
      * attribute names (columns) of this model. Such attributes will be ignored. Those values whose names are
@@ -254,23 +264,27 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return true if a record was deleted, false if not.
      */
     public boolean delete() {
-        fireBeforeDelete(this);
-        boolean result;
-        if( 1 == new DB(getMetaModelLocal().getDbName()).exec("DELETE FROM " + getMetaModelLocal().getTableName()
-                + " WHERE " + getMetaModelLocal().getIdName() + "= ?", getId())) {
+        return transaction(new Callable<Boolean>() {
+            public Boolean call() throws Exception {
+                fireBeforeDelete(Model.this);
+                boolean result;
+                if( 1 == db().exec("DELETE FROM " + getMetaModelLocal().getTableName()
+                        + " WHERE " + getMetaModelLocal().getIdName() + "= ?", getId())) {
 
-            frozen = true;
-            if(getMetaModelLocal().cached()){
-                QueryCache.instance().purgeTableCache(getMetaModelLocal().getTableName());
+                    frozen = true;
+                    if(getMetaModelLocal().cached()){
+                        QueryCache.instance().purgeTableCache(getMetaModelLocal().getTableName());
+                    }
+                    purgeEdges();
+                    result = true;
+                }
+                else{
+                    result =  false;
+                }
+                fireAfterDelete(Model.this);
+                return result;
             }
-            purgeEdges();
-            result = true;
-        }
-        else{
-            result =  false;
-        }
-        fireAfterDelete(this);
-        return result;
+        });
     }
 
 
@@ -305,10 +319,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * SQL DELETE.
      */
     public void deleteCascade(){
-        deleteOneToManyChildren();
-        deleteJoinsForManyToMany();
-        deletePolymorphicChildren();
-        delete();
+        transaction(new Runnable() {
+            public void run() {
+                deleteOneToManyChildren();
+                deleteJoinsForManyToMany();
+                deletePolymorphicChildren();
+                delete();
+            }
+        });
     }
 
     private void deleteJoinsForManyToMany() {
@@ -317,7 +335,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             String join = ((Many2ManyAssociation)association).getJoin();
             String sourceFK = ((Many2ManyAssociation)association).getSourceFkName();
             String query = "DELETE FROM " + join + " WHERE " + sourceFK + " = " + getId();
-            new DB(getMetaModelLocal().getDbName()).exec(query);
+            db().exec(query);
         }
     }
 
@@ -327,7 +345,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             String  target = association.getTarget();
             String parentType = association.getTypeLabel();
             String query = "DELETE FROM " + target + " WHERE parent_id = ? AND parent_type = ?";
-            new DB(getMetaModelLocal().getDbName()).exec(query, getId(), parentType);
+            db().exec(query, getId(), parentType);
         }
     }
 
@@ -350,7 +368,15 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
     }
 
-
+    /**
+     * Return DB instance by static context
+     *
+     * @return the db instance
+     */
+    private static DB sdb(){
+        MetaModel metaModel = getMetaModel();
+        return new DB(metaModel.getDbName());
+    }
     /**
      * Deletes some records from associated table. This method does not follow any associations.
      * If this model has one to many associations, you might end up with either orphan records in child
@@ -365,15 +391,20 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param params   (optional) - list of parameters if a query is parametrized.
      * @return number od deleted records.
      */
-    public static int delete(String query, Object... params) {
-        MetaModel metaModel = getMetaModel();
-        int count =  params == null || params.length == 0? new DB(metaModel.getDbName()).exec("DELETE FROM " + metaModel.getTableName() + " WHERE " + query) :
-        new DB(metaModel.getDbName()).exec("DELETE FROM " + metaModel.getTableName() + " WHERE " + query, params);
-        if(metaModel.cached()){
-            QueryCache.instance().purgeTableCache(metaModel.getTableName());
-        }
-        purgeEdges();
-        return count;
+    public static int delete(final String query, final Object... params) {
+        return transaction(new Callable<Integer>() {
+            public Integer call() throws Exception {
+                MetaModel metaModel = getMetaModel();
+                int count = params == null || params.length == 0 ?
+                        sdb().exec("DELETE FROM " + metaModel.getTableName() + " WHERE " + query) :
+                        sdb().exec("DELETE FROM " + metaModel.getTableName() + " WHERE " + query, params);
+                if (metaModel.cached()) {
+                    QueryCache.instance().purgeTableCache(metaModel.getTableName());
+                }
+                purgeEdges();
+                return count;
+            }
+        });
     }
 
     /**
@@ -382,10 +413,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param id id in question.
      * @return true if corresponding record exists in DB, false if it does not.
      */
-    public static boolean exists(Object id){
-        MetaModel metaModel = getMetaModel();
-        return null != new DB(metaModel.getDbName()).firstCell("SELECT " + metaModel.getIdName() + " FROM " + metaModel.getTableName()
-                + " WHERE " + metaModel.getIdName() + " = ?", id);
+    public static boolean exists(final Object id){
+        return transaction(new Callable<Boolean>() {
+            public Boolean call() throws Exception {
+                MetaModel metaModel = getMetaModel();
+                return null != sdb().firstCell("SELECT " + metaModel.getIdName() + " FROM " + metaModel.getTableName()
+                                                       + " WHERE " + metaModel.getIdName() + " = ?", id);
+            }
+        });
     }
 
     /**
@@ -394,14 +429,18 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return number of records deleted.
      */
     public static int deleteAll() {
-        MetaModel metaModel = getMetaModel();
-        int count = new DB(metaModel.getDbName()).exec("DELETE FROM " + metaModel.getTableName());
-        if(metaModel.cached()){
-            QueryCache.instance().purgeTableCache(metaModel.getTableName());
-        }
+        return transaction(new Callable<Integer>() {
+            public Integer call() throws Exception {
+                MetaModel metaModel = getMetaModel();
+                int count = sdb().exec("DELETE FROM " + metaModel.getTableName());
+                if(metaModel.cached()){
+                    QueryCache.instance().purgeTableCache(metaModel.getTableName());
+                }
 
-        purgeEdges();
-        return count;
+                purgeEdges();
+                return count;
+            }
+        });
     }
 
     /**
@@ -421,27 +460,31 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * updates first, then conditions.
      * @return number of updated records.
      */
-    public static int update(String updates, String conditions, Object ... params) {
+    public static int update(final String updates, final String conditions, final Object ... params) {
 
         //TODO: validate that the number of question marks is the same as number of parameters
+        return transaction(new Callable<Integer>() {
+            public Integer call() throws Exception {
+                MetaModel metaModel = getMetaModel();
+                Object[] allParams;
+                String localUpdates = updates;
+                if(metaModel.hasAttribute("updated_at")){
+                    localUpdates = "updated_at = ?, " + updates;
+                    allParams = new Object[params.length + 1];
+                    System.arraycopy(params, 0, allParams, 1, params.length);
 
-        MetaModel metaModel = getMetaModel();
-        Object []allParams;
-        if(metaModel.hasAttribute("updated_at")){
-            updates = "updated_at = ?, " + updates;
-            allParams = new Object[params.length + 1];
-            System.arraycopy(params, 0, allParams, 1, params.length);
-
-            allParams[0] = new Timestamp(System.currentTimeMillis());
-        }else{
-            allParams = params;
-        }
-        String sql = "UPDATE " + metaModel.getTableName() + " SET " + updates + ((conditions != null)?" WHERE " + conditions:"");
-        int count = new DB(metaModel.getDbName()).exec(sql, allParams);
-        if(metaModel.cached()){
-            QueryCache.instance().purgeTableCache(metaModel.getTableName());
-        }
-        return count;
+                    allParams[0] = new Timestamp(System.currentTimeMillis());
+                }else{
+                    allParams = params;
+                }
+                String sql = "UPDATE " + metaModel.getTableName() + " SET " + localUpdates + ((conditions != null)?" WHERE " + conditions:"");
+                int count = new DB(metaModel.getDbName()).exec(sql, allParams);
+                if(metaModel.cached()){
+                    QueryCache.instance().purgeTableCache(metaModel.getTableName());
+                }
+                return count;
+            }
+        });
     }
 
 
@@ -485,9 +528,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public Map<String, Object> toMap(){
         Map<String, Object> retVal = new HashMap<String, Object>();
         for (String key : attributes.keySet()) {
-            if(attributes.get(key) == null)
-                continue;
-
+            if( attributes.get(key) == null ) continue;
             if(attributes.get(key) instanceof Clob){
                 retVal.put(key.toLowerCase(), getString(key));
             }else{
@@ -499,7 +540,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
 
         for(Class childClass: cachedChildren.keySet()){
-            List<Model> children = cachedChildren.get(childClass);
+            List<? extends Model> children = cachedChildren.get(childClass);
 
             List<Map> childMaps = new ArrayList<Map>(children.size());
             for(Model child:children){
@@ -588,44 +629,50 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return toJsonP(pretty, "", attrs);
     }
 
+
+    public String toJson() {
+        //TODO impl default to json manner
+        return toJson(true, (String[]) attributes().toArray());
+    }
+
     protected  String toJsonP(boolean pretty, String indent, String... attrs) {
 
         List<String> attrList = Arrays.asList(attrs);
 
-                StringWriter sw = new StringWriter();
+        StringWriter sw = new StringWriter();
 
-                sw.write(indent  +  "{"  + (pretty?"\n  " + indent: "") + "\"model_class\":\"" + getClass().getName() + "\",");
+        sw.write(indent  +  "{"  + (pretty?"\n  " + indent: "") + "\"model_class\":\"" + getClass().getName() + "\",");
 
-                List<String> attributeStrings = new ArrayList<String>();
+        List<String> attributeStrings = new ArrayList<String>();
 
-                for (String name : attributes.keySet()) {
-                    if (attrList.contains(name) || attrList.size() == 0){
-                        String val = getString(name);
-                        val = val == null? val : val.replaceAll("\"", "\\\\\"");
-                        attributeStrings.add((pretty?"\n  " + indent: "") + "\"" + name + "\":\"" + val + "\"" );
-                    }
+        for (String name : attributes.keySet()) {
+            if (attrList.contains(name) || attrList.size() == 0){
+                String val = getString(name);
+                val = val == null? val : val.replaceAll("\"", "\\\\\"");
+                attributeStrings.add((pretty?"\n  " + indent: "") + "\"" + name + "\":\"" + val + "\"" );
+            }
+        }
+        sw.write(Util.join(attributeStrings,  ","  ));
+
+        if(cachedChildren != null  && cachedChildren.size() > 0){
+
+            sw.write("," + (pretty? "\n  " + indent :"") + "\"children\" : {");
+
+            for(Class childClass :cachedChildren.keySet()){
+                String name = Inflector.pluralize(childClass.getSimpleName()).toLowerCase();
+                sw.write((pretty?"\n" + indent + "    ":"") + name  + " : [");
+                List<String> childrenList = new ArrayList<String>();
+                for(Model child: cachedChildren.get(childClass)){
+                    childrenList.add((pretty?"\n" + indent:"")  + child.toJsonP(pretty, (pretty?indent + "    ":"")));
                 }
-                sw.write(Util.join(attributeStrings,  ","  ));
+                sw.write(Util.join(childrenList, ","));
+                sw.write((pretty?"\n" + indent + indent :"")  + "]");
+            }
+            sw.write((pretty?"\n" + indent + indent :"")  + "}");
+        }
 
-                if(cachedChildren != null  && cachedChildren.size() > 0){
-
-                    sw.write("," + (pretty? "\n  " + indent :"") + "\"children\" : {");
-
-                    for(Class childClass :cachedChildren.keySet()){
-                        String name = Inflector.pluralize(childClass.getSimpleName()).toLowerCase();
-                        sw.write((pretty?"\n" + indent + "    ":"") +"\"" + name  + "\" : [");
-                        List<String> childrenList = new ArrayList<String>();
-                        for(Model child: cachedChildren.get(childClass)){
-                            childrenList.add((pretty?"\n" + indent:"")  + child.toJsonP(pretty, (pretty?indent + "    ":"")));
-                        }
-                        sw.write(Util.join(childrenList, ","));
-                        sw.write((pretty?"\n" + indent + indent :"")  + "]");
-                    }
-                    sw.write((pretty?"\n" + indent + indent :"")  + "}");
-                }
-
-                sw.write((pretty?"\n" + indent: "")  + "}");
-                return sw.toString();
+        sw.write((pretty?"\n" + indent: "")  + "}");
+        return sw.toString();
     }
 
 
@@ -681,7 +728,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             }
         }
 
-        List<Map> results = new DB(getMetaModelLocal().getDbName()).findAll(query, Integer.parseInt(fkValue));
+        List<Map> results = db().findAll(query, Integer.parseInt(fkValue));
         //expect only one result here
         if (results.size() == 0) { //ths could be covered by referential integrity constraint
             return null;
@@ -772,7 +819,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     /**
      * This method should be called from all instance methods for performance.
      *
-     * @return
+     * @return cached meta model instance
      */
     private MetaModel getMetaModelLocal(){
         if(metaModelLocal == null)
@@ -993,7 +1040,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param value value
      * @return reference to this model.
      */
-    public Model setLong(String attribute, Object value) {
+    public Model getLong(String attribute, Object value) {
         return set(attribute, Convert.toLong(value));
     }
 
@@ -1065,11 +1112,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
 
     public <T extends Model> LazyList<T> getAll(Class<T> clazz) {
-        List<Model> children = cachedChildren.get(clazz);
+        List<? extends Model> children = cachedChildren.get(clazz);
         if(children != null){
             return (LazyList<T>) children;
         }
-
+        //TODO if the model haven't been saved, it shouldn't query to db
         String tableName = Registry.instance().getTableName(clazz);
         if(tableName == null) throw new IllegalArgumentException("table: " + tableName + " does not exist for model: " + clazz);
 
@@ -1152,8 +1199,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param validator new validator.
      * @return
      */
-    public static ValidationBuilder addValidator(Validator validator){
-        return ValidationHelper.addValidator(Model.<Model>getDaClass(), validator);
+    public static ValidationBuilder addValidator(final Validator validator){
+        return transaction(new Callable<ValidationBuilder>() {
+            public ValidationBuilder call() throws Exception {
+                return ValidationHelper.addValidator(Model.<Model>getDaClass(), validator);
+            }
+        }, true);
     }
 
     /**
@@ -1167,8 +1218,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         errors.put(key, value);
     }
 
-    public static void removeValidator(Validator validator){
-        Registry.instance().removeValidator(Model.<Model>getDaClass(), validator);
+    public static void removeValidator(final Validator validator){
+        transaction(new Runnable() {
+            public void run(){
+                Registry.instance().removeValidator(Model.<Model>getDaClass(), validator);
+            }
+        }, true);
     }
 
     public static List<Validator> getValidators(Class<Model> daClass){
@@ -1183,8 +1238,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param pattern regexp pattern which must match  the value.
      * @return
      */
-    protected static ValidationBuilder validateRegexpOf(String attribute, String pattern) {
-        return ValidationHelper.addRegexpValidator(Model.<Model>getDaClass(), attribute.toLowerCase(), pattern);
+    protected static ValidationBuilder validateRegexpOf(final String attribute, final String pattern) {
+        return transaction(new Callable<ValidationBuilder>() {
+            public ValidationBuilder call() throws Exception {
+                return ValidationHelper.addRegexpValidator(Model.<Model>getDaClass(), attribute.toLowerCase(), pattern);
+            }
+        }, true);
     }
 
     /**
@@ -1193,8 +1252,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attribute name of atribute that holds email value.
      * @return
      */
-    protected static ValidationBuilder validateEmailOf(String attribute) {
-        return ValidationHelper.addEmailValidator(Model.<Model>getDaClass(), attribute.toLowerCase());
+    protected static ValidationBuilder validateEmailOf(final String attribute) {
+        return transaction(new Callable<ValidationBuilder>() {
+            public ValidationBuilder call() throws Exception {
+                return ValidationHelper.addEmailValidator(Model.<Model>getDaClass(), attribute.toLowerCase());
+            }
+        }, true );
     }
 
     /**
@@ -1206,8 +1269,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param max max value of range.
      * @return
      */
-    protected static ValidationBuilder validateRange(String attribute, Number min, Number max) {
-        return ValidationHelper.addRangevalidator(Model.<Model>getDaClass(), attribute.toLowerCase(), min, max);
+    protected static ValidationBuilder validateRange(final String attribute, final Number min, final Number max) {
+        return transaction(new Callable<ValidationBuilder>() {
+            public ValidationBuilder call() throws Exception {
+                return ValidationHelper.addRangeValidator(Model.<Model>getDaClass(), attribute.toLowerCase(), min, max);
+            }
+        },true );
     }
 
     /**
@@ -1216,8 +1283,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attributes list of attributes to validate.
      * @return
      */
-    protected static ValidationBuilder validatePresenceOf(String... attributes) {
-        return ValidationHelper.addPresensevalidators(Model.<Model>getDaClass(), toLowerCase(attributes));
+    protected static ValidationBuilder validatePresenceOf(final String... attributes) {
+        return transaction(new Callable<ValidationBuilder>() {
+            public ValidationBuilder call() throws Exception {
+                return ValidationHelper.addPresenceValidators(Model.<Model>getDaClass(), toLowerCase(attributes));
+            }
+        }, true);
     }
 
     /**
@@ -1237,8 +1308,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param format format for conversion. Refer to {@link java.text.SimpleDateFormat}
      * @return message passing for custom validation message.
      */
-    protected static ValidationBuilder convertDate(String attributeName, String format){
-        return ValidationHelper.addDateConverter(Model.<Model>getDaClass(), attributeName, format);
+    protected static ValidationBuilder convertDate(final String attributeName, final String format){
+        return transaction(new Callable<ValidationBuilder>() {
+            public ValidationBuilder call() throws Exception {
+                return ValidationHelper.addDateConverter(Model.<Model>getDaClass(), attributeName, format);
+            }
+        }, true);
     }
 
     /**
@@ -1249,15 +1324,23 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param format format for conversion. Refer to {@link java.text.SimpleDateFormat}
      * @return message passing for custom validation message.
      */
-    protected static ValidationBuilder convertTimestamp(String attributeName, String format){
-        return ValidationHelper.addTimestampConverter(Model.<Model>getDaClass(), attributeName, format);
+    protected static ValidationBuilder convertTimestamp(final String attributeName, final String format){
+        return transaction(new Callable<ValidationBuilder>() {
+            public ValidationBuilder call() throws Exception {
+                return ValidationHelper.addTimestampConverter(Model.<Model>getDaClass(), attributeName, format);
+            }
+        }, true);
     }
 
-    public static boolean belongsTo(Class<? extends Model> targetClass) {
-        String targetTable = Registry.instance().getTableName(targetClass);
-        MetaModel metaModel = getMetaModel();
-        return (null != metaModel.getAssociationForTarget(targetTable, BelongsToAssociation.class) ||
-                null != metaModel.getAssociationForTarget(targetTable, Many2ManyAssociation.class));
+    public static boolean belongsTo(final Class<? extends Model> targetClass) {
+        return transaction(new Callable<Boolean>() {
+            public Boolean call() throws Exception {
+                String targetTable = Registry.instance().getTableName(targetClass);
+                MetaModel metaModel = getMetaModel();
+                return (null != metaModel.getAssociationForTarget(targetTable, BelongsToAssociation.class) ||
+                        null != metaModel.getAssociationForTarget(targetTable, Many2ManyAssociation.class));
+            }
+        }, true);
     }
 
 
@@ -1281,15 +1364,19 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * Executes all validators attached to this model.
      */
     public void validate() {
-        fireBeforeValidation(this);
-        errors = new Errors();
-        List<Validator> theValidators = Registry.instance().getValidators((Class<Model>)getClass());
-        if(theValidators != null){
-            for (Validator validator : theValidators) {
-                validator.validate(this);
+        transaction(new Runnable() {
+            public void run() {
+                fireBeforeValidation(Model.this);
+                errors = new Errors();
+                List<Validator> theValidators = Registry.instance().getValidators((Class<Model>)Model.this.getClass());
+                if(theValidators != null){
+                    for (Validator validator : theValidators) {
+                        validator.validate(Model.this);
+                    }
+                }
+                fireAfterValidation(Model.this);
             }
-        }
-        fireAfterValidation(this);
+        });
     }
 
     public boolean hasErrors() {
@@ -1345,20 +1432,96 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * indexes 1, 3, 5... are values. Element at index 1 is a value for attribute at index 0 and so on.
      * @return newly instantiated model.
      */
-    public static <T extends Model> T create(Object ... namesAndValues){
+    public static <T extends Model> T create(final Object ... namesAndValues){
+        return transaction(new Callable<T>(){
+            public T call() throws Exception {
+                if(namesAndValues.length %2 != 0) throw new IllegalArgumentException("number of arguments must be even");
 
-        if(namesAndValues.length %2 != 0) throw new IllegalArgumentException("number of arguments must be even");
+                try{
 
-        try{
+                    Model m = getDaClass().newInstance();
+                    setNamesAndValues(m, namesAndValues);
+                    return (T) m;
+                }
+                catch(IllegalArgumentException e){throw e;}
+                catch(ClassCastException e){throw new  IllegalArgumentException("All even arguments must be strings");}
+                catch(DBException e){throw e;}
+                catch (Exception e){throw new InitException("This model must provide a default constructor.", e);}
+            }
+        });
+    }
 
-            Model m = getDaClass().newInstance();
-            setNamesAndValues(m, namesAndValues);
-            return (T) m;
+    /**
+     * Perform a callable task in transaction scope(Not readonly)
+     *
+     * @param callable the task
+     * @param <T> the returned value type
+     * @return the result
+     */
+    public static <T> T transaction(Callable<T> callable) {
+        return transaction(callable, false);
+    }
+
+    /**
+     * Perform a runnable task in transaction scope(Not readonly)
+     *
+     * @param runnable the task
+     */
+    public static void transaction(final Runnable runnable) {
+        transaction(runnable, false);
+    }
+
+    /**
+     * Perform a runnable task in transaction scope(Not readonly)
+     *
+     * @param runnable the task
+     * @param readonly transaction readonly or not
+     */
+    public static void transaction(final Runnable runnable, boolean readonly) {
+        transaction(new Callable<Object>() {
+            public Object call() throws Exception {
+                runnable.run();
+                return null;
+            }
+        }, readonly);
+    }
+
+    /**
+     * Perform a callable task in transaction scope with readonly setting
+     *
+     * this method can't be called from outside of Model subclasses, because of static link problem:
+     *
+     * <pre><code>
+     * Sample.main{
+     *     Employee.transaction(...) //will failed here
+     *     //it's equals to: Model.transaction(...)
+     *     //we should avoid call this method outside of models to ensure the ClassGetter(used by Model) works
+     *     //or instruct this method as:
+     *     Model{
+     *         static <T> T transaction(Callable<T> callable, boolean readonly){
+     *            try {
+     *                String dbName = MetaModel.getDbName(concrete.domain.Model.class);
+     *                return MetaModel.transaction(dbName, callable, readonly);
+     *            } catch (ClassNotFoundException e) {
+     *                throw new IllegalStateException(e);
+     *            }
+     *         }
+     *     }
+     * }
+     *
+     * </code></pre>
+     * @param callable the task
+     * @param readonly does the transaction should be readonly or not?
+     * @param <T> the returned value type
+     * @return the result
+     */
+    public static <T> T transaction(Callable<T> callable, boolean readonly){
+        try {
+            String dbName = MetaModel.getDbName((Class<Model>) Class.forName(getClassName()));
+            return MetaModel.transaction(dbName, callable, readonly);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException(e);
         }
-        catch(IllegalArgumentException e){throw e;}
-        catch(ClassCastException e){throw new  IllegalArgumentException("All even arguments must be strings");}
-        catch(DBException e){throw e;}
-        catch (Exception e){throw new InitException("This model must provide a default constructor.", e);}
     }
 
 
@@ -1405,19 +1568,22 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * indexes 1, 3, 5... are values. Element at index 1 is a value for attribute at index 0 and so on.
      * @return newly instantiated model which also has been saved to DB.
      */
-    public static <T extends Model> T createIt(Object ... namesAndValues){
-        T m = (T)create(namesAndValues);
-        m.saveIt();
-        return m;
+    public static <T extends Model> T createIt(final Object ... namesAndValues){
+        return transaction(new Callable<T>() {
+            public T call() throws Exception {
+                T m = (T) create(namesAndValues);
+                m.saveIt();
+                return m;
+            }
+        });
     }
 
-    public static <T extends Model> T findById(Object id) {
-        if(id == null) return null;
+    public static <T extends Model> T findById(final Object id) {
+        if (id == null) return null;
 
         MetaModel mm = getMetaModel();
         LazyList<T> l = new LazyList<T>(mm.getIdName() + " = ?", new Object[]{id}, mm).limit(1);
         return l.size() > 0 ? l.get(0) : null;
-
     }
 
     /**
@@ -1465,17 +1631,20 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param params list of parameters corresponding to the place holders in the subquery.
      * @return instance of <code>LazyList<Model></code> containing results.
      */
-    public static <T extends Model> LazyList<T> find(String subquery, Object... params) {
+    public static <T extends Model> LazyList<T> find(final String subquery, final Object... params) {
+        return transaction(new Callable<LazyList<T>>() {
+            public LazyList<T> call() throws Exception {
+                if(subquery.equals("*") && params.length == 0){
+                    return findAll();
+                }
 
-        if(subquery.trim().equals("*") && params.length == 0){
-            return findAll();
-        }
+                if(subquery.equals("*") && params.length != 0){
+                    throw new IllegalArgumentException("cannot provide parameters with query: '*', use findAll() method instead");
+                }
 
-        if(subquery.equals("*") && params.length != 0){
-            throw new IllegalArgumentException("cannot provide parameters with query: '*', use findAll() method instead");
-        }
-
-        return  new LazyList(subquery, params, getMetaModel());
+                return  new LazyList(subquery, params, getMetaModel());
+            }
+        }, true);
     }
 
 
@@ -1548,18 +1717,22 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param query sub-query (content after "WHERE" clause)
      * @param params optional parameters for a query.
      */
-    public static void findWith(final ModelListener listener, String query, Object ... params) {
-        long start = System.currentTimeMillis();
-        final MetaModel metaModel = getMetaModel();
-        String sql = metaModel.getDialect().selectStar(metaModel.getTableName(), query);
+    public static void findWith(final ModelListener listener, final String query, final Object ... params) {
+        transaction(new Runnable() {
+            public void run() {
+                long start = System.currentTimeMillis();
+                final MetaModel metaModel = getMetaModel();
+                String sql = metaModel.getDialect().selectStar(metaModel.getTableName(), query);
 
-        new DB(metaModel.getDbName()).find(sql, params).with( new RowListenerAdapter() {
-            @Override
-            public void onNext(Map<String, Object> row) {
-                listener.onModel(instance(row, metaModel));
+                new DB(metaModel.getDbName()).find(sql, params).with(new RowListenerAdapter() {
+                    @Override
+                    public void onNext(Map<String, Object> row) {
+                        listener.onModel(instance(row, metaModel));
+                    }
+                });
+                LogFilter.logQuery(logger, sql, null, start);
             }
-        });
-        LogFilter.logQuery(logger, sql, null, start);
+        }, true);
     }
 
 
@@ -1607,63 +1780,66 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param child instance of a model that has a relationship to the current model.
      * Either one to many or many to many relationships are accepted.
      */
-    public void add(Model child) {
+    public void add(final Model child) {
+        transaction(new Runnable() {
+            public void run() {
+                //TODO: refactor this method
+                String childTable = Registry.instance().getTableName(child.getClass());
+                MetaModel metaModel = getMetaModelLocal();
+                if (getId() != null) {
 
-        //TODO: refactor this method
-        String childTable = Registry.instance().getTableName(child.getClass());
-        MetaModel metaModel = getMetaModelLocal();
-        if (getId() != null) {
+                    if (metaModel.hasAssociation(childTable, OneToManyAssociation.class)) {
+                        OneToManyAssociation ass = (OneToManyAssociation)metaModel.getAssociationForTarget(childTable, OneToManyAssociation.class);
+                        String fkName = ass.getFkName();
+                        child.set(fkName, getId());
+                        child.saveIt();//this will cause an exception in case validations fail.
+                    }else if(metaModel.hasAssociation(childTable, Many2ManyAssociation.class)){
+                        Many2ManyAssociation ass = (Many2ManyAssociation) metaModel.getAssociationForTarget(childTable, Many2ManyAssociation.class);
+                        String join = ass.getJoin();
+                        String sourceFkName = ass.getSourceFkName();
+                        String targetFkName = ass.getTargetFkName();
+                        if(child.getId() == null)
+                            child.saveIt();
 
-            if (metaModel.hasAssociation(childTable, OneToManyAssociation.class)) {
-                OneToManyAssociation ass = (OneToManyAssociation)metaModel.getAssociationForTarget(childTable, OneToManyAssociation.class);
-                String fkName = ass.getFkName();
-                child.set(fkName, getId());
-                child.saveIt();//this will cause an exception in case validations fail.
-            }else if(metaModel.hasAssociation(childTable, Many2ManyAssociation.class)){
-                Many2ManyAssociation ass = (Many2ManyAssociation) metaModel.getAssociationForTarget(childTable, Many2ManyAssociation.class);
-                String join = ass.getJoin();
-                String sourceFkName = ass.getSourceFkName();
-                String targetFkName = ass.getTargetFkName();
-                if(child.getId() == null)
-                    child.saveIt();
+                        MetaModel joinMM = Registry.instance().getMetaModel(join);
+                        if(joinMM == null){
+                            new DB(metaModel.getDbName()).exec("INSERT INTO " + join + " ( " + sourceFkName + ", " + targetFkName + " ) VALUES ( " + getId()+ ", " + child.getId() + ")");
+                        }else{
+                            //TODO: write a test to cover this case:
+                            //this is for Oracle, many 2 many, and all annotations used, including @IdGenerator. In this case,
+                            //it is best to delegate generation of insert to a model (sequences, etc.)
+                            try{
+                                Model joinModel = (Model)joinMM.getModelClass().newInstance();
+                                joinModel.set(sourceFkName, getId());
+                                joinModel.set(targetFkName, child.getId());
+                                joinModel.saveIt();
+                            }
+                            catch(InstantiationException e){
+                                throw new InitException("failed to create a new instance of class: " + joinMM.getClass()
+                                        + ", are you sure this class has a default constructor?", e);
+                            }
+                            catch(IllegalAccessException e){throw new InitException(e);}
+                            finally {
+                                QueryCache.instance().purgeTableCache(join);
+                                QueryCache.instance().purgeTableCache(metaModel.getTableName());
+                                QueryCache.instance().purgeTableCache(childTable);
+                            }
+                        }
+                     }else if(metaModel.hasAssociation(childTable, OneToManyPolymorphicAssociation.class)){
 
-                MetaModel joinMM = Registry.instance().getMetaModel(join);
-                if(joinMM == null){
-                    new DB(metaModel.getDbName()).exec("INSERT INTO " + join + " ( " + sourceFkName + ", " + targetFkName + " ) VALUES ( " + getId()+ ", " + child.getId() + ")");
-                }else{
-                    //TODO: write a test to cover this case:
-                    //this is for Oracle, many 2 many, and all annotations used, including @IdGenerator. In this case,
-                    //it is best to delegate generation of insert to a model (sequences, etc.)
-                    try{
-                        Model joinModel = (Model)joinMM.getModelClass().newInstance();
-                        joinModel.set(sourceFkName, getId());
-                        joinModel.set(targetFkName, child.getId());
-                        joinModel.saveIt();
-                    }
-                    catch(InstantiationException e){
-                        throw new InitException("failed to create a new instance of class: " + joinMM.getClass()
-                                + ", are you sure this class has a default constructor?", e);
-                    }
-                    catch(IllegalAccessException e){throw new InitException(e);}
-                    finally {
-                        QueryCache.instance().purgeTableCache(join);
-                        QueryCache.instance().purgeTableCache(metaModel.getTableName());
-                        QueryCache.instance().purgeTableCache(childTable);
-                    }
+                        OneToManyPolymorphicAssociation ass = (OneToManyPolymorphicAssociation)metaModel
+                                .getAssociationForTarget(childTable, OneToManyPolymorphicAssociation.class);
+                        child.set("parent_id", getId());
+                        child.set("parent_type", ass.getTypeLabel());
+                        child.saveIt();
+
+                    }else
+                        throw new NotAssociatedException(metaModel.getTableName(), childTable);
+                } else {
+                    throw new IllegalArgumentException("You can only add associated model to an instance that exists in DB. Save this instance first, then you will be able to add dependencies to it.");
                 }
-             }else if(metaModel.hasAssociation(childTable, OneToManyPolymorphicAssociation.class)){
-
-                OneToManyPolymorphicAssociation ass = (OneToManyPolymorphicAssociation)metaModel
-                        .getAssociationForTarget(childTable, OneToManyPolymorphicAssociation.class);
-                child.set("parent_id", getId());
-                child.set("parent_type", ass.getTypeLabel());
-                child.saveIt();
-
-            }else
-                throw new NotAssociatedException(metaModel.getTableName(), childTable);
-        } else {
-            throw new IllegalArgumentException("You can only add associated model to an instance that exists in DB. Save this instance first, then you will be able to add dependencies to it.");
-        }
+            }
+        });
     }
 
 
@@ -1684,32 +1860,35 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @param child model representing a "child" as in one to many or many to many association with this model.
      */
-    public void remove(Model child){
+    public void remove(final Model child){
+        transaction(new Runnable() {
+            public void run() {
+                if(child == null) throw new IllegalArgumentException("cannot remove what is null");
 
-        if(child == null) throw new IllegalArgumentException("cannot remove what is null");
+                if(child.frozen() || child.getId() == null) throw new IllegalArgumentException("Cannot remove a child that does " +
+                        "not exist in DB (either frozen, or ID not set)");
 
-        if(child.frozen() || child.getId() == null) throw new IllegalArgumentException("Cannot remove a child that does " +
-                "not exist in DB (either frozen, or ID not set)");
-
-        String childTable = Registry.instance().getTableName(child.getClass());
-        MetaModel metaModel = getMetaModelLocal();
-        if (getId() != null) {
-            if (metaModel.hasAssociation(childTable, OneToManyAssociation.class)
-                    || metaModel.hasAssociation(childTable, OneToManyPolymorphicAssociation.class)) {
-                child.delete();
-            }else if(metaModel.hasAssociation(childTable, Many2ManyAssociation.class)){
-                Many2ManyAssociation ass = (Many2ManyAssociation)metaModel.getAssociationForTarget(childTable, Many2ManyAssociation.class);
-                String join = ass.getJoin();
-                String sourceFkName = ass.getSourceFkName();
-                String targetFkName = ass.getTargetFkName();
-                new DB(metaModel.getDbName()).exec("DELETE FROM " + join + " WHERE " + sourceFkName + " = ? AND "
-                        + targetFkName + " = ?", getId(), child.getId());
-            }else
-                throw new NotAssociatedException(metaModel.getTableName(), childTable);
-        } else {
-            throw new IllegalArgumentException("You can only add associated model to an instance that exists in DB. " +
-                    "Save this instance first, then you will be able to add dependencies to it.");
-        }
+                String childTable = Registry.instance().getTableName(child.getClass());
+                MetaModel metaModel = getMetaModelLocal();
+                if (getId() != null) {
+                    if (metaModel.hasAssociation(childTable, OneToManyAssociation.class)
+                            || metaModel.hasAssociation(childTable, OneToManyPolymorphicAssociation.class)) {
+                        child.delete();
+                    }else if(metaModel.hasAssociation(childTable, Many2ManyAssociation.class)){
+                        Many2ManyAssociation ass = (Many2ManyAssociation)metaModel.getAssociationForTarget(childTable, Many2ManyAssociation.class);
+                        String join = ass.getJoin();
+                        String sourceFkName = ass.getSourceFkName();
+                        String targetFkName = ass.getTargetFkName();
+                        new DB(metaModel.getDbName()).exec("DELETE FROM " + join + " WHERE " + sourceFkName + " = ? AND "
+                                + targetFkName + " = ?", getId(), child.getId());
+                    }else
+                        throw new NotAssociatedException(metaModel.getTableName(), childTable);
+                } else {
+                    throw new IllegalArgumentException("You can only add associated model to an instance that exists in DB. " +
+                            "Save this instance first, then you will be able to add dependencies to it.");
+                }
+            }
+        });
     }
 
     /**
@@ -1719,12 +1898,16 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return  true if the model was saved, false if you set an ID value for the model, but such ID does not exist in DB.
      */
     public boolean saveIt() {
-        boolean result = save();
-        purgeEdges();
-        if(errors.size() > 0){
-            throw new ValidationException(this);
-        }
-        return result;
+        return transaction(new Callable<Boolean>() {
+            public Boolean call() throws Exception {
+                boolean result = save();
+                purgeEdges();
+                if(errors.size() > 0){
+                    throw new ValidationException(Model.this);
+                }
+                return result;
+            }
+        });
     }
 
 
@@ -1781,62 +1964,74 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * False will also be returned if you set an ID value for the model, but such ID does not exist in DB.
      */
     public boolean save() {
-        if(frozen) throw new FrozenException(this);
+        return transaction(new Callable<Boolean>() {
+            public Boolean call() throws Exception {
+                if(frozen) throw new FrozenException(Model.this);
 
-        fireBeforeSave(this);
+                fireBeforeSave(Model.this);
 
-        validate();
-        if (hasErrors()) {
-            return false;
-        }
+                validate();
+                if (hasErrors()) {
+                    return false;
+                }
 
-        boolean result;
-        if (blank(getId())) {
-            result =  insert();
-        } else {
-            result = update();
-        }
-        fireAfterSave(this);
-        return result;
+                boolean result;
+                if (blank(getId())) {
+                    result =  insert();
+                } else {
+                    result = update();
+                }
+                fireAfterSave(Model.this);
+                return result;
+            }
+        });
     }
 
     public static Long count() {
-        MetaModel metaModel = getMetaModel();
-        String sql = "SELECT COUNT(*) FROM " + metaModel.getTableName();
-        Long result;
-        if(metaModel.cached()){
-         result = (Long)QueryCache.instance().getItem(metaModel.getTableName(), sql, null);
-            if(result == null)
-            {
-                result = new DB(metaModel.getDbName()).count(metaModel.getTableName());
-                QueryCache.instance().addItem(metaModel.getTableName(), sql, null, result);
+        return transaction(new Callable<Long>() {
+            public Long call() throws Exception {
+                MetaModel metaModel = getMetaModel();
+                String sql = "SELECT COUNT(*) FROM " + metaModel.getTableName();
+                Long result;
+                if(metaModel.cached()){
+                 result = (Long)QueryCache.instance().getItem(metaModel.getTableName(), sql, null);
+                    if(result == null)
+                    {
+                        result = new DB(metaModel.getDbName()).count(metaModel.getTableName());
+                        QueryCache.instance().addItem(metaModel.getTableName(), sql, null, result);
+                    }
+                }else{
+                    result = new DB(metaModel.getDbName()).count(metaModel.getTableName());
+                }
+                return result;
             }
-        }else{
-            result = new DB(metaModel.getDbName()).count(metaModel.getTableName());
-        }
-        return result;
+        }, true);
     }
 
-    public static Long count(String query, Object... params) {
+    public static Long count(final String query, final Object... params) {
+        return transaction(new Callable<Long>() {
+            public Long call() throws Exception {
+                MetaModel metaModel = getMetaModel();
 
-        MetaModel metaModel = getMetaModel();
+                //attention: this SQL is only used for caching, not for real queries.
+                String sql = "SELECT COUNT(*) FROM " + metaModel.getTableName() + " where " + query;
 
-        //attention: this SQL is only used for caching, not for real queries.
-        String sql = "SELECT COUNT(*) FROM " + metaModel.getTableName() + " where " + query;
-
-        Long result;
-        if(metaModel.cached()){
-            result = (Long)QueryCache.instance().getItem(metaModel.getTableName(), sql, params);
-            if(result == null){
-                result = new DB(metaModel.getDbName()).count(metaModel.getTableName(), query, params);
-                QueryCache.instance().addItem(metaModel.getTableName(), sql, params, result);
+                Long result;
+                if(metaModel.cached()){
+                    result = (Long)QueryCache.instance().getItem(metaModel.getTableName(), sql, params);
+                    if(result == null){
+                        result = new DB(metaModel.getDbName()).count(metaModel.getTableName(), query, params);
+                        QueryCache.instance().addItem(metaModel.getTableName(), sql, params, result);
+                    }
+                }else{
+                    result = new DB(metaModel.getDbName()).count(metaModel.getTableName(), query, params);
+                }
+                return result;
             }
-        }else{
-            result = new DB(metaModel.getDbName()).count(metaModel.getTableName(), query, params);
-        }
-        return result;
+        });
     }
 
+    //it has been wrapped in transaction
     private boolean insert() {
 
         fireBeforeCreate(this);
@@ -1853,7 +2048,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
         String query = getMetaModelLocal().getDialect().createParametrizedInsert(getMetaModelLocal());
         try {
-            long id = new DB(getMetaModelLocal().getDbName()).execInsert(query, getMetaModelLocal().getIdName(), values.toArray());
+            long id = db().execInsert(query, getMetaModelLocal().getIdName(), values.toArray());
             if(getMetaModelLocal().cached()){
                 QueryCache.instance().purgeTableCache(getMetaModelLocal().getTableName());
             }
@@ -1885,6 +2080,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
     }
 
+    //it has been wrapped in transaction
     private boolean update() {
 
         doUpdatedAt();
@@ -1961,7 +2157,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
     }
 
-    private static <T extends Model> Class<T> getDaClass() {
+    public static <T extends Model> Class<T> getDaClass() {
         try {
             MetaModel mm = Registry.instance().getMetaModelByClassName(getClassName());
             return mm == null? (Class<T>) Class.forName(getClassName()) : mm.getModelClass();
@@ -1970,7 +2166,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
     }
 
-    private static String getClassName() {
+    public static String getClassName() {
         return new ClassGetter().getClassName();
     }
 
@@ -1986,20 +2182,56 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return getMetaModelLocal().getIdName();
     }
 
-    protected void setChildren(Class childClass, List<Model> children) {
-        cachedChildren.put(childClass, children);
+    //added by kadvin
+    protected List getChildrenFromCache(Class childClass){
+        return cachedChildren.get(childClass);
     }
 
+    //FOR one-to-many
+    protected void setChildren(Class childClass, List<? extends Model> children) {
+        cachedChildren.put(childClass, children);
+    }
+    //For one-to-many
+    protected void addChild(Class childClass, Model child){
+        List<Model> children = (List<Model>) cachedChildren.get(childClass);
+        if( children == null ){
+            //TODO how to deal with this case? we need put a lazy list into the map(others expected this class), but can't get data back...
+            children = new LazyList<Model>();
+            cachedChildren.put(childClass, children);
+        }
+        children.add(child);
+    }
+
+    //for one-to-many
+    protected void addChild(Model child){
+        addChild(child.getClass(), child);
+    }
+
+    protected void setChild(Model child){
+        addChild(child);
+    }
+
+    /**
+     * Create a event for specific event type
+     *
+     * @param eventType the event type
+     * @return created event
+     */
+    public EventObject createEvent(String eventType) {
+        return null;
+    }
 
     static class ClassGetter extends SecurityManager {
         public String getClassName() {
             Class[] classes = getClassContext();
-            for (int i = 0; i < classes.length; i++) {
-                Class aClass = classes[i];
-                if (aClass.getSuperclass().equals(Model.class)) {  // TODO: revisit for inheritance implementation
-                    return aClass.getName();
+            Class parent = Model.class;
+            for (Class aClass : classes) {
+                if (aClass == Model.class) continue;
+                if (parent.isAssignableFrom(aClass)) {
+                    parent = aClass;
                 }
             }
+            if( parent != null ) return parent.getName();
             throw new InitException("failed to determine Model class name, are you sure models have been instrumented?");
         }
     }

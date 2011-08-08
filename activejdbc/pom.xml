@@ -87,7 +87,6 @@
                 <jdbc.driver>org.h2.Driver</jdbc.driver>
                 <jdbc.url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1</jdbc.url>
                 <jdbc.user>sa</jdbc.user>
-                <jdbc.password></jdbc.password>
                 <db>h2</db>
             </properties>
             <dependencies>

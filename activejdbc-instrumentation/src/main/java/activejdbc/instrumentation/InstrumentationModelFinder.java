@@ -23,7 +23,6 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.NotFoundException;
 
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,12 +35,10 @@ public class InstrumentationModelFinder extends ModelFinder {
     private CtClass modelClass;
     private List<CtClass> models = new ArrayList<CtClass>();
 
-
     InstrumentationModelFinder() throws NotFoundException {
         ClassPool pool = ClassPool.getDefault();
         pool.insertClassPath(new ClassClassPath(ModelFinder.class));
         modelClass = pool.get("activejdbc.Model");
-
     }
 
     @Override
@@ -52,7 +49,7 @@ public class InstrumentationModelFinder extends ModelFinder {
             CtClass clazz = cp.get(className);
 
             if (clazz.subclassOf(modelClass) && !clazz.equals(modelClass)) {
-                models.add(clazz);
+             models.add(clazz);
                 System.out.println("Found model: " + clazz.getName());
             }
         }

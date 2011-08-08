@@ -28,6 +28,7 @@ import java.util.List;
  * 
  * @author Igor Polevoy
  */
+@SuppressWarnings("unchecked")
 public class ValidationHelper {
     public static NumericValidationBuilder addNumericalityValidators(Class<Model> modelClass, String... attributes) {
         List<NumericValidator> validators = new ArrayList<NumericValidator>();
@@ -61,7 +62,7 @@ public class ValidationHelper {
         return new ValidationBuilder(validators);
     }
 
-    public static ValidationBuilder addRangevalidator(Class<Model> modelClass, String attribute, Number min, Number max) {
+    public static ValidationBuilder addRangeValidator(Class<Model> modelClass, String attribute, Number min, Number max) {
         List<Validator> validators = new ArrayList<Validator>();
 
         validators.add(new RangeValidator(attribute, min, max));
@@ -69,7 +70,7 @@ public class ValidationHelper {
         return new ValidationBuilder(validators);
     }
 
-    public static ValidationBuilder addPresensevalidators(Class<Model> modelClass, String... attributes) {
+    public static ValidationBuilder addPresenceValidators(Class<Model> modelClass, String... attributes) {
         List<Validator> validators = new ArrayList<Validator>();
 
         for (String attribute : attributes) {

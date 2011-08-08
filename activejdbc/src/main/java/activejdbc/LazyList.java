@@ -37,6 +37,7 @@ import java.util.*;
  *
  * @author Igor Polevoy
  */
+@SuppressWarnings("unchecked")
 public class LazyList<T extends Model> extends AbstractList<T>{
 
     final static Logger logger = LoggerFactory.getLogger(LazyList.class);
@@ -238,36 +239,58 @@ public class LazyList<T extends Model> extends AbstractList<T>{
         return (LazyList<E>) this;
     }
 
-    protected void hydrate(){
+    protected DB db(){
+        return new DB(metaModel.getDbName());
+    }
 
-        if(hydrated) return;
-
-        String subQuery = Util.join(subQueries.toArray(new String[]{}), " ");
-
-        String sql = fullQuery != null? fullQuery :
-                Registry.instance().getConfiguration().getDialect(metaModel).formSelect(metaModel.getTableName(), subQuery,
-                        orderBys, limit, offset);
-
-        if(metaModel.cached()){        
-            ArrayList<T> cached = (ArrayList<T>) QueryCache.instance().getItem(metaModel.getTableName(), sql, params);
-            if(cached != null){
-                delegate = cached;
-                return;
+    protected void transaction(Runnable job){
+        try {
+            metaModel.acquire(true);
+            job.run();
+        } catch (Exception e) {
+            if( e instanceof RuntimeException){
+                throw (RuntimeException)e;
+            }else{
+                throw new DBException(e);
             }
+        } finally {
+            metaModel.release();
         }
+    }
 
-        long start = System.currentTimeMillis();
-        new DB(metaModel.getDbName()).find(sql, params).with(new RowListenerAdapter() {
-            public void onNext(Map<String, Object> rowMap) {
-                delegate.add((T) Model.instance(rowMap, metaModel));
+    protected void hydrate(){
+        transaction(new Runnable(){
+            public void run() {
+                if(hydrated) return;
+
+                String subQuery = Util.join(subQueries.toArray(new String[]{}), " ");
+
+                String sql = fullQuery != null? fullQuery :
+                        Registry.instance().getConfiguration().getDialect(metaModel).formSelect(metaModel.getTableName(), subQuery,
+                                orderBys, limit, offset);
+
+                if(metaModel.cached()){
+                    ArrayList<T> cached = (ArrayList<T>) QueryCache.instance().getItem(metaModel.getTableName(), sql, params);
+                    if(cached != null){
+                        delegate = cached;
+                        return;
+                    }
+                }
+
+                long start = System.currentTimeMillis();
+                db().find(sql, params).with(new RowListenerAdapter() {
+                    public void onNext(Map<String, Object> rowMap) {
+                        delegate.add((T) Model.instance(rowMap, metaModel));
+                    }
+                });
+                LogFilter.logQuery(logger, sql, params, start);
+                if(metaModel.cached()){
+                    QueryCache.instance().addItem(metaModel.getTableName(), sql, params, delegate);
+                }
+                hydrated = true;
+                processIncludes();
             }
         });
-        LogFilter.logQuery(logger, sql, params, start);
-        if(metaModel.cached()){
-            QueryCache.instance().addItem(metaModel.getTableName(), sql, params, delegate);
-        }
-        hydrated = true;
-        processIncludes();        
     }
 
     private void processIncludes(){
