@@ -15,7 +15,7 @@ public class OracleDBReset {
 
     private static boolean done = false;
 
-    static void resetOracle(String[] statements) throws SQLException {
+    public static void resetOracle(String[] statements) throws SQLException {
             dropTriggers();
             dropSequences();
             dropTables();

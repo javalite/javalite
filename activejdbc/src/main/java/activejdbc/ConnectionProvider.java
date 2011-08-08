@@ -6,8 +6,13 @@ package activejdbc;
 import java.sql.Connection;
 
 /**
- * Provide Connection
+ * Provide Connection, it likes a connection specific maintainer which can provide connection later.
  */
 public interface ConnectionProvider {
+    /**
+     * Provide connection to caller
+     *
+     * @return the usable connection
+     */
     Connection getConnection();
 }

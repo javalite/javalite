@@ -12,7 +12,7 @@ import java.sql.Statement;
  */
 public class DefaultDBReset {
 
-    static void resetSchema(String[] statements) throws SQLException {
+    public static void resetSchema(String[] statements) throws SQLException {
         Connection connection = Base.connection();
         for (String statement: statements) {
             if(Util.blank(statement)) continue;

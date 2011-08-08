@@ -65,6 +65,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }, true);
     }
 
+    /**
+     * Just a convenient method to access the helper DB object for the model instance
+     *
+     * @return helper DB object
+     */
     protected static DB db(){
         return new DB(getMetaModel().getDbName());
     }
@@ -369,15 +374,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Return DB instance by static context
-     *
-     * @return the db instance
-     */
-    private static DB sdb(){
-        MetaModel metaModel = getMetaModel();
-        return new DB(metaModel.getDbName());
-    }
-    /**
      * Deletes some records from associated table. This method does not follow any associations.
      * If this model has one to many associations, you might end up with either orphan records in child
      * tables, or run into integrity constraint violations. However, this method if very efficient as it deletes all records
@@ -396,8 +392,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             public Integer call() throws Exception {
                 MetaModel metaModel = getMetaModel();
                 int count = params == null || params.length == 0 ?
-                        sdb().exec("DELETE FROM " + metaModel.getTableName() + " WHERE " + query) :
-                        sdb().exec("DELETE FROM " + metaModel.getTableName() + " WHERE " + query, params);
+                        db().exec("DELETE FROM " + metaModel.getTableName() + " WHERE " + query) :
+                        db().exec("DELETE FROM " + metaModel.getTableName() + " WHERE " + query, params);
                 if (metaModel.cached()) {
                     QueryCache.instance().purgeTableCache(metaModel.getTableName());
                 }
@@ -417,7 +413,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return transaction(new Callable<Boolean>() {
             public Boolean call() throws Exception {
                 MetaModel metaModel = getMetaModel();
-                return null != sdb().firstCell("SELECT " + metaModel.getIdName() + " FROM " + metaModel.getTableName()
+                return null != db().firstCell("SELECT " + metaModel.getIdName() + " FROM " + metaModel.getTableName()
                                                        + " WHERE " + metaModel.getIdName() + " = ?", id);
             }
         });
@@ -432,7 +428,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return transaction(new Callable<Integer>() {
             public Integer call() throws Exception {
                 MetaModel metaModel = getMetaModel();
-                int count = sdb().exec("DELETE FROM " + metaModel.getTableName());
+                int count = db().exec("DELETE FROM " + metaModel.getTableName());
                 if(metaModel.cached()){
                     QueryCache.instance().purgeTableCache(metaModel.getTableName());
                 }
@@ -630,6 +626,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
 
+    /**
+     * Generates a JSON document from content of this model in default manner:
+     *
+     * pretty and output all db attributes
+     *
+     * @return generated JSON.
+     */
     public String toJson() {
         //TODO impl default to json manner
         return toJson(true, (String[]) attributes().toArray());
@@ -1235,32 +1238,24 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
 
     /**
-     * Validates an attribite format with a ree hand regular expression.
+     * Validates an attribute format with a ree hand regular expression.
      *
      * @param attribute attribute to validate.
      * @param pattern regexp pattern which must match  the value.
-     * @return
+     * @return the validation builder
      */
     protected static ValidationBuilder validateRegexpOf(final String attribute, final String pattern) {
-        return transaction(new Callable<ValidationBuilder>() {
-            public ValidationBuilder call() throws Exception {
-                return ValidationHelper.addRegexpValidator(Model.<Model>getDaClass(), attribute.toLowerCase(), pattern);
-            }
-        }, true);
+        return ValidationHelper.addRegexpValidator(Model.<Model>getDaClass(), attribute.toLowerCase(), pattern);
     }
 
     /**
      * Validates email format.
      *
      * @param attribute name of atribute that holds email value.
-     * @return
+     * @return the validation builder
      */
     protected static ValidationBuilder validateEmailOf(final String attribute) {
-        return transaction(new Callable<ValidationBuilder>() {
-            public ValidationBuilder call() throws Exception {
-                return ValidationHelper.addEmailValidator(Model.<Model>getDaClass(), attribute.toLowerCase());
-            }
-        }, true );
+        return ValidationHelper.addEmailValidator(Model.<Model>getDaClass(), attribute.toLowerCase());
     }
 
     /**
@@ -1270,34 +1265,27 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attribute attribute to validate - should be within range.
      * @param min min value of range.
      * @param max max value of range.
-     * @return
+     * @return the validation builder
      */
     protected static ValidationBuilder validateRange(final String attribute, final Number min, final Number max) {
-        return transaction(new Callable<ValidationBuilder>() {
-            public ValidationBuilder call() throws Exception {
-                return ValidationHelper.addRangeValidator(Model.<Model>getDaClass(), attribute.toLowerCase(), min, max);
-            }
-        },true );
+        return ValidationHelper.addRangeValidator(Model.<Model>getDaClass(), attribute.toLowerCase(), min, max);
     }
 
     /**
      * The validation will not pass if the value is either an empty string "", or null.
      *
      * @param attributes list of attributes to validate.
-     * @return
+     * @return the validation builder
      */
     protected static ValidationBuilder validatePresenceOf(final String... attributes) {
-        return transaction(new Callable<ValidationBuilder>() {
-            public ValidationBuilder call() throws Exception {
-                return ValidationHelper.addPresenceValidators(Model.<Model>getDaClass(), toLowerCase(attributes));
-            }
-        }, true);
+        return ValidationHelper.addPresenceValidators(Model.<Model>getDaClass(), toLowerCase(attributes));
     }
 
     /**
      * Add a custom validator to the model.
      *
      * @param validator  custom validator.
+     * @return the validation builder
      */
     protected static ValidationBuilder validateWith(Validator validator) {
         return addValidator(validator);
@@ -1312,11 +1300,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return message passing for custom validation message.
      */
     protected static ValidationBuilder convertDate(final String attributeName, final String format){
-        return transaction(new Callable<ValidationBuilder>() {
-            public ValidationBuilder call() throws Exception {
-                return ValidationHelper.addDateConverter(Model.<Model>getDaClass(), attributeName, format);
-            }
-        }, true);
+        return ValidationHelper.addDateConverter(Model.<Model>getDaClass(), attributeName, format);
     }
 
     /**
@@ -1328,22 +1312,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return message passing for custom validation message.
      */
     protected static ValidationBuilder convertTimestamp(final String attributeName, final String format){
-        return transaction(new Callable<ValidationBuilder>() {
-            public ValidationBuilder call() throws Exception {
-                return ValidationHelper.addTimestampConverter(Model.<Model>getDaClass(), attributeName, format);
-            }
-        }, true);
+        return ValidationHelper.addTimestampConverter(Model.<Model>getDaClass(), attributeName, format);
     }
 
     public static boolean belongsTo(final Class<? extends Model> targetClass) {
-        return transaction(new Callable<Boolean>() {
-            public Boolean call() throws Exception {
-                String targetTable = Registry.instance().getTableName(targetClass);
-                MetaModel metaModel = getMetaModel();
-                return (null != metaModel.getAssociationForTarget(targetTable, BelongsToAssociation.class) ||
-                        null != metaModel.getAssociationForTarget(targetTable, Many2ManyAssociation.class));
-            }
-        }, true);
+        String targetTable = Registry.instance().getTableName(targetClass);
+        MetaModel metaModel = getMetaModel();
+        return (null != metaModel.getAssociationForTarget(targetTable, BelongsToAssociation.class) ||
+                null != metaModel.getAssociationForTarget(targetTable, Many2ManyAssociation.class));
     }
 
 
@@ -2161,12 +2137,16 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     public static <T extends Model> Class<T> getDaClass() {
-        try {
-            MetaModel mm = Registry.instance().getMetaModelByClassName(getClassName());
-            return mm == null? (Class<T>) Class.forName(getClassName()) : mm.getModelClass();
-        } catch (Exception e) {
-            throw new DBException(e.getMessage(), e);
-        }
+        return transaction(new Callable<Class<T>>() {
+            public Class<T> call() throws Exception {
+                try {
+                    MetaModel mm = Registry.instance().getMetaModelByClassName(getClassName());
+                    return mm == null? (Class<T>) Class.forName(getClassName()) : mm.getModelClass();
+                } catch (Exception e) {
+                    throw new DBException(e.getMessage(), e);
+                }
+            }
+        });
     }
 
     public static String getClassName() {
@@ -2185,37 +2165,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return getMetaModelLocal().getIdName();
     }
 
-    //added by kadvin
-    protected List getChildrenFromCache(Class childClass){
-        return cachedChildren.get(childClass);
-    }
-
     //FOR one-to-many
     protected void setChildren(Class childClass, List<? extends Model> children) {
         cachedChildren.put(childClass, children);
     }
-    //For one-to-many
-    protected void addChild(Class childClass, Model child){
-        List<Model> children = (List<Model>) cachedChildren.get(childClass);
-        if( children == null ){
-            //TODO how to deal with this case? we need put a lazy list into the map(others expected this class), but can't get data back...
-            children = new LazyList<Model>();
-            cachedChildren.put(childClass, children);
-        }
-        children.add(child);
-    }
-
-    //for one-to-many
-    protected void addChild(Model child){
-        addChild(child.getClass(), child);
-    }
-
-    protected void setChild(Model child){
-        addChild(child);
-    }
 
     /**
-     * Create a event for specific event type
+     * Create a event for specific event type, this method is used to broadcast model event outside of the model callbacks
      *
      * @param eventType the event type
      * @return created event
@@ -2228,6 +2184,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         public String getClassName() {
             Class[] classes = getClassContext();
             Class parent = Model.class;
+            //Have been enhanced by kadvin to support STI (prepare)
+            //To support find out the concrete model not only derived from Model directly
             for (Class aClass : classes) {
                 if (aClass == Model.class) continue;
                 if (parent.isAssignableFrom(aClass)) {

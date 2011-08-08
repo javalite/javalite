@@ -17,11 +17,13 @@ limitations under the License.
 
 package activejdbc;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
+import activejdbc.providers.AnotherProvider;
+import activejdbc.providers.ByDsProvider;
+import activejdbc.providers.ByJndiProvider;
+import activejdbc.providers.CommonProvider;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -48,18 +50,17 @@ public class Base {
         establish(DEFAULT_DB_NAME, driver, url, user, password);
     }
 
+    /**
+     * Establish connection towards db with name = dbName, specified with driver, url, user, password
+     *
+     * @param dbName the db name
+     * @param driver the driver class full qualified name
+     * @param url the jdbc url
+     * @param user the jdbc db user
+     * @param password the password
+     */
     public static void establish(String dbName, final String driver, final String url, final String user, final String password){
-        ConnectionsAccess.register(dbName, new ConnectionProvider(){
-            public Connection getConnection(){
-                try {
-                    Class.forName(driver);
-                    System.out.println("Establish connection to: " + url);
-                    return DriverManager.getConnection(url, user, password);
-                } catch (Exception e) {
-                    throw new InitException(e);
-                }
-            }
-        });
+        ConnectionsAccess.register(dbName, new CommonProvider(driver, url, user, password));
     }
 
     /**
@@ -74,21 +75,27 @@ public class Base {
         MetaModel.acquire(DEFAULT_DB_NAME, false);
     }
 
+    /**
+     * Establish connection for default db, specified with driver, url, properties
+     *
+     * @param driver the driver class full qualified name
+     * @param url the jdbc url
+     * @param props jdbc properties
+     */
     public static void establish(final String driver, final String url, final Properties props) {
         establish(DEFAULT_DB_NAME, driver, url, props);
     }
 
+    /**
+     * Establish connection towards db with name = dbName, specified with driver, url, props
+     *
+     * @param dbName the db name
+     * @param driver the driver class full qualified name
+     * @param url the jdbc url
+     * @param props jdbc properties
+     */
     public static void establish(String dbName, final String driver, final String url, final Properties props){
-        ConnectionsAccess.register(dbName, new ConnectionProvider(){
-            public Connection getConnection(){
-                try {
-                    Class.forName(driver);
-                    return DriverManager.getConnection(url, props);
-                } catch (Exception e) {
-                    throw new InitException(e);
-                }
-            }
-        });
+        ConnectionsAccess.register(dbName, new AnotherProvider(driver, url, props));
     }
 
     public static void open(String jndiName) {
@@ -96,23 +103,23 @@ public class Base {
         MetaModel.acquire(DEFAULT_DB_NAME, false);
     }
 
+    /**
+     * Establish connection for default database, specified with driver, url, user, password
+     *
+     * @param jndiName the jndi name
+     * */
     public static void establish(final String jndiName){
         establish(DEFAULT_DB_NAME, jndiName);
     }
 
+    /**
+     * Establish connection towards db with name = dbName by a jndi resource
+     *
+     * @param dbName the database name
+     * @param jndiName the jndi resource name
+     */
     public static void establish(String dbName, final String jndiName){
-        ConnectionsAccess.register(dbName, new ConnectionProvider() {
-
-            public Connection getConnection() {
-                try {
-                    Context ctx = new InitialContext();
-                    DataSource ds = (DataSource) ctx.lookup(jndiName);
-                    return ds.getConnection();
-                } catch (Exception e) {
-                    throw new InitException(e);
-                }
-            }
-        });
+        ConnectionsAccess.register(dbName, new ByJndiProvider(jndiName));
     }
 
     public static void open(DataSource ds) {
@@ -121,21 +128,25 @@ public class Base {
     }
 
 
+    /**
+     * Establish connection by a datasource
+     *
+     * @param ds the data source
+     * @return the data source
+     */
     public static Object establish(DataSource ds){
         establish(DEFAULT_DB_NAME, ds);
         return ds;
     }
 
+    /**
+     * Establish connection towards db with name = dbName by datasource
+     *
+     * @param dbName the db name
+     * @param ds the data source
+     */
     public static void establish(String dbName, final DataSource ds){
-        ConnectionsAccess.register(dbName, new ConnectionProvider() {
-            public Connection getConnection() {
-                try {
-                   return ds.getConnection();
-                } catch (Exception e) {
-                    throw new InitException(e);
-                }
-            }
-        });
+        ConnectionsAccess.register(dbName, new ByDsProvider(ds));
     }
 
     /**
@@ -152,9 +163,6 @@ public class Base {
     public static void close() {
         MetaModel.release(DEFAULT_DB_NAME);
     }
-
-
-
 
     public static Long count(String table){        
         return new DB(DEFAULT_DB_NAME).count(table);
