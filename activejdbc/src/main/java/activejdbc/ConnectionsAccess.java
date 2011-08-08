@@ -84,11 +84,23 @@ public class ConnectionsAccess {
         return new ArrayList<Connection>(getConnectionMap().values());
     }
 
+    /**
+     * Register a connection provider for the db specified by dbName
+     *
+     * @param dbName the db name
+     * @param provider the registered provider
+     */
     public static void register(String dbName, ConnectionProvider provider) {
 //        attach(dbName, provider.getConnection());//put a connection in thread context, TODO when should it be closed?
         connectionProviders.put(dbName, provider);
     }
 
+    /**
+     * Get the connection provider for the target db
+     *
+     * @param dbName the db name
+     * @return the connection provider, if can't find, will blame an IllegalArgumentException
+     */
     public static ConnectionProvider provider(String dbName){
         ConnectionProvider provider = connectionProviders.get(dbName);
         if( provider == null ){
@@ -97,6 +109,12 @@ public class ConnectionsAccess {
         return provider;
     }
 
+    /**
+     * Increase the usage of current connection
+     *
+     * @param dbName the db name
+     * @return the increased usage value
+     */
     public static Integer increaseUsage(String dbName) {
         Integer integer = getUsageMap().get(dbName);
         if( integer == null ) integer = 0;
@@ -104,6 +122,12 @@ public class ConnectionsAccess {
         return getUsageMap().get(dbName);
     }
 
+    /**
+     * decrease the usage of current connection
+     *
+     * @param dbName the db name
+     * @return the decreased usage value
+     */
     public static Integer decreaseUsage(String dbName) {
         Integer integer = getUsageMap().get(dbName);
         if( integer == null ) integer = 1;
