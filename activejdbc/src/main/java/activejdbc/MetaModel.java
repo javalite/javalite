@@ -318,6 +318,12 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
         return Collections.unmodifiableMap(columnMetadata);
     }
 
+    /**
+     * Acquire a connection
+     *
+     * @param readonly does this connection should be set as readonly or not
+     * @return connection
+     */
     public Connection acquire(boolean readonly){
         return acquire(dbName, readonly);
     }
@@ -351,6 +357,9 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
 
     }
 
+    /**
+     * Release connection hold by current thread.
+     */
     public void release(){
         release(dbName);
     }
@@ -395,6 +404,14 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
     }
 
 
+    /**
+     * Run a callable in transaction context
+     *
+     * @param callable the callable target
+     * @param readonly readonly setting
+     * @param <T> result type
+     * @return result
+     */
     public <T> T transaction(Callable<T> callable, boolean readonly) {
         return transaction(dbName, callable, readonly);
     }

@@ -243,6 +243,11 @@ public class LazyList<T extends Model> extends AbstractList<T>{
         return new DB(metaModel.getDbName());
     }
 
+    /**
+     * Wrap the hydrate into the transaction context
+     *
+     * @param job the hydrate job
+     */
     protected void transaction(Runnable job){
         try {
             metaModel.acquire(true);
