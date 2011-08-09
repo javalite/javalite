@@ -15,17 +15,7 @@ limitations under the License.
 */
 
 
-package activejdbc.instrumentation;
-
-import activejdbc.Model;
-import activejdbc.ModelFinder;
-import javassist.CtClass;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.List;
+package org.javalite.instrumentation;
 
 /**
  * @author Igor Polevoy

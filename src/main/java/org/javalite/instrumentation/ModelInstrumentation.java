@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 
-package activejdbc.instrumentation;
+package org.javalite.instrumentation;
 
 import javassist.*;
 import java.net.URISyntaxException;
@@ -30,7 +30,7 @@ public class ModelInstrumentation{
     public ModelInstrumentation() throws NotFoundException {
         ClassPool cp = ClassPool.getDefault();
         cp.insertClassPath(new ClassClassPath(this.getClass()));
-        modelClass = ClassPool.getDefault().get("activejdbc.Model");
+        modelClass = ClassPool.getDefault().get("org.javalite.activejdbc.Model");
     }
 
     public void instrument(CtClass modelClass) throws InstrumentationException {
@@ -59,12 +59,6 @@ public class ModelInstrumentation{
         className = className.replace(".", "/");
         return file.substring(0, file.indexOf(className));
     }
-
-    public static void main(String[] args) {
-
-        System.getProperties().list(System.out);
-    }
-
 
     private void addDelegates(CtClass target) throws NotFoundException, CannotCompileException {
         CtMethod[] modelMethods = modelClass.getDeclaredMethods();
@@ -112,7 +106,7 @@ public class ModelInstrumentation{
     private CtMethod createFindById(CtClass clazz) throws CannotCompileException {
         String body = "public static "+ clazz.getName() +" findById(Object obj)\n" +
                 "        {\n" +
-                "            return (" + clazz.getName() + ")activejdbc.Model.findById(obj);\n" +
+                "            return (" + clazz.getName() + ")org.javalite.activejdbc.Model.findById(obj);\n" +
                 "        }";
         return CtNewMethod.make(body, clazz);
     }
@@ -120,7 +114,7 @@ public class ModelInstrumentation{
     private CtMethod createFindFirst(CtClass clazz) throws CannotCompileException {
         String body = " public static " + clazz.getName() + " findFirst(String s, Object params[])\n" +
                 "   {\n" +
-                "       return (" + clazz.getName() + ")activejdbc.Model.findFirst(s, params);\n" +
+                "       return (" + clazz.getName() + ")org.javalite.activejdbc.Model.findFirst(s, params);\n" +
                 "   }";
         return CtNewMethod.make(body, clazz);
     }

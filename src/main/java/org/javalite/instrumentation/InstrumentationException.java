@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 
-package activejdbc.instrumentation;
+package org.javalite.instrumentation;
 
 
 public class InstrumentationException extends RuntimeException{

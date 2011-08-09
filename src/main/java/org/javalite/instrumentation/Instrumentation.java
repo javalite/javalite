@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 
-package activejdbc.instrumentation;
+package org.javalite.instrumentation;
 
 import javassist.CtClass;
 
