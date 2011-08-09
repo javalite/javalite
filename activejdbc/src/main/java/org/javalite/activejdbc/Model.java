@@ -2132,7 +2132,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
     }
 
-    public static <T extends Model> Class<T> getDaClass() {
+    private static <T extends Model> Class<T> getDaClass() {
         return transaction( new Callable<Class<T>>() {
             public Class<T> call() throws Exception {
                 try {

@@ -55,15 +55,6 @@ public class TransactionTest extends JSpecSupport {
         a(Account.getMetaModel().getTableName()).shouldBeEqual("accounts");
     }
 
-    @Test public void getDaClassShouldWorks(){
-        //any model related API can works now
-        try {
-            Account.getDaClass();
-        } catch (Error e) {
-            e.printStackTrace();
-        }
-    }
-
     @Test public void countShouldWorks(){
         //any model related API can works now
         a(Account.count() == 0).shouldBeTrue();
