@@ -1,1 +1,1 @@
-mvn clean deploy -Dgpg.passphrase=yourpassphrase
+mvn clean source:jar  javadoc:jar  deploy -Pinstrument
