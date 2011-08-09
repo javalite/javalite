@@ -210,7 +210,7 @@
         <!--some tests use MySQL verbatim; -->
         <dependency><groupId>mysql</groupId><artifactId>mysql-connector-java</artifactId><version>5.0.4</version><scope>test</scope></dependency>
         <dependency>
-            <groupId>javalite</groupId>
+            <groupId>org.javalite</groupId>
             <artifactId>javalite-common</artifactId>
             <version>${project.version}</version>
             <exclusions>
