@@ -74,4 +74,19 @@
         </dependencies>
     </dependencyManagement>
 
+    <pluginRepositories>
+        <pluginRepository>
+			<id>sonatype-nexus-plugin-snapshots</id>
+			<name>Sonatype Nexus Plugin Snapshots</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+    </pluginRepositories>
+    
+
 </project>
