@@ -61,7 +61,7 @@
     </target>
 
     <target name="instrument" depends="compile_tests">
-        <java classname="activejdbc.instrumentation.Main">
+        <java classname="org.javalite.instrumentation.Main">
             <sysproperty key="outputDirectory" value="${classes}"/>
             <classpath refid="build_classpath"/>
         </java>

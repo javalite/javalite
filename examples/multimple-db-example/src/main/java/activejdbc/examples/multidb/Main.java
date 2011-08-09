@@ -15,7 +15,7 @@ limitations under the License.
 */
 package activejdbc.examples.multidb;
 
-import activejdbc.DB;
+import org.javalite.activejdbc.DB;
 
 public class Main {
     public static void main(String[] args) {

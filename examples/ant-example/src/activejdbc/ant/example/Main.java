@@ -16,7 +16,7 @@ limitations under the License.
 
 package activejdbc.ant.example;
 
-import activejdbc.Base;
+import org.javalite.activejdbc.Base;
 
 /**
  * @author Igor Polevoy

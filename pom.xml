@@ -1,13 +1,24 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <!-- Comments by kadvin -->
-  <modelVersion>4.0.0</modelVersion>
-    <groupId>activejdbc</groupId>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.javalite</groupId>
     <artifactId>activejdbc-root</artifactId>
     <packaging>pom</packaging>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
     <name>ActiveJDBC Framework Root</name>
     <url>http://code.google.com/p/activejdbc/</url>
+
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
+    <scm>
+       <connection>scm:svn:https://activejdbc.googlecode.com/svn/trunk/</connection>
+       <developerConnection>scm:svn:https://activejdbc.googlecode.com/svn/trunk/</developerConnection>
+       <url>https://activejdbc.googlecode.com/svn/trunk//</url>
+     </scm>
 
     <build>
         <plugins>
@@ -27,8 +38,6 @@
         <module>activejdbc</module>
         <module>activejdbc-instrumentation</module>
         <module>javalite-common</module>
-        <module>activejdbc-cluster-test</module>
-        
     </modules>
     <dependencyManagement>
         <dependencies>
@@ -65,17 +74,19 @@
         </dependencies>
     </dependencyManagement>
 
-    <distributionManagement>
-        <repository>
-            <id>ipsolutions-repo</id>
-            <name>IPSolutions Repository</name>
-            <url>scp://localhost/opt/maven/repository</url>
-        </repository>
-        <snapshotRepository>
-            <id>ipsolutions-repo</id>
-            <name>IPSolutions Repository</name>
-            <url>scp://localhost/opt/maven/repository</url>
-        </snapshotRepository>
-    </distributionManagement>
+    <pluginRepositories>
+        <pluginRepository>
+			<id>sonatype-nexus-plugin-snapshots</id>
+			<name>Sonatype Nexus Plugin Snapshots</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+    </pluginRepositories>
+
 
 </project>

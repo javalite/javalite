@@ -16,12 +16,12 @@ limitations under the License.
 
 package activejdbc.examples.simple;
 
-import activejdbc.Base;
+import org.javalite.activejdbc.Base;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static javalite.test.jspec.JSpec.the;
+import static org.javalite.test.jspec.JSpec.the;
 
 /**
  * @author Igor Polevoy

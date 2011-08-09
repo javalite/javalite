@@ -1,16 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>activejdbc</groupId>
+    <groupId>org.javalite</groupId>
     <artifactId>activejdbc</artifactId>
     <packaging>jar</packaging>
     <name>ActiveJDBC Framework</name>
     
 
     <parent>
-        <groupId>activejdbc</groupId>
+        <groupId>org.javalite</groupId>
         <artifactId>activejdbc-root</artifactId>
-        <version>1.1-SNAPSHOT</version>
+        <version>1.2-SNAPSHOT</version>
     </parent>
 
     <!--Default to MySQL if no profile provided-->
@@ -87,6 +87,7 @@
                 <jdbc.driver>org.h2.Driver</jdbc.driver>
                 <jdbc.url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1</jdbc.url>
                 <jdbc.user>sa</jdbc.user>
+                <jdbc.password></jdbc.password>
                 <db>h2</db>
             </properties>
             <dependencies>
@@ -104,9 +105,9 @@
             <build>
                 <plugins>
                 <plugin>
-                    <groupId>activejdbc</groupId>
+                    <groupId>org.javalite</groupId>
                     <artifactId>activejdbc-instrumentation</artifactId>
-                    <version>1.1-SNAPSHOT</version>
+                    <version>1.2-SNAPSHOT</version>
                     <executions>
                         <execution>
                             <phase>process-test-classes</phase>
@@ -139,7 +140,11 @@
                     <maxmem>512m</maxmem>
                 </configuration>
             </plugin>
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.1.2</version>
+            </plugin>
             <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
@@ -205,7 +210,7 @@
         <!--some tests use MySQL verbatim; -->
         <dependency><groupId>mysql</groupId><artifactId>mysql-connector-java</artifactId><version>5.0.4</version><scope>test</scope></dependency>
         <dependency>
-            <groupId>javalite</groupId>
+            <groupId>org.javalite</groupId>
             <artifactId>javalite-common</artifactId>
             <version>${project.version}</version>
             <exclusions>

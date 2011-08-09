@@ -15,8 +15,8 @@ limitations under the License.
 */
 package activejdbc.examples.multidb;
 
-import activejdbc.Model;
-import activejdbc.annotations.DbName;
+import org.javalite.activejdbc.Model;
+import org.javalite.activejdbc.annotations.DbName;
 
 @DbName("corporation")
 public class Employee extends Model {}

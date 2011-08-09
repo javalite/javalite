@@ -1,5 +1,5 @@
 package activejdbc.examples.simple;
 
-import activejdbc.Model;
+import org.javalite.activejdbc.Model;
 
 public class Employee extends Model {}
