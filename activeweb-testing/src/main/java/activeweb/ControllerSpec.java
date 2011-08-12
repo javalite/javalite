@@ -20,7 +20,42 @@ import javalite.common.Util;
 import javalite.test.jspec.TestException;
 
 /**
- * Super class for controller tests. This class will not open a connection to a test DB.
+ * Super class for controller tests. This class is used by unit tests that test a single controller. Controllers are
+ * tested by simulating a web request to a controller (no physical network is involved, and no container initialized).
+ * <p/>
+ * Subclasses must follow a simple naming convention: subclass name must be
+ * made of two words: controller short class name and word "Spec". Example, of there is a controller:
+ * <pre>
+ * public class GreeterController extends AppController{
+ *   ...
+ * }
+ * </pre>
+ * then the test will look like this:
+ * <pre>
+ *
+ * public class GreeterControllerSpec extends ControllerSpec{
+ * ...
+ * }
+ * </pre>
+ *
+ * ActiveWeb controller specs allow for true TDD, since they do not have a compiler dependency on controllers.
+ * You can describe full behavior of your controller before a controller class even exists. Simplest example:
+ * <pre>
+ * public GreeterControllerSpec extends ControllerSpec{
+ *  &#064;Test
+ *  public void shouldRespondWithGreetingMessage(){
+ *      request().get("index");
+ *      a(responseCode()).shouldBeEqual(200);
+ *      a(assigns().get("message")).shouldBeEqual("Hello, earthlings!");
+ *  }
+ * }
+ * </pre>
+ *
+ * In a code snippet above, a request with HTTP GET method is simulated to the GreeterController, index() action.
+ * Controller is expected to assign an object called "message" with value "Hello, earthlings!" to a view. 
+ *
+ * This class will not open a connection to a test DB. If you need a connection,
+ * use {@link activeweb.DBControllerSpec}.
  *
  * @see {@link activeweb.DBControllerSpec}. 
  * @author Igor Polevoy
@@ -46,7 +81,12 @@ public class ControllerSpec extends SpecHelper {
         return new RequestBuilder(controllerPath, session());
     }
 
-    protected String getControllerPath(){
+    /**
+     * Returns a controller path - this includes packages if there are any after "app.controllers".
+     *
+     * @return   controller path
+     */
+    protected final String getControllerPath(){
         String controllerClassName = getControllerClassName();
         Class<? extends AppController> controllerClass;
         try{

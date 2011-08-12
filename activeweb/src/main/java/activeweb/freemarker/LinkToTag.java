@@ -19,12 +19,10 @@ package activeweb.freemarker;
 import activeweb.AppController;
 import activeweb.ControllerFactory;
 import activeweb.Router;
-import freemarker.ext.beans.BooleanModel;
 import freemarker.template.*;
 
 import java.io.Writer;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import static javalite.common.Util.blank;
@@ -45,7 +43,7 @@ import static javalite.common.Util.blank;
  * This attribute is optional. If this attribute is omitted, the
  * tag will use the controller which was used to generate the current page. This makes it convenient to write links on pages
  * for the same controller.
- * <li> <strong>action</strong>: name of an action. Optional. If this attribute is omitted, the action will default to "index".
+ * <li> <strong>action</strong>: name of a controller action, not HTML form action. Optional. If this attribute is omitted, the action will default to "index".
  * <li> <strong>id</strong>: id, as in a route: /controller/action/id. Optional.
  * <li> <strong>html_id</strong>: value of this attribute will be used to set the HTML ID of the Anchor element. Optional.
  * <li> <strong>query_string</strong>: query string as is usually used in GET HTTP calls - the part of a URL
@@ -104,7 +102,7 @@ import static javalite.common.Util.blank;
  * .....
  *   }
  * <p/>
- *   function doAfterWith(afterArg, data){
+ *   function afterDelete(afterArg, data){
  *          ...
  *   }
  *   </code>
@@ -112,7 +110,7 @@ import static javalite.common.Util.blank;
  * Here, the JS confirmation dialog will present the message before posting an Ajax call, then function "beforeDelete"
  * will be called. After that, it will make an Ajax call, and will execute function "afterDelete", passing it the
  * result of Ajax invocation as an argument. In the JS code above, the "beforeArg" and "afterArg" arguments have values
- * null since the "beforeArg" and "afterArg" attributes were not used.
+ * null since the "before_arg" and "after_arg" attributes were not used.
  * <p/>
  * <h3>Example 4 - Before/after callback arguments</h3>
  * <p/>
@@ -137,7 +135,7 @@ import static javalite.common.Util.blank;
  *   </code>
  * </pre>
  * <p/>
- * This is presuming that there is an element like this on teh page:
+ * This is presuming that there is an element like this on the page:
  * <p/>
  * <pre>
  * <code>
@@ -165,6 +163,8 @@ import static javalite.common.Util.blank;
  * </pre>
  * </code>
  *
+ *  In this example, the link is trying to make an Ajax call to a controlled action which does not exists.
+ *
  * @author Igor Polevoy
  */
 public class LinkToTag extends FreeMarkerTag {
@@ -172,14 +172,15 @@ public class LinkToTag extends FreeMarkerTag {
     protected void render(Map params, String body, Writer writer) throws Exception {
 
         String controller;
-        boolean restful;
+        Boolean restful;
         if (params.get("controller") != null) {
             controller = params.get("controller").toString();
             AppController controllerInstance = (AppController) Class.forName(ControllerFactory.getControllerClassName(controller)).newInstance();
             restful = controllerInstance.restful();
         } else if (get("activeweb") != null) {
-            controller = ((SimpleHash) get("activeweb")).get("controller").toString();
-            restful = ((TemplateBooleanModel) ((SimpleHash) get("activeweb")).get("restful")).getAsBoolean();
+            Map activeweb = (Map) getUnwrapped("activeweb");
+            controller = activeweb.get("controller").toString();
+            restful = (Boolean) activeweb.get("restful");
         } else {
             throw new IllegalArgumentException("link_to directive is missing: 'controller'  and no controller found in context");
         }

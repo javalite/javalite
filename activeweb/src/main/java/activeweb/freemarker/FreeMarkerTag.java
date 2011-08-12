@@ -17,7 +17,9 @@ package activeweb.freemarker;
 
 import activeweb.ViewException;
 import freemarker.core.Environment;
+import freemarker.ext.beans.MapModel;
 import freemarker.template.*;
+import freemarker.template.utility.DeepUnwrap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,6 +72,25 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
         } catch (Exception e) {
             throw new ViewException(e);
         }
+    }
+
+    /**
+     * Gets an object from context - by name.
+     *
+     * @param name name of object
+     * @return object or null if not found.
+     */
+    protected Object getUnwrapped(Object name) {
+        try{
+         return DeepUnwrap.unwrap(get(name));
+        }catch(ViewException e){
+            throw e;
+        }catch (TemplateException e){
+            throw new ViewException(e);
+
+        }
+
+
     }
 
     /**

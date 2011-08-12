@@ -19,6 +19,7 @@ import activeweb.InitException;
 import activeweb.TemplateManager;
 import activeweb.ViewException;
 import activeweb.ViewMissingException;
+import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
@@ -44,7 +45,7 @@ public class FreeMarkerTemplateManager implements TemplateManager {
     public FreeMarkerTemplateManager() {
         config = new Configuration();
         config.setObjectWrapper(new DefaultObjectWrapper());
-        config.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
+        config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
         config.setSharedVariable("link_to", new LinkToTag());
         config.setSharedVariable("form", new FormTag());
         config.setSharedVariable("content", new ContentForTag());
@@ -53,6 +54,7 @@ public class FreeMarkerTemplateManager implements TemplateManager {
         config.setSharedVariable("render", new RenderTag());
         config.setSharedVariable("confirm", new ConfirmationTag());
         config.setSharedVariable("wrap", new WrapTag());
+        config.setSharedVariable("debug", new DebugTag());
 
         AbstractFreeMarkerConfig freeMarkerConfig = activeweb.Configuration.getFreeMarkerConfig();
         if(freeMarkerConfig != null){

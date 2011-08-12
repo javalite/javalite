@@ -169,10 +169,11 @@ public class HttpSupport {
     /**
      * Renders results with a template.
      *
-     * This call must be the last call in the action. All subsequent calls to assign values, render or respond will generate
-     * {@link IllegalStateException}.
+     * This call must be the last call in the action.
      *
-     * @param template - template name, must be absolute.
+     * @param template - template name, must be "absolute", starting with slash,
+     * such as: "/controller_dir/action_template".
+     * @param values map with values to pass to view. 
      * @return instance of {@link RenderBuilder}, which is used to provide additional parameters.
      */
     protected RenderBuilder render(String template, Map values) {
@@ -187,7 +188,7 @@ public class HttpSupport {
      * This method does not expect a full URL.
      *
      * @param path - expected to be a path within the application.
-     * @return
+     * @return instance of {@link activeweb.HttpSupport.HttpBuilder} to accept additional information.
      */
     protected HttpBuilder redirect(String path) {
         RedirectResponse resp = new RedirectResponse(path);

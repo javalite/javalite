@@ -25,6 +25,5 @@ import freemarker.template.TemplateExceptionHandler;
 public class FreeMarkerConfig extends AbstractFreeMarkerConfig {
     public void init() {
         getConfiguration().setNumberFormat("0.##");
-        getConfiguration().setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
     }
 }
