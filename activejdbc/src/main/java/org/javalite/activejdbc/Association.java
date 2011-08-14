@@ -31,16 +31,28 @@ public class Association implements Serializable {
 
     private String source, target;
 
-    
+
+    /**
+     * @param source source table name of this association.
+     * @param target target table name of this association.
+     */
     protected Association(String source, String target) {
         this.source = source;
         this.target = target;
     }
 
+    /**
+     * Returns source table name of this association.
+     * @return source table name of this association.
+     */
     public String getSource() {
         return source;
     }
 
+    /**
+     * Returns target table name of this association.
+     * @return target table name of this association.
+     */
     public String getTarget() {
         return target;
     }

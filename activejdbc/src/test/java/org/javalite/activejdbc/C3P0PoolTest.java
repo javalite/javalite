@@ -25,6 +25,7 @@ import java.beans.PropertyVetoException;
 import java.sql.SQLException;
 
 import static org.javalite.test.jspec.JSpec.a;
+import static org.javalite.activejdbc.test.JdbcProperties.*;
 
 /**
  * Example of using c3p0 Pool 
@@ -35,8 +36,8 @@ public class C3P0PoolTest  {
 
     @Test
     public void shouldUseConnectionFromPool() throws PropertyVetoException, SQLException, ClassNotFoundException {
-        Class.forName("com.mysql.jdbc.Driver");
-        DataSource dataSourceUnpooled = DataSources.unpooledDataSource("jdbc:mysql://localhost/activejdbc", "root", "p@ssw0rd");
+        Class.forName(driver());
+        DataSource dataSourceUnpooled = DataSources.unpooledDataSource(url(), user(), password());
         DataSource dataSourcePooled = DataSources.pooledDataSource(dataSourceUnpooled); //init the connection pool
         Base.open(dataSourcePooled); //get connection from pool
         Person.deleteAll(); //clean DB before test

@@ -151,7 +151,7 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
      * 
      * @param target association of this table and the target table.
      * @param associationClass class of association in requested.
-     * @return association os this table with the target table. Will return null if there is no association with target
+     * @return association of this table with the target table. Will return null if there is no association with target
      * table and specified type.
      */
     public E getAssociationForTarget(String target, Class<? extends Association> associationClass){

@@ -1,3 +1,14 @@
+DROP TABLE IF EXISTS cakes;
+CREATE TABLE cakes (id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR(56) NOT NULL);
+
+DROP TABLE IF EXISTS swords;
+CREATE TABLE swords (id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR(56) NOT NULL);
+
+DROP TABLE IF EXISTS meals;
+CREATE TABLE meals (id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR(56) NOT NULL);
+
+DROP TABLE IF EXISTS cheeses;
+CREATE TABLE cheeses (id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR(56) NOT NULL);
 
 DROP TABLE IF EXISTS people;
 CREATE TABLE people (id  int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR(56) NOT NULL, last_name VARCHAR(56), dob DATE, graduation_date DATE, created_at DATETIME, updated_at DATETIME);

@@ -1,3 +1,14 @@
+DROP TABLE IF EXISTS cakes;
+CREATE TABLE cakes (id serial PRIMARY KEY, name VARCHAR(56) NOT NULL);
+
+DROP TABLE IF EXISTS swords;
+CREATE TABLE swords (id serial PRIMARY KEY, name VARCHAR(56) NOT NULL);
+
+DROP TABLE IF EXISTS meals;
+CREATE TABLE meals (id serial PRIMARY KEY, name VARCHAR(56) NOT NULL);
+
+DROP TABLE IF EXISTS cheeses;
+CREATE TABLE cheeses (id serial PRIMARY KEY, name VARCHAR(56) NOT NULL);
 
 DROP TABLE IF EXISTS people;
 CREATE TABLE people (id serial PRIMARY KEY, name VARCHAR(56) NOT NULL, last_name VARCHAR(56), dob DATE, graduation_date DATE, created_at TIMESTAMP, updated_at TIMESTAMP);

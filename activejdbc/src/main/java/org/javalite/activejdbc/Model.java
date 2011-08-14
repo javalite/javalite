@@ -23,6 +23,7 @@ import org.javalite.activejdbc.validation.*;
 import static org.javalite.common.Util.blank;
 
 import java.io.*;
+import java.lang.reflect.Modifier;
 import java.sql.*;
 import java.math.BigDecimal;
 import java.util.*;
@@ -1996,9 +1997,26 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             Class[] classes = getClassContext();
             for (int i = 0; i < classes.length; i++) {
                 Class aClass = classes[i];
-                if (aClass.getSuperclass().equals(Model.class)) {  // TODO: revisit for inheritance implementation
-                    return aClass.getName();
-                }
+
+		boolean isValidModel = true; 
+		// Inherits from Model whithout being abstract => Can be a valid one
+		if(Model.class.isAssignableFrom(aClass) && aClass != null && !aClass.equals(Model.class) && !Modifier.isAbstract(aClass.getModifiers()))
+		{
+			// The requirement for being a valid model is that all superclasses between aClass and Model must be declared abstract
+			// Any superclass found that is not abstract and that is not model is rejected
+			Class superClass = aClass;
+			while(!superClass.equals(Model.class) && isValidModel)
+			{
+				superClass = superClass.getSuperclass();
+				if(!Modifier.isAbstract(superClass.getModifiers()) && !superClass.equals(Model.class))
+					isValidModel = false;
+			}			
+		}
+		else
+			isValidModel = false;
+
+		if(isValidModel)
+			return aClass.getName();
             }
             throw new InitException("failed to determine Model class name, are you sure models have been instrumented?");
         }

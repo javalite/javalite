@@ -40,11 +40,11 @@ public class ToJsonSpec extends ActiveJDBCTest {
         Person p  = (Person)Person.findById(1);
         //test no indent
         String json = p.toJson(false, "name", "last_name", "dob");
-        the(json).shouldBeEqual("{\"model_class\":\"activejdbc.test_models.Person\",\"name\":\"John\",\"dob\":\"1934-12-01\",\"last_name\":\"Smith\"}");
+        the(json).shouldBeEqual("{\"model_class\":\"org.javalite.activejdbc.test_models.Person\",\"name\":\"John\",\"dob\":\"1934-12-01\",\"last_name\":\"Smith\"}");
         //test indent
         json = p.toJson(true, "name", "last_name", "dob");
         String expected = "{\n" +
-                "  \"model_class\":\"activejdbc.test_models.Person\",\n" +
+                "  \"model_class\":\"org.javalite.activejdbc.test_models.Person\",\n" +
                 "  \"name\":\"John\",\n" +
                 "  \"dob\":\"1934-12-01\",\n" +
                 "  \"last_name\":\"Smith\"\n" +
@@ -59,7 +59,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
         User u = personList.get(0);
         String json = u.toJson(true);
         a(json).shouldEqual("{\n" +
-                "  \"model_class\":\"activejdbc.test_models.User\",\n" +
+                "  \"model_class\":\"org.javalite.activejdbc.test_models.User\",\n" +
                 "  \"id\":\"1\",\n" +
                 "  \"first_name\":\"Marilyn\",\n" +
                 "  \"email\":\"mmonroe@yahoo.com\",\n" +
@@ -67,7 +67,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
                 "  \"children\" : {\n" +
                 "    \"addresses\" : [\n" +
                 "    {\n" +
-                "      \"model_class\":\"activejdbc.test_models.Address\",\n" +
+                "      \"model_class\":\"org.javalite.activejdbc.test_models.Address\",\n" +
                 "      \"id\":\"1\",\n" +
                 "      \"zip\":\"60606\",\n" +
                 "      \"state\":\"IL\",\n" +
@@ -77,7 +77,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
                 "      \"city\":\"Springfield\"\n" +
                 "    },\n" +
                 "    {\n" +
-                "      \"model_class\":\"activejdbc.test_models.Address\",\n" +
+                "      \"model_class\":\"org.javalite.activejdbc.test_models.Address\",\n" +
                 "      \"id\":\"2\",\n" +
                 "      \"zip\":\"60606\",\n" +
                 "      \"state\":\"IL\",\n" +
@@ -87,7 +87,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
                 "      \"city\":\"Springfield\"\n" +
                 "    },\n" +
                 "    {\n" +
-                "      \"model_class\":\"activejdbc.test_models.Address\",\n" +
+                "      \"model_class\":\"org.javalite.activejdbc.test_models.Address\",\n" +
                 "      \"id\":\"3\",\n" +
                 "      \"zip\":\"60606\",\n" +
                 "      \"state\":\"IL\",\n" +
@@ -107,7 +107,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
         List<User> personList = User.findAll().orderBy("id").include(Address.class);
         User u = personList.get(0);
         String json = u.toJson(false);
-        a(json).shouldEqual("{\"model_class\":\"activejdbc.test_models.User\",\"id\":\"1\",\"first_name\":\"Marilyn\",\"email\":\"mmonroe@yahoo.com\",\"last_name\":\"Monroe\",\"children\" : {\"addresses\" : [{\"model_class\":\"activejdbc.test_models.Address\",\"id\":\"1\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"123 Pine St.\",\"address2\":\"apt 31\",\"user_id\":\"1\",\"city\":\"Springfield\"},{\"model_class\":\"activejdbc.test_models.Address\",\"id\":\"2\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"456 Brook St.\",\"address2\":\"apt 21\",\"user_id\":\"1\",\"city\":\"Springfield\"},{\"model_class\":\"activejdbc.test_models.Address\",\"id\":\"3\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"23 Grove St.\",\"address2\":\"apt 32\",\"user_id\":\"1\",\"city\":\"Springfield\"}]}}");
+        a(json).shouldEqual("{\"model_class\":\"org.javalite.activejdbc.test_models.User\",\"id\":\"1\",\"first_name\":\"Marilyn\",\"email\":\"mmonroe@yahoo.com\",\"last_name\":\"Monroe\",\"children\" : {\"addresses\" : [{\"model_class\":\"org.javalite.activejdbc.test_models.Address\",\"id\":\"1\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"123 Pine St.\",\"address2\":\"apt 31\",\"user_id\":\"1\",\"city\":\"Springfield\"},{\"model_class\":\"org.javalite.activejdbc.test_models.Address\",\"id\":\"2\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"456 Brook St.\",\"address2\":\"apt 21\",\"user_id\":\"1\",\"city\":\"Springfield\"},{\"model_class\":\"org.javalite.activejdbc.test_models.Address\",\"id\":\"3\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"23 Grove St.\",\"address2\":\"apt 32\",\"user_id\":\"1\",\"city\":\"Springfield\"}]}}");
     }
 
     @Test
@@ -117,7 +117,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
         User u = (User)User.findById(1);
         String json = u.toJson(true, "email", "last_name");
         the(json).shouldBeEqual("{\n" +
-                "  \"model_class\":\"activejdbc.test_models.User\",\n" +
+                "  \"model_class\":\"org.javalite.activejdbc.test_models.User\",\n" +
                 "  \"email\":\"mmonroe@yahoo.com\",\n" +
                 "  \"last_name\":\"Monroe\"\n" +
                 "}");
@@ -129,7 +129,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
         LazyList<User> personList = User.findAll().orderBy("id").include(Address.class);
 
         String json = personList.toJson(false);
-        a(json).shouldBeEqual("[{\"model_class\":\"activejdbc.test_models.User\",\"id\":\"1\",\"first_name\":\"Marilyn\",\"email\":\"mmonroe@yahoo.com\",\"last_name\":\"Monroe\",\"children\" : {\"addresses\" : [{\"model_class\":\"activejdbc.test_models.Address\",\"id\":\"1\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"123 Pine St.\",\"address2\":\"apt 31\",\"user_id\":\"1\",\"city\":\"Springfield\"},{\"model_class\":\"activejdbc.test_models.Address\",\"id\":\"2\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"456 Brook St.\",\"address2\":\"apt 21\",\"user_id\":\"1\",\"city\":\"Springfield\"},{\"model_class\":\"activejdbc.test_models.Address\",\"id\":\"3\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"23 Grove St.\",\"address2\":\"apt 32\",\"user_id\":\"1\",\"city\":\"Springfield\"}]}},{\"model_class\":\"activejdbc.test_models.User\",\"id\":\"2\",\"first_name\":\"John\",\"email\":\"jdoe@gmail.com\",\"last_name\":\"Doe\",\"children\" : {\"addresses\" : [{\"model_class\":\"activejdbc.test_models.Address\",\"id\":\"4\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"143 Madison St.\",\"address2\":\"apt 34\",\"user_id\":\"2\",\"city\":\"Springfield\"},{\"model_class\":\"activejdbc.test_models.Address\",\"id\":\"5\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"153 Creek St.\",\"address2\":\"apt 35\",\"user_id\":\"2\",\"city\":\"Springfield\"},{\"model_class\":\"activejdbc.test_models.Address\",\"id\":\"6\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"163 Gorge St.\",\"address2\":\"apt 36\",\"user_id\":\"2\",\"city\":\"Springfield\"},{\"model_class\":\"activejdbc.test_models.Address\",\"id\":\"7\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"173 Far Side.\",\"address2\":\"apt 37\",\"user_id\":\"2\",\"city\":\"Springfield\"}]}}]");
+        a(json).shouldBeEqual("[{\"model_class\":\"org.javalite.activejdbc.test_models.User\",\"id\":\"1\",\"first_name\":\"Marilyn\",\"email\":\"mmonroe@yahoo.com\",\"last_name\":\"Monroe\",\"children\" : {\"addresses\" : [{\"model_class\":\"org.javalite.activejdbc.test_models.Address\",\"id\":\"1\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"123 Pine St.\",\"address2\":\"apt 31\",\"user_id\":\"1\",\"city\":\"Springfield\"},{\"model_class\":\"org.javalite.activejdbc.test_models.Address\",\"id\":\"2\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"456 Brook St.\",\"address2\":\"apt 21\",\"user_id\":\"1\",\"city\":\"Springfield\"},{\"model_class\":\"org.javalite.activejdbc.test_models.Address\",\"id\":\"3\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"23 Grove St.\",\"address2\":\"apt 32\",\"user_id\":\"1\",\"city\":\"Springfield\"}]}},{\"model_class\":\"org.javalite.activejdbc.test_models.User\",\"id\":\"2\",\"first_name\":\"John\",\"email\":\"jdoe@gmail.com\",\"last_name\":\"Doe\",\"children\" : {\"addresses\" : [{\"model_class\":\"org.javalite.activejdbc.test_models.Address\",\"id\":\"4\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"143 Madison St.\",\"address2\":\"apt 34\",\"user_id\":\"2\",\"city\":\"Springfield\"},{\"model_class\":\"org.javalite.activejdbc.test_models.Address\",\"id\":\"5\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"153 Creek St.\",\"address2\":\"apt 35\",\"user_id\":\"2\",\"city\":\"Springfield\"},{\"model_class\":\"org.javalite.activejdbc.test_models.Address\",\"id\":\"6\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"163 Gorge St.\",\"address2\":\"apt 36\",\"user_id\":\"2\",\"city\":\"Springfield\"},{\"model_class\":\"org.javalite.activejdbc.test_models.Address\",\"id\":\"7\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"173 Far Side.\",\"address2\":\"apt 37\",\"user_id\":\"2\",\"city\":\"Springfield\"}]}}]");
     }
 
     @Test
