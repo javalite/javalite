@@ -35,4 +35,6 @@ public class HomeController extends AppController {
     }
 
     public void wrappedToo(){}
+    
+    public void gwt(){}
 }
