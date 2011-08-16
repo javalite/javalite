@@ -9,3 +9,18 @@
         in order for this application to display correctly.
     </div>
 </noscript>
+
+<style type="text/css">
+
+    .gwt_control{
+        margin-top: 10px;
+    }
+
+</style>
+
+
+<hr/>
+<span class="gwt_control"> Enter value: </span>
+<div id="text_div" class="gwt_control"> </div>
+<div id="button_div" class="gwt_control"> </div>
+<div id="label_div" class="gwt_control"> </div>

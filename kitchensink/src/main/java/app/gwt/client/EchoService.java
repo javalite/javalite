@@ -6,8 +6,8 @@ import com.google.gwt.user.client.rpc.RemoteService;
  *
  * @author Max Artyukhov
  */
-public interface CommunicationService extends RemoteService {
+public interface EchoService extends RemoteService {
     
-    String generate(String text);
+    String echo(String text);
     
 }

@@ -5,11 +5,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.*;
 
 /**
  *
@@ -18,26 +14,24 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class GwtExampleEntryPoint implements EntryPoint {
 
     public void onModuleLoad() {
-        VerticalPanel verticalPanel = new VerticalPanel();
-        RootPanel.get().add(verticalPanel);
-        
+
         final TextBox textBox = new TextBox();
-        verticalPanel.add(textBox);
+        RootPanel.get("text_div").add(textBox);
         
         Button button = new Button("Try");
-        verticalPanel.add(button);
+        RootPanel.get("button_div").add(button);
         
         final Label resultLabel = new Label();
-        verticalPanel.add(resultLabel);
+        RootPanel.get("label_div").add(resultLabel);
         
         button.addClickHandler(new ClickHandler() {
 
             public void onClick(ClickEvent event) {
                 String textValue = textBox.getValue();
-                CommunicationServiceAsync.INSTANCE.generate(textValue, new AsyncCallback<String>() {
+                EchoServiceAsync.INSTANCE.echo(textValue, new AsyncCallback<String>() {
 
                     public void onFailure(Throwable caught) {
-                        Window.alert("Exception occured on the server side; Please check logs");
+                        Window.alert("Exception occured on the server side; Please check server log: " + caught.toString());
                     }
 
                     public void onSuccess(String result) {

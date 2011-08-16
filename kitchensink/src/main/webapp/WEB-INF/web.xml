@@ -15,7 +15,7 @@
         <filter-class>activeweb.RequestDispatcher</filter-class>
         <init-param>
             <param-name>exclusions</param-name>
-            <param-value>css,images,js,html,GwtExample</param-value>
+            <param-value>css,images,js,html,GwtExample,ico</param-value>
         </init-param>
         <init-param>
             <param-name>root_controller</param-name>

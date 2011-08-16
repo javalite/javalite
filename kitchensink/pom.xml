@@ -46,12 +46,53 @@
                 <jdbc.password>p@ssw0rd</jdbc.password>
             </properties>
         </profile>
+        <profile>
+            <id>gwt</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>gwt-maven-plugin</artifactId>
+                        <version>2.2.0</version>
+                        <configuration>
+                            <bindAddress>0.0.0.0</bindAddress>
+                            <runTarget>/home/gwt</runTarget>
+                            <port>8080</port>
+                            <hostedWebapp>
+                                ${project.build.directory}/${project.build.finalName}
+                            </hostedWebapp>
+                            <draftCompile>true</draftCompile>
+                            <module>app.gwt.GwtExample</module>
+                            <systemProperties>
+                                <activejdbc.log>.*</activejdbc.log>
+                                <active_reload>true</active_reload>
+                                <activeweb.log.request>true</activeweb.log.request>
+                            </systemProperties>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>compile</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>com.google.gwt</groupId>
+                                <artifactId>gwt-dev</artifactId>
+                                <version>${gwt.version}</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
-    
+
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
+            <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.4.2</version>
                 <configuration>
@@ -122,41 +163,7 @@
                     </includes>
                 </configuration>
             </plugin>
-            
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>gwt-maven-plugin</artifactId>
-                <version>2.2.0</version>
-                <configuration>
-                    <bindAddress>0.0.0.0</bindAddress>
-                    <runTarget>/home/gwt</runTarget>
-                    <port>7878</port>
-                    <hostedWebapp>
-                                ${project.build.directory}/${project.build.finalName}
-                    </hostedWebapp>
-                    <draftCompile>true</draftCompile>
-                    <module>app.gwt.GwtExample</module>
-                    <systemProperties>
-                        <activejdbc.log>.*</activejdbc.log>
-                        <active_reload>true</active_reload>
-                        <activeweb.log.request>true</activeweb.log.request>
-                    </systemProperties>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.google.gwt</groupId>
-                        <artifactId>gwt-dev</artifactId>
-                        <version>${gwt.version}</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
+
 
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
