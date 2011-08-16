@@ -18,7 +18,7 @@ public class GwtExampleEntryPoint implements EntryPoint {
         final TextBox textBox = new TextBox();
         RootPanel.get("text_div").add(textBox);
         
-        Button button = new Button("Try");
+        Button button = new Button("Do echo");
         RootPanel.get("button_div").add(button);
         
         final Label resultLabel = new Label();
