@@ -51,22 +51,8 @@ public class InstrumentationModelFinder extends ModelFinder {
             ClassPool cp = ClassPool.getDefault();
             CtClass clazz = cp.get(className);
 
-            boolean isValidModel = true;
-            // Inherits from Model whithout being abstract => Can be a valid one
-            if (clazz.subclassOf(modelClass) && clazz != null && !clazz.equals(modelClass) && !Modifier.isAbstract(clazz.getModifiers())) {
-                // The requirement for being valid is that every superclass between clazz and Model must be declared abstract
-                // Any superclass found that is not abstract will make clazz an invalid model
-                CtClass superClass = clazz;
-                while (!superClass.equals(modelClass) && isValidModel) {
-                    superClass = superClass.getSuperclass();
-                    if (!Modifier.isAbstract(superClass.getModifiers()) && !superClass.equals(modelClass))
-                        isValidModel = false;
-                }
-            } else{
-                isValidModel = false;
-            }
-
-            if (isValidModel) {
+            if (clazz.subclassOf(modelClass) && clazz != null && !clazz.equals(modelClass))
+	    {
                 models.add(clazz);
                 System.out.println("Found model: " + clazz.getName());
             }
