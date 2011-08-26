@@ -669,7 +669,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
 
         if(fkValue == null){
-            throw new OrphanRecordException("Attribute:  "  + fkName + " is null, cannot determine parent. Child record: " + this);
+            logger.debug("Attribute:  "  + fkName + " is null, cannot determine parent. Child record: " + this);
+            return null;
         }
         String parentIdName = parentMM.getIdName();
         String query = getMetaModelLocal().getDialect().selectStarParametrized(parentTable, parentIdName);
@@ -684,7 +685,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         List<Map> results = new DB(getMetaModelLocal().getDbName()).findAll(query, Integer.parseInt(fkValue));
         //expect only one result here
-        if (results.size() == 0) { //ths could be covered by referential integrity constraint
+        if (results.size() == 0) { //this should be covered by referential integrity constraint
             return null;
         } else {
             try {
@@ -701,7 +702,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     protected void setCachedParent(Model parent) {
-        cachedParents.put(parent.getClass(), parent);
+        if(parent != null){
+            cachedParents.put(parent.getClass(), parent);
+        }
     }
 
 

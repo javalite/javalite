@@ -27,9 +27,10 @@ import org.junit.Test;
  */
 public class Defect48Test extends ActiveJDBCTest{
 
-    @Test(expected = InternalException.class)
+    @Test
     public void shouldFailIfParentRequestedAndForeignKeyNotSet(){
         Address a = new Address();
-        User u = a.parent(User.class);// this was causing a NumberFOrmatException before.
+        User u = a.parent(User.class);
+        a(u).shouldBeNull();
     }
 }

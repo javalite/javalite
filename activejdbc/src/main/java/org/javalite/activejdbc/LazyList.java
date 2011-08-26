@@ -308,10 +308,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
         for(Model child: delegate){
             Object fk = child.get(fkName);
             Model parent = parentsHasByIds.get(fk);
-            if(parent == null){
-                throw new OrphanRecordException("Failed to find this child's parent, seems like an orphaned record. Child model: " + child);
-            }
-            child.setCachedParent(parent);
+            child.setCachedParent(parent); //this could be null, which is fine
         }
     }
 

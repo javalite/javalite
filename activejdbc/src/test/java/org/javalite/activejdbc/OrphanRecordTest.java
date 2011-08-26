@@ -16,7 +16,7 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
-import org.javalite.activejdbc.OrphanRecordException;
+
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Address;
 import org.javalite.activejdbc.test_models.User;
@@ -38,18 +38,19 @@ public class OrphanRecordTest extends ActiveJDBCTest {
     }
 
 
-    @Test(expected = OrphanRecordException.class)
-    public void shouldThrowExceptionIfForeignKeyIsNull(){
+    @Test
+    public void shouldReturnNullIfForeignKeyIsNull(){
         Address.createIt("address1", "123 Pine Street", "address2", "apt 4",  "city", "New Heaven",  "state", "MI",  "zip", 12345);
-        Address a = (Address)Address.findFirst("address1 = ?", "123 Pine Street");
-        a.parent(User.class);
+        Address address = (Address)Address.findFirst("address1 = ?", "123 Pine Street");
+        a(address.parent(User.class)).shouldBeNull();
     }
 
-    @Test(expected = OrphanRecordException.class)
-    public void shouldThrowExceptionIfForeignKeyPointsNonExistingParent(){
+    @Test
+    public void shouldReturnNullIfForeignKeyPointsNonExistingParent(){
         Address.createIt("address1", "123 Pine Street", "address2", "apt 4",  "city", "New Heaven",  "state", "MI",
                 "zip", 12345, "user_id", 1234);
         List<Address> addressList = Address.findAll().include(User.class);
-        addressList.size();
+
+        the(addressList.get(0).parent(User.class)).shouldBeNull();
     }
 }
