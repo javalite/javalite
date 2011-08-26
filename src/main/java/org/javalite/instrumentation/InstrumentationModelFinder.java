@@ -45,21 +45,21 @@ public class InstrumentationModelFinder extends ModelFinder {
     }
 
     @Override
-    protected void classFound(String className) throws IOException, ClassNotFoundException {
+        protected void classFound(String className) throws IOException, ClassNotFoundException {
 
-        try {
-            ClassPool cp = ClassPool.getDefault();
-            CtClass clazz = cp.get(className);
+            try {
+                ClassPool cp = ClassPool.getDefault();
+                CtClass clazz = cp.get(className);
 
-            if (clazz.subclassOf(modelClass) && clazz != null && !clazz.equals(modelClass))
-	    {
-                models.add(clazz);
-                System.out.println("Found model: " + clazz.getName());
+                if (clazz.subclassOf(modelClass) && clazz != null && !clazz.equals(modelClass))
+            {
+                    models.add(clazz);
+                    System.out.println("Found model: " + clazz.getName());
+                }
+            } catch (Exception e) {
+                throw new InstrumentationException(e);
             }
-        } catch (Exception e) {
-            throw new InstrumentationException(e);
         }
-    }
 
     public List<CtClass> getModels(){
         return models;
