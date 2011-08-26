@@ -17,11 +17,9 @@ limitations under the License.
 
 package org.javalite.activejdbc.test_models;
 
-import org.javalite.activejdbc.Model;
 
 /**
  * @author Stephane Restani
  */
-public class Cheese extends Meal {
-}
+public class Cheese extends Meal {}
 

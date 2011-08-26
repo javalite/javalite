@@ -22,7 +22,5 @@ import org.javalite.activejdbc.Model;
 /**
  * @author Stephane Restani
  */
-public class Sword extends Weapon {
-
-}
+public class Sword extends Weapon {}
 

@@ -34,10 +34,10 @@ public class HierarchyTest extends ActiveJDBCTest {
 	 * This test verifies that single-table inheritance is not possible.
 	 * Cheese extends Meal which are both non-abstract classes
 	 */
-    @Ignore
+
 	@Test(expected = org.javalite.activejdbc.DBException.class)
 	public void shouldFailSTI() {
-		Cheese.count();
+        Cheese.count();
 	}
 
 	/**

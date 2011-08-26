@@ -1,62 +1,3 @@
-CREATE TABLE cakes (id NUMBER NOT NULL, name VARCHAR(56) NOT NULL)
--- BREAK
-ALTER TABLE cakes ADD CONSTRAINT cakes_pk PRIMARY KEY ( id )
--- BREAK
-CREATE SEQUENCE cakes_seq START WITH 1 INCREMENT BY 1
--- BREAK
-CREATE OR REPLACE TRIGGER cakes_trigger
-	BEFORE INSERT ON cakes REFERENCING
-	NEW AS new
-	OLD AS old
-	FOR EACH ROW
-	begin
-select coalesce(:new.id, cakes_seq.nextval) into :new.id from dual;
-end;
-
-CREATE TABLE swords (id NUMBER NOT NULL, name VARCHAR(56) NOT NULL)
--- BREAK
-ALTER TABLE swords ADD CONSTRAINT swords_pk PRIMARY KEY ( id )
--- BREAK
-CREATE SEQUENCE swords_seq START WITH 1 INCREMENT BY 1
--- BREAK
-CREATE OR REPLACE TRIGGER swords_trigger
-        BEFORE INSERT ON swords REFERENCING
-        NEW AS new
-        OLD AS old
-        FOR EACH ROW
-        begin
-select coalesce(:new.id, swords_seq.nextval) into :new.id from dual;
-end;
-
-CREATE TABLE meals (id NUMBER NOT NULL, name VARCHAR(56) NOT NULL)
--- BREAK
-ALTER TABLE meals ADD CONSTRAINT meals_pk PRIMARY KEY ( id )
--- BREAK
-CREATE SEQUENCE meals_seq START WITH 1 INCREMENT BY 1
--- BREAK
-CREATE OR REPLACE TRIGGER meals_trigger
-        BEFORE INSERT ON meals REFERENCING
-        NEW AS new
-        OLD AS old
-        FOR EACH ROW
-        begin
-select coalesce(:new.id, meals_seq.nextval) into :new.id from dual;
-end;
-
-CREATE TABLE cheeses (id NUMBER NOT NULL, name VARCHAR(56) NOT NULL)
--- BREAK
-ALTER TABLE cheeses ADD CONSTRAINT cheeses_pk PRIMARY KEY ( id )
--- BREAK
-CREATE SEQUENCE cheeses_seq START WITH 1 INCREMENT BY 1
--- BREAK
-CREATE OR REPLACE TRIGGER cheeses_trigger
-        BEFORE INSERT ON cheeses REFERENCING
-        NEW AS new
-        OLD AS old
-        FOR EACH ROW
-        begin
-select coalesce(:new.id, cheeses_seq.nextval) into :new.id from dual;
-end;
 
 CREATE TABLE people (id  NUMBER NOT NULL, name VARCHAR(56) NOT NULL, last_name VARCHAR(56), dob DATE, graduation_date DATE, created_at TIMESTAMP, updated_at TIMESTAMP)
 -- BREAK
@@ -771,3 +712,52 @@ CREATE OR REPLACE TRIGGER content_groups_trigger
     begin
 select coalesce(:new.id, content_groups_seq.nextval) into :new.id from dual;
 end;
+
+-- BREAK
+CREATE TABLE cakes (id NUMBER NOT NULL, name VARCHAR(56) NOT NULL)
+-- BREAK
+ALTER TABLE cakes ADD CONSTRAINT cakes_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE cakes_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER cakes_trigger
+	BEFORE INSERT ON cakes REFERENCING
+	NEW AS new
+	OLD AS old
+	FOR EACH ROW
+	begin
+select coalesce(:new.id, cakes_seq.nextval) into :new.id from dual;
+end;
+
+-- BREAK
+CREATE TABLE swords (id NUMBER NOT NULL, name VARCHAR(56) NOT NULL)
+-- BREAK
+ALTER TABLE swords ADD CONSTRAINT swords_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE swords_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER swords_trigger
+        BEFORE INSERT ON swords REFERENCING
+        NEW AS new
+        OLD AS old
+        FOR EACH ROW
+        begin
+select coalesce(:new.id, swords_seq.nextval) into :new.id from dual;
+end;
+
+-- BREAK
+CREATE TABLE meals (id NUMBER NOT NULL, name VARCHAR(56) NOT NULL)
+-- BREAK
+ALTER TABLE meals ADD CONSTRAINT meals_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE meals_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER meals_trigger
+        BEFORE INSERT ON meals REFERENCING
+        NEW AS new
+        OLD AS old
+        FOR EACH ROW
+        begin
+select coalesce(:new.id, meals_seq.nextval) into :new.id from dual;
+end;
+

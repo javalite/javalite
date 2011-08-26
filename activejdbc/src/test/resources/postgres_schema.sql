@@ -1,15 +1,3 @@
-DROP TABLE IF EXISTS cakes;
-CREATE TABLE cakes (id serial PRIMARY KEY, name VARCHAR(56) NOT NULL);
-
-DROP TABLE IF EXISTS swords;
-CREATE TABLE swords (id serial PRIMARY KEY, name VARCHAR(56) NOT NULL);
-
-DROP TABLE IF EXISTS meals;
-CREATE TABLE meals (id serial PRIMARY KEY, name VARCHAR(56) NOT NULL);
-
-DROP TABLE IF EXISTS cheeses;
-CREATE TABLE cheeses (id serial PRIMARY KEY, name VARCHAR(56) NOT NULL);
-
 DROP TABLE IF EXISTS people;
 CREATE TABLE people (id serial PRIMARY KEY, name VARCHAR(56) NOT NULL, last_name VARCHAR(56), dob DATE, graduation_date DATE, created_at TIMESTAMP, updated_at TIMESTAMP);
 
@@ -137,6 +125,15 @@ CREATE TABLE mammals (id  serial PRIMARY KEY, name VARCHAR(56));
 DROP TABLE IF EXISTS classifications;
 CREATE TABLE classifications (id  serial PRIMARY KEY, name VARCHAR(56), parent_id INT, parent_type VARCHAR(56));
 
-
 DROP TABLE IF EXISTS content_groups;
 create table content_groups ( id  serial PRIMARY KEY, group_name INT);
+
+DROP TABLE IF EXISTS cakes;
+CREATE TABLE cakes (id serial PRIMARY KEY, name VARCHAR(56) NOT NULL);
+
+DROP TABLE IF EXISTS swords;
+CREATE TABLE swords (id serial PRIMARY KEY, name VARCHAR(56) NOT NULL);
+
+DROP TABLE IF EXISTS meals;
+CREATE TABLE meals (id serial PRIMARY KEY, name VARCHAR(56) NOT NULL);
+

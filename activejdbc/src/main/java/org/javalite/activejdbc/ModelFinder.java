@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.*;
 import java.util.zip.ZipEntry;
@@ -176,26 +175,12 @@ public class ModelFinder {
         }
     }
 
+
     protected void classFound(String className) throws IOException, ClassNotFoundException {
         Class clazz = Class.forName(className);
 
-	boolean isValidModel = true;
-        // Inherits from Model and is not abstract => Can be a valid one
-        if(Model.class.isAssignableFrom(clazz) && clazz != null && !clazz.equals(Model.class) && !Modifier.isAbstract(clazz.getModifiers()))
+        if(Model.class.isAssignableFrom(clazz) && clazz != null && !clazz.equals(Model.class))
         {
-		// The requirement for being a valid model is that every superclass between clazz and Model must be declared abstract
-		// Any superclass found that is not abstract and not Model is rejected
-        	Class superClass = clazz;
-                while(!superClass.equals(Model.class) && isValidModel)
-                {
-			superClass = superClass.getSuperclass();
-                        if(!Modifier.isAbstract(superClass.getModifiers()) && !superClass.equals(Model.class))
-                               isValidModel = false;
-                }
-        } else
-        	isValidModel = false;
-
-        if(isValidModel) {
 		String dbName = MetaModel.getDbName(clazz);
 		if(modelClasses.get(dbName) == null) {
 			modelClasses.put(dbName, new ArrayList<Class<? extends Model>>());

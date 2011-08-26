@@ -22,5 +22,4 @@ import org.javalite.activejdbc.Model;
 /**
  * @author Stephane Restani
  */
-public class Meal extends Model {
-}
+public class Meal extends Model {}

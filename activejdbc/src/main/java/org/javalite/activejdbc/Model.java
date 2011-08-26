@@ -1991,32 +1991,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         cachedChildren.put(childClass, children);
     }
 
-
     static class ClassGetter extends SecurityManager {
         public String getClassName() {
             Class[] classes = getClassContext();
-            for (int i = 0; i < classes.length; i++) {
-                Class aClass = classes[i];
-
-		boolean isValidModel = true; 
-		// Inherits from Model whithout being abstract => Can be a valid one
-		if(Model.class.isAssignableFrom(aClass) && aClass != null && !aClass.equals(Model.class) && !Modifier.isAbstract(aClass.getModifiers()))
-		{
-			// The requirement for being a valid model is that all superclasses between aClass and Model must be declared abstract
-			// Any superclass found that is not abstract and that is not model is rejected
-			Class superClass = aClass;
-			while(!superClass.equals(Model.class) && isValidModel)
-			{
-				superClass = superClass.getSuperclass();
-				if(!Modifier.isAbstract(superClass.getModifiers()) && !superClass.equals(Model.class))
-					isValidModel = false;
-			}			
-		}
-		else
-			isValidModel = false;
-
-		if(isValidModel)
-			return aClass.getName();
+            for (Class clazz : classes) {
+                if (Model.class.isAssignableFrom(clazz) && clazz != null && !clazz.equals(Model.class)) {
+                    return clazz.getName();
+                }
             }
             throw new InitException("failed to determine Model class name, are you sure models have been instrumented?");
         }

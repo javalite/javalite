@@ -22,7 +22,5 @@ import org.javalite.activejdbc.Model;
 /**
  * @author Stephane Restani
  */
-public abstract class Dessert extends Model {
-
-}
+public abstract class Dessert extends Model {}
 
