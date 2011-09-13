@@ -23,7 +23,7 @@ public class BelongsToParentsTest extends ActiveJDBCTest {
 	
 	@Test
 	public void shouldCheckThatComputerBelongsTo2DifferentParents() { 
-		Computer computer = Computer.findById(1);
+		Computer computer = (Computer)Computer.findById(1);
 		a(computer.parent(Motherboard.class)).shouldNotBeNull();
 		a(computer.parent(Keyboard.class)).shouldNotBeNull();
 	}

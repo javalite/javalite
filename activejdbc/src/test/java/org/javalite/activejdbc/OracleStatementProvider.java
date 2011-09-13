@@ -46,6 +46,14 @@ public class OracleStatementProvider implements StatementProvider{
                     "INSERT INTO addresses VALUES(6, '163 Gorge St.', 'apt 36', 'Springfield', 'IL', '60606', 2)",
                     "INSERT INTO addresses VALUES(7, '173 Far Side.', 'apt 37', 'Springfield', 'IL', '60606', 2)"
             );
+        } else if (table.equals("rooms")) {
+            statements =  Arrays.asList(
+                    "INSERT INTO rooms VALUES(1, 'bathroom', 1)",
+                    "INSERT INTO rooms VALUES(2, 'conference room', 1)",
+                    "INSERT INTO rooms VALUES(3, 'ball room', 7)",
+                    "INSERT INTO rooms VALUES(4, 'basement', 7)"
+            );
+
         } else if (table.equals("legacy_universities")) {
             statements =  Arrays.asList(
 
@@ -75,18 +83,29 @@ public class OracleStatementProvider implements StatementProvider{
         } else if (table.equals("patients")) {
             statements =  Arrays.asList(
                     "INSERT INTO patients VALUES(1, 'Jim', 'Cary')",
-                    "INSERT INTO patients VALUES(2, 'John', 'Carpenter')"
+                    "INSERT INTO patients VALUES(2, 'John', 'Carpenter')",
+                    "INSERT INTO patients VALUES(3, 'John', 'Krugg')"
+            );
+        } else if (table.equals("prescriptions")) {
+            statements =  Arrays.asList(
+                    "INSERT INTO prescriptions VALUES(1, 'Viagra', 1)",
+                    "INSERT INTO prescriptions VALUES(2, 'Prozac', 1)",
+                    "INSERT INTO prescriptions VALUES(3, 'Valium', 2)",
+                    "INSERT INTO prescriptions VALUES(4, 'Marijuana (medicinal) ', 2)",
+                    "INSERT INTO prescriptions VALUES(5, 'CML treatment', 3)"
             );
         } else if (table.equals("doctors")) {
             statements =  Arrays.asList(
-                    "INSERT INTO doctors VALUES(1, 'John', 'Doe', 'otholaringology')",
-                    "INSERT INTO doctors VALUES(2, 'Hellen', 'Hunt', 'dentistry')"
+                    "INSERT INTO doctors VALUES(1, 'John', 'Doe', 'otolaryngology')",
+                    "INSERT INTO doctors VALUES(2, 'Hellen', 'Hunt', 'dentistry')",
+                    "INSERT INTO doctors VALUES(3, 'John', 'Druker', 'oncology')"
             );
         } else if (table.equals("doctors_patients")) {
             statements =  Arrays.asList(
                     "INSERT INTO doctors_patients VALUES(1, 1, 2)",
                     "INSERT INTO doctors_patients VALUES(2, 1, 1)",
-                    "INSERT INTO doctors_patients VALUES(3, 2, 1)"
+                    "INSERT INTO doctors_patients VALUES(3, 2, 1)",
+                    "INSERT INTO doctors_patients VALUES(4, 3, 3)"
             );
         } else if (table.equals("students")) {
             statements =  Arrays.asList(

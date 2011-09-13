@@ -1,10 +1,10 @@
 package org.javalite.activejdbc;
 
-import org.javalite.activejdbc.Base;
-import org.javalite.activejdbc.Model;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.*;
+import org.junit.Ignore;
 import org.junit.Test;
+
 
 /**
  * @author Igor Polevoy
@@ -12,21 +12,34 @@ import org.junit.Test;
 public class DeleteCascadeTest extends ActiveJDBCTest{
 
     @Test 
-    public void shouldDeleteOneToManyChildren(){
-        deleteAndPopulateTables("users", "addresses");
+    public void shouldDeleteOneToManyDeep(){
+        deleteAndPopulateTables("users", "addresses", "rooms");
 
-        //verify total count before delete
-        a(Address.findAll().size()).shouldBeEqual(7);
+        //verify child count
+        a(Address.count()).shouldBeEqual(7);
+        //verify grand children count
+        a(Room.count()).shouldBeEqual(4);
 
-        User.<Model>findById(1).deleteCascade();
+        //delete
+        User u = (User)User.findById(1);
+        u.deleteCascade();
+        a(u).shouldBe("frozen");
+        a(User.count()).shouldBeEqual(1);
 
         //verify total count after delete
-        a(Address.findAll().size()).shouldBeEqual(4);
+        a(Address.count()).shouldBeEqual(4);
         
         //verify that no relations left in child table
         a(Address.where("user_id = ?", 1).size()).shouldBeEqual(0);
+
+        //check deep delete here
+        a(Room.count()).shouldBeEqual(2);
+        a(Room.count("address_id= ?", 1)).shouldBeEqual(0);
     }
 
+    /**
+     * This is to test conventional models
+     */
     @Test
     public void shouldDeletePolymorphicChildren(){
 
@@ -44,18 +57,124 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
         a(Comment.findAll().size()).shouldBeEqual(5);
         a.deleteCascade();
         a(Comment.findAll().size()).shouldBeEqual(3);
-
         a(Comment.where("parent_type = ? and parent_id = ?", "activejdbc.test_models.Article", 1).size()).shouldBeEqual(0);
+    }
 
+    /**
+     * This is to test models with annotations that override conventions.
+     */
+    @Test
+    public void shouldDeletePolymorphicChildrenDeep(){
+        deleteAndPopulateTables("vehicles", "mammals", "classifications");
+        Vehicle car = (Vehicle)Vehicle.createIt("name", "car");
+        Classification fourWheeled = (Classification)Classification.create("name", "four wheeled");
+        car.add(fourWheeled);
+        Classification sedan = (Classification)Classification.create("name", "sedan");
+        car.add(sedan);
+        sedan.add(SubClassification.create("name", "passenger"));
+
+        a(SubClassification.count()).shouldBeEqual(1);
+        car.deleteCascade();
+        a(SubClassification.count()).shouldBeEqual(0);
     }
 
 
     @Test
-    public void shouldRemoveJoinLinksWHenDeleted() {
-        deleteAndPopulateTables("doctors", "patients", "doctors_patients");
-        Doctor doctorNumberOne = (Doctor)Doctor.findById(1);
-        doctorNumberOne.deleteCascade();
-        a(Base.findAll("select * from doctors_patients").size()).shouldBeEqual(1);
+    public void shouldDeleteMany2ManyDeep() {
+
+        //case 1: simple: follow many to many, then one to many
+        deleteAndPopulateTables("doctors", "patients", "doctors_patients", "prescriptions");
+        a(Prescription.count()).shouldBeEqual(5);
+
+        Doctor.<Model>findById(3).deleteCascade();
+
+        a(Doctor.count()).shouldBeEqual(2);
+        a(DoctorsPatients.count()).shouldBeEqual(3);
+        a(Prescription.count()).shouldBeEqual(4);
+
+        //case 2: more complicated, the search comes back to DOCTORS table and removes another doctor.
+        deleteAndPopulateTables("doctors", "patients", "doctors_patients", "prescriptions", "comments");
+        Prescription.<Model>findById(1).add(Comment.create("author", "doctor", "content", "live live to the fullest"));
+        Prescription.<Model>findById(5).add(Comment.create("author", "doctor", "content", "make cancer go away!"));
+
+        a(Prescription.count()).shouldBeEqual(5);
+        a(Comment.count()).shouldBeEqual(2);
+
+        Doctor.<Model>findById(1).deleteCascade();
+
+        a(Doctor.count()).shouldBeEqual(1);
+        a(DoctorsPatients.count()).shouldBeEqual(1);
+        a(Prescription.count()).shouldBeEqual(1);
+        a(Comment.count()).shouldBeEqual(1);
     }
 
+    @Test
+    @Ignore
+    public void shouldDeleteOne2ManyShallow(){
+        deleteAndPopulateTables("users", "addresses", "rooms");
+
+        //verify child count
+        a(Address.count()).shouldBeEqual(7);
+        //verify grand children count
+        a(Room.count()).shouldBeEqual(4);
+
+        //delete
+        User u = (User)User.findById(1);
+        u.deleteCascadeShallow();
+        a(u).shouldBe("frozen");
+        a(User.count()).shouldBeEqual(1);
+
+        //verify total count after delete
+        a(Address.count()).shouldBeEqual(4);
+
+        //verify that no relations left in child table
+        a(Address.where("user_id = ?", 1).size()).shouldBeEqual(0);
+
+        //check shallow delete here - there needs to be the same number as before.
+        a(Room.count()).shouldBeEqual(4);
+        //and we have orphan rooms, but I guess this is expected.s
+        a(Room.count("address_id= ?", 1)).shouldBeEqual(2);
+    }
+
+    @Test
+    @Ignore
+    public void shouldDeleteMany2ManyShallow(){
+        deleteAndPopulateTables("doctors", "patients", "doctors_patients", "prescriptions");
+        a(Prescription.count()).shouldBeEqual(5);
+
+        Doctor.<Model>findById(3).deleteCascadeShallow();
+
+        a(Doctor.count()).shouldBeEqual(2);
+        a(DoctorsPatients.count()).shouldBeEqual(3);
+
+        //so, prescriptions did not get deleted, hence orphaned
+        a(Prescription.count()).shouldBeEqual(5);
+    }
+
+    @Test
+    @Ignore
+    public void shouldDeletePolymorphicShallow(){
+
+        deleteAndPopulateTables("vehicles", "mammals", "classifications");
+        Vehicle car = (Vehicle)Vehicle.createIt("name", "car");
+        Classification fourWheeled = (Classification)Classification.create("name", "four wheeled");
+        car.add(fourWheeled);
+        Classification sedan = (Classification)Classification.create("name", "sedan");
+        car.add(sedan);
+        sedan.add(SubClassification.create("name", "passenger"));
+        sedan.add(SubClassification.create("name", "4 wheel drive"));
+
+        //pre-execution checks
+        a(Vehicle.count()).shouldBeEqual(1);
+        a(Classification.count()).shouldBeEqual(2);
+        a(SubClassification.count()).shouldBeEqual(2);
+
+        car.deleteCascadeShallow();
+
+        //model and child deleted
+        a(Vehicle.count()).shouldBeEqual(0);
+        a(Classification.count()).shouldBeEqual(0);
+        //sub-classification did not get deleted
+        a(SubClassification.count()).shouldBeEqual(2);
+    }
 }

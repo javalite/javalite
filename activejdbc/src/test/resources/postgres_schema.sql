@@ -16,6 +16,9 @@ CREATE TABLE users (id  serial PRIMARY KEY, first_name VARCHAR(56), last_name VA
 DROP TABLE IF EXISTS addresses;
 CREATE TABLE addresses (id  serial PRIMARY KEY, address1 VARCHAR(56), address2 VARCHAR(56), city VARCHAR(56), state VARCHAR(56), zip VARCHAR(56), user_id INT);
 
+DROP TABLE IF EXISTS rooms;
+CREATE TABLE rooms (id  serial PRIMARY KEY, name VARCHAR(56), address_id INT);
+
 DROP TABLE IF EXISTS legacy_universities;
 CREATE TABLE legacy_universities (id  serial PRIMARY KEY, univ_name VARCHAR(56), address1 VARCHAR(56), address2 VARCHAR(56), city VARCHAR(56), state VARCHAR(56), zip VARCHAR(56));
 
@@ -33,6 +36,9 @@ CREATE TABLE animals (animal_id  serial PRIMARY KEY, animal_name VARCHAR(56));
 
 DROP TABLE IF EXISTS patients;
 CREATE TABLE patients (id  serial PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56));
+
+DROP TABLE IF EXISTS prescriptions;
+CREATE TABLE prescriptions (id  serial PRIMARY KEY, name VARCHAR(56), patient_id INT);
 
 DROP TABLE IF EXISTS doctors;
 CREATE TABLE doctors (id  serial PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), discipline varchar(56));
@@ -124,6 +130,9 @@ CREATE TABLE mammals (id  serial PRIMARY KEY, name VARCHAR(56));
 
 DROP TABLE IF EXISTS classifications;
 CREATE TABLE classifications (id  serial PRIMARY KEY, name VARCHAR(56), parent_id INT, parent_type VARCHAR(56));
+
+DROP TABLE IF EXISTS sub_classifications;
+CREATE TABLE sub_classifications (id  serial PRIMARY KEY, name VARCHAR(56), classification_id INT);
 
 DROP TABLE IF EXISTS content_groups;
 create table content_groups ( id  serial PRIMARY KEY, group_name INT);

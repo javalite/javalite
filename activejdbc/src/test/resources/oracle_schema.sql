@@ -100,6 +100,22 @@ select coalesce(:new.id, addresses_seq.nextval) into :new.id from dual;
 end;
 
 
+-- BREAK
+CREATE TABLE rooms (id  NUMBER NOT NULL, name VARCHAR(56), address_id NUMBER)
+-- BREAK
+ALTER TABLE rooms ADD CONSTRAINT rooms_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE rooms_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER rooms_trigger
+    BEFORE INSERT ON rooms REFERENCING
+    NEW AS new
+    OLD AS old
+    FOR EACH ROW
+    begin
+select coalesce(:new.id, rooms_seq.nextval) into :new.id from dual;
+end;
+
 
 
 -- BREAK
@@ -205,6 +221,23 @@ CREATE OR REPLACE TRIGGER patients_trigger
     FOR EACH ROW
     begin
 select coalesce(:new.id, patients_seq.nextval) into :new.id from dual;
+end;
+
+
+-- BREAK
+CREATE TABLE prescriptions (id  NUMBER NOT NULL, name VARCHAR(56), patient_id NUMBER)
+-- BREAK
+ALTER TABLE prescriptions ADD CONSTRAINT prescriptions_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE prescriptions_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER prescriptions_trigger
+    BEFORE INSERT ON prescriptions REFERENCING
+    NEW AS new
+    OLD AS old
+    FOR EACH ROW
+    begin
+select coalesce(:new.id, prescriptions_seq.nextval) into :new.id from dual;
 end;
 
 
@@ -694,6 +727,23 @@ CREATE OR REPLACE TRIGGER classifications_trigger
     FOR EACH ROW
     begin
 select coalesce(:new.id, classifications_seq.nextval) into :new.id from dual;
+end;
+
+
+-- BREAK
+CREATE TABLE sub_classifications (id  NUMBER NOT NULL, name VARCHAR(56), classification_id NUMBER)
+-- BREAK
+ALTER TABLE sub_classifications ADD CONSTRAINT sub_classifications_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE sub_classifications_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER sub_classifications_trigger
+    BEFORE INSERT ON sub_classifications REFERENCING
+    NEW AS new
+    OLD AS old
+    FOR EACH ROW
+    begin
+select coalesce(:new.id, sub_classifications_seq.nextval) into :new.id from dual;
 end;
 
 

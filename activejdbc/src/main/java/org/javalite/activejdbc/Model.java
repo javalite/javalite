@@ -23,7 +23,6 @@ import org.javalite.activejdbc.validation.*;
 import static org.javalite.common.Util.blank;
 
 import java.io.*;
-import java.lang.reflect.Modifier;
 import java.sql.*;
 import java.math.BigDecimal;
 import java.util.*;
@@ -288,29 +287,145 @@ public abstract class Model extends CallbackSupport implements Externalizable {
        }
     }
 
-
     /**
-     * Deletes this record from table.
-     * After deletion, this instance becomes {@link #frozen()} and cannot be used anymore until {@link #thaw()} is called.
-     * <h4>One to many relationships:</h4>
-     * Deletes current model and all one to many associations. This is not a high performance method, as it will
+     * Deletes this record from associated table, as well as children.
+     *
+     * Deletes current model and all of its child and many to many associations. This is not a high performance method, as it will
      * load every row into a model instance before deleting, effectively calling (N + 1) per table queries to the DB, one to select all
      * the associated records (per table), and one delete statement per record. Use it for small data sets.
-     * It will follow associations of children and their associations too.
-     * <h4>Many to many relationships:</h4>
-     * Deletes current model and will navigate through all many to many relationships
-     * this model has, and clear links to other tables in join tables. This is a high performance call because links are cleared with one
-     * SQL DELETE.
-     * <h4>One to many polymorphic relationship:</h4>
-     * Deletes current model and all polymorphic children. This is a high performance call because children are cleared with one
-     * SQL DELETE.
+     *
+     * <p/>
+     * In cases of simple one to many and polymorphic associations, things are as expected, a parent is deleted an all children are
+     * deleted as well, but in more complicated cases, this method will walk entire three of associated tables, sometimes
+     * coming back to the same one where it all started.
+     * It will follow associations of children and their associations too; consider this a true cascade delete with all implications
+     * (circular dependencies, referential integrity constraints, potential performance bottlenecks, etc.)
+     * <p/>
+     *
+     * Imagine a situation where you have DOCTORS and PATIENTS in many to many relationship (with DOCTORS_PATIENTS table
+     * as a join table), and in addition PATIENTS and PRESCRIPTIONS in one to many relationship, where a patient might
+     * have many prescriptions:
+     *
+     <pre>
+     DOCTORS
+        +----+------------+-----------+-----------------+
+        | id | first_name | last_name | discipline      |
+        +----+------------+-----------+-----------------+
+        |  1 | John       | Kentor    | otolaryngology  |
+        |  2 | Hellen     | Hunt      | dentistry       |
+        |  3 | John       | Druker    | oncology        |
+        +----+------------+-----------+-----------------+
+
+     PATIENTS
+        +----+------------+-----------+
+        | id | first_name | last_name |
+        +----+------------+-----------+
+        |  1 | Jim        | Cary      |
+        |  2 | John       | Carpenter |
+        |  3 | John       | Doe       |
+        +----+------------+-----------+
+
+     DOCTORS_PATIENTS
+        +----+-----------+------------+
+        | id | doctor_id | patient_id |
+        +----+-----------+------------+
+        |  1 |         1 |          2 |
+        |  2 |         1 |          1 |
+        |  3 |         2 |          1 |
+        |  4 |         3 |          3 |
+        +----+-----------+------------+
+
+     PRESCRIPTIONS
+        +----+------------------------+------------+
+        | id | name                   | patient_id |
+        +----+------------------------+------------+
+        |  1 | Viagra                 |          1 |
+        |  2 | Prozac                 |          1 |
+        |  3 | Valium                 |          2 |
+        |  4 | Marijuana (medicinal)  |          2 |
+        |  5 | CML treatment          |          3 |
+        +----+------------------------+------------+
+     * </pre>
+     *
+     * Lets start with a simple example, Doctor John Druker. This doctor has one patient John Doe, and the patient has one prescription.
+     * So, when an instance of this doctor model is issued statement:
+     * <pre>
+     *     drDruker.deleteCascade();
+     * </pre>
+     * , the result is as expected: the DOCTORS:ID=3 is deleted, DOCTORS_PATIENTS:ID=4 is deleted, PATIENTS:ID=3 is deleted
+     * and PRESCRIPTIONS:ID=5 is deleted.
+     *
+     * <p/>
+     * However, when doctor Kentor(#1) is deleted, the following records are also deleted:
+     * <ul>
+     *     <li>DOCTORS_PATIENTS:ID=1, 2 - these are links to patients</li>
+     *     <li>PATIENTS:ID=1,2 these are patients themselves</li>
+     *     <li>PRESCRIPTIONS:ID=1,2,3,4  - these are prescriptions of patients 1 and 2</li>
+     * </ul>
+     * But, in addition, since this is a many to many relationship, deleting patients 1 and 2 results in also deleting
+     * doctor Hellen Hunt(#2), since she is a doctor of patient Jim Cary(#1), deleting all corresponding join links from
+     * table DOCTORS_PATIENTS. So, deleting doctor Kentor, deleted most all records from related tables, leaving only these
+     * records in place:
+     * <ul>
+     *     <li>DOCTORS:ID=3</li>
+     *     <li>DOCTORS_PATIENTS:ID=4</li>
+     *     <li>PATIENTS:ID=3</li>
+     *     <li>PRESCRIPTIONS:ID=5</li>
+     * </ul>
+     * Had doctor Hellen Hunt(#2) had more patients, it would delete them too, and so on. This goes a long way to say that it
+     * could be easy to be tangled up in web of associations, so be careful out there.
+     *
+     * <p/>
+     * After deletion, this instance becomes {@link #frozen()} and cannot be used anymore until {@link #thaw()} is called.
      */
     public void deleteCascade(){
-        deleteOneToManyChildren();
-        deleteJoinsForManyToMany();
-        deletePolymorphicChildren();
+        deleteMany2ManyDeep();
+        deleteChildrenDeep(getMetaModelLocal().getOneToManyAssociations());
+        deleteChildrenDeep(getMetaModelLocal().getPolymorphicAssociations());
         delete();
     }
+
+
+    private void deleteMany2ManyDeep(){
+        List<Model>  allMany2ManyChildren = new ArrayList<Model>();
+        List<Many2ManyAssociation> many2ManyAssociations = getMetaModelLocal().getManyToManyAssociations();
+        for (Association association : many2ManyAssociations) {
+            String targetTableName = association.getTarget();
+            Class c = Registry.instance().getModelClass(targetTableName);
+            if(c == null){// this model is probably not defined as a class, but the table exists!
+                logger.error("ActiveJDBC WARNING: failed to find a model class for: " + targetTableName + ", maybe model is not defined for this table?" +
+                        " There might be a risk of running into integrity constrain violation if this model is not defined.");
+            }
+            else{
+                allMany2ManyChildren.addAll(getAll(c));
+            }
+        }
+
+        deleteJoinsForManyToMany();
+        for (Model model : allMany2ManyChildren) {
+            model.deleteCascade();
+        }
+    }
+
+    /**
+     * Deletes this records from associated table, as well as its immediate children. This is a high performance method
+     * because it does not walk through a chain of child dependencies like {@link #deleteCascade()} does, but rather issues
+     * one DELETE statement per child dependency table. Also, its semantics are a bit different between that {@link #deleteCascade()}.
+     * It only deletes current record and immediate children, but not their children (no grand kinds are dead as a result :)).s
+     * <h4>One to many and polymorphic associations</h4>
+     * The current record is deleted, as well as immediate children.
+     * <h4>Many to many associations</h4>
+     * The current record is deleted, as well as links in a join table. Nothing else is deleted.
+     * <p/>
+     * After deletion, this instance becomes {@link #frozen()} and cannot be used anymore until {@link #thaw()} is called.
+     */
+    public void deleteCascadeShallow(){
+        deleteJoinsForManyToMany();
+        deleteOne2ManyChildrenShallow();
+        deletePolymorphicChildrenShallow();
+        delete();
+    }
+
 
     private void deleteJoinsForManyToMany() {
         List<Association> associations = getMetaModelLocal().getManyToManyAssociations();
@@ -322,7 +437,16 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
     }
 
-    private void deletePolymorphicChildren() {
+    private void deleteOne2ManyChildrenShallow() {
+        List<OneToManyAssociation> childAssociations = getMetaModelLocal().getOneToManyAssociations();
+        for (OneToManyAssociation association : childAssociations) {
+            String  target = association.getTarget();
+            String query = "DELETE FROM " + target + " WHERE " + association.getFkName() + " = ?";
+            new DB(getMetaModelLocal().getDbName()).exec(query, getId());
+        }
+    }
+
+    private void deletePolymorphicChildrenShallow() {
         List<OneToManyPolymorphicAssociation> polymorphics = getMetaModelLocal().getPolymorphicAssociations();
         for (OneToManyPolymorphicAssociation association : polymorphics) {
             String  target = association.getTarget();
@@ -332,13 +456,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
     }
 
-    private void deleteOneToManyChildren(){
-        List<Association> one2manies = getMetaModelLocal().getOneToManyAssociations();
-        for (Association association : one2manies) {
+
+    private void deleteChildrenDeep(List<Association> childAssociations){
+        for (Association association : childAssociations) {
             String targetTableName = association.getTarget();
             Class c = Registry.instance().getModelClass(targetTableName);
-            if(c == null)// this model is probably not defined as a class, but the table exists!
-            {
+            if(c == null){// this model is probably not defined as a class, but the table exists!
                 logger.error("ActiveJDBC WARNING: failed to find a model class for: " + targetTableName + ", maybe model is not defined for this table?" +
                         " There might be a risk of running into integrity constrain violation if this model is not defined.");
             }
@@ -350,7 +473,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             }
         }
     }
-
 
     /**
      * Deletes some records from associated table. This method does not follow any associations.
@@ -1675,15 +1797,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * Removes associated child from this instance. The child model should be either in belongs to association (including polymorphic) to this model
      * or many to many association.
      *
-     * <p/><p/>
-     * In case this is a one to many or polymorphic relationship, this method will simply call <code>child.delete()</code> method. This will
-     * render the child object frozen.
+     * <h3>One to many and polymorphic associations</h3>
+     * This method will simply call <code>child.delete()</code> method. This will render the child object frozen.
      *
-     * <p/><p/>
-     * In case this is a many to many relationship, this method will remove an associated record from the join table, and
-     * will do nothing to the child model or record.
+     * <h3>Many to many associations</h3>
+     * This method will remove an associated record from the join table, and will do nothing to the child model or record.
      *
-     * <p/><p/>
+     * <p/>
      * This method will throw a {@link NotAssociatedException} in case a model that has no relationship is passed.
      *
      * @param child model representing a "child" as in one to many or many to many association with this model.

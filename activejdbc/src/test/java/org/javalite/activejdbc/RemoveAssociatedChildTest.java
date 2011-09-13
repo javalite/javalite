@@ -19,10 +19,7 @@ package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.Base;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
-import org.javalite.activejdbc.test_models.Book;
-import org.javalite.activejdbc.test_models.Doctor;
-import org.javalite.activejdbc.test_models.Library;
-import org.javalite.activejdbc.test_models.Patient;
+import org.javalite.activejdbc.test_models.*;
 import org.junit.Test;
 
 import java.util.List;
@@ -35,7 +32,7 @@ import java.util.Map;
 public class RemoveAssociatedChildTest extends ActiveJDBCTest {
 
     @Test
-    public void testOne2many(){
+    public void shouldDeleteChildInOneToMany(){
         deleteAndPopulateTables("libraries", "books");
         Library l = (Library)Library.findById(1);
         List<Book> books = l.getAll(Book.class);
@@ -49,22 +46,22 @@ public class RemoveAssociatedChildTest extends ActiveJDBCTest {
     }
 
     @Test
-    public void testMany2Many(){
+    public void shouldClearJoinLinksWhenChildRemovedInMany2Many(){
         deleteAndPopulateTables("doctors", "patients", "doctors_patients");
         Doctor doctor = (Doctor)Doctor.findById(1);        
         List<Patient> patients = doctor.getAll(Patient.class);
         int initSize = patients.size();
 
+        a(DoctorsPatients.count()).shouldBeEqual(4);
         doctor.remove(patients.get(0));
 
         //one few association from the same doctor to patients.
         a(doctor.getAll(Patient.class).size()).shouldBeEqual(initSize - 1);
 
         //number of join records decreased by 1
-        List<Map> doctorPatientsList = Base.findAll("select * from doctors_patients");
-        a(doctorPatientsList.size()).shouldBeEqual(2);
+        a(DoctorsPatients.count()).shouldBeEqual(3);
 
         //the number of patients is not changing
-        a(Patient.findAll().size()).shouldBeEqual(2);
+        a(Patient.findAll().size()).shouldBeEqual(3);
     }
 }

@@ -17,6 +17,9 @@ CREATE TABLE users (id  int(11) NOT NULL  auto_increment PRIMARY KEY, first_name
 DROP TABLE IF EXISTS addresses;
 CREATE TABLE addresses (id  int(11) NOT NULL  auto_increment PRIMARY KEY, address1 VARCHAR(56), address2 VARCHAR(56), city VARCHAR(56), state VARCHAR(56), zip VARCHAR(56), user_id int(11));
 
+DROP TABLE IF EXISTS rooms;
+CREATE TABLE rooms (id  int(11) NOT NULL  auto_increment PRIMARY KEY, name VARCHAR(56), address_id int(11));
+
 DROP TABLE IF EXISTS legacy_universities;
 CREATE TABLE legacy_universities (id  int(11) NOT NULL  auto_increment PRIMARY KEY, univ_name VARCHAR(56), address1 VARCHAR(56), address2 VARCHAR(56), city VARCHAR(56), state VARCHAR(56), zip VARCHAR(56));
 
@@ -34,6 +37,9 @@ CREATE TABLE animals (animal_id  int(11) NOT NULL  auto_increment PRIMARY KEY, a
 
 DROP TABLE IF EXISTS patients;
 CREATE TABLE patients (id  int(11) NOT NULL  auto_increment PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56));
+
+DROP TABLE IF EXISTS prescriptions;
+CREATE TABLE prescriptions (id  int(11) NOT NULL  auto_increment PRIMARY KEY, name VARCHAR(56), patient_id int(11));
 
 DROP TABLE IF EXISTS doctors;
 CREATE TABLE doctors (id  int(11) NOT NULL  auto_increment PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), discipline varchar(56));
@@ -121,6 +127,9 @@ CREATE TABLE mammals (id  int(11) NOT NULL  auto_increment PRIMARY KEY, name VAR
 
 DROP TABLE IF EXISTS classifications;
 CREATE TABLE classifications (id  int(11) NOT NULL  auto_increment PRIMARY KEY, name VARCHAR(56), parent_id int(11), parent_type VARCHAR(56));
+
+DROP TABLE IF EXISTS sub_classifications;
+CREATE TABLE sub_classifications (id  int(11) NOT NULL  auto_increment PRIMARY KEY, name VARCHAR(56), classification_id int(11));
 
 DROP TABLE IF EXISTS content_groups;
 create table content_groups ( id  int(11) NOT NULL  auto_increment PRIMARY KEY, group_name INT(11) );

@@ -14,14 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License. 
 */
 
-
 package org.javalite.activejdbc.test_models;
 
 import org.javalite.activejdbc.Model;
-import org.javalite.activejdbc.annotations.BelongsToPolymorphic;
 
 /**
  * @author Igor Polevoy
  */
-@BelongsToPolymorphic(parents = {Article.class, Post.class, Prescription.class})
-public class Comment extends Model {}
+public class Prescription extends Model {}

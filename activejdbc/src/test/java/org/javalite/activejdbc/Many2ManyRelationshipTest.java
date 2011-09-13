@@ -67,20 +67,16 @@ public class Many2ManyRelationshipTest extends ActiveJDBCTest {
     public void shouldAddNewChildInManyToManyAssociation(){
         deleteAndPopulateTables("doctors", "patients", "doctors_patients");
         Doctor doctor = (Doctor)Doctor.findById(1);
+
         Patient jimThePatient = (Patient)Patient.create("first_name", "Jim", "last_name", "Smith");
         //this will add a new patient record and a new record in the join table that connects a doctor and a new patient.
+        a(DoctorsPatients.count()).shouldBeEqual(4);
         doctor.add(jimThePatient);
-        List<Map> doctorPatientsList = Base.findAll("select * from doctors_patients order by id");
-        a(doctorPatientsList.size()).shouldBeEqual(4);
+        a(DoctorsPatients.count()).shouldBeEqual(5);
 
-        a(doctorPatientsList.get(3).get("doctor_id")).shouldBeEqual(1);
-        a(doctorPatientsList.get(3).get("patient_id")).shouldBeEqual(3);
-
-        List<Patient> patients = Patient.findAll().orderBy("id");
+        List<Patient> patients = doctor.getAll(Patient.class).orderBy("id");
         a(patients.size()).shouldBeEqual(3);
-        Patient jim = patients.get(2);
-        a(jim.get("first_name")).shouldBeEqual("Jim");
-        a(jim.get("last_name")).shouldBeEqual("Smith");
+        a(patients.get(2).get("last_name")).shouldBeEqual("Smith");
     }
 
     @Test(expected = NotAssociatedException.class)

@@ -45,6 +45,13 @@ public class PostgreSQLStatementProvider implements StatementProvider{
                     "INSERT INTO addresses (address1, address2, city, state, zip, user_id ) VALUES('163 Gorge St.', 'apt 36', 'Springfield', 'IL', '60606', 2);",
                     "INSERT INTO addresses (address1, address2, city, state, zip, user_id ) VALUES('173 Far Side.', 'apt 37', 'Springfield', 'IL', '60606', 2);"
             );
+        } else if (table.equals("rooms")) {
+            statements =  Arrays.asList(
+                    "INSERT INTO rooms (name, address_id) VALUES('bathroom', 1);",
+                    "INSERT INTO rooms (name, address_id) VALUES('conference room', 1);",
+                    "INSERT INTO rooms (name, address_id) VALUES('ball room', 7);",
+                    "INSERT INTO rooms (name, address_id) VALUES('basement', 7);"
+            );
         } else if (table.equals("legacy_universities")) {
             statements =  Arrays.asList(
 
@@ -74,18 +81,30 @@ public class PostgreSQLStatementProvider implements StatementProvider{
         } else if (table.equals("patients")) {
             statements =  Arrays.asList(
                     "INSERT INTO patients (first_name , last_name ) VALUES('Jim', 'Cary');",
-                    "INSERT INTO patients (first_name , last_name ) VALUES('John', 'Carpenter');"
+                    "INSERT INTO patients (first_name , last_name ) VALUES('John', 'Carpenter');",
+                    "INSERT INTO patients (first_name , last_name ) VALUES('John', 'Krugg');"
+            );
+        } else if (table.equals("prescriptions")) {
+            statements =  Arrays.asList(
+                    "INSERT INTO prescriptions (name, patient_id) VALUES('Viagra', 1);",
+                    "INSERT INTO prescriptions (name, patient_id) VALUES('Prozac', 1);",
+                    "INSERT INTO prescriptions (name, patient_id) VALUES('Valium', 2);",
+                    "INSERT INTO prescriptions (name, patient_id) VALUES('Marijuana (medicinal) ', 2);",
+                    "INSERT INTO prescriptions (name, patient_id) VALUES('CML treatment', 3);"
             );
         } else if (table.equals("doctors")) {
             statements =  Arrays.asList(
-                    "INSERT INTO doctors (first_name, last_name, discipline) VALUES('John', 'Doe', 'otholaringology');",
-                    "INSERT INTO doctors (first_name, last_name, discipline) VALUES('Hellen', 'Hunt', 'dentistry');"
+                    "INSERT INTO doctors (first_name, last_name, discipline) VALUES('John', 'Doe', 'otolaryngology');",
+                    "INSERT INTO doctors (first_name, last_name, discipline) VALUES('Hellen', 'Hunt', 'dentistry');",
+                    "INSERT INTO doctors (first_name, last_name, discipline) VALUES('John', 'Druker', 'oncology');"
+
             );
         } else if (table.equals("doctors_patients")) {
             statements =  Arrays.asList(
                     "INSERT INTO doctors_patients (doctor_id, patient_id ) VALUES(1, 2);",
                     "INSERT INTO doctors_patients (doctor_id, patient_id ) VALUES(1, 1);",
-                    "INSERT INTO doctors_patients (doctor_id, patient_id ) VALUES(2, 1);"
+                    "INSERT INTO doctors_patients (doctor_id, patient_id ) VALUES(2, 1);",
+                    "INSERT INTO doctors_patients (doctor_id, patient_id ) VALUES(3, 3);"
             );
         } else if (table.equals("students")) {
             statements =  Arrays.asList(
