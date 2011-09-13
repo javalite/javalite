@@ -16,13 +16,12 @@ limitations under the License.
 
 package app.config;
 
-import activeweb.freemarker.AbstractFreeMarkerConfig;
-import freemarker.template.TemplateExceptionHandler;
+import org.javalite.activeweb.freemarker.AbstractFreeMarkerConfig;
 
 /**
  * @author Igor Polevoy
  */
-public class FreeMarkerConfig extends AbstractFreeMarkerConfig {
+public class FreeMarkerConfig extends org.javalite.activeweb.freemarker.AbstractFreeMarkerConfig {
     @Override
     public void init() {
         //this is to override a strange FreeMarker default processing of numbers 

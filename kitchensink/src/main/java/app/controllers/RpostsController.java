@@ -16,11 +16,11 @@ limitations under the License.
 
 package app.controllers;
 
-import activeweb.AppController;
-import activeweb.annotations.RESTful;
+import org.javalite.activeweb.AppController;
+import org.javalite.activeweb.annotations.RESTful;
 import app.models.Post;
 
-import static activeweb.Captcha.generateText;
+import static org.javalite.activeweb.Captcha.generateText;
 
 /**
     GET 	/photos 	            index 	        display a list of all photos
@@ -36,7 +36,7 @@ import static activeweb.Captcha.generateText;
 public class RpostsController extends AppController {
 
     public void index(){
-        view("posts", Post.findAll().orderBy("created_at desc").toMaps());
+        view("posts", Post.findAll().orderBy("created_at desc"));
 
     }
 
@@ -76,7 +76,7 @@ public class RpostsController extends AppController {
         if(p == null){
             render("/system/404");
         }else{
-            view("post", p.toMap());
+            view("post", p);
         }
     }
 

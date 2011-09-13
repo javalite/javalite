@@ -16,7 +16,7 @@ limitations under the License.
 
 package app.filters;
 
-import activeweb.controller_filters.HttpSupportFilter;
+import org.javalite.activeweb.controller_filters.HttpSupportFilter;
 
 /**
  * @author Igor Polevoy

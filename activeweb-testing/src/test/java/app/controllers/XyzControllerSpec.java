@@ -17,7 +17,7 @@ limitations under the License.
 package app.controllers;
 
 
-import activeweb.IntegrationSpec;
+import org.javalite.activeweb.IntegrationSpec;
 import org.junit.Test;
 
 /**

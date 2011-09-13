@@ -16,7 +16,7 @@ limitations under the License.
 
 package app.models;
 
-import activejdbc.Model;
+import org.javalite.activejdbc.Model;
 
 /**
  * @author Igor Polevoy

@@ -16,9 +16,9 @@ limitations under the License.
 
 package app.controllers;
 
-import activeweb.AppController;
-import activeweb.annotations.DELETE;
-import activeweb.annotations.POST;
+import org.javalite.activeweb.AppController;
+import org.javalite.activeweb.annotations.DELETE;
+import org.javalite.activeweb.annotations.POST;
 import app.models.Book;
 
 /**

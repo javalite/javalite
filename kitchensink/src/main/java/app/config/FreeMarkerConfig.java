@@ -16,8 +16,7 @@ limitations under the License.
 
 package app.config;
 
-import activeweb.freemarker.AbstractFreeMarkerConfig;
-import freemarker.template.TemplateExceptionHandler;
+import org.javalite.activeweb.freemarker.AbstractFreeMarkerConfig;
 
 /**
  * @author Igor Polevoy

@@ -16,9 +16,9 @@ limitations under the License.
 
 package app.controllers;
 
-import activeweb.DBControllerSpec;
+import org.javalite.activeweb.DBControllerSpec;
 import app.models.Book;
-import javalite.test.XPathHelper;
+import org.javalite.test.XPathHelper;
 import org.junit.Before;
 import org.junit.Test;
 

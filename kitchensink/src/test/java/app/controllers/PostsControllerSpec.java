@@ -16,9 +16,9 @@ limitations under the License.
 
 package app.controllers;
 
-import activeweb.DBControllerSpec;
+import org.javalite.activeweb.DBControllerSpec;
 import app.models.Post;
-import javalite.test.XPathHelper;
+import org.javalite.test.XPathHelper;
 import org.junit.Test;
 
 import java.util.List;
@@ -37,11 +37,11 @@ public class PostsControllerSpec extends DBControllerSpec {
         Post.createIt("author", "John", "title", "post 3", "content", "fake content");
 
         request().get("index");
-        List<Map> postMaps = (List<Map>) assigns().get("posts");
+        List<Post> posts = (List<Post>) assigns().get("posts");
 
-        a(postMaps.get(0).get("title")).shouldEqual("post 1");
-        a(postMaps.get(1).get("title")).shouldEqual("post 2");
-        a(postMaps.get(2).get("title")).shouldEqual("post 3");
+        a(posts.get(0).get("title")).shouldEqual("post 1");
+        a(posts.get(1).get("title")).shouldEqual("post 2");
+        a(posts.get(2).get("title")).shouldEqual("post 3");
     }
 
     @Test
@@ -82,7 +82,7 @@ public class PostsControllerSpec extends DBControllerSpec {
 
         request().param("id", p.getId()).get("view");
 
-        Map post = (Map) assigns().get("post");
+        Post post = (Post) assigns().get("post");
         a(post.get("title")).shouldEqual("post 1");
     }
 

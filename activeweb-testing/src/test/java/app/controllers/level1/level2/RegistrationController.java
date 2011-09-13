@@ -16,7 +16,7 @@ limitations under the License.
 
 package app.controllers.level1.level2;
 
-import activeweb.AppController;
+import org.javalite.activeweb.AppController;
 
 /**
  * @author Igor Polevoy

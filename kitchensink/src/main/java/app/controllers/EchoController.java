@@ -1,6 +1,6 @@
 package app.controllers;
 
-import activeweb.GWTAppController;
+import org.javalite.activeweb.GWTAppController;
 import app.gwt.client.EchoService;
 
 import java.util.Date;

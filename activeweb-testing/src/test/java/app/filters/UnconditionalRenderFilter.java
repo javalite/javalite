@@ -15,14 +15,14 @@ limitations under the License.
 */
 package app.filters;
 
-import activeweb.controller_filters.HttpSupportFilter;
+import org.javalite.activeweb.controller_filters.HttpSupportFilter;
 
-import static javalite.common.Collections.map;
+import static org.javalite.common.Collections.map;
 
 /**
  * @author Igor Polevoy
  */
-public class UnconditionalRenderFilter extends HttpSupportFilter{
+public class UnconditionalRenderFilter extends HttpSupportFilter {
     @Override
     public void before() {
         render("/unconditional/index", map("user", param("user"))).noLayout();

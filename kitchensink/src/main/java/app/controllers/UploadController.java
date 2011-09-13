@@ -16,10 +16,10 @@ limitations under the License.
 
 package app.controllers;
 
-import activeweb.AppController;
-import activeweb.FormItem;
-import activeweb.annotations.POST;
-import javalite.common.Util;
+import org.javalite.activeweb.AppController;
+import org.javalite.activeweb.FormItem;
+import org.javalite.activeweb.annotations.POST;
+import org.javalite.common.Util;
 
 import java.io.IOException;
 import java.util.Iterator;

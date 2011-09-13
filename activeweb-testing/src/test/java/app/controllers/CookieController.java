@@ -15,8 +15,8 @@ limitations under the License.
 */
 package app.controllers;
 
-import activeweb.AppController;
-import activeweb.Cookie;
+import org.javalite.activeweb.AppController;
+import org.javalite.activeweb.Cookie;
 
 /**
  * @author Igor Polevoy

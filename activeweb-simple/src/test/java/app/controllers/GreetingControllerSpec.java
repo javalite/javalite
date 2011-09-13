@@ -16,7 +16,7 @@ limitations under the License.
 
 package app.controllers;
 
-import activeweb.ControllerSpec;
+import org.javalite.activeweb.ControllerSpec;
 import app.services.GreeterMockModule;
 import com.google.inject.Guice;
 import org.junit.Before;

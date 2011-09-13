@@ -16,8 +16,8 @@ limitations under the License.
 
 package app.controllers.rest;
 
-import activeweb.AppController;
-import activeweb.annotations.RESTful;
+import org.javalite.activeweb.AppController;
+import org.javalite.activeweb.annotations.RESTful;
 
 /**
  * @author Igor Polevoy

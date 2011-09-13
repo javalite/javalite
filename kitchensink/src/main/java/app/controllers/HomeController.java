@@ -16,9 +16,9 @@ limitations under the License.
 
 package app.controllers;
 
-import activeweb.AppController;
-import activeweb.controller_filters.AbstractLoggingFilter;
-import activeweb.controller_filters.HeadersLogFilter;
+import org.javalite.activeweb.AppController;
+import org.javalite.activeweb.controller_filters.AbstractLoggingFilter;
+import org.javalite.activeweb.controller_filters.HeadersLogFilter;
 
 /**
  * @author Igor Polevoy

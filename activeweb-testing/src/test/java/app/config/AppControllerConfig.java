@@ -16,9 +16,9 @@ limitations under the License.
 
 package app.config;
 
-import activeweb.AbstractControllerConfig;
-import activeweb.AppContext;
-import activeweb.controller_filters.TimingFilter;
+import org.javalite.activeweb.AbstractControllerConfig;
+import org.javalite.activeweb.AppContext;
+import org.javalite.activeweb.controller_filters.TimingFilter;
 import app.filters.InjectionRedirectFilter;
 
 /**

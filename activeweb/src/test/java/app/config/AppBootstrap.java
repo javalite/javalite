@@ -16,8 +16,8 @@ limitations under the License.
 
 package app.config;
 
-import activeweb.AppContext;
-import activeweb.Bootstrap;
+import org.javalite.activeweb.AppContext;
+import org.javalite.activeweb.Bootstrap;
 
 /**
  * @author Igor Polevoy

@@ -15,8 +15,8 @@ limitations under the License.
 */
 package app.config;
 
-import activeweb.AbstractDBConfig;
-import activeweb.AppContext;
+import org.javalite.activeweb.AbstractDBConfig;
+import org.javalite.activeweb.AppContext;
 
 /**
  * @author Igor Polevoy

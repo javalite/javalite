@@ -3,10 +3,10 @@
     <modelVersion>4.0.0</modelVersion>
 
 
-    <groupId>activeweb</groupId>
+    <groupId>org.javalite</groupId>
     <artifactId>activeweb-example-zip</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1-SNAPSHOT</version>
     <name>ActiveWeb Example WebApp Zip</name>
     <description>
         This module exists solely for the purpose of creating a zip of the activeweb-simple module to be
@@ -14,9 +14,9 @@
     </description>
 
     <parent>
-        <groupId>activeweb</groupId>
+        <groupId>org.javalite</groupId>
         <artifactId>activeweb-root</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.1-SNAPSHOT</version>
     </parent>
 
 

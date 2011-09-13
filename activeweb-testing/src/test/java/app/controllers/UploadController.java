@@ -16,16 +16,16 @@ limitations under the License.
 
 package app.controllers;
 
-import activeweb.AppController;
-import activeweb.FormItem;
-import activeweb.annotations.POST;
+import org.javalite.activeweb.AppController;
+import org.javalite.activeweb.FormItem;
+import org.javalite.activeweb.annotations.POST;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static javalite.common.Collections.map;
+import static org.javalite.common.Collections.map;
 
 /**
  * @author Igor Polevoy

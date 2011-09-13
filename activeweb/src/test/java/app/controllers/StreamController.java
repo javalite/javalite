@@ -16,15 +16,17 @@ limitations under the License.
 
 package app.controllers;
 
-import activeweb.AppController;
-import static javalite.common.Collections.map;
+import org.javalite.activeweb.AppController;
+import org.javalite.activeweb.AppController;
+
+import static org.javalite.common.Collections.map;
 
 import java.io.*;
 
 /**
  * @author Igor Polevoy
  */
-public class StreamController extends AppController{
+public class StreamController extends AppController {
     public void streamOut(){
         InputStream in = getClass().getResourceAsStream("/hello.pdf");
         streamOut(in).contentType("application/pdf");

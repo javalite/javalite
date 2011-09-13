@@ -15,8 +15,8 @@ limitations under the License.
 */
 package app.controllers;
 
-import activeweb.AppController;
-import activeweb.annotations.POST;
+import org.javalite.activeweb.AppController;
+import org.javalite.activeweb.annotations.POST;
 
 /**
  * @author Igor Polevoy

@@ -16,12 +16,9 @@ limitations under the License.
 package app.controllers;
 
 
-import activeweb.ControllerException;
-import activeweb.ControllerSpec;
-import org.junit.Before;
+import org.javalite.activeweb.ControllerException;
+import org.javalite.activeweb.ControllerSpec;
 import org.junit.Test;
-
-import static javalite.test.jspec.JSpec.a;
 
 /**
  * @author Igor Polevoy

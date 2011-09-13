@@ -3,10 +3,10 @@
     <modelVersion>4.0.0</modelVersion>
 
 
-    <groupId>activeweb</groupId>
+    <groupId>org.javalite</groupId>
     <artifactId>activeweb-root</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1-SNAPSHOT</version>
     <name>ActiveWeb - Root</name>
     <description>Root of ActiveWeb the project</description>
     <developers>
@@ -72,9 +72,9 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
-                <groupId>javalite</groupId>
+                <groupId>org.javalite</groupId>
                 <artifactId>javalite-common</artifactId>
-                <version>1.1-SNAPSHOT</version>
+                <version>1.2-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>

@@ -16,22 +16,19 @@ limitations under the License.
 
 package app.controllers;
 
-import activeweb.AppController;
-import static activeweb.Captcha.*;
+import org.javalite.activeweb.AppController;
+import static org.javalite.activeweb.Captcha.*;
 
-import activeweb.annotations.DELETE;
-import activeweb.annotations.POST;
+import org.javalite.activeweb.annotations.DELETE;
+import org.javalite.activeweb.annotations.POST;
 import app.models.Post;
-
-
-import java.io.IOException;
 
 /**
  * @author Igor Polevoy
  */
 public class PostsController extends AppController {
     public void index() {
-        view("posts", Post.findAll().orderBy("created_at desc").toMaps());
+        view("posts", Post.findAll().orderBy("created_at desc"));
     }
 
     @POST
@@ -80,7 +77,7 @@ public class PostsController extends AppController {
           render("/system/404").status(404);
             return;
         }else{
-            assign("post", p.toMap());
+            assign("post", p);
         }
     }
 
@@ -100,7 +97,7 @@ public class PostsController extends AppController {
             flash("message", message);
             redirect(PostsController.class);
         }else{
-            view("post", p.toMap());
+            view("post", p);
         }
     }
 
@@ -111,7 +108,7 @@ public class PostsController extends AppController {
         Post p = new Post();
         p.fromMap(params1st());
         if(!p.save()){
-            view("post", p.toMap());
+            view("post", p);
             view("errors", p.errors());
             render("edit_post");
         }else{

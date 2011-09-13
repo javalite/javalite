@@ -16,7 +16,7 @@ limitations under the License.
 
 package app.controllers.test;
 
-import activeweb.ControllerSpec;
+import org.javalite.activeweb.ControllerSpec;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -16,12 +16,14 @@ limitations under the License.
 
 package app.controllers;
 
-import activeweb.AppController;
-import activeweb.Cookie;
+import org.javalite.activeweb.AppController;
+import org.javalite.activeweb.AppController;
+import org.javalite.activeweb.Cookie;
+import org.javalite.activeweb.Cookie;
 
 import java.io.ByteArrayInputStream;
 
-import static javalite.common.Collections.map;
+import static org.javalite.common.Collections.map;
 
 /**
  * @author Igor Polevoy

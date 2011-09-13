@@ -16,11 +16,11 @@ limitations under the License.
 
 package app.controllers;
 
-import activeweb.AppController;
+import org.javalite.activeweb.AppController;
 
 import java.io.IOException;
 
-import static javalite.common.Util.readResourceBytes;
+import static org.javalite.common.Util.readResourceBytes;
 
 /**
  * @author Igor Polevoy

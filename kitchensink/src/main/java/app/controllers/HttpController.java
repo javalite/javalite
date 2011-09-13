@@ -16,18 +16,13 @@ limitations under the License.
 
 package app.controllers;
 
-import activeweb.AppController;
-import activeweb.annotations.DELETE;
-import activeweb.annotations.POST;
-import activeweb.annotations.PUT;
+import org.javalite.activeweb.AppController;
+import org.javalite.activeweb.annotations.DELETE;
+import org.javalite.activeweb.annotations.POST;
+import org.javalite.activeweb.annotations.PUT;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
 
 /**
  * This controller exists to test the <code>javalite.http</code> library.

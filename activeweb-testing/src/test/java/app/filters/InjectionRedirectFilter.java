@@ -16,12 +16,9 @@ limitations under the License.
 
 package app.filters;
 
-import activeweb.controller_filters.ControllerFilter;
-import activeweb.controller_filters.HttpSupportFilter;
 import app.services.Redirector;
 import com.google.inject.Inject;
-
-import java.util.Map;
+import org.javalite.activeweb.controller_filters.HttpSupportFilter;
 
 /**
  * @author Igor Polevoy
