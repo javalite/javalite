@@ -408,10 +408,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Deletes this records from associated table, as well as its immediate children. This is a high performance method
+     * Deletes this record from associated table, as well as its immediate children. This is a high performance method
      * because it does not walk through a chain of child dependencies like {@link #deleteCascade()} does, but rather issues
      * one DELETE statement per child dependency table. Also, its semantics are a bit different between that {@link #deleteCascade()}.
-     * It only deletes current record and immediate children, but not their children (no grand kinds are dead as a result :)).s
+     * It only deletes current record and immediate children, but not their children (no grand kinds are dead as a result :)).
      * <h4>One to many and polymorphic associations</h4>
      * The current record is deleted, as well as immediate children.
      * <h4>Many to many associations</h4>
