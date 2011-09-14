@@ -21,38 +21,4 @@
         <module>kitchensink</module>
     </modules>
 
-    <repositories>
-        <repository>
-            <id>ip-solutions</id>
-            <name>IP Solutions</name>
-            <url>http://ipsolutionsdev.com/snapshots/</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-                <checksumPolicy>warn</checksumPolicy>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>snapshots</id>
-            <name>IP Solutions Snapshots</name>
-            <url>http://ipsolutionsdev.com/snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
-    </repositories>
-    <distributionManagement>
-        <repository>
-            <id>ipsolutions-repo</id>
-            <name>IPSolutions Repository</name>
-            <url>scp://localhost/opt/maven/repository</url>
-        </repository>
-        <snapshotRepository>
-            <id>ipsolutions-repo</id>
-            <name>IPSolutions Repository</name>
-            <url>scp://localhost/opt/maven/repository</url>
-        </snapshotRepository>
-    </distributionManagement>
-
-    
 </project>

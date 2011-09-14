@@ -15,6 +15,20 @@
         </developer>
     </developers>
 
+
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
+    <scm>
+        <connection>scm:svn:https://activeweb.googlecode.com/svn/trunk</connection>
+        <developerConnection>scm:svn:https://activeweb.googlecode.com/svn/trunk</developerConnection>
+        <url>https://activeweb.googlecode.com/svn/trunk/</url>
+    </scm>
+
+
     <modules>
         <module>activeweb</module>
         <module>activeweb-testing</module>
@@ -149,39 +163,6 @@
             </dependency>            
         </dependencies>
     </dependencyManagement>
-
-    <repositories>
-        <repository>
-            <id>ip-solutions</id>
-            <name>IP Solutions</name>
-            <url>http://ipsolutionsdev.com/snapshots/</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-                <checksumPolicy>warn</checksumPolicy>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>snapshots</id>
-            <name>IP Solutions Snapshots</name>
-            <url>http://ipsolutionsdev.com/snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
-    </repositories>
-    <distributionManagement>
-        <repository>
-            <id>ipsolutions-repo</id>
-            <name>IPSolutions Repository</name>
-            <url>scp://localhost/opt/maven/repository</url>
-        </repository>
-        <snapshotRepository>
-            <id>ipsolutions-repo</id>
-            <name>IPSolutions Repository</name>
-            <url>scp://localhost/opt/maven/repository</url>
-        </snapshotRepository>
-    </distributionManagement>
 
     
 </project>

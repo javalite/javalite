@@ -192,54 +192,5 @@
             </exclusions>
         </dependency>
     </dependencies>
-    <repositories>
-        <repository>
-            <id>ipsolutions_repo</id>
-            <name>Ipsolutionsdev Maven Repository</name>
-            <url>http://ipsolutionsdev.com/snapshots/</url>
-        </repository>
-        <repository>
-            <id>ipsolutions_repo_snapshots</id>
-            <name>Ipsolutionsdev Maven Snapshot Repository</name>
-            <url>http://ipsolutionsdev.com/snapshots/</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-                <checksumPolicy>warn</checksumPolicy>
-            </snapshots>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>ipsolutions_plugin_repo</id>
-            <name>Ipsolutionsdev Maven Repository</name>
-            <url>http://ipsolutionsdev.com/snapshots/</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>ipsolutions_plugin_repo_snapshots</id>
-            <name>Ipsolutionsdev Maven Snapshot Repository</name>
-            <url>http://ipsolutionsdev.com/snapshots/</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-                <checksumPolicy>warn</checksumPolicy>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
-
-
-    <!--Feel free to delete this section-->
-     <distributionManagement>
-            <repository>
-                <id>ipsolutions-repo</id>
-                <name>IPSolutions Repository</name>
-                <url>scp://localhost/opt/maven/repository</url>
-            </repository>
-            <snapshotRepository>
-                <id>ipsolutions-repo</id>
-                <name>IPSolutions Repository</name>
-                <url>scp://localhost/opt/maven/repository</url>
-            </snapshotRepository>
-        </distributionManagement>
 
 </project>
