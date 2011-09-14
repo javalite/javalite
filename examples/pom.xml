@@ -1,0 +1,58 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.javalite</groupId>
+    <artifactId>activeweb-examples</artifactId>
+    <packaging>pom</packaging>
+    <version>1.1-SNAPSHOT</version>
+    <name>ActiveWeb - Examples</name>
+    <description>Root of ActiveWeb Examples</description>
+    <developers>
+        <developer>
+            <name>Igor Polevoy</name>
+            <email>igor at polevoy dot org</email>
+        </developer>
+    </developers>
+
+    <modules>
+        <module>activeweb-example-zip</module>
+        <module>activeweb-simple</module>
+        <module>kitchensink</module>
+    </modules>
+
+    <repositories>
+        <repository>
+            <id>ip-solutions</id>
+            <name>IP Solutions</name>
+            <url>http://ipsolutionsdev.com/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>warn</checksumPolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>snapshots</id>
+            <name>IP Solutions Snapshots</name>
+            <url>http://ipsolutionsdev.com/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
+    <distributionManagement>
+        <repository>
+            <id>ipsolutions-repo</id>
+            <name>IPSolutions Repository</name>
+            <url>scp://localhost/opt/maven/repository</url>
+        </repository>
+        <snapshotRepository>
+            <id>ipsolutions-repo</id>
+            <name>IPSolutions Repository</name>
+            <url>scp://localhost/opt/maven/repository</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    
+</project>
