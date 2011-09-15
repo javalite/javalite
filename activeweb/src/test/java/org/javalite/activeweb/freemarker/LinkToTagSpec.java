@@ -164,4 +164,12 @@ public class LinkToTagSpec extends RequestSpec {
                 "link_to/restful3", sw);
         a(sw.toString()).shouldBeEqual("<a href=\"/bookstore/rest/book/3/edit_form\" data-link=\"aw\">Click here to edit book 3</a>");
     }
+
+    @Test
+    public void shouldPassHtmlId(){
+        sw = new StringWriter();
+        manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "/rest/book", "restful", true)),
+                        "link_to/has_html_id", sw);
+        a(sw.toString()).shouldBeEqual("<a href=\"/bookstore/book/read/2?first_name=John\" id=\"bazooka\" data-link=\"aw\" class=\"red_button\">Click here to read book 2</a>");
+    }
 }

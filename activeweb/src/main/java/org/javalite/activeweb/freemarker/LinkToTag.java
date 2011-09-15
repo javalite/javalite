@@ -245,11 +245,15 @@ public class LinkToTag extends FreeMarkerTag {
             tf.attribute("data-error", params.get("error").toString());
         }
 
+        if (params.containsKey("html_id")) {
+            tf.attribute("id", params.get("html_id").toString());
+        }
+
         tf.attribute("data-link", "aw");
 
         tf.addAttributesExcept(params, "controller", "action", "form", "id", "method",
                 "query_string", "query_params", "context_path", "destination",
-                "before", "before_arg", "after", "after_arg", "confirm", "error");
+                "before", "before_arg", "after", "after_arg", "confirm", "error", "html_id");
         writer.write(tf.toString());
     }
 
