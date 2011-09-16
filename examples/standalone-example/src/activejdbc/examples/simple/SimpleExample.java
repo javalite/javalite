@@ -1,6 +1,6 @@
 package activejdbc.examples.simple;
 
-import activejdbc.Base;
+import org.javalite.activejdbc.Base;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
