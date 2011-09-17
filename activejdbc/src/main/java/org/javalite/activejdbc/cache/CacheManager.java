@@ -36,11 +36,11 @@ public abstract class CacheManager {
 
     /**
      * Returns a cached item. Can return null if not found.
-     *
+     * @param group group of caches - this is a name of a table for which query results are cached
      * @param key key of the item.
      * @return a cached item. Can return null if not found.
      */
-    public abstract Object getCache(String key);
+    public abstract Object getCache(String group, String key);
 
     /**
      * Adds item to cache. 

@@ -31,7 +31,7 @@ public class OSCacheManager extends CacheManager{
         administrator = new GeneralCacheAdministrator();
     }
 
-    public Object getCache(String key) {
+    public Object getCache(String group, String key) {
         try {
             return administrator.getFromCache(key);
         } catch (NeedsRefreshException nre) {

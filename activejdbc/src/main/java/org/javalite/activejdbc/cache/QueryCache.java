@@ -83,7 +83,7 @@ public class QueryCache {
 
         if (enabled) {
             String key = getKey(tableName, query, params);
-            Object item = cacheManager.getCache(key);
+            Object item = cacheManager.getCache(tableName, key);
             if (item == null) {
                 logAccess(query, params, "MISS");
             } else {
