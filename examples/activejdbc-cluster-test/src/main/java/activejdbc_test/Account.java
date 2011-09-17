@@ -22,8 +22,8 @@ limitations under the License.
 
 package activejdbc_test;
 
-import activejdbc.Model;
-import activejdbc.annotations.Cached;
+import org.javalite.activejdbc.Model;
+import org.javalite.activejdbc.annotations.Cached;
 
 @Cached
 public class Account extends Model{}

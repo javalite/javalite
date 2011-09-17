@@ -17,7 +17,7 @@ limitations under the License.
 
 package activejdbc_test;
 
-import activejdbc.Base;
+import org.javalite.activejdbc.Base;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,7 +42,7 @@ public class ClusterTest {
 
             String command = s.next();
             if (!command.equalsIgnoreCase("i") && !command.equalsIgnoreCase("s")) {
-                print("wrong command, use 's' ot 'i'");
+                print("wrong command, use 's' or 'i'");
             } else if (command.equalsIgnoreCase("i")) {
                 insert();
             } else {
