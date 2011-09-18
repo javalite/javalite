@@ -10,6 +10,12 @@
     <name>ActiveJDBC EHCache Test</name>
     <description>This module is a test for EHCache integration, do not add this
         as a dependency to your project</description>
+    <parent>
+        <groupId>org.javalite</groupId>
+        <artifactId>activejdbc-root</artifactId>
+        <version>1.2-SNAPSHOT</version>
+    </parent>
+
 
     <build>
         <plugins>

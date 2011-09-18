@@ -1,4 +1,7 @@
-<ehcache>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd"
+         updateCheck="true" monitoring="autodetect">
+
     <diskStore path="java.io.tmpdir"/>
     <defaultCache
             maxElementsInMemory="1000"
@@ -11,4 +14,7 @@
             diskExpiryThreadIntervalSeconds="120"
             memoryStoreEvictionPolicy="LRU"
             />
+    <terracottaConfig url=""
 </ehcache>
+
+
