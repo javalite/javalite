@@ -37,20 +37,34 @@ public class Paginator implements Serializable {
     private Object[] params;
     private MetaModel metaModel;
     private int currentPage;
+    private boolean fullQuery;
 
 
     /**
-     * Paginator is created with parameters to jump to pages.
+     * Paginator is created with parameters to jump to junk of result sets (pages). This class is useful "paging"
+     * through result on a user interface (web page).
+     *
+     * <h4>Examples of a sub-query:</h4>
+     * <ul>
+     *     <li><code>"last_name like '%John%'"</code> - this is a sub-query, and the rest of the information will be filled out
+     * by this class</li>
+     *     <li> "*" - will search for all records, no filtering</li>
+     * </ul>
+     * Sub-query is used in simple cases, when filtering is done against one database.
+     *
+     * <h4>Full query example</h4>
+     * <ul>
+     *     <li>"select * from people where last_name like '%John%'"</li>
+     * </ul>
      *
      * @param modelClass model class mapped to a table.
      * @param pageSize   number of items per page.
-     * @param query      this is a query that will be applied every time a new page is requested.
-     *                   Examples are:
-     *                   <ul>
-     *                     <li>"last_name like '%John%'",
-     *                     <li>"*" - will search for all records, no filtering.
-     *                   </ul>
-     * @param params     a set of parameters if a query is parametrized (has question marks '?').
+     * @param params a set of parameters if a query is parametrized (has question marks '?').
+     * @param query      this is a query that will be applied every time a new page is requested; this
+     * query should not contain limit, offset or order by clauses of any kind, Paginator will do this automatically.
+     * This parameter can have two forms, a sub-query or a full query.
+     *
+     *
      */
     public Paginator(Class<? extends Model> modelClass, int pageSize, String query, Object... params) {
 
@@ -59,12 +73,16 @@ public class Paginator implements Serializable {
         }catch(Exception e){
             throw new InitException(e);
         }
+
         
         this.pageSize = pageSize;
         this.query = query;
         this.params = params;
         String tableName = Registry.instance().getTableName(modelClass);
         this.metaModel = Registry.instance().getMetaModel(tableName);
+
+        this.fullQuery = query.trim().toLowerCase().startsWith("select");
+
     }
 
     /**
@@ -149,17 +167,17 @@ public class Paginator implements Serializable {
         }
     }
 
-    private <T extends Model> LazyList<T> find(String subquery, Object... params) {
+    private <T extends Model> LazyList<T> find(String query, Object... params) {
 
-        if (subquery.equals("*") && params.length == 0) {
+        if (query.equals("*") && params.length == 0) {
             return findAll();
         }
 
-        if (subquery.equals("*") && params.length != 0) {
+        if (query.equals("*") && params.length != 0) {
             throw new IllegalArgumentException("cannot provide parameters with query: '*', use findAll() method instead");
         }
 
-        return new LazyList(subquery, params, metaModel);
+        return fullQuery ? new LazyList(true, metaModel, this.query, params) : new LazyList(query, params, metaModel);
     }
 
     private <T extends Model> LazyList<T> findAll() {

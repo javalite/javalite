@@ -714,6 +714,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     protected  String toJsonP(boolean pretty, String indent, String... attrs) {
 
         List<String> attrList = Arrays.asList(attrs);
+        Collections.sort(attrList);
 
                 StringWriter sw = new StringWriter();
 
@@ -1703,7 +1704,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return list of models representing result set.
      */
     public static <T extends Model> LazyList<T> findBySQL(String fullQuery, Object... params) {
-        return  new LazyList<T>(getMetaModel(), fullQuery, params);
+        return  new LazyList<T>(false, getMetaModel(), fullQuery,  params);
      }
 
     /**

@@ -33,7 +33,8 @@ public class OracleDialect extends DefaultDialect {
      *
      * Look here for reference: <a href="http://explainextended.com/2009/05/06/oracle-row_number-vs-rownum/">Oracle: ROW_NUMBER vs ROWNUM</a>
      *
-     * @param tableName name of table
+     * @param tableName name of table. If table name is null, then the subQuery parameter is considered to be a full query, and all that needs to be done is to
+     * add limit, offset and order bys
      * @param subQuery sub query, something like: "name = ? and ssn = ?". It can be blank: "" or null;
      * @param orderBys collection of order by: "dob desc" - one example
      * @param limit limit value, -1 if not needed.
@@ -50,17 +51,21 @@ public class OracleDialect extends DefaultDialect {
 
         offset += 1;//Oracle offset starts with 1, not like MySQL with 0;
 
-        String fullQuery = needLimit || needOffset ? "SELECT t.* FROM " + tableName + " t " : "SELECT * FROM " + tableName;
+        String fullQuery;
+        if (tableName == null) {//table is in teh sub-query already
+            fullQuery = subQuery;
+        } else {
+            fullQuery = needLimit || needOffset ? "SELECT t.* FROM " + tableName + " t " : "SELECT * FROM " + tableName;
+            if (!Util.blank(subQuery)) {
+                String where = " WHERE ";
+                //this is only to support findFirst("order by..."), might need to revisit later
 
-        if(!Util.blank(subQuery)){
-            String where = " WHERE ";
-            //this is only to support findFirst("order by..."), might need to revisit later
-
-            if(!groupByPattern.matcher(subQuery.toLowerCase().trim()).find()  &&
-                   !orderByPattern.matcher(subQuery.toLowerCase().trim()).find() ){
-                fullQuery += where;
+                if (!groupByPattern.matcher(subQuery.toLowerCase().trim()).find() &&
+                        !orderByPattern.matcher(subQuery.toLowerCase().trim()).find()) {
+                    fullQuery += where;
+                }
+                fullQuery += subQuery;
             }
-            fullQuery += subQuery;
         }
 
         if(orderBys.size() != 0){

@@ -438,15 +438,6 @@ public class ModelTest extends ActiveJDBCTest {
 
     }
 
-    @Test
-    @Ignore
-    public void testOrdeBy(){
-    }
-
-    @Test
-    @Ignore
-    public void testGroupBy(){
-    }
 
     @Test
     public void shouldGenerateCorrectInsertSQL(){

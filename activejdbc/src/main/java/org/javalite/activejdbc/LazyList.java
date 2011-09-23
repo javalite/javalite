@@ -49,6 +49,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
     private Object[] params;
     private long limit = -1, offset = -1;
     private Map<Class<T>, Association> includes = new HashMap<Class<T>, Association>();
+    private boolean forPaginator;
     
     protected LazyList(String subQuery, Object[] params, MetaModel metaModel){
         if(subQuery != null)
@@ -58,16 +59,24 @@ public class LazyList<T extends Model> extends AbstractList<T>{
         this.metaModel = metaModel;
     }
 
-    protected LazyList(MetaModel metaModel, String fullQuery, Object[] params){
+    /**
+     *
+     * @param metaModel
+     * @param fullQuery
+     * @param forPaginator true is this list should not check usage of limit() and offset() methods.
+     * @param params
+     */
+    protected LazyList(boolean forPaginator, MetaModel metaModel, String fullQuery, Object[] params){
         this.fullQuery = fullQuery;
         this.params = params == null? new Object[]{}: params;
         this.metaModel = metaModel;
+        this.forPaginator = forPaginator;
     }
 
     protected LazyList(){}
     /**
      *  This method limits the number of results in the resultset.
-     *  It can be used in combination wit the offset like this:
+     *  It can be used in combination with the offset like this:
      * 
      *  <code>List&lt;Event&gt; events =  Event.find("mnemonic = ?", "GLUC").offset(101).limit(20).orderBy("history_event_id");</code>
      *  This will produce 20 records, starting from record 101. This is an efficient method, it will only retrieve records
@@ -77,7 +86,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
      * @return instance of this <code>LazyList</code>
      */
     public <E extends Model>  LazyList<E> limit(long limit){
-        if(fullQuery != null) throw new IllegalArgumentException("Cannot use .limit() if using free form SQL");
+        if(fullQuery != null && !forPaginator) throw new IllegalArgumentException("Cannot use .limit() if using free form SQL");
 
         if(limit < 0) throw new IllegalArgumentException("limit cannot be negative");
 
@@ -98,7 +107,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
      * @return instance of this <code>LazyList</code>
      */
     public <E extends Model>  LazyList<E> offset(long offset){
-        if(fullQuery != null) throw new IllegalArgumentException("Cannot use .offset() if using free form SQL");
+        if(fullQuery != null && !forPaginator) throw new IllegalArgumentException("Cannot use .offset() if using free form SQL");
 
         if(offset < 0) throw new IllegalArgumentException("offset cannot be negative");
 
@@ -114,7 +123,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
      * @return instance of this <code>LazyList</code>
      */
     public <E extends Model>  LazyList<E> orderBy(String orderBy){
-        if(fullQuery != null) throw new IllegalArgumentException("Cannot use .orderBy() if using free form SQL");
+        if(fullQuery != null && !forPaginator) throw new IllegalArgumentException("Cannot use .orderBy() if using free form SQL");
 
         orderBys.add(orderBy);
         return (LazyList<E>) this;
@@ -244,9 +253,15 @@ public class LazyList<T extends Model> extends AbstractList<T>{
 
         String subQuery = Util.join(subQueries.toArray(new String[]{}), " ");
 
-        String sql = fullQuery != null? fullQuery :
+        String sql;
+        if(forPaginator){
+            sql = Registry.instance().getConfiguration().getDialect(metaModel).formSelect(null, fullQuery,
+                        orderBys, limit, offset);
+        }else{
+            sql = fullQuery != null ? fullQuery :
                 Registry.instance().getConfiguration().getDialect(metaModel).formSelect(metaModel.getTableName(), subQuery,
                         orderBys, limit, offset);
+        }
 
         if(metaModel.cached()){        
             ArrayList<T> cached = (ArrayList<T>) QueryCache.instance().getItem(metaModel.getTableName(), sql, params);

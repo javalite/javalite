@@ -17,6 +17,7 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
+import org.codehaus.jackson.map.ser.impl.IndexedStringListSerializer;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.test.jspec.ExceptionExpectation;
 import org.javalite.activejdbc.test_models.Item;
@@ -124,5 +125,14 @@ public class PaginatorTest extends ActiveJDBCTest {
         System.out.println("Page 3");
         p.getPage(3).dump(System.out);
 
+    }
+
+    @Test
+    public void shouldPaginateWithRawSql(){
+
+        Paginator p = new Paginator(Item.class, 10, "select * from items where item_description like '%2%'").orderBy("item_number");
+        List<Item> items = p.getPage(28);
+        a(items.size()).shouldBeEqual(1);
+        a(items.get(0).get("item_number")).shouldBeEqual(992);
     }
 }
