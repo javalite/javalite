@@ -96,9 +96,18 @@ public class FormItem {
     /**
      * File name.
      *
+     * @deprecated use {@link #getFileName()}
      * @return file name.
      */
     public String getName() {
+        return fileItemStream.getName();
+    }
+
+    /**
+     * File name.
+     * @return file name.
+     */
+    public String getFileName(){
         return fileItemStream.getName();
     }
 
