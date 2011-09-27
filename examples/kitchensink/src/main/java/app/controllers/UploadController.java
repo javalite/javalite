@@ -33,20 +33,33 @@ public class UploadController extends AppController {
     }
 
 
-
     @POST
     public void save() throws IOException {
 
+        //MUST READ ALL ITEMS ONE AT THE TIME.
+        //MUST NEVER SKIP!
+
         Iterator<FormItem> iterator = uploadedFiles();
-        String content = null, name = null;
-        if (iterator.hasNext()){
+        String fileContent = "", fileName = "";
+        String fieldContent = "", fieldName = "";
+        while (iterator.hasNext()) {
             FormItem item = iterator.next();
-            name = item.getName();
-            if(item.isFile())
-                content = Util.read(item.getInputStream());
+
+            if(item.isFile()){
+                fileName= item.getFileName();
+                fileContent= Util.read(item.getInputStream());
+            }else{
+                fieldName= item.getFieldName();
+                fieldContent= Util.read(item.getInputStream());
+            }
         }
-        flash("file_accepted", "file was accepted: " + name);
-        flash("file_content", content);
+
+        flash("file_name", fileName);
+        flash("file_content", fileContent);
+
+        flash("field_name",  fieldName);
+        flash("field_content", fieldContent);
+
         redirect(UploadController.class);
     }
 }

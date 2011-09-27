@@ -2,21 +2,44 @@
 
 
 <h2>Upload page</h2>
-<div style="background-color:lightblue;margin:20px"><@flash name="file_accepted" /></div>
 
-
-<#if (flasher.file_content)??>
-    File Content:
-    <div style="background-color:#ffffe0;margin:20px">
-        <code>
+<#if (flasher.file_name)??>
+File: "<@flash name="file_name"/>":
+<div style="background-color:#ffffe0;margin:20px">
+    <code>
             <pre>
             <@flash name="file_content" />
             </pre>
-        </code>
+    </code>
+</div>
+</#if>
 
-    </div>
+<#if (flasher.field_name)??>
+Field: "<@flash name="field_name"/>":
+<div style="background-color:#ffffe0;margin:20px">
+    <code>
+            <pre>
+            <@flash name="field_content" />
+            </pre>
+    </code>
+</div>
 </#if>
 <@form controller="upload" action="save" method="post" enctype="multipart/form-data">
-    Select a file to upload:<input type="file" name="file">
-    <button>Upload File</button>
+<table>
+    <tr>
+        <td>Enter some value:</td>
+        <td><input name="a_field" type="text"></td>
+    </tr>
+    <tr>
+        <td>Select a file to upload:</td>
+        <td><input type="file" name="a_file"></td>
+    </tr>
+    <tr>
+        <td><button>Submit</button></td>
+        <td></td>
+    </tr>
+
+</table>
 </@>
+
+
