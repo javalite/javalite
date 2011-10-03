@@ -15,6 +15,7 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
+import org.javalite.activejdbc.DB;
 import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,7 +133,7 @@ public class RequestDispatcher implements Filter {
                     request.setAttribute("id", route.getId());
                 }
 
-                runner.run(route, false, true);
+                runner.run(route, true);
             } else {
                 //TODO: theoretically this will never happen, because if the route was not excluded, the router.recognize() would throw some kind
                 // of exception, leading to the a system error page.
@@ -153,6 +154,12 @@ public class RequestDispatcher implements Filter {
             renderSystemError(e);
         }finally {
            ContextAccess.clear();
+            List<String> connectionsRemaining = DB.getCurrrentConnectionNames();
+            if(connectionsRemaining.size() != 0){
+                logger.warn("CONNECTION LEAK DETECTED ... and AVERTED!!! You left connections opened:"
+                        + connectionsRemaining + ". ActiveWeb is closing all active connections for you...");
+                DB.closeAllConnections();
+            }
         }
     }
 

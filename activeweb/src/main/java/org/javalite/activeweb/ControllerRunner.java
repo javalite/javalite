@@ -38,7 +38,7 @@ class ControllerRunner {
 
     private static Logger logger = LoggerFactory.getLogger(ControllerRunner.class.getName());
 
-    protected void run(MatchedRoute route, boolean ignoreConnections, boolean integrateViews) throws Exception {
+    protected void run(MatchedRoute route, boolean integrateViews) throws Exception {
         ControllerRegistry controllerRegistry = ContextAccess.getControllerRegistry();
         List<ControllerFilter> globalFilters = controllerRegistry.getGlobalFilters();
         List<ControllerFilter> controllerFilters = controllerRegistry.getMetaData(route.getController().getClass()).getFilters();
@@ -77,10 +77,6 @@ class ControllerRunner {
                 throw e;//if exception was not handled by filter, re-throw
             }
         }
-        finally {
-            if(!ignoreConnections)// set to true for testing.
-                closeDbConnections();
-        }
     }
 
     private void inject(AppController controller) {
@@ -91,12 +87,6 @@ class ControllerRunner {
         }
     }
 
-    private void closeDbConnections() {
-        if(DB.getCurrrentConnectionNames().size() != 0){
-            logger.warn("CONNECTION LEAK DETECTED ... and AVERTED!!! You left connections opened. ActiveWeb is closing all active connections for you...");
-            DB.closeAllConnections();
-        }
-    }
 
     private void renderResponse(MatchedRoute route,  boolean integrateViews){
 

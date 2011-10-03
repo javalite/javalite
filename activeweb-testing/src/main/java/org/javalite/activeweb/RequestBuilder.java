@@ -62,7 +62,7 @@ public class RequestBuilder {
      * @param contentType this is content type for this field, not the request. Set to a value reflecting the file
      * content, such as "image/png", "applicaiton/pdf", etc. 
      * @param content this is the binary content of the file.
-     * @return {@link activeweb.RequestBuilder} for setting additional request parameters.
+     * @return {@link org.javalite.activeweb.RequestBuilder} for setting additional request parameters.
      */
     public RequestBuilder formItem(String name, String fieldName, boolean isFile, String contentType, byte[] content){
         checkContentType();
@@ -75,7 +75,7 @@ public class RequestBuilder {
      * this method will be ignored.
      *
      * @param item this can be an instance of a {@link org.javalite.activeweb.FormItem} or {@link org.javalite.activeweb.FileItem}.
-     * @return {@link activeweb.RequestBuilder} for setting additional request parameters.
+     * @return {@link org.javalite.activeweb.RequestBuilder} for setting additional request parameters.
      */
     public RequestBuilder formItem(FormItem item){
         checkContentType();
@@ -248,7 +248,7 @@ public class RequestBuilder {
             ContextAccess.setHttpResponse(new MockHttpServletResponse());
             ContextAccess.setActionName(actionName);
 
-            runner.run(new MatchedRoute(controller, actionName), true, integrateViews);
+            runner.run(new MatchedRoute(controller, actionName),  integrateViews);
         }catch(WebException e){
             throw e;
         }catch(Exception e){
