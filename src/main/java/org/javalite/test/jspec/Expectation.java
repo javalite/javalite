@@ -127,18 +127,31 @@ public class Expectation<T> {
     /**
      * Tests that the Tested value is a specific type.
      *
-     * @param clazz type the the expected value should have.
+     * @param clazz type the the expected value should have (or super type). Lets say the super type is Car, and sub type is
+     * Toyota, then this test will pass:
+     * <pre>
+     *     a(new Toyota()).shouldBeA(Car.class).
+     * </pre>
+     * Think if this not in terms of direct typing but from a point of view of inheritance.
+     * <p>
+     * Synonym for {@link #shouldBeA(Class)}.
+     *
      */
     public void shouldBeType(Class clazz) {
-        if (!actual.getClass().equals(clazz)) throw new TestException(actual.getClass() + " is not " + clazz);
+        if (!clazz.isAssignableFrom(actual.getClass())) throw new TestException(actual.getClass() + " is not " + clazz);
     }
 
     /**
      * Tests that the Tested value is a specific type.
      *
+     * @param clazz type the the expected value should have (or super type). Lets say the super type is Car, and sub type is
+     * Toyota, then this test will pass:
+     * <pre>
+     *     a(new Toyota()).shouldBeA(Car.class).
+     * </pre>
+     * Think if this not in terms of direct typing but from a point of view of inheritance.
+     * <p>
      * Synonym for {@link #shouldBeType(Class)}.
-     * 
-     * @param clazz type the the expected value should have.
      */
     public void shouldBeA(Class clazz) {
         shouldBeType(clazz);
