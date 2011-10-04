@@ -163,27 +163,6 @@ public abstract class AppController extends HttpSupport {
         return Configuration.getDefaultLayout();
     }
 
-
-    public boolean injectable() {
-
-        //TODO: should be optimized in non - reload mode.
-
-
-        Method[] methods = getClass().getMethods();
-        for (Method method : methods) {
-            Annotation[] annotations = method.getAnnotations();
-            for (Annotation annotation : annotations) {
-                Class c = annotation.annotationType();
-                if (annotation.annotationType().toString().equals(Inject.class.toString())) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-
-
 /**
      * Returns HttpMethod for an action. By default if actions do not specify a method, and the controller is not
      * {@link org.javalite.activeweb.annotations.RESTful}, then an action is open for GET requests. If a controller is

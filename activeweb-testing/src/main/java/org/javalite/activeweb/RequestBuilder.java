@@ -33,7 +33,7 @@ public class RequestBuilder {
     private static final String MULTIPART = "multipart/form-data";
 
     private boolean integrateViews = false;
-    private Map<String, String> values = new HashMap<String, String>();
+    private Map<String, Object> values = new HashMap<String, Object>();
     private Map<String, String> headers = new HashMap<String, String>();
     private String contentType;
     private byte[] content;
@@ -89,29 +89,54 @@ public class RequestBuilder {
         }
     }
 
-    public RequestBuilder param(String name, String value) {        
-        values.put(name, value);
-        checkParamAndMultipart();
-        return this;
-    }
-
     private void checkParamAndMultipart() {
         if(contentType != null && contentType.equals(MULTIPART) && values.size() > 0){
             throw new IllegalArgumentException("cannot use param() with content type: " + MULTIPART + ", use formItem()");
         }
     }
 
+    /**
+     * Sets a single parameter for request.
+     *
+     * @param name name of parameter.
+     * @param value value of parameter.
+     * @return instance of RequestBuilder.
+     */
     public RequestBuilder param(String name, Object value) {
-        param(name, value.toString());
+
+        if(name == null || value == null) throw new IllegalArgumentException("neither argument can be null");
+
+        if(value instanceof List){
+            List list = (List) value;
+            values.put(name, list);
+        }else{
+            values.put(name, value.toString());
+        }
+        checkParamAndMultipart();
         return this;
     }
 
 
+    /**
+     * Sets a single header for the request.
+     *
+     * @param name name of header.
+     * @param value value of header.
+     * @return instance of RequestBuilder.
+     */
     public RequestBuilder header(String name, String value) {
         headers.put(name, value);
         return this;
     }
 
+    /**
+     * Convenience method to set names and values for headers. If arguments are indexed
+     * from 1, then every odd argument is a name and every even argument that follows it is a value corresponding
+     * to the preceding odd argument.
+     *
+     * @param namesAndValues names and following corresponding values
+     * @return instance of RequestBuilder
+     */
     public RequestBuilder headers(String ... namesAndValues) {
 
         if(namesAndValues.length % 2 != 0)
@@ -125,7 +150,15 @@ public class RequestBuilder {
         return this;
     }
 
-    public RequestBuilder params(String ... namesAndValues){
+    /**
+     * Convenience method for setting parameters of the request. If arguments are indexed
+     * from 1, then every odd argument is a name and every even argument that follows it is a value corresponding
+     * to the preceding odd argument.
+     *
+     * @param namesAndValues names and following corresponding values
+     * @return instance of RequestBuilder.
+     */
+    public RequestBuilder params(Object ... namesAndValues){
 
         if(namesAndValues.length % 2 != 0)
             throw new IllegalArgumentException("number of arguments must be even");
@@ -133,11 +166,17 @@ public class RequestBuilder {
 
         for (int i = 0; i < namesAndValues.length - 1; i += 2) {
             if (namesAndValues[i] == null) throw new IllegalArgumentException("parameter names cannot be nulls");
-            param(namesAndValues[i], namesAndValues[i + 1]);
+                param(namesAndValues[i].toString(), namesAndValues[i + 1]);
         }
         return this;
     }
 
+    /**
+     * Sets content type on request.
+     *
+     * @param contentType content type.
+     * @return instance of RequestBuilder
+     */
     public RequestBuilder contentType(String contentType) {                
         this.contentType = contentType;
         checkParamAndMultipart();
@@ -157,31 +196,64 @@ public class RequestBuilder {
         return this;
     }
 
+    /**
+     * Call this method to cause generation of the view after execution of a controller.
+     * If this method is used, the content of generated HTML will be available with <code>responseContent()</code>.
+     *
+     * @return instance of RequestBuilder
+     */
     public RequestBuilder integrateViews() {
         integrateViews = true;
         return this;
     }
 
+    /**
+     * Call this method to cause generation of the view after execution of a controller.
+     * If this method is used, the content of generated HTML will be available with <code>responseContent()</code>.
+     *
+     * @param integrateViews true to integrate views, false not to.
+     * @return instance of RequestBuilder
+     */
     public RequestBuilder integrateViews(boolean integrateViews) {
         this.integrateViews = integrateViews;
         return this;
     }
 
+    /**
+     * Simulate HTTP GET call to an action of controller.
+     *
+     * @param actionName name of action as on a URL - not CamelCase.
+     */
     public void get(String actionName) {
         realAction = actionName;
         submitRequest(actionName, HttpMethod.GET);
     }
 
+    /**
+     * Simulate HTTP POST call to an action of controller.
+     *
+     * @param actionName name of action as on a URL - not CamelCase.
+     */
     public void post(String actionName) {
         realAction = actionName;
         submitRequest(actionName, HttpMethod.POST);
     }
 
+    /**
+     * Simulate HTTP PUT call to an action of controller.
+     *
+     * @param actionName name of action as on a URL - not CamelCase.
+     */
     public void put(String actionName) {
         realAction = actionName;
         submitRequest(actionName, HttpMethod.PUT);
     }
 
+    /**
+     * Simulate HTTP DELETE call to an action of controller.
+     *
+     * @param actionName name of action as on a URL - not CamelCase.
+     */
     public void delete(String actionName) {
         realAction = actionName;
         submitRequest(actionName, HttpMethod.DELETE);
@@ -237,9 +309,13 @@ public class RequestBuilder {
             AppController controller = createControllerInstance(getControllerClassName(controllerPath));
             ContextAccess.setRoute(new MatchedRoute(controller, realAction, id));
             Injector injector = ContextAccess.getControllerRegistry().getInjector();
-            if(injector != null && controller.injectable()){
-                injector.injectMembers(controller);
+
+            long start = System.currentTimeMillis();
+            if(injector != null){
+                 injector.injectMembers(controller);
+                System.out.println("Injection took: " + (System.currentTimeMillis() - start) + " milliseconds");
             }
+
 
             ControllerRunner runner = new ControllerRunner();
 
@@ -273,16 +349,39 @@ public class RequestBuilder {
 
     private void addParameterValues(MockHttpServletRequest httpServletRequest) {
         for (String key : values.keySet()) {
-            httpServletRequest.addParameter(key, values.get(key));
+            Object value = values.get(key);
+            if(value instanceof List){
+                List<String> strings = new ArrayList<String>(((List)value).size());
+                for (Object v: ((List)value)) {
+                    strings.add(v.toString());
+                }
+                httpServletRequest.addParameter(key, strings.toArray(new String[]{}));
+            }else{
+                httpServletRequest.addParameter(key, value.toString());
+            }
         }
     }
 
-    public RequestBuilder id(String id) {
-        this.id = id;
+
+    /**
+     * Sets ID for this request. This method will convert ID value to string before executing a controller.
+     *
+     * @param id id for this request;  this value is accessible inside controller with <code>getId()</code> method.
+     * @return
+     */
+    public RequestBuilder id(Object id) {
+        if(id == null) throw new IllegalArgumentException("id can't be null");
+        this.id = id.toString();
         return this;
     }
 
 
+    /**
+     * Sets a query string (as in URL) for the request.
+     *
+     * @param queryString query string value
+     * @return instance of RequestBuilder.
+     */
     public RequestBuilder queryString(String queryString) {
         this.queryString = queryString;
         return this;

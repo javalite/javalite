@@ -32,13 +32,6 @@ public class AppControllerSpec {
     SimpleController simpleController = new SimpleController();
     RestfulController restfulController = new RestfulController();
 
-@Test
-    public void shouldDetectIfControllerIsInjectable(){
-
-        a(new ImagesController().injectable()).shouldBeTrue();
-        a(new SubImagesController().injectable()).shouldBeTrue();
-        a(new SimpleController().injectable()).shouldBeFalse();
-    }
 
 
     //////////////// START STANDARD ACTIONS //////////////////////////////

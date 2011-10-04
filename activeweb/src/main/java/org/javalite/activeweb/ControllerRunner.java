@@ -81,8 +81,7 @@ class ControllerRunner {
 
     private void inject(AppController controller) {
         Injector injector = ContextAccess.getControllerRegistry().getInjector();
-        //TODO: this information can be cached for performance. 
-        if (injector != null && controller.injectable()) {
+        if (injector != null) {
             injector.injectMembers(controller);
         }
     }

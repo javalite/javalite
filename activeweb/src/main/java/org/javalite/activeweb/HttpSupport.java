@@ -548,6 +548,32 @@ public class HttpSupport {
         return params;
     }
 
+    /**
+     * Sets character encoding on the response.
+     *
+     * @param encoding character encoding for response.
+     */
+    protected void setEncoding(String encoding){
+        ContextAccess.getHttpResponse().setCharacterEncoding(encoding);
+    }
+
+    /**
+     * Sets content length of response.
+     *
+     * @param length content length of response.
+     */
+    protected void setContentLength(int length){
+        ContextAccess.getHttpResponse().setContentLength(length);
+    }
+    /**
+     * Sets locale on response.
+     *
+     * @param locale locale for response.
+     */
+    protected void setLocale(Locale locale){
+        ContextAccess.getHttpResponse().setLocale(locale);
+    }
+
 
     /**
      * Returns a map where keys are names of all parameters, while values are first value for each parameter, even
@@ -764,6 +790,18 @@ public class HttpSupport {
      */
     protected void header(String name, String value){
         ContextAccess.getHttpResponse().addHeader(name, value);
+    }
+
+    /**
+     * Adds a header to response.
+     *
+     * @param name name of header.
+     * @param value value of header.
+     */
+    protected void header(String name, Object value){
+        if(value == null) throw new NullPointerException("value cannot be null");
+
+        header(name, value.toString());
     }
 
     /**
