@@ -73,7 +73,7 @@ public class ControllerFactory {
         }
     }
 
-    private static String compileController(String controllerClassName) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    private synchronized static String compileController(String controllerClassName) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
         String controllerFileName = controllerClassName.replace(".", System.getProperty("file.separator")) + ".java";
 
