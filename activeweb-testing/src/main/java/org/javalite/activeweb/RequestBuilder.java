@@ -97,6 +97,9 @@ public class RequestBuilder {
 
     /**
      * Sets a single parameter for request.
+     * <p>
+     *     For parameters with multiple values, set the value to be <code>List<String></code>
+     * </p>
      *
      * @param name name of parameter.
      * @param value value of parameter.
@@ -154,6 +157,9 @@ public class RequestBuilder {
      * Convenience method for setting parameters of the request. If arguments are indexed
      * from 1, then every odd argument is a name and every even argument that follows it is a value corresponding
      * to the preceding odd argument.
+     * <p>
+     *     For parameters with multiple values, set the value to be <code>List<String></code>
+     * </p>
      *
      * @param namesAndValues names and following corresponding values
      * @return instance of RequestBuilder.
