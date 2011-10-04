@@ -236,7 +236,7 @@ public class DB {
      * @param query this is a filtering query for the count. If '*' provided, all records will be counted. Example:
      * <code>"age > 65 AND department = 'accounting'"</code>
      * @param params parameters for placeholder substitution.
-     * @return copunt number of records found in a table.
+     * @return count number of records found in a table.
      */
     public Long count(String table, String query, Object... params) {
 

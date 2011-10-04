@@ -63,16 +63,10 @@ public class PaginatorTest extends ActiveJDBCTest {
         a(items.get(9).get("item_number")).shouldBeEqual(20);//page end
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testThrowExceptionIfWrongArgument(){
-
         final Paginator p1 = new Paginator(Item.class, 10, "*").orderBy("item_number");
-
-        expect(new ExceptionExpectation(IllegalArgumentException.class) {
-            public void exec() {
-                p1.getPage(-2);
-            }
-        });
+        p1.getPage(-2);
     }
 
     @Test
@@ -134,5 +128,6 @@ public class PaginatorTest extends ActiveJDBCTest {
         List<Item> items = p.getPage(28);
         a(items.size()).shouldBeEqual(1);
         a(items.get(0).get("item_number")).shouldBeEqual(992);
+        a(p.pageCount()).shouldBeEqual(28);
     }
 }

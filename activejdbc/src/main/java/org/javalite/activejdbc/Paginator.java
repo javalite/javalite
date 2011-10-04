@@ -18,6 +18,8 @@ limitations under the License.
 package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.cache.QueryCache;
+import org.javalite.common.Convert;
+
 import java.io.Serializable;
 
 /**
@@ -38,6 +40,7 @@ public class Paginator implements Serializable {
     private MetaModel metaModel;
     private int currentPage;
     private boolean fullQuery;
+    private String countQuery;
 
 
     /**
@@ -74,7 +77,6 @@ public class Paginator implements Serializable {
             throw new InitException(e);
         }
 
-        
         this.pageSize = pageSize;
         this.query = query;
         this.params = params;
@@ -83,6 +85,8 @@ public class Paginator implements Serializable {
 
         this.fullQuery = query.trim().toLowerCase().startsWith("select");
 
+        countQuery = fullQuery ? "SELECT COUNT(*) " + query.substring(query.toLowerCase().indexOf("from"))
+                               : "SELECT COUNT(*) FROM " + metaModel.getTableName() + " WHERE " + query;
     }
 
     /**
@@ -174,7 +178,7 @@ public class Paginator implements Serializable {
         }
 
         if (query.equals("*") && params.length != 0) {
-            throw new IllegalArgumentException("cannot provide parameters with query: '*', use findAll() method instead");
+            throw new IllegalArgumentException("cannot provide parameters with query: '*'");
         }
 
         return fullQuery ? new LazyList(true, metaModel, this.query, params) : new LazyList(query, params, metaModel);
@@ -185,20 +189,21 @@ public class Paginator implements Serializable {
     }
 
     private Long count(String query, Object... params) {
-
-        //attention: this SQL is only used for caching, not for real queries.
-        String sql = "SELECT COUNT(*) FROM " + metaModel.getTableName() + " WHERE " + query;
-
         Long result;
         if(metaModel.cached()){
-            result = (Long)QueryCache.instance().getItem(metaModel.getTableName(), sql, params);
+            result = getCount();
             if(result == null){
-                result = new DB(metaModel.getDbName()).count(metaModel.getTableName(), query, params);
-                QueryCache.instance().addItem(metaModel.getTableName(), sql, params, result);
+                result = getCount();
+                QueryCache.instance().addItem(metaModel.getTableName(), countQuery, params, result);
             }
         }else{
-            result = new DB(metaModel.getDbName()).count(metaModel.getTableName(), query, params);
+            result = getCount();
         }
         return result;
+    }
+
+    private long getCount(){
+            return fullQuery? Convert.toLong(new DB(metaModel.getDbName()).firstCell(countQuery, params))
+                            : new DB(metaModel.getDbName()).count(metaModel.getTableName(), query, params);
     }
 }
