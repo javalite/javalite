@@ -144,5 +144,5 @@ CREATE TABLE swords (id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHA
 DROP TABLE IF EXISTS meals;
 CREATE TABLE meals (id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR(56) NOT NULL);
 
-DROP TABLE IF EXISTS Member;
-CREATE TABLE Member (id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR(56) NOT NULL);
+DROP TABLE IF EXISTS member;
+CREATE TABLE member (id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR(56) NOT NULL);
