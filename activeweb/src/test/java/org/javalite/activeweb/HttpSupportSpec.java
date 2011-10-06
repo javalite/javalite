@@ -152,6 +152,14 @@ public class HttpSupportSpec {
     }
 
     @Test
+    public void shouldNotFailIfNoParams() {
+        MockHttpServletRequest req = new MockHttpServletRequest();
+        req.setParameter("cities", (String[])null);
+        ContextAccess.setHttpRequest(req);
+        a(controller.params("cities").size()).shouldBeEqual(0);
+    }
+
+    @Test
     public void shouldRetrieveCookies(){
 
         MockHttpServletRequest req = new MockHttpServletRequest();

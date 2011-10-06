@@ -531,7 +531,13 @@ public class HttpSupport {
      * @return multiple request values for a name.
      */
     protected List<String> params(String name){
-        return name.equals("id") ? asList(getId()):asList(ContextAccess.getHttpRequest().getParameterValues(name));
+        if (name.equals("id")) {
+            String id = getId();
+            return id != null ? asList(id) : Collections.<String>emptyList();
+        } else {
+            String[] values = ContextAccess.getHttpRequest().getParameterValues(name);
+            return values != null ? asList(values) : Collections.<String>emptyList();
+        }
     }
 
     /**
