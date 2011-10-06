@@ -811,3 +811,20 @@ CREATE OR REPLACE TRIGGER meals_trigger
 select coalesce(:new.id, meals_seq.nextval) into :new.id from dual;
 end;
 
+
+
+-- BREAK
+CREATE TABLE Member (id NUMBER NOT NULL, name VARCHAR(56) NOT NULL)
+-- BREAK
+ALTER TABLE Member ADD CONSTRAINT Member_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE Member_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER Member_trigger
+        BEFORE INSERT ON meals REFERENCING
+        NEW AS new
+        OLD AS old
+        FOR EACH ROW
+        begin
+select coalesce(:new.id, Member_seq.nextval) into :new.id from dual;
+end;
