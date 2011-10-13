@@ -203,7 +203,7 @@ public class SpecHelper extends JSpecSupport{
      * @param name name of a value assigned by controller.
      * @return a single value assigned by controller.
      */
-    protected int valInt(String name){
+    protected int valInteger(String name){
         assert name != null;
         return Convert.toInteger(val(name));
     }
