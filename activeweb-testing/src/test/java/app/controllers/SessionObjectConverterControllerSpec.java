@@ -37,8 +37,6 @@ public class SessionObjectConverterControllerSpec extends ControllerSpec {
 
     @Test
     public void shouldConvertInController(){
-
-
         session("name", "John");
         session("int", 1);
         session("double", 1);
