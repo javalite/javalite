@@ -16,6 +16,7 @@ limitations under the License.
 package org.javalite.activeweb;
 
 
+import org.javalite.common.Convert;
 import org.javalite.common.Util;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -607,6 +608,139 @@ public class HttpSupport {
      */
     protected SessionFacade session(){
         return new SessionFacade();
+    }
+
+    /**
+     * Convenience method, sets an object on a session. Equivalent of:
+     * <pre>
+     * <code>
+     *     session().put(name, value)
+     * </code>
+     * </pre>
+     *
+     * @param name name of object
+     * @param value object itself.
+     */
+    protected void session(String name, Serializable value){
+        session().put(name, value);
+    }
+
+    /**
+     * Convenience method, returns object from session, equivalent of:
+     * <pre>
+     * <code>
+     *     session().get(name)
+     * </code>
+     * </pre>
+     *
+     * @param name name of object,
+     * @return session object.
+     */
+    protected Object sessionObject(String name){
+        return session().get(name);
+    }
+
+    /**
+     * Convenience method, returns object from session, equivalent of:
+     * <pre>
+     * <code>
+     *     String val = (String)session().get(name)
+     * </code>
+     * </pre>
+     *
+     * @param name name of object
+     * @return value
+     */
+    protected String sessionString(String name){
+        return (String)session().get(name);
+    }
+
+
+
+    /**
+     * Convenience method, returns object from session, equivalent of:
+     * <pre>
+     * <code>
+     *     Integer val = (Integer)session().get(name)
+     * </code>
+     * </pre>
+     *
+     * @param name name of object
+     * @return value
+     */
+    protected Integer sessionInteger(String name){
+        return Convert.toInteger(session().get(name));
+    }
+
+    /**
+     * Convenience method, returns object from session, equivalent of:
+     * <pre>
+     * <code>
+     *     Boolean val = (Boolean)session().get(name)
+     * </code>
+     * </pre>
+     *
+     * @param name name of object
+     * @return value
+     */
+    protected Boolean sessionBoolean(String name){
+        return Convert.toBoolean(session().get(name));
+    }
+
+    /**
+     * Convenience method, returns object from session, equivalent of:
+     * <pre>
+     * <code>
+     *     Double val = (Double)session().get(name)
+     * </code>
+     * </pre>
+     *
+     * @param name name of object
+     * @return value
+     */
+    protected Double sessionDouble(String name){
+        return Convert.toDouble(session().get(name));
+    }
+
+    /**
+     * Convenience method, returns object from session, equivalent of:
+     * <pre>
+     * <code>
+     *     Float val = (Float)session().get(name)
+     * </code>
+     * </pre>
+     *
+     * @param name name of object
+     * @return value
+     */
+    protected Float sessionFloat(String name){
+        return Convert.toFloat(session().get(name));
+    }
+
+    /**
+     * Convenience method, returns object from session, equivalent of:
+     * <pre>
+     * <code>
+     *     Long val = (Long)session().get(name)
+     * </code>
+     * </pre>
+     *
+     * @param name name of object
+     * @return value
+     */
+    protected Long sessionLong(String name){
+        return Convert.toLong(session().get(name));
+    }
+
+    /**
+     * Returns true if session has named object, false if not.
+     *
+     * @param name name of object.
+     * @return true if session has named object, false if not.
+     */
+    protected boolean sessionHas(String name){
+        return session().get(name) != null;
+
     }
 
     /**

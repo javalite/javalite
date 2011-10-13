@@ -18,6 +18,7 @@ package org.javalite.activeweb;
 
 
 import com.google.inject.Injector;
+import org.javalite.common.Convert;
 import org.javalite.test.jspec.JSpecSupport;
 import org.javalite.test.jspec.TestException;
 import org.javalite.activeweb.freemarker.FreeMarkerTag;
@@ -28,6 +29,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 
 import javax.servlet.http.HttpSession;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -159,6 +161,98 @@ public class SpecHelper extends JSpecSupport{
     }
 
     /**
+     * Synonym of {@link #assigns()}.
+     *
+     * @return values assigned by controller during execution
+     */
+    protected Map vals(){
+        if(ContextAccess.getControllerResponse() == null){
+            throw new TestException("There is no controller response, did you actually invoke a controller/action?");
+        }
+        return ContextAccess.getControllerResponse().values();
+    }
+
+    /**
+     * Returns a single value assigned by controller.
+     *
+     * @param name name of a value assigned by controller.
+     *
+     * @return a single value assigned by controller.
+     */
+    protected Object val(String name){
+        if(ContextAccess.getControllerResponse() == null){
+            throw new TestException("There is no controller response, did you actually invoke a controller/action?");
+        }
+        return ContextAccess.getControllerResponse().values().get(name);
+    }
+
+    /**
+     * String value assigned by controller.
+     *
+     * @param name name of a value assigned by controller.
+     * @return a single value assigned by controller.
+     */
+    protected String valString(String name){
+        assert name != null;
+        return val(name).toString();
+    }
+
+    /**
+     * int value assigned by controller.
+     *
+     * @param name name of a value assigned by controller.
+     * @return a single value assigned by controller.
+     */
+    protected int valInt(String name){
+        assert name != null;
+        return Convert.toInteger(val(name));
+    }
+
+    /**
+     * long value assigned by controller.
+     *
+     * @param name name of a value assigned by controller.
+     * @return a single value assigned by controller.
+     */
+    protected long valLong(String name){
+        assert name != null;
+        return Convert.toLong(val(name));
+    }
+
+    /**
+     * double value assigned by controller.
+     *
+     * @param name name of a value assigned by controller.
+     * @return a single value assigned by controller.
+     */
+    protected double valDouble(String name){
+        assert name != null;
+        return Convert.toDouble(val(name));
+    }
+
+    /**
+     * float value assigned by controller.
+     *
+     * @param name name of a value assigned by controller.
+     * @return a single value assigned by controller.
+     */
+    protected float valFloat(String name) {
+        assert name != null;
+        return Convert.toFloat(val(name));
+    }
+
+    /**
+     * boolean value assigned by controller.
+     *
+     * @param name name of a value assigned by controller.
+     * @return a single value assigned by controller.
+     */
+    protected boolean valBoolean(String name){
+        assert name != null;
+        return Convert.toBoolean(val(name));
+    }
+
+    /**
      * Returns true after execution of an action that sent a redirect.
      * @return true after execution of an action that sent a redirect, false otherwise.
      */
@@ -250,4 +344,140 @@ public class SpecHelper extends JSpecSupport{
         Map flasher = (Map) session().get("flasher");
         return flasher.get(name) == null? null :flasher.get(name).toString();
     }
+
+
+
+    /**
+     * Convenience method, sets an object on a session. Equivalent of:
+     * <pre>
+     * <code>
+     *     session().put(name, value)
+     * </code>
+     * </pre>
+     *
+     * @param name name of object
+     * @param value object itself.
+     */
+    protected void session(String name, Serializable value){
+        session().put(name, value);
+    }
+
+    /**
+     * Convenience method, returns object from session, equivalent of:
+     * <pre>
+     * <code>
+     *     session().get(name)
+     * </code>
+     * </pre>
+     *
+     * @param name name of object,
+     * @return session object.
+     */
+    protected Object sessionObject(String name){
+        return session().get(name);
+    }
+
+    /**
+     * Convenience method, returns object from session, equivalent of:
+     * <pre>
+     * <code>
+     *     String val = (String)session().get(name)
+     * </code>
+     * </pre>
+     *
+     * @param name name of object
+     * @return value
+     */
+    protected String sessionString(String name){
+        return (String)session().get(name);
+    }
+
+
+
+    /**
+     * Convenience method, returns object from session, equivalent of:
+     * <pre>
+     * <code>
+     *     Integer val = (Integer)session().get(name)
+     * </code>
+     * </pre>
+     *
+     * @param name name of object
+     * @return value
+     */
+    protected Integer sessionInteger(String name){
+        return Convert.toInteger(session().get(name));
+    }
+
+    /**
+     * Convenience method, returns object from session, equivalent of:
+     * <pre>
+     * <code>
+     *     Boolean val = (Boolean)session().get(name)
+     * </code>
+     * </pre>
+     *
+     * @param name name of object
+     * @return value
+     */
+    protected Boolean sessionBoolean(String name){
+        return Convert.toBoolean(session().get(name));
+    }
+
+    /**
+     * Convenience method, returns object from session, equivalent of:
+     * <pre>
+     * <code>
+     *     Double val = (Double)session().get(name)
+     * </code>
+     * </pre>
+     *
+     * @param name name of object
+     * @return value
+     */
+    protected Double sessionDouble(String name){
+        return Convert.toDouble(session().get(name));
+    }
+
+    /**
+     * Convenience method, returns object from session, equivalent of:
+     * <pre>
+     * <code>
+     *     Float val = (Float)session().get(name)
+     * </code>
+     * </pre>
+     *
+     * @param name name of object
+     * @return value
+     */
+    protected Float sessionFloat(String name){
+        return Convert.toFloat(session().get(name));
+    }
+
+    /**
+     * Convenience method, returns object from session, equivalent of:
+     * <pre>
+     * <code>
+     *     Long val = (Long)session().get(name)
+     * </code>
+     * </pre>
+     *
+     * @param name name of object
+     * @return value
+     */
+    protected Long sessionLong(String name){
+        return Convert.toLong(session().get(name));
+    }
+
+    /**
+     * Returns true if session has named object, false if not.
+     *
+     * @param name name of object.
+     * @return true if session has named object, false if not.
+     */
+    protected boolean sessionHas(String name){
+        return session().get(name) != null;
+
+    }
+
 }
