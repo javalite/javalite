@@ -40,4 +40,10 @@ public class ExpectationTest {
 
         a(new Job()).shouldBeA(Runnable.class);
     }
+
+    @Test
+    public void shouldTestContains(){
+        String testString = "this is just a test";
+        a(testString).shouldContain("test");
+    }
 }
