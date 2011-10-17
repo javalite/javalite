@@ -188,6 +188,15 @@ public class Expectation<T> {
     }
 
     /**
+     * Tests that a string representation of tested object contains a substring.
+     *
+     * @param substring value that is expected to be a substring of a tested object.
+     */
+    public void shouldContain(String substring){
+        if (!actual.toString().contains(substring)) throw  new TestException("tested value does not contain substring");
+    }
+
+    /**
      * Tested value is not the same reference value as expected.
      *
      * @param expected expected reference.

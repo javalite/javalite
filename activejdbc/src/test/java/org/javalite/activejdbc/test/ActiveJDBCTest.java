@@ -17,9 +17,8 @@ limitations under the License.
 
 package org.javalite.activejdbc.test;
 
+import java.io.*;
 import java.sql.*;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -27,6 +26,7 @@ import java.util.List;
 import static org.javalite.common.Collections.list;
 
 import org.javalite.activejdbc.*;
+import org.javalite.activejdbc.test_models.Person;
 import org.javalite.test.jspec.JSpecSupport;
 
 import org.junit.After;
@@ -173,7 +173,6 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
                     st.executeUpdate(statement);
                 }
                 catch(Exception e){
-                    System.out.println("Statement: " + statement);
                     throw e;
                 }
 
@@ -183,5 +182,23 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
         catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+
+    PrintStream errOrig;
+    PrintStream err;
+    ByteArrayOutputStream bout;
+
+    protected void replaceSystemError() {
+        errOrig = System.err;
+        bout = new ByteArrayOutputStream();
+        err = new PrintStream(bout);
+        System.setErr(err);
+    }
+
+    protected String getSystemError() throws IOException {
+        err.flush();
+        bout.flush();
+        return bout.toString();
     }
 }

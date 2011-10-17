@@ -14,36 +14,27 @@ See the License for the specific language governing permissions and
 limitations under the License. 
 */
 
-package org.javalite.common.test;
+package org.javalite.activejdbc;
 
+import org.javalite.activejdbc.test.ActiveJDBCTest;
+import org.javalite.activejdbc.test_models.NoArg;
 import org.junit.Test;
 
-import static org.javalite.test.jspec.JSpec.a;
+import java.io.IOException;
 
 /**
  * @author Igor Polevoy
  */
-public class ExpectationTest {
-
+public class Defect199Test extends ActiveJDBCTest {
     @Test
-    public void shouldTestSuperClassAndInterface(){
+    public void shouldProvideGoodMessage() throws IOException {
 
-        class Car{}
-        class Toyota extends Car{}
-
-        a(new Car()).shouldBeA(Car.class);
-        a(new Toyota()).shouldBeA(Car.class);
-
-        class Job implements Runnable{
-            public void run() {}
+        replaceSystemError();
+        try{
+            NoArg.create("name", "blah");
+        }catch(Exception e){
+            e.printStackTrace();
         }
-
-        a(new Job()).shouldBeA(Runnable.class);
-    }
-
-    @Test
-    public void shouldTestContains(){
-        String testString = "this is just a test";
-        a(testString).shouldContain("test");
+        a(getSystemError()).shouldContain("org.javalite.activejdbc.test_models.NoArg");
     }
 }
