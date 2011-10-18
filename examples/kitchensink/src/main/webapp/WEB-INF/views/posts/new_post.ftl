@@ -3,7 +3,7 @@
 <h2>Create New Post:</h2>
 
 <span class="message"><@flash name="values_missing"/></span>
-<@form controller="posts" action="add" method="post">
+<@form action="add" method="post">
 <table>
     <tr>
         <td>Author:</td>
