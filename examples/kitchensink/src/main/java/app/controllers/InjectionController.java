@@ -26,15 +26,10 @@ import org.javalite.activeweb.AppController;
  * @author Igor Polevoy
  */
 public class InjectionController extends AppController {
-
+    @Inject
     Greeter greeter;
 
     public void index(){
         view("message", greeter.greet());
-    }
-
-    @Inject
-    public void setGreeter( Greeter greeter) {
-        this.greeter = greeter;
     }
 }
