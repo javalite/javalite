@@ -9,30 +9,30 @@
 </form>
 
 <h2>Include form data:</h2>
-<@link_to controller="unobtrusive" action="do-get" form="form1" destination="result1">Ajax Get</@>
+<@link_to  action="do-get" form="form1" destination="result1">Ajax Get</@>
 <br>
-<@link_to controller="unobtrusive" action="do-post" form="form1" destination="result1" method="post">Ajax Post</@>
+<@link_to action="do-post" form="form1" destination="result1" method="post">Ajax Post</@>
 <br>
-<@link_to controller="unobtrusive" action="do-put" form="form1" destination="result1" method="put">Ajax Put</@>
+<@link_to action="do-put" form="form1" destination="result1" method="put">Ajax Put</@>
 <br>
-<@link_to controller="unobtrusive" action="do-delete" form="form1" destination="result1" method="delete">Ajax Delete</@>
+<@link_to  action="do-delete" form="form1" destination="result1" method="delete">Ajax Delete</@>
 
 <div id="result1" style="margin:20px;font-size:large;background-color:#f5f5f5;">result will be here</div>
 
 <h1>Links with JS callbacks</h1>
 
-<@link_to controller="unobtrusive" action="do-get" form="form1"  before="doBeforeWithArg" before_arg="callbacks_result"
+<@link_to action="do-get" form="form1"  before="doBeforeWithArg" before_arg="callbacks_result"
                                 after="doAfterWithArg" after_arg="callbacks_result">Callbacks Get</@>
 <br>
-<@link_to controller="unobtrusive" action="do-post" form="form1"  method="post" before="doBefore" after="doAfter" >Callbacks Post</@>
+<@link_to action="do-post" form="form1"  method="post" before="doBefore" after="doAfter" >Callbacks Post</@>
 <br>
-<@link_to controller="unobtrusive" action="do-put" form="form1"  method="put" before="doBefore" after="doAfter">Callbacks Put</@>
+<@link_to action="do-put" form="form1"  method="put" before="doBefore" after="doAfter">Callbacks Put</@>
 <br>
-<@link_to controller="unobtrusive" action="do-delete" form="form1"  method="delete" before="doBefore" after="doAfter" confirm="are you really sure???">Callbacks Delete</@> - uses confirmation 
+<@link_to action="do-delete" form="form1"  method="delete" before="doBefore" after="doAfter" confirm="are you really sure???">Callbacks Delete</@> - uses confirmation
 
 
 <br>
-<@link_to controller="unobtrusive" action="doesnotexist" error="onError" destination="callbacks_result">Will cause error</@>
+<@link_to action="doesnotexist" error="onError" destination="callbacks_result">Will cause error</@>
 
 
 
