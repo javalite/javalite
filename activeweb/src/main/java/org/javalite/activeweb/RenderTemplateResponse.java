@@ -80,6 +80,9 @@ class RenderTemplateResponse extends ControllerResponse{
         try {
             templateManager.merge(values, template, layout, ContextAccess.getHttpResponse().getWriter());
         }
+        catch (IllegalStateException e){
+            throw e;
+        }
         catch (ViewException e) {
             throw e;
         }

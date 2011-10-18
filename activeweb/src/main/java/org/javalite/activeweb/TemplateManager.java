@@ -54,12 +54,4 @@ public interface TemplateManager {
      * @param templateLocation this can be absolute or relative.
      */
     void setTemplateLocation(String templateLocation);
-
-
-    /**
-     * Returns values assigned to this manager in the {@link #merge} methods. Mostly used for tests.
-     * 
-     * @return values assigned to this manager
-     */
-    Map getValues();
 }

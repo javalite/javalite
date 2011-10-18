@@ -24,6 +24,8 @@ import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
 import org.javalite.common.Util;
 import org.javalite.activeweb.InitException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import java.io.*;
@@ -38,8 +40,10 @@ public class FreeMarkerTemplateManager implements TemplateManager {
 
     private Configuration config;
     private String defaultLayout;
-    private Map values;
+
     private String location;
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     public FreeMarkerTemplateManager() {
         config = new Configuration();
@@ -68,7 +72,6 @@ public class FreeMarkerTemplateManager implements TemplateManager {
 
     public void merge(Map input, String template, String layout, Writer writer) {
 
-        this.values = input;
         //TODO: refactor this, add tests
 
         try {
@@ -105,6 +108,7 @@ public class FreeMarkerTemplateManager implements TemplateManager {
 
             FreeMarkerTL.setEnvironment(null);
             writer.flush();
+            logger.info("Rendered template: '" + template + "' with layout: '" + layout + "'");
 
         }
         catch(FileNotFoundException e){
@@ -148,9 +152,7 @@ public class FreeMarkerTemplateManager implements TemplateManager {
         catch(Exception e){throw new InitException(e);}
     }
 
-    public Map getValues() {
-        return values;  
-    }
+
 
     /**
      * Registers an application-specific tag.

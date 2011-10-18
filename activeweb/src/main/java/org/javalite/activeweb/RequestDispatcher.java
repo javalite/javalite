@@ -192,23 +192,35 @@ public class RequestDispatcher implements Filter {
     }
 
     private void renderSystemError(String template, String layout, int status, Throwable e) {
-        logger.error("ActiveWeb ERROR: \n" + getRequestProperties(), e);
-        if(ContextAccess.getHttpRequest().getHeader("x-requested-with")!= null
-                || ContextAccess.getHttpRequest().getHeader("X-Requested-With") != null){
+        try{
+            logger.error("ActiveWeb ERROR: \n" + getRequestProperties(), e);
+            if (ContextAccess.getHttpRequest().getHeader("x-requested-with") != null
+                    || ContextAccess.getHttpRequest().getHeader("X-Requested-With") != null) {
 
+                try {
+                    ContextAccess.getHttpResponse().setStatus(status);
+                    ContextAccess.getHttpResponse().getWriter().write(getStackTraceString(e));
+                } catch (Exception ex) {
+                    logger.error("Failed to send error response to client", ex);
+                }
+            } else {
+                RenderTemplateResponse resp = new RenderTemplateResponse(getMapWithExceptionDataAndSession(e), template);
+                resp.setLayout(layout);
+                resp.setStatus(status);
+                resp.setTemplateManager(Configuration.getTemplateManager());
+                ParamCopy.copyInto(resp.values());
+                resp.process();
+            }
+        }catch(Throwable t){
+            if(t instanceof IllegalStateException){
+                logger.error("Failed to render a template: '" + template + "' because templates are rendered with Writer, but you probably already used OutputStream");
+            }
+            logger.error(t.toString(), t);
             try{
-                ContextAccess.getHttpResponse().setStatus(status);
-                ContextAccess.getHttpResponse().getWriter().write(getStackTraceString(e));                
+                ContextAccess.getHttpResponse().getOutputStream().print("<div style='background-color:pink;'>internal error</div>");
             }catch(Exception ex){
-                logger.error("Failed to send error response to client", ex);
-            }                        
-        }else{
-            RenderTemplateResponse resp = new RenderTemplateResponse(getMapWithExceptionDataAndSession(e), template);
-            resp.setLayout(layout);
-            resp.setStatus(status);
-            resp.setTemplateManager(Configuration.getTemplateManager());
-            ParamCopy.copyInto(resp.values());
-            resp.process();            
+                logger.error(ex.toString(), ex);
+            }
         }
     }
 
