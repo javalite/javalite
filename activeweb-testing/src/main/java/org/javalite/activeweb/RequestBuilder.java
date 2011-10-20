@@ -319,10 +319,7 @@ public class RequestBuilder {
             long start = System.currentTimeMillis();
             if(injector != null){
                  injector.injectMembers(controller);
-                System.out.println("Injection took: " + (System.currentTimeMillis() - start) + " milliseconds");
             }
-
-
             ControllerRunner runner = new ControllerRunner();
 
             //must reset these two because in tests, we can execute multiple controllers in the same test method.
