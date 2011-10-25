@@ -2088,8 +2088,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     private static <T extends Model> Class<T> getDaClass() {
         try {
-            MetaModel mm = Registry.instance().getMetaModelByClassName(getClassName());
-            return mm == null? (Class<T>) Class.forName(getClassName()) : mm.getModelClass();
+            if (Registry.instance().initialized()) {
+                MetaModel mm = Registry.instance().getMetaModelByClassName(getClassName());
+                return mm == null ? (Class<T>) Class.forName(getClassName()) : mm.getModelClass();
+            } else {
+                return (Class<T>) Class.forName(getClassName());
+            }
         } catch (Exception e) {
             throw new DBException(e.getMessage(), e);
         }

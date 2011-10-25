@@ -57,6 +57,10 @@ public class Registry {
 
     }
 
+    public boolean initialized(){
+           return !initedDbs.isEmpty();
+    }
+
     public static Registry instance() {
         if(instance == null){
             instance = new Registry();
