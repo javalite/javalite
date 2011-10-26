@@ -381,7 +381,7 @@ public class Registry {
     }
 
 
-    public Class<? extends Model> getModelClass(String table) {
+    protected Class<? extends Model> getModelClass(String table) {
         Class modelClass = metaModels.getModelClass(table);
 
         if(modelClass == null)
@@ -392,6 +392,7 @@ public class Registry {
 
     protected String getTableName(Class<? extends Model> modelClass) {
 
+        init(MetaModel.getDbName(modelClass));
         String tableName = metaModels.getTableName(modelClass);
         if (tableName == null) {
             throw new DBException("failed to find metamodel for " + modelClass + ". Are you sure that a corresponding table  exists in DB?");
