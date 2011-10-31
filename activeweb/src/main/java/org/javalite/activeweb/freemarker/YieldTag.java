@@ -34,7 +34,7 @@ public class YieldTag extends FreeMarkerTag {
         List<String>  contentList = ContentTL.getAllContent().get(nameOfContent);
 
         if(contentList == null){
-            logger().warn("Failed to find content for: " + nameOfContent);
+            logger().debug("Failed to find content for: " + nameOfContent);
         }else{
             writer.write(Util.join(contentList, " "));
         }

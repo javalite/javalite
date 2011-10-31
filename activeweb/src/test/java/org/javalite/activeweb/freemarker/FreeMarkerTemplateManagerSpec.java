@@ -102,7 +102,6 @@ public class FreeMarkerTemplateManagerSpec extends JSpecSupport {
         err.flush();
         String errorOutput = new String(bin.toByteArray());
 
-        a(errorOutput.contains("YieldTag - Failed to find content for: title")).shouldBeTrue();
         a(XPathHelper.selectText("//title", generated)).shouldEqual("");
     }
 
