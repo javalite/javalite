@@ -1063,16 +1063,40 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return Convert.toFloat(get(attribute));
     }
 
+    /**
+     * If the value is instance of java.sql.Timestamp, returns it, else tries to convert the
+     * value to Timestamp using {@link Timestamp#valueOf(String)}.
+     * This method might trow <code>IllegalArgumentException</code> if fails at conversion.
+     *
+     * @see {@link Timestamp#valueOf(String)}
+     * @param attribute attribute name
+     * @return instance of Timestamp.
+     */
     public Timestamp getTimestamp(String attribute) {
         return Convert.toTimestamp(get(attribute));
-
     }
 
+
+    /**
+     * Converts any value to <code>Double</code>.
+     * @param attribute attribute name
+     *
+     * @return converted double.
+     */
     public Double getDouble(String attribute) {
         return Convert.toDouble(get(attribute));
     }
 
 
+
+    /**
+     * Returns true if the value is any numeric type and has a value of 1, or
+     * if string type has a value of 'y', 't', 'true' or 'yes'. Otherwise, return false.
+     *
+     * @param attribute attribute name
+     * @return true if the value is any numeric type and has a value of 1, or
+     * if string type has a value of 'y', 't', 'true' or 'yes'. Otherwise, return false.
+     */
     public Boolean getBoolean(String attribute) {
         return Convert.toBoolean(get(attribute));
     }

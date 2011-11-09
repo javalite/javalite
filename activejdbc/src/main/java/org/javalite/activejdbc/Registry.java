@@ -37,10 +37,12 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Igor Polevoy
  */
-public class Registry {
+public enum Registry {
+
+    //our singleton!
+    INSTANCE;
 
     private final static Logger logger = LoggerFactory.getLogger(Registry.class);
-    private static Registry instance;
     private final static HashMap<Class, List<Validator>> validators = new HashMap<Class, List<Validator>>();
     private final static HashMap<Class, List<CallbackListener>> listeners = new HashMap<Class, List<CallbackListener>>();
     private MetaModels metaModels = new MetaModels();
@@ -54,7 +56,6 @@ public class Registry {
             statisticsQueue = new StatisticsQueue();
             statisticsQueue.start();
         }
-
     }
 
     public boolean initialized(){
@@ -62,10 +63,7 @@ public class Registry {
     }
 
     public static Registry instance() {
-        if(instance == null){
-            instance = new Registry();
-        }
-        return instance;
+        return INSTANCE;
     }
 
     public StatisticsQueue getStatisticsQueue(){
