@@ -913,8 +913,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      */
     public void refresh() {
-        //TODO: test!
         Model fresh = findById(getId());
+
+        if(fresh == null)
+            throw new StaleModelException("Failed to refresh self because probably record with " +
+                    "this ID does not exist anymore. Stale model: " + this);
+
         fresh.copyTo(this);
     }
 
