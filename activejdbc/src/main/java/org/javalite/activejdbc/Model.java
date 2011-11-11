@@ -1953,6 +1953,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return result;
     }
 
+    /**
+     * Returns total count of records in table.
+     *
+     * @return total count of records in table.
+     */
     public static Long count() {
         MetaModel metaModel = getMetaModel();
         String sql = "SELECT COUNT(*) FROM " + metaModel.getTableName();
@@ -1970,6 +1975,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return result;
     }
 
+    /**
+     * Returns count of records in table under a condition.
+     *
+     * @param query query to select records to count.
+     * @param params parameters (if any) for the query.
+     * @return count of records in table under a condition.
+     */
     public static Long count(String query, Object... params) {
 
         MetaModel metaModel = getMetaModel();
