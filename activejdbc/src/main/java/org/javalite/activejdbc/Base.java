@@ -151,11 +151,13 @@ public class Base {
     /**
      * This method returns entire resultset as one list. Do not use it for large result sets.
      * Example:
+     * <pre>
      * <code>
      *  List<Map<String, Object>> people = Base.findAll("select * from people where first_name = ?", "John");
      *  for(Map person: people)
      *      System.out.println(person.get("first_name"));
      * </code>
+     * </pre>
      *
      * @param query raw SQL query. This query is parametrized.
      * @param params list of parameters for a parametrized query.
