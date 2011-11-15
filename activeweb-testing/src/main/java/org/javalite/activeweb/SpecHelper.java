@@ -187,6 +187,22 @@ public class SpecHelper extends JSpecSupport{
     }
 
     /**
+     * Returns a single value assigned by controller.
+     *
+     * @param name name of a value assigned by controller.
+     *
+     * @param T type to be returned.
+     *
+     * @return a single value assigned by controller.
+     */
+    protected  <T>  T val(String name, Class<T> T){
+        if(ContextAccess.getControllerResponse() == null){
+            throw new TestException("There is no controller response, did you actually invoke a controller/action?");
+        }
+        return (T) ContextAccess.getControllerResponse().values().get(name);
+    }
+
+    /**
      * String value assigned by controller.
      *
      * @param name name of a value assigned by controller.
