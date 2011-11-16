@@ -82,7 +82,8 @@
     </target>
     
     <target name="run" depends="package">
-        <java classname="activejdbc.ant.example.Main" failonerror="true">
+        <java classname="activejdbc.ant.example.Main" failonerror="true" fork="true">
+            <jvmarg value="-Dactivejdbc.log"/>
             <classpath refid="run_classpath"/>
         </java>
     </target>
