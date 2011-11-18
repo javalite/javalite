@@ -35,8 +35,8 @@ class ContentTL {
     }
 
     static void addContent(String name, String content) {
-        if(ContentTL.contentTL.get().get(name) == null){
-            ContentTL.contentTL.get().put(name, new ArrayList<String>());
+        if(contentTL.get().get(name) == null){
+            contentTL.get().put(name, new ArrayList<String>());
         }
         List<String> contentList = ContentTL.contentTL.get().get(name);
         contentList.add(content);

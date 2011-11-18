@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.locks.Condition;
 
 import static org.javalite.common.Util.blank;
 
@@ -32,6 +33,8 @@ import static org.javalite.common.Util.blank;
  */
 public class Configuration {
     private static Logger LOGGER = LoggerFactory.getLogger(Configuration.class.getName());
+
+
 
     enum Params{templateManager, bootstrap, defaultLayout, targetDir, rootPackage, dbconfig, controllerConfig, rollback, freeMarkerConfig}
 
@@ -43,6 +46,7 @@ public class Configuration {
     private static String ENV;
     private static boolean activeReload = !blank(System.getProperty("active_reload")) && System.getProperty("active_reload").equals("true");
     private static AbstractFreeMarkerConfig freeMarkerConfig;
+    private static boolean useDefaultLayoutForErrors = true;
 
     static{
         try {
@@ -69,6 +73,24 @@ public class Configuration {
         }
     }
 
+    /**
+     * Set to true if you want ActiveWeb to wrap the errors, such as 404, and 500 in a default layout.
+     * False will ensure that these pages will render without default layout. If you need custom dynamic layout
+     * wrapping these pages, use "@wrap" tag and conditions.
+     *
+     * @param useDefaultLayoutForErrors true to use default layout, false no not to use it.
+     */
+    public static void setUseDefaultLayoutForErrors(boolean useDefaultLayoutForErrors) {
+        Configuration.useDefaultLayoutForErrors = useDefaultLayoutForErrors;
+    }
+
+    /**
+     * True to use default layout for error pages, false not to.
+     * @return true to use default layout for error pages, false not to.
+     */
+    protected static boolean useDefaultLayoutForErrors() {
+        return useDefaultLayoutForErrors;
+    }
 
     public static boolean logRequestParams() {
         String logRequest = System.getProperty("activeweb.log.request");

@@ -79,7 +79,9 @@ public class FreeMarkerTemplateManager implements TemplateManager {
             if(org.javalite.activeweb.Configuration.getEnv().equals("development")){
                 config.clearTemplateCache();
             }
-            
+
+            ContentTL.reset();
+
             if(layout == null){//no layout
                 Template temp = config.getTemplate(template + ".ftl");
                 temp.process(input, writer);
@@ -87,7 +89,7 @@ public class FreeMarkerTemplateManager implements TemplateManager {
                 return;
             }
 
-            ContentTL.reset();
+
 
             //Generate the template itself
             Template pageTemplate = config.getTemplate(template + ".ftl");

@@ -15,6 +15,7 @@ limitations under the License.
 */
 package org.javalite.activeweb.freemarker;
 
+import org.javalite.activeweb.ViewException;
 import org.javalite.common.Util;
 
 import java.io.IOException;
@@ -31,6 +32,13 @@ public class YieldTag extends FreeMarkerTag {
     protected void render(Map params, String body, Writer writer) throws IOException {
         validateParamsPresence(params, "to");
         String nameOfContent = params.get("to").toString();
+
+
+        Map<String, List<String>> allContent = ContentTL.getAllContent();
+        if(allContent == null){
+            throw new ViewException("Content for name: '" + nameOfContent + "' is missing. " +
+                    "Ensure you have this tag <@content for=\"title\">... on page being rendered.");
+        }
         List<String>  contentList = ContentTL.getAllContent().get(nameOfContent);
 
         if(contentList == null){

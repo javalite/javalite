@@ -1,3 +1,7 @@
+<@content for="title">500 Internall Error</@content>
+
+<@wrap with="/layouts/default_layout">
+
 Error:<br/>
 <pre>
 ${message}
@@ -16,3 +20,5 @@ ${message}
 ${stack_trace}
 </pre>
 </div>
+
+</@wrap>

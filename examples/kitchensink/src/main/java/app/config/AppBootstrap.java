@@ -15,9 +15,8 @@ limitations under the License.
 */
 package app.config;
 
+import org.javalite.activeweb.*;
 import org.javalite.activeweb.AppContext;
-import org.javalite.activeweb.AppContext;
-import org.javalite.activeweb.Bootstrap;
 import app.services.GreeterModule;
 import com.google.inject.Guice;
 import org.javalite.activeweb.Bootstrap;
@@ -27,7 +26,7 @@ import org.javalite.activeweb.Bootstrap;
  */
 public class AppBootstrap extends Bootstrap {
     public void init(AppContext context) {
-        
         setInjector(Guice.createInjector(new GreeterModule()));
+        Configuration.setUseDefaultLayoutForErrors(false);
     }
 }

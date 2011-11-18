@@ -911,7 +911,7 @@ public class HttpSupport {
      *
      * @return all headers from a request keyed by header name.
      */
-    public Map<String, String> headers(){
+    protected Map<String, String> headers(){
 
         Map<String, String> headers = new HashMap<String, String>();
         Enumeration<String> names = ContextAccess.getHttpRequest().getHeaderNames();

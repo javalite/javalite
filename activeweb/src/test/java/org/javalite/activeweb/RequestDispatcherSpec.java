@@ -236,12 +236,24 @@ public class RequestDispatcherSpec extends RequestSpec {
 
 
     @Test
+    public void shouldSend500WithoutDefaultLayout() throws ServletException, IOException {
+
+        Configuration.setUseDefaultLayoutForErrors(false);
+        request.setServletPath("/hello/bad-bad-template");
+        request.setMethod("GET");
+
+        dispatcher.doFilter(request, response, filterChain);
+        String html = response.getContentAsString();
+
+        a(html.contains("default layout")).shouldBeFalse();
+    }
+
+    @Test
     public void shouldRenderWithDefaultLayout() throws ServletException, IOException {
         request.setServletPath("/hello");
         request.setMethod("GET");
         dispatcher.doFilter(request, response, filterChain);
         String html = response.getContentAsString();
-        System.out.println(html);
         a(XPathHelper.selectText("//title", html)).shouldBeEqual("default layout");
     }
 
