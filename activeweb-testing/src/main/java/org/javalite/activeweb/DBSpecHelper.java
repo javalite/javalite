@@ -20,6 +20,8 @@ import org.javalite.activeweb.AppContext;
 import org.javalite.activeweb.Configuration;
 import org.javalite.activeweb.ConnectionSpecWrapper;
 import org.javalite.activeweb.InitException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -29,7 +31,9 @@ import java.util.List;
  *
  * @author Igor Polevoy
  */
-public class DBSpecHelper {    
+public class DBSpecHelper {
+
+    private static Logger logger = LoggerFactory.getLogger(DBSpecHelper.class);
 
     public static void initDBConfig() {
         String dbConfigClassName = Configuration.get("dbconfig");
@@ -51,8 +55,10 @@ public class DBSpecHelper {
 
     public static void openTestConnections(){
         List<ConnectionSpecWrapper> connectionWrappers = getTestConnectionWrappers();
-        if(connectionWrappers.isEmpty())
-            throw new InitException("There are no connection specs for testing in " + Configuration.getEnv() + " environment");
+        if(connectionWrappers.isEmpty()){
+            logger.warn("no DB connections are configured, none opened");
+            return;
+        }
 
         for (ConnectionSpecWrapper connectionWrapper : connectionWrappers) {
             DB db = new DB(connectionWrapper.getDbName());
