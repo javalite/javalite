@@ -332,6 +332,7 @@ public class Router {
     protected String findPackagePrefix(String uri) {
 
         String temp = uri.startsWith("/") ? uri.substring(1) : uri;
+        temp = temp.replace(".", "_");
         temp = temp.replace("/", ".");
 
         //find all matches

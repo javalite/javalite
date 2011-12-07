@@ -61,6 +61,13 @@ public class RouterControllerPathSpec {
     }
 
     @Test
+    public void shouldFindControllerInSubPackageWithPeriodInPath() {
+        Map controllerPath = router.getControllerPath("/v1.0/service");
+        a(controllerPath.get(Router.PACKAGE_SUFFIX)).shouldBeEqual("v1_0");
+        a(controllerPath.get(Router.CONTROLLER_NAME)).shouldBeEqual("service");
+    }
+
+    @Test
     public void shouldFindControllerInSubPackageWithTrailingSlash() {
 
         Map path = router.getControllerPath("/admin/db/");
