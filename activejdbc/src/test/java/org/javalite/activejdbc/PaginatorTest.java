@@ -17,9 +17,7 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
-import org.codehaus.jackson.map.ser.impl.IndexedStringListSerializer;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
-import org.javalite.test.jspec.ExceptionExpectation;
 import org.javalite.activejdbc.test_models.Item;
 import org.junit.Test;
 
