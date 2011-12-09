@@ -132,7 +132,7 @@ public class Expectation<T> {
      * <pre>
      *     a(new Toyota()).shouldBeA(Car.class).
      * </pre>
-     * Think if this not in terms of direct typing but from a point of view of inheritance.
+     * Think of this not in terms of direct typing but from a point of view of inheritance.
      * <p>
      * Synonym for {@link #shouldBeA(Class)}.
      *
@@ -149,7 +149,7 @@ public class Expectation<T> {
      * <pre>
      *     a(new Toyota()).shouldBeA(Car.class).
      * </pre>
-     * Think if this not in terms of direct typing but from a point of view of inheritance.
+     * Think of this not in terms of direct typing but from a point of view of inheritance.
      * <p>
      * Synonym for {@link #shouldBeType(Class)}.
      */
