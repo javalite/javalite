@@ -17,6 +17,8 @@ limitations under the License.
 
 package org.javalite.test.jspec;
 import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
 
 public class Expectation<T> {
 
@@ -188,12 +190,64 @@ public class Expectation<T> {
     }
 
     /**
-     * Tests that a string representation of tested object contains a substring.
+     * Tests that an expected value is contained in the tested object. The tested object can be of the following types:
+     * <ul>
+     *     <li>Any object - in this case, the string representation of this object is tested to contain a string representation of
+     *     expected value as a substring.<br/>For example, this will pass:
+     *     <pre><code>
+     *         the("meaning of life is 42").shouldContain("meaning");
+     *     </code>
+     *     </pre></li>
+     *     <li><code>java.util.List</code> - in this case, the tested list is expected to contain an expected object.
+     *     <br/>For example, this will pass: <pre><code>
+     *         a(Arrays.asList(1, 2, 3)).shouldContain(3);
+     *     </code></pre>
+     *     </li>
+     *     <li><code>java.util.Map</code> - in this case, the tested map is expected to contain an object whose key is the expected object.
+     *     <br/>For example, this will pass: <pre><code>
+     *         Map map = new HashMap();
+     *         map.put("one", 1);
+     *         map.put("two", 2);
+     *         map.put("three", 3);
+     *         a(map).shouldContain("two");
+     *     </code>
+     *     </pre>
+     *     </li>
+     * </ul>
      *
-     * @param substring value that is expected to be a substring of a tested object.
+     * @param expected value that is expected to be contained in a tested object.
      */
-    public void shouldContain(String substring){
-        if (!actual.toString().contains(substring)) throw  new TestException("tested value does not contain substring");
+    public void shouldContain(Object expected){
+        if(!contains(expected))
+            throw new TestException("tested value does not contain expected value: " + expected);
+    }
+
+    /**
+     * This method is exactly opposite (negated) of {@link #shouldContain(Object)}.
+     *
+     * @param expected value that is expected to be NOT contained in a tested object.
+     */
+    public void shouldNotContain(Object expected) {
+        if(contains(expected))
+            throw new TestException("tested value contain expected value: " + expected + ", but it should not");
+    }
+
+    private boolean contains(Object expected){
+        if(actual instanceof List){
+            List actualList = (List) actual;
+            if(actualList.contains(expected)){
+                return true;
+            }
+        }
+
+        if(actual instanceof Map){
+            Map actualMap = (Map) actual;
+            if(actualMap.containsKey(expected)){
+                return true;
+            }
+        }
+
+        return actual.toString().contains(expected.toString());
     }
 
     /**
@@ -240,4 +294,5 @@ public class Expectation<T> {
         catch (TestException e) {throw e;}
         catch (Exception e) {throw new RuntimeException(e);}
     }
+
 }

@@ -16,9 +16,15 @@ limitations under the License.
 
 package org.javalite.common.test;
 
+import org.javalite.common.Collections;
+import org.javalite.test.jspec.TestException;
 import org.junit.Test;
 
+import java.util.List;
+
+import static org.javalite.common.Collections.map;
 import static org.javalite.test.jspec.JSpec.a;
+import static org.javalite.test.jspec.JSpec.the;
 
 /**
  * @author Igor Polevoy
@@ -43,7 +49,65 @@ public class ExpectationTest {
 
     @Test
     public void shouldTestContains(){
-        String testString = "this is just a test";
-        a(testString).shouldContain("test");
+        //object
+        the("meaning of life is 42").shouldContain("meaning");
+
+        //list
+        List list = Collections.list("one", "two", "three");
+        a(list).shouldContain("one");
+
+        //map
+        a(map("one", 1, "two", 2)).shouldContain("one");
+    }
+
+    @Test
+    public void shouldTestNegativeContains(){
+        //object
+        the("meaning of life is 42").shouldNotContain("blah");
+
+
+        //list
+        List list = Collections.list("one", "two", "three");
+        a(list).shouldNotContain("four");
+
+        //map
+        a(map("one", 1, "two", 2)).shouldNotContain("three");
+    }
+
+
+    @Test(expected = TestException.class)
+    public void shouldTestMissingValueWithSting() {
+        the("meaning of life is 42").shouldContain("blah");
+    }
+
+    @Test(expected = TestException.class)
+    public void shouldTestMissingValueWithList() {
+        List list = Collections.list("one", "two", "three");
+        a(list).shouldContain("four");
+    }
+
+    @Test(expected = TestException.class)
+    public void shouldTestMissingValueWithMap() {
+        a(map("one", 1, "two", 2)).shouldContain("three");
+    }
+
+
+
+
+
+    @Test(expected = TestException.class)
+    public void shouldTestNegativeMissingValueWithSting() {
+        the("meaning of life is 42").shouldNotContain("meaning");
+    }
+
+    @Test(expected = TestException.class)
+    public void shouldTestNegativeMissingValueWithList() {
+        List list = Collections.list("one", "two", "three");
+        a(list).shouldNotContain("one");
+    }
+
+    @Test(expected = TestException.class)
+    public void shouldTestNegativeMissingValueWithMap() {
+        a(map("one", 1, "two", 2)).shouldNotContain("one");
     }
 }
