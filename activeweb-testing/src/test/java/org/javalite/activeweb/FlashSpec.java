@@ -33,7 +33,7 @@ public class FlashSpec extends IntegrationSpec {
     public void shouldPropagateFlashMessageToNextRequestOnly(){
 
         controller("flashing").get("create");
-        System.out.println(session());
+
         a(session().get("flasher")).shouldNotBeNull();
 
         a(flash("saved")).shouldBeEqual("your data has been saved");
@@ -47,4 +47,33 @@ public class FlashSpec extends IntegrationSpec {
         controller("flashing").integrateViews().get("list");
         a(responseContent()).shouldBeEqual("hello from flashing list: ");
     }
+
+
+    @Test
+    public void shouldPropagateFlashAsMap(){
+
+        controller("flashing").get("as-map");
+
+        a(session().get("flasher")).shouldNotBeNull();
+        a(flash("one")).shouldBeEqual("1");
+        a(flash("two")).shouldBeEqual("2");
+
+        controller("flashing").get("index");
+        a(flash("one")).shouldBeNull();
+    }
+
+
+    @Test
+    public void shouldPropagateFlashAsVararg(){
+
+        controller("flashing").get("as-vararg");
+
+        a(session().get("flasher")).shouldNotBeNull();
+        a(flash("one")).shouldBeEqual("1");
+        a(flash("two")).shouldBeEqual("2");
+
+        controller("flashing").get("index");
+        a(flash("one")).shouldBeNull();
+    }
+
 }

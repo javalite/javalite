@@ -17,10 +17,13 @@ package app.controllers;
 
 import org.javalite.activeweb.AppController;
 
+import static org.javalite.common.Collections.map;
+
 /**
  * @author Igor Polevoy
  */
 public class FlashingController extends AppController {
+    public void index(){}
 
     public void create(){
         flash("saved", "your data has been saved");
@@ -29,4 +32,14 @@ public class FlashingController extends AppController {
     public void list(){
         assign("some", "meaningless data");
     }
+
+    public void asMap(){
+        flash(map("one", "1", "two", "2"));
+    }
+
+
+    public void asVararg(){
+        flash("one", 1, "two", 2);
+    }
+
 }
