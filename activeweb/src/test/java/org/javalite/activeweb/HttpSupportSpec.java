@@ -16,6 +16,7 @@ limitations under the License.
 package org.javalite.activeweb;
 
 
+import static org.javalite.common.Collections.map;
 import static org.javalite.test.jspec.JSpec.*;
 
 
@@ -193,24 +194,42 @@ public class HttpSupportSpec {
     }
 
     @Test
-      public void shouldRedirectToDifferentAction(){
-          controller.willRedirect();
-          ContextAccess.getControllerResponse().process();
-          a(httpResp.getRedirectedUrl()).shouldBeEqual("another_controller/index");
-      }
+    public void shouldRedirectToDifferentAction() {
+        controller.willRedirect();
+        ContextAccess.getControllerResponse().process();
+        a(httpResp.getRedirectedUrl()).shouldBeEqual("another_controller/index");
+    }
 
-      @Test
-      public void shouldRedirectToURL(){
-          controller.willRedirectURL();
-          ContextAccess.getControllerResponse().process();
-          a(httpResp.getRedirectedUrl()).shouldBeEqual("http://yahoo.com");
-      }
+    @Test
+    public void shouldRedirectToURL() {
+        controller.willRedirectURL();
+        ContextAccess.getControllerResponse().process();
+        a(httpResp.getRedirectedUrl()).shouldBeEqual("http://yahoo.com");
+    }
 
-      @Test
-      public void shouldRedirectToController(){
-          ((MockHttpServletRequest)ContextAccess.getHttpRequest()).setContextPath("/webapp1");
-          controller.willRedirectToController();
-          ContextAccess.getControllerResponse().process();
-          a(httpResp.getRedirectedUrl()).shouldBeEqual("/webapp1/hello/abc_action/123?name=john");
-      }    
+    @Test
+    public void shouldRedirectToController() {
+        ((MockHttpServletRequest) ContextAccess.getHttpRequest()).setContextPath("/webapp1");
+        controller.willRedirectToController();
+        ContextAccess.getControllerResponse().process();
+        a(httpResp.getRedirectedUrl()).shouldBeEqual("/webapp1/hello/abc_action/123?name=john");
+    }
+
+    @Test
+    public void shouldPassValuesAsVararg() {
+        HttpSupport httpSupport  = new HttpSupport();
+        httpSupport.view("one", 1, "two", 2);
+        a(httpReq.getAttribute("one")).shouldBeEqual(1);
+        a(httpReq.getAttribute("two")).shouldBeEqual(2);
+    }
+
+    @Test
+    public void shouldPassValuesAsMap() {
+        HttpSupport httpSupport  = new HttpSupport();
+        httpSupport.view(map("one", 1, "two", 2));
+        a(httpReq.getAttribute("one")).shouldBeEqual(1);
+        a(httpReq.getAttribute("two")).shouldBeEqual(2);
+    }
+
+
 }

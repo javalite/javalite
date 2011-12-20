@@ -88,6 +88,28 @@ public class HttpSupport {
         assign(name, value);
     }
 
+
+    /**
+     * Convenience method, calls {@link #assign(String, Object)} internally.
+     * The keys in teh map are converted to String values.
+     *
+     * @param values map with values to pass to view.
+     */
+    protected void view(Map values){
+        for(Object key:values.keySet() ){
+            assign(key.toString(), values.get(key));
+        }
+    }
+
+    /**
+     * Convenience method, calls {@link #assign(String, Object)} internally.
+     *
+     *
+     */
+    protected void view(Object ... values){
+        view(map(values));
+    }
+
     public class HttpBuilder {
         private ControllerResponse controllerResponse;
         private HttpBuilder(ControllerResponse controllerResponse){
