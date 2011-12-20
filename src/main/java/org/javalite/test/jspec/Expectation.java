@@ -46,7 +46,7 @@ public class Expectation<T> {
      * @param expected expected value.
      */
     public void shouldBeEqual(T expected) {
-
+        checkNull();
         String expectedName = expected == null? "null":expected.getClass().getName();
         String actualName = actual == null? "null":actual.getClass().getName();
 
@@ -115,6 +115,8 @@ public class Expectation<T> {
      * @param expected expected value.
      */
     public void shouldNotBeEqual(T expected) {
+        checkNull();
+
         if (actual.equals(expected))
             throw new TestException("Objects: '" + actual + "' and '" + expected + "' are equal, but they should not be");
     }
@@ -140,6 +142,8 @@ public class Expectation<T> {
      *
      */
     public void shouldBeType(Class clazz) {
+        checkNull();
+
         if (!clazz.isAssignableFrom(actual.getClass())) throw new TestException(actual.getClass() + " is not " + clazz);
     }
 
@@ -163,6 +167,8 @@ public class Expectation<T> {
      * Tested value should be false.
      */
     public void shouldBeFalse() {
+        checkNull();
+
         if ((Boolean) actual) throw new TestException("should not be true, but it is");
     }
 
@@ -170,6 +176,8 @@ public class Expectation<T> {
      * Tested value should be true.
      */
     public void shouldBeTrue() {
+        checkNull();
+
         if (!(Boolean) actual) throw new TestException("should be true, but it is not");
     }
 
@@ -186,6 +194,7 @@ public class Expectation<T> {
      * @param expected expected reference.
      */
     public void shouldBeTheSameAs(T expected) {
+        checkNull();
         if (actual != expected) throw new TestException("references are not the same, but they should be");
     }
 
@@ -233,6 +242,7 @@ public class Expectation<T> {
     }
 
     private boolean contains(Object expected){
+        checkNull();
         if(actual instanceof List){
             List actualList = (List) actual;
             if(actualList.contains(expected)){
@@ -256,6 +266,7 @@ public class Expectation<T> {
      * @param expected expected reference.
      */
     public void shouldNotBeTheSameAs(T expected) {
+        checkNull();
         if (actual == expected) throw new TestException("references are the same, but they should not be");
     }
 
@@ -271,6 +282,7 @@ public class Expectation<T> {
      * @param returnValue - if execution of boolean method should return true or false to pass the test.
      */
     private void invokeBoolean(String booleanMethod, boolean returnValue) {
+        checkNull();
         Method m = null;
         try {
 
@@ -295,4 +307,8 @@ public class Expectation<T> {
         catch (Exception e) {throw new RuntimeException(e);}
     }
 
+    private void checkNull(){
+        if(actual == null)
+            throw new IllegalArgumentException("tested value is null");
+    }
 }
