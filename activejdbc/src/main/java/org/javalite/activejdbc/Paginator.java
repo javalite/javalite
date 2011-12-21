@@ -53,12 +53,14 @@ public class Paginator implements Serializable {
      * by this class</li>
      *     <li> "*" - will search for all records, no filtering</li>
      * </ul>
-     * Sub-query is used in simple cases, when filtering is done against one database.
+     * Sub-query is used in simple cases, when filtering is done against one table.
      *
      * <h4>Full query example</h4>
      * <ul>
      *     <li>"select * from people where last_name like '%John%'"</li>
      * </ul>
+     * Full query is used in cases when select covers many tables. In this case, the selected columns need to include
+     * attributes of the model class.
      *
      * @param modelClass model class mapped to a table.
      * @param pageSize   number of items per page.
