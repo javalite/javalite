@@ -44,7 +44,7 @@ public class Paginator implements Serializable {
 
 
     /**
-     * Paginator is created with parameters to jump to junk of result sets (pages). This class is useful "paging"
+     * Paginator is created with parameters to jump to chunks of result sets (pages). This class is useful "paging"
      * through result on a user interface (web page).
      *
      * <h4>Examples of a sub-query:</h4>
