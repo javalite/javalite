@@ -71,9 +71,6 @@ public class HttpSupport {
      * @param value value.
      */
     protected void assign(String name, Object value) {
-        if(value == null)
-            throw new IllegalArgumentException("value '" + name + "' is null");
-
         KeyWords.check(name);
         ContextAccess.getHttpRequest().setAttribute(name, value);
     }
