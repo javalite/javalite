@@ -35,14 +35,13 @@ public class SessionObjectConverterController extends AppController {
 
     public void inController(){
 
+        session("last_name", "Smith");
+
         view("name", sessionObject("name"));
         view("int", sessionObject("int"));
         view("double", sessionObject("double"));
         view("float", sessionObject("float"));
         view("long", sessionObject("long"));
         view("boolean", sessionObject("boolean"));
-
-
-
     }
 }

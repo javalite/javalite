@@ -191,11 +191,11 @@ public class SpecHelper extends JSpecSupport{
      *
      * @param name name of a value assigned by controller.
      *
-     * @param T type to be returned.
+     * @param type type to be returned.
      *
      * @return a single value assigned by controller.
      */
-    protected  <T>  T val(String name, Class<T> T){
+    protected  <T>  T val(String name, Class<T> type){
         if(ContextAccess.getControllerResponse() == null){
             throw new TestException("There is no controller response, did you actually invoke a controller/action?");
         }
@@ -353,14 +353,24 @@ public class SpecHelper extends JSpecSupport{
      * @param name name of flash value.
      * @return flash value assigned to session by controller.
      */
-    protected String flash(String name){
+    protected Object flash(String name){
         if(session().get("flasher") == null)
             return null;
 
         Map flasher = (Map) session().get("flasher");
-        return flasher.get(name) == null? null :flasher.get(name).toString();
+        return flasher.get(name) == null? null :flasher.get(name);
     }
 
+    /**
+     * Returns a named flash value assigned to session by controller.
+     *
+     * @param name name of flash value.
+     * @param type type to be returned
+     * @return flash value assigned to session by controller.
+     */
+    protected  <T>  T flash(String name, Class<T> type){
+        return (T) flash(name);
+    }
 
 
     /**
@@ -423,6 +433,18 @@ public class SpecHelper extends JSpecSupport{
      */
     protected Integer sessionInteger(String name){
         return Convert.toInteger(session().get(name));
+    }
+
+
+    /**
+     * Returns object from session that is already cast to expected type.
+     *
+     * @param name name of object in session
+     * @param type expected type.
+     * @return object from session that is already cast to expected type.
+     */
+    protected  <T>  T session(String name, Class<T> type){
+        return (T) session().get(name);
     }
 
     /**

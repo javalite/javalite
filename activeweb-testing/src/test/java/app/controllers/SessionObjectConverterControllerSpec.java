@@ -46,6 +46,8 @@ public class SessionObjectConverterControllerSpec extends ControllerSpec {
 
         request().get("in-controller");
 
+        a(session("last_name", String.class)).shouldBeEqual("Smith");
+
         a(val("name", String.class)).shouldBeEqual("John");
         a(val("name")).shouldBeEqual("John");
         a(val("int")).shouldBeEqual(1);

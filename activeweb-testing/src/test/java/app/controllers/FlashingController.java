@@ -34,7 +34,7 @@ public class FlashingController extends AppController {
     }
 
     public void asMap(){
-        flash(map("one", "1", "two", "2"));
+        flash(map("one", 1, "two", 2));
     }
 
 

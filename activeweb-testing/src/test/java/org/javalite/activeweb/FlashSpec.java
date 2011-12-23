@@ -55,8 +55,8 @@ public class FlashSpec extends IntegrationSpec {
         controller("flashing").get("as-map");
 
         a(session().get("flasher")).shouldNotBeNull();
-        a(flash("one")).shouldBeEqual("1");
-        a(flash("two")).shouldBeEqual("2");
+        a(flash("one")).shouldBeEqual(1);
+        a(flash("two")).shouldBeEqual(2);
 
         controller("flashing").get("index");
         a(flash("one")).shouldBeNull();
@@ -69,8 +69,8 @@ public class FlashSpec extends IntegrationSpec {
         controller("flashing").get("as-vararg");
 
         a(session().get("flasher")).shouldNotBeNull();
-        a(flash("one")).shouldBeEqual("1");
-        a(flash("two")).shouldBeEqual("2");
+        a(flash("one")).shouldBeEqual(1);
+        a(flash("two")).shouldBeEqual(2);
 
         controller("flashing").get("index");
         a(flash("one")).shouldBeNull();
