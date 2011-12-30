@@ -69,8 +69,17 @@ public class Router {
             return new MatchedRoute(controller, "index");
         }
 
-        return controller.restful() ? matchRestful(uri, controllerName, packageSuffix, httpMethod, controller) :
-                matchStandard(uri, controllerName, packageSuffix, controller);
+        MatchedRoute route;
+        if(controller.restful()){
+            route = matchRestful(uri, controllerName, packageSuffix, httpMethod, controller);
+            if(route != null){
+                return route;
+            }else{
+                return matchStandard(uri, controllerName, packageSuffix, controller);
+            }
+        }else{
+            return matchStandard(uri, controllerName, packageSuffix, controller);
+        }
     }
 
 

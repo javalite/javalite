@@ -186,6 +186,19 @@ public class RouterRestfulSpec {
         a(mr.getId()).shouldBeEqual("1");
     }
 
+
+
+    @Test
+    public void shouldRecognizeNonRestfulRouteOnResftfulController() throws ControllerLoadException {
+
+        MatchedRoute mr = r.recognize("/photos/non-restful/23", HttpMethod.GET);
+
+        a(mr.getControllerClassName()).shouldBeEqual("app.controllers.PhotosController");
+        a(mr.getActionName()).shouldBeEqual("non-restful");
+        a(mr.getId()).shouldBeEqual("23");
+    }
+
+
     @Test
     public void shouldRecognizeRestfulRouteDestroyForControllerInPackage() throws ControllerLoadException {
 
