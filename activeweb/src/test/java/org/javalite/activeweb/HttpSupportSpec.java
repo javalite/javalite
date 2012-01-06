@@ -16,10 +16,6 @@ limitations under the License.
 package org.javalite.activeweb;
 
 
-import static org.javalite.common.Collections.map;
-import static org.javalite.test.jspec.JSpec.*;
-
-
 import app.controllers.HttpSupportController;
 import org.javalite.activeweb.mock.MockTemplateManager;
 import org.junit.Before;
@@ -28,6 +24,9 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.io.UnsupportedEncodingException;
+
+import static org.javalite.common.Collections.map;
+import static org.javalite.test.jspec.JSpec.a;
 
 /**
  * @author Igor Polevoy
@@ -40,8 +39,9 @@ public class HttpSupportSpec {
 
     @Before
     public void before(){
-        ContextAccess.setHttpResponse(httpResp = new MockHttpServletResponse());
-        ContextAccess.setHttpRequest(httpReq = new MockHttpServletRequest());
+        Context.setHttpResponse(httpResp = new MockHttpServletResponse());
+        Context.setHttpRequest(httpReq = new MockHttpServletRequest());
+        Context.setRequestContext(new RequestContext());
         controller = new HttpSupportController();
     }
 
@@ -57,7 +57,7 @@ public class HttpSupportSpec {
         controller.render("list");
         a(controller.values().get("name")).shouldBeEqual("Smith");
 
-        RenderTemplateResponse resp = (RenderTemplateResponse)ContextAccess.getControllerResponse();
+        RenderTemplateResponse resp = (RenderTemplateResponse) Context.getControllerResponse();
         resp.setLayout("/layouts/default_layout");
         MockTemplateManager templateManager = new MockTemplateManager();
         resp.setTemplateManager(templateManager);
@@ -77,11 +77,11 @@ public class HttpSupportSpec {
     @Test
     public void shouldRenderImplicitOverrideLayoutAndContentType() {
 
-        ContextAccess.setActionName("will_render_explicit");
+        Context.setActionName("will_render_explicit");
         controller.willRenderExplicit();
         a(controller.values().get("name")).shouldBeEqual("Paul McCartney");
 
-        RenderTemplateResponse resp = (RenderTemplateResponse)ContextAccess.getControllerResponse();
+        RenderTemplateResponse resp = (RenderTemplateResponse) Context.getControllerResponse();
         MockTemplateManager templateManager = new MockTemplateManager();
         resp.setTemplateManager(templateManager);
         resp.process();
@@ -101,7 +101,7 @@ public class HttpSupportSpec {
 
         a(controller.values().get("name")).shouldBeEqual("Lady Gaga");
 
-        RenderTemplateResponse resp = (RenderTemplateResponse)ContextAccess.getControllerResponse();
+        RenderTemplateResponse resp = (RenderTemplateResponse) Context.getControllerResponse();
         MockTemplateManager templateManager = new MockTemplateManager();
         resp.setTemplateManager(templateManager);
         resp.setLayout("/layouts/default_layout");
@@ -120,7 +120,7 @@ public class HttpSupportSpec {
     @Test
     public void shouldRespondWithXML() throws UnsupportedEncodingException {
         controller.willRespondWithXML();
-        ContextAccess.getControllerResponse().process();
+        Context.getControllerResponse().process();
         a(httpResp.getContentAsString()).shouldBeEqual("pretend this is XML...");
         a(httpResp.getContentType()).shouldBeEqual("text/xml");
     }
@@ -129,7 +129,7 @@ public class HttpSupportSpec {
     @Test
     public void shouldStreamOutData() throws UnsupportedEncodingException {
         controller.willStreamOut();
-        ContextAccess.getControllerResponse().process();
+        Context.getControllerResponse().process();
         a(httpResp.getContentAsString()).shouldBeEqual("streaming data");
         a(httpResp.getContentType()).shouldBeEqual("application/pdf");
     }
@@ -138,7 +138,7 @@ public class HttpSupportSpec {
     public void shouldReturnNamedParam(){
         MockHttpServletRequest req = new MockHttpServletRequest();
         req.setParameter("name", "igor");
-        ContextAccess.setHttpRequest(req);
+        Context.setHttpRequest(req);
         a(controller.param("name")).shouldBeEqual("igor");
     }
 
@@ -146,7 +146,7 @@ public class HttpSupportSpec {
     public void shouldReturnMultipleParamsForName(){
         MockHttpServletRequest req = new MockHttpServletRequest();
         req.setParameter("cities", new String[]{"Chicago", "New York"});
-        ContextAccess.setHttpRequest(req);
+        Context.setHttpRequest(req);
         a(controller.params("cities").size()).shouldBeEqual(2);
         a(controller.params("cities").get(0)).shouldBeEqual("Chicago");
         a(controller.params("cities").get(1)).shouldBeEqual("New York");
@@ -156,7 +156,7 @@ public class HttpSupportSpec {
     public void shouldNotFailIfNoParams() {
         MockHttpServletRequest req = new MockHttpServletRequest();
         req.setParameter("cities", (String[])null);
-        ContextAccess.setHttpRequest(req);
+        Context.setHttpRequest(req);
         a(controller.params("cities").size()).shouldBeEqual(0);
     }
 
@@ -167,7 +167,7 @@ public class HttpSupportSpec {
         javax.servlet.http.Cookie cookie = new javax.servlet.http.Cookie("test", "test value");
 
         req.setCookies(new javax.servlet.http.Cookie[]{cookie});
-        ContextAccess.setHttpRequest(req);
+        Context.setHttpRequest(req);
         controller.willRetrieveCookie();
         Cookie awCookie = (Cookie )controller.values().get("cookie");
         a(awCookie).shouldNotBeNull();
@@ -196,22 +196,22 @@ public class HttpSupportSpec {
     @Test
     public void shouldRedirectToDifferentAction() {
         controller.willRedirect();
-        ContextAccess.getControllerResponse().process();
+        Context.getControllerResponse().process();
         a(httpResp.getRedirectedUrl()).shouldBeEqual("another_controller/index");
     }
 
     @Test
     public void shouldRedirectToURL() {
         controller.willRedirectURL();
-        ContextAccess.getControllerResponse().process();
+        Context.getControllerResponse().process();
         a(httpResp.getRedirectedUrl()).shouldBeEqual("http://yahoo.com");
     }
 
     @Test
     public void shouldRedirectToController() {
-        ((MockHttpServletRequest) ContextAccess.getHttpRequest()).setContextPath("/webapp1");
+        ((MockHttpServletRequest) Context.getHttpRequest()).setContextPath("/webapp1");
         controller.willRedirectToController();
-        ContextAccess.getControllerResponse().process();
+        Context.getControllerResponse().process();
         a(httpResp.getRedirectedUrl()).shouldBeEqual("/webapp1/hello/abc_action/123?name=john");
     }
 

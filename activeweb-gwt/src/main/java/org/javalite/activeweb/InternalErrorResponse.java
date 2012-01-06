@@ -28,7 +28,7 @@ public class InternalErrorResponse extends ControllerResponse {
     @Override
     void doProcess() {
         try {
-            ContextAccess.getHttpResponse().sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            Context.getHttpResponse().sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } catch(IOException ioe) {
             throw new WebException(ioe);
                     }

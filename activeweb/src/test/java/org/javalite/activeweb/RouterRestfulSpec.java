@@ -31,7 +31,7 @@ public class RouterRestfulSpec {
     Router r = new Router("home");
     @Before
     public void before(){
-        ContextAccess.setControllerRegistry(new ControllerRegistry(new MockFilterConfig()));
+        Context.setControllerRegistry(new ControllerRegistry(new MockFilterConfig()));
     }
 
     /*
@@ -51,9 +51,9 @@ public class RouterRestfulSpec {
      * GET 	/photos 	            index 	        display a list of all photos
      */
     @Test
-    public void shouldRecognizeRestfulRouteIndex() throws ControllerLoadException {
+    public void shouldRecognizeRestfulRouteIndex() throws ClassLoadException {
         Router r = new Router(null);
-        MatchedRoute mr = r.recognize("/photos", HttpMethod.GET);
+        Route mr = r.recognize("/photos", HttpMethod.GET);
 
         a(mr.getControllerClassName()).shouldBeEqual("app.controllers.PhotosController");
         a(mr.getActionName()).shouldBeEqual("index");
@@ -61,9 +61,9 @@ public class RouterRestfulSpec {
 
 
     @Test
-    public void shouldRecognizeRestfulRouteIndexForControllerInPackage() throws ControllerLoadException {
+    public void shouldRecognizeRestfulRouteIndexForControllerInPackage() throws ClassLoadException {
         Router r = new Router(null);
-        MatchedRoute mr = r.recognize("/admin/special/special_rest", HttpMethod.GET);
+        Route mr = r.recognize("/admin/special/special_rest", HttpMethod.GET);
 
         a(mr.getControllerClassName()).shouldBeEqual("app.controllers.admin.special.SpecialRestController");
         a(mr.getActionName()).shouldBeEqual("index");
@@ -74,18 +74,18 @@ public class RouterRestfulSpec {
      * GET 	/photos/new_form 	    new_form        return an HTML form for creating a new photo
      */
     @Test
-    public void shouldRecognizeRestfulRouteNewForm() throws ControllerLoadException {
+    public void shouldRecognizeRestfulRouteNewForm() throws ClassLoadException {
 
-        MatchedRoute mr = r.recognize("/photos/new_form", HttpMethod.GET);
+        Route mr = r.recognize("/photos/new_form", HttpMethod.GET);
 
         a(mr.getControllerClassName()).shouldBeEqual("app.controllers.PhotosController");
         a(mr.getActionName()).shouldBeEqual("new_form");
     }
 
     @Test
-    public void shouldRecognizeRestfulRouteNewFormForControllerInPackage() throws ControllerLoadException {
+    public void shouldRecognizeRestfulRouteNewFormForControllerInPackage() throws ClassLoadException {
 
-        MatchedRoute mr = r.recognize("/admin/special2/special2_rest/new_form", HttpMethod.GET);
+        Route mr = r.recognize("/admin/special2/special2_rest/new_form", HttpMethod.GET);
 
         a(mr.getControllerClassName()).shouldBeEqual("app.controllers.admin.special2.Special2RestController");
         a(mr.getActionName()).shouldBeEqual("new_form");
@@ -95,18 +95,18 @@ public class RouterRestfulSpec {
      * POST 	/photos 	            create 	        create a new photo
      */
     @Test
-    public void shouldRecognizeRestfulRouteCreate() throws ControllerLoadException {
+    public void shouldRecognizeRestfulRouteCreate() throws ClassLoadException {
 
-        MatchedRoute mr = r.recognize("/photos", HttpMethod.POST);
+        Route mr = r.recognize("/photos", HttpMethod.POST);
 
         a(mr.getControllerClassName()).shouldBeEqual("app.controllers.PhotosController");
         a(mr.getActionName()).shouldBeEqual("create");
     }
 
     @Test
-    public void shouldRecognizeRestfulRouteCreateForControllerInPackage() throws ControllerLoadException {
+    public void shouldRecognizeRestfulRouteCreateForControllerInPackage() throws ClassLoadException {
 
-        MatchedRoute mr = r.recognize("/admin/special2/special2_rest", HttpMethod.POST);
+        Route mr = r.recognize("/admin/special2/special2_rest", HttpMethod.POST);
 
         a(mr.getControllerClassName()).shouldBeEqual("app.controllers.admin.special2.Special2RestController");
         a(mr.getActionName()).shouldBeEqual("create");
@@ -115,18 +115,18 @@ public class RouterRestfulSpec {
 
     //GET 	/photos/id 	        show            display a specific photo
     @Test
-    public void shouldRecognizeRestfulRouteShow() throws ControllerLoadException {
+    public void shouldRecognizeRestfulRouteShow() throws ClassLoadException {
 
-        MatchedRoute mr = r.recognize("/photos/1", HttpMethod.GET);
+        Route mr = r.recognize("/photos/1", HttpMethod.GET);
 
         a(mr.getControllerClassName()).shouldBeEqual("app.controllers.PhotosController");
         a(mr.getActionName()).shouldBeEqual("show");
         a(mr.getId()).shouldBeEqual("1");
     }
     @Test
-    public void shouldRecognizeRestfulRouteShowForControllerInPackage() throws ControllerLoadException {
+    public void shouldRecognizeRestfulRouteShowForControllerInPackage() throws ClassLoadException {
 
-        MatchedRoute mr = r.recognize("/admin/special/special_rest/1", HttpMethod.GET);
+        Route mr = r.recognize("/admin/special/special_rest/1", HttpMethod.GET);
 
         a(mr.getControllerClassName()).shouldBeEqual("app.controllers.admin.special.SpecialRestController");
         a(mr.getActionName()).shouldBeEqual("show");
@@ -135,9 +135,9 @@ public class RouterRestfulSpec {
 
     //GET 	/photos/id/edit_form   edit_form 	    return an HTML form for editing a photo
     @Test
-    public void shouldRecognizeRestfulRouteEditForm() throws ControllerLoadException {
+    public void shouldRecognizeRestfulRouteEditForm() throws ClassLoadException {
         
-        MatchedRoute mr = r.recognize("/photos/1/edit_form", HttpMethod.GET);
+        Route mr = r.recognize("/photos/1/edit_form", HttpMethod.GET);
 
         a(mr.getControllerClassName()).shouldBeEqual("app.controllers.PhotosController");
         a(mr.getActionName()).shouldBeEqual("edit_form");
@@ -145,8 +145,8 @@ public class RouterRestfulSpec {
     }
 
     @Test
-    public void shouldRecognizeRestfulRouteEditFormForControllerInPackage() throws ControllerLoadException {
-        MatchedRoute mr = r.recognize("/admin/special/special_rest/1/edit_form", HttpMethod.GET);
+    public void shouldRecognizeRestfulRouteEditFormForControllerInPackage() throws ClassLoadException {
+        Route mr = r.recognize("/admin/special/special_rest/1/edit_form", HttpMethod.GET);
 
         a(mr.getControllerClassName()).shouldBeEqual("app.controllers.admin.special.SpecialRestController");
         a(mr.getActionName()).shouldBeEqual("edit_form");
@@ -155,9 +155,9 @@ public class RouterRestfulSpec {
 
     //PUT 	/photos/id 	        update          update a specific photo
     @Test
-    public void shouldRecognizeRestfulRouteUpdate() throws ControllerLoadException {
+    public void shouldRecognizeRestfulRouteUpdate() throws ClassLoadException {
 
-        MatchedRoute mr = r.recognize("/photos/1", HttpMethod.PUT);
+        Route mr = r.recognize("/photos/1", HttpMethod.PUT);
 
         a(mr.getControllerClassName()).shouldBeEqual("app.controllers.PhotosController");
         a(mr.getActionName()).shouldBeEqual("update");
@@ -166,9 +166,9 @@ public class RouterRestfulSpec {
 
 
     @Test
-    public void shouldRecognizeRestfulRouteUpdateForControllerInPackage() throws ControllerLoadException {
+    public void shouldRecognizeRestfulRouteUpdateForControllerInPackage() throws ClassLoadException {
 
-        MatchedRoute mr = r.recognize("/admin/special2/special3/special3_rest/1", HttpMethod.PUT);
+        Route mr = r.recognize("/admin/special2/special3/special3_rest/1", HttpMethod.PUT);
 
         a(mr.getControllerClassName()).shouldBeEqual("app.controllers.admin.special2.special3.Special3RestController");
         a(mr.getActionName()).shouldBeEqual("update");
@@ -177,32 +177,19 @@ public class RouterRestfulSpec {
 
     //DELETE 	/photos/:id 	        destroy         delete a specific photo
     @Test
-    public void shouldRecognizeRestfulRouteDestroy() throws ControllerLoadException {
+    public void shouldRecognizeRestfulRouteDestroy() throws ClassLoadException {
 
-        MatchedRoute mr = r.recognize("/photos/1", HttpMethod.DELETE);
+        Route mr = r.recognize("/photos/1", HttpMethod.DELETE);
 
         a(mr.getControllerClassName()).shouldBeEqual("app.controllers.PhotosController");
         a(mr.getActionName()).shouldBeEqual("destroy");
         a(mr.getId()).shouldBeEqual("1");
     }
 
-
-
     @Test
-    public void shouldRecognizeNonRestfulRouteOnResftfulController() throws ControllerLoadException {
+    public void shouldRecognizeRestfulRouteDestroyForControllerInPackage() throws ClassLoadException {
 
-        MatchedRoute mr = r.recognize("/photos/non-restful/23", HttpMethod.GET);
-
-        a(mr.getControllerClassName()).shouldBeEqual("app.controllers.PhotosController");
-        a(mr.getActionName()).shouldBeEqual("non-restful");
-        a(mr.getId()).shouldBeEqual("23");
-    }
-
-
-    @Test
-    public void shouldRecognizeRestfulRouteDestroyForControllerInPackage() throws ControllerLoadException {
-
-        MatchedRoute mr = r.recognize("/admin/special2/special3/special3_rest/1", HttpMethod.DELETE);
+        Route mr = r.recognize("/admin/special2/special3/special3_rest/1", HttpMethod.DELETE);
 
         a(mr.getControllerClassName()).shouldBeEqual("app.controllers.admin.special2.special3.Special3RestController");
         a(mr.getActionName()).shouldBeEqual("destroy");

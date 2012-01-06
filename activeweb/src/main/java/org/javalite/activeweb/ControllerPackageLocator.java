@@ -16,6 +16,9 @@ limitations under the License.
 
 package org.javalite.activeweb;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.servlet.FilterConfig;
 import java.io.File;
 import java.net.MalformedURLException;
@@ -32,6 +35,10 @@ import java.util.jar.JarFile;
  * @author Igor Polevoy
  */
 class ControllerPackageLocator {
+
+    private static Logger logger = LoggerFactory.getLogger(ControllerPackageLocator.class);
+
+
     public static List<String> locateControllerPackages(FilterConfig config) {
         String controllerPath = System.getProperty("file.separator") + Configuration.getRootPackage() + System.getProperty("file.separator") + "controllers";
         List<String> controllerPackages = new ArrayList<String>();
@@ -96,6 +103,7 @@ class ControllerPackageLocator {
         }
     }
 
+    //Maybe this is a hack for other containers too?? Maybe this is not a hack at all?
     private static List<URL> hackForWeblogic(FilterConfig config) {
         List<URL> urls = new ArrayList<URL>();
         Set libJars = config.getServletContext().getResourcePaths("/WEB-INF/lib");
@@ -104,7 +112,7 @@ class ControllerPackageLocator {
                 urls.add(config.getServletContext().getResource((String) jar));
             }
             catch (MalformedURLException e) {
-                //TODO: need to log warning
+                logger.warn("Failed to get resource: " + jar);
             }
         }
         addClassesUrl(config, urls);

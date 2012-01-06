@@ -28,12 +28,7 @@ import org.javalite.activeweb.controller_filters.*;
 public class AppControllerConfig extends AbstractControllerConfig {
 
     public void init(AppContext context) {
-
-        HeadersLogFilter headersLogger = new HeadersLogFilter();
-        context.set("headersLogger", headersLogger);
-        
-        addGlobalFilters(new TimingFilter(), new RequestPropertiesLogFilter(), new RequestParamsLogFilter(),
-                headersLogger);
+        addGlobalFilters(new TimingFilter());
         add(new DBConnectionFilter()).to(PostsController.class, RpostsController.class);
     }
 }

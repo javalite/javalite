@@ -28,7 +28,6 @@ import org.junit.Before;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 
-import javax.servlet.http.HttpSession;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,13 +53,14 @@ public class SpecHelper extends JSpecSupport{
 
         sessionFacade = new SessionTestFacade(new MockHttpSession());
 
-        ContextAccess.setTLs(null, new MockHttpServletResponse(), new MockFilterConfig(), new ControllerRegistry(new MockFilterConfig()), new AppContext());
+        Context.setTLs(null, new MockHttpServletResponse(), new MockFilterConfig(),
+                new ControllerRegistry(new MockFilterConfig()), new AppContext(), new RequestContext());
         setTemplateLocation("src/main/webapp/WEB-INF/views");//default location of all views
     }
 
     @After
     public void afterEnd(){
-        ContextAccess.clear();
+        Context.clear();
     }
 
     /**
@@ -76,7 +76,7 @@ public class SpecHelper extends JSpecSupport{
      * @return  status code set on response by controller
      */
     protected int statusCode(){
-        return ContextAccess.getControllerResponse().getStatus();
+        return Context.getControllerResponse().getStatus();
     }
 
     /**
@@ -85,7 +85,7 @@ public class SpecHelper extends JSpecSupport{
      * @return  content type set on response by controller
      */
     protected String contentType(){
-        return ContextAccess.getControllerResponse().getContentType();
+        return Context.getControllerResponse().getContentType();
     }
 
     /**
@@ -95,7 +95,7 @@ public class SpecHelper extends JSpecSupport{
      */
     protected String responseContent(){
         try{
-            return ((MockHttpServletResponse)ContextAccess.getHttpResponse()).getContentAsString();
+            return ((MockHttpServletResponse) Context.getHttpResponse()).getContentAsString();
         }
         catch(Exception e){
             throw new SpecException(e);
@@ -109,7 +109,7 @@ public class SpecHelper extends JSpecSupport{
      */
     protected byte[] bytesContent(){
         try{
-            return ((MockHttpServletResponse)ContextAccess.getHttpResponse()).getContentAsByteArray();
+            return ((MockHttpServletResponse) Context.getHttpResponse()).getContentAsByteArray();
         }
         catch(Exception e){
             throw new RuntimeException(e);
@@ -122,7 +122,7 @@ public class SpecHelper extends JSpecSupport{
      * @return  layout set after executing an action of a controller.
      */
     protected String layout(){
-        ControllerResponse resp = ContextAccess.getControllerResponse();
+        ControllerResponse resp = Context.getControllerResponse();
         try{
             if(!(resp instanceof RenderTemplateResponse))
                 throw new SpecException("failed to get layout, did you perform a render operation? I found a different " +
@@ -135,7 +135,7 @@ public class SpecHelper extends JSpecSupport{
 
 
     protected String template(){
-        ControllerResponse resp = ContextAccess.getControllerResponse();
+        ControllerResponse resp = Context.getControllerResponse();
         try{
             if(!(resp instanceof RenderTemplateResponse))
                 throw new SpecException("failed to get layout, did you perform a render operation? I found a different " +
@@ -154,10 +154,10 @@ public class SpecHelper extends JSpecSupport{
      * @return values assigned by controller during execution
      */
     protected Map assigns(){
-        if(ContextAccess.getControllerResponse() == null){
+        if(Context.getControllerResponse() == null){
             throw new TestException("There is no controller response, did you actually invoke a controller/action?");
         }
-        return ContextAccess.getControllerResponse().values();
+        return Context.getControllerResponse().values();
     }
 
     /**
@@ -166,10 +166,10 @@ public class SpecHelper extends JSpecSupport{
      * @return values assigned by controller during execution
      */
     protected Map vals(){
-        if(ContextAccess.getControllerResponse() == null){
+        if(Context.getControllerResponse() == null){
             throw new TestException("There is no controller response, did you actually invoke a controller/action?");
         }
-        return ContextAccess.getControllerResponse().values();
+        return Context.getControllerResponse().values();
     }
 
     /**
@@ -180,10 +180,10 @@ public class SpecHelper extends JSpecSupport{
      * @return a single value assigned by controller.
      */
     protected Object val(String name){
-        if(ContextAccess.getControllerResponse() == null){
+        if(Context.getControllerResponse() == null){
             throw new TestException("There is no controller response, did you actually invoke a controller/action?");
         }
-        return ContextAccess.getControllerResponse().values().get(name);
+        return Context.getControllerResponse().values().get(name);
     }
 
     /**
@@ -196,10 +196,10 @@ public class SpecHelper extends JSpecSupport{
      * @return a single value assigned by controller.
      */
     protected  <T>  T val(String name, Class<T> type){
-        if(ContextAccess.getControllerResponse() == null){
+        if(Context.getControllerResponse() == null){
             throw new TestException("There is no controller response, did you actually invoke a controller/action?");
         }
-        return (T) ContextAccess.getControllerResponse().values().get(name);
+        return (T) Context.getControllerResponse().values().get(name);
     }
 
     /**
@@ -273,7 +273,7 @@ public class SpecHelper extends JSpecSupport{
      * @return true after execution of an action that sent a redirect, false otherwise.
      */
     protected boolean redirected(){
-        return ContextAccess.getControllerResponse() instanceof RedirectResponse;
+        return Context.getControllerResponse() instanceof RedirectResponse;
     }
 
     /**
@@ -282,7 +282,7 @@ public class SpecHelper extends JSpecSupport{
      * @return a redirect value if one was produced by a controller or filter, null if not.
      */
     protected String redirectValue(){
-        ControllerResponse resp = ContextAccess.getControllerResponse();
+        ControllerResponse resp = Context.getControllerResponse();
         if(resp != null && resp instanceof RedirectResponse){
             RedirectResponse redirectResponse = (RedirectResponse)resp;
             return redirectResponse.redirectValue();
@@ -296,8 +296,8 @@ public class SpecHelper extends JSpecSupport{
      * @return all cookies from last response.
      */
     protected Cookie[] getCookies(){
-        if(ContextAccess.getHttpResponse() == null) throw new IllegalStateException("response does not exist");
-        javax.servlet.http.Cookie[] servletCookies = ((MockHttpServletResponse)ContextAccess.getHttpResponse()).getCookies();
+        if(Context.getHttpResponse() == null) throw new IllegalStateException("response does not exist");
+        javax.servlet.http.Cookie[] servletCookies = ((MockHttpServletResponse) Context.getHttpResponse()).getCookies();
         List<Cookie> cookies = new ArrayList<Cookie>();
         for(javax.servlet.http.Cookie cookie: servletCookies){
             cookies.add(Cookie.fromServletCookie(cookie));
@@ -331,7 +331,7 @@ public class SpecHelper extends JSpecSupport{
     }
 
     protected void setInjector(Injector injector){
-        ContextAccess.getControllerRegistry().setInjector(injector);
+        Context.getControllerRegistry().setInjector(injector);
     }
 
     /**

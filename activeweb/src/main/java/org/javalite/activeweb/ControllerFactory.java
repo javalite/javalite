@@ -31,51 +31,55 @@ import static org.javalite.common.Util.join;
  */
 public class ControllerFactory {
 
-    static <T extends AppController> Class<T> getControllerClass(String controllerClassName) throws ControllerLoadException {
+
+    protected static AppController createControllerInstance(String controllerClassName) throws ClassLoadException {
+        try {
+
+            Object o = getCompiledClass(controllerClassName).newInstance();
+            return (AppController)o ;
+        } catch (CompilationException e) {
+            throw e;
+        } catch (ClassLoadException e) {
+            throw e;
+        } catch (ClassCastException e) {
+            throw new ClassLoadException("Class: " + controllerClassName + " is not a controller, are you sure it extends " + AppController.class.getName() + "?");
+        } catch (Exception e) {
+            throw new ClassLoadException(e);
+        }
+    }
+
+    //TODO: rename and move this method soemwhere
+    static Class getCompiledClass(String className) throws ClassLoadException{
         Class controllerClass;
         try {
             if (Configuration.activeReload()) {
-                String compilationResult = compileController(controllerClassName);
+                String compilationResult = compileClass(className);
                 if (compilationResult.contains("cannot read")) {
-                    throw new ControllerLoadException(compilationResult);
+                    throw new ClassLoadException(compilationResult);
                 }
                 if (compilationResult.contains("error")) {
                     throw new CompilationException(compilationResult);
                 }
 
-                ControllerClassLoader controllerClassLoader =
-                        new ControllerClassLoader(ControllerFactory.class.getClassLoader(), Configuration.getTargetDir());
-                controllerClass = controllerClassLoader.loadClass(controllerClassName);
+                DynamicClassLoader dynamicClassLoader = new DynamicClassLoader(ControllerFactory.class.getClassLoader(),
+                        Configuration.getTargetDir());
+                controllerClass = dynamicClassLoader.loadClass(className);
             } else {
-                //TODO: in case there is no active_reload, cache instance of controllers - optimization!
-                controllerClass = Class.forName(controllerClassName);
+                //TODO: in case there is no active_reload, cache instance of controller class - optimization!
+                controllerClass = Class.forName(className);
             }
 
             return controllerClass;
         } catch (CompilationException e) {
             throw e;
         } catch (Exception e) {
-            throw new ControllerLoadException(e);
+            throw new ClassLoadException(e);
         }
     }
 
-    protected static AppController createControllerInstance(String controllerClassName) throws ControllerLoadException {
-        try {
-            return getControllerClass(controllerClassName).newInstance();
-        } catch (CompilationException e) {
-            throw e;
-        } catch (ControllerLoadException e) {
-            throw e;
-        } catch (ClassCastException e) {
-            throw new ControllerLoadException("Class: " + controllerClassName + " is not a controller, are you sure it extends " + AppController.class.getName() + "?");
-        } catch (Exception e) {
-            throw new ControllerLoadException(e);
-        }
-    }
+    protected synchronized static String compileClass(String className) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
-    private synchronized static String compileController(String controllerClassName) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-
-        String controllerFileName = controllerClassName.replace(".", System.getProperty("file.separator")) + ".java";
+        String controllerFileName = className.replace(".", System.getProperty("file.separator")) + ".java";
 
         URLClassLoader loader = ((URLClassLoader) Thread.currentThread().getContextClassLoader());
         URL[] urls = loader.getURLs();

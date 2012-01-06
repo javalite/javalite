@@ -41,10 +41,10 @@ class ParamCopy {
 
 
     private static void insertActiveWebParamsInto(Map assigns) {
-        assigns.put("context_path", ContextAccess.getHttpRequest().getContextPath());
-        assigns.put("activeweb", map("controller", ContextAccess.getControllerPath(), 
-                                      "action", ContextAccess.getActionName(),
-                                      "restful", ContextAccess.isRestful(),
+        assigns.put("context_path", Context.getHttpRequest().getContextPath());
+        assigns.put("activeweb", map("controller", Context.getControllerPath(),
+                                      "action", Context.getActionName(),
+                                      "restful", Context.isRestful(),
                                       "environment", Configuration.getEnv()));
     }
 
@@ -63,12 +63,12 @@ class ParamCopy {
 
 
     private static void copyRequestParamsInto(Map assigns) {
-        Enumeration names = ContextAccess.getHttpRequest().getParameterNames();
+        Enumeration names = Context.getHttpRequest().getParameterNames();
 
         Map<String, String> requestParameterMap = new HashMap<String, String>();
         while (names.hasMoreElements()) {
             Object name = names.nextElement();
-            String[] values = ContextAccess.getHttpRequest().getParameterValues(name.toString());
+            String[] values = Context.getHttpRequest().getParameterValues(name.toString());
             Object value = values != null && values.length == 1 ? values[0] : values;
             requestParameterMap.put(name.toString(), value.toString());
         }
@@ -77,10 +77,10 @@ class ParamCopy {
 
 
     private static void copyRequestAttributesInto(Map assigns){
-        Enumeration names = ContextAccess.getHttpRequest().getAttributeNames();
+        Enumeration names = Context.getHttpRequest().getAttributeNames();
         while (names.hasMoreElements()) {
             Object name = names.nextElement();
-            Object value = ContextAccess.getHttpRequest().getAttribute(name.toString());
+            Object value = Context.getHttpRequest().getAttribute(name.toString());
             assigns.put(name, value);
         }
     }

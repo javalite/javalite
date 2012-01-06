@@ -15,7 +15,6 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
-import org.javalite.activejdbc.DB;
 import org.javalite.activeweb.controller_filters.ControllerFilter;
 import com.google.inject.Injector;
 import org.javalite.common.Inflector;
@@ -38,17 +37,17 @@ class ControllerRunner {
 
     private static Logger logger = LoggerFactory.getLogger(ControllerRunner.class.getName());
 
-    protected void run(MatchedRoute route, boolean integrateViews) throws Exception {
-        ControllerRegistry controllerRegistry = ContextAccess.getControllerRegistry();
+    protected void run(Route route, boolean integrateViews) throws Exception {
+        ControllerRegistry controllerRegistry = Context.getControllerRegistry();
         List<ControllerFilter> globalFilters = controllerRegistry.getGlobalFilters();
         List<ControllerFilter> controllerFilters = controllerRegistry.getMetaData(route.getController().getClass()).getFilters();
         List<ControllerFilter> actionFilters = controllerRegistry.getMetaData(route.getController().getClass()).getFilters(route.getActionName());        
-        ContextAccess.getControllerRegistry().injectFilters();
+        Context.getControllerRegistry().injectFilters();
 
         try {
             filterBefore(globalFilters, controllerFilters, actionFilters);
 
-            if (ContextAccess.getControllerResponse() == null) {//execute controller... only if a filter did not respond
+            if (Context.getControllerResponse() == null) {//execute controller... only if a filter did not respond
 
                 String methodName = Inflector.camelize(route.getActionName().replace('-', '_'), false);
                 checkActionMethod(route.getController(), methodName);
@@ -69,7 +68,7 @@ class ControllerRunner {
             throw e;
         }
         catch (WebException e) {
-            ContextAccess.setControllerResponse(null);//must blow away, as this response is not valid anymore. 
+            Context.setControllerResponse(null);//must blow away, as this response is not valid anymore.
 
             if (exceptionHandled(e, globalFilters, controllerFilters, actionFilters)) {
                 logger.info("A filter has called render(..) method, proceeding to render it...");
@@ -81,16 +80,16 @@ class ControllerRunner {
     }
 
     private void inject(AppController controller) {
-        Injector injector = ContextAccess.getControllerRegistry().getInjector();
+        Injector injector = Context.getControllerRegistry().getInjector();
         if (injector != null) {
             injector.injectMembers(controller);
         }
     }
 
 
-    private void renderResponse(MatchedRoute route,  boolean integrateViews){
+    private void renderResponse(Route route,  boolean integrateViews) throws InstantiationException, IllegalAccessException {
 
-        ControllerResponse controllerResponse = ContextAccess.getControllerResponse();
+        ControllerResponse controllerResponse = Context.getControllerResponse();
         String controllerLayout = route.getController().getLayout();
         if (controllerResponse == null) {//this is implicit processing - default behavior, really
 
@@ -103,7 +102,7 @@ class ControllerRunner {
                 resp.setLayout(controllerLayout);//could be a real layout ot null for no layout
             }
 
-            ContextAccess.setControllerResponse(resp);
+            Context.setControllerResponse(resp);
             resp.setTemplateManager(Configuration.getTemplateManager());
         } else if (controllerResponse instanceof RenderTemplateResponse) {
             RenderTemplateResponse resp = (RenderTemplateResponse) controllerResponse;
@@ -116,7 +115,7 @@ class ControllerRunner {
             resp.setTemplateManager(Configuration.getTemplateManager());
         }
 
-        controllerResponse = ContextAccess.getControllerResponse();
+        controllerResponse = Context.getControllerResponse();
         
         if (integrateViews && controllerResponse instanceof RenderTemplateResponse) {
             ParamCopy.copyInto((controllerResponse.values()));
@@ -128,7 +127,7 @@ class ControllerRunner {
 
 
     private void processFlash() {
-        HttpSession session = ContextAccess.getHttpRequest().getSession();
+        HttpSession session = Context.getHttpRequest().getSession();
         if (session != null) {
             Object flashObj = session.getAttribute("flasher");
             if (flashObj != null && flashObj instanceof Map) {
@@ -147,7 +146,7 @@ class ControllerRunner {
 
         HttpMethod actionHttpMethod = controller.getActionHttpMethod(methodName);
 
-        String requestMethod = HttpMethod.getMethod(ContextAccess.getHttpRequest()).toString();
+        String requestMethod = HttpMethod.getMethod(Context.getHttpRequest()).toString();
         String actionMethod = actionHttpMethod.toString();
         
         if(!requestMethod.equalsIgnoreCase(actionMethod)){
@@ -162,7 +161,7 @@ class ControllerRunner {
                 controllerFilter.onException(e);
             }
         }
-        return ContextAccess.getControllerResponse() != null;
+        return Context.getControllerResponse() != null;
     }
 
     private void filterBefore(List<ControllerFilter> ... filters) {
@@ -173,7 +172,7 @@ class ControllerRunner {
                     logger.debug("Executing filter: " + controllerFilter.getClass().getName() + "#before" );
                 }
                 controllerFilter.before();
-                if(ContextAccess.getControllerResponse() != null) return;//a filter responded!
+                if(Context.getControllerResponse() != null) return;//a filter responded!
             }
         }
         }catch(Exception e){

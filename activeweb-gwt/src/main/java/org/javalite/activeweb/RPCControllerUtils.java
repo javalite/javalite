@@ -66,7 +66,7 @@ final class RPCControllerUtils {
      *         encoding
      */
     static boolean acceptsGzipEncoding() {
-        String acceptEncoding = ContextAccess.getHttpRequest().getHeader(ACCEPT_ENCODING);
+        String acceptEncoding = Context.getHttpRequest().getHeader(ACCEPT_ENCODING);
         if (null == acceptEncoding) {
             return false;
         }
@@ -156,7 +156,7 @@ final class RPCControllerUtils {
          * Need to support 'Transfer-Encoding: chunked', so do not rely on
          * presence of a 'Content-Length' request header.
          */
-        InputStream in = ContextAccess.getHttpRequest().getInputStream();
+        InputStream in = Context.getHttpRequest().getInputStream();
         byte[] buffer = new byte[BUFFER_SIZE];
         ByteArrayOutputStream out = new ByteArrayOutputStream(BUFFER_SIZE);
         try {
@@ -197,7 +197,7 @@ final class RPCControllerUtils {
      * Sets the correct header to indicate that a response is gzipped.
      */
     static void setGzipEncodingHeader() {
-        ContextAccess.getHttpResponse().setHeader(CONTENT_ENCODING, CONTENT_ENCODING_GZIP);
+        Context.getHttpResponse().setHeader(CONTENT_ENCODING, CONTENT_ENCODING_GZIP);
     }
 
     /**
@@ -255,14 +255,14 @@ final class RPCControllerUtils {
 
             if (caught != null) {                
                 LOGGER.info("Unable to compress response", caught);
-                ContextAccess.setControllerResponse(new InternalErrorResponse());
+                Context.setControllerResponse(new InternalErrorResponse());
                 return;
             }
         }
 
         // Send the reply.
         //
-        ContextAccess.setControllerResponse(new GWTByteArrayResponse(responseBytes));
+        Context.setControllerResponse(new GWTByteArrayResponse(responseBytes));
     }
 
     /**
@@ -275,7 +275,7 @@ final class RPCControllerUtils {
         DirectResponse directResponse = new DirectResponse(GENERIC_FAILURE_MSG);
         directResponse.setContentType("text/plain");
         directResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        ContextAccess.setControllerResponse(directResponse);
+        Context.setControllerResponse(directResponse);
     }
 
     /**
@@ -288,7 +288,7 @@ final class RPCControllerUtils {
     static void checkCharacterEncodingIgnoreCase(String expectedCharSet)
             throws RPCException {
         boolean encodingOkay = false;
-        String characterEncoding = ContextAccess.getHttpRequest().getCharacterEncoding();
+        String characterEncoding = Context.getHttpRequest().getCharacterEncoding();
         if (characterEncoding != null) {
             /*
              * TODO: It would seem that we should be able to use equalsIgnoreCase here
@@ -321,7 +321,7 @@ final class RPCControllerUtils {
      */
     static void checkContentTypeIgnoreCase(String expectedContentType)
             throws RPCException {
-        String contentType = ContextAccess.getHttpRequest().getContentType();
+        String contentType = Context.getHttpRequest().getContentType();
         boolean contentTypeIsOkay = false;
 
         if (contentType != null) {

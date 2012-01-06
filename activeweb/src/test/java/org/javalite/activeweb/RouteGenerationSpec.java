@@ -34,7 +34,7 @@ public class RouteGenerationSpec extends JSpecSupport {
 
     @Before
     public void before(){
-        ContextAccess.setControllerRegistry(new ControllerRegistry(new MockFilterConfig())); 
+        Context.setControllerRegistry(new ControllerRegistry(new MockFilterConfig()));
     }
     
 

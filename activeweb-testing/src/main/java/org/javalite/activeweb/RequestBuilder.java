@@ -278,7 +278,7 @@ public class RequestBuilder {
         }
 
         request.setContextPath("/test_context");
-        ContextAccess.setHttpRequest(request);
+        Context.setHttpRequest(request);
 
 
         if(sessionFacade != null)
@@ -313,8 +313,8 @@ public class RequestBuilder {
         addParameterValues(request);
         try{
             AppController controller = createControllerInstance(getControllerClassName(controllerPath));
-            ContextAccess.setRoute(new MatchedRoute(controller, realAction, id));
-            Injector injector = ContextAccess.getControllerRegistry().getInjector();
+            Context.setRoute(new Route(controller, realAction, id));
+            Injector injector = Context.getControllerRegistry().getInjector();
 
             long start = System.currentTimeMillis();
             if(injector != null){
@@ -323,11 +323,11 @@ public class RequestBuilder {
             ControllerRunner runner = new ControllerRunner();
 
             //must reset these two because in tests, we can execute multiple controllers in the same test method.
-            ContextAccess.setControllerResponse(null);
-            ContextAccess.setHttpResponse(new MockHttpServletResponse());
-            ContextAccess.setActionName(actionName);
+            Context.setControllerResponse(null);
+            Context.setHttpResponse(new MockHttpServletResponse());
+            Context.setActionName(actionName);
 
-            runner.run(new MatchedRoute(controller, actionName),  integrateViews);
+            runner.run(new Route(controller, actionName),  integrateViews);
         }catch(WebException e){
             throw e;
         }catch(Exception e){

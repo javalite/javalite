@@ -51,6 +51,6 @@ public abstract class Bootstrap implements AppConfig{
     public void destroy(AppContext context){}
 
     public void setInjector(Injector injector){
-        ContextAccess.getControllerRegistry().setInjector(injector);
+        Context.getControllerRegistry().setInjector(injector);
     }
 }

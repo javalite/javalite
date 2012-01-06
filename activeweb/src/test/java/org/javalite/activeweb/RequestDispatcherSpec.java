@@ -29,13 +29,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 
+import static org.javalite.activeweb.SystemStreamUtil.getSystemErr;
+import static org.javalite.activeweb.SystemStreamUtil.replaceError;
+import static org.javalite.activeweb.SystemStreamUtil.restoreSystemErr;
+
 /**
  * @author Igor Polevoy
  */
 public class RequestDispatcherSpec extends RequestSpec {
 
     private boolean fellThrough = false;
-    private ByteArrayOutputStream bout;
+
     private FilterChain badFilterChain;
 
     @Before
@@ -53,11 +57,11 @@ public class RequestDispatcherSpec extends RequestSpec {
             }
         };
 
-        replaceErrorOut();
+        replaceError();
     }
 
     public void after(){
-        restoreSystemError();
+        restoreSystemErr();
     }
 
     @Test
@@ -67,7 +71,7 @@ public class RequestDispatcherSpec extends RequestSpec {
         request.setMethod("GET");
 
         dispatcher.doFilter(request, response, filterChain);
-        a(getSystemErrContent().contains("URI is: '/', but root controller not set")).shouldBeTrue();
+        a(getSystemErr().contains("URI is: '/', but root controller not set")).shouldBeTrue();
     }
 
     @Test
@@ -134,7 +138,7 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
-        a(getSystemErrContent().contains("activeweb.ControllerException")).shouldBeTrue();
+        a(getSystemErr().contains("activeweb.ControllerException")).shouldBeTrue();
         a(response.getContentAsString()).shouldBeEqual("java.lang.ArithmeticException: / by zero; / by zero");// this is coming from a system/error.ftl
         a(response.getStatus()).shouldBeEqual(500);
     }
@@ -147,7 +151,7 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
-        a(getSystemErrContent().contains("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController")).shouldBeTrue();
+        a(getSystemErr().contains("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController")).shouldBeTrue();
 
 
         String html = response.getContentAsString();
@@ -166,7 +170,7 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
-        a(getSystemErrContent().contains("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController")).shouldBeTrue();
+        a(getSystemErr().contains("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController")).shouldBeTrue();
 
         String html = response.getContentAsString();
 
@@ -182,7 +186,7 @@ public class RequestDispatcherSpec extends RequestSpec {
         request.setMethod("GET");
         dispatcher.doFilter(request, response, filterChain);
 
-        a(getSystemErrContent().contains("are you sure it extends " + AppController.class.getName())).shouldBeTrue();
+        a(getSystemErr().contains("are you sure it extends " + AppController.class.getName())).shouldBeTrue();
 
         String html = response.getContentAsString();
 
@@ -199,7 +203,7 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
-        a(getSystemErrContent().contains("java.lang.NoSuchMethodException: app.controllers.HelloController.hello(")).shouldBeTrue();
+        a(getSystemErr().contains("java.lang.NoSuchMethodException: app.controllers.HelloController.hello(")).shouldBeTrue();
 
         String html = response.getContentAsString();
 
@@ -215,7 +219,7 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
-        a(getSystemErrContent().contains("Template /hello/no-view.ftl not found.")).shouldBeTrue();
+        a(getSystemErr().contains("Template /hello/no-view.ftl not found.")).shouldBeTrue();
 
         String html = response.getContentAsString();
 
@@ -303,27 +307,10 @@ public class RequestDispatcherSpec extends RequestSpec {
 
     @Test
     public void shouldCallDestroyOnAppBootstrap() throws ServletException, IOException {
-        replaceErrorOut();
+        replaceError();
         dispatcher.destroy();
-        a(getSystemErrContent()).shouldBeEqual("ahrrr! destroyed!");
+        a(getSystemErr()).shouldBeEqual("ahrrr! destroyed!");
     }
     
-    PrintStream err;
-
-    void replaceErrorOut() {
-        bout = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(bout);
-        err = System.err;
-        System.setErr(ps);
-    }
-
-    String getSystemErrContent() {
-        return new String(bout.toByteArray());
-    }
-
-    void restoreSystemError(){
-        if(err == null) throw new NullPointerException("err cannot be null");
-        System.setErr(err);
-    }
 
 }

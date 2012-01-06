@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * @author Igor Polevoy
  */
-class ContextAccess {
+class Context {
 
     private static ThreadLocal<ControllerRegistry> registry = new ThreadLocal<ControllerRegistry>();
     private static ThreadLocal<HttpServletRequest> request = new ThreadLocal<HttpServletRequest>();
@@ -34,14 +34,23 @@ class ContextAccess {
     private static ThreadLocal<String> controllerPath = new ThreadLocal<String>();
     private static ThreadLocal<Boolean> restful = new ThreadLocal<Boolean>();
     private static ThreadLocal<AppContext> appContext = new ThreadLocal<AppContext>();
+    private static ThreadLocal<RequestContext> requestContext = new ThreadLocal<RequestContext>();
 
+
+    public static RequestContext getRequestContext() {
+        return requestContext.get();
+    }
+
+    public static void setRequestContext(RequestContext requestContext) {
+        Context.requestContext.set(requestContext);
+    }
 
     public static AppContext getAppContext() {
         return appContext.get();
     }
 
     public static void setAppContext(AppContext appContext) {
-        ContextAccess.appContext.set(appContext);
+        Context.appContext.set(appContext);
     }
 
     static void setControllerRegistry(ControllerRegistry controllerRegistry){
@@ -108,15 +117,20 @@ class ContextAccess {
         restful.set(restfulVal);
     }
 
-    static void setTLs(HttpServletRequest req, HttpServletResponse resp, FilterConfig conf, ControllerRegistry reg, AppContext context) {
+    static void setTLs(HttpServletRequest req, HttpServletResponse resp, FilterConfig conf,
+                       ControllerRegistry reg, AppContext context, RequestContext requestContext) {
         setHttpRequest(req);
         setHttpResponse(resp);
         setControllerRegistry(reg);
         setFilterConfig(conf);
         setAppContext(context);
+        setRequestContext(requestContext);
     }
 
-    static void setRoute(MatchedRoute route){
+    static void setRoute(Route route) throws InstantiationException, IllegalAccessException {
+        if(route != null && route.getId() != null){
+            getHttpRequest().setAttribute("id", route.getId());
+        }
         setControllerPath(Router.getControllerPath(route.getController().getClass()));
         setActionName(route.getActionName());
         setRestful(route.getController().restful());
@@ -130,5 +144,6 @@ class ContextAccess {
         actionName.set(null);
         controllerPath.set(null);
         filterConfig.set(null);
+        requestContext.set(null);
     }
 }

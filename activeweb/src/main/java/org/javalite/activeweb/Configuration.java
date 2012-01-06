@@ -36,7 +36,7 @@ public class Configuration {
 
 
 
-    enum Params{templateManager, bootstrap, defaultLayout, targetDir, rootPackage, dbconfig, controllerConfig, rollback, freeMarkerConfig}
+    enum Params{templateManager, bootstrap, defaultLayout, targetDir, rootPackage, dbconfig, controllerConfig, rollback, freeMarkerConfig, route_config}
 
     private static final Configuration instance = new Configuration();
     private static Properties props = new Properties();
@@ -168,6 +168,10 @@ public class Configuration {
 
     public static String getDbConfigClassName(){
         return get(Params.dbconfig.toString());
+    }
+
+    public static String getRouteConfigClassName(){
+        return get(Params.route_config.toString());
     }
 
     public static String getTargetDir() {

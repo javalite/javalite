@@ -80,7 +80,7 @@ public class GWTAppController extends AppController implements SerializationPoli
      */
     void doUnexpectedFailure(Throwable e) {
         try {
-            ContextAccess.getHttpResponse().reset();
+            Context.getHttpResponse().reset();
         } catch (IllegalStateException ex) {
             /*
              * If we can't reset the request, the only way to signal that something
@@ -104,7 +104,7 @@ public class GWTAppController extends AppController implements SerializationPoli
      * HTTP header.
      */
     private String getPermutationStrongName() {
-        return ContextAccess.getHttpRequest().getHeader(STRONG_NAME_HEADER);
+        return Context.getHttpRequest().getHeader(STRONG_NAME_HEADER);
     }            
 
     /**
@@ -130,7 +130,7 @@ public class GWTAppController extends AppController implements SerializationPoli
     private SerializationPolicy loadSerializationPolicy(String moduleBaseURL, String strongName) {
         // The request can tell you the path of the web app relative to the
         // container root.
-        String contextPath = ContextAccess.getHttpRequest().getContextPath();
+        String contextPath = Context.getHttpRequest().getContextPath();
 
         String modulePath = null;
         if (moduleBaseURL != null) {
@@ -165,7 +165,7 @@ public class GWTAppController extends AppController implements SerializationPoli
                     + strongName);
 
             // Open the RPC resource file and read its contents.
-            InputStream is = ContextAccess.getFilterConfig().getServletContext().getResourceAsStream(
+            InputStream is = Context.getFilterConfig().getServletContext().getResourceAsStream(
                     serializationPolicyFilePath);
             try {
                 if (is != null) {

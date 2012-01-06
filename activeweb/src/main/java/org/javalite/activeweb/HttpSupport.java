@@ -26,9 +26,11 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.URL;
+import java.security.Key;
 import java.util.*;
 
 import static java.util.Arrays.asList;
+import static org.javalite.common.Collections.list;
 import static org.javalite.common.Collections.map;
 
 /**
@@ -72,7 +74,7 @@ public class HttpSupport {
      */
     protected void assign(String name, Object value) {
         KeyWords.check(name);
-        ContextAccess.getHttpRequest().setAttribute(name, value);
+        Context.getHttpRequest().setAttribute(name, value);
     }
 
     /**
@@ -136,7 +138,7 @@ public class HttpSupport {
          * @param value value of header.
          */
         public HttpBuilder header(String name, String value){
-            ContextAccess.getHttpResponse().setHeader(name, value);
+            Context.getHttpResponse().setHeader(name, value);
             return this;
         }
 
@@ -198,7 +200,7 @@ public class HttpSupport {
      */
     protected RenderBuilder render(String template, Map values) {
         RenderTemplateResponse resp = new RenderTemplateResponse(values, template);
-        ContextAccess.setControllerResponse(resp);
+        Context.setControllerResponse(resp);
         return new RenderBuilder(resp);
     }
 
@@ -212,7 +214,7 @@ public class HttpSupport {
      */
     protected HttpBuilder redirect(String path) {
         RedirectResponse resp = new RedirectResponse(path);
-        ContextAccess.setControllerResponse(resp);
+        Context.setControllerResponse(resp);
         return new HttpBuilder(resp);
     }
 
@@ -224,7 +226,7 @@ public class HttpSupport {
      */
     protected HttpBuilder redirect(URL url) {
         RedirectResponse resp = new RedirectResponse(url);
-        ContextAccess.setControllerResponse(resp);
+        Context.setControllerResponse(resp);
         return new HttpBuilder(resp);
     }
 
@@ -238,10 +240,10 @@ public class HttpSupport {
      * @return {@link HttpSupport.HttpBuilder}, to accept additional information.
      */
     protected HttpBuilder redirectToReferrer(String defaultReference) {
-        String referrer = ContextAccess.getHttpRequest().getHeader("Referer");
+        String referrer = Context.getHttpRequest().getHeader("Referer");
         referrer = referrer == null? defaultReference: referrer;
         RedirectResponse resp = new RedirectResponse(referrer);
-        ContextAccess.setControllerResponse(resp);
+        Context.setControllerResponse(resp);
         return new HttpBuilder(resp);
     }
 
@@ -253,10 +255,10 @@ public class HttpSupport {
      * @return {@link HttpSupport.HttpBuilder}, to accept additional information.
      */
     protected HttpBuilder redirectToReferrer() {
-        String referrer = ContextAccess.getHttpRequest().getHeader("Referer");
-        referrer = referrer == null? ContextAccess.getHttpRequest().getContextPath(): referrer;
+        String referrer = Context.getHttpRequest().getHeader("Referer");
+        referrer = referrer == null? Context.getHttpRequest().getContextPath(): referrer;
         RedirectResponse resp = new RedirectResponse(referrer);
-        ContextAccess.setControllerResponse(resp);
+        Context.setControllerResponse(resp);
         return new HttpBuilder(resp);
     }
 
@@ -350,7 +352,7 @@ public class HttpSupport {
      */
     protected <T extends AppController> HttpBuilder redirect(Class<T> controllerClass, Map params){
         String controllerPath = Router.getControllerPath(controllerClass);
-        String contextPath = ContextAccess.getHttpRequest().getContextPath();
+        String contextPath = Context.getHttpRequest().getContextPath();
         String action = params.get("action") != null? params.get("action").toString() : null;
         String id = params.get("id") != null? params.get("id").toString() : null;
         boolean restful= AppController.restful(controllerClass);
@@ -360,7 +362,7 @@ public class HttpSupport {
         String uri = contextPath + Router.generate(controllerPath, action, id, restful, params);
 
         RedirectResponse resp = new RedirectResponse(uri);
-        ContextAccess.setControllerResponse(resp);
+        Context.setControllerResponse(resp);
         return new HttpBuilder(resp);
     }
 
@@ -373,7 +375,7 @@ public class HttpSupport {
      */
     protected HttpBuilder respond(String text){
         DirectResponse resp = new DirectResponse(text);
-        ContextAccess.setControllerResponse(resp);
+        Context.setControllerResponse(resp);
         return new HttpBuilder(resp);
     }
 
@@ -389,7 +391,7 @@ public class HttpSupport {
     protected HttpBuilder sendFile(File file) throws FileNotFoundException {
         try{
             StreamResponse resp = new StreamResponse(new FileInputStream(file));
-            ContextAccess.setControllerResponse(resp);
+            Context.setControllerResponse(resp);
             HttpBuilder builder = new HttpBuilder(resp);
             builder.header("Content-Disposition", "attachment; filename=" + file.getName());
             return builder;
@@ -406,7 +408,13 @@ public class HttpSupport {
      * @return value of request parameter.
      */
     protected String param(String name){
-        return name.equals("id") ? getId():ContextAccess.getHttpRequest().getParameter(name);
+        if(name.equals("id")){
+            return getId();
+        }else if(Context.getRequestContext().getUserSegments().get(name) != null){
+            return Context.getRequestContext().getUserSegments().get(name);
+        }else{
+            return Context.getHttpRequest().getParameter(name);
+        }
     }
 
     /**
@@ -415,7 +423,7 @@ public class HttpSupport {
      * @return local host name on which request was received.
      */
     protected String host() {
-        return ContextAccess.getHttpRequest().getLocalName();
+        return Context.getHttpRequest().getLocalName();
     }
 
 
@@ -425,7 +433,7 @@ public class HttpSupport {
      * @return local IP address on which request was received.
      */
     protected String ipAddress() {
-        return ContextAccess.getHttpRequest().getLocalAddr();
+        return Context.getHttpRequest().getLocalAddr();
     }
 
 
@@ -463,7 +471,7 @@ public class HttpSupport {
      * @return port on which the of the server received current request.
      */
     protected int port(){
-        return ContextAccess.getHttpRequest().getLocalPort();
+        return Context.getHttpRequest().getLocalPort();
     }
 
 
@@ -473,7 +481,7 @@ public class HttpSupport {
      * @return protocol of request
      */
     protected String protocol(){
-        return ContextAccess.getHttpRequest().getProtocol();
+        return Context.getHttpRequest().getProtocol();
     }
 
     //TODO: provide methods for: X-Forwarded-Proto and X-Forwarded-Port
@@ -500,8 +508,8 @@ public class HttpSupport {
      * @return ID value from URI is one exists, null if not.
      */
     protected String getId(){
-        String paramId = ContextAccess.getHttpRequest().getParameter("id");
-        if(paramId != null && ContextAccess.getHttpRequest().getAttribute("id") != null){
+        String paramId = Context.getHttpRequest().getParameter("id");
+        if(paramId != null && Context.getHttpRequest().getAttribute("id") != null){
             logger.warn("WARNING: probably you have 'id' supplied both as a HTTP parameter, as well as in the URI. Choosing parameter over URI value.");
         }
 
@@ -509,7 +517,7 @@ public class HttpSupport {
         if(paramId != null){
             theId =  paramId;
         }else{
-            Object id = ContextAccess.getHttpRequest().getAttribute("id");
+            Object id = Context.getHttpRequest().getAttribute("id");
             theId =  id != null ? id.toString() : null;
         }
         return Util.blank(theId) ? null : theId;
@@ -522,7 +530,7 @@ public class HttpSupport {
      * @return a collection of uploaded files from a multi-part port request.
      */
     protected Iterator<FormItem> uploadedFiles() {
-        HttpServletRequest req = ContextAccess.getHttpRequest();
+        HttpServletRequest req = Context.getHttpRequest();
 
         Iterator<FormItem> iterator;
 
@@ -534,7 +542,7 @@ public class HttpSupport {
 
             ServletFileUpload upload = new ServletFileUpload();
             try {
-                FileItemIterator it = upload.getItemIterator(ContextAccess.getHttpRequest());
+                FileItemIterator it = upload.getItemIterator(Context.getHttpRequest());
                 iterator = new FormItemIterator(it);
             } catch (Exception e) {
                 throw new ControllerException(e);
@@ -555,22 +563,34 @@ public class HttpSupport {
             String id = getId();
             return id != null ? asList(id) : Collections.<String>emptyList();
         } else {
-            String[] values = ContextAccess.getHttpRequest().getParameterValues(name);
-            return values != null ? asList(values) : Collections.<String>emptyList();
+            String[] values = Context.getHttpRequest().getParameterValues(name);
+            List<String>valuesList = values == null? new ArrayList<String>() : list(values);
+            String userSegment = Context.getRequestContext().getUserSegments().get(name);
+            if(userSegment != null){
+                valuesList.add(userSegment);
+            }
+            return valuesList;
         }
     }
 
     /**
-     * Returns an immutable java.util.Map containing parameter names as keys and parameter values as map values.
+     * Returns an instance of <code>java.util.Map</code> containing parameter names as keys and parameter values as map values.
      * The keys in the parameter map are of type String. The values in the parameter map are of type String array.
      *
-     * @return an immutable java.util.Map containing parameter names as keys and parameter values as map values.
+     * @return an instance <code>java.util.Map</code> containing parameter names as keys and parameter values as map values.
      * The keys in the parameter map are of type String. The values in the parameter map are of type String array.
      */
     protected Map<String, String[]> params(){
-        SimpleHash params = new SimpleHash(ContextAccess.getHttpRequest().getParameterMap());
+        SimpleHash params = new SimpleHash(Context.getHttpRequest().getParameterMap());
         if(getId() != null)
             params.put("id", new String[]{getId()});
+
+        Map<String, String> userSegments = Context.getRequestContext().getUserSegments();
+
+        for(String name:userSegments.keySet()){
+            params.put(name, new String[]{userSegments.get(name)});
+        }
+
         return params;
     }
 
@@ -580,7 +600,7 @@ public class HttpSupport {
      * @param encoding character encoding for response.
      */
     protected void setEncoding(String encoding){
-        ContextAccess.getHttpResponse().setCharacterEncoding(encoding);
+        Context.getHttpResponse().setCharacterEncoding(encoding);
     }
 
     /**
@@ -589,7 +609,7 @@ public class HttpSupport {
      * @param length content length of response.
      */
     protected void setContentLength(int length){
-        ContextAccess.getHttpResponse().setContentLength(length);
+        Context.getHttpResponse().setContentLength(length);
     }
     /**
      * Sets locale on response.
@@ -597,7 +617,7 @@ public class HttpSupport {
      * @param locale locale for response.
      */
     protected void setLocale(Locale locale){
-        ContextAccess.getHttpResponse().setLocale(locale);
+        Context.getHttpResponse().setLocale(locale);
     }
 
 
@@ -611,13 +631,16 @@ public class HttpSupport {
     protected Map<String, String> params1st(){
         //TODO: candidate for performance optimization
         Map<String, String> params = new HashMap<String, String>();
-        Enumeration names = ContextAccess.getHttpRequest().getParameterNames();
+        Enumeration names = Context.getHttpRequest().getParameterNames();
         while (names.hasMoreElements()) {
             String name = names.nextElement().toString();
-            params.put(name, ContextAccess.getHttpRequest().getParameter(name));
+            params.put(name, Context.getHttpRequest().getParameter(name));
         }
         if(getId() != null)
             params.put("id", getId());
+
+        Map<String, String> userSegments = Context.getRequestContext().getUserSegments();
+        params.putAll(userSegments);
         return params;
     }
 
@@ -768,7 +791,7 @@ public class HttpSupport {
      * @return collection of all cookies browser sent.
      */
     public List<Cookie> cookies(){
-        javax.servlet.http.Cookie[] servletCookies = ContextAccess.getHttpRequest().getCookies();
+        javax.servlet.http.Cookie[] servletCookies = Context.getHttpRequest().getCookies();
         List<Cookie> cookies = new ArrayList<Cookie>();
         for (javax.servlet.http.Cookie servletCookie: servletCookies) {
             Cookie cookie = Cookie.fromServletCookie(servletCookie);
@@ -784,7 +807,7 @@ public class HttpSupport {
      * @return a cookie by name, null if not found.
      */
     public Cookie cookie(String name){
-        javax.servlet.http.Cookie[] servletCookies = ContextAccess.getHttpRequest().getCookies();
+        javax.servlet.http.Cookie[] servletCookies = Context.getHttpRequest().getCookies();
         if (servletCookies != null) {
             for (javax.servlet.http.Cookie servletCookie : servletCookies) {
                 if (servletCookie.getName().equals(name)) {
@@ -812,7 +835,7 @@ public class HttpSupport {
      * @param cookie cookie to send.
      */
     public void sendCookie(Cookie cookie){
-        ContextAccess.getHttpResponse().addCookie(Cookie.toServletCookie(cookie));
+        Context.getHttpResponse().addCookie(Cookie.toServletCookie(cookie));
     }
 
     /**
@@ -822,7 +845,7 @@ public class HttpSupport {
      * @param value value of cookie.
      */
     public void sendCookie(String name, String value) {
-        ContextAccess.getHttpResponse().addCookie(Cookie.toServletCookie(new Cookie(name, value)));
+        Context.getHttpResponse().addCookie(Cookie.toServletCookie(new Cookie(name, value)));
     }
 
 
@@ -835,7 +858,7 @@ public class HttpSupport {
     public void sendPermanentCookie(String name, String value) {
         Cookie cookie = new Cookie(name, value);
         cookie.setMaxAge(60*60*24*365*20);
-        ContextAccess.getHttpResponse().addCookie(Cookie.toServletCookie(cookie));
+        Context.getHttpResponse().addCookie(Cookie.toServletCookie(cookie));
     }
 
     /**
@@ -845,7 +868,7 @@ public class HttpSupport {
      * @return a path of the request.
      */
     protected String path(){
-        return ContextAccess.getHttpRequest().getServletPath();
+        return Context.getHttpRequest().getServletPath();
     }
 
     /**
@@ -854,7 +877,7 @@ public class HttpSupport {
      * @return a full URL of the request, all except a query string.
      */
     protected  String url(){
-        return ContextAccess.getHttpRequest().getRequestURL().toString();
+        return Context.getHttpRequest().getRequestURL().toString();
     }
 
     /**
@@ -863,7 +886,7 @@ public class HttpSupport {
      * @return query string of the request.
      */
     protected  String queryString(){
-        return ContextAccess.getHttpRequest().getQueryString();
+        return Context.getHttpRequest().getQueryString();
     }
 
     /**
@@ -872,7 +895,7 @@ public class HttpSupport {
      * @return an HTTP method from the request.
      */
     protected String method(){
-        return ContextAccess.getHttpRequest().getMethod();
+        return Context.getHttpRequest().getMethod();
     }
 
     /**
@@ -882,7 +905,7 @@ public class HttpSupport {
      * @return a context of the request - usually an app name (as seen on URL of request).
      */
     protected String context(){
-        return ContextAccess.getHttpRequest().getContextPath();
+        return Context.getHttpRequest().getContextPath();
     }
 
 
@@ -892,7 +915,7 @@ public class HttpSupport {
      * @return  URI, or a full path of request.
      */
     protected String uri(){
-        return ContextAccess.getHttpRequest().getRequestURI();
+        return Context.getHttpRequest().getRequestURI();
     }
 
     /**
@@ -901,7 +924,7 @@ public class HttpSupport {
      * @return host name of the requesting client.
      */
     protected String remoteHost(){
-        return ContextAccess.getHttpRequest().getRemoteHost();
+        return Context.getHttpRequest().getRemoteHost();
     }
 
     /**
@@ -910,7 +933,7 @@ public class HttpSupport {
      * @return IP address of the requesting client.
      */
     protected String remoteAddress(){
-        return ContextAccess.getHttpRequest().getRemoteAddr();
+        return Context.getHttpRequest().getRemoteAddr();
     }
 
 
@@ -922,7 +945,7 @@ public class HttpSupport {
      * @return header value.
      */
     protected String header(String name){
-        return ContextAccess.getHttpRequest().getHeader(name);
+        return Context.getHttpRequest().getHeader(name);
     }
 
     /**
@@ -933,10 +956,10 @@ public class HttpSupport {
     protected Map<String, String> headers(){
 
         Map<String, String> headers = new HashMap<String, String>();
-        Enumeration<String> names = ContextAccess.getHttpRequest().getHeaderNames();
+        Enumeration<String> names = Context.getHttpRequest().getHeaderNames();
         while (names.hasMoreElements()) {
             String name = names.nextElement();
-            headers.put(name, ContextAccess.getHttpRequest().getHeader(name));
+            headers.put(name, Context.getHttpRequest().getHeader(name));
         }
         return headers;
     }
@@ -948,7 +971,7 @@ public class HttpSupport {
      * @param value value of header.
      */
     protected void header(String name, String value){
-        ContextAccess.getHttpResponse().addHeader(name, value);
+        Context.getHttpResponse().addHeader(name, value);
     }
 
     /**
@@ -971,7 +994,7 @@ public class HttpSupport {
      */
     protected HttpBuilder streamOut(InputStream in) {
         StreamResponse resp = new StreamResponse(in);
-        ContextAccess.setControllerResponse(resp);
+        Context.setControllerResponse(resp);
         return new HttpBuilder(resp);
     }
 
@@ -995,7 +1018,7 @@ public class HttpSupport {
      * @return a String specifying the real path, or null if the translation cannot be performed
      */
     protected String getRealPath(String path) {
-        return ContextAccess.getFilterConfig().getServletContext().getRealPath(path);
+        return Context.getFilterConfig().getServletContext().getRealPath(path);
     }
 
     /**
@@ -1029,16 +1052,16 @@ public class HttpSupport {
      */
     protected OutputStream outputStream(String contentType, Map headers, int status) {
         try {
-            ContextAccess.setControllerResponse(new NopResponse(contentType, status));
+            Context.setControllerResponse(new NopResponse(contentType, status));
 
             if (headers != null) {
                 for (Object key : headers.keySet()) {
                     if (headers.get(key) != null)
-                        ContextAccess.getHttpResponse().addHeader(key.toString(), headers.get(key).toString());
+                        Context.getHttpResponse().addHeader(key.toString(), headers.get(key).toString());
                 }
             }
 
-            return ContextAccess.getHttpResponse().getOutputStream();
+            return Context.getHttpResponse().getOutputStream();
         }catch(Exception e){
             throw new ControllerException(e);
         }
@@ -1065,16 +1088,16 @@ public class HttpSupport {
      */
     protected PrintWriter writer(String contentType, Map headers, int status){
         try{
-            ContextAccess.setControllerResponse(new NopResponse(contentType, status));
+            Context.setControllerResponse(new NopResponse(contentType, status));
 
             if (headers != null) {
                 for (Object key : headers.keySet()) {
                     if (headers.get(key) != null)
-                        ContextAccess.getHttpResponse().addHeader(key.toString(), headers.get(key).toString());
+                        Context.getHttpResponse().addHeader(key.toString(), headers.get(key).toString());
                 }
             }
 
-            return ContextAccess.getHttpResponse().getWriter();
+            return Context.getHttpResponse().getWriter();
         }catch(Exception e){
             throw new ControllerException(e);
         }
@@ -1119,6 +1142,6 @@ public class HttpSupport {
      * @return
      */
     protected AppContext appContext(){
-        return ContextAccess.getAppContext();
+        return Context.getAppContext();
     }
 }

@@ -47,15 +47,16 @@ public abstract class RequestSpec extends JSpecSupport {
     protected MockFilterConfig config;
 
     @Before
-    public void before() throws ServletException, IOException {
+    public void before() throws ServletException, IOException, IllegalAccessException, InstantiationException {
         dispatcher = new RequestDispatcher();
         request = new MockHttpServletRequest();
         dispatcher.init(new MockFilterConfig());
         response = new MockHttpServletResponse();
         config = new MockFilterConfig();
-        ContextAccess.clear();
-        ContextAccess.setTLs(request, response, config, new ControllerRegistry(new MockFilterConfig()), new AppContext());
-        ContextAccess.setRoute(new MatchedRoute(new HomeController(), "index"));
+        Context.clear();
+        Context.setTLs(request, response, config, new ControllerRegistry(new MockFilterConfig()),
+                                                                                new AppContext(),new RequestContext());
+        Context.setRoute(new Route(new HomeController(), "index"));
         org.javalite.activeweb.Configuration.getTemplateManager().setTemplateLocation("src/test/views");
     }
 

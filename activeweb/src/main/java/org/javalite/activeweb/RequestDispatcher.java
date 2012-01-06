@@ -30,7 +30,6 @@ import java.util.*;
 
 import static org.javalite.activeweb.Configuration.getDefaultLayout;
 import static org.javalite.activeweb.Configuration.useDefaultLayoutForErrors;
-import static org.javalite.activeweb.ControllerFactory.getControllerClassName;
 import static org.javalite.common.Collections.map;
 
 /**
@@ -51,7 +50,7 @@ public class RequestDispatcher implements Filter {
         filterConfig.getServletContext().setAttribute("controllerRegistry", registry);
         
         Configuration.getTemplateManager().setServletContext(filterConfig.getServletContext());
-        ContextAccess.setControllerRegistry(registry);//bootstrap below requires it
+        Context.setControllerRegistry(registry);//bootstrap below requires it
         appContext = new AppContext();
         filterConfig.getServletContext().setAttribute("appContext", appContext);
         initApp(appContext);
@@ -66,6 +65,8 @@ public class RequestDispatcher implements Filter {
 
         router = new Router(filterConfig.getInitParameter("root_controller"));
 
+        initRoutes(appContext);
+
         logger.info("ActiveWeb: starting the app in environment: " + Configuration.getEnv());
     }
 
@@ -76,6 +77,45 @@ public class RequestDispatcher implements Filter {
         initAppConfig(Configuration.getDbConfigClassName(), context, false);
 
     }
+
+    //this exists for testing only
+    private AbstractRouteConfig routeConfig;
+
+    private boolean runMode = true;
+    protected void setRouteConfig(AbstractRouteConfig routeConfig) {
+        this.routeConfig = routeConfig;
+        runMode = false;
+    }
+
+    protected void initRoutes(AppContext context){
+
+        String routeConfigClassName = Configuration.getRouteConfigClassName();
+        try {
+
+            if(runMode){
+                Class configClass = ControllerFactory.getCompiledClass(routeConfigClassName);
+                routeConfig = (AbstractRouteConfig) configClass.newInstance();
+            }
+
+            routeConfig.init(context);
+            router.setRoutes(routeConfig.getRoutes());
+            logger.info("Loaded routes from: " + routeConfigClassName);
+        } catch (Exception e) {
+            logger.warn("Failed to load custom routes. Going with built in defaults: " + getCauseMessage(e));
+        }
+    }
+
+
+    //TODO: refactor to some util class. This is stolen...ehrr... borrowed from Apache ExceptionUtils
+    static String getCauseMessage(Throwable throwable) {
+        List<Throwable> list = new ArrayList<Throwable>();
+        while (throwable != null && list.contains(throwable) == false) {
+            list.add(throwable);
+            throwable = throwable.getCause();
+        }
+        return list.get(0).getMessage();
+    }
+
 
     private void initAppConfig(String configClassName, AppContext context, boolean fail){
 
@@ -108,7 +148,7 @@ public class RequestDispatcher implements Filter {
 
             HttpServletRequest request = (HttpServletRequest) req;
             HttpServletResponse response = (HttpServletResponse) resp;
-            ContextAccess.setTLs(request, response, filterConfig, getControllerRegistry(), appContext);
+            Context.setTLs(request, response, filterConfig, getControllerRegistry(), appContext, new RequestContext());
 
             String uri = request.getServletPath();
             if (Util.blank(uri)) {
@@ -122,17 +162,18 @@ public class RequestDispatcher implements Filter {
                 return;
             }
 
-            MatchedRoute route = router.recognize(uri, HttpMethod.getMethod(request));
+
+            if(Configuration.activeReload()){
+                initRoutes(appContext);
+            }
+
+            Route route = router.recognize(uri, HttpMethod.getMethod(request));
 
             if (route != null) {
-                ContextAccess.setRoute(route);
+                Context.setRoute(route);
 
                 if (Configuration.logRequestParams()) {
                     logger.info("================ New request: " + new Date() + " ================");
-                }
-
-                if (route.getId() != null) {
-                    request.setAttribute("id", route.getId());
                 }
 
                 runner.run(route, true);
@@ -144,7 +185,7 @@ public class RequestDispatcher implements Filter {
             }
         } catch (CompilationException e) {
             renderSystemError(e);
-        } catch (ControllerLoadException e) {
+        } catch (ClassLoadException e) {
             renderSystemError("/system/404", useDefaultLayoutForErrors()?getDefaultLayout():null, 404, e);
         }catch (ActionNotFoundException e) {
             renderSystemError("/system/404", useDefaultLayoutForErrors()?getDefaultLayout():null, 404, e);
@@ -155,7 +196,7 @@ public class RequestDispatcher implements Filter {
         }catch (Throwable e) {
             renderSystemError(e);
         }finally {
-           ContextAccess.clear();
+           Context.clear();
             List<String> connectionsRemaining = DB.getCurrrentConnectionNames();
             if(connectionsRemaining.size() != 0){
                 logger.warn("CONNECTION LEAK DETECTED ... and AVERTED!!! You left connections opened:"
@@ -196,12 +237,12 @@ public class RequestDispatcher implements Filter {
     private void renderSystemError(String template, String layout, int status, Throwable e) {
         try{
             logger.error("ActiveWeb ERROR: \n" + getRequestProperties(), e);
-            if (ContextAccess.getHttpRequest().getHeader("x-requested-with") != null
-                    || ContextAccess.getHttpRequest().getHeader("X-Requested-With") != null) {
+            if (Context.getHttpRequest().getHeader("x-requested-with") != null
+                    || Context.getHttpRequest().getHeader("X-Requested-With") != null) {
 
                 try {
-                    ContextAccess.getHttpResponse().setStatus(status);
-                    ContextAccess.getHttpResponse().getWriter().write(getStackTraceString(e));
+                    Context.getHttpResponse().setStatus(status);
+                    Context.getHttpResponse().getWriter().write(getStackTraceString(e));
                 } catch (Exception ex) {
                     logger.error("Failed to send error response to client", ex);
                 }
@@ -219,7 +260,7 @@ public class RequestDispatcher implements Filter {
             }
             logger.error(t.toString(), t);
             try{
-                ContextAccess.getHttpResponse().getOutputStream().print("<div style='background-color:pink;'>internal error</div>");
+                Context.getHttpResponse().getOutputStream().print("<div style='background-color:pink;'>internal error</div>");
             }catch(Exception ex){
                 logger.error(ex.toString(), ex);
             }
@@ -229,7 +270,7 @@ public class RequestDispatcher implements Filter {
 
     private String getRequestProperties(){
         StringBuilder sb = new StringBuilder();
-        HttpServletRequest request = ContextAccess.getHttpRequest();
+        HttpServletRequest request = Context.getHttpRequest();
         sb.append("Request URL: ").append(request.getRequestURL()).append("\n");
         sb.append("ContextPath: ").append(request.getContextPath()).append("\n");
         sb.append("Query String: ").append(request.getQueryString()).append("\n");

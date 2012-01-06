@@ -41,9 +41,14 @@ public class Router {
     public static final String PACKAGE_SUFFIX = "package_suffix";
 
     private String rootControllerName;
+    private List<Route> routes = new ArrayList<Route>();
 
-    public Router(String rootControllerName) {
+    protected Router(String rootControllerName) {
         this.rootControllerName = rootControllerName;
+    }
+
+    public void setRoutes(List<Route> routes) {
+        this.routes = routes;
     }
 
     /**
@@ -51,37 +56,45 @@ public class Router {
      *
      * @param uri        URI of incoming request.
      * @param httpMethod http method of the request.
-     * @return instance of a <code>MatchedRoute</code> if one is found, null if not.
+     * @return instance of a <code>Route</code> if one is found, null if not.
      */
-    protected MatchedRoute recognize(String uri, HttpMethod httpMethod) throws ControllerLoadException {
+    protected Route recognize(String uri, HttpMethod httpMethod) throws ClassLoadException {
 
-        Map<String, String> controllerPath = getControllerPath(uri);
+        Route route = matchCustom(uri);
+        if (route == null) { //proceed to built-in routes
 
-        String controllerName = controllerPath.get(Router.CONTROLLER_NAME);
-        String packageSuffix = controllerPath.get(Router.PACKAGE_SUFFIX);
-        if (controllerName == null) {
-            return null;
-        }
-        String controllerClassName = getControllerClassName(controllerName, packageSuffix);
-        AppController controller = createControllerInstance(controllerClassName);
+            //DTO as map here
+            Map<String, String> controllerPath = getControllerPath(uri);
 
-        if (uri.equals("/") && rootControllerName != null && httpMethod.equals(HttpMethod.GET)){
-            return new MatchedRoute(controller, "index");
-        }
-
-        MatchedRoute route;
-        if(controller.restful()){
-            route = matchRestful(uri, controllerName, packageSuffix, httpMethod, controller);
-            if(route != null){
-                return route;
-            }else{
-                return matchStandard(uri, controllerName, packageSuffix, controller);
+            String controllerName = controllerPath.get(Router.CONTROLLER_NAME);
+            String packageSuffix = controllerPath.get(Router.PACKAGE_SUFFIX);
+            if (controllerName == null) {
+                return null;
             }
-        }else{
-            return matchStandard(uri, controllerName, packageSuffix, controller);
+            String controllerClassName = getControllerClassName(controllerName, packageSuffix);
+            AppController controller = createControllerInstance(controllerClassName);
+
+            if (uri.equals("/") && rootControllerName != null && httpMethod.equals(HttpMethod.GET)) {
+                return new Route(controller, "index");
+            }
+
+            route = controller.restful() ? matchRestful(uri, controllerName, packageSuffix, httpMethod, controller) :
+                    matchStandard(uri, controllerName, packageSuffix, controller);
         }
+
+
+        return route;
     }
 
+    private Route matchCustom(String uri) throws ClassLoadException {
+
+        for (Route route : routes) {
+            if (route.matches(uri)) {
+                return route;
+            }
+        }
+        return null;
+    }
 
 
     /**
@@ -90,16 +103,16 @@ public class Router {
      * @param uri            request URI
      * @param controllerName name of controller
      * @param packageSuffix  package suffix or null if none. .
-     * @return instance of a <code>MatchedRoute</code> if one is found, null if not.
+     * @return instance of a <code>Route</code> if one is found, null if not.
      */
-    private MatchedRoute matchStandard(String uri, String controllerName, String packageSuffix, AppController controller) {
+    private Route matchStandard(String uri, String controllerName, String packageSuffix, AppController controller) {
 
         String controllerPath = (packageSuffix != null ? "/" + packageSuffix.replace(".", "/") : "") + "/" + controllerName;
         String theUri = uri.endsWith("/") ? uri.substring(0, uri.length() - 1) : uri;
 
         //ANY    /package_suffix/controller
         if (controllerPath.length() == theUri.length()) {
-            return new MatchedRoute(controller, "index");
+            return new Route(controller, "index");
         }
 
         String tail = theUri.substring(controllerPath.length() + 1);
@@ -107,14 +120,14 @@ public class Router {
 
         //ANY    /package_suffix/controller/action
         if (parts.length == 1) {
-            return new MatchedRoute(controller, parts[0]);
+            return new Route(controller, parts[0]);
         }
 
         //ANY    /package_suffix/controller/action/id/
         if (parts.length == 2) {
-            return new MatchedRoute(controller, parts[0], parts[1]);
+            return new Route(controller, parts[0], parts[1]);
         }
-        LOGGER.warn("Failed to find action on in request: " + uri);
+        LOGGER.warn("Failed to find action for request: " + uri);
         return null;
     }
 
@@ -126,9 +139,9 @@ public class Router {
      * @param controllerName name of controller
      * @param packageSuffix  package suffix or null if none. .
      * @param httpMethod     http method of a request.
-     * @return instance of a <code>MatchedRoute</code> if one is found, null if not.
+     * @return instance of a <code>Route</code> if one is found, null if not.
      */
-    private MatchedRoute matchRestful(String uri, String controllerName, String packageSuffix, HttpMethod httpMethod, AppController controller) {
+    private Route matchRestful(String uri, String controllerName, String packageSuffix, HttpMethod httpMethod, AppController controller) {
 
         String theUri = uri.endsWith("/") ? uri.substring(0, uri.length() - 1) : uri;
         String controllerPath = (packageSuffix != null ? "/" + packageSuffix.replace(".", "/") : "") + "/" + controllerName;
@@ -137,39 +150,39 @@ public class Router {
 
         //GET 	/photos 	            index 	display a list of all photos
         if (controllerPath.equals(theUri) && httpMethod.equals(HttpMethod.GET)) {
-            return new MatchedRoute(controller, "index");
+            return new Route(controller, "index");
         }
 
         //GET 	/photos/new_form 	    new_form        return an HTML form for creating a new photo
         if (parts.length == 1 && httpMethod.equals(HttpMethod.GET) && parts[0].equalsIgnoreCase("new_form")) {
-            return new MatchedRoute(controller, "new_form");
+            return new Route(controller, "new_form");
         }
 
         //POST 	/photos 	            create 	        create a new photo
         if (parts.length == 0 && httpMethod.equals(HttpMethod.POST)) {
-            return new MatchedRoute(controller, "create");
+            return new Route(controller, "create");
         }
 
         //GET 	/photos/id 	        show            display a specific photo
         if (parts.length == 1 && httpMethod.equals(HttpMethod.GET)) {
-            return new MatchedRoute(controller, "show", parts[0]);
+            return new Route(controller, "show", parts[0]);
         }
 
         //GET 	/photos/id/edit_form   edit_form 	    return an HTML form for editing a photo
         if (parts.length == 2 && httpMethod.equals(HttpMethod.GET) && parts[1].equalsIgnoreCase("edit_form")) {
-            return new MatchedRoute(controller, "edit_form", parts[0]);
+            return new Route(controller, "edit_form", parts[0]);
         }
 
         //PUT 	/photos/id 	        update          update a specific photo
         if (parts.length == 1 && httpMethod.equals(HttpMethod.PUT)) {
-            return new MatchedRoute(controller,  "update", parts[0]);
+            return new Route(controller, "update", parts[0]);
         }
 
         //DELETE 	/photos/id 	        destroy         delete a specific photo
         if (parts.length == 1 && httpMethod.equals(HttpMethod.DELETE)) {
-            return new MatchedRoute(controller, "destroy", parts[0]);
+            return new Route(controller, "destroy", parts[0]);
         }
-        LOGGER.warn("Failed to find action on in request: " + uri);
+        LOGGER.warn("Failed to find action for request: " + uri);
         return null;
     }
 
@@ -346,10 +359,10 @@ public class Router {
 
         //find all matches
         List<String> candidates = new ArrayList<String>();
-        ControllerRegistry r = ContextAccess.getControllerRegistry();
-        
+        ControllerRegistry r = Context.getControllerRegistry();
 
-        for (String pack : ContextAccess.getControllerRegistry().getControllerPackages()) {
+
+        for (String pack : Context.getControllerRegistry().getControllerPackages()) {
             if (temp.startsWith(pack)) {
                 candidates.add(pack);
             }

@@ -16,7 +16,6 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import org.javalite.activeweb.annotations.RESTful;
-import com.google.inject.Inject;
 import org.javalite.common.Util;
 
 import java.io.IOException;
@@ -99,21 +98,21 @@ public abstract class AppController extends HttpSupport {
      */
     protected RenderBuilder render(){
 
-        String template = Router.getControllerPath(getClass()) + "/" + ContextAccess.getActionName();
+        String template = Router.getControllerPath(getClass()) + "/" + Context.getActionName();
         return super.render(template, values());
     }
 
 
     protected String servletPath() {
-        return ContextAccess.getHttpRequest().getServletPath();
+        return Context.getHttpRequest().getServletPath();
     }
 
     protected String queryString() {
-        return ContextAccess.getHttpRequest().getQueryString();
+        return Context.getHttpRequest().getQueryString();
     }
 
     protected InputStream getRequestInputStream() throws IOException {
-        return ContextAccess.getHttpRequest().getInputStream();
+        return Context.getHttpRequest().getInputStream();
     }
 
     /**
@@ -122,7 +121,7 @@ public abstract class AppController extends HttpSupport {
      * @throws IOException
      */
     protected InputStream getRequestStream() throws IOException {
-        return ContextAccess.getHttpRequest().getInputStream();
+        return Context.getHttpRequest().getInputStream();
     }
 
     /**
@@ -133,7 +132,7 @@ public abstract class AppController extends HttpSupport {
      * @throws IOException
      */
     protected String getRequestString() throws IOException {
-        return Util.read(ContextAccess.getHttpRequest().getInputStream());
+        return Util.read(Context.getHttpRequest().getInputStream());
     }
 
     /**
@@ -144,7 +143,7 @@ public abstract class AppController extends HttpSupport {
      * @throws IOException
      */
     protected byte[] getRequestBytes() throws IOException {        
-        return Util.bytes(ContextAccess.getHttpRequest().getInputStream());
+        return Util.bytes(Context.getHttpRequest().getInputStream());
     }
 
 
@@ -207,35 +206,40 @@ public abstract class AppController extends HttpSupport {
      */
     public HttpMethod getActionHttpMethod(String actionMethodName) {
         if (restful()) {
-            return getRestfulActionMethod(actionMethodName);
+            HttpMethod method = getRestfulActionMethod(actionMethodName);
+            return method != null ? method : getNonRestfulActionHttpMethod(actionMethodName);
         } else {
-            try {
-                //TODO: this is using reflection twice for the same thing within one request, refactor please                
-                Method method = getClass().getMethod(actionMethodName);
-                Annotation[] annotations = method.getAnnotations();
-                if (annotations.length > 0 && restful()) {
-                    throw new InitException("Controller: " + getClass() + " is mis-configured. If a @RESTful " +
-                            "annotation is used, no action annotations are allowed: @GET, @POST, @PUT, @DELETE. " +
-                            "Offending action: " + actionMethodName);
-                } else if (annotations.length > 1) {
-                    throw new InitException("Controller: " + getClass() + " is mis-configured. Actions cannot " +
-                            "specify more than one HTTP method. Only one of these annotations allowed on any action:" +
-                            "@GET, @POST, @PUT, @DELETE");
-                }
-
-                //default behavior: GET method!
-                if (annotations.length == 0) {
-                    return HttpMethod.GET;
-                } else {
-                    return HttpMethod.method(annotations[0]);
-                }
-            }
-            catch (NoSuchMethodException e) {
-                throw new ActionNotFoundException(e);
-            }
+            return getNonRestfulActionHttpMethod(actionMethodName);
         }
     }
 
+    private HttpMethod getNonRestfulActionHttpMethod(String actionMethodName){
+        try {
+            //TODO: this is using reflection twice for the same thing within one request, refactor please
+            Method method = getClass().getMethod(actionMethodName);
+            Annotation[] annotations = method.getAnnotations();
+
+            if (annotations.length > 1) {
+                throw new InitException("Controller: " + getClass() + " is mis-configured. Actions cannot " +
+                        "specify more than one HTTP method. Only one of these annotations allowed on any action:" +
+                        "@GET, @POST, @PUT, @DELETE");
+            }
+
+            //default behavior: GET method!
+            if (annotations.length == 0) {
+                return HttpMethod.GET;
+            } else {
+                return HttpMethod.method(annotations[0]);
+            }
+        }
+        catch (NoSuchMethodException e) {
+            throw new ActionNotFoundException(e);
+        }
+    }
+
+    /**
+     * @return will return null if action is none of the restful actions.
+     */
     private HttpMethod getRestfulActionMethod(String action) {
         if (action.equals("index")) {
             return HttpMethod.GET;
@@ -251,8 +255,11 @@ public abstract class AppController extends HttpSupport {
             return HttpMethod.PUT;
         } else if (action.equals("destroy")) {
             return HttpMethod.DELETE;
-        } else throw new IllegalArgumentException("Restful controllers are allowed to have the only " +
-                "following actions: index, newForm, create, show, editForm, update, destroy");
+        } else{
+            logWarning("You might want to execute a non-restful action on a restful controller. It is recommended that you " +
+                    "use the following methods on restful controllers: index, newForm, create, show, editForm, update, destroy");
+            return null;
+        }
     }
 
 

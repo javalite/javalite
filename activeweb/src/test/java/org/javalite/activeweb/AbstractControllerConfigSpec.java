@@ -37,7 +37,7 @@ public class AbstractControllerConfigSpec {
 
     @Before
     public void setUp() throws Exception {
-        ContextAccess.setControllerRegistry(new ControllerRegistry(new MockFilterConfig()));
+        Context.setControllerRegistry(new ControllerRegistry(new MockFilterConfig()));
     }
 
     @Test
@@ -54,7 +54,7 @@ public class AbstractControllerConfigSpec {
         config.init(new AppContext());
 
 
-        List<ControllerFilter> filters = ContextAccess.getControllerRegistry().getGlobalFilters();
+        List<ControllerFilter> filters = Context.getControllerRegistry().getGlobalFilters();
 
         a(filters.size()).shouldBeEqual(1);
         a(filters.get(0).getClass()).shouldBeTheSameAs(AbcFilter.class);
@@ -80,17 +80,17 @@ public class AbstractControllerConfigSpec {
 
         List<ControllerFilter> filters;
         //PersonController filters
-        filters= ContextAccess.getControllerRegistry().getMetaData(PersonController.class).getFilters();
+        filters= Context.getControllerRegistry().getMetaData(PersonController.class).getFilters();
         the(filters.get(0)).shouldBeTheSameAs(filter1);
         the(filters.get(1)).shouldBeTheSameAs(filter2);
 
         //BookController filters
-        filters = ContextAccess.getControllerRegistry().getMetaData(BookController.class).getFilters();
+        filters = Context.getControllerRegistry().getMetaData(BookController.class).getFilters();
         the(filters.get(0)).shouldBeTheSameAs(filter1);
         the(filters.get(1)).shouldBeTheSameAs(filter2);
 
         //LibraryController filter
-        filters = ContextAccess.getControllerRegistry().getMetaData(LibraryController.class).getFilters();
+        filters = Context.getControllerRegistry().getMetaData(LibraryController.class).getFilters();
         the(filters.size()).shouldBeEqual(1);
         the(filters.get(0)).shouldBeTheSameAs(logFilter);
     }
@@ -111,9 +111,9 @@ public class AbstractControllerConfigSpec {
         //init config.
         config.init(new AppContext());
 
-        List<ControllerFilter> filters = ContextAccess.getControllerRegistry().getMetaData(LibraryController.class).getFilters("show");
+        List<ControllerFilter> filters = Context.getControllerRegistry().getMetaData(LibraryController.class).getFilters("show");
         a(filters.size()).shouldBeEqual(0);
-        filters = ContextAccess.getControllerRegistry().getMetaData(LibraryController.class).getFilters("index");
+        filters = Context.getControllerRegistry().getMetaData(LibraryController.class).getFilters("index");
         a(filters.size()).shouldBeEqual(1);
         a(filters.get(0)).shouldBeTheSameAs(logFilter);
     }
@@ -137,21 +137,21 @@ public class AbstractControllerConfigSpec {
 
         List<ControllerFilter> filters;
         //LibraryController
-        filters = ContextAccess.getControllerRegistry().getMetaData(LibraryController.class).getFilters("show");
+        filters = Context.getControllerRegistry().getMetaData(LibraryController.class).getFilters("show");
         a(filters.size()).shouldBeEqual(2);
-        filters = ContextAccess.getControllerRegistry().getMetaData(LibraryController.class).getFilters("index");
+        filters = Context.getControllerRegistry().getMetaData(LibraryController.class).getFilters("index");
         a(filters.size()).shouldBeEqual(2);
 
         //BookController
-        filters = ContextAccess.getControllerRegistry().getMetaData(BookController.class).getFilters("show");
+        filters = Context.getControllerRegistry().getMetaData(BookController.class).getFilters("show");
         a(filters.size()).shouldBeEqual(2);
-        filters = ContextAccess.getControllerRegistry().getMetaData(BookController.class).getFilters("index");
+        filters = Context.getControllerRegistry().getMetaData(BookController.class).getFilters("index");
         a(filters.size()).shouldBeEqual(2);
-        filters = ContextAccess.getControllerRegistry().getMetaData(BookController.class).getFilters("list");
+        filters = Context.getControllerRegistry().getMetaData(BookController.class).getFilters("list");
         a(filters.size()).shouldBeEqual(1);
 
         //BookController non-existent filter
-        filters = ContextAccess.getControllerRegistry().getMetaData(BookController.class).getFilters("foo");
+        filters = Context.getControllerRegistry().getMetaData(BookController.class).getFilters("foo");
         a(filters.size()).shouldBeEqual(0);
     }
 }

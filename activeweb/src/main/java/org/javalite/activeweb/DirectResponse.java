@@ -29,8 +29,8 @@ class DirectResponse extends ControllerResponse {
     void doProcess() {
 
         try {
-            ContextAccess.getHttpResponse().getWriter().write(text);
-            ContextAccess.getHttpResponse().getWriter().flush();
+            Context.getHttpResponse().getWriter().write(text);
+            Context.getHttpResponse().getWriter().flush();
         }
         catch (Exception e) {
             throw new ControllerException(e);

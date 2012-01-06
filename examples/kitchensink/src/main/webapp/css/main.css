@@ -1,11 +1,6 @@
 @charset "UTF-8";
 /* CSS Document */
 
-*{
-	margin:0;
-	padding:0;
-}
-
 html, body{
 	background:white;
 	font:normal 13px Arial, sans-serif;

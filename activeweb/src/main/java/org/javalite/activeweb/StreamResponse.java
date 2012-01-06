@@ -31,7 +31,7 @@ class StreamResponse extends ControllerResponse{
     @Override
     void doProcess() {
         try{
-            OutputStream out = ContextAccess.getHttpResponse().getOutputStream();
+            OutputStream out = Context.getHttpResponse().getOutputStream();
             byte[] bytes = new byte[1024];
 
             int x;

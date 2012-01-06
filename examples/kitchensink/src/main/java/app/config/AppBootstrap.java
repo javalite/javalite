@@ -27,6 +27,6 @@ import org.javalite.activeweb.Bootstrap;
 public class AppBootstrap extends Bootstrap {
     public void init(AppContext context) {
         setInjector(Guice.createInjector(new GreeterModule()));
-        Configuration.setUseDefaultLayoutForErrors(false);
+        Configuration.setUseDefaultLayoutForErrors(true);
     }
 }

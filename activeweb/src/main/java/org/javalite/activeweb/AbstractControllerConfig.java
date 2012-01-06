@@ -68,7 +68,7 @@ public abstract class AbstractControllerConfig implements AppConfig {
         public FilterBuilder to(Class<? extends AppController>... controllerClasses) {
             this.controllerClasses = controllerClasses;
             for (Class<? extends AppController> controllerClass : controllerClasses) {
-                ContextAccess.getControllerRegistry().getMetaData(controllerClass).addFilters(filters);
+                Context.getControllerRegistry().getMetaData(controllerClass).addFilters(filters);
             }
             return this;
         }
@@ -89,7 +89,7 @@ public abstract class AbstractControllerConfig implements AppConfig {
                 throw new IllegalArgumentException("controller classes not provided. Please call 'to(controllers)' before 'forActions(actions)'");
 
             for (Class<? extends AppController> controllerClass : controllerClasses) {
-                ContextAccess.getControllerRegistry().getMetaData(controllerClass).addFilters(filters, actionNames);
+                Context.getControllerRegistry().getMetaData(controllerClass).addFilters(filters, actionNames);
             }
         }
     }
@@ -118,7 +118,7 @@ public abstract class AbstractControllerConfig implements AppConfig {
      * @param filters filters to be added.
      */
     protected void addGlobalFilters(ControllerFilter... filters) {
-        ContextAccess.getControllerRegistry().addGlobalFilters(filters);
+        Context.getControllerRegistry().addGlobalFilters(filters);
     }
     
 }

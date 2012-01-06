@@ -32,20 +32,20 @@ public class RouterStandardSpec {
 
     @Before
     public void before() {
-        ContextAccess.setControllerRegistry(new ControllerRegistry(new MockFilterConfig()));
+        Context.setControllerRegistry(new ControllerRegistry(new MockFilterConfig()));
     }
 
     @Test
-    public void shouldMatchRootRoute() throws ControllerLoadException {
+    public void shouldMatchRootRoute() throws ClassLoadException {
 
-        MatchedRoute mr = router.recognize("/", HttpMethod.GET);
+        Route mr = router.recognize("/", HttpMethod.GET);
 
         a(mr.getControllerClassName()).shouldBeEqual("app.controllers.HomeController");
         a(mr.getActionName()).shouldBeEqual("index");
     }
 
     @Test
-    public void shouldNotFindRouteIfControllerNotProvidedAndUriIsRoot() throws ControllerLoadException {
+    public void shouldNotFindRouteIfControllerNotProvidedAndUriIsRoot() throws ClassLoadException {
 
         Router router = new Router(null);
         a(router.recognize("/", HttpMethod.GET)).shouldBeNull();
@@ -58,9 +58,9 @@ public class RouterStandardSpec {
          ANY           /controller/action/id/
      */
     @Test
-    public void shouldRecognizeStandardRouteWithControllerActionAndId() throws ControllerLoadException {
+    public void shouldRecognizeStandardRouteWithControllerActionAndId() throws ClassLoadException {
 
-        MatchedRoute mr = router.recognize("/home/copy/1/", HttpMethod.DELETE);
+        Route mr = router.recognize("/home/copy/1/", HttpMethod.DELETE);
 
         a(mr.getControllerClassName()).shouldBeEqual("app.controllers.HomeController");
         a(mr.getActionName()).shouldBeEqual("copy");
@@ -69,9 +69,9 @@ public class RouterStandardSpec {
 
     //ANY    /controller/action                     {}
     @Test
-    public void shouldRecognizeStandardRouteWithControllerAction() throws ControllerLoadException {
+    public void shouldRecognizeStandardRouteWithControllerAction() throws ClassLoadException {
 
-        MatchedRoute mr = router.recognize("/home/copy", HttpMethod.GET);
+        Route mr = router.recognize("/home/copy", HttpMethod.GET);
 
         a(mr.getControllerClassName()).shouldBeEqual("app.controllers.HomeController");
         a(mr.getActionName()).shouldBeEqual("copy");
@@ -81,9 +81,9 @@ public class RouterStandardSpec {
 
     //ANY    /controller/
     @Test
-    public void shouldRecognizeStandardRouteWithDefaultAction() throws ControllerLoadException {
+    public void shouldRecognizeStandardRouteWithDefaultAction() throws ClassLoadException {
 
-        MatchedRoute mr = router.recognize("/home", HttpMethod.GET);
+        Route mr = router.recognize("/home", HttpMethod.GET);
 
         a(mr.getControllerClassName()).shouldBeEqual("app.controllers.HomeController");
         a(mr.getActionName()).shouldBeEqual("index");
@@ -91,9 +91,9 @@ public class RouterStandardSpec {
     }
 
     @Test
-    public void shouldRecognizeStandardRouteWithDefaultActionForControllerInSubPackage() throws ControllerLoadException {
+    public void shouldRecognizeStandardRouteWithDefaultActionForControllerInSubPackage() throws ClassLoadException {
 
-        MatchedRoute mr = router.recognize("/admin/permissions", HttpMethod.GET);
+        Route mr = router.recognize("/admin/permissions", HttpMethod.GET);
 
         a(mr.getControllerClassName()).shouldBeEqual("app.controllers.admin.PermissionsController");
         a(mr.getActionName()).shouldBeEqual("index");
@@ -101,9 +101,9 @@ public class RouterStandardSpec {
     }
 
     @Test
-    public void shouldRecognizeStandardRouteWithDefaultActionForControllerIn2ndLevelSubPackage() throws ControllerLoadException {
+    public void shouldRecognizeStandardRouteWithDefaultActionForControllerIn2ndLevelSubPackage() throws ClassLoadException {
 
-        MatchedRoute mr = router.recognize("/admin/special/special", HttpMethod.GET);
+        Route mr = router.recognize("/admin/special/special", HttpMethod.GET);
 
         a(mr.getControllerClassName()).shouldBeEqual("app.controllers.admin.special.SpecialController");
         a(mr.getActionName()).shouldBeEqual("index");
@@ -111,9 +111,9 @@ public class RouterStandardSpec {
     }
 
     @Test
-    public void shouldRecognizeStandardRouteWithDefaultActionForControllerIn3rdLevelSubPackage() throws ControllerLoadException {
+    public void shouldRecognizeStandardRouteWithDefaultActionForControllerIn3rdLevelSubPackage() throws ClassLoadException {
 
-        MatchedRoute mr = router.recognize("/admin/special2/special3/special3", HttpMethod.GET);
+        Route mr = router.recognize("/admin/special2/special3/special3", HttpMethod.GET);
 
         a(mr.getControllerClassName()).shouldBeEqual("app.controllers.admin.special2.special3.Special3Controller");
         a(mr.getActionName()).shouldBeEqual("index");

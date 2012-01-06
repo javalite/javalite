@@ -37,10 +37,10 @@ public class GWTByteArrayResponse extends StreamResponse {
 
     @Override
     void doProcess() {
-        ContextAccess.getHttpResponse().setContentLength(contentLenght);
+        Context.getHttpResponse().setContentLength(contentLenght);
         setContentType(CONTENT_TYPE_APPLICATION_JSON_UTF8);
         setStatus(HttpServletResponse.SC_OK);
-        ContextAccess.getHttpResponse().setHeader(CONTENT_DISPOSITION, ATTACHMENT);
+        Context.getHttpResponse().setHeader(CONTENT_DISPOSITION, ATTACHMENT);
         super.doProcess();
     }
     

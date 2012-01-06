@@ -28,6 +28,7 @@ public class AppContext {
 
     private Map context = new HashMap();
 
+
     /**
      * Retrieves object by name
      *

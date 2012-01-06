@@ -34,7 +34,7 @@ public class SessionFacade {
      * @return named object. 
      */
     public Object get(String name){
-        return ContextAccess.getHttpRequest().getSession(true).getAttribute(name);
+        return Context.getHttpRequest().getSession(true).getAttribute(name);
     }
 
     /**
@@ -55,7 +55,7 @@ public class SessionFacade {
      * @param name name of object
      */
     public void remove(String name){
-        ContextAccess.getHttpRequest().getSession(true).removeAttribute(name);
+        Context.getHttpRequest().getSession(true).removeAttribute(name);
     }
 
     /**
@@ -64,7 +64,7 @@ public class SessionFacade {
      * @param value object reference.
      */
     public void put(String name, Serializable value){
-        ContextAccess.getHttpRequest().getSession(true).setAttribute(name, value);
+        Context.getHttpRequest().getSession(true).setAttribute(name, value);
     }
 
     /**
@@ -73,14 +73,14 @@ public class SessionFacade {
      * @return time when session was created.
      */
     public long getCreationTime(){
-        return ContextAccess.getHttpRequest().getSession(true).getCreationTime();
+        return Context.getHttpRequest().getSession(true).getCreationTime();
     }
 
     /**
      * Invalidates current session. All attributes are discarded.
      */
     public void invalidate(){
-        ContextAccess.getHttpRequest().getSession(true).invalidate();
+        Context.getHttpRequest().getSession(true).invalidate();
     }
 
     /**
@@ -88,7 +88,7 @@ public class SessionFacade {
      * @param seconds time to live.
      */
     public void setTimeToLive(int seconds){
-        ContextAccess.getHttpRequest().getSession(true).setMaxInactiveInterval(seconds);
+        Context.getHttpRequest().getSession(true).setMaxInactiveInterval(seconds);
     }
 
     /**
@@ -98,7 +98,7 @@ public class SessionFacade {
      */
     public String[] names(){
         List<String> namesList = new ArrayList<String>();
-        Enumeration names = ContextAccess.getHttpRequest().getSession(true).getAttributeNames();
+        Enumeration names = Context.getHttpRequest().getSession(true).getAttributeNames();
         while (names.hasMoreElements()) {
             Object o = names.nextElement();
             namesList.add(o.toString());

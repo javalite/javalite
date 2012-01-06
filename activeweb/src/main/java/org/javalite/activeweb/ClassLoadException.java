@@ -18,13 +18,13 @@ package org.javalite.activeweb;
 /**
  * @author Igor Polevoy
  */
-public class ControllerLoadException extends Exception{
+public class ClassLoadException extends Exception{
 
-    public ControllerLoadException(String message) {
+    public ClassLoadException(String message) {
         super(message);   
     }
 
-    public ControllerLoadException(Throwable cause) {
+    public ClassLoadException(Throwable cause) {
         super(cause);   
     }
 }

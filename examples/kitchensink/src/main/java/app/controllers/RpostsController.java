@@ -85,4 +85,8 @@ public class RpostsController extends AppController {
         flash("post_deleted", "Your post was deleted");
         redirect(".");
     }
+
+    public void hello(){
+        respond("this is coming from a non-restful action of a restful controller");
+    }
 }

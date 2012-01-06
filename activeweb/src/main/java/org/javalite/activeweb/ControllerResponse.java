@@ -34,7 +34,7 @@ abstract class ControllerResponse {
     }
 
     void setStatus(int status) {
-        ContextAccess.getHttpResponse().setStatus(status);
+        Context.getHttpResponse().setStatus(status);
         this.status = status;
         statusSet = true;
     }
@@ -44,7 +44,7 @@ abstract class ControllerResponse {
     }
 
     void setContentType(String contentType) {
-        ContextAccess.getHttpResponse().setContentType(contentType);
+        Context.getHttpResponse().setContentType(contentType);
         this.contentType = contentType;
         contentTypeSet = true;
     }
@@ -56,10 +56,10 @@ abstract class ControllerResponse {
     final void process(){
 
         if(!statusSet){
-            ContextAccess.getHttpResponse().setStatus(status);
+            Context.getHttpResponse().setStatus(status);
         }
         if(!contentTypeSet){
-            ContextAccess.getHttpResponse().setContentType(contentType);
+            Context.getHttpResponse().setContentType(contentType);
         }
         doProcess();
     }
