@@ -13,7 +13,7 @@ import org.javalite.activeweb.AppContext;
 public class RouteConfig extends AbstractRouteConfig {
     public void init(AppContext appContext) {
         route("/myposts").to(PostsController.class);
-        route("/greeting1").to(HomeController.class);
+        route("/greeting/{action}/{name}").to(HelloController.class);
         route("/rposts_internal/{action}").to(RpostsController.class);
         route("/{action}/greeting/{name}").to(HelloController.class);
     }
