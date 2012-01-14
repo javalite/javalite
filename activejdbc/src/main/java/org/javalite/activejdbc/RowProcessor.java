@@ -27,7 +27,6 @@ import java.util.HashMap;
 public class RowProcessor {
     private ResultSet rs;
     private Statement s;
-    private MetaModel mm;
 
     protected RowProcessor(ResultSet rs, Statement s){
         this.rs = rs;
@@ -65,12 +64,4 @@ public class RowProcessor {
         rs.close();
         s.close();
     }
-
-	public MetaModel getMm() {
-		return mm;
-	}
-
-	public void setMm(MetaModel mm) {
-		this.mm = mm;
-	}
 }
