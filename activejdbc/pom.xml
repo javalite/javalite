@@ -100,6 +100,47 @@
             </dependencies>
         </profile>
         <profile>
+            <id>tds</id>
+            <properties>
+                <jdbc.driver>net.sourceforge.jtds.jdbc.Driver</jdbc.driver>
+                <jdbc.url>jdbc:jtds:sqlserver://localdb/mssql;TDS=8.0</jdbc.url>
+                <jdbc.user>activejdbc</jdbc.user>
+                <jdbc.password>activejdbc</jdbc.password>
+                <db>mssql</db>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>net.sourceforge.jtds</groupId>
+                    <artifactId>jtds</artifactId>
+                    <version>1.2.4</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>mssql</id>
+            <properties>
+                <jdbc.driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc.driver>
+                <jdbc.url>jdbc:sqlserver://localdb:1433;databaseName=mssql</jdbc.url>
+                <jdbc.user>activejdbc</jdbc.user>
+                <jdbc.password>activejdbc</jdbc.password>
+                <db>mssql</db>
+            </properties>
+            <dependencies>
+                <!-- If Microsoft were at all helpful. -->
+                <!-- <dependency>
+                    <groupId>com.microsoft.sqljdbc</groupId>
+                    <artifactId>sqljdbc4</artifactId>
+                    <version>4.0.2</version>
+                </dependency> -->
+                <!-- But, alas, they're not -->
+                <dependency>
+                    <groupId>org.ncsasports</groupId>
+                    <artifactId>org.ncsasports.sqljdbc.jar</artifactId>
+                    <version>100</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <id>instrument</id>
             
             <build>
@@ -267,4 +308,11 @@
         </dependency>
 
     </dependencies>
+    <repositories>
+        <repository>
+            <id>dev.ncsasports.org</id>
+            <name>dev.ncsasports.org-releases</name>
+            <url>http://dev.ncsasports.org/artifactory/remote-repos/</url>
+        </repository>
+    </repositories>
 </project>

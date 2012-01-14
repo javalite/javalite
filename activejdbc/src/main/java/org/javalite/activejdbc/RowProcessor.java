@@ -27,6 +27,7 @@ import java.util.HashMap;
 public class RowProcessor {
     private ResultSet rs;
     private Statement s;
+    private MetaModel mm;
 
     protected RowProcessor(ResultSet rs, Statement s){
         this.rs = rs;
@@ -47,13 +48,16 @@ public class RowProcessor {
         ResultSetMetaData metaData = rs.getMetaData();
 
         String labels[] = new String[metaData.getColumnCount()];
+        String types[] = new String[metaData.getColumnCount()];
         for (int i = 1; i <= labels.length; i++) {
             labels[i - 1] = metaData.getColumnLabel(i);
+            types[i - 1] = metaData.getColumnTypeName(i);
         }
 
         while (rs.next()) {
             HashMap<String, Object> row = new HashMap<String, Object>();
-            for (String label : labels) {                
+            int i = 0;
+            for (String label : labels) {
                 row.put(label.toLowerCase(), rs.getObject(label));
             }
             if(!listener.next(row)) break;
@@ -61,4 +65,12 @@ public class RowProcessor {
         rs.close();
         s.close();
     }
+
+	public MetaModel getMm() {
+		return mm;
+	}
+
+	public void setMm(MetaModel mm) {
+		this.mm = mm;
+	}
 }

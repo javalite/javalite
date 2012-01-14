@@ -17,20 +17,40 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
-import org.javalite.activejdbc.associations.*;
-import org.javalite.activejdbc.cache.QueryCache;
-import org.javalite.activejdbc.validation.*;
-import static org.javalite.common.Util.blank;
-
-import java.io.*;
-import java.sql.*;
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.Collections;
-
 import static org.javalite.common.Inflector.*;
+import static org.javalite.common.Util.*;
 
-import org.javalite.common.*;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.sql.Clob;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import org.javalite.activejdbc.associations.BelongsToAssociation;
+import org.javalite.activejdbc.associations.BelongsToPolymorphicAssociation;
+import org.javalite.activejdbc.associations.Many2ManyAssociation;
+import org.javalite.activejdbc.associations.NotAssociatedException;
+import org.javalite.activejdbc.associations.OneToManyAssociation;
+import org.javalite.activejdbc.associations.OneToManyPolymorphicAssociation;
+import org.javalite.activejdbc.cache.QueryCache;
+import org.javalite.activejdbc.validation.NumericValidationBuilder;
+import org.javalite.activejdbc.validation.ValidationBuilder;
+import org.javalite.activejdbc.validation.ValidationException;
+import org.javalite.activejdbc.validation.ValidationHelper;
+import org.javalite.activejdbc.validation.Validator;
+import org.javalite.common.Convert;
+import org.javalite.common.Inflector;
+import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,8 +110,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attributesMap map containing values for this instance.
      */
     protected  void hydrate(Map attributesMap) {
-
         List<String> attributeNames = getMetaModelLocal().getAttributeNamesSkipId();
+        Map<String, ColumnMetadata> types = getMetaModelLocal().getColumnMetadata();
 
         String idName = getMetaModelLocal().getIdName();
         Object id = attributesMap.get(idName);
@@ -118,7 +138,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             if( value instanceof Clob && getMetaModelLocal().cached() ){
                 this.attributes.put(attrName.toLowerCase(), Convert.toString(value));
             }else {
-                this.attributes.put(attrName.toLowerCase(), value);
+        		this.attributes.put(attrName, getMetaModelLocal().getDialect().overrideDriverTypeConversion(getMetaModelLocal(), attrName, value));
             }
         }
     }
