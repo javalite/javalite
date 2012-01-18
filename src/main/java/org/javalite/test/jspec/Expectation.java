@@ -81,6 +81,21 @@ public class Expectation<T> {
         shouldBe(booleanMethod);
     }
 
+
+    /**
+     * This is for cases suh as: "hasErrors()": <code>a(p).shouldNotHave("errors")</code>.
+     * Invokes a boolean method and uses return value in comparison.
+     * @param booleanMethod name of boolean method as specified in Java Beans specification. Example: if method name
+     * is <code>hasChildren()</code>, then the string "children" needs to be passed. This results in readable  code
+     * such as:
+     * <pre>
+     * a(bean).shouldNotHave("children");
+     * </pre>
+     */
+    public void shouldNotHave(String booleanMethod) {
+        shouldNotBe(booleanMethod);
+    }
+
     /**
      * Invokes a boolean method and uses return value in comparison.
      * 
