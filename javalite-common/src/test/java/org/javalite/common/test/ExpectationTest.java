@@ -91,10 +91,6 @@ public class ExpectationTest {
         a(map("one", 1, "two", 2)).shouldContain("three");
     }
 
-
-
-
-
     @Test(expected = TestException.class)
     public void shouldTestNegativeMissingValueWithSting() {
         the("meaning of life is 42").shouldNotContain("meaning");
@@ -109,5 +105,13 @@ public class ExpectationTest {
     @Test(expected = TestException.class)
     public void shouldTestNegativeMissingValueWithMap() {
         a(map("one", 1, "two", 2)).shouldNotContain("one");
+    }
+
+
+    @Test
+    public void shouldTestShouldHaveMethod(){
+        Room room = new Room();
+        the(room).shouldHave("walls");
+        the(room).shouldNotHave("children");
     }
 }
