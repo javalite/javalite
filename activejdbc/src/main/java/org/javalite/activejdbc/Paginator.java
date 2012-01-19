@@ -204,7 +204,12 @@ public class Paginator implements Serializable {
         return result;
     }
 
-    private long getCount(){
+    /**
+     * Total count of records based on provided criteria.
+     *
+     * @return total count of records based on provided criteria
+     */
+    public long getCount(){
             return fullQuery? Convert.toLong(new DB(metaModel.getDbName()).firstCell(countQuery, params))
                             : new DB(metaModel.getDbName()).count(metaModel.getTableName(), query, params);
     }
