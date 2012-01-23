@@ -18,6 +18,7 @@ limitations under the License.
 package org.javalite.instrumentation;
 
 import javassist.CtClass;
+import org.javalite.activejdbc.annotations.DbName;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -60,14 +61,27 @@ public class Instrumentation {
         }
     }
 
-    private static void generateModelsFile(List<CtClass> models, File target) throws IOException {
+    private static void generateModelsFile(List<CtClass> models, File target) throws IOException, ClassNotFoundException {
         String modelsFileName = target.getAbsolutePath() + System.getProperty("file.separator") + "activejdbc_models.properties";
         FileOutputStream fout = new FileOutputStream(modelsFileName);
 
         for (CtClass model : models) {
-            fout.write(( model.getName() + "\n").getBytes());
+            fout.write((model.getName() + ":" + getDatabaseName(model) + "\n").getBytes());
         }
         fout.close();
+    }
+
+    static String getDatabaseName(CtClass model) throws ClassNotFoundException {
+        Object[] annotations =  model.getAnnotations();
+
+        for (Object annotation : annotations) {
+
+            if(annotation instanceof DbName){
+               return ((DbName)annotation).value();
+            }
+        }
+
+        return "default";
     }
 
 }
