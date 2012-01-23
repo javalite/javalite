@@ -694,7 +694,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 sw.write(indent + indent + "</" + name + ">" + (spaces > 0?"\n":""));
             }
         }
-        beforeClosingTag(spaces, sw);
+        beforeClosingTag(spaces, sw, attrs);
         sw.write(indent + "</" + topTag + ">" + (spaces > 0?"\n":""));
         return sw.toString();
     }
