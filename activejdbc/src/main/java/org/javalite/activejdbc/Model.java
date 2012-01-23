@@ -705,7 +705,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param spaces number of spaces of indent
      * @param writer to write content to.
      */
-    public void beforeClosingTag(int spaces, StringWriter writer) {
+    public void beforeClosingTag(int spaces, StringWriter writer, String ... attrs) {
         //do nothing.
     }
 
