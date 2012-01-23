@@ -226,6 +226,9 @@ public class Expectation<T> {
      *     <br/>For example, this will pass: <pre><code>
      *         a(Arrays.asList(1, 2, 3)).shouldContain(3);
      *     </code></pre>
+     *
+     *     This uses {@link List#contains(Object)} logic
+     *
      *     </li>
      *     <li><code>java.util.Map</code> - in this case, the tested map is expected to contain an object whose key is the expected object.
      *     <br/>For example, this will pass: <pre><code>
