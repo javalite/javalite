@@ -60,7 +60,7 @@ public class Router {
      */
     protected Route recognize(String uri, HttpMethod httpMethod) throws ClassLoadException {
 
-        Route route = matchCustom(uri);
+        Route route = matchCustom(uri, httpMethod);
         if (route == null) { //proceed to built-in routes
 
             //DTO as map here
@@ -86,10 +86,10 @@ public class Router {
         return route;
     }
 
-    private Route matchCustom(String uri) throws ClassLoadException {
+    private Route matchCustom(String uri, HttpMethod httpMethod) throws ClassLoadException {
 
         for (Route route : routes) {
-            if (route.matches(uri)) {
+            if (route.matches(uri, httpMethod)) {
                 return route;
             }
         }

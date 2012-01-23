@@ -36,16 +36,30 @@ public class Route {
     private AppController controller;
     private Class<? extends AppController> type;
     private List<Segment> segments = new ArrayList<Segment>();
+    private List<HttpMethod> methods = new ArrayList<HttpMethod>();
 
 
     private int mandatorySegmentCount = 0;
 
+    /**
+     * Used for standard and restful routes.
+     *
+     * @param controller controller
+     * @param actionName action name
+     * @param id id
+     */
     protected Route(AppController controller, String actionName, String id) {
         this.controller = controller;
         this.actionName = actionName;
         this.id = id;
     }
 
+    /**
+     * Used for  tests.
+     *
+     * @param controller controller
+     * @param actionName action name
+     */
     protected Route(AppController controller, String actionName) {
         this(controller, actionName, null);
     }
@@ -67,6 +81,12 @@ public class Route {
         }
     }
 
+    /**
+     * Allows to wire a route to a controller.
+     *
+     * @param type class of controller to which a route is mapped
+     * @return instance of {@link Route}.
+     */
     public  <T extends AppController> Route to(Class<T> type) {
 
         boolean hasControllerSegment = false;
@@ -82,6 +102,12 @@ public class Route {
         return this;
     }
 
+    /**
+     * Name of action to which a route is mapped.
+     *
+     * @param action name of action.
+     * @return instance of {@link Route}.
+     */
     public Route action(String action) {
         boolean hasActionSegment = false;
         for (Segment segment : segments) {
@@ -96,6 +122,57 @@ public class Route {
         return this;
     }
 
+    /**
+     * Specifies that this route is mapped to HTTP GET method.
+     *
+     * @return instance of {@link Route}.
+     */
+    public Route get(){
+
+        if(!methods.contains(HttpMethod.GET)){
+            methods.add(HttpMethod.GET);
+        }
+        return this;
+    }
+
+    /**
+     * Specifies that this route is mapped to HTTP POST method.
+     *
+     * @return instance of {@link Route}.
+     */
+    public Route post(){
+
+        if(!methods.contains(HttpMethod.POST)){
+            methods.add(HttpMethod.POST);
+        }
+        return this;
+    }
+
+    /**
+     * Specifies that this route is mapped to HTTP PUT method.
+     *
+     * @return instance of {@link Route}.
+     */
+    public Route put(){
+
+        if(!methods.contains(HttpMethod.PUT)){
+            methods.add(HttpMethod.PUT);
+        }
+        return this;
+    }
+
+    /**
+     * Specifies that this route is mapped to HTTP DELETE method.
+     *
+     * @return instance of {@link Route}.
+     */
+    public Route delete(){
+
+        if(!methods.contains(HttpMethod.DELETE)){
+            methods.add(HttpMethod.DELETE);
+        }
+        return this;
+    }
 
     protected String getActionName() {
         return actionName == null ? actionName = "index": actionName;
@@ -121,11 +198,13 @@ public class Route {
     /**
      * Returns true if this route matches the request URI, otherwise returns false.
      *
+     *
      * @param requestUri incoming URI for request.
+     * @param httpMethod
      * @return true if this route matches the request URI
      * @throws ClassLoadException in case could not load controller
      */
-    protected boolean matches(String requestUri) throws ClassLoadException {
+    protected boolean matches(String requestUri, HttpMethod httpMethod) throws ClassLoadException {
 
         String[] requestUriSegments = Util.split(requestUri, '/');
 
@@ -155,7 +234,11 @@ public class Route {
             controller = reloadController();
         }
 
-        return match;
+        return match && methodMatches(httpMethod);
+    }
+
+    private boolean methodMatches(HttpMethod httpMethod) {
+        return methods.size() == 0 && httpMethod.equals(HttpMethod.GET) || methods.contains(httpMethod);
     }
 
     private AppController reloadController() throws ClassLoadException {

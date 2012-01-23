@@ -225,4 +225,38 @@ public class RouterCustomSpec extends RequestSpec {
         request.setServletPath("/photos/12");
         execDispatcher();
     }
+
+
+    @Test
+    public void shouldNotMatchWithWithPost(){
+
+        SystemStreamUtil.replaceError();
+        routeConfig = new AbstractRouteConfig() {
+            public void init(AppContext appContext) {
+                route("/greeting").to(Route2Controller.class).post().action("hi");
+            }
+        };
+        request.setServletPath("/greeting");
+        execDispatcher();
+        a(responseContent()).shouldContain("not found");
+
+        a(SystemStreamUtil.getSystemErr()).shouldContain(" java.lang.ClassNotFoundException: app.controllers.GreetingController");
+        SystemStreamUtil.restoreSystemErr();
+    }
+
+
+    @Test
+    public void shouldMatchWithWithPost(){
+
+        routeConfig = new AbstractRouteConfig() {
+            public void init(AppContext appContext) {
+                route("/greeting/{action}").post().to(Route2Controller.class);
+            }
+        };
+        request.setServletPath("/greeting/save");
+        request.setMethod("post");
+        execDispatcher();
+
+        a(responseContent()).shouldContain("this is a save.ftl");
+    }
 }
