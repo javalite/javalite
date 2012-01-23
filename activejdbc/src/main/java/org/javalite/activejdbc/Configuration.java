@@ -19,6 +19,7 @@ package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.cache.CacheManager;
 import org.javalite.activejdbc.dialects.*;
+import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +32,8 @@ import java.util.*;
  */
 public class Configuration {
 
-    private List<String> modelsIndex = new ArrayList<String>();
+    //key is a DB name, value is a list of model names
+    private Map<String, List<String>> modelsMap = new HashMap<String, List<String>>();
     private Properties properties = new Properties();
     private static CacheManager cacheManager;
     final static Logger logger = LoggerFactory.getLogger(Configuration.class);
@@ -50,7 +52,16 @@ public class Configuration {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                     String line ;
                     while(  (line = reader.readLine()) != null ){
-                        modelsIndex.add(line);
+
+                        String[] parts = Util.split(line, ':');
+                        String modelName = parts[0];
+                        String dbName = parts[1];
+
+                        if(modelsMap.get(dbName) == null){
+                            modelsMap.put(dbName, new ArrayList<String>());
+                        }
+
+                        modelsMap.get(dbName).add(modelName);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -61,7 +72,7 @@ public class Configuration {
         } catch (IOException e) {
             throw new InitException(e);
         }
-        if(modelsIndex.isEmpty()){
+        if(modelsMap.isEmpty()){
             LogFilter.log(logger, "ActiveJDBC Warning: Cannot locate any models, assuming project without models.");
             return;
         }
@@ -88,8 +99,8 @@ public class Configuration {
         }
     }
 
-    String[] getModelNames() throws IOException {
-        return modelsIndex.toArray(new String[modelsIndex.size()]) ;
+    List<String> getModelNames(String dbName) throws IOException {
+        return modelsMap.get(dbName);
     }
 
 

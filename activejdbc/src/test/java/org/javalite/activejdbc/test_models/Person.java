@@ -43,10 +43,4 @@ public class Person extends Model {
 
         writer.append(indent + "<test>test content</test>\n");
     }
-
-
-    @Override
-    public void beforeClosingBrace(boolean pretty, String indent, StringWriter writer) {
-        writer.append((pretty?",\n" + indent:",") + "\"injected\": {\"real_name\":\"John Doe\"}");
-    }
 }

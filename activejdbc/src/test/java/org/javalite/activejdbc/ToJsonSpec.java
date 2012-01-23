@@ -18,10 +18,7 @@ package org.javalite.activejdbc;
 
 
 import org.javalite.activejdbc.test.ActiveJDBCTest;
-import org.javalite.activejdbc.test_models.Address;
-import org.javalite.activejdbc.test_models.Page;
-import org.javalite.activejdbc.test_models.Person;
-import org.javalite.activejdbc.test_models.User;
+import org.javalite.activejdbc.test_models.*;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
@@ -156,12 +153,14 @@ public class ToJsonSpec extends ActiveJDBCTest {
 
     @Test
     public void shouldInjectCustomContentIntoJson() throws IOException {
-        deleteAndPopulateTable("people");
-        Person p  = (Person)Person.findById(1);
-        String json = p.toJson(true, "name", "last_name", "dob");
+        deleteAndPopulateTable("posts");
+
+        Post p = (Post)Post.findById(1);
+        String json = p.toJson(true, "title");
+
         Map map = mapper.readValue(json, Map.class);
         Map injected = (Map) map.get("injected");
-        a(injected.get("real_name")).shouldBeEqual("John Doe");
+        a(injected.get("secret_name")).shouldBeEqual("Secret Name");
     }
 }
 

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This script is used for fast instrumentation of the project's models-->
+<project default="instrument" basedir=".">
+
+    <property name="out.dir" value="target/test-classes"/>
+
+    <path id="instrument_classpath">
+        <pathelement location="${out.dir}"/>
+        <path location="${user.home}/.m2/repository/org/javalite/activejdbc-instrumentation/1.2-SNAPSHOT/activejdbc-instrumentation-1.2-SNAPSHOT.jar"/>
+        <path location="${user.home}/.m2/repository/javassist/javassist/3.8.0.GA/javassist-3.8.0.GA.jar"/>
+        <path location="${user.home}/.m2/repository/org/javalite/activejdbc/1.2-SNAPSHOT/activejdbc-1.2-SNAPSHOT.jar"/>
+    </path>
+
+    <target name="instrument">
+        <java classname="org.javalite.instrumentation.Main">
+            <sysproperty key="outputDirectory" value="${out.dir}"/>
+            <classpath refid="instrument_classpath"/>
+        </java>
+    </target>
+
+</project>

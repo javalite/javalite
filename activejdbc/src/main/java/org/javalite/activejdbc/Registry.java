@@ -133,7 +133,7 @@ public enum Registry {
             }
 
             try {
-                mf.findModels();
+                mf.findModels(dbName);
                 String dbType = ConnectionsAccess.getConnection(dbName).getMetaData().getDatabaseProductName();
                 registerModels(dbName, mf.getModelsForDb(dbName), dbType);
                 String[] tables = metaModels.getTableNames(dbName);
