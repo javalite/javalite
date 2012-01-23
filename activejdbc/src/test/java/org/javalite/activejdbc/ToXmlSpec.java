@@ -85,4 +85,15 @@ public class ToXmlSpec extends ActiveJDBCTest {
         List<Map> maps = Article.findAll().toMaps();
         a(maps.get(0).get("content")).shouldBeA(String.class);
     }
+
+
+    @Test
+    public void shouldInjectCustomContentIntoXML(){
+        deleteAndPopulateTable("people");
+        Person p  = (Person)Person.findById(1);
+        String xml = p.toXml(2, true);
+
+        a(XPathHelper.selectText("/person/test", xml)).shouldEqual("test content");
+
+    }
 }

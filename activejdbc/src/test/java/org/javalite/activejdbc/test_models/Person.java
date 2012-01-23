@@ -20,6 +20,10 @@ package org.javalite.activejdbc.test_models;
 import org.javalite.activejdbc.Model;
 import org.javalite.activejdbc.annotations.Cached;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+
 
 @Cached
 public class Person extends Model {
@@ -27,5 +31,22 @@ public class Person extends Model {
         validatePresenceOf("name", "last_name");
         convertDate("dob", "yyyy-MM-dd");
         convertTimestamp("graduation_date", "yyyy-MM-dd");
-    }    
+    }
+
+
+    public void beforeClosingTag(int spaces, StringWriter writer) {
+
+        String indent = "";
+        for(int i = 0; i < spaces * 2; i++){
+            indent += " ";
+        }
+
+        writer.append(indent + "<test>test content</test>\n");
+    }
+
+
+    @Override
+    public void beforeClosingBrace(boolean pretty, String indent, StringWriter writer) {
+        writer.append((pretty?",\n" + indent:",") + "\"injected\": {\"real_name\":\"John Doe\"}");
+    }
 }

@@ -694,10 +694,20 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 sw.write(indent + indent + "</" + name + ">" + (spaces > 0?"\n":""));
             }
         }
+        beforeClosingTag(spaces, sw);
         sw.write(indent + "</" + topTag + ">" + (spaces > 0?"\n":""));
         return sw.toString();
     }
 
+    /**
+     * Override in a subclass to imject customn content onto XML just before the closing tag.
+     *
+     * @param spaces number of spaces of indent
+     * @param writer to write content to.
+     */
+    public void beforeClosingTag(int spaces, StringWriter writer) {
+        //do nothing.
+    }
 
 
     /**
@@ -748,10 +758,20 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                     sw.write((pretty?"\n" + indent + indent :"")  + "}");
                 }
 
+                beforeClosingBrace(pretty, pretty?"  " + indent: "", sw);
                 sw.write((pretty?"\n" + indent: "")  + "}");
                 return sw.toString();
     }
 
+    /**
+     * Override in subclasses in order to inject custom content into Json just before the closing brace.
+     *
+     * @param indent indent at current level
+     * @param writer writer to write custom content to
+     */
+    public void beforeClosingBrace(boolean pretty, String indent, StringWriter writer){
+
+    }
 
 
     /**
@@ -1211,11 +1231,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * In case of many to many, the <code>clazz</code>  must be a class of a another related model, and it will return a
      * collection of all related models.
      * <p/>
-     * In case of many to many, the <code>clazz</code>  must be a class of a polymorphicly related model, and it will return a
+     * In case of polymorphic, the <code>clazz</code>  must be a class of a polymorphically related model, and it will return a
      * collection of all related models.
      *
      *
-     * @param clazz class of a child model for one to many, or class of another model, in case of many to many.
+     * @param clazz class of a child model for one to many, or class of another model, in case of many to many or class of child in case of
+     * polymorphic
+     *
      * @return list of children in case of one to many, or list of other models, in case many to many.
      */
 

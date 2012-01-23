@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Igor Polevoy
@@ -150,6 +151,17 @@ public class ToJsonSpec extends ActiveJDBCTest {
         p = new Page();
         p.set("description", null);
         p.toJson(true);
+    }
+
+
+    @Test
+    public void shouldInjectCustomContentIntoJson() throws IOException {
+        deleteAndPopulateTable("people");
+        Person p  = (Person)Person.findById(1);
+        String json = p.toJson(true, "name", "last_name", "dob");
+        Map map = mapper.readValue(json, Map.class);
+        Map injected = (Map) map.get("injected");
+        a(injected.get("real_name")).shouldBeEqual("John Doe");
     }
 }
 
