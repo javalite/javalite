@@ -33,7 +33,6 @@
         <module>activeweb</module>
         <module>activeweb-testing</module>
         <module>activeweb-gwt</module>
-        <module>examples</module>
     </modules>
 
     <build>
