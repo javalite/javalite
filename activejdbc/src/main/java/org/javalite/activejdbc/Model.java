@@ -20,19 +20,20 @@ package org.javalite.activejdbc;
 import org.javalite.activejdbc.associations.*;
 import org.javalite.activejdbc.cache.QueryCache;
 import org.javalite.activejdbc.validation.*;
-import static org.javalite.common.Util.blank;
-
-import java.io.*;
-import java.sql.*;
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.Collections;
-
-import static org.javalite.common.Inflector.*;
-
-import org.javalite.common.*;
+import org.javalite.common.Convert;
+import org.javalite.common.Inflector;
+import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.math.BigDecimal;
+import java.sql.Clob;
+import java.sql.Timestamp;
+import java.util.*;
+
+import static org.javalite.common.Inflector.*;
+import static org.javalite.common.Util.blank;
 
 
 /**
@@ -90,7 +91,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attributesMap map containing values for this instance.
      */
     protected  void hydrate(Map attributesMap) {
-
         List<String> attributeNames = getMetaModelLocal().getAttributeNamesSkipId();
 
         String idName = getMetaModelLocal().getIdName();
@@ -118,7 +118,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             if( value instanceof Clob && getMetaModelLocal().cached() ){
                 this.attributes.put(attrName.toLowerCase(), Convert.toString(value));
             }else {
-                this.attributes.put(attrName.toLowerCase(), value);
+        		this.attributes.put(attrName, getMetaModelLocal().getDialect().overrideDriverTypeConversion(getMetaModelLocal(), attrName, value));
             }
         }
     }

@@ -46,7 +46,7 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
         if(!schemaGenerated){
             generateSchema();
             schemaGenerated = true;
-            System.out.println("DB: " + db());
+            System.out.println("DB: " + db() + ", Driver:" + driver());
         }
     }
 
@@ -64,6 +64,8 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
             DefaultDBReset.resetSchema(getStatements(";", "h2_schema.sql"));
         } else if (db().equals("oracle")) {
             OracleDBReset.resetOracle(getStatements("-- BREAK", "oracle_schema.sql"));
+        } else if (db().equals("mssql")) {
+        	DefaultDBReset.resetSchema(getStatements("; ", "mssql_schema.sql"));
         }
     }
 
@@ -158,6 +160,10 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
             statementProvider = new PostgreSQLStatementProvider();
         } else if (db().equals("h2")) {
             statementProvider = new H2StatementProvider();
+        } else if (db().equals("mssql")) {
+            statementProvider = new MSSQLStatementProvider();
+        } else {
+        	throw new RuntimeException("Unknown db:" + db());
         }
         return statementProvider;
     }
@@ -165,8 +171,10 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
 
 
     private void executeStatements(List<String> statements) {
+    	String curStmt = "";
         try {
             for (String statement : statements) {
+            	curStmt = statement;
                 Statement st;
                 st = Base.connection().createStatement();
                 try{
@@ -180,7 +188,7 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
             }            
         }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(curStmt, e);
         }
     }
 

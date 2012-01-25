@@ -444,7 +444,6 @@ public class ModelTest extends ActiveJDBCTest {
         deleteAndPopulateTables("students", "courses", "registrations");
         Student s = (Student)Student.findById(1);
         String insertSQL = s.toInsert();
-        System.out.println(insertSQL);
 
         the(insertSQL).shouldBeEqual("INSERT INTO students (dob, first_name, id, last_name) VALUES ('1965-12-01', 'Jim', 1, 'Cary')");
 

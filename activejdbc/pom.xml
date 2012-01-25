@@ -5,7 +5,7 @@
     <artifactId>activejdbc</artifactId>
     <packaging>jar</packaging>
     <name>ActiveJDBC Framework</name>
-    
+
 
     <parent>
         <groupId>org.javalite</groupId>
@@ -22,7 +22,7 @@
         <jdbc.password>p@ssw0rd</jdbc.password>
         <db>mysql</db>
     </properties>
-    
+
     <profiles>
         <profile>
             <id>mysql</id>
@@ -100,8 +100,49 @@
             </dependencies>
         </profile>
         <profile>
+            <id>tds</id>
+            <properties>
+                <jdbc.driver>net.sourceforge.jtds.jdbc.Driver</jdbc.driver>
+                <jdbc.url>jdbc:jtds:sqlserver://192.168.0.33/activejdbc;TDS=8.0</jdbc.url>
+                <jdbc.user>activejdbc</jdbc.user>
+                <jdbc.password>activejdbc</jdbc.password>
+                <db>mssql</db>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>net.sourceforge.jtds</groupId>
+                    <artifactId>jtds</artifactId>
+                    <version>1.2.4</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>mssql</id>
+            <properties>
+                <jdbc.driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc.driver>
+                <jdbc.url>jdbc:sqlserver://192.168.0.33:1433;databaseName=activejdbc</jdbc.url>
+                <jdbc.user>activejdbc</jdbc.user>
+                <jdbc.password>activejdbc</jdbc.password>
+                <db>mssql</db>
+            </properties>
+            <dependencies>
+                <!-- If Microsoft were at all helpful. -->
+                <!-- <dependency>
+                    <groupId>com.microsoft.sqljdbc</groupId>
+                    <artifactId>sqljdbc4</artifactId>
+                    <version>4.0.2</version>
+                </dependency> -->
+                <!-- But, alas, they're not -->
+                <dependency>
+                    <groupId>org.ncsasports</groupId>
+                    <artifactId>org.ncsasports.sqljdbc.jar</artifactId>
+                    <version>100</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <id>instrument</id>
-            
+
             <build>
                 <plugins>
                 <plugin>
@@ -187,7 +228,7 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>2.7</version>
-                    
+
              </plugin>
 
             <plugin>
@@ -216,7 +257,7 @@
             <exclusions>
                 <exclusion>
                     <groupId>dom4j</groupId>
-                    <artifactId>dom4j</artifactId>                    
+                    <artifactId>dom4j</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>jaxen</groupId>
@@ -267,4 +308,11 @@
         </dependency>
 
     </dependencies>
+    <repositories>
+        <repository>
+            <id>dev.ncsasports.org</id>
+            <name>dev.ncsasports.org-releases</name>
+            <url>http://dev.ncsasports.org/artifactory/remote-repos/</url>
+        </repository>
+    </repositories>
 </project>

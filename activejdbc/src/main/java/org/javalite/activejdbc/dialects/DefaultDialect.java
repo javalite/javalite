@@ -68,7 +68,6 @@ public class DefaultDialect {
         query += mm.isVersioned()? ", " + 1 :"";
         query +=")";
 
-
         return query; 
     }
 
@@ -98,5 +97,9 @@ public class DefaultDialect {
         }
 
         return fullQuery;
-    } 
+    }
+   
+   public Object overrideDriverTypeConversion(MetaModel mm, String attributeName, Object value) {
+	   return value;
+   }
 }

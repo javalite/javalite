@@ -23,7 +23,10 @@ import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.*;
 
@@ -113,7 +116,6 @@ public class Configuration {
     }
 
     DefaultDialect getDialect(MetaModel mm){
-
         if(dialects.get(mm.getDbType()) == null){
             if(mm.getDbType().equalsIgnoreCase("Oracle")){
                 dialects.put(mm.getDbType(), new OracleDialect());
@@ -126,6 +128,9 @@ public class Configuration {
             }
             else if(mm.getDbType().equalsIgnoreCase("h2")){
                 dialects.put(mm.getDbType(), new H2Dialect());
+            }
+            else if(mm.getDbType().equalsIgnoreCase("Microsoft SQL Server")){
+                dialects.put(mm.getDbType(), new MSSQLDialect());
             }
             else{
                 dialects.put(mm.getDbType(), new DefaultDialect());
