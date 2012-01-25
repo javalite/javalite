@@ -572,7 +572,20 @@ public class DB {
      * @return connection from current thread. 
      */
     public Connection connection() {
-        return ConnectionsAccess.getConnection(dbName);
+        Connection connection = ConnectionsAccess.getConnection(dbName);
+        if(connection  == null)
+            throw new DBException("there is no connection '" + dbName + "' on this thread, are you sure you opened it?");
+
+        return connection;
+    }
+
+    /**
+     * Use to check if there is a connection present on current thread.
+     *
+     * @return true if finds connection on current thread, false if not.
+     */
+    public boolean hasConnection(){
+        return null != ConnectionsAccess.getConnection(dbName);
     }
 
     /**

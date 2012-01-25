@@ -104,6 +104,16 @@ public class Base {
 
     }
 
+
+    /**
+     * Use to check if there is a default connection present on current thread.
+     *
+     * @return true if finds default connection on current thread, false if not.
+     */
+    public static boolean hasConnection(){
+        return new DB(DEFAULT_DB_NAME).hasConnection();
+    }
+
     /**
      * Closes connection.
      */
