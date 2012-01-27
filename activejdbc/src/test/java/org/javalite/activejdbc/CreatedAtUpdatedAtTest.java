@@ -67,7 +67,7 @@ public class CreatedAtUpdatedAtTest extends ActiveJDBCTest {
         List<Person> people = Person.findAll();
         Timestamp updated_at = people.get(0).getTimestamp("updated_at");
 
-        try{Thread.sleep(1000);}catch(Exception e){}//MySQL seems to round off some milliseconds, this sucks.
+        try{Thread.sleep(5000);}catch(Exception e){}//MySQL seems to round off some milliseconds, this sucks.
 
         Person.update("last_name = ?", "name like '%%'", "Smith");
         people = Person.findAll();
