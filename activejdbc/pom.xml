@@ -113,8 +113,17 @@
                     <groupId>net.sourceforge.jtds</groupId>
                     <artifactId>jtds</artifactId>
                     <version>1.2.4</version>
+                    <scope>test</scope>
                 </dependency>
             </dependencies>
+
+            <repositories>
+                <repository>
+                    <id>ms-releases</id>
+                    <url>http://192.168.0.55:8084/nexus/content/repositories/microsoft/</url>
+                </repository>
+            </repositories>
+
         </profile>
         <profile>
             <id>mssql</id>
@@ -127,18 +136,19 @@
             </properties>
             <dependencies>
                 <!-- If Microsoft were at all helpful. -->
-                <!-- <dependency>
+                <dependency>
                     <groupId>com.microsoft.sqljdbc</groupId>
                     <artifactId>sqljdbc4</artifactId>
                     <version>4.0.2</version>
-                </dependency> -->
-                <!-- But, alas, they're not -->
-                <dependency>
-                    <groupId>org.ncsasports</groupId>
-                    <artifactId>org.ncsasports.sqljdbc.jar</artifactId>
-                    <version>100</version>
+                    <scope>test</scope>
                 </dependency>
             </dependencies>
+            <repositories>
+                <repository>
+                    <id>ms-releases</id>
+                    <url>http://192.168.0.55:8084/nexus/content/repositories/microsoft/</url>
+                </repository>
+            </repositories>
         </profile>
         <profile>
             <id>instrument</id>
@@ -308,11 +318,5 @@
         </dependency>
 
     </dependencies>
-    <repositories>
-        <repository>
-            <id>dev.ncsasports.org</id>
-            <name>dev.ncsasports.org-releases</name>
-            <url>http://dev.ncsasports.org/artifactory/remote-repos/</url>
-        </repository>
-    </repositories>
+
 </project>
