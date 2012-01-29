@@ -61,7 +61,7 @@ class DynamicClassLoader extends ClassLoader {
             }
         }
         catch(Exception e){
-            logger.warn("Failed to dynamically load class: " + name + ". Loading by parent class loader.");
+            logger.debug("Failed to dynamically load class: " + name + ". Loading by parent class loader.");
             return loadByParent(name);
         }
     }
