@@ -58,10 +58,19 @@
                 <dependency>
                     <groupId>oracle</groupId>
                     <artifactId>ojdbc14</artifactId>
-                    <version>10.2.0.1</version>
+                    <version>10.2.0.4</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
+
+            <repositories>
+                <repository>
+                    <id>oracle</id>
+                    <url>http://192.168.0.55:8084/nexus/content/repositories/oracle/</url>
+                </repository>
+            </repositories>
+
+
         </profile>
         <profile>
             <id>postgresql</id>
