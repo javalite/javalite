@@ -616,4 +616,14 @@ public class DB {
             new DB(name).close();
         }
     }
+
+
+    /**
+     * Provides connections available on current thread.
+     *
+     * @return  connections available on current thread.
+     */
+    public static Map<String, Connection> connections(){
+        return ConnectionsAccess.getConnectionMap();
+    }
 }
