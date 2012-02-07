@@ -89,6 +89,7 @@ class ControllerRunner {
 
     private void renderResponse(Route route,  boolean integrateViews) throws InstantiationException, IllegalAccessException {
 
+        //TODO: a bit of spaghetti code here...
         ControllerResponse controllerResponse = Context.getControllerResponse();
         String controllerLayout = route.getController().getLayout();
         if (controllerResponse == null) {//this is implicit processing - default behavior, really
@@ -127,7 +128,7 @@ class ControllerRunner {
 
 
     private void processFlash() {
-        HttpSession session = Context.getHttpRequest().getSession();
+        HttpSession session = Context.getHttpRequest().getSession(false);
         if (session != null) {
             Object flashObj = session.getAttribute("flasher");
             if (flashObj != null && flashObj instanceof Map) {
@@ -138,7 +139,6 @@ class ControllerRunner {
                     session.removeAttribute("flasher");
                 }
             }
-
         }
     }
 

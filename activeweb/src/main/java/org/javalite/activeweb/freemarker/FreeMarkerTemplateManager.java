@@ -82,36 +82,28 @@ public class FreeMarkerTemplateManager implements TemplateManager {
 
             ContentTL.reset();
 
-            if(layout == null){//no layout
-                Template temp = config.getTemplate(template + ".ftl");
-                temp.process(input, writer);
-                writer.flush();
-                return;
-            }
-
-
-
-            //Generate the template itself
             Template pageTemplate = config.getTemplate(template + ".ftl");
-            StringWriter pageWriter = new StringWriter();
-            pageTemplate.process(input, pageWriter);
-            String pageContent = pageWriter.toString();
+            if(layout == null){//no layout
+                pageTemplate.process(input, writer);
+            }else{ // with layout
+                 //Generate the template itself
+                StringWriter pageWriter = new StringWriter();
+                pageTemplate.process(input, pageWriter);
 
-            Map values = new HashMap(input);
-            values.put("page_content", pageContent);
-            Map<String, List<String>>  assignedValues = ContentTL.getAllContent();
+                Map values = new HashMap(input);
+                values.put("page_content", pageWriter.toString());
+                Map<String, List<String>>  assignedValues = ContentTL.getAllContent();
 
-            for(String name: assignedValues.keySet()){
-                values.put(name, Util.join(assignedValues.get(name), " "));
+                for(String name: assignedValues.keySet()){
+                    values.put(name, Util.join(assignedValues.get(name), " "));
+                }
+
+                Template layoutTemplate = config.getTemplate(layout + ".ftl");
+                layoutTemplate.process(values, writer);
+
+                FreeMarkerTL.setEnvironment(null);
+                logger.info("Rendered template: '" + template + "' with layout: '" + layout + "'");
             }
-
-            Template layoutTemplate = config.getTemplate(layout + ".ftl");
-            layoutTemplate.process(values, writer);
-
-            FreeMarkerTL.setEnvironment(null);
-            writer.flush();
-            logger.info("Rendered template: '" + template + "' with layout: '" + layout + "'");
-
         }
         catch(FileNotFoundException e){
             throw new ViewMissingException(e);
