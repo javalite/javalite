@@ -352,6 +352,9 @@ public enum Registry {
         MetaModel sourceMM = getMetaModel(source);
 
         for (String target : metaModels.getTableNames(dbName)) {
+            if(target.equalsIgnoreCase("Member")){
+                int i =0;
+            }
             MetaModel targetMM = getMetaModel(target);
 
             String sourceFKName = getMetaModel(source).getFKName();
@@ -375,7 +378,7 @@ public enum Registry {
 
     private String findTableName(Class<? extends Model> modelClass) {
         Table tableAnnotation = modelClass.getAnnotation(Table.class);
-        return tableAnnotation == null ? Inflector.tableize(Inflector.shortName(modelClass.getName())) : tableAnnotation.value().toLowerCase();
+        return tableAnnotation == null ? Inflector.tableize(Inflector.shortName(modelClass.getName())) : tableAnnotation.value();
     }
 
 

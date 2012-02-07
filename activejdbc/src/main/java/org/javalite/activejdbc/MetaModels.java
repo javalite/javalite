@@ -56,8 +56,15 @@ public class MetaModels {
     }
 
     MetaModel getMetaModel(String tableName) {
-        MetaModel mm = metaModelsByTableName.get(tableName.toLowerCase());
-        return mm != null? mm : metaModelsByTableName.get(tableName.toUpperCase());
+        MetaModel mm = metaModelsByTableName.get(tableName);
+        if(mm != null){
+            return mm;
+        }
+        mm = metaModelsByTableName.get(tableName.toLowerCase());
+        if(mm != null){
+            return mm;
+        }
+        return metaModelsByTableName.get(tableName.toUpperCase());
     }
 
     String[] getTableNames(String dbName) {
