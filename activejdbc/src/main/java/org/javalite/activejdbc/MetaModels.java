@@ -100,7 +100,7 @@ public class MetaModels {
         if (many2ManyAssociations.size() == 0) {
             for (String table : metaModelsByTableName.keySet()) {
                 MetaModel mm = metaModelsByTableName.get(table);
-                many2ManyAssociations.addAll(mm.getManyToManyAssociations());
+                many2ManyAssociations.addAll(mm.getManyToManyAssociations(new ArrayList<Association>()));
             }
         }
 

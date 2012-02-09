@@ -379,16 +379,34 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * After deletion, this instance becomes {@link #frozen()} and cannot be used anymore until {@link #thaw()} is called.
      */
     public void deleteCascade(){
-        deleteMany2ManyDeep();
-        deleteChildrenDeep(getMetaModelLocal().getOneToManyAssociations());
-        deleteChildrenDeep(getMetaModelLocal().getPolymorphicAssociations());
+        deleteCascadeExcept();
+    }
+
+    /**
+     * This method does everything {@link #deleteCascade()} does, but in addition allows to exclude some assosiations
+     * from this action. This is necessary because {@link #deleteCascade()} method can be far too eager to delete
+     * records in a database, and this is a good way to tell the model to exclude some associations from deletes.
+     *
+     * <p>Example:</p>
+     * <code>
+     *     Patient.findById(3).deleteCascadeExcept(Patient.getMetaModel().getAssociationForTarget("prescriptions"));
+     * </code>
+     *
+     * @see {@link #deleteCascade()} - see for more information.
+     * @param excludedAssociations associations
+     */
+    public void deleteCascadeExcept(Association ... excludedAssociations){
+        List<Association> excludedAssociationsList = Arrays.asList(excludedAssociations);
+        deleteMany2ManyDeep(getMetaModelLocal().getManyToManyAssociations(excludedAssociationsList));
+        deleteChildrenDeep(getMetaModelLocal().getOneToManyAssociations(excludedAssociationsList));
+        deleteChildrenDeep(getMetaModelLocal().getPolymorphicAssociations(excludedAssociationsList));
         delete();
     }
 
 
-    private void deleteMany2ManyDeep(){
+
+    private void deleteMany2ManyDeep(List<Many2ManyAssociation> many2ManyAssociations){
         List<Model>  allMany2ManyChildren = new ArrayList<Model>();
-        List<Many2ManyAssociation> many2ManyAssociations = getMetaModelLocal().getManyToManyAssociations();
         for (Association association : many2ManyAssociations) {
             String targetTableName = association.getTarget();
             Class c = Registry.instance().getModelClass(targetTableName);
@@ -410,7 +428,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     /**
      * Deletes this record from associated table, as well as its immediate children. This is a high performance method
      * because it does not walk through a chain of child dependencies like {@link #deleteCascade()} does, but rather issues
-     * one DELETE statement per child dependency table. Also, its semantics are a bit different between that {@link #deleteCascade()}.
+     * one DELETE statement per child dependency table. Also, its semantics are a bit different between than {@link #deleteCascade()}.
      * It only deletes current record and immediate children, but not their children (no grand kinds are dead as a result :)).
      * <h4>One to many and polymorphic associations</h4>
      * The current record is deleted, as well as immediate children.
@@ -428,7 +446,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
 
     private void deleteJoinsForManyToMany() {
-        List<Association> associations = getMetaModelLocal().getManyToManyAssociations();
+        List<Association> associations = getMetaModelLocal().getManyToManyAssociations(new ArrayList<Association>());
         for(Association association:associations){
             String join = ((Many2ManyAssociation)association).getJoin();
             String sourceFK = ((Many2ManyAssociation)association).getSourceFkName();
@@ -438,7 +456,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     private void deleteOne2ManyChildrenShallow() {
-        List<OneToManyAssociation> childAssociations = getMetaModelLocal().getOneToManyAssociations();
+        List<OneToManyAssociation> childAssociations = getMetaModelLocal().getOneToManyAssociations(new ArrayList<Association>());
         for (OneToManyAssociation association : childAssociations) {
             String  target = association.getTarget();
             String query = "DELETE FROM " + target + " WHERE " + association.getFkName() + " = ?";
@@ -447,7 +465,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     private void deletePolymorphicChildrenShallow() {
-        List<OneToManyPolymorphicAssociation> polymorphics = getMetaModelLocal().getPolymorphicAssociations();
+        List<OneToManyPolymorphicAssociation> polymorphics = getMetaModelLocal().getPolymorphicAssociations(new ArrayList<Association>());
         for (OneToManyPolymorphicAssociation association : polymorphics) {
             String  target = association.getTarget();
             String parentType = association.getTypeLabel();

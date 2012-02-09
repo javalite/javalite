@@ -43,8 +43,6 @@ public class ConnectionsAccess {
      * @return a named connection attached to current thread and bound to name specified by argument.
      */
     static Connection getConnection(String dbName){
-        
-
         return getConnectionMap().get(dbName);
     }
 

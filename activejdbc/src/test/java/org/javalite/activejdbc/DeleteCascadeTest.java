@@ -1,9 +1,14 @@
 package org.javalite.activejdbc;
 
+import org.javalite.activejdbc.cache.CacheEvent;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.*;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.util.List;
 
 
 /**
@@ -84,6 +89,8 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
 
         //case 1: simple: follow many to many, then one to many
         deleteAndPopulateTables("doctors", "patients", "doctors_patients", "prescriptions");
+        Registry.cacheManager().flush(CacheEvent.ALL);
+
         a(Prescription.count()).shouldBeEqual(5);
 
         Doctor.<Model>findById(3).deleteCascade();
@@ -108,8 +115,29 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
         a(Comment.count()).shouldBeEqual(1);
     }
 
+
     @Test
-    @Ignore
+    public void shouldDeleteMany2ManyDeepSkippingAssociation() {
+
+        deleteAndPopulateTables("doctors", "patients", "doctors_patients", "prescriptions");
+        Registry.cacheManager().flush(CacheEvent.ALL);
+
+
+        Registry.cacheManager().flush(CacheEvent.ALL);
+
+        a(Doctor.count()).shouldBeEqual(3);
+        a(Patient.count()).shouldBeEqual(3);
+        a(Prescription.count()).shouldBeEqual(5);
+
+        Patient.findById(3).deleteCascadeExcept(Patient.getMetaModel().getAssociationForTarget("prescriptions"));
+
+        a(Doctor.count()).shouldBeEqual(2);
+        a(Patient.count()).shouldBeEqual(2);
+        a(Prescription.count()).shouldBeEqual(5); //<<< Prescription count is unchanged!
+    }
+
+
+    @Test
     public void shouldDeleteOne2ManyShallow(){
         deleteAndPopulateTables("users", "addresses", "rooms");
 
@@ -137,9 +165,10 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
     }
 
     @Test
-    @Ignore
     public void shouldDeleteMany2ManyShallow(){
         deleteAndPopulateTables("doctors", "patients", "doctors_patients", "prescriptions");
+        Registry.cacheManager().flush(CacheEvent.ALL);
+
         a(Prescription.count()).shouldBeEqual(5);
 
         Doctor.<Model>findById(3).deleteCascadeShallow();
@@ -152,10 +181,12 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
     }
 
     @Test
-    @Ignore
     public void shouldDeletePolymorphicShallow(){
 
+        SubClassification.deleteAll();
+
         deleteAndPopulateTables("vehicles", "mammals", "classifications");
+        Registry.cacheManager().flush(CacheEvent.ALL);
         Vehicle car = (Vehicle)Vehicle.createIt("name", "car");
         Classification fourWheeled = (Classification)Classification.create("name", "four wheeled");
         car.add(fourWheeled);

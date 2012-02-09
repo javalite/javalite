@@ -231,30 +231,30 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
         return singularize(getTableName()).toLowerCase() + "_id";
     }
 
-    protected List<OneToManyAssociation>  getOneToManyAssociations() {
+    protected List<OneToManyAssociation>  getOneToManyAssociations(List<Association> exclusions) {
         List<OneToManyAssociation> one2Manies = new ArrayList<OneToManyAssociation>();
         for (Association association : associations) {
-            if(association.getClass().equals(OneToManyAssociation.class)){
+            if(association.getClass().equals(OneToManyAssociation.class) && !exclusions.contains(association)){
                 one2Manies.add((OneToManyAssociation)association);
             }
         }
         return one2Manies;
     }
 
-    protected List<OneToManyPolymorphicAssociation>  getPolymorphicAssociations() {
+    protected List<OneToManyPolymorphicAssociation>  getPolymorphicAssociations(List<Association> exclusions) {
         List<OneToManyPolymorphicAssociation> one2Manies = new ArrayList<OneToManyPolymorphicAssociation>();
         for (Association association : associations) {
-            if(association.getClass().equals(OneToManyPolymorphicAssociation.class)){
+            if(association.getClass().equals(OneToManyPolymorphicAssociation.class) && !exclusions.contains(association)){
                 one2Manies.add((OneToManyPolymorphicAssociation)association);
             }
         }
         return one2Manies;
     }
 
-    protected List<Many2ManyAssociation>  getManyToManyAssociations() {
+    protected List<Many2ManyAssociation>  getManyToManyAssociations(List<Association> excludedAssociations) {
         List<Many2ManyAssociation> many2Manies = new ArrayList<Many2ManyAssociation>();
         for (Association association : associations) {
-            if(association.getClass().equals(Many2ManyAssociation.class)){
+            if(association.getClass().equals(Many2ManyAssociation.class) && !excludedAssociations.contains(association)){
                 many2Manies .add((Many2ManyAssociation)association);
             }
         }
