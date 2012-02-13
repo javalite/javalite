@@ -196,6 +196,17 @@ public abstract class AppController extends HttpSupport {
         return Configuration.getDefaultLayout();
     }
 
+    /**
+     * Returns hardcoded value "text/html". Override this method to set default content type to a different value across
+     * all actions in controller and its subclasses. This is a convenient method for building REST webservices. You can set
+     * this value once to "text/json", "text/xml" or whatever else you need.
+     *
+     * @return hardcoded value "text/html"
+     */
+    protected String getContentType(){
+        return "text/html";
+    }
+
 /**
      * Returns HttpMethod for an action. By default if actions do not specify a method, and the controller is not
      * {@link org.javalite.activeweb.annotations.RESTful}, then an action is open for GET requests. If a controller is

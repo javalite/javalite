@@ -23,6 +23,8 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
+import javax.servlet.ServletException;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import static org.javalite.common.Collections.map;
@@ -31,204 +33,153 @@ import static org.javalite.test.jspec.JSpec.a;
 /**
  * @author Igor Polevoy
  */
-public class HttpSupportSpec {
-    MockHttpServletResponse httpResp;
-    MockHttpServletRequest httpReq;
-    HttpSupportController controller;
-
-
-    @Before
-    public void before(){
-        Context.setHttpResponse(httpResp = new MockHttpServletResponse());
-        Context.setHttpRequest(httpReq = new MockHttpServletRequest());
-        Context.setRequestContext(new RequestContext());
-        controller = new HttpSupportController();
-    }
+public class HttpSupportSpec extends RequestSpec{
 
     /**
      * tests data set if no render or response or any other method called from action
      */
     @Test
-    public void shouldRenderImplicit() {
+    public void shouldRenderImplicit() throws IOException, ServletException {
 
-        controller.willRenderImplicit();
-        //this step needs to be performed by framework, really, since this is implicit
-        //a ControllerResponse is produced in this step.
-        controller.render("list");
-        a(controller.values().get("name")).shouldBeEqual("Smith");
+        request.setServletPath("/http_support/will_render_implicit");
+        request.setMethod("GET");
 
-        RenderTemplateResponse resp = (RenderTemplateResponse) Context.getControllerResponse();
-        resp.setLayout("/layouts/default_layout");
-        MockTemplateManager templateManager = new MockTemplateManager();
-        resp.setTemplateManager(templateManager);
-        resp.process();
-        a(templateManager.getLayout()).shouldBeEqual("/layouts/default_layout");
-        a(templateManager.getTemplate()).shouldBeEqual("/http_support/list");
-        a(templateManager.getValues().get("name")).shouldBeEqual("Smith");
+        dispatcher.doFilter(request, response, filterChain);
 
-
-        a(httpResp.getContentType()).shouldBeEqual("text/html");
-        a(httpResp.getStatus()).shouldBeEqual(200);
-
-       //at this point, there is nothing in the response, since we used a MockTemplateManager.
+        a(response.getContentAsString()).shouldContain("default layout");
+        a(response.getContentAsString()).shouldContain("Smith");
+        a(response.getStatus()).shouldBeEqual(200);
+        a(response.getContentType()).shouldBeEqual("text/html");
     }
 
 
     @Test
-    public void shouldRenderImplicitOverrideLayoutAndContentType() {
+    public void shouldRenderImplicitOverrideLayoutAndContentType() throws IOException, ServletException {
 
-        Context.setActionName("will_render_explicit");
-        controller.willRenderExplicit();
-        a(controller.values().get("name")).shouldBeEqual("Paul McCartney");
+        request.setServletPath("/http_support/will_render_explicit");
+        request.setMethod("GET");
 
-        RenderTemplateResponse resp = (RenderTemplateResponse) Context.getControllerResponse();
-        MockTemplateManager templateManager = new MockTemplateManager();
-        resp.setTemplateManager(templateManager);
-        resp.process();
-        a(templateManager.getLayout()).shouldBeEqual("custom");
-        a(templateManager.getTemplate()).shouldBeEqual("/http_support/will_render_explicit");
-        a(templateManager.getValues().get("name")).shouldBeEqual("Paul McCartney");
-
-        a(httpResp.getContentType()).shouldBeEqual("text/xml");
-        a(httpResp.getStatus()).shouldBeEqual(200);
+        dispatcher.doFilter(request, response, filterChain);
+        String html = response.getContentAsString();
+        the(html).shouldContain("this is a custom layout");
+        the(html).shouldContain("explicit template");
+        the(html).shouldContain("name: Paul McCartney");
+        the(response.getContentType()).shouldBeEqual("text/html");
+        the(response.getStatus()).shouldBeEqual(200);
     }
 
 
     @Test
-    public void shouldRenderDifferentExplicitView(){
+    public void shouldRenderDifferentExplicitView() throws IOException, ServletException {
 
-        controller.willRenderDifferentView();
+        request.setServletPath("/http_support/will_render_different_view");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+        String html = response.getContentAsString();
 
-        a(controller.values().get("name")).shouldBeEqual("Lady Gaga");
-
-        RenderTemplateResponse resp = (RenderTemplateResponse) Context.getControllerResponse();
-        MockTemplateManager templateManager = new MockTemplateManager();
-        resp.setTemplateManager(templateManager);
-        resp.setLayout("/layouts/default_layout");
-        resp.process();
-        a(templateManager.getLayout()).shouldBeEqual("/layouts/default_layout");
-        a(templateManager.getTemplate()).shouldBeEqual("/http_support/index");
-        a(templateManager.getValues().get("name")).shouldBeEqual("Lady Gaga");
-
-        a(httpResp.getContentType()).shouldBeEqual("text/html");
-        a(httpResp.getStatus()).shouldBeEqual(200);
-    }
-
-
-
-
-    @Test
-    public void shouldRespondWithXML() throws UnsupportedEncodingException {
-        controller.willRespondWithXML();
-        Context.getControllerResponse().process();
-        a(httpResp.getContentAsString()).shouldBeEqual("pretend this is XML...");
-        a(httpResp.getContentType()).shouldBeEqual("text/xml");
-    }
-
-
-    @Test
-    public void shouldStreamOutData() throws UnsupportedEncodingException {
-        controller.willStreamOut();
-        Context.getControllerResponse().process();
-        a(httpResp.getContentAsString()).shouldBeEqual("streaming data");
-        a(httpResp.getContentType()).shouldBeEqual("application/pdf");
+        the(html).shouldContain("default layout");
+        the(html).shouldContain("index page");
+        the(html).shouldContain("Lady Gaga");
+        the(response.getContentType()).shouldBeEqual("text/html");
+        the(response.getStatus()).shouldBeEqual(200);
     }
 
     @Test
-    public void shouldReturnNamedParam(){
-        MockHttpServletRequest req = new MockHttpServletRequest();
-        req.setParameter("name", "igor");
-        Context.setHttpRequest(req);
-        a(controller.param("name")).shouldBeEqual("igor");
+    public void shouldRespondWithXML() throws IOException, ServletException {
+
+        request.setServletPath("/http_support/will_respond_with_xml");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+        String html = response.getContentAsString();
+
+        a(html).shouldBeEqual("pretend this is XML...");
+        a(response.getStatus()).shouldBeEqual(200);
+        a(response.getContentType()).shouldBeEqual("text/xml");
     }
 
     @Test
-    public void shouldReturnMultipleParamsForName(){
-        MockHttpServletRequest req = new MockHttpServletRequest();
-        req.setParameter("cities", new String[]{"Chicago", "New York"});
-        Context.setHttpRequest(req);
-        a(controller.params("cities").size()).shouldBeEqual(2);
-        a(controller.params("cities").get(0)).shouldBeEqual("Chicago");
-        a(controller.params("cities").get(1)).shouldBeEqual("New York");
+    public void shouldStreamOutData() throws IOException, ServletException {
+
+        request.setServletPath("/http_support/will_stream_out");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+        String html = response.getContentAsString();
+
+        a(html).shouldBeEqual("streaming data");
+        a(response.getStatus()).shouldBeEqual(200);
+        a(response.getContentType()).shouldBeEqual("application/pdf");
     }
 
     @Test
-    public void shouldNotFailIfNoParams() {
-        MockHttpServletRequest req = new MockHttpServletRequest();
-        req.setParameter("cities", (String[])null);
-        Context.setHttpRequest(req);
-        a(controller.params("cities").size()).shouldBeEqual(0);
-    }
+    public void shouldRetrieveCookies() throws IOException, ServletException {
 
-    @Test
-    public void shouldRetrieveCookies(){
-
-        MockHttpServletRequest req = new MockHttpServletRequest();
         javax.servlet.http.Cookie cookie = new javax.servlet.http.Cookie("test", "test value");
+        request.setCookies(new javax.servlet.http.Cookie[]{cookie});
+        request.setServletPath("/http_support/will_retrieve_cookie");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+        String html = response.getContentAsString();
 
-        req.setCookies(new javax.servlet.http.Cookie[]{cookie});
-        Context.setHttpRequest(req);
-        controller.willRetrieveCookie();
-        Cookie awCookie = (Cookie )controller.values().get("cookie");
-        a(awCookie).shouldNotBeNull();
-        a(awCookie.getName()).shouldBeEqual("test");
-        a(awCookie.getValue()).shouldBeEqual("test value");
+        the(html).shouldContain("cookie name: test");
+        the(html).shouldContain("cookie value: test value");
     }
 
     @Test
-    public void shouldSendCookie(){
-        controller.willSendCookie();
-        javax.servlet.http.Cookie cookie  = httpResp.getCookie("user");
+    public void shouldSendCookie() throws IOException, ServletException {
+
+        request.setServletPath("/http_support/will_send_cookie");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+
+        javax.servlet.http.Cookie cookie  = response.getCookie("user");
         a(cookie).shouldNotBeNull();
         a(cookie.getName()).shouldBeEqual("user");
         a(cookie.getValue()).shouldBeEqual("Fred");
     }
 
     @Test
-    public void shouldPassDefaultLayout(){
-        controller.willSendCookie();
-        javax.servlet.http.Cookie cookie  = httpResp.getCookie("user");
-        a(cookie).shouldNotBeNull();
-        a(cookie.getName()).shouldBeEqual("user");
-        a(cookie.getValue()).shouldBeEqual("Fred");
+    public void shouldRedirectToDifferentAction() throws IOException, ServletException {
+
+        request.setServletPath("/http_support/will_redirect");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+        a(response.getRedirectedUrl()).shouldBeEqual("another_controller/index");
     }
 
     @Test
-    public void shouldRedirectToDifferentAction() {
-        controller.willRedirect();
-        Context.getControllerResponse().process();
-        a(httpResp.getRedirectedUrl()).shouldBeEqual("another_controller/index");
+    public void shouldRedirectToURL() throws IOException, ServletException {
+        request.setServletPath("/http_support/will_redirect_url");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+        a(response.getRedirectedUrl()).shouldBeEqual("http://yahoo.com");
     }
 
     @Test
-    public void shouldRedirectToURL() {
-        controller.willRedirectURL();
-        Context.getControllerResponse().process();
-        a(httpResp.getRedirectedUrl()).shouldBeEqual("http://yahoo.com");
+    public void shouldRedirectToController() throws IOException, ServletException {
+
+        request.setServletPath("/http_support/will_redirect_to_controller");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+        a(response.getRedirectedUrl()).shouldBeEqual("/test_context/hello/abc_action/123?name=john");
     }
 
     @Test
-    public void shouldRedirectToController() {
-        ((MockHttpServletRequest) Context.getHttpRequest()).setContextPath("/webapp1");
-        controller.willRedirectToController();
-        Context.getControllerResponse().process();
-        a(httpResp.getRedirectedUrl()).shouldBeEqual("/webapp1/hello/abc_action/123?name=john");
+    public void shouldPassValuesAsVararg() throws IOException, ServletException {
+
+        request.setServletPath("/http_support/will_pass_vararg");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+        String html = response.getContentAsString();
+        the(html).shouldContain("1,2");
     }
 
     @Test
-    public void shouldPassValuesAsVararg() {
-        HttpSupport httpSupport  = new HttpSupport();
-        httpSupport.view("one", 1, "two", 2);
-        a(httpReq.getAttribute("one")).shouldBeEqual(1);
-        a(httpReq.getAttribute("two")).shouldBeEqual(2);
-    }
-
-    @Test
-    public void shouldPassValuesAsMap() {
-        HttpSupport httpSupport  = new HttpSupport();
-        httpSupport.view(map("one", 1, "two", 2));
-        a(httpReq.getAttribute("one")).shouldBeEqual(1);
-        a(httpReq.getAttribute("two")).shouldBeEqual(2);
+    public void shouldPassValuesAsMap() throws IOException, ServletException {
+        request.setServletPath("/http_support/will_pass_map");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+        String html = response.getContentAsString();
+        the(html).shouldContain("2,1");
     }
 
 

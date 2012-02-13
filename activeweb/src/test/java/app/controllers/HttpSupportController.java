@@ -35,7 +35,7 @@ public class HttpSupportController extends AppController {
 
     public void willRenderExplicit(){
         assign("name", "Paul McCartney");
-        render().layout("custom").contentType("text/xml");
+        render().layout("/http_support/custom").contentType("text/html");
     }
 
     public void willRenderDifferentView(){
@@ -53,10 +53,10 @@ public class HttpSupportController extends AppController {
         redirect("another_controller/index");
     }
 
-    public void willRedirectURL(){
+    public void willRedirectUrl(){
         redirect("http://yahoo.com");
     }
-    public void willRespondWithXML(){
+    public void willRespondWithXml(){
         respond("pretend this is XML...").contentType("text/xml");
     }
 
@@ -76,5 +76,13 @@ public class HttpSupportController extends AppController {
 
     public void willRedirectToController(){
         redirect(HelloController.class, map("action", "abc_action", "id", "123", "name", "john"));
+    }
+
+    public void willPassVararg(){
+        view("one", 1, "two", 2);
+    }
+
+    public void willPassMap(){
+        view(map("one", 1, "two", 2));
     }
 }

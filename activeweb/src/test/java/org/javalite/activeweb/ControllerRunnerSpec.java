@@ -59,4 +59,23 @@ public class ControllerRunnerSpec extends RequestSpec{
         String html = response.getContentAsString();
         a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("Ben Stiller");
     }
+
+    @Test
+    public void shouldUseDefaultContentType() throws IOException, ServletException {
+
+        request.setServletPath("/default_content_type");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+        a(response.getContentType()).shouldBeEqual("text/html");
+    }
+
+
+        @Test
+    public void shouldUseCustomContentType() throws IOException, ServletException {
+
+        request.setServletPath("/custom_content_type");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+        a(response.getContentType()).shouldBeEqual("application/json");
+    }
 }

@@ -50,6 +50,7 @@ public abstract class RequestSpec extends JSpecSupport {
     public void before() throws ServletException, IOException, IllegalAccessException, InstantiationException {
         dispatcher = new RequestDispatcher();
         request = new MockHttpServletRequest();
+        request.setContextPath("/test_context");
         dispatcher.init(new MockFilterConfig());
         response = new MockHttpServletResponse();
         config = new MockFilterConfig();

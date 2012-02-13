@@ -23,7 +23,7 @@ import java.util.Map;
  */
 abstract class ControllerResponse {
 
-    private String contentType = "text/html";
+    private String contentType;
     private int status = 200;
 
     private boolean statusSet = false;

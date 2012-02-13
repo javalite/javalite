@@ -102,6 +102,10 @@ class ControllerRunner {
             if(!Configuration.getDefaultLayout().equals(controllerLayout)){
                 resp.setLayout(controllerLayout);//could be a real layout ot null for no layout
             }
+            if(resp.getContentType() == null){
+                resp.setContentType(route.getController().getContentType());
+            }
+
 
             Context.setControllerResponse(resp);
             resp.setTemplateManager(Configuration.getTemplateManager());
@@ -112,7 +116,9 @@ class ControllerRunner {
             if(!Configuration.getDefaultLayout().equals(controllerLayout) && Configuration.getDefaultLayout().equals(responseLayout)){
                 resp.setLayout(controllerLayout);
             }
-
+            if(resp.getContentType() == null){
+                resp.setContentType(route.getController().getContentType());
+            }
             resp.setTemplateManager(Configuration.getTemplateManager());
         }
 
@@ -122,6 +128,9 @@ class ControllerRunner {
             ParamCopy.copyInto((controllerResponse.values()));
             controllerResponse.process();
         }else if(!(controllerResponse instanceof RenderTemplateResponse)){
+            if(controllerResponse.getContentType() == null){
+                controllerResponse.setContentType(route.getController().getContentType());
+            }
             controllerResponse.process();
         }
     }
