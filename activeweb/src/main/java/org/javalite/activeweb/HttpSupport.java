@@ -61,6 +61,10 @@ public class HttpSupport {
         logger.error(info);
     }
 
+    protected void logError(Throwable e){
+        logger.error("", e);
+    }
+
     protected void logError(String info, Throwable e){
         logger.error(info, e);
     }
