@@ -718,7 +718,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Override in a subclass to imject customn content onto XML just before the closing tag.
+     * Override in a subclass to inject custom content onto XML just before the closing tag.
      *
      * @param spaces number of spaces of indent
      * @param writer to write content to.
