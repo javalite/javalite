@@ -20,26 +20,26 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 
-// This text will be stored with each diagram;  use it for notes.</help_text><zoom_level>10</zoom_level><element><type>com.umlet.element.base.Class</type><coordinates><x>400</x><y>300</y><w>120</w><h>30</h></coordinates><panel_attributes>Cheese
-bg=red</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>590</x><y>310</y><w>50</w><h>130</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>30;30;30;110</additional_attributes></element><element><type>com.umlet.element.base.Class</type><coordinates><x>560</x><y>420</y><w>150</w><h>50</h></coordinates><panel_attributes>Cake
+// This text will be stored with each diagram;  use it for notes.</help_text><zoom_level>10</zoom_level><element><type>com.umlet.element.base.Class</type><coordinates><x>160</x><y>300</y><w>120</w><h>30</h></coordinates><panel_attributes>Cheese
+bg=pink</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>350</x><y>310</y><w>50</w><h>130</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>30;30;30;110</additional_attributes></element><element><type>com.umlet.element.base.Class</type><coordinates><x>320</x><y>420</y><w>150</w><h>50</h></coordinates><panel_attributes>Cake
 --
 Table: CAKES
 bg=green
-</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Class</type><coordinates><x>580</x><y>200</y><w>120</w><h>30</h></coordinates><panel_attributes>(A) Dessert
+</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Class</type><coordinates><x>340</x><y>200</y><w>120</w><h>30</h></coordinates><panel_attributes>(A) Dessert
 bg=pink
 
-</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Class</type><coordinates><x>400</x><y>200</y><w>140</w><h>50</h></coordinates><panel_attributes>Meal
+</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Class</type><coordinates><x>160</x><y>200</y><w>140</w><h>50</h></coordinates><panel_attributes>Meal
 --
 Table: MEALS
 bg=green
-</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Class</type><coordinates><x>560</x><y>310</y><w>130</w><h>30</h></coordinates><panel_attributes>(A) Pastry
-bg=pink</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Class</type><coordinates><x>750</x><y>310</y><w>150</w><h>50</h></coordinates><panel_attributes>Sword
+</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Class</type><coordinates><x>320</x><y>310</y><w>130</w><h>30</h></coordinates><panel_attributes>(A) Pastry
+bg=pink</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Class</type><coordinates><x>510</x><y>310</y><w>150</w><h>50</h></coordinates><panel_attributes>Sword
 --
 Table: SWORDS
 
 bg=green
-</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Class</type><coordinates><x>740</x><y>200</y><w>120</w><h>30</h></coordinates><panel_attributes>(A) Weapon
+</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Class</type><coordinates><x>500</x><y>200</y><w>120</w><h>30</h></coordinates><panel_attributes>(A) Weapon
 bg=pink
-</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>600</x><y>200</y><w>50</w><h>130</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>30;30;30;110</additional_attributes></element><element><type>com.umlet.element.base.Class</type><coordinates><x>580</x><y>70</y><w>120</w><h>30</h></coordinates><panel_attributes>Model
+</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>360</x><y>200</y><w>50</w><h>130</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>30;30;30;110</additional_attributes></element><element><type>com.umlet.element.base.Class</type><coordinates><x>340</x><y>70</y><w>120</w><h>30</h></coordinates><panel_attributes>Model
 bg=pink
-</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>610</x><y>70</y><w>50</w><h>150</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>30;30;30;130</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>430</x><y>220</y><w>50</w><h>100</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>30;30;30;80</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>420</x><y>70</y><w>200</w><h>150</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>180;30;30;130</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>630</x><y>70</y><w>180</w><h>150</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>30;30;160;130</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>780</x><y>200</y><w>50</w><h>130</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>30;30;30;110</additional_attributes></element></umlet_diagram>
+</panel_attributes><additional_attributes/></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>370</x><y>70</y><w>50</w><h>150</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>30;30;30;130</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>190</x><y>220</y><w>50</w><h>100</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>30;30;30;80</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>180</x><y>70</y><w>200</w><h>150</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>180;30;30;130</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>390</x><y>70</y><w>180</w><h>150</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>30;30;160;130</additional_attributes></element><element><type>com.umlet.element.base.Relation</type><coordinates><x>540</x><y>200</y><w>50</w><h>130</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>30;30;30;110</additional_attributes></element></umlet_diagram>
