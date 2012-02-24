@@ -71,7 +71,7 @@ class ControllerRunner {
             Context.setControllerResponse(null);//must blow away, as this response is not valid anymore.
 
             if (exceptionHandled(e, globalFilters, controllerFilters, actionFilters)) {
-                logger.info("A filter has called render(..) method, proceeding to render it...");
+                logger.debug("A filter has called render(..) method, proceeding to render it...");
                 renderResponse(route, integrateViews);//a filter has created an instance of a controller response, need to render it.
             }else{
                 throw e;//if exception was not handled by filter, re-throw
