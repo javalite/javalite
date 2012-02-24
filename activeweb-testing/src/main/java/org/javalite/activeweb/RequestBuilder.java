@@ -60,7 +60,7 @@ public class RequestBuilder {
      * @param fieldName name of field name - this is typically a name of a HTML form field.
      * @param isFile set true for file, false for regular field. 
      * @param contentType this is content type for this field, not the request. Set to a value reflecting the file
-     * content, such as "image/png", "applicaiton/pdf", etc. 
+     * content, such as "image/png", "application/pdf", etc.
      * @param content this is the binary content of the file.
      * @return {@link org.javalite.activeweb.RequestBuilder} for setting additional request parameters.
      */
@@ -209,7 +209,7 @@ public class RequestBuilder {
      * @return instance of RequestBuilder
      */
     public RequestBuilder integrateViews() {
-        integrateViews = true;
+        integrateViews(true);
         return this;
     }
 
@@ -308,7 +308,7 @@ public class RequestBuilder {
         }else{
             request.setMethod(method.toString());
         }
-
+        Context.getRequestContext().set("integrateViews", integrateViews);
         addHeaders(request);
         addParameterValues(request);
         try{

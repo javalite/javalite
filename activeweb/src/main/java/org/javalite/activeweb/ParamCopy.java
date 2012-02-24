@@ -70,7 +70,8 @@ class ParamCopy {
             Object name = names.nextElement();
             String[] values = Context.getHttpRequest().getParameterValues(name.toString());
             Object value = values != null && values.length == 1 ? values[0] : values;
-            requestParameterMap.put(name.toString(), value.toString());
+            if(value != null)
+                requestParameterMap.put(name.toString(), value.toString());
         }
         assigns.put("request", requestParameterMap);
     }

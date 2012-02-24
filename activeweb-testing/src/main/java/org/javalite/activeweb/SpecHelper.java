@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.mock.web.MockFilterConfig;
 
+import static org.javalite.common.Util.blank;
+
 /**
  * This class is not used directly in applications.
  * 
@@ -41,8 +43,8 @@ import org.springframework.mock.web.MockFilterConfig;
  */
 public class SpecHelper extends JSpecSupport{
 
-    private MockHttpSession session;
-    SessionTestFacade sessionFacade;
+
+    private SessionTestFacade sessionFacade;
 
     protected SessionTestFacade session(){
         return sessionFacade;
@@ -95,7 +97,17 @@ public class SpecHelper extends JSpecSupport{
      */
     protected String responseContent(){
         try{
-            return ((MockHttpServletResponse) Context.getHttpResponse()).getContentAsString();
+            Boolean integrateViews = (Boolean) Context.getRequestContext().get("integrateViews");
+
+            //content can be provided simply by respond() method
+            String content = ((MockHttpServletResponse) Context.getHttpResponse()).getContentAsString();
+            if(!integrateViews && blank(content)){
+                throw new SpecException("Use integrateViews() method to generate response content");
+            }
+            return content;
+        }
+        catch(SpecException e){
+            throw e;
         }
         catch(Exception e){
             throw new SpecException(e);
