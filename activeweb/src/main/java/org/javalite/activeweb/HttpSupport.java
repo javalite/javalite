@@ -624,6 +624,33 @@ public class HttpSupport {
         Context.getHttpResponse().setLocale(locale);
     }
 
+    /**
+     * Same as {@link #setLocale(java.util.Locale)}
+     *
+     * @param locale locale for response
+     */
+    protected void locale(Locale locale){
+        Context.getHttpResponse().setLocale(locale);
+    }
+
+    /**
+     * Returns locale of request.
+     *
+     * @return locale of request.
+     */
+    protected Locale locale(){
+        return Context.getHttpRequest().getLocale();
+    }
+
+    /**
+     * Same as {@link #locale()}.
+     *
+     * @return locale of request.
+     */
+    protected Locale getLocale(){
+        return Context.getHttpRequest().getLocale();
+    }
+
 
     /**
      * Returns a map where keys are names of all parameters, while values are first value for each parameter, even
