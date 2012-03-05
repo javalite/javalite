@@ -67,7 +67,7 @@ class ControllerRunner {
         catch(ActionNotFoundException e){
             throw e;
         }
-        catch (WebException e) {
+        catch (RuntimeException e) {
             Context.setControllerResponse(null);//must blow away, as this response is not valid anymore.
 
             if (exceptionHandled(e, globalFilters, controllerFilters, actionFilters)) {
