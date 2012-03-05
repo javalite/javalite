@@ -25,13 +25,13 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
 
-import static org.javalite.activeweb.SystemStreamUtil.getSystemErr;
-import static org.javalite.activeweb.SystemStreamUtil.replaceError;
-import static org.javalite.activeweb.SystemStreamUtil.restoreSystemErr;
+import java.io.IOException;
+
+import static org.javalite.test.SystemStreamUtil.getSystemErr;
+import static org.javalite.test.SystemStreamUtil.replaceError;
+import static org.javalite.test.SystemStreamUtil.restoreSystemErr;
+
 
 /**
  * @author Igor Polevoy

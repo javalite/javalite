@@ -17,11 +17,10 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import app.controllers.*;
+import org.javalite.test.SystemStreamUtil;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.servlet.ServletException;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 /**
