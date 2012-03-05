@@ -44,7 +44,7 @@ public class RequestPropertiesLogFilter extends AbstractLoggingFilter{
     }
 
     protected String getMessage() {
-        StringBuffer sb = new StringBuffer("\n");
+        StringBuilder sb = new StringBuilder("\n");
         sb.append("Request URL: ").append(url()).append("\n");
         sb.append("ContextPath: ").append(context()).append("\n");
         sb.append("Query String: ").append(queryString()).append("\n");

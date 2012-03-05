@@ -38,12 +38,12 @@ public class UploadControllerSpec extends IntegrationSpec{
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailIfMultipartAndParamUsed(){
-        controller("upload").contentType("multipart/form-data").param("fake", "fake");
+        controller("upload").contentType("multipart/form-data").param("fake", "fake").get("index");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailIfMultipartAndParamUsedreversed(){
-        controller("upload").param("fake", "fake").contentType("multipart/form-data");
+        controller("upload").param("fake", "fake").contentType("multipart/form-data").get("index");
     }
 
     @Test

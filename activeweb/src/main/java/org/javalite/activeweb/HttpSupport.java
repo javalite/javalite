@@ -421,6 +421,19 @@ public class HttpSupport {
         }
     }
 
+
+    /**
+     * Tests if a request parameter exists. Disregards tge value completely - this
+     * can be empty string, but as long as parameter does exist, this method returns true.
+     *
+     * @param name name of request parameter to test.
+     * @return true if parameter exists, false if not.
+     */
+    protected boolean exists(String name){
+        return param(name) != null;
+    }
+
+
     /**
      * Returns local host name on which request was received.
      * 

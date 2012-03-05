@@ -115,10 +115,25 @@ public class RequestBuilder {
         }else{
             values.put(name, value.toString());
         }
-        checkParamAndMultipart();
         return this;
     }
 
+
+    /**
+     * Convenience method, exists to pass parameters with blank values.
+     * Calling this method such as:  <code>param("flag")</code> is equivalent to:
+     * <code>param("flag", "")</code>
+     *
+     * @param name name of parameter to pass
+     * @return instance of RequestBuilder.
+     */
+    public RequestBuilder param(String name) {
+
+        if(name == null) throw new IllegalArgumentException("name can't be null");
+
+        values.put(name, "");
+        return this;
+    }
 
     /**
      * Sets a single header for the request.
@@ -185,7 +200,6 @@ public class RequestBuilder {
      */
     public RequestBuilder contentType(String contentType) {                
         this.contentType = contentType;
-        checkParamAndMultipart();
         return this;
     }
 
@@ -267,6 +281,9 @@ public class RequestBuilder {
 
 
     private void submitRequest(String actionName, HttpMethod method) {
+
+        checkParamAndMultipart();
+
         //TODO: refactor this method, getting out of control        
         if(contentType != null && contentType.equals(MULTIPART) && formItems.size() > 0){
             request = new MockMultipartHttpServletRequestImpl();
