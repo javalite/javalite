@@ -723,8 +723,22 @@ public class HttpSupport {
      * @return session object.
      */
     protected Object sessionObject(String name){
-        return session().get(name);
+        return session(name);
     }
+
+    /**
+     * Synonym of {@link #sessionObject(String)}.
+     *
+     * @param name name of session attribute
+     * @return value of session attribute of null if not found
+     */
+    protected Object session(String name){
+        Object val = session().get(name);
+        return val == null ? null : val;
+    }
+
+
+
 
     /**
      * Convenience method, returns object from session, equivalent of:
@@ -738,7 +752,7 @@ public class HttpSupport {
      * @return value
      */
     protected String sessionString(String name){
-        return (String)session().get(name);
+        return Convert.toString(session(name));
     }
 
 
@@ -755,7 +769,7 @@ public class HttpSupport {
      * @return value
      */
     protected Integer sessionInteger(String name){
-        return Convert.toInteger(session().get(name));
+        return Convert.toInteger(session(name));
     }
 
     /**
@@ -770,7 +784,7 @@ public class HttpSupport {
      * @return value
      */
     protected Boolean sessionBoolean(String name){
-        return Convert.toBoolean(session().get(name));
+        return Convert.toBoolean(session(name));
     }
 
     /**
@@ -785,7 +799,7 @@ public class HttpSupport {
      * @return value
      */
     protected Double sessionDouble(String name){
-        return Convert.toDouble(session().get(name));
+        return Convert.toDouble(session(name));
     }
 
     /**
@@ -800,7 +814,7 @@ public class HttpSupport {
      * @return value
      */
     protected Float sessionFloat(String name){
-        return Convert.toFloat(session().get(name));
+        return Convert.toFloat(session(name));
     }
 
     /**
@@ -815,7 +829,7 @@ public class HttpSupport {
      * @return value
      */
     protected Long sessionLong(String name){
-        return Convert.toLong(session().get(name));
+        return Convert.toLong(session(name));
     }
 
     /**
@@ -826,7 +840,6 @@ public class HttpSupport {
      */
     protected boolean sessionHas(String name){
         return session().get(name) != null;
-
     }
 
     /**

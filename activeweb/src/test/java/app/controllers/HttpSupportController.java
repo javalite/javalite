@@ -85,4 +85,10 @@ public class HttpSupportController extends AppController {
     public void willPassMap(){
         view(map("one", 1, "two", 2));
     }
+
+    public void getSessionAttr(){
+        view("exists", sessionHas("name"));
+        render().noLayout();
+    }
+
 }

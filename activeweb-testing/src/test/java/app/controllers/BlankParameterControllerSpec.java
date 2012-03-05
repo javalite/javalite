@@ -15,9 +15,4 @@ public class BlankParameterControllerSpec extends ControllerSpec {
         a(val("exists")).shouldBeTrue();
         a(val("flag1")).shouldEqual("");
     }
-
-    @Test
-    public void shouldTestFlagExists(){
-
-    }
 }

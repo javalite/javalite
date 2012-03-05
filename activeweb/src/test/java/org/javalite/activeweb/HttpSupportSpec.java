@@ -183,4 +183,25 @@ public class HttpSupportSpec extends RequestSpec{
     }
 
 
+    @Test
+    public void shouldNotGetNPEWhenGettingNonExistentSessionValue1() throws IOException, ServletException {
+
+        request.setServletPath("/http_support/get_session_attr");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+        String html = response.getContentAsString();
+        a(html).shouldEqual("false");
+    }
+
+    @Test
+    public void shouldNotGetNPEWhenGettingNonExistentSessionValue2() throws IOException, ServletException {
+
+        request.getSession().setAttribute("name", "igor");
+        request.setServletPath("/http_support/get_session_attr");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+        String html = response.getContentAsString();
+        a(html).shouldEqual("true");
+    }
+
 }
