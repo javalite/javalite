@@ -42,7 +42,7 @@ public class SessionControllerSpec extends ControllerSpec {
     }
 
 
-    @Test(expected = ControllerException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void shouldRejectSettingNameSessionIntoParams(){
         request().integrateViews().get("bad_action");
     }

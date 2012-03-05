@@ -330,6 +330,8 @@ public class RequestBuilder {
             runner.run(new Route(controller, actionName),  integrateViews);
         }catch(WebException e){
             throw e;
+        }catch(RuntimeException e){
+            throw e;
         }catch(Exception e){
             throw new SpecException(e);
         }

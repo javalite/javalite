@@ -138,8 +138,11 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
-        a(getSystemErr().contains("activeweb.ControllerException")).shouldBeTrue();
-        a(response.getContentAsString()).shouldBeEqual("java.lang.ArithmeticException: / by zero; / by zero");// this is coming from a system/error.ftl
+
+        a(getSystemErr().contains("java.lang.ArithmeticException")).shouldBeTrue();
+
+        System.out.println(response.getContentAsString());
+        a(response.getContentAsString()).shouldBeEqual("/ by zero");// this is coming from a system/error.ftl
         a(response.getStatus()).shouldBeEqual(500);
     }
 
@@ -300,8 +303,8 @@ public class RequestDispatcherSpec extends RequestSpec {
         request.setMethod("GET");
         request.addHeader("X-Requested-With", "XMLHttpRequest");
         dispatcher.doFilter(request, response, filterChain);
-        String out = response.getContentAsString();        
-        the(out.contains("activeweb.ControllerException: java.lang.ArithmeticException: / by zero; / by zero\n")).shouldBeTrue();
+        String out = response.getContentAsString();
+        the(out.contains("java.lang.ArithmeticException: / by zero")).shouldBeTrue();
     }
 
 
@@ -310,6 +313,21 @@ public class RequestDispatcherSpec extends RequestSpec {
         replaceError();
         dispatcher.destroy();
         a(getSystemErr()).shouldBeEqual("ahrrr! destroyed!");
+    }
+
+    @Test
+    public void shouldNotWrapRuntimeException() throws IOException, ServletException {
+
+        request.setServletPath("/db_exception");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+
+
+
+        System.out.println(response.getContentAsString());
+
+
+
     }
     
 

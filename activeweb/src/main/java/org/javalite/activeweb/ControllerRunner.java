@@ -211,6 +211,8 @@ class ControllerRunner {
         }catch(InvocationTargetException e){
             if(e.getCause() != null && e.getCause() instanceof  WebException){
                 throw (WebException)e.getCause();                
+            }else if(e.getCause() != null && e.getCause() instanceof RuntimeException){
+                throw (RuntimeException)e.getCause();
             }else if(e.getCause() != null){
                 throw new ControllerException(e.getCause());
             }
