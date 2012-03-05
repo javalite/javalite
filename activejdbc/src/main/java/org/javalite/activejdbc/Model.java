@@ -919,9 +919,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             throw new IllegalArgumentException("can only copy between the same types");
         }
 
-        List<String> attrs = getMetaModelLocal().getAttributeNamesSkipGenerated();
+        List<String> attrs = getMetaModelLocal().getAttributeNamesSkip(getMetaModelLocal().getIdName());
         for (String name : attrs) {
-            other.set(name, get(name));
+            other.attributes.put(name, get(name));
         }
     }
 
