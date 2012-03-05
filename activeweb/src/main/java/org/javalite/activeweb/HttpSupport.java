@@ -859,6 +859,9 @@ public class HttpSupport {
      */
     public List<Cookie> cookies(){
         javax.servlet.http.Cookie[] servletCookies = Context.getHttpRequest().getCookies();
+        if(servletCookies == null)
+            return new ArrayList<Cookie>();
+
         List<Cookie> cookies = new ArrayList<Cookie>();
         for (javax.servlet.http.Cookie servletCookie: servletCookies) {
             Cookie cookie = Cookie.fromServletCookie(servletCookie);

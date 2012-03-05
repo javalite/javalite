@@ -91,4 +91,10 @@ public class HttpSupportController extends AppController {
         render().noLayout();
     }
 
+
+    public void getCookies(){
+        view("count", cookies().size());
+        render().noLayout();
+    }
+
 }

@@ -16,19 +16,11 @@ limitations under the License.
 package org.javalite.activeweb;
 
 
-import app.controllers.HttpSupportController;
-import org.javalite.activeweb.mock.MockTemplateManager;
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-
-import static org.javalite.common.Collections.map;
-import static org.javalite.test.jspec.JSpec.a;
 
 /**
  * @author Igor Polevoy
@@ -204,4 +196,23 @@ public class HttpSupportSpec extends RequestSpec{
         a(html).shouldEqual("true");
     }
 
+    @Test
+    public void shouldNotGetNPEWhenGettingCookiesAndNoCookiesExist() throws IOException, ServletException {
+
+        request.setServletPath("/http_support/get_cookies");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+        String html = response.getContentAsString();
+        a(html).shouldEqual("0");
+    }
+
+    @Test
+    public void shouldCountCookies() throws IOException, ServletException {
+        request.setCookies(new javax.servlet.http.Cookie[]{new Cookie("name", "value"), new Cookie("name1", "value1")});
+        request.setServletPath("/http_support/get_cookies");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+        String html = response.getContentAsString();
+        a(html).shouldEqual("2");
+    }
 }
