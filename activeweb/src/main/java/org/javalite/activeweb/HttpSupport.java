@@ -423,13 +423,23 @@ public class HttpSupport {
 
 
     /**
-     * Tests if a request parameter exists. Disregards tge value completely - this
+     * Tests if a request parameter exists. Disregards the value completely - this
      * can be empty string, but as long as parameter does exist, this method returns true.
      *
      * @param name name of request parameter to test.
      * @return true if parameter exists, false if not.
      */
     protected boolean exists(String name){
+        return param(name) != null;
+    }
+
+    /**
+     * Synonym of {@link #exists(String)}.
+     *
+     * @param name name of request parameter to test.
+     * @return true if parameter exists, false if not.
+     */
+    protected boolean requestHas(String name){
         return param(name) != null;
     }
 
