@@ -2067,6 +2067,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
             fireAfterCreate(this);
             return true;
+        } catch (DBException e) {
+            throw e;
         } catch (Exception e) {
             throw new DBException(e.getMessage(), e);
         }
