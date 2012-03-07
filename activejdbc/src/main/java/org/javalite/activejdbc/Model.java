@@ -744,41 +744,51 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         List<String> attrList = Arrays.asList(attrs);
         Collections.sort(attrList);
 
-                StringWriter sw = new StringWriter();
+        StringWriter sw = new StringWriter();
 
-                sw.write(indent  +  "{"  + (pretty?"\n  " + indent: "") + "\"model_class\":\"" + getClass().getName() + "\",");
+        sw.write(indent + "{" + (pretty ? "" + indent : ""));
 
-                List<String> attributeStrings = new ArrayList<String>();
+        if(attrList.size() == 0){
+            sw.write("\"model_class\":\"" + getClass().getName() + "\",");
+        }
 
-                for (String name : attributes.keySet()) {
-                    if (attrList.contains(name) || attrList.size() == 0){
-                        String val = getString(name);
-                        val = val == null? val : val.replaceAll("\"", "\\\\\"");
-                        attributeStrings.add((pretty?"\n  " + indent: "") + "\"" + name + "\":\"" + val + "\"" );
-                    }
+        List<String> attributeStrings = new ArrayList<String>();
+
+        if (attrList.size() == 0) {
+            for (String name : attributes.keySet()) {
+                String val = getString(name);
+                val = val == null ? val : val.replaceAll("\"", "\\\\\"");
+                attributeStrings.add((pretty ? "\n  " + indent : "") + "\"" + name + "\":\"" + val + "\"");
+            }
+        } else {
+            for (String name : attrList) {
+                String val = getString(name);
+                val = val == null ? val : val.replaceAll("\"", "\\\\\"");
+                attributeStrings.add((pretty ? "\n  " + indent : "") + "\"" + name + "\":\"" + val + "\"");
+            }
+        }
+        sw.write(Util.join(attributeStrings, ","));
+
+        if (cachedChildren != null && cachedChildren.size() > 0) {
+
+            sw.write("," + (pretty ? "\n  " + indent : "") + "\"children\" : {");
+
+            for (Class childClass : cachedChildren.keySet()) {
+                String name = Inflector.pluralize(childClass.getSimpleName()).toLowerCase();
+                sw.write((pretty ? "\n" + indent + "    " : "") + "\"" + name + "\" : [");
+                List<String> childrenList = new ArrayList<String>();
+                for (Model child : cachedChildren.get(childClass)) {
+                    childrenList.add((pretty ? "\n" + indent : "") + child.toJsonP(pretty, (pretty ? indent + "    " : "")));
                 }
-                sw.write(Util.join(attributeStrings,  ","  ));
+                sw.write(Util.join(childrenList, ","));
+                sw.write((pretty ? "\n" + indent + indent : "") + "]");
+            }
+            sw.write((pretty ? "\n" + indent + indent : "") + "}");
+        }
 
-                if(cachedChildren != null  && cachedChildren.size() > 0){
-
-                    sw.write("," + (pretty? "\n  " + indent :"") + "\"children\" : {");
-
-                    for(Class childClass :cachedChildren.keySet()){
-                        String name = Inflector.pluralize(childClass.getSimpleName()).toLowerCase();
-                        sw.write((pretty?"\n" + indent + "    ":"") +"\"" + name  + "\" : [");
-                        List<String> childrenList = new ArrayList<String>();
-                        for(Model child: cachedChildren.get(childClass)){
-                            childrenList.add((pretty?"\n" + indent:"")  + child.toJsonP(pretty, (pretty?indent + "    ":"")));
-                        }
-                        sw.write(Util.join(childrenList, ","));
-                        sw.write((pretty?"\n" + indent + indent :"")  + "]");
-                    }
-                    sw.write((pretty?"\n" + indent + indent :"")  + "}");
-                }
-
-                beforeClosingBrace(pretty, pretty?"  " + indent: "", sw);
-                sw.write((pretty?"\n" + indent: "")  + "}");
-                return sw.toString();
+        beforeClosingBrace(pretty, pretty ? "  " + indent : "", sw);
+        sw.write((pretty ? "\n" + indent : "") + "}");
+        return sw.toString();
     }
 
     /**
