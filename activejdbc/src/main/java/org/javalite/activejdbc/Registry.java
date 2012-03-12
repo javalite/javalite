@@ -134,7 +134,11 @@ public enum Registry {
 
             try {
                 mf.findModels(dbName);
-                String dbType = ConnectionsAccess.getConnection(dbName).getMetaData().getDatabaseProductName();
+                Connection c = ConnectionsAccess.getConnection(dbName);
+                if(c == null){
+                    throw new DBException("Failed to retrieve metadata from DB, connection: '" + dbName + "' is not available");
+                }
+                String dbType = c.getMetaData().getDatabaseProductName();
                 registerModels(dbName, mf.getModelsForDb(dbName), dbType);
                 String[] tables = metaModels.getTableNames(dbName);
 

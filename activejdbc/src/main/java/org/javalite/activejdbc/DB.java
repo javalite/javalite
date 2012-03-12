@@ -202,6 +202,9 @@ public class DB {
     public void close() {
         try {
             Connection connection = ConnectionsAccess.getConnection(dbName);
+            if(connection == null){
+                throw new DBException("cannot close connection '" + dbName + "' because it is not available");
+            }
             StatementCache.instance().cleanStatementCache(connection);
 
             if(connection != null){
@@ -534,7 +537,11 @@ public class DB {
      */
     public  void openTransaction() {
         try {
-            ConnectionsAccess.getConnection(dbName).setAutoCommit(false);
+            Connection c = ConnectionsAccess.getConnection(dbName);
+            if(c == null){
+                throw new DBException("Cannot open transaction, connection '" + dbName + "' not available");
+            }
+            c.setAutoCommit(false);
             LogFilter.log(logger, "Transaction opened");
         } catch (SQLException ex) {
             throw new DBException(ex.getMessage(), ex);
@@ -547,7 +554,11 @@ public class DB {
      */
     public void commitTransaction() {
         try {
-            ConnectionsAccess.getConnection(dbName).commit();
+            Connection c= ConnectionsAccess.getConnection(dbName);
+            if(c == null){
+                throw new DBException("Cannot commit transaction, connection '" + dbName + "' not available");
+            }
+            c.commit();
             LogFilter.log(logger, "Transaction committed");
         } catch (SQLException ex) {
             throw new DBException(ex.getMessage(), ex);
@@ -559,7 +570,11 @@ public class DB {
      */
     public void rollbackTransaction() {
         try {
-            ConnectionsAccess.getConnection(dbName).rollback();
+            Connection c = ConnectionsAccess.getConnection(dbName);
+            if (c == null) {
+                throw new DBException("Cannot rollback transaction, connection '" + dbName + "' not available");
+            }
+            c.rollback();
             LogFilter.log(logger, "Transaction rolled back");
         } catch (SQLException ex) {
             throw new DBException(ex.getMessage(), ex);
