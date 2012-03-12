@@ -115,4 +115,12 @@ public class SessionFacade {
     public String getId(){
         return Context.getHttpRequest().getSession(true).getId();
     }
+
+
+    /**
+     * Destroys current session
+     */
+    public void destroy(){
+        Context.getHttpRequest().getSession(true).invalidate();
+    }
 }
