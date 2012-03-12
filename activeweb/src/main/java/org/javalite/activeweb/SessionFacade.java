@@ -105,4 +105,14 @@ public class SessionFacade {
         }        
         return namesList.toArray(new String[0]);
     }
+
+
+    /**
+     * returns ID of the underlying session
+     *
+     * @return ID of the underlying session
+     */
+    public String getId(){
+        return Context.getHttpRequest().getSession(true).getId();
+    }
 }
