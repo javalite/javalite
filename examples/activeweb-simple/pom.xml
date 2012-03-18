@@ -217,6 +217,11 @@
                 <updatePolicy>always</updatePolicy>
             </snapshots>
         </pluginRepository>
+        <pluginRepository>
+            <id>c5-public-repository</id>
+            <url>http://mvn.carbonfive.com/public</url>
+        </pluginRepository>
+
     </pluginRepositories>
 
 </project>
