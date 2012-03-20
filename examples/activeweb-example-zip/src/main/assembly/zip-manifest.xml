@@ -13,6 +13,7 @@
             <outputDirectory>..</outputDirectory>
             <includes>
                 <include>pom.xml</include>
+                <include>build.xml</include>
                 <include>scripts/**.*</include>
                 <include>src/</include>
                 <include>README</include>
