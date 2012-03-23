@@ -530,6 +530,17 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
+     * Returns true if record corresponding to the id of this instance exists in  the DB.
+     *
+     * @return true if corresponding record exists in DB, false if it does not.
+     */
+    public boolean exists(){
+        MetaModel metaModel = getMetaModelLocal();
+        return null != new DB(metaModel.getDbName()).firstCell("SELECT " + metaModel.getIdName() + " FROM " + metaModel.getTableName()
+                + " WHERE " + metaModel.getIdName() + " = ?", getId());
+    }
+
+    /**
      * Deletes all records from associated table. This methods does not take associations into account.
      *
      * @return number of records deleted.

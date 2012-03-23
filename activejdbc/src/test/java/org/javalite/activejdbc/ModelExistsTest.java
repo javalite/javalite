@@ -27,9 +27,17 @@ import org.junit.Test;
 public class ModelExistsTest extends ActiveJDBCTest {
 
     @Test
-    public void test(){
+    public void testStatic(){
         deleteAndPopulateTable("people");
         a(Person.exists(10000)).shouldBeFalse();
         a(Person.exists(1)).shouldBeTrue();        
+    }
+
+    @Test
+    public void testInstance(){
+        deleteAndPopulateTable("people");
+        Person p = Person.<Person>findAll().get(0);
+        Person.delete("id = ?", p.getId());
+        a(p.exists()).shouldBeFalse();
     }
 }
