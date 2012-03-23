@@ -324,6 +324,7 @@
             <groupId>net.sf.ehcache</groupId>
             <artifactId>ehcache-core</artifactId>
             <version>2.4.5</version>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>
