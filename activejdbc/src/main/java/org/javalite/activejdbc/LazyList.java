@@ -31,6 +31,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
 
+import static org.javalite.common.Collections.list;
+
 /**
  * While this class is public, it is never instantiated directly. This class provides
  * a number of APIs for augmenting the query. 
@@ -247,11 +249,26 @@ public class LazyList<T extends Model> extends AbstractList<T>{
         return (LazyList<E>) this;
     }
 
-    protected void hydrate(){
 
-        if(hydrated) return;
+    /**
+     * Same as <code>toSql(true)</code>, see {@link #toSql(boolean)};
+     *
+     * @return SQL in a dialect for current connection which will be used if you start querying this
+     * list.
+     */
+    public String toSql() {
+        return toSql(true);
+    }
 
-        String subQuery = Util.join(subQueries.toArray(new String[]{}), " ");
+    /**
+     * Use to see what SQL will be sent to the database.
+     *
+     * @param showParameters true to see parameter values, false not to.
+     * @return SQL in a dialect for current connection which will be used if you start querying this
+     * list.
+     */
+    public String toSql(boolean showParameters) {
+           String subQuery = Util.join(subQueries.toArray(new String[]{}), " ");
 
         String sql;
         if(forPaginator){
@@ -262,6 +279,18 @@ public class LazyList<T extends Model> extends AbstractList<T>{
                 Registry.instance().getConfiguration().getDialect(metaModel).formSelect(metaModel.getTableName(), subQuery,
                         orderBys, limit, offset);
         }
+
+        sql += showParameters ? ", with parameters: " + list(params) : "";
+
+        return sql ;
+    }
+
+
+    protected void hydrate(){
+
+        if(hydrated) return;
+
+        String sql= toSql(false);
 
         if(metaModel.cached()){        
             ArrayList<T> cached = (ArrayList<T>) QueryCache.instance().getItem(metaModel.getTableName(), sql, params);
