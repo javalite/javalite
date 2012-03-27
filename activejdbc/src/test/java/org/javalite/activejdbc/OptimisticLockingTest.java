@@ -54,12 +54,32 @@ public class OptimisticLockingTest extends ActiveJDBCTest {
         m.saveIt();
 
         Watermelon m1 = (Watermelon)Watermelon.findById(1);
-        final Watermelon m2 = (Watermelon)Watermelon.findById(1);
+        Watermelon m2 = (Watermelon)Watermelon.findById(1);
 
         m1.set("melon_type", "red");
         m1.saveIt();
 
         m2.set("melon_type", "yellow");
         m2.saveIt();  //<<<<================ this will cause the StaleModelException
+    }
+
+
+
+    @Test
+    public void should(){
+        deleteAndPopulateTable("watermelons");
+
+        Watermelon m = new Watermelon();
+        m.set("melon_type", "dark_green");
+        m.saveIt();
+
+        m.set("melon_type", "light_green");
+        m.saveIt();
+
+        m.set("melon_type", "super_green");
+        m.saveIt();
+
+        m.set("melon_type", "dark_red");
+        m.saveIt();
     }
 }

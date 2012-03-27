@@ -2087,6 +2087,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             attributes.put(getMetaModelLocal().getIdName(), id);
 
             fireAfterCreate(this);
+
+            if(getMetaModelLocal().isVersioned()){
+                set("record_version", 1);
+            }
+
             return true;
         } catch (DBException e) {
             throw e;
