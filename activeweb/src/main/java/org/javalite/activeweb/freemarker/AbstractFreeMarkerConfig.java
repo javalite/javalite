@@ -16,7 +16,11 @@ limitations under the License.
 
 package org.javalite.activeweb.freemarker;
 
+import com.google.inject.Injector;
 import freemarker.template.Configuration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Igor Polevoy
@@ -24,6 +28,8 @@ import freemarker.template.Configuration;
 public abstract class AbstractFreeMarkerConfig {
 
     private Configuration configuration;
+
+    private List<FreeMarkerTag> userTags = new ArrayList<FreeMarkerTag>();
 
     public void setConfiguration(Configuration config){
         this.configuration = config;
@@ -41,6 +47,7 @@ public abstract class AbstractFreeMarkerConfig {
      */
     public void registerTag(String name, FreeMarkerTag tag){
         configuration.setSharedVariable(name, tag);
+        userTags.add(tag);
     }
 
     /**
@@ -49,4 +56,14 @@ public abstract class AbstractFreeMarkerConfig {
     public abstract void init();
 
 
+    /**
+     * Injects user tags with members
+     *
+     * @param injector user tags with members using this injector.
+     */
+    public void inject(Injector injector) {
+        for (FreeMarkerTag tag: userTags) {
+            injector.injectMembers(tag);
+        }
+    }
 }

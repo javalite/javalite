@@ -15,6 +15,7 @@ limitations under the License.
 */
 package org.javalite.activeweb.mock;
 
+import com.google.inject.Injector;
 import org.javalite.activeweb.TemplateManager;
 
 import javax.servlet.ServletContext;

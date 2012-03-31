@@ -3,9 +3,6 @@
 <h2>Create New Post:</h2>
 
 
-<hr/>
-
-<hr/>
 
 <span class="message"><@flash name="values_missing"/></span>
 <@form controller="rposts" method="post">
@@ -34,8 +31,10 @@
     <tr>
         <td></td>
         <td>
-            <span id="captcha_container"><@render partial="captcha" id=1/></span><br/>
-            <@link_to controller="captcha" action="recaptcha" destination="captcha_container">Reset</@>
+
+            <img class="captcha" src="${context_path}/captcha" id="captcha_img">
+            <br/>
+            <a href="#" onclick="$('#captcha_img').attr('src', '${context_path}/captcha?t=' + new Date().getTime());">Reset captcha</a>
 
             <br/>Verify that you are human, enter text above: <br/>
             <input type="text" name="captcha">

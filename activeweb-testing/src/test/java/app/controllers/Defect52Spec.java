@@ -16,7 +16,7 @@ public class Defect52Spec extends IntegrationSpec {
     }
 
     @Test(expected = SpecException.class)
-    public void shouldShtowExceptionBecauseIntegrateViewsWasNotCalled() {
+    public void shouldShowExceptionBecauseIntegrateViewsWasNotCalled() {
         controller("abc_person").get("index");
         responseContent();//causes exception because integrateViews() was not called
     }

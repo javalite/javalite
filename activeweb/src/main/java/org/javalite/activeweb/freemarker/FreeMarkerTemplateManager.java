@@ -15,15 +15,15 @@ limitations under the License.
 */
 package org.javalite.activeweb.freemarker;
 
-import org.javalite.activeweb.TemplateManager;
-import org.javalite.activeweb.ViewException;
-import org.javalite.activeweb.ViewMissingException;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
-import org.javalite.common.Util;
 import org.javalite.activeweb.InitException;
+import org.javalite.activeweb.TemplateManager;
+import org.javalite.activeweb.ViewException;
+import org.javalite.activeweb.ViewMissingException;
+import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +82,15 @@ public class FreeMarkerTemplateManager implements TemplateManager {
 
             ContentTL.reset();
 
-            Template pageTemplate = config.getTemplate(template + ".ftl");
+            Template pageTemplate;
+
+            try{
+                pageTemplate = config.getTemplate(template + ".ftl");
+            }catch(FileNotFoundException e){
+                logger.warn("Current location: " + new File(".").getCanonicalPath());
+                throw e;
+            }
+
             if(layout == null){//no layout
                 pageTemplate.process(input, writer);
             }else{ // with layout
@@ -145,7 +153,6 @@ public class FreeMarkerTemplateManager implements TemplateManager {
         }
         catch(Exception e){throw new InitException(e);}
     }
-
 
 
     /**

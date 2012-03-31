@@ -17,25 +17,17 @@ limitations under the License.
 package app.controllers;
 
 import org.javalite.activeweb.AppController;
+import org.javalite.activeweb.Captcha;
 
 import java.io.IOException;
-
-import static org.javalite.activeweb.Captcha.*;
 
 /**
  * @author Igor Polevoy
  */
 public class CaptchaController extends AppController {
-
-
-    public void captcha() throws IOException {
-        outputStream("image/png").write(generateImage(session().get("captcha").toString()));
-    }
-
-    public void recaptcha(){
-        String captcha = generateText();
-        session().put("captcha", captcha);
-        view("id", System.currentTimeMillis());
-        render("/posts/_captcha").noLayout();
+    public void index() throws IOException {
+        String captchaText = Captcha.generateText();
+        session().put("captcha", captchaText);
+        outputStream("image/png").write(Captcha.generateImage(captchaText));
     }
 }

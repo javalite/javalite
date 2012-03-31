@@ -17,6 +17,7 @@ package org.javalite.activeweb;
 
 import org.javalite.activeweb.controller_filters.ControllerFilter;
 import com.google.inject.Injector;
+import org.javalite.activeweb.freemarker.AbstractFreeMarkerConfig;
 import org.javalite.common.Inflector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,7 @@ import javax.servlet.http.HttpSession;
 class ControllerRunner {
 
     private static Logger logger = LoggerFactory.getLogger(ControllerRunner.class.getName());
+    private boolean tagsInjected = false;
 
     protected void run(Route route, boolean integrateViews) throws Exception {
         ControllerRegistry controllerRegistry = Context.getControllerRegistry();
@@ -51,6 +53,8 @@ class ControllerRunner {
 
                 String methodName = Inflector.camelize(route.getActionName().replace('-', '_'), false);
                 checkActionMethod(route.getController(), methodName);
+
+                //Configuration.getTemplateManager().
                 inject(route.getController());
                 if(Configuration.logRequestParams()){
                     logger.info("Executing controller: " + route.getController().getClass().getName() + "." + methodName);
@@ -58,6 +62,9 @@ class ControllerRunner {
 
                 executeAction(route.getController(), methodName);
             }
+
+            injectFreemarkerTags();
+
             renderResponse(route, integrateViews);
             processFlash();
 
@@ -77,6 +84,22 @@ class ControllerRunner {
                 throw e;//if exception was not handled by filter, re-throw
             }
         }
+    }
+
+    private void injectFreemarkerTags() {
+        if(!tagsInjected){
+            AbstractFreeMarkerConfig freeMarkerConfig = Configuration.getFreeMarkerConfig();
+
+
+            Injector injector = Context.getControllerRegistry().getInjector();
+            tagsInjected = true;
+            if(injector == null || freeMarkerConfig == null){
+                return;
+            }
+            freeMarkerConfig.inject(injector);
+
+        }
+
     }
 
     private void inject(AppController controller) {

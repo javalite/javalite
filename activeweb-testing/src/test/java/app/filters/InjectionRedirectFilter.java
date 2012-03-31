@@ -25,6 +25,7 @@ import org.javalite.activeweb.controller_filters.HttpSupportFilter;
  */
 public class InjectionRedirectFilter extends HttpSupportFilter {
 
+    @Inject
     private Redirector redirector;
 
     public void before() {
@@ -33,18 +34,4 @@ public class InjectionRedirectFilter extends HttpSupportFilter {
             redirect(path);
         }
     }
-
-    public void after() {
-
-    }
-
-    public void onException(Exception e) {
-
-    }
-
-    @Inject
-    public void setRedirector(Redirector redirector) {
-        this.redirector = redirector;
-    }
-
 }

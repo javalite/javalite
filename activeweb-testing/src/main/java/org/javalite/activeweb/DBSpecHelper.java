@@ -40,10 +40,13 @@ public class DBSpecHelper {
         try {
             Object dbconfig = Class.forName(dbConfigClassName).newInstance();
             dbconfig.getClass().getMethod("init", AppContext.class).invoke(dbconfig, new AppContext());
-        } catch (Exception e) {
-            throw new RuntimeException("failed to initialize class " + dbConfigClassName
-                    + " are you sure you defined this class?", e);
-        }
+        } catch (ClassNotFoundException e) {
+            logger.warn("Failed to locate class: " + dbConfigClassName + ", proceeding without it...");
+
+    } catch (Exception e) {
+        throw new RuntimeException("failed to initialize class " + dbConfigClassName
+                + " are you sure you defined this class?", e);
+    }
 
         Configuration.setTesting(true);
     }

@@ -16,6 +16,9 @@ limitations under the License.
 
 package org.javalite.activeweb;
 
+import app.services.RedirectorModule;
+import com.google.inject.Guice;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -25,6 +28,12 @@ public class QueryStringSpec extends AppIntegrationSpec {
 
     public QueryStringSpec(){
         suppressDb();
+    }
+
+
+    @Before
+    public void before() {
+        setInjector(Guice.createInjector(new RedirectorModule()));
     }
 
 

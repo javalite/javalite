@@ -3,17 +3,19 @@
 
 html, body{
 	background:white;
-	font:normal 13px Arial, sans-serif;
+	font-family:Verdana,serif;
 	color:#5a5a5a;
 }
 
 a{
 	text-decoration:none;
 	outline:none;
+    color: #4169e1;
 }
 
 a:hover{
 	text-decoration:underline;
+    color: #ff4500;
 }
 
 p{
@@ -27,11 +29,12 @@ ul, ol{
 
 .header{
     background-color:#fafad2;
+    padding: 10px;
 }
 
 
 .main{
-    padding:20px
+    /*padding:20px*/
 }
 
 
@@ -43,10 +46,11 @@ ul, ol{
 
 .captcha{
     border-style:solid;
-    border-width:1px;
-    border-color:black;
+    border-width:4px;
+    border-color:#d3d3d3;
     margin-top:10px;
     margin-bottom:10px;
+    padding: 3px;
 }
 
 .message{
@@ -62,5 +66,7 @@ ul, ol{
 
 .footer{
     background-color:#fafad2;
+    padding: 10px;
 }
+
 

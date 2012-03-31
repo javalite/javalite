@@ -1,1 +1,0 @@
-<img class="captcha" src="../captcha/captcha?id=${id?c}"/>

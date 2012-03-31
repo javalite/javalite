@@ -58,7 +58,7 @@ import org.javalite.common.Util;
  * @see {@link org.javalite.activeweb.DBControllerSpec}.
  * @author Igor Polevoy
  */
-public class ControllerSpec extends SpecHelper {
+public class ControllerSpec extends RequestSpecHelper {
 
     private String controllerPath;
 

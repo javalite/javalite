@@ -15,6 +15,8 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
+import com.google.inject.Injector;
+
 import javax.servlet.ServletContext;
 import java.io.Writer;
 import java.util.Map;
