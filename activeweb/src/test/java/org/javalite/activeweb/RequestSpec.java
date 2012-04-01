@@ -57,8 +57,7 @@ public abstract class RequestSpec extends JSpecSupport {
         Context.clear();
         Context.setTLs(request, response, config, new ControllerRegistry(new MockFilterConfig()),
                                                                                 new AppContext(),new RequestContext());
-        Context.setRoute(new Route(new HomeController(), "index"));
-        org.javalite.activeweb.Configuration.getTemplateManager().setTemplateLocation("src/test/views");
+        Configuration.getTemplateManager().setTemplateLocation("src/test/views");
     }
 
 }

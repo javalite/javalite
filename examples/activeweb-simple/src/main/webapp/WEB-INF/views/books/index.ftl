@@ -1,4 +1,4 @@
-<@content for="title">Books List</@content>
+y <@content for="title">Books List</@content>
 
 
 <div class="message"><@flash name="message"/></div>

@@ -1,5 +1,6 @@
 package app.views;
 
+import app.controllers.AbcPersonController;
 import com.google.inject.Guice;
 import org.javalite.activeweb.ViewSpec;
 import org.junit.Before;
@@ -27,5 +28,22 @@ public class ViewSpecTest extends ViewSpec{
     public void shouldRenderTemplateWithCustomTagValuePassedInParameterAndInjectedServiceAllInOneTiredOfReadingNameOfThisMethodMeToo(){
         registerTag("custom", new CustomTag());
         a(render("/views/template_with_tag", map("name", "Dolly"))).shouldBeEqual("Hello Dolly, this is coming from a custom tag, greeting: This is message from Mars, age: 3");
+    }
+
+    @Test
+    public void shouldRenderLinkToTag(){
+        a(render("/views/link_to_template")).shouldBeEqual("<a href=\"/test_context/abc_person\" data-link=\"aw\">ABC Person</a>");
+    }
+
+    @Test
+    public void shouldRenderLinkToTagWithControllerInContext(){
+        setCurrentController(AbcPersonController.class);
+        a(render("/views/link_to_template")).shouldBeEqual("<a href=\"/test_context/abc_person\" data-link=\"aw\">ABC Person</a>");
+    }
+
+    @Test
+    public void shouldCheckContentFor(){
+        a(render("/views/content_for_template")).shouldBeEqual("");
+        a(contentFor("title").get(0)).shouldBeEqual("this is a title");
     }
 }

@@ -182,7 +182,7 @@ public class LinkToTag extends FreeMarkerTag {
             controller = activeweb.get("controller").toString();
             restful = (Boolean) activeweb.get("restful");
         } else {
-            throw new IllegalArgumentException("link_to directive is missing: 'controller'  and no controller found in context");
+            throw new IllegalArgumentException("link_to directive is missing: 'controller', and no controller found in context");
         }
 
         if (!controller.startsWith("/")) {

@@ -23,14 +23,13 @@ import java.util.Map;
 /**
  * @author Igor Polevoy
  */
-class ContentTL {
+public class ContentTL {
     private static ThreadLocal<Map<String, List<String>>> contentTL = new ThreadLocal<Map<String, List<String>>>();
-
 
     static void reset(){
         contentTL.set(new HashMap<String, List<String>>());
     }
-    static Map<String, List<String>> getAllContent() {
+    public static Map<String, List<String>> getAllContent() {
         return contentTL.get();
     }
 
