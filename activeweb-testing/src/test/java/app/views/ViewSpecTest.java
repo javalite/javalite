@@ -46,4 +46,9 @@ public class ViewSpecTest extends ViewSpec{
         a(render("/views/content_for_template")).shouldBeEqual("");
         a(contentFor("title").get(0)).shouldBeEqual("this is a title");
     }
+
+    @Test
+    public void shouldRenderDynamicValues(){
+        a(render("/views/template_with_value", "name", "John")).shouldBeEqual("John");
+    }
 }

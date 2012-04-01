@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.javalite.common.Collections.map;
+
 /**
  * This is a spec used to test templates and custom tags.
  *
@@ -104,6 +106,20 @@ public abstract class ViewSpec extends SpecHelper {
         manager.merge(values, templateName, stringWriter);
         return stringWriter.toString();
     }
+
+/**
+     * Renders a template by name.
+     *
+     * @param templateName name of template to render
+     * @param namesAndValues - list of names and values, where first, third, etc argument is a name and second,
+     * fourth, etc. argument is a corresponding value.
+     * @return rendered template content as string
+     */
+    protected String render(String templateName, String ... namesAndValues) {
+        return render(templateName, map(namesAndValues));
+    }
+
+
 
 
     /**
