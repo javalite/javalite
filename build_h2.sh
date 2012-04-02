@@ -1,1 +1,1 @@
-mvn clean install -Ph2,instrument
+mvn clean install -Ph2,instrument -DargLine="-Dactivejdbc.log"

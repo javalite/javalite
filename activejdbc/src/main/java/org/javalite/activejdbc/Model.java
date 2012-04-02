@@ -20,9 +20,7 @@ package org.javalite.activejdbc;
 import org.javalite.activejdbc.associations.*;
 import org.javalite.activejdbc.cache.QueryCache;
 import org.javalite.activejdbc.validation.*;
-import org.javalite.common.Convert;
-import org.javalite.common.Inflector;
-import org.javalite.common.Util;
+import org.javalite.common.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +29,7 @@ import java.math.BigDecimal;
 import java.sql.Clob;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.Collections;
 
 import static org.javalite.common.Inflector.*;
 import static org.javalite.common.Util.blank;
@@ -2063,6 +2062,21 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return result;
     }
 
+
+    /**
+     * @return attributes names that have been set by client code.
+     */
+    private List<String> getValueAttributeNames() {
+        List<String> attributeNames = new ArrayList<String>();
+
+        for(String name: attributes.keySet()){
+            if (!name.equalsIgnoreCase("record_version") && !name.equalsIgnoreCase(getMetaModelLocal().getIdName()))
+                attributeNames.add(name);
+        }
+        return attributeNames;
+      }
+
+
     private boolean insert() {
 
         fireBeforeCreate(this);
@@ -2071,13 +2085,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         //TODO: need to invoke checkAttributes here too, and maybe rely on MetaModel for this.
 
-        List<String> attrs = getMetaModelLocal().getAttributeNamesSkip("record_version", getMetaModelLocal().getIdName());
+        List<String> valueAttributes = getValueAttributeNames();
 
         List<Object> values = new ArrayList<Object>();
-        for (String attribute : attrs) {
+        for (String attribute : valueAttributes) {
             values.add(this.attributes.get(attribute));
         }
-        String query = getMetaModelLocal().getDialect().createParametrizedInsert(getMetaModelLocal());
+        String query = getMetaModelLocal().getDialect().createParametrizedInsert(getMetaModelLocal(), valueAttributes);
         try {
             long id = new DB(getMetaModelLocal().getDbName()).execInsert(query, getMetaModelLocal().getIdName(), values.toArray());
             if(getMetaModelLocal().cached()){
@@ -2099,6 +2113,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             throw new DBException(e.getMessage(), e);
         }
     }
+
 
     private void doCreatedAt() {
         if(getMetaModelLocal().hasAttribute("created_at")){

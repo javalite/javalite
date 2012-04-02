@@ -58,12 +58,12 @@ public class DefaultDialect {
         return sql.substring(0, sql.length() - 5);//remove last comma
     }
 
-    public String createParametrizedInsert(MetaModel mm){
-        List<String> attributes = mm.getAttributeNamesSkip("record_version", mm.getIdName());
-        String query = "INSERT INTO " + mm.getTableName() + " (" + Util.join(attributes, ", ");
+    public String createParametrizedInsert(MetaModel mm, List<String> nonNullAttributes){
+
+        String query = "INSERT INTO " + mm.getTableName() + " (" + Util.join(nonNullAttributes, ", ");
         query += mm.getIdGeneratorCode()!= null ? ", " + mm.getIdName() :"";
         query += mm.isVersioned()? ", " + "record_version" :"";
-        query += ") VALUES ("+ getQuestions(attributes.size());
+        query += ") VALUES ("+ getQuestions(nonNullAttributes.size());
         query += mm.getIdGeneratorCode() != null ? ", " + mm.getIdGeneratorCode() :"";
         query += mm.isVersioned()? ", " + 1 :"";
         query +=")";
