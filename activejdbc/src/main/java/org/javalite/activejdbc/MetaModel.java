@@ -41,6 +41,7 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
     private Class<T> modelClass;
     private boolean cached;
     private String idGeneratorCode;
+    private List<String> attributeNamesNoId;
 
     protected MetaModel(String dbName, String tableName, String idName, Class<T> modelClass, String dbType, boolean cached, String idGeneratorCode) {
         this.idName = idName.toLowerCase();
@@ -80,7 +81,6 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
         return columnMetadata != null &&  columnMetadata.size() > 0;
     }
 
-    private List<String> attributeNamesNoId;
 
     /**
      * Finds all attribute names except for id.
@@ -100,6 +100,7 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
      * @return list of all attributes except id, created_at, updated_at and record_version. 
      */
     public List<String> getAttributeNamesSkipGenerated() {
+        //TODO: can cache this
         List<String> attributes = getAttributeNames();
         attributes.remove(getIdName().toLowerCase());
         attributes.remove("created_at");
@@ -121,6 +122,11 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
         return attributes;
     }
 
+    /**
+     * Returns true if this model supports optimistic locking, false if not
+     *
+     * @return true if this model supports optimistic locking, false if not
+     */
     public boolean isVersioned(){
         List<String> attrs = getAttributeNames(); 
         return attrs.contains("record_version") || attrs.contains("RECORD_VERSION");
@@ -209,7 +215,7 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
     }
 
     public String toString() {
-        final StringBuffer t = new StringBuffer();
+        final StringBuilder t = new StringBuilder();
         t.append("MetaModel: ").append(tableName).append(", ").append(modelClass).append("\n");
         if(columnMetadata != null){
             for (String key : columnMetadata.keySet()) {
