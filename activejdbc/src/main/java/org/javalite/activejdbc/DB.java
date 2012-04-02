@@ -58,6 +58,7 @@ public class DB {
      * @param password password.
      */
     public void open(String driver, String url, String user, String password) {
+        checkExistingConnection(dbName);
         try {
             Class.forName(driver);
             Connection connection = DriverManager.getConnection(url, user, password);
@@ -75,6 +76,7 @@ public class DB {
      * @param props connection properties
      */
     public void open(String driver, String url, Properties props) {
+        checkExistingConnection(dbName);
         try {
             Class.forName(driver);
             Connection connection = DriverManager.getConnection(url, props);
@@ -91,6 +93,7 @@ public class DB {
      * @param jndiName name of a configured data source. 
      */
     public void open(String jndiName) {
+        checkExistingConnection(dbName);
         try {
             Context ctx = new InitialContext();
             DataSource ds = (DataSource) ctx.lookup(jndiName);
@@ -107,8 +110,8 @@ public class DB {
      *
      * @param datasource datasource will be used to acquire a connection.
      */
-    public void open(DataSource datasource)
-    {
+    public void open(DataSource datasource){
+        checkExistingConnection(dbName);
         try {
             Connection connection = datasource.getConnection();
             ConnectionsAccess.attach(dbName, connection);
@@ -126,6 +129,7 @@ public class DB {
      * @param jndiProperties JNDI properties
      */
     public void open(String jndiName, Properties jndiProperties) {
+        checkExistingConnection(dbName);
         try {
             Context ctx = new InitialContext(jndiProperties);
             DataSource ds = (DataSource) ctx.lookup(jndiName);
@@ -143,12 +147,20 @@ public class DB {
      * @param spec specification for a JDBC connection.
      */
     public void open(ConnectionSpec spec){
+        checkExistingConnection(dbName);
         if(spec instanceof ConnectionJdbcSpec){
             openJdbc((ConnectionJdbcSpec)spec);
         }else if(spec instanceof ConnectionJndiSpec){
             openJndi((ConnectionJndiSpec)spec);
         }else{
             throw new IllegalArgumentException("this spec not supported: " + spec.getClass());
+        }
+    }
+
+    private void checkExistingConnection(String dbName){
+        if( null != ConnectionsAccess.getConnection(dbName)){
+            throw new DBException("Cannot open a new connection because existing connection is still on current thread, dbName: " + dbName + ", connection instance: " + connection()
+            + ". This might indicate a logical error in your application.");
         }
     }
 
