@@ -119,13 +119,8 @@ public enum Registry {
         return metaModels.getMetaModel(modelClass);
     }
 
+     synchronized void init(String dbName) {
 
-     void init(String dbName) {
-        if (initedDbs.contains(dbName)) {
-            return;
-        }
-
-        synchronized (this) {
             if (initedDbs.contains(dbName)) {
                 return;
             } else {
@@ -161,7 +156,7 @@ public enum Registry {
                 } else {
                     throw new InitException(e);
                 }
-            }
+
         }
     }
 
