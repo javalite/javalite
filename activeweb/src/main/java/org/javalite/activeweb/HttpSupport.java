@@ -553,10 +553,40 @@ public class HttpSupport {
 
     /**
      * Returns a collection of uploaded files from a multi-part port request.
+     * Uses request encoding if one provided, and sets no limit on the size of upload.
      *
      * @return a collection of uploaded files from a multi-part port request.
      */
     protected Iterator<FormItem> uploadedFiles() {
+        return uploadedFiles(null, -1);
+    }
+
+    /**
+     * Returns a collection of uploaded files from a multi-part port request.
+     * Sets no limit on the size of upload.
+     *
+     * @param encoding specifies the character encoding to be used when reading the headers of individual part.
+     * When not specified, or null, the request encoding is used. If that is also not specified, or null,
+     * the platform default encoding is used.
+     *
+     * @return a collection of uploaded files from a multi-part port request.
+     */
+    protected Iterator<FormItem> uploadedFiles(String encoding) {
+        return uploadedFiles(encoding, -1);
+    }
+
+
+    /**
+     * Returns a collection of uploaded files from a multi-part port request.
+     *
+     * @param encoding specifies the character encoding to be used when reading the headers of individual part.
+     * When not specified, or null, the request encoding is used. If that is also not specified, or null,
+     * the platform default encoding is used.
+     * @param maxFileSize maximum file size in the upload in bytes. -1 indicates no limit.
+     *
+     * @return a collection of uploaded files from a multi-part port request.
+     */
+    protected Iterator<FormItem> uploadedFiles(String encoding, long maxFileSize) {
         HttpServletRequest req = Context.getHttpRequest();
 
         Iterator<FormItem> iterator;
@@ -568,6 +598,8 @@ public class HttpSupport {
                 throw new ControllerException("this is not a multipart request, be sure to add this attribute to the form: ... enctype=\"multipart/form-data\" ...");
 
             ServletFileUpload upload = new ServletFileUpload();
+            upload.setHeaderEncoding(encoding);
+            upload.setFileSizeMax(maxFileSize);
             try {
                 FileItemIterator it = upload.getItemIterator(Context.getHttpRequest());
                 iterator = new FormItemIterator(it);
