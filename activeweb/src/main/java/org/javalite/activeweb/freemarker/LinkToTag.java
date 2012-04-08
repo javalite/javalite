@@ -201,7 +201,7 @@ public class LinkToTag extends FreeMarkerTag {
         }
 
         String action = params.containsKey("action") ? params.get("action").toString() : null;
-        String id = params.containsKey("id") ? params.get("id").toString() : null;
+        String id = blank(params.get("id")) ? null : params.get("id").toString();
 
         Map queryParams = getQueryParams(params);
         String href = getContextPath();
