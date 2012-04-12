@@ -78,7 +78,6 @@ public class SelectTagSpec extends RequestSpec {
                 "/select/index", sw);
 
         a(sw.toString()).shouldBeEqual("<select><option value=\"1\">The Hitchhiker's Guide to the Galaxy</option><option value=\"2\" selected=\"true\">All Quiet on Western Front</option></select>");
-
     }
 
     @Test
@@ -89,8 +88,6 @@ public class SelectTagSpec extends RequestSpec {
                 "/select/has_body", sw);
 
         a(sw.toString()).shouldBeEqual("<select><option value=\"3\">A Tale of Two Cities</option>\n" +
-                "<option value=\"1\">The Hitchhiker's Guide to the Galaxy</option><option value=\"2\" selected=\"true\">All Quiet on Western Front</option></select><option value=\"3\">A Tale of Two Cities</option>\n");
-
-        System.out.println(sw.toString());
+                "<option value=\"1\">The Hitchhiker's Guide to the Galaxy</option><option value=\"2\" selected=\"true\">All Quiet on Western Front</option></select>");
     }
 }

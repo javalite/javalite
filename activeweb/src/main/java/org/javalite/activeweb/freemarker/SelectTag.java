@@ -37,7 +37,7 @@ import java.util.Map;
  * then the output from the tag will be:
  *<pre>
  *     &lt;select&gt;&lt;option value=&quot;3&quot;&gt;A Tale of Two Cities&lt;/option&gt;
-       &lt;option value=&quot;1&quot;&gt;The Hitchhiker&apos;s Guide to the Galaxy&lt;/option&gt;&lt;option value=&quot;2&quot; selected=&quot;true&quot;&gt;All Quiet on Western Front&lt;/option&gt;&lt;/select&gt;&lt;option value=&quot;3&quot;&gt;A Tale of Two Cities&lt;/option&gt;
+       &lt;option value=&quot;1&quot;&gt;The Hitchhiker&apos;s Guide to the Galaxy&lt;/option&gt;&lt;option value=&quot;2&quot; selected=&quot;true&quot;&gt;All Quiet on Western Front&lt;/option&gt;&lt;/select&gt;
  *</pre>
  *
  * Which means that the generated code is appended to hand-written body.
@@ -85,8 +85,8 @@ public class SelectTag extends FreeMarkerTag {
             optionsBuffer.append(tf.toString());
         }
 
-        TagFactory tf = new TagFactory("select", body + optionsBuffer);
-        writer.write(tf.toString());
-        writer.write(body);
+        TagFactory selectTf = new TagFactory("select", body + optionsBuffer);
+        selectTf.addAttributesExcept(params, "list");
+        writer.write(selectTf.toString());
     }
 }
