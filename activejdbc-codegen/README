@@ -1,0 +1,11 @@
+This is a tool to generate Java bean style model classes using ActiveJDBC.
+It creates Java bean class and interface for each table in the database.
+It creates specific setters and getters for each class.
+Usage:
+1. Modify the generator.properties with the database
+2. Execute run.sh - this will build and execute this code generator which creates the classes and interfaces for each table in the database.
+   The classes will be created in the package specified in the properties file.
+
+
+
+
