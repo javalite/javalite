@@ -58,6 +58,7 @@ public class FreeMarkerTemplateManager implements TemplateManager {
         config.setSharedVariable("confirm", new ConfirmationTag());
         config.setSharedVariable("wrap", new WrapTag());
         config.setSharedVariable("debug", new DebugTag());
+        config.setSharedVariable("select", new SelectTag());
 
         AbstractFreeMarkerConfig freeMarkerConfig = org.javalite.activeweb.Configuration.getFreeMarkerConfig();
         if(freeMarkerConfig != null){
