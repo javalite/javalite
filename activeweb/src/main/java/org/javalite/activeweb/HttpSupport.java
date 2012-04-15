@@ -1231,6 +1231,17 @@ public class HttpSupport {
         return header("X-Requested-With") != null || header("x-requested-with") != null;
     }
 
+
+    /**
+     * Helper method, returns user-agent header of the request.
+     *
+     * @return user-agent header of the request.
+     */
+    protected String userAgent(){
+        String camel = header("User-Agent");
+        return camel != null ? camel : header("user-agent");
+    }
+
     /**
      * Synonym for {@link #isXhr()}.
      */
