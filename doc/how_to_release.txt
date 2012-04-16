@@ -1,0 +1,8 @@
+1. Release JavaLite
+2. Release Instrumentation
+3. Release the rest
+
+
+start with staging a release:
+https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide#SonatypeOSSMavenRepositoryUsageGuide-7a.3.StageaRelease
+
