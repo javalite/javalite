@@ -2,9 +2,16 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.javalite</groupId>
     <artifactId>javalite-common</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>JavaLite Common Classes</name>
+
+
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
   
      <scm>
        <connection>scm:svn:https://activejdbc.googlecode.com/svn/trunk/javalite-common/</connection>
