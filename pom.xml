@@ -3,14 +3,10 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.javalite</groupId>
     <artifactId>javalite-common</artifactId>
+    <version>1.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>JavaLite Common Classes</name>
 
-    <parent>
-        <groupId>org.javalite</groupId>
-        <artifactId>activejdbc-root</artifactId>
-        <version>1.2-SNAPSHOT</version>
-    </parent>
 
     <build>
         <plugins>
@@ -42,10 +38,15 @@
 
 
     <dependencies>
-        <dependency><groupId>junit</groupId><artifactId>junit</artifactId></dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.2</version>
+        </dependency>
         <dependency>
             <groupId>dom4j</groupId>
             <artifactId>dom4j</artifactId>
+            <version>1.6.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>xml-apis</groupId>
@@ -56,6 +57,7 @@
         <dependency>
             <groupId>jaxen</groupId>
             <artifactId>jaxen</artifactId>
+            <version>1.1.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>xml-apis</groupId>
