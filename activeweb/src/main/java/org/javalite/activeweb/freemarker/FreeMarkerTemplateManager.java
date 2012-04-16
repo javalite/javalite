@@ -75,6 +75,7 @@ public class FreeMarkerTemplateManager implements TemplateManager {
 
         //TODO: refactor this, add tests
 
+        String errorMessage = "Failed to render template: '" +(location != null? location:"") +  template + ".ftl" + (layout == null? "', without layout" : "', with layout: '" +(location != null? location:"") + layout + "'");
         try {
 
             if(org.javalite.activeweb.Configuration.getEnv().equals("development")){
@@ -115,13 +116,14 @@ public class FreeMarkerTemplateManager implements TemplateManager {
             }
         }
         catch(FileNotFoundException e){
-            throw new ViewMissingException(e);
+            throw new ViewMissingException(errorMessage, e);
         }
         catch(ViewException e){
+            logger.error(errorMessage);
             throw e;
         }
         catch (Exception e) {
-            throw new ViewException("failed to render template: '" +(location != null? location:"") +  template + ".ftl" + (layout == null? "', without layout" : "', with layout: '" +(location != null? location:"") + layout + "'"), e);
+            throw new ViewException(errorMessage, e);
         }
     }
     
