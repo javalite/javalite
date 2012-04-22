@@ -43,11 +43,4 @@
         <dependency><groupId>org.slf4j</groupId>    <artifactId>slf4j-api</artifactId><version>1.5.10</version></dependency>
         <dependency><groupId>org.slf4j</groupId>    <artifactId>slf4j-simple</artifactId><version>1.5.10</version></dependency>
     </dependencies>
-    
-
-  <scm>
-    <connection>scm:svn:http://svn.sonatype.org/spice/tags/activejdbc-instrumentation-1.2</connection>
-    <developerConnection>scm:svn:https://svn.sonatype.org/spice/tags/activejdbc-instrumentation-1.2</developerConnection>
-    <url>http://svn.sonatype.org/spice/tags/activejdbc-instrumentation-1.2</url>
-  </scm>
 </project>
