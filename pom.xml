@@ -9,11 +9,11 @@
 
 
     <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>7</version>
+        <groupId>org.javalite</groupId>
+        <artifactId>activejdbc-root</artifactId>
+        <version>1.2-SNAPSHOT</version>
     </parent>
-    
+ 
     <build>
         <plugins>
             <plugin>
