@@ -3,7 +3,7 @@
     <groupId>org.javalite</groupId>
     <artifactId>activejdbc-instrumentation</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2</version>
     <name>ActiveJDBC Framework Instrumentation Maven Plugin</name>
 
     <parent>
@@ -13,9 +13,9 @@
     </parent>
 
      <scm>
-       <connection>scm:svn:https://activejdbc.googlecode.com/svn/trunk/activejdbc-instrumentation</connection>
-       <developerConnection>scm:svn:https://activejdbc.googlecode.com/svn/trunk/activejdbc-instrumentation</developerConnection>
-       <url>https://activejdbc.googlecode.com/svn/trunk/activejdbc-instrumentation</url>
+       <connection>scm:svn:https://activejdbc.googlecode.com/svn/tags/activejdbc-instrumentation-1.2</connection>
+       <developerConnection>scm:svn:https://activejdbc.googlecode.com/svn/tags/activejdbc-instrumentation-1.2</developerConnection>
+       <url>https://activejdbc.googlecode.com/svn/tags/activejdbc-instrumentation-1.2</url>
      </scm>
 
  
