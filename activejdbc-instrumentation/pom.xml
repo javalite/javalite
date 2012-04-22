@@ -11,6 +11,13 @@
         <artifactId>oss-parent</artifactId>
         <version>7</version>
     </parent>
+
+     <scm>
+       <connection>scm:svn:https://activejdbc.googlecode.com/svn/trunk/activejdbc-instrumentation</connection>
+       <developerConnection>scm:svn:https://activejdbc.googlecode.com/svn/trunk/activejdbc-instrumentation</developerConnection>
+       <url>https://activejdbc.googlecode.com/svn/trunk/activejdbc-instrumentation</url>
+     </scm>
+
  
     <build>
         <plugins>
