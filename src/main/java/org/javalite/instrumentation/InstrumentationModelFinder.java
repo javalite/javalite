@@ -17,7 +17,6 @@ limitations under the License.
 
 package org.javalite.instrumentation;
 
-import org.javalite.activejdbc.ModelFinder;
 import javassist.ClassClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -43,9 +42,9 @@ public class InstrumentationModelFinder{
     private List<CtClass> models = new ArrayList<CtClass>();
 
 
-    InstrumentationModelFinder() throws NotFoundException {
+    InstrumentationModelFinder() throws NotFoundException, ClassNotFoundException {
         ClassPool pool = ClassPool.getDefault();
-        pool.insertClassPath(new ClassClassPath(ModelFinder.class));
+        pool.insertClassPath(new ClassClassPath(Class.forName("org.javalite.activejdbc.Model")));
         modelClass = pool.get("org.javalite.activejdbc.Model");
 
     }
