@@ -30,7 +30,7 @@
                     <maxmem>512m</maxmem>
                 </configuration>
             </plugin>
-
+<!-- temporary commenting out due to Masven 3 issue.
             <plugin>
                 <groupId>org.javalite</groupId>
                 <artifactId>activejdbc-instrumentation</artifactId>
@@ -44,6 +44,7 @@
                     </execution>
                 </executions>
             </plugin>
+-->
         </plugins>
     </build>
     <dependencies>

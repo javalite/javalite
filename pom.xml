@@ -37,6 +37,7 @@
     </build>
     <modules>
         <module>activejdbc</module>
+        <module>activejdbc-instrumentation</module>
         <module>activejdbc-ehcache</module>       
         <module>javalite-common</module>
     </modules>
