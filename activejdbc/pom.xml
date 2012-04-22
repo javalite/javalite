@@ -9,7 +9,7 @@
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>activejdbc-root</artifactId>
-        <version>1.3-SNAPSHOT</version>
+        <version>1.2-SNAPSHOT</version>
     </parent>
 
     <!--Default to MySQL if no profile provided-->
@@ -160,6 +160,10 @@
         </profile>
         <profile>
             <id>instrument</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+
             <build>
                 <plugins>
                 <plugin>
@@ -175,6 +179,14 @@
                             </configuration>
                         </execution>
                     </executions>
+                    <dependencies>
+                        <!--<dependency>-->
+                            <!--<groupId>org.javalite</groupId>-->
+                            <!--<artifactId>activejdbc</artifactId>-->
+                            <!--<version>1.2-SNAPSHOT</version>-->
+                        <!--</dependency>-->
+
+                    </dependencies>
                 </plugin>
                 </plugins>
             </build>
