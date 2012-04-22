@@ -17,6 +17,7 @@ limitations under the License.
 
 package org.javalite.instrumentation;
 
+import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -27,6 +28,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.List;
 
 
 /**
@@ -34,6 +37,7 @@ import java.net.URL;
  * @goal instrument
  * @requiresDependencyResolution compile
  * @execute phase="process-classes"
+ * @requiresDependencyResolution runtime
  */
 
 public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
@@ -66,6 +70,7 @@ public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
+            addCP();//this will add a runtime classpath to the plugin
             //TODO we should support set a filter for dependencies, and convert filtered dependency as Maven Project
             // But I don't how to convert, so I use a temp solution: developer set outputDirectories(target path)
             if( outputDirectories != null ){
@@ -87,7 +92,22 @@ public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
         }
     }
 
+    //man, what a hack!
+    private void addCP() throws DependencyResolutionRequiredException, MalformedURLException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        List runtimeClasspathElements = project.getRuntimeClasspathElements();
 
+        for (Object runtimeClasspathElement : runtimeClasspathElements) {
+            String element = (String) runtimeClasspathElement;
+            addUrl(new File(element).toURI().toURL());
+        }
+    }
+
+    private void addUrl(URL url) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        ClassLoader realmLoader = getClass().getClassLoader();
+        Method addUrlMethod = realmLoader.getClass().getSuperclass().getDeclaredMethod("addURL", URL.class);
+        addUrlMethod.setAccessible(true);
+        addUrlMethod.invoke(realmLoader, url);
+    }
 
     private void instrument(String instrumentationDirectory) throws MalformedURLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {//this is an unbelievable hack I had to do in order to add output directory to classpath.
 
@@ -100,11 +120,8 @@ public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
         //Basically, the plugin is running with a different classpath - I searched high and wide, wrote a lot of garbage code,
         //but this is the only "solution" that works. Basically I need the instrumentationDirectory be on classpath
         //Igor
-        ClassLoader realmLoader = getClass().getClassLoader();
-        URL outDir = new File(instrumentationDirectory).toURL();
-        Method addUrlMethod = realmLoader.getClass().getSuperclass().getDeclaredMethod("addURL", URL.class);
-        addUrlMethod.setAccessible(true);
-        addUrlMethod.invoke(realmLoader, outDir);
+        URL outDir = new File(instrumentationDirectory).toURI().toURL();
+        addUrl(outDir);
         Instrumentation instrumentation = new Instrumentation();
         instrumentation.setOutputDirectory(instrumentationDirectory);
         instrumentation.instrument();

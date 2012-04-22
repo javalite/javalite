@@ -32,12 +32,24 @@
                     <maxmem>512m</maxmem>
                 </configuration>
             </plugin>
+     <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
         </plugins>
     </build>
     <modules>
         <module>activejdbc</module>
-        <module>activejdbc-instrumentation</module>
-        <module>activejdbc-ehcache</module>       
     </modules>
     <dependencyManagement>
         <dependencies>

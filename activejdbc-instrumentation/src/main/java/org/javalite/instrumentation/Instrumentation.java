@@ -18,11 +18,13 @@ limitations under the License.
 package org.javalite.instrumentation;
 
 import javassist.CtClass;
-import org.javalite.activejdbc.annotations.DbName;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -31,7 +33,6 @@ import java.util.List;
 public class Instrumentation {
 
     private String outputDirectory;
-
 
     public void setOutputDirectory(String outputDirectory) {
         this.outputDirectory = outputDirectory;
@@ -61,7 +62,7 @@ public class Instrumentation {
         }
     }
 
-    private static void generateModelsFile(List<CtClass> models, File target) throws IOException, ClassNotFoundException {
+    private static void generateModelsFile(List<CtClass> models, File target) throws IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         String modelsFileName = target.getAbsolutePath() + System.getProperty("file.separator") + "activejdbc_models.properties";
         FileOutputStream fout = new FileOutputStream(modelsFileName);
 
@@ -71,17 +72,14 @@ public class Instrumentation {
         fout.close();
     }
 
-    static String getDatabaseName(CtClass model) throws ClassNotFoundException {
+    static String getDatabaseName(CtClass model) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Object[] annotations =  model.getAnnotations();
-
         for (Object annotation : annotations) {
-
-            if(annotation instanceof DbName){
-               return ((DbName)annotation).value();
+            if(annotation.getClass().getName().equals("org.javalite.activejdbc.annotations.DbName") ){
+                Method valueMethod = annotation.getClass().getMethod("value");
+               return valueMethod.invoke(annotation).toString();
             }
         }
-
         return "default";
     }
-
 }
