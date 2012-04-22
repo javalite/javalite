@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.javalite</groupId>
     <artifactId>activejdbc</artifactId>
@@ -10,7 +9,7 @@
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>activejdbc-root</artifactId>
-        <version>1.2-SNAPSHOT</version>
+        <version>1.2</version>
     </parent>
 
     <!--Default to MySQL if no profile provided-->
@@ -96,7 +95,7 @@
                 <jdbc.driver>org.h2.Driver</jdbc.driver>
                 <jdbc.url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1</jdbc.url>
                 <jdbc.user>sa</jdbc.user>
-                <jdbc.password></jdbc.password>
+                <jdbc.password />
                 <db>h2</db>
             </properties>
             <dependencies>
