@@ -169,7 +169,7 @@
                 <plugin>
                     <groupId>org.javalite</groupId>
                     <artifactId>activejdbc-instrumentation</artifactId>
-                    <version>1.2-SNAPSHOT</version>
+                    <version>1.2</version>
                     <executions>
                         <execution>
                             <phase>process-test-classes</phase>
@@ -179,14 +179,6 @@
                             </configuration>
                         </execution>
                     </executions>
-                    <dependencies>
-                        <!--<dependency>-->
-                            <!--<groupId>org.javalite</groupId>-->
-                            <!--<artifactId>activejdbc</artifactId>-->
-                            <!--<version>1.2-SNAPSHOT</version>-->
-                        <!--</dependency>-->
-
-                    </dependencies>
                 </plugin>
                 </plugins>
             </build>
