@@ -1,1 +1,1 @@
-mvn -o exec:java -Dexec.mainClass="activejdbc_test.ClusterTest"
+mvn  exec:java -Dexec.mainClass="activejdbc_test.ClusterTest"
