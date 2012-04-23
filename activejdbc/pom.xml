@@ -3,14 +3,22 @@
     <groupId>org.javalite</groupId>
     <artifactId>activejdbc</artifactId>
     <packaging>jar</packaging>
-    <name>ActiveJDBC Framework</name>
+    <version>1.3-SNAPSHOT</version>
+    <name>ActiveJDBC - Da Framework</name>
 
 
     <parent>
-        <groupId>org.javalite</groupId>
-        <artifactId>activejdbc-root</artifactId>
-        <version>1.3-SNAPSHOT</version>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
     </parent>
+
+    <scm>
+       <connection>scm:svn:https://activejdbc.googlecode.com/svn/trunk/</connection>
+       <developerConnection>scm:svn:https://activejdbc.googlecode.com/svn/trunk/</developerConnection>
+       <url>https://activejdbc.googlecode.com/svn/trunk//</url>
+     </scm>
+
 
     <!--Default to MySQL if no profile provided-->
     <properties>
@@ -225,18 +233,51 @@
     </build>
 
     <dependencies>
-        <dependency><groupId>junit</groupId>        <artifactId>junit</artifactId></dependency>
-        <dependency><groupId>javassist</groupId>    <artifactId>javassist</artifactId></dependency>
-        <dependency><groupId>javax.servlet</groupId><artifactId>servlet-api</artifactId></dependency>
-        <dependency><groupId>org.slf4j</groupId>    <artifactId>slf4j-api</artifactId></dependency>
-        <dependency><groupId>org.slf4j</groupId>    <artifactId>jcl-over-slf4j</artifactId><scope>provided</scope></dependency>
-        <dependency><groupId>org.slf4j</groupId>    <artifactId>slf4j-simple</artifactId></dependency>
-        <!--some tests use MySQL verbatim; -->
-        <dependency><groupId>mysql</groupId><artifactId>mysql-connector-java</artifactId><version>5.1.17</version><scope>test</scope></dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.8.0.GA</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.6.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>1.6.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.6.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.17</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>javalite-common</artifactId>
-            <version>1.2</version>
+            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>dom4j</groupId>
@@ -251,14 +292,39 @@
         <dependency>
             <groupId>dom4j</groupId>
             <artifactId>dom4j</artifactId>
+            <version>1.6.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>jaxen</groupId>
             <artifactId>jaxen</artifactId>
+            <version>1.1.1</version>
             <scope>test</scope>
         </dependency>
-        <dependency><groupId>opensymphony</groupId> <artifactId>oscache</artifactId> <scope>provided</scope></dependency>
+        <dependency>
+            <groupId>opensymphony</groupId>
+            <artifactId>oscache</artifactId>
+            <version>2.4</version>
+            <scope>provided</scope>
+            <exclusions>
+              <exclusion>
+                <groupId>javax.jms</groupId>
+                <artifactId>jms</artifactId>
+              </exclusion>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hibernate</groupId>
+                    <artifactId>hibernate</artifactId>
+                </exclusion>
+              <exclusion>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+              </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
         	<groupId>com.h2database</groupId>
         	<artifactId>h2</artifactId>
@@ -290,7 +356,5 @@
             <version>2.4.5</version>
             <scope>provided</scope>
         </dependency>
-
     </dependencies>
-
 </project>

@@ -6,15 +6,9 @@
     <artifactId>activejdbc-ehcache</artifactId>
     <version>1.3-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>ActiveJDBC EHCache Test</name>
+    <name>ActiveJDBC - EHCache Test</name>
     <description>This module is a test for EHCache integration, do not add this
         as a dependency to your project</description>
-    <parent>
-        <groupId>org.javalite</groupId>
-        <artifactId>activejdbc-root</artifactId>
-        <version>1.3-SNAPSHOT</version>
-    </parent>
-
 
     <build>
         <plugins>
@@ -29,7 +23,7 @@
                     <maxmem>512m</maxmem>
                 </configuration>
             </plugin>
-<!-- temporary commenting out due to Masven 3 issue.
+<!-- temporary commenting out due to Maven 3 issue.
             <plugin>
                 <groupId>org.javalite</groupId>
                 <artifactId>activejdbc-instrumentation</artifactId>
