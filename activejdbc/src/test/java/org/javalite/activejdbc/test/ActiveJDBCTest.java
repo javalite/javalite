@@ -48,10 +48,19 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
             schemaGenerated = true;
             System.out.println("DB: " + db() + ", Driver:" + driver());
         }
+
+        Base.connection().setAutoCommit(false);
+
     }
 
     @After
     public void after() {
+
+        try {
+            Base.connection().rollback();
+        } catch (SQLException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
         Base.close();
     }
 

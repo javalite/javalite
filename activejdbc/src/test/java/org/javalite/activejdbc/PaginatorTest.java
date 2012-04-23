@@ -35,8 +35,7 @@ public class PaginatorTest extends ActiveJDBCTest {
         super.before();
         deleteAndPopulateTable("items");
         for(int i = 1; i <= 1000; i++){
-            Item item = (Item)Item.create("item_number", i, "item_description", "this is item # " + i);
-            item.saveIt();
+            Item.createIt("item_number", i, "item_description", "this is item # " + i);
         }
     }
 

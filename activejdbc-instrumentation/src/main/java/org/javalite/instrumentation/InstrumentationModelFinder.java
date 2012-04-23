@@ -44,7 +44,9 @@ public class InstrumentationModelFinder{
 
     InstrumentationModelFinder() throws NotFoundException, ClassNotFoundException {
         ClassPool pool = ClassPool.getDefault();
-        pool.insertClassPath(new ClassClassPath(Class.forName("org.javalite.activejdbc.Model")));
+        //any simple class will do here, but Model - it causes slf4j to be loaded during instrumentation.
+        pool.insertClassPath(new ClassClassPath(Class.forName("org.javalite.activejdbc.Association")));
+
         modelClass = pool.get("org.javalite.activejdbc.Model");
 
     }
