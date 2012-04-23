@@ -72,12 +72,14 @@ public class Instrumentation {
         fout.close();
     }
 
-    static String getDatabaseName(CtClass model) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+     static String getDatabaseName(CtClass model) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Object[] annotations =  model.getAnnotations();
+
         for (Object annotation : annotations) {
-            if(annotation.getClass().getName().equals("org.javalite.activejdbc.annotations.DbName") ){
+            Class dbNameClass = Class.forName("org.javalite.activejdbc.annotations.DbName");
+            if(dbNameClass.isAssignableFrom(annotation.getClass())){
                 Method valueMethod = annotation.getClass().getMethod("value");
-               return valueMethod.invoke(annotation).toString();
+                return valueMethod.invoke(annotation).toString();
             }
         }
         return "default";
