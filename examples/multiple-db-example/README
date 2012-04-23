@@ -6,6 +6,6 @@ Usage:
 2. Execute run.sh - this will build and execute this program from start to finish.
 3. Examine run.sh and its output
 
-Do not forget to replace the snapshot releases with latest build from: http://ipsolutionsdev.com/snapshots/activejdbc/
+Do not forget to replace the snapshot releases with latest build from: https://oss.sonatype.org/content/repositories/snapshots/org/javalite/
 
 

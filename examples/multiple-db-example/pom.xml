@@ -4,7 +4,8 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.javalite</groupId>
-    <artifactId>activeJdbc-multi-db-example</artifactId>
+    <artifactId>multiple-db-example</artifactId>
+    <name>ActiveJDBC - Multiple Database Connections</name>
     <version>1.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
