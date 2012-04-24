@@ -5,8 +5,8 @@
 export OUTDIR=classes
 
 export CLASSPATH=$OUTDIR
-export CLASSPATH=$CLASSPATH:lib/activejdbc-1.3-SNAPSHOT.jar:
-export CLASSPATH=$CLASSPATH:lib/javalite-common-1.3-SNAPSHOT.jar
+export CLASSPATH=$CLASSPATH:lib/activejdbc-1.2.2-SNAPSHOT.jar:
+export CLASSPATH=$CLASSPATH:lib/javalite-common-1.2.2-SNAPSHOT.jar
 export CLASSPATH=$CLASSPATH:lib/mysql-connector-java-5.0.4.jar
 export CLASSPATH=$CLASSPATH:lib/slf4j-api-1.5.10.jar
 export CLASSPATH=$CLASSPATH:lib/slf4j-simple-1.5.10.jar
