@@ -573,26 +573,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return number of updated records.
      */
     public static int update(String updates, String conditions, Object ... params) {
-
         //TODO: validate that the number of question marks is the same as number of parameters
-
-        MetaModel metaModel = getMetaModel();
-        Object []allParams;
-        if(metaModel.hasAttribute("updated_at")){
-            updates = "updated_at = ?, " + updates;
-            allParams = new Object[params.length + 1];
-            System.arraycopy(params, 0, allParams, 1, params.length);
-
-            allParams[0] = new Timestamp(System.currentTimeMillis());
-        }else{
-            allParams = params;
-        }
-        String sql = "UPDATE " + metaModel.getTableName() + " SET " + updates + ((conditions != null)?" WHERE " + conditions:"");
-        int count = new DB(metaModel.getDbName()).exec(sql, allParams);
-        if(metaModel.cached()){
-            QueryCache.instance().purgeTableCache(metaModel.getTableName());
-        }
-        return count;
+        return ModelDelegate.update(Model.getMetaModel(), updates, conditions, params);
     }
 
 
@@ -1350,15 +1332,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     protected static NumericValidationBuilder validateNumericalityOf(String... attributes) {
-        return ValidationHelper.addNumericalityValidators(Model.<Model>getDaClass(), toLowerCase(attributes));
-    }
-
-    private static String[] toLowerCase(String[] arr){
-        String[] newArr = new String[arr.length];
-        for (int i = 0; i < newArr.length; i++) {
-            newArr[i] = arr[i].toLowerCase();
-        }
-        return newArr;
+        return ValidationHelper.addNumericalityValidators(Model.<Model>getDaClass(), ModelDelegate.toLowerCase(attributes));
     }
 
     /**
@@ -1432,7 +1406,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return
      */
     protected static ValidationBuilder validatePresenceOf(String... attributes) {
-        return ValidationHelper.addPresensevalidators(Model.<Model>getDaClass(), toLowerCase(attributes));
+        return ValidationHelper.addPresensevalidators(Model.<Model>getDaClass(), ModelDelegate.toLowerCase(attributes));
     }
 
     /**
@@ -1567,7 +1541,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         try{
 
             Model m = getDaClass().newInstance();
-            setNamesAndValues(m, namesAndValues);
+            ModelDelegate.setNamesAndValues(m, namesAndValues);
             return (T) m;
         }
         catch(IllegalArgumentException e){throw e;}
@@ -1595,21 +1569,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return newly instantiated model.
      */
     public Model set(Object ... namesAndValues){
-        setNamesAndValues(this, namesAndValues);
+        ModelDelegate.setNamesAndValues(this, namesAndValues);
         return this;
-    }
-
-    private static void setNamesAndValues(Model m, Object... namesAndValues) {
-
-        String[] names = new String[namesAndValues.length / 2];
-        Object[] values = new Object[namesAndValues.length / 2];
-        int j = 0;
-        for (int i = 0; i < namesAndValues.length - 1; i += 2, j++) {
-            if (namesAndValues[i] == null) throw new IllegalArgumentException("attribute names cannot be nulls");
-            names[j] = (String) namesAndValues[i];
-            values[j] = namesAndValues[i + 1];
-        }
-        m.set(names, values);
     }
 
     /**
@@ -2254,7 +2215,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
     }
 
-
     /**
      * Generates INSERT SQL based on this model. Uses single quotes for all string values.
      * Example:
@@ -2354,24 +2314,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     private static void purgeEdges(){
-        //this is to eliminate side effects of cache on associations.
-        //TODO: Need to write tests for cases;
-        // 1. One to many relationship. Parent and child are cached.
-        //      When a new child inserted, the parent.getAll(Child.class) should see that
-        // 2. Many to many. When a new join inserted, updated or deleted, the one.getAll(Other.class) should see the difference.
-
-        //Purge associated targets
-        MetaModel metaModel = getMetaModel();
-        List<Association> associations = metaModel.getAssociations();
-        for(Association association: associations){
-            QueryCache.instance().purgeTableCache(association.getTarget());
-        }
-
-        //Purge edges in case this model represents a join
-        List<String> edges = Registry.instance().getEdges(metaModel.getTableName());
-        for(String edge: edges){
-            QueryCache.instance().purgeTableCache(edge);
-        }
+        ModelDelegate.purgeEdges(getMetaModel());
     }
 
 
