@@ -5,9 +5,9 @@
 
     <path id="instrument_classpath">
         <pathelement location="${out.dir}"/>
-        <path location="${user.home}/.m2/repository/org/javalite/activejdbc-instrumentation/1.3-SNAPSHOT/activejdbc-instrumentation-1.3-SNAPSHOT.jar"/>
+        <path location="${user.home}/.m2/repository/org/javalite/activejdbc-instrumentation/1.2.2/activejdbc-instrumentation-1.2.2.jar"/>
         <path location="${user.home}/.m2/repository/javassist/javassist/3.8.0.GA/javassist-3.8.0.GA.jar"/>
-        <path location="${user.home}/.m2/repository/org/javalite/activejdbc/1.3-SNAPSHOT/activejdbc-1.3-SNAPSHOT.jar"/>
+        <path location="${user.home}/.m2/repository/org/javalite/activejdbc/1.2.2/activejdbc-1.2.2.jar"/>
     </path>
 
     <target name="instrument">

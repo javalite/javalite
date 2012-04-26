@@ -91,7 +91,7 @@ public class ControllerFactory {
         String targetClasses = join(list("target", "classes"), System.getProperty("file.separator"));
         String srcMainJava = join(list("src", "main", "java"), System.getProperty("file.separator"));
 
-        String[] args = {"-d", targetClasses, "-cp", classpath, srcMainJava + System.getProperty("file.separator") + controllerFileName};
+        String[] args = {"-g:lines", "-d", targetClasses, "-cp", classpath, srcMainJava + System.getProperty("file.separator") + controllerFileName};
 
         Class cl = Class.forName("com.sun.tools.javac.Main");
         Method compile = cl.getMethod("compile", String[].class, PrintWriter.class);
