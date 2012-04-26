@@ -13,7 +13,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-*/
+ */
 package activejdbc.codegen;
 
 import java.io.File;
@@ -25,16 +25,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class to represent the generated Java bean Class.
- * Class name is same as the table name in singular form. e.g For employees table , Employee.java is generated
+ * Class to represent the generated Java bean Class. Class name is same as the
+ * table name in singular form. e.g For employees table , Employee.java is
+ * generated
+ * 
  * @author Kalyan Mulampaka
- *
+ * 
  */
 public class Clazz
 {
 
 	final static Logger logger = LoggerFactory.getLogger(Clazz.class);
-
+	private String rootFolderPath;
 	private String packageName;
 	private String name;
 	private String extendsClassName;
@@ -44,6 +46,16 @@ public class Clazz
 	public Clazz ()
 	{
 
+	}
+
+	public String getRootFolderPath ()
+	{
+		return rootFolderPath;
+	}
+
+	public void setRootFolderPath (String rootFolderPath)
+	{
+		this.rootFolderPath = rootFolderPath;
 	}
 
 	public List<Method> getMethods ()
@@ -104,40 +116,51 @@ public class Clazz
 
 		strBuf.append("public class " + WordUtils.capitalize(CodeGenUtil.normalize(name)));
 		strBuf.append(" extends " + extendsClassName);
-		strBuf.append(" implements " + interfaceName + "\n");
-		strBuf.append("{\n");
+		if (StringUtils.isNotBlank(interfaceName))
+		{
+			strBuf.append(" implements " + interfaceName);
+		}
+		strBuf.append("\n{\n\n");
 		// no args constructor
 		strBuf.append("\tpublic " + WordUtils.capitalize(CodeGenUtil.normalize(name)) + " ()\n\t{\n");
 
-		strBuf.append("\t}\n");
+		strBuf.append("\t}\n\n");
 
 		for (Method method : methods)
 		{
 			String methodName = WordUtils.capitalize(CodeGenUtil.normalize(method.getName()));
 			String paramName = CodeGenUtil.normalize(method.getParameter().getName());
 			String paramType = method.getParameter().getType().getName();
-
+			String columnName = method.getParameter().getName();
 			// setter
-			strBuf.append("\tpublic void set" + methodName + " (");
-			strBuf.append(paramType + " " + paramName);
-			strBuf.append(")\n");
+			if (method.isGenerateSetter())
+			{
+				strBuf.append(CodeGenUtil.generateComment());
+				strBuf.append("\tpublic void set" + methodName + " (");
+				strBuf.append(paramType + " " + paramName);
+				strBuf.append(")\n");
 
-			// implementation
-			String columnName = interfaceName + "." + StringUtils.upperCase(method.getParameter().getName());
-			strBuf.append("\t{\n");
-			strBuf.append("\t\tset(" + columnName + ".getColumnName(), " + paramName + ");\n");
-			strBuf.append("\t}\n");
+				// implementation
+				strBuf.append("\t{\n");
+				strBuf.append("\t\tset(\"" + columnName + "\", " + paramName + ");\n");
+				strBuf.append("\t}\n\n");
+			}
 
 			// getter
-			strBuf.append("\tpublic " + paramType + " get" + methodName + " ()\n");
-			strBuf.append("\t{\n");
-			strBuf.append("\t\treturn " + columnName + ".getColumnType().cast(get(" + columnName + ".getColumnName()" + "));\n");
-			strBuf.append("\t}\n");
+			if (method.isGenerateGetter())
+			{
+				strBuf.append(CodeGenUtil.generateComment());
+				strBuf.append("\tpublic " + paramType + " get" + methodName + " ()\n");
+				strBuf.append("\t{\n");
+				strBuf.append("\t\treturn (" + paramType + ") get(\"" + columnName + "\");\n");
+				strBuf.append("\t}\n\n");
+			}
 		}
 		strBuf.append("}");
 		logger.debug("Printing Class file content:\n" + strBuf.toString());
 		return strBuf;
 	}
+
 
 	public void createFile () throws Exception
 	{
@@ -145,6 +168,10 @@ public class Clazz
 		if (StringUtils.isNotBlank(this.packageName))
 		{
 			path = StringUtils.replace(this.packageName, ".", "/") + "/";
+		}
+		if (StringUtils.isNotBlank(this.rootFolderPath))
+		{
+			path = this.rootFolderPath + "/" + path;
 		}
 		String fileName = path + WordUtils.capitalize(CodeGenUtil.normalize(this.name)) + ".java";
 		File file = new File(fileName);

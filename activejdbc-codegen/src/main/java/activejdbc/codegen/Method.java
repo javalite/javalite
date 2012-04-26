@@ -25,6 +25,8 @@ public class Method
 {
 	private String name;
 	private Parameter parameter;
+	private boolean generateSetter = true;
+	private boolean generateGetter = true;
 
 	public Method ()
 	{
@@ -51,6 +53,25 @@ public class Method
 		this.parameter = parameter;
 	}
 
+	public boolean isGenerateSetter ()
+	{
+		return generateSetter;
+	}
+	
+	public void setGenerateSetter (boolean generateSetter)
+	{
+		this.generateSetter = generateSetter;
+	}
+	
+	public boolean isGenerateGetter ()
+	{
+		return generateGetter;
+	}
+	
+	public void setGenerateGetter (boolean generateGetter)
+	{
+		this.generateGetter = generateGetter;
+	}
 
 
 
