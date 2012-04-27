@@ -20,7 +20,6 @@ import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Member;
 import org.junit.Test;
 
-import javax.sound.midi.VoiceStatus;
 
 /**
  * @author Igor Polevoy

@@ -129,7 +129,7 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
         a(Patient.count()).shouldBeEqual(3);
         a(Prescription.count()).shouldBeEqual(5);
 
-        Patient.findById(3).deleteCascadeExcept(Patient.getMetaModel().getAssociationForTarget("prescriptions"));
+        Patient.<Patient>findById(3).deleteCascadeExcept(Patient.getMetaModel().getAssociationForTarget("prescriptions"));
 
         a(Doctor.count()).shouldBeEqual(2);
         a(Patient.count()).shouldBeEqual(2);
