@@ -17,9 +17,7 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
-import org.javalite.activejdbc.associations.BelongsToAssociation;
-import org.javalite.activejdbc.associations.Many2ManyAssociation;
-import org.javalite.activejdbc.associations.OneToManyAssociation;
+import org.javalite.activejdbc.associations.*;
 import org.javalite.activejdbc.cache.QueryCache;
 import org.javalite.common.Inflector;
 import org.javalite.common.Util;
@@ -315,7 +313,6 @@ public class LazyList<T extends Model> extends AbstractList<T>{
     }
 
     private void processIncludes(){
-
         for(Class includedClass: includes.keySet()){            
             Association association = includes.get(includedClass);
             if(association instanceof BelongsToAssociation){
@@ -324,8 +321,42 @@ public class LazyList<T extends Model> extends AbstractList<T>{
                 processChildren((OneToManyAssociation)association, includedClass);
             }else if(association instanceof Many2ManyAssociation){
                 processOther((Many2ManyAssociation)association, includedClass);
+            }else if(association instanceof OneToManyPolymorphicAssociation){
+                processPolymorphicChildren((OneToManyPolymorphicAssociation) association, includedClass);
+            }else if(association instanceof BelongsToPolymorphicAssociation){
+                processPolymorphicParent((BelongsToPolymorphicAssociation)association, includedClass);
             }
         }        
+    }
+
+    /**
+     * @author Evan Leonard
+     */
+    private void processPolymorphicParent(BelongsToPolymorphicAssociation association, Class parentClass) {
+        if(delegate.size() == 0){//no need to process children if no models selected.
+            return;
+        }
+
+        final MetaModel parentMM = Registry.instance().getMetaModel(parentClass);
+        final Map<Object, Model> parentsHasByIds = new HashMap<Object, Model>();
+
+        String parentClassName = association.getParentClassName();
+
+        //need to remove duplicates because more than one child can belong to the same parent.
+        List parentIds = collect("parent_id", "parent_type", parentClassName);
+        ArrayList noDuplicateList = new ArrayList(new HashSet(parentIds));
+
+        for(Model parent: new LazyList<Model>(parentMM.getIdName() + " IN (" + Util.join(noDuplicateList, ", ") + ")", null, parentMM)){
+            parentsHasByIds.put(parentClassName+":"+parent.getId(), parent);
+        }
+
+        //now that we have the parents in the has, we need to distribute them into list of children that are
+        //stored in the delegate.
+        for(Model child: delegate){
+            Object fk = child.get("parent_id");
+            Model parent = parentsHasByIds.get(parentClassName+":"+fk);
+            child.setCachedParent(parent); //this could be null, which is fine
+        }
     }
 
     private void processParent(BelongsToAssociation association, Class parentClass) {
@@ -365,7 +396,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
      * </pre>
      * provided that the corresponding table has a column <code>first_name</code>.
      * <p/><p/>
-     * Bare in mind, that if all you need is a one column data, this method of getting it is not
+     * Keep in mind, that if all you need is a one column data, this method of getting it is not
      * the most efficient (because since you are using a model, you will query all columns from a table,
      * but will use only one). In these cases, you might want to consider {@link Base#firstColumn(String, Object...)} and
      * {@link DB#firstColumn(String, Object...)}.
@@ -382,6 +413,49 @@ public class LazyList<T extends Model> extends AbstractList<T>{
 
         return results;
     }
+
+
+    public List collect(String columnName, String filterColumn, Object filterValue) {
+        hydrate();
+        List results = new ArrayList();
+        for (Model model : delegate) {
+            if (model.get(filterColumn).equals(filterValue)) {
+                results.add(model.get(columnName));
+            }
+        }
+        return results;
+    }
+
+
+
+    private void processPolymorphicChildren(OneToManyPolymorphicAssociation association, Class childClass) {
+        if (delegate.size() == 0) {//no need to process children if no models selected.
+            return;
+        }
+
+        MetaModel childMM = Registry.instance().getMetaModel(childClass);
+        String fkName = association.getTarget();
+
+        Map<Object, List<Model>> childrenByParentId = new HashMap<Object, List<Model>>();
+
+        List ids = collect(metaModel.getIdName());
+
+
+        for (Model child : new LazyList<Model>("parent_id IN (" + Util.join(ids, ", ") + ") AND parent_type = '" + association.getTypeLabel() + "'", null, childMM).orderBy(childMM.getIdName())) {
+            if (childrenByParentId.get(child.get("parent_id")) == null) {
+                childrenByParentId.put(child.get("parent_id"), new SuperLazyList<Model>());
+            }
+            childrenByParentId.get(child.get("parent_id")).add(child);
+        }
+
+        for (T parent : delegate) {
+            List<Model> children = childrenByParentId.get(parent.getId());
+            if (children != null) {
+                parent.setChildren(childClass, children);
+            }
+        }
+    }
+
 
     private void processChildren(OneToManyAssociation association, Class childClass) {
 

@@ -25,6 +25,7 @@ import org.javalite.activejdbc.test_models.Post;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Igor Polevoy
@@ -123,5 +124,49 @@ public class PolymorphicAssociationsTest extends ActiveJDBCTest {
         article.add(Comment.create("author", "rkinderman", "content", "this is another test comment text"));
 
         Comment.findAll().get(0).parent(Post.class);
+    }
+
+    @Test
+    public void shouldFindPolymorphicParentWithInclude(){
+
+        deleteAndPopulateTables("articles", "posts", "comments");
+        Article article = (Article) Article.findById(1);
+        article.add(Comment.create("author", "ipolevoy", "content", "this is just a test comment text"));
+        article.add(Comment.create("author", "rkinderman", "content", "this is another test comment text"));
+
+
+        LazyList<Article> articles = Article.findAll().include(Comment.class).orderBy("id");
+        articles.size();
+
+        //compares references.
+        the(articles.get(0).getAll(Comment.class).get(0)).shouldBeTheSameAs(articles.get(0).getAll(Comment.class).get(0));
+
+    }
+
+    /**
+     * @author Evan Leonard
+     */
+    @Test
+    public void shouldBeAbleToIncludePolymorphicParent() {
+        deleteAndPopulateTables("comments", "articles", "posts");
+
+        Post p = (Post) Post.findById(1);
+        p.add(Comment.create("author", "eleonard", "content", "this is just a test comment text"));
+
+        Article a = (Article) Article.findById(2);
+        a.add(Comment.create("author", "eleonard", "content", "this is just a test comment text"));
+
+        final LazyList<Comment> comments = Comment.findAll().orderBy("id").include(Article.class, Post.class);
+
+        final List<Map> commentMaps = comments.toMaps();
+
+        final Map post = (Map) commentMaps.get(0).get("post");
+        the(post.get("id")).shouldBeEqual(1);
+
+        final Map article = (Map) commentMaps.get(1).get("article");
+        the(article.get("id")).shouldBeEqual(2);
+
+        //ensure we get the same reference
+        the(comments.get(0).parent(Post.class)).shouldBeTheSameAs(comments.get(0).parent(Post.class));
     }
 }

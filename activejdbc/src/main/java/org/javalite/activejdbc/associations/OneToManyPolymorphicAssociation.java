@@ -29,6 +29,7 @@ public class OneToManyPolymorphicAssociation extends Association {
     /**
      * @param source source table, the one that has many targets
      * @param target target table - many targets belong to source.
+     * @param typeLabel
      */
     public OneToManyPolymorphicAssociation(String source, String target,  String typeLabel) {
         super(source, target);
