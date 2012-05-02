@@ -14,9 +14,28 @@ See the License for the specific language governing permissions and
 limitations under the License. 
 */
 
+
 package org.javalite.activejdbc;
 
-public interface RowProcessor {
+import java.util.HashMap;
+import java.util.List;
 
-	void with(RowListener listener);
+
+public class CachedRowProcessor implements RowProcessor {
+	
+    private List<HashMap<String, Object>> queryMap;
+
+    public CachedRowProcessor(List<HashMap<String, Object>> queryMap){
+        this.queryMap = queryMap;
+    }
+
+    public void with(RowListener listener){
+    	if(queryMap == null){
+    		return;
+    	}
+    	for(HashMap<String, Object> row : queryMap){
+    		//TODO Add hook for onLoad?? 
+    		if(!listener.next(row)) break;
+    	}
+    }
 }

@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 
-package org.javalite.activejdbc;
+package org.javalite.activejdbc.cache;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,21 +25,19 @@ import java.util.HashMap;
 /**
  * @author Igor Polevoy
  */
-class StatementCache {
+public class StatementCache {
 
-    private static StatementCache  instance = new StatementCache();
+    private static StatementCache instance = new StatementCache();
     private StatementCache (){}
 
-    static StatementCache instance(){return instance;}
+    public static StatementCache instance(){return instance;}
 
     private HashMap<Connection, HashMap<String, PreparedStatement>> statementCache = new HashMap<Connection, HashMap<String, PreparedStatement>>();
 
-    PreparedStatement getPreparedStatement(Connection connection, String query) throws SQLException {
-
+    public PreparedStatement getPreparedStatement(Connection connection, String query) throws SQLException {
         if (!statementCache.containsKey(connection)) {
             statementCache.put(connection, new HashMap<String, PreparedStatement>());
         }
-
         HashMap<String, PreparedStatement> preparedStatementMap = statementCache.get(connection);
         return preparedStatementMap.get(query);
     }
@@ -48,7 +46,18 @@ class StatementCache {
         statementCache.get(connection).put(query, ps);
     }
 
-    void cleanStatementCache(Connection connection) {
+    public void cleanStatementCache(Connection connection) {
+    	if(statementCache.get(connection) == null){
+    		return;
+    	}
+    	for(String key : statementCache.get(connection).keySet()){
+    		try {
+				statementCache.get(connection).get(key).close();
+			} catch (Exception e) {
+				// ignore
+				e.printStackTrace();
+			}
+    	}
         statementCache.remove(connection);
     }
 }

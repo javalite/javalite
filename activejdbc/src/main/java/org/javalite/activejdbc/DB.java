@@ -17,7 +17,10 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
+import org.javalite.activejdbc.cache.QueryHolder;
+import org.javalite.activejdbc.cache.StatementCache;
 import org.javalite.common.Convert;
+import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +41,8 @@ import java.util.*;
 public class DB {
     
     private String dbName;
+    private boolean isSqlQueryCacheEnabled;
+    private boolean isConnectionStatisticsEnabled;
     final static Logger logger = LoggerFactory.getLogger(DB.class);
 
     /**
@@ -49,6 +54,26 @@ public class DB {
         this.dbName = dbName;
     }
 
+    /**
+     * Enables SQL Query cache for that instance of DB. Actually, cache will be created only in subsequent DB.open() call.
+     *
+     * @return DB instance for using in fluent calls. Such as DB db = new DB("default").enableSqlCache()
+     */
+    public DB enableSqlCache(){
+    	isSqlQueryCacheEnabled = true;
+    	return this;
+    }
+    
+    /**
+     * Enables Connection statistics gathering for that instance of DB. Actually, statistics gathering  will be started only in subsequent DB.open() call.
+     *
+     * @return DB instance for using in fluent calls. Such as DB db = new DB("default").enableSqlCache()
+     */
+    public DB enableConnectionStatistics(){
+    	isConnectionStatisticsEnabled = true;
+    	return this;
+    }
+    
     /**
      * Opens a new connection based on JDBC properties and attaches it to a current thread.
      *
@@ -62,7 +87,7 @@ public class DB {
         try {
             Class.forName(driver);
             Connection connection = DriverManager.getConnection(url, user, password);
-            ConnectionsAccess.attach(dbName, connection);
+            ConnectionsAccess.attach(dbName, connection, isSqlQueryCacheEnabled, isConnectionStatisticsEnabled);
         } catch (Exception e) {
             throw new InitException(e);
         }
@@ -80,7 +105,7 @@ public class DB {
         try {
             Class.forName(driver);
             Connection connection = DriverManager.getConnection(url, props);
-            ConnectionsAccess.attach(dbName, connection);
+            ConnectionsAccess.attach(dbName, connection, isSqlQueryCacheEnabled, isConnectionStatisticsEnabled);
         } catch (Exception e) {
             throw new InitException(e);
         }
@@ -98,7 +123,7 @@ public class DB {
             Context ctx = new InitialContext();
             DataSource ds = (DataSource) ctx.lookup(jndiName);
             Connection connection = ds.getConnection();
-            ConnectionsAccess.attach(dbName, connection);
+            ConnectionsAccess.attach(dbName, connection, isSqlQueryCacheEnabled, isConnectionStatisticsEnabled);
         } catch (Exception e) {
             throw new InitException(e);
         }
@@ -114,7 +139,7 @@ public class DB {
         checkExistingConnection(dbName);
         try {
             Connection connection = datasource.getConnection();
-            ConnectionsAccess.attach(dbName, connection);
+            ConnectionsAccess.attach(dbName, connection, isSqlQueryCacheEnabled, isConnectionStatisticsEnabled);
         } catch (Exception e) {
             throw new InitException(e);
         }
@@ -134,7 +159,7 @@ public class DB {
             Context ctx = new InitialContext(jndiProperties);
             DataSource ds = (DataSource) ctx.lookup(jndiName);
             Connection connection = ds.getConnection();
-            ConnectionsAccess.attach(dbName, connection);
+            ConnectionsAccess.attach(dbName, connection, isSqlQueryCacheEnabled, isConnectionStatisticsEnabled);
         } catch (Exception e) {
             throw new InitException(e);
         }
@@ -201,7 +226,7 @@ public class DB {
         try {         
             DataSource ds = (DataSource) context.lookup(jndiName);
             Connection connection = ds.getConnection();
-            ConnectionsAccess.attach(dbName, connection);
+            ConnectionsAccess.attach(dbName, connection, isSqlQueryCacheEnabled, isConnectionStatisticsEnabled);
         } catch (Exception e) {
             throw new InitException(e);
         }
@@ -258,9 +283,7 @@ public class DB {
         if(query.trim().equals("*") && params.length == 0){
             return count(table);
         }
-        if(query.trim().equals("*") && params.length != 0){
-            throw new IllegalArgumentException("cannot use '*' and parameters");
-        }
+        checkCountQueryParams(query, params);
 
         String sql = "SELECT COUNT(*) FROM " + table + " WHERE " + query;
         return Convert.toLong(firstCell(sql, params));
@@ -388,31 +411,10 @@ public class DB {
      * @return instance of <code>RowProcessor</code> which has with() method for convenience.
      */
     public RowProcessor find(String query, Object ... params) {
-
-        //TODO: count ? signs and number of params, throw exception if do not match
-
-        if(query.indexOf('?') != -1 && params.length == 0) throw new IllegalArgumentException("you have placeholders (?) in the query, but no arguments are passed");
-        if(query.indexOf('?') == -1 && params.length != 0) throw new IllegalArgumentException("you passed arguments, but the query does not have placeholders: (?)");
-        if(!query.toLowerCase().contains("select"))throw new IllegalArgumentException("query must be 'select' query");
-
-        //TODO: cache prepared statements here too
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            ps = connection().prepareStatement(query);
-            for (int index = 0; index < params.length; index++) {
-                Object param = params[index];
-                ps.setObject(index + 1, param);
-            }
-
-            rs = ps.executeQuery();
-            return new RowProcessor(rs, ps);
-
-        } catch (Exception e) {throw new DBException(query, params, e);}
-
+        checkSelectQueryParams(query, params);
+        return getRowProcessor(new QueryHolder(query, params));
     }
-
-
+    
     /**
      * Executes a raw query and calls instance of <code>RowListener</code> with every row found.
      * Use this method for very large result sets.
@@ -421,21 +423,9 @@ public class DB {
      * @param listener client listener implementation for processing individual rows.
      */
     public void find(String sql, RowListener listener) {
-
-        Statement s = null;
-        ResultSet rs = null;
-        try {
-            s = connection().createStatement();
-            rs = s.executeQuery(sql);
-            RowProcessor p = new RowProcessor(rs, s);
-            p.with(listener);
-        }
-        catch (Exception e) {
-            throw new DBException(sql, null, e);
-        }
-        finally{try{rs.close();}catch(Exception e){/*ignore*/} try{s.close();}catch(Exception e){/*ignore*/}}
+    	RowProcessor p = getRowProcessor(new QueryHolder(sql, null));
+        p.with(listener);
     }
-
 
     /**
      * Executes DML. Use it for inserts and updates.
@@ -445,19 +435,19 @@ public class DB {
      */
     public int exec(String query){
         long start = System.currentTimeMillis();
-        Statement s = null;
         try {
-            s = connection().createStatement();
+            PreparedStatement s = getPreparedStatement(query, null);
             int count = s.executeUpdate(query);
             LogFilter.logQuery(logger, query, null, start);
+            if(count > 0){
+            	ConnectionsAccess.purgeSqlCache(dbName);
+            }
             return count;
         } catch (SQLException e) {
             logger.error("Query failed: " + query, e);
             throw new DBException(query, null, e);
         }
-        finally{try{s.close();}catch(Exception e){/*ignore*/}}
     }
-
 
     /**
      * Executes parametrized DML - will contain question marks as placeholders.
@@ -468,28 +458,22 @@ public class DB {
      */
     public  int exec(String query, Object ... params){
 
-        if(query.trim().toLowerCase().startsWith("select")) throw new IllegalArgumentException("expected DML, but got select...");
-
-        if(query.indexOf('?') == -1) throw new IllegalArgumentException("query must be parametrized");
+        checkUpdateSqlParams(query, params);
 
         long start = System.currentTimeMillis();
-        PreparedStatement ps = null;
         try {
-            ps = connection().prepareStatement(query);
-            for (int index = 0; index < params.length; index++) {
-                Object param = params[index];
-                ps.setObject(index + 1, param);
-            }
+        	PreparedStatement ps = getPreparedStatement(query, null, params);
             int count =  ps.executeUpdate();
             LogFilter.logQuery(logger, query, params, start);
+            if(count > 0){
+            	ConnectionsAccess.purgeSqlCache(dbName);
+            }
             return count;
         } catch (Exception e) {
             throw new DBException(query, params, e);
         }
-        finally{try{ps.close();}catch(Exception e){/*ignore*/}}
 
     }
-
 
     /**
      * This method is specific for inserts.
@@ -501,31 +485,22 @@ public class DB {
      * functionality is not supported by DB or driver.
      */
     long execInsert(String query, String autoIncrementColumnName, Object... params) {
-
-        if (!query.toLowerCase().contains("insert"))
-            throw new IllegalArgumentException("this method is only for inserts");
+    	
+    	checkInsertSqlParams(query, params);
 
         long start = System.currentTimeMillis();
-        PreparedStatement ps = null;
+        
         try {
-            Connection connection = connection();
-            ps = StatementCache.instance().getPreparedStatement(connection, query);
-            if(ps == null){                
-                ps = connection.prepareStatement(query, new String[]{autoIncrementColumnName});
-                StatementCache.instance().cache(connection, query, ps);
-            }
-            for (int index = 0; index < params.length; index++) {
-                Object param = params[index];
-                ps.setObject(index + 1, param);
-            }
+        	PreparedStatement ps = getPreparedStatement(query, autoIncrementColumnName, params);
             ps.executeUpdate();
-
+            
             ResultSet rs = null;
             try{
                 rs = ps.getGeneratedKeys();
                 if (rs.next()) {
                     long id = rs.getLong(1);
                     LogFilter.logQuery(logger, query, params, start);
+                    ConnectionsAccess.purgeSqlCache(dbName);
                     return id;
                 } else {
                     return -1;
@@ -653,4 +628,85 @@ public class DB {
     public static Map<String, Connection> connections(){
         return ConnectionsAccess.getConnectionMap();
     }
+    
+    /*
+     * Check parameters for SQL SELECT clause
+     */
+    private void checkSelectQueryParams(String query, Object... params) {
+		if(query.indexOf('?') != -1 && params.length == 0) throw new IllegalArgumentException("you have placeholders (?) in the query, but no arguments are passed");
+        if(query.indexOf('?') == -1 && params.length != 0) throw new IllegalArgumentException("you passed arguments, but the query does not have placeholders: (?)");
+        if(!query.toLowerCase().contains("select"))throw new IllegalArgumentException("query must be 'select' query");
+        if(Util.countOccurrences(query, '?') != params.length)throw new IllegalArgumentException("count of placeholders(?) and number of params is different. Check your query " + query);
+	}
+    
+    /*
+     * Check parameters for SQL SELECT count() clause
+     */
+    private void checkCountQueryParams(String query, Object... params) {
+		if(query.trim().equals("*") && params.length != 0){
+            throw new IllegalArgumentException("cannot use '*' and parameters");
+        }
+	}
+
+    /*
+     * Check parameters for SQL UPDATE or DELETE clause
+     */
+    private void checkUpdateSqlParams(String query, Object... params) {
+		if(query.trim().toLowerCase().startsWith("select")) throw new IllegalArgumentException("expected DML, but got select...");
+        if(query.indexOf('?') == -1) throw new IllegalArgumentException("query must be parametrized");
+        if(Util.countOccurrences(query, '?') != params.length)throw new IllegalArgumentException("count of placeholders(?) and number of params is different. Check your query" + query);
+	}
+    
+    /*
+     * Check parameters for SQL INSERT clause
+     */
+    private void checkInsertSqlParams(String query, Object... params) {
+        if (!query.toLowerCase().contains("insert")) throw new IllegalArgumentException("this method is only for inserts");
+        if(query.indexOf('?') == -1) throw new IllegalArgumentException("query must be parametrized");
+        if(Util.countOccurrences(query, '?') != params.length)throw new IllegalArgumentException("count of placeholders(?) and number of params is different. Check your query" + query);
+	}
+    
+    /*
+	 * Return cached row processor in case when data in connection cache and connection cache is disabled. Otherwise return default row processor(direct call to DB)
+	 */
+	private RowProcessor getRowProcessor(QueryHolder queryHolder) throws DBException {
+        ResultSet rs = null;
+        try {
+        	PreparedStatement ps = getPreparedStatement(queryHolder.getQuery(), null, queryHolder.getParams());
+            if(ConnectionsAccess.isSqlQueryCacheEnabled(dbName)){
+    			List<HashMap<String, Object>> cachedResult = ConnectionsAccess.getCachedResult(queryHolder, this.dbName);
+    			if(cachedResult != null){
+    				logger.info("SqlQueryCache hit for query " + queryHolder.getQuery() + "with parameters " + queryHolder.getParams());
+    				return new CachedRowProcessor(cachedResult);
+    			}
+    		}
+    		rs = ps.executeQuery();
+    		return new DefaultRowProcessor(this.dbName, rs, queryHolder);
+        } catch (Exception e) {
+        	throw new DBException(queryHolder, e);
+        }
+		
+	}
+	
+	/*
+	 * Method to retrieve and cache ALL preparement statements. We shouldn't close any PreparedStatement, instead there are will be closed in DB.close() call
+	 */
+	private PreparedStatement getPreparedStatement(String query, String autoIncrementColumnName, Object... params) throws SQLException{
+		PreparedStatement ps = null;
+        Connection connection = connection();
+        ps = StatementCache.instance().getPreparedStatement(connection, query);
+        if(ps == null){
+        	if(autoIncrementColumnName != null) {
+        		ps = connection.prepareStatement(query, new String[]{autoIncrementColumnName});
+        	} else {
+        		ps = connection.prepareStatement(query);
+        	}
+            StatementCache.instance().cache(connection, query, ps);
+        }
+        for (int index = 0; index < params.length; index++) {
+            Object param = params[index];
+            ps.setObject(index + 1, param);
+        }
+        return ps;
+	}
 }

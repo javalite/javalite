@@ -48,7 +48,11 @@ public class ActiveJdbcFilter implements Filter {
 
     private static String jndiName;
 
-    public void init(FilterConfig config) throws ServletException {
+    public static String getJndiName() {
+		return jndiName;
+	}
+
+	public void init(FilterConfig config) throws ServletException {
 
     	jndiName = config.getInitParameter("jndiName");
         if(jndiName == null)
@@ -58,7 +62,7 @@ public class ActiveJdbcFilter implements Filter {
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
         long before = System.currentTimeMillis();
         try{
-            Base.open(jndiName);
+            openDB();
             Base.openTransaction();
             chain.doFilter(req, resp);
             Base.commitTransaction();
@@ -77,6 +81,10 @@ public class ActiveJdbcFilter implements Filter {
         }
         logger.info("Processing took: " + (System.currentTimeMillis() - before) + " milliseconds");
     }
+
+	protected void openDB() {
+		Base.open(jndiName);
+	}
 
     public void destroy() {}
 }

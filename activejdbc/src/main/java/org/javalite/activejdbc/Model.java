@@ -509,6 +509,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         MetaModel metaModel = getMetaModel();
         int count =  params == null || params.length == 0? new DB(metaModel.getDbName()).exec("DELETE FROM " + metaModel.getTableName() + " WHERE " + query) :
         new DB(metaModel.getDbName()).exec("DELETE FROM " + metaModel.getTableName() + " WHERE " + query, params);
+        //MAYBE check for count?? if count =0 , there are no cheanges in DB, so purge cache isn't needed?
         if(metaModel.cached()){
             QueryCache.instance().purgeTableCache(metaModel.getTableName());
         }

@@ -17,6 +17,8 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
+import org.javalite.activejdbc.cache.QueryHolder;
+
 /**
  * Generic exception wrapper for all things DB.
  *
@@ -72,5 +74,9 @@ public class DBException extends RuntimeException{
 
     public DBException() {
         super();    
-    }    
+    }
+
+	public DBException(QueryHolder queryHolder, Exception e) {
+		this(queryHolder.getQuery(), queryHolder.getParams(), e);
+	}    
 }

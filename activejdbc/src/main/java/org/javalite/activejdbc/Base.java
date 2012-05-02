@@ -72,6 +72,16 @@ public class Base {
     public static void open(String jndiName) {
         new DB(DEFAULT_DB_NAME).open(jndiName);
     }
+    
+    /**
+     * Opens a connection from JNDI based on a registered name with enabled SQL query cache. This assumes that there is a <code>jndi.properties</code>
+     * file with proper JNDI configuration in it.
+     *
+     * @param jndiName name of a configured data source.
+     */
+    public static void openCached(String jndiName) {
+        new DB(DEFAULT_DB_NAME).enableSqlCache().open(jndiName);
+    }
 
     /**
      * Opens a new connection from JNDI data source by name using explicit JNDI properties. This method can be used in cases
@@ -295,4 +305,18 @@ public class Base {
     public static void rollbackTransaction() {
         new DB(DEFAULT_DB_NAME).rollbackTransaction();
     }
+
+    /**
+     * Opens a new connection based on JDBC properties and attaches it to a current thread also enable sql query cache.
+     *
+     * @param driver class name of driver
+     * @param url URL connection to DB
+     * @param user user name.
+     * @param password password.
+     */
+	public static void openCached(String driver, String url, String user,
+			String password) {
+		new DB(DEFAULT_DB_NAME).enableSqlCache().open(driver, url, user, password);
+		
+	}
 }

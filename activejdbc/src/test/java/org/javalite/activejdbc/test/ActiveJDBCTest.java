@@ -41,7 +41,7 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
 
     @Before
     public void before() throws Exception {
-        Base.open(driver(), url(), user(), password());
+        openDB();
 
         if(!schemaGenerated){
             generateSchema();
@@ -52,6 +52,10 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
         Base.connection().setAutoCommit(false);
 
     }
+
+	protected void openDB() {
+		Base.open(driver(), url(), user(), password());
+	}
 
     @After
     public void after() {
