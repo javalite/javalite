@@ -233,4 +233,145 @@ public class Util {
         pw.flush();
         return sw.toString();
     }
+    
+    /**
+	 * Returns count of occurrences of specified char symbol in given string
+	 *
+	 * @param - haystack - string to search
+	 * @param needle - specified char
+	 * @return count of occurrences
+	 */
+	public static int countOccurrences(String haystack, char needle)
+	{
+	    int count = 0;
+	    for (int i=0; i < haystack.length(); i++)
+	    {
+	        if (haystack.charAt(i) == needle)
+	        {
+	             count++;
+	        }
+	    }
+	    return count;
+	}
+	
+	/**
+	 * Used for transform sql queries in canonical format. First of all convert raw sql to lower case, then replace sequences of '   ' to just one ' '.
+	 * Then transform all "a=1", "a =1" and "a= 1"  to canonical format "a = 1". All that sequences will be transformed ("==" "!=" ">=" "<=" "!=" "=" "<" ">" "!")
+	 * Currently used in Connection cache to find same semantics for queries like "select *  from people where id=1" and " select * from People where id = 1" 
+	 * @param sql - raw sql
+	 * @return canonical form of sql.
+	 */
+	public static String toGracefulSQL(String sql){
+		StringBuilder enhanced = new StringBuilder(sql.length() + 10);
+		//Doesn't matter, char not included anyway
+		char previous = 'a';
+		//All chars will be in lower case, except that between ''
+		boolean toLower = true;
+		for(int i = 0; i < sql.length(); i++){
+			char ch;
+			if(toLower){
+				ch = Character.toLowerCase(sql.charAt(i));
+			} else {
+				ch = sql.charAt(i);
+			}
+			if(Character.isWhitespace(ch)){
+				//replace spaces
+				if(previous != ' '){
+					enhanced.append(' ');
+				}
+				previous = ' ';
+				continue;
+			} else if (ch == '=' || ch == '>' || ch == '<' || ch == '!'){
+				if(previous != ' ' && previous != '=' && previous != '<' && previous != '>' && previous != '!'){
+					enhanced.append(' ');
+				}
+				enhanced.append(ch);
+				previous = ch;
+			} else if (ch == '\''){
+				if(previous == '=' || previous == '<' || previous == '>' || previous == '!'){
+					enhanced.append(' ');
+				}
+				toLower = !toLower;
+				enhanced.append(ch);
+				previous = ch;
+			} else {
+				if(previous == '=' || previous == '<' || previous == '>' || previous == '!'){
+					enhanced.append(' ');
+				}
+				enhanced.append(ch);
+				previous = ch;
+			}
+		}
+		return enhanced.toString().trim();
+	}
+	
+	/**
+	 * Used in ConnectionCache. If sql contains "limit", method try to find and convert to numeric values limit and offset. If limit or offset in non-numeric format return null
+	 * @param sql -raw sql
+	 * @return array of integers, first integer is numeric value for limit(if exist, otherwise - 0) and second - is numeric value for offset(0 if absent).
+	 */
+	public static int[] getLimitAndOffsetFromString(String sql){
+		int[] result = new int[2];
+		if(!sql.contains("limit")){
+			return result;
+		} else {
+			int limitValueStartIndex = sql.indexOf("limit") + 6;
+			int limitValueEndIndex;
+			if(sql.indexOf(" ", limitValueStartIndex) != -1){
+				limitValueEndIndex = sql.indexOf(" ", limitValueStartIndex);
+			} else {
+				limitValueEndIndex = sql.length();
+			}
+			int limitValue = 0;
+			try{
+				limitValue = Integer.valueOf(sql.substring(limitValueStartIndex, limitValueEndIndex));
+			} catch (Exception e) {
+				return null;
+			}
+			result[0] = limitValue;
+			if(!sql.contains("offset")){
+				return result;
+			} else {
+				int offsetValueStartIndex = sql.indexOf("offset") + 7;
+				int offsetValueEndIndex;
+				if(sql.indexOf(" ", offsetValueStartIndex) != -1){
+					offsetValueEndIndex = sql.indexOf(" ", offsetValueStartIndex);
+				} else {
+					offsetValueEndIndex = sql.length();
+				}
+				int offsetValue = 0;
+				try{
+					offsetValue = Integer.valueOf(sql.substring(offsetValueStartIndex, offsetValueEndIndex));
+				} catch (Exception e) {
+					return null;
+				}
+				result[1] = offsetValue;
+				return result;
+			}
+		}
+	}
+	
+	/**
+	 * Used in ConnectionCache. Trim limit and offset from raw sql. It can be helpful if connection cache already hold results for query without limit and offset. 
+	 * Depend on getLimitAndOffsetFromString(sql) method. If limit and format in non-numeric format return rqw sql untouched.
+	 * @param sql -raw sql
+	 * @return sql without "limit" and "offset"
+	 */
+	public static String trimLimitAndOffset(String sql){
+		int[] values = getLimitAndOffsetFromString(sql);
+		if(values == null){
+			return sql;
+		}
+		String replace = "";
+		if(values[0] != 0){
+			replace += "limit " + values[0];
+		}
+		if(values[1] != 0){
+			replace += " offset " + values[1];
+		}
+		if(!replace.equals("")){
+			sql = sql.replace(replace, "");
+		}
+		return sql.trim();
+	}
 }
