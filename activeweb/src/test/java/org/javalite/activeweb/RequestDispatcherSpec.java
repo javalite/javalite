@@ -138,10 +138,10 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
-
         a(getSystemErr().contains("java.lang.ArithmeticException")).shouldBeTrue();
 
-        System.out.println(response.getContentAsString());
+        a(response.getContentType()).shouldBeEqual("text/html");
+
         a(response.getContentAsString()).shouldBeEqual("/ by zero");// this is coming from a system/error.ftl
         a(response.getStatus()).shouldBeEqual(500);
     }
