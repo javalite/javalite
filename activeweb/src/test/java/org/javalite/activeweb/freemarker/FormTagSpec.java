@@ -135,4 +135,20 @@ public class FormTagSpec extends JSpecSupport {
                 "    <input type=\"hidden\" name=\"blah\">\n" +
                 "</form>");
     }
+
+
+    @Test
+    public void shouldFixIssue105(){
+        StringWriter sw = new StringWriter();
+
+        manager.getTag("form").overrideContext("");
+
+        manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", true)),
+                "/form/simple_form_with_put_for_restful_controller_in_sub_package", sw);
+
+        a(sw.toString()).shouldBeEqual("<form action=\"/rest/book/x123\" method=\"post\">\n" +
+                "\t<input type='hidden' name='_method' value='put' />\n" +
+                "    <input type=\"hidden\" name=\"blah\">\n" +
+                "</form>");
+    }
 }

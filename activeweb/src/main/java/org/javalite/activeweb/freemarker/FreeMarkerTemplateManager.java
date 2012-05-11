@@ -167,4 +167,15 @@ public class FreeMarkerTemplateManager implements TemplateManager {
     public void registerTag(String name, FreeMarkerTag tag){
        config.setSharedVariable(name, tag);
     }
+
+     /**
+     * Returns an instance of {@link FreeMarkerTag}. Use this method
+     * to further configure specific tags.
+     *
+     * @param tagName name of tag as used in a template
+     * @return instance of registered tag
+     */
+    public FreeMarkerTag getTag(String tagName){
+        return (FreeMarkerTag) config.getSharedVariable(tagName);
+    }
 }

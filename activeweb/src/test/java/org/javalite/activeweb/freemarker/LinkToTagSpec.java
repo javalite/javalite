@@ -182,4 +182,13 @@ public class LinkToTagSpec extends RequestSpec {
         a(sw.toString()).shouldBeEqual("<a href=\"/bookstore/book/read?first_name=John\" data-link=\"aw\" class=\"red_button\">Click here to read book 2</a>");
     }
 
+
+    @Test
+    public void shouldFixIssue102() {
+        sw = new StringWriter();
+        manager.getTag("link_to").overrideContext("");
+        manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "simple", "restful", false)),
+                "/link_to/defect_105", sw);
+        a(sw.toString()).shouldBeEqual("<a href=\"/book/read?first_name=John\" data-link=\"aw\" class=\"red_button\">Click here to read book 2</a>");
+    }
 }

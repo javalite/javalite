@@ -128,7 +128,7 @@ public class FormTag  extends FreeMarkerTag{
         }
 
         TagFactory tf = new TagFactory("form", bodyPrefix + body);
-        Object contextPath = get("context_path");
+        Object contextPath = getContextPath();
         String action = params.get("action") == null? null: params.get("action").toString();
         String controllerPath = params.get("controller") == null? activeweb.get("controller").toString(): params.get("controller").toString();
 

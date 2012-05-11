@@ -36,6 +36,8 @@ import java.util.*;
 public abstract class FreeMarkerTag implements TemplateDirectiveModel {
     
     private Logger logger = LoggerFactory.getLogger(getClass().getName());
+    private String context = null;
+
 
     /**
      * Provides a logger to a subclass.
@@ -118,6 +120,9 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @return context path.
      */
     protected String getContextPath(){
+
+        if(context != null) return context;
+
         if(get("context_path") == null){
             throw new ViewException("context_path missing - red alarm!");
         }
@@ -175,6 +180,17 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
         }catch(Exception e){
             throw new ViewException(e);
         }
+    }
+
+
+    /**
+     * Use to override context of the application. Usually this is done because  you need
+     * to generate special context related paths due to web server configuration
+     *
+     * @param context this context will be used instead of one provided by Servlet API
+     */
+    public void overrideContext(String context){
+        this.context = context;
     }
 }
 
