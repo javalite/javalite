@@ -68,8 +68,15 @@ public class ModelInstrumentation{
             if(Modifier.PRIVATE == method.getModifiers()){
                 continue;
             }
-
             CtMethod newMethod = CtNewMethod.delegator(method, target);
+
+			// Include the generic signature
+			for (Object attr : method.getMethodInfo().getAttributes()) {
+				if (attr instanceof javassist.bytecode.SignatureAttribute) {
+					javassist.bytecode.SignatureAttribute signatureAttribute = (javassist.bytecode.SignatureAttribute) attr;
+					newMethod.getMethodInfo().addAttribute(signatureAttribute);
+				}
+			}
 
             if (!targetHasMethod(targetMethods, newMethod)) {
                 target.addMethod(newMethod);
