@@ -68,7 +68,7 @@ public class Many2ManyRelationshipTest extends ActiveJDBCTest {
         deleteAndPopulateTables("doctors", "patients", "doctors_patients");
         Doctor doctor = (Doctor)Doctor.findById(1);
 
-        Patient jimThePatient = (Patient)Patient.create("first_name", "Jim", "last_name", "Smith");
+        Patient jimThePatient = Patient.create("first_name", "Jim", "last_name", "Smith");
         //this will add a new patient record and a new record in the join table that connects a doctor and a new patient.
         a(DoctorsPatients.count()).shouldBeEqual(4);
         doctor.add(jimThePatient);
@@ -83,18 +83,18 @@ public class Many2ManyRelationshipTest extends ActiveJDBCTest {
      public void shouldRejectUnassociatedModel(){
         deleteAndPopulateTable("students");
 
-        Student bill = (Student)Student.createIt("dob", new Date(System.currentTimeMillis()), "first_name", "Bill", "last_name", "Jansen");
-        bill.add(Plant.<Model>create("plant_name", "pine", "category", "trees"));
+        Student bill = Student.createIt("dob", new Date(System.currentTimeMillis()), "first_name", "Bill", "last_name", "Jansen");
+        bill.add(Plant.create("plant_name", "pine", "category", "trees"));
      }
 
     @Test
     public void shouldFindWithParamsForJoinTable(){
 
-        Programmer programmer = (Programmer)Programmer.createIt("first_name", "Jim", "last_name", "Garnoe");
-        Project project1 = (Project)Project.createIt("project_name", "Prove theory of everything");
-        Project project2 = (Project)Project.createIt("project_name", "Find meaning of life");
+        Programmer programmer = Programmer.createIt("first_name", "Jim", "last_name", "Garnoe");
+        Project project1 = Project.createIt("project_name", "Prove theory of everything");
+        Project project2 = Project.createIt("project_name", "Find meaning of life");
 
-        Assignment assignment = (Assignment)Assignment.createIt("duration_weeks", 3);
+        Assignment assignment = Assignment.createIt("duration_weeks", 3);
         programmer.add(assignment);
         project1.add(assignment);
         

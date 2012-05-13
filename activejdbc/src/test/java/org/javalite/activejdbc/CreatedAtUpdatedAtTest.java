@@ -45,7 +45,7 @@ public class CreatedAtUpdatedAtTest extends ActiveJDBCTest {
         //DOB setter missing
         p.saveIt();
 
-        p  = (Person)Person.findFirst("last_name = ?", "Simpson");
+        p  = Person.findFirst("last_name = ?", "Simpson");
         Timestamp createdAt = p.getTimestamp("created_at");
         a(createdAt).shouldNotBeNull();
 
@@ -54,7 +54,7 @@ public class CreatedAtUpdatedAtTest extends ActiveJDBCTest {
         p.set("name", "Bart");
         p.saveIt();
 
-        p = (Person)Person.findFirst("last_name = ?", "Simpson");
+        p = Person.findFirst("last_name = ?", "Simpson");
         Timestamp updatedAt = p.getTimestamp("updated_at");
 
         a(updatedAt).shouldNotBeNull();

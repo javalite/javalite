@@ -29,7 +29,7 @@ public class IsModelValidTest extends ActiveJDBCTest {
     @Test
     public void test(){
         deleteAndPopulateTable("people");
-        Person p = (Person)Person.create("name", "Sam", "dob", "2001-01-07");
+        Person p = Person.create("name", "Sam", "dob", "2001-01-07");
         a(p).shouldNotBe("valid");
         p.set("last_name", "Johnson");
         a(p).shouldBe("valid");

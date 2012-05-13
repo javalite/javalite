@@ -36,17 +36,17 @@ public class SimpleExample {
     }
 
     private static void selectEmployee() {
-        Employee e = (Employee)Employee.findFirst("first_name = ?", "John");
+        Employee e = Employee.findFirst("first_name = ?", "John");
         logger.info(e.toString());
     }
 
     private static void updateEmployee() {
-        Employee e = (Employee)Employee.findFirst("first_name = ?", "John");
+        Employee e = Employee.findFirst("first_name = ?", "John");
         e.set("last_name", "Steinbeck").saveIt();
     }
 
     private static void deleteEmployee() {
-        Employee e = (Employee)Employee.findFirst("first_name = ?", "John");
+        Employee e = Employee.findFirst("first_name = ?", "John");
         e.delete();
     }
 

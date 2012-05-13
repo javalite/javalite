@@ -76,7 +76,7 @@ public class CacheTest extends ActiveJDBCTest {
 
     @Test
     public void testFindFirst(){
-        Person p = (Person)Person.findFirst("name like ?" , "%3%");
+        Person p = Person.findFirst("name like ?" , "%3%");
         //comes from cache
         a(p).shouldBeTheSameAs(Person.findFirst("name like ?" , "%3%"));
     }

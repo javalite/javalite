@@ -66,8 +66,8 @@ public class SetParentTest extends ActiveJDBCTest {
     @Test
     public void shouldAcceptTwoParents(){
 
-        Motherboard m = (Motherboard)Motherboard.createIt("description", "board 1");
-        Keyboard k = (Keyboard)Keyboard.createIt("description", "blah");
+        Motherboard m = Motherboard.createIt("description", "board 1");
+        Keyboard k = Keyboard.createIt("description", "blah");
 
         Computer c = new Computer();
         c.setParent(m);

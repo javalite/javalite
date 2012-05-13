@@ -41,7 +41,7 @@ public class OrphanRecordTest extends ActiveJDBCTest {
     @Test
     public void shouldReturnNullIfForeignKeyIsNull(){
         Address.createIt("address1", "123 Pine Street", "address2", "apt 4",  "city", "New Heaven",  "state", "MI",  "zip", 12345);
-        Address address = (Address)Address.findFirst("address1 = ?", "123 Pine Street");
+        Address address = Address.findFirst("address1 = ?", "123 Pine Street");
         a(address.parent(User.class)).shouldBeNull();
     }
 

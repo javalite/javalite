@@ -71,10 +71,10 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
     @Test
     public void shouldDeletePolymorphicChildrenDeep(){
         deleteAndPopulateTables("vehicles", "mammals", "classifications");
-        Vehicle car = (Vehicle)Vehicle.createIt("name", "car");
-        Classification fourWheeled = (Classification)Classification.create("name", "four wheeled");
+        Vehicle car = Vehicle.createIt("name", "car");
+        Classification fourWheeled = Classification.create("name", "four wheeled");
         car.add(fourWheeled);
-        Classification sedan = (Classification)Classification.create("name", "sedan");
+        Classification sedan = Classification.create("name", "sedan");
         car.add(sedan);
         sedan.add(SubClassification.create("name", "passenger"));
 
@@ -101,8 +101,8 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
 
         //case 2: more complicated, the search comes back to DOCTORS table and removes another doctor.
         deleteAndPopulateTables("doctors", "patients", "doctors_patients", "prescriptions", "comments");
-        Prescription.<Model>findById(1).add(Comment.create("author", "doctor", "content", "live live to the fullest"));
-        Prescription.<Model>findById(5).add(Comment.create("author", "doctor", "content", "make cancer go away!"));
+        Prescription.findById(1).add(Comment.create("author", "doctor", "content", "live live to the fullest"));
+        Prescription.findById(5).add(Comment.create("author", "doctor", "content", "make cancer go away!"));
 
         a(Prescription.count()).shouldBeEqual(5);
         a(Comment.count()).shouldBeEqual(2);
@@ -187,10 +187,10 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
 
         deleteAndPopulateTables("vehicles", "mammals", "classifications");
         Registry.cacheManager().flush(CacheEvent.ALL);
-        Vehicle car = (Vehicle)Vehicle.createIt("name", "car");
-        Classification fourWheeled = (Classification)Classification.create("name", "four wheeled");
+        Vehicle car = Vehicle.createIt("name", "car");
+        Classification fourWheeled = Classification.create("name", "four wheeled");
         car.add(fourWheeled);
-        Classification sedan = (Classification)Classification.create("name", "sedan");
+        Classification sedan = Classification.create("name", "sedan");
         car.add(sedan);
         sedan.add(SubClassification.create("name", "passenger"));
         sedan.add(SubClassification.create("name", "4 wheel drive"));

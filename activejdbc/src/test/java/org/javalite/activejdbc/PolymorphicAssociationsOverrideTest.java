@@ -39,8 +39,8 @@ public class PolymorphicAssociationsOverrideTest extends ActiveJDBCTest {
     @Test
     public void shouldAddPolymorphicChild() {
         deleteAndPopulateTables("vehicles", "mammals", "classifications");
-        Vehicle car = (Vehicle)Vehicle.createIt("name", "car");
-        Classification classification = (Classification)Classification.create("name", "four wheeled");
+        Vehicle car = Vehicle.createIt("name", "car");
+        Classification classification = Classification.create("name", "four wheeled");
         car.add(classification);
         a(classification.get("parent_type")).shouldBeEqual("Vehicle");
         a(Classification.findAll().get(0).get("name")).shouldBeEqual("four wheeled");
@@ -49,7 +49,7 @@ public class PolymorphicAssociationsOverrideTest extends ActiveJDBCTest {
     @Test
     public void shouldFindAllPolymorphicChildren() {
         deleteAndPopulateTables("vehicles", "mammals", "classifications");
-        Vehicle car = (Vehicle)Vehicle.createIt("name", "car");
+        Vehicle car = Vehicle.createIt("name", "car");
         car.add(Classification.create("name", "four wheeled"));
         car.add(Classification.create("name", "sedan"));
         
@@ -60,7 +60,7 @@ public class PolymorphicAssociationsOverrideTest extends ActiveJDBCTest {
         a(classifications.get(1).get("name")).shouldBeEqual("sedan");
 //
 
-        Mammal fox = (Mammal)Mammal.createIt("name", "fox");
+        Mammal fox = Mammal.createIt("name", "fox");
         fox.add(Classification.create("name", "furry"));
         fox.add(Classification.create("name", "carnivore"));
         fox.add(Classification.create("name", "four legged"));
@@ -79,7 +79,7 @@ public class PolymorphicAssociationsOverrideTest extends ActiveJDBCTest {
     public void shouldFindAllPolymorphicChildrenWithCriteria() {
 
         deleteAndPopulateTables("vehicles", "mammals", "classifications");
-        Vehicle car = (Vehicle)Vehicle.createIt("name", "car");
+        Vehicle car = Vehicle.createIt("name", "car");
         car.add(Classification.create("name", "four wheeled"));
         car.add(Classification.create("name", "sedan"));
 
@@ -92,7 +92,7 @@ public class PolymorphicAssociationsOverrideTest extends ActiveJDBCTest {
     public void shouldRemovePolymorphicChildren() {
         deleteAndPopulateTables("vehicles", "mammals", "classifications");
         
-        Vehicle car = (Vehicle)Vehicle.createIt("name", "car");
+        Vehicle car = Vehicle.createIt("name", "car");
         Classification fourWheels = (Classification)Classification.create("name", "four wheeled");
         car.add(fourWheels);
         car.add(Classification.create("name", "sedan"));
@@ -108,7 +108,7 @@ public class PolymorphicAssociationsOverrideTest extends ActiveJDBCTest {
     public void shouldInferPolymorphicNames() {
 
         deleteAndPopulateTables("vehicles", "mammals", "classifications");
-        Vehicle car = (Vehicle)Vehicle.createIt("name", "car");
+        Vehicle car = Vehicle.createIt("name", "car");
         car.add(Classification.create("name", "four wheeled"));
         car.add(Classification.create("name", "sedan"));
 
@@ -122,7 +122,7 @@ public class PolymorphicAssociationsOverrideTest extends ActiveJDBCTest {
 
         deleteAndPopulateTables("vehicles", "mammals", "classifications");
         Vehicle.createIt("name", "bike");
-        Vehicle  veh = (Vehicle)Vehicle.createIt("name", "car");
+        Vehicle  veh = Vehicle.createIt("name", "car");
         veh.add(Classification.create("name", "four wheeled"));
         veh.add(Classification.create("name", "sedan"));
 
@@ -137,7 +137,7 @@ public class PolymorphicAssociationsOverrideTest extends ActiveJDBCTest {
     public void shouldThrowExceptionIfWrongParentTypeRequested() {
 
         deleteAndPopulateTables("vehicles", "mammals", "classifications");
-        Vehicle car = (Vehicle)Vehicle.createIt("name", "car");
+        Vehicle car = Vehicle.createIt("name", "car");
         car.add(Classification.create("name", "four wheeled"));
         car.add(Classification.create("name", "sedan"));
 

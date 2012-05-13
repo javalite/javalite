@@ -120,7 +120,7 @@ public class IncludesTest extends ActiveJDBCTest{
 
     @Test
     public void shouldIncludeMany2ManyInCaseJoinTableHasUnconventionalPKName() {
-        Ingredient sugar = (Ingredient)Ingredient.createIt("ingredient_name", "sugar");
+        Ingredient sugar = Ingredient.createIt("ingredient_name", "sugar");
         sugar.add(Recipe.create("recipe_name", "pie"));
 
         //test data:

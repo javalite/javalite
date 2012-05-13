@@ -83,14 +83,14 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void testModelFindOne() {
         deleteAndPopulateTable("people");
-        Person person = (Person)Person.findFirst("id = 2");
+        Person person = Person.findFirst("id = 2");
         a(person).shouldNotBeNull();
     }
 
     @Test
     public void testModelFindOneParametrized() {
         deleteAndPopulateTable("people");
-        Person person = (Person)Person.findFirst("id = ?", 2);
+        Person person = Person.findFirst("id = ?", 2);
         a(person).shouldNotBeNull();
     }
 
@@ -181,7 +181,7 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void testGetById() {
         deleteAndPopulateTable("people");
-        Person p = (Person)Person.findById(1);
+        Person p = Person.findById(1);
         a(p).shouldNotBeNull();
     }
 
@@ -200,7 +200,7 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void testInstanceDelete() {
         deleteAndPopulateTable("people");
-        Person p = (Person)Person.findById(1);
+        Person p = Person.findById(1);
         p.delete();
 
         a(3L).shouldBeEqual(Person.count());
@@ -252,7 +252,7 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void testOneToMany() {
         deleteAndPopulateTables("users", "addresses");
-        User user = (User)User.findById(1);
+        User user = User.findById(1);
         List<Address> addresses = user.getAll(Address.class);
 
         a(3).shouldBeEqual(addresses.size());
@@ -261,7 +261,7 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void testOneToManyWrongAssociation() {
         deleteAndPopulateTables("users", "addresses");
-        final User user = (User)User.findById(1);
+        final User user = User.findById(1);
         expect(new ExceptionExpectation(NotAssociatedException.class){
             public void exec() {
                 user.getAll(Book.class);//wrong table
@@ -286,14 +286,14 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void testCustomIdName(){
         deleteAndPopulateTable("animals");
-       Animal a = (Animal)Animal.findById(1);
+       Animal a = Animal.findById(1);
        a(a).shouldNotBeNull();
     }
 
     @Test
     public void testOneToManyOverrideConventionAssociation(){
         deleteAndPopulateTables("libraries", "books");
-        Library l = (Library)Library.findById(1);
+        Library l = Library.findById(1);
         List<Book> books = l.getAll(Book.class);
         Library lib = (Library)books.get(0).parent(Library.class);
         the(lib).shouldNotBeNull();
@@ -318,7 +318,7 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void testSaveOneToManyAssociation(){
         deleteAndPopulateTables("users", "addresses");
-        User u = (User)User.findById(1);
+        User u = User.findById(1);
         Address a = new Address();
 
         a.set("address1", "436 Barnaby Ct.");
@@ -328,7 +328,7 @@ public class ModelTest extends ActiveJDBCTest {
         a.set("zip", "60090");
         u.add(a);
 
-        u = (User)User.findById(1);
+        u = User.findById(1);
         System.out.println(u);
 
         a = new Address();
@@ -343,7 +343,7 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void testCopyTo(){
         deleteAndPopulateTables("users", "addresses");
-        User u = (User)User.findById(1);
+        User u = User.findById(1);
         User u1 = new User();
         u.copyTo(u1);
         a(u1.get("first_name")).shouldBeEqual("Marilyn");
@@ -352,7 +352,7 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void testCopyFrom(){
         deleteAndPopulateTables("users", "addresses");
-        User u = (User)User.findById(1);
+        User u = User.findById(1);
         User u1 = new User();
         u1.copyFrom(u);
         a(u1.get("first_name")).shouldBeEqual("Marilyn");
@@ -368,7 +368,7 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void testFrosen(){
         deleteAndPopulateTables("users", "addresses");
-        final User u = (User)User.findById(1);
+        final User u = User.findById(1);
         final Address a = new Address();
 
         a.set("address1", "436 Flamingo St.");
@@ -442,7 +442,7 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void shouldGenerateCorrectInsertSQL(){
         deleteAndPopulateTables("students", "courses", "registrations");
-        Student s = (Student)Student.findById(1);
+        Student s = Student.findById(1);
         String insertSQL = s.toInsert();
 
         the(insertSQL).shouldBeEqual("INSERT INTO students (dob, first_name, id, last_name) VALUES ('1965-12-01', 'Jim', 1, 'Cary')");
@@ -458,7 +458,7 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void shouldFindManyToOneViaGetter() {
         deleteAndPopulateTables("users", "addresses");
-        Address address = Address.<Address>findById(1);
+        Address address = Address.findById(1);
         User u = (User)address.get("user");
         a(u).shouldNotBeNull();
     }
@@ -466,7 +466,7 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void shouldFindOneToManyViaGetter() {
         deleteAndPopulateTables("users", "addresses");
-        User user = (User)User.findById(1);
+        User user = User.findById(1);
         List<Address> addresses = (List<Address>)user.get("addresses");
         a(3).shouldBeEqual(addresses.size());
     }

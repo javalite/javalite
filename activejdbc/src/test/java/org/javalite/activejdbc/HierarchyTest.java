@@ -16,14 +16,12 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
-import org.javalite.activejdbc.LazyList;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
-import org.javalite.activejdbc.test_models.*;
-import org.junit.Ignore;
+import org.javalite.activejdbc.test_models.Cake;
+import org.javalite.activejdbc.test_models.Cheese;
+import org.javalite.activejdbc.test_models.Person;
+import org.javalite.activejdbc.test_models.Sword;
 import org.junit.Test;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author Stephane Restani

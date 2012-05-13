@@ -38,7 +38,7 @@ public class CreateModelTest extends ActiveJDBCTest {
     @Test
     public void shouldCreateModel() {
 
-        Person p = Person.<Person>create("name", "Sam", "last_name", "Margulis", "dob", "2001-01-07");
+        Person p = Person.create("name", "Sam", "last_name", "Margulis", "dob", "2001-01-07");
         p.saveIt();
         a(p.get("name")).shouldBeEqual("Sam");
     }
@@ -65,7 +65,7 @@ public class CreateModelTest extends ActiveJDBCTest {
     @Test
     public void shouldCreateAndSaveModel(){
 
-        Person p = Person.<Person>createIt("name", "Sam", "last_name", "Margulis", "dob", "2001-01-07");
+        Person p = Person.createIt("name", "Sam", "last_name", "Margulis", "dob", "2001-01-07");
         a(p.getId()).shouldNotBeNull();
     }
 }
