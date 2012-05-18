@@ -15,6 +15,7 @@ limitations under the License.
 */
 package app.config;
 
+
 import org.javalite.activeweb.AbstractControllerConfig;
 import org.javalite.activeweb.AppContext;
 import org.javalite.activeweb.controller_filters.DBConnectionFilter;

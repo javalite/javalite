@@ -197,16 +197,18 @@ class ControllerRunner {
     }
 
     private void filterBefore(List<ControllerFilter> ... filters) {
-        try{
-            for(List<ControllerFilter> filterGroup: filters){
-            for (ControllerFilter controllerFilter : filterGroup) {
-                if(Configuration.logRequestParams()){
-                    logger.debug("Executing filter: " + controllerFilter.getClass().getName() + "#before" );
+        try {
+            for (List<ControllerFilter> filterGroup : filters) {
+                for (ControllerFilter controllerFilter : filterGroup) {
+                    if (Configuration.logRequestParams()) {
+                        logger.debug("Executing filter: " + controllerFilter.getClass().getName() + "#before");
+                    }
+                    controllerFilter.before();
+                    if (Context.getControllerResponse() != null) return;//a filter responded!
                 }
-                controllerFilter.before();
-                if(Context.getControllerResponse() != null) return;//a filter responded!
             }
-        }
+        }catch(RuntimeException e){
+            throw e;
         }catch(Exception e){
             throw new FilterException(e);
         }
