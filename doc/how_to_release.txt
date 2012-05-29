@@ -1,13 +1,9 @@
-1. Release JavaLite Common
-2. Release Instrumentation
-3. Wait till they are promoted to central Maven
-4. Switch all modules - including examples to use new released version of JavaLite Common and Instrumentation fixed versions
-5. Test everything, including examples
-6. Commit all changes
-7. Release main module: activejdbc
+Entire library is released with three commands:
+mvn release:clean
+mvn release:prepare
+mvn release:perform
 
 
-
-start with staging a release:
-https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide#SonatypeOSSMavenRepositoryUsageGuide-7a.3.StageaRelease
+After that, follow steps to release:
+https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide#SonatypeOSSMavenRepositoryUsageGuide-8.ReleaseIt
 
