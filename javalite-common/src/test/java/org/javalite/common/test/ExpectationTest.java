@@ -114,4 +114,13 @@ public class ExpectationTest {
         the(room).shouldHave("walls");
         the(room).shouldNotHave("children");
     }
+
+    public class A {
+        public boolean isKnownAsRole() {return true;}
+    }
+
+    @Test
+    public void shouldTestBooleanMethodWithCamelCase(){
+        the(new A()).shouldBe("knownAsRole");
+    }
 }

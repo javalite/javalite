@@ -20,6 +20,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
+import static org.javalite.common.Inflector.capitalize;
+
 public class Expectation<T> {
 
     private T actual;
@@ -288,10 +290,7 @@ public class Expectation<T> {
         if (actual == expected) throw new TestException("references are the same, but they should not be");
     }
 
-    private String capitalize(String s) {
-        if (s.length() == 0) return s;
-        return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
-    }
+
 
     /**
      * Invokes a boolean method.
