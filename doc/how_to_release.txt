@@ -1,8 +1,8 @@
-1. Release JavaLite
+1. Release JavaLite Common
 2. Release Instrumentation
 3. Wait till they are promoted to central Maven
 4. Switch all modules - including examples to use new released version of JavaLite Common and Instrumentation fixed versions
-5. Test everything, including exanmples
+5. Test everything, including examples
 6. Commit all changes
 7. Release main module: activejdbc
 

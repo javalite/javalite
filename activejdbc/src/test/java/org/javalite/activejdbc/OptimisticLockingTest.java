@@ -16,7 +16,7 @@ public class OptimisticLockingTest extends ActiveJDBCTest {
         Watermelon m = new Watermelon();
         m.set("melon_type", "dark_green");
         m.saveIt();
-        Watermelon m1 = (Watermelon) Watermelon.findById(1);
+        Watermelon m1 = Watermelon.findById(1);
         a(m1.get("record_version")).shouldBeEqual(1);
     }
 
@@ -29,20 +29,20 @@ public class OptimisticLockingTest extends ActiveJDBCTest {
         m.set("melon_type", "dark_green");
         m.saveIt();
 
-        m = (Watermelon)Watermelon.findById(1);
+        m = Watermelon.findById(1);
         m.set("melon_type", "red").saveIt();
         a(m.get("record_version")).shouldBeEqual(2);// this will ensure that the value is updated in the model itself
-        m = (Watermelon)Watermelon.findById(1);
+        m = Watermelon.findById(1);
         a(m.get("record_version")).shouldBeEqual(2);
 
-        m = (Watermelon)Watermelon.findById(1);
+        m = Watermelon.findById(1);
         m.set("melon_type", "green").saveIt();
-        m = (Watermelon)Watermelon.findById(1);
+        m = Watermelon.findById(1);
         a(m.get("record_version")).shouldBeEqual(3);
 
-        m = (Watermelon)Watermelon.findById(1);
+        m = Watermelon.findById(1);
         m.set("melon_type", "yellow").saveIt();
-        m = (Watermelon)Watermelon.findById(1);
+        m = Watermelon.findById(1);
         a(m.get("record_version")).shouldBeEqual(4);
     }
 
@@ -53,8 +53,8 @@ public class OptimisticLockingTest extends ActiveJDBCTest {
         m.set("melon_type", "dark_green");
         m.saveIt();
 
-        Watermelon m1 = (Watermelon)Watermelon.findById(1);
-        Watermelon m2 = (Watermelon)Watermelon.findById(1);
+        Watermelon m1 = Watermelon.findById(1);
+        Watermelon m2 = Watermelon.findById(1);
 
         m1.set("melon_type", "red");
         m1.saveIt();

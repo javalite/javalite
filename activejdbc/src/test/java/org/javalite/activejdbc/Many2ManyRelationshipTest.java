@@ -38,19 +38,19 @@ public class Many2ManyRelationshipTest extends ActiveJDBCTest {
     @Test
     public void shouldSelectManyToManyWithGetAll(){
         deleteAndPopulateTables("doctors", "patients", "doctors_patients");
-        Doctor doctor = (Doctor)Doctor.findById(1);
+        Doctor doctor = Doctor.findById(1);
         List<Patient> patients = doctor.getAll(Patient.class);
         a(2).shouldBeEqual(patients.size());
 
-        doctor = (Doctor)Doctor.findById(2);
+        doctor = Doctor.findById(2);
         patients = doctor.getAll(Patient.class);
         a(1).shouldBeEqual(patients.size());
 
-        Patient p = (Patient)Patient.findById(1);
+        Patient p = Patient.findById(1);
         List<Doctor> doctors = p.getAll(Doctor.class);
         a(2).shouldBeEqual(doctors.size());
 
-        p = (Patient)Patient.findById(2);
+        p = Patient.findById(2);
         doctors = p.getAll(Doctor.class);
         a(1).shouldBeEqual(doctors.size());
     }
@@ -58,7 +58,7 @@ public class Many2ManyRelationshipTest extends ActiveJDBCTest {
     @Test
     public void shouldFindManyToManyViaGetter(){
         deleteAndPopulateTables("doctors", "patients", "doctors_patients");
-        Doctor doctor = (Doctor)Doctor.findById(1);
+        Doctor doctor = Doctor.findById(1);
         List<Patient> patients = (List<Patient>)doctor.get("patients");
         a(2).shouldBeEqual(patients.size());
     }
@@ -66,7 +66,7 @@ public class Many2ManyRelationshipTest extends ActiveJDBCTest {
     @Test
     public void shouldAddNewChildInManyToManyAssociation(){
         deleteAndPopulateTables("doctors", "patients", "doctors_patients");
-        Doctor doctor = (Doctor)Doctor.findById(1);
+        Doctor doctor = Doctor.findById(1);
 
         Patient jimThePatient = Patient.create("first_name", "Jim", "last_name", "Smith");
         //this will add a new patient record and a new record in the join table that connects a doctor and a new patient.
@@ -108,19 +108,19 @@ public class Many2ManyRelationshipTest extends ActiveJDBCTest {
     @Test
     public void shouldSelectManyToManyWithGet(){
         deleteAndPopulateTables("doctors", "patients", "doctors_patients");
-        Doctor doctor = (Doctor)Doctor.findById(1);
+        Doctor doctor = Doctor.findById(1);
         List<Patient> patients = doctor.getAll(Patient.class);
         a(2).shouldBeEqual(patients.size());
 
-        doctor = (Doctor)Doctor.findById(2);
+        doctor = Doctor.findById(2);
         patients = doctor.getAll(Patient.class);
         a(1).shouldBeEqual(patients.size());
 
-        Patient p = (Patient)Patient.findById(1);
+        Patient p = Patient.findById(1);
         List<Doctor> doctors = p.getAll(Doctor.class);
         a(2).shouldBeEqual(doctors.size());
 
-        p = (Patient)Patient.findById(2);
+        p = Patient.findById(2);
         doctors = p.getAll(Doctor.class);
         a(1).shouldBeEqual(doctors.size());
     }

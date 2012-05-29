@@ -83,7 +83,7 @@ public class CacheTest extends ActiveJDBCTest {
 
     @Test
     public void testFindById(){
-        Person p1 = (Person)Person.findById(1);
+        Person p1 = Person.findById(1);
 
         a(p1).shouldBeTheSameAs(Person.findById(1));
 
@@ -119,7 +119,7 @@ public class CacheTest extends ActiveJDBCTest {
     @Test
     public void testCachedParent(){
         deleteAndPopulateTables("libraries", "books");
-        Book b = (Book)Book.findById(1);
+        Book b = Book.findById(1);
         Library l1 = b.parent(Library.class);
 
         a(l1 == b.parent(Library.class)).shouldBeTrue();

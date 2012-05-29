@@ -690,14 +690,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         for(String name: modelMap.keySet()){
             Object value  = modelMap.get(name);
             if((attrList.contains(name) || attrs.length == 0) && !(value instanceof List)){
-                sw.write(indent + indent + "<" + name + ">" + value + "</" + name + ">" + (spaces > 0?"\n":""));
+                sw.write(indent + indent + "<" + name + ">" + XmlEntities.XML.escape(value.toString()) + "</" + name + ">" + (spaces > 0?"\n":""));
             }else if (value instanceof List){
                 List<Map> children = (List<Map>)value;
                 sw.write(indent + indent + "<" + name + ">" + (spaces > 0?"\n":""));
                 for(Map child: children){
                     sw.write(indent + indent + indent + "<" + Inflector.singularize(name) + ">" + (spaces > 0?"\n":""));
                     for(Object childKey: child.keySet()){
-                        sw.write(indent + indent + indent + indent + "<" + childKey + ">" + child.get(childKey)+ "</" + childKey +">" + (spaces > 0?"\n":""));
+                        sw.write(indent + indent + indent + indent + "<" + childKey + ">" + XmlEntities.XML.escape(child.get(childKey).toString())+ "</" + childKey +">" + (spaces > 0?"\n":""));
                     }
                     sw.write(indent + indent + indent + "</" + Inflector.singularize(name) + ">" + (spaces > 0?"\n":""));
                 }

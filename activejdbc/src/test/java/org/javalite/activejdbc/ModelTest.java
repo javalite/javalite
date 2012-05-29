@@ -492,7 +492,7 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void shouldFindChildrenWithCriteria(){
         deleteAndPopulateTables("users", "addresses");
-        User user = (User)User.findById(1);
+        User user = User.findById(1);
 
         a(user.get(Address.class, "address1 = ? or address2 = ?", "456 Brook St.", "apt 21").size()).shouldEqual(1);
     }
@@ -533,7 +533,7 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void shouldSerializeModel() throws IOException, ClassNotFoundException {
         deleteAndPopulateTable("people");
-        Person p = (Person)Person.findById(1);
+        Person p = Person.findById(1);
 
         //write model
         ByteArrayOutputStream bout =  new ByteArrayOutputStream();

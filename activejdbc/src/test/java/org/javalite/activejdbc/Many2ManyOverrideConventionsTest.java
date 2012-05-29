@@ -35,19 +35,19 @@ public class Many2ManyOverrideConventionsTest extends ActiveJDBCTest {
 
         deleteAndPopulateTables("students", "courses", "registrations");
         
-        Student student = (Student) Student.findById(1);
+        Student student = Student.findById(1);
         List<Course> courses = student.getAll(Course.class);
         a(2).shouldBeEqual(courses.size());
 
-        student = (Student)Student.findById(2);
+        student = Student.findById(2);
         courses = student.getAll(Course.class);
         a(1).shouldBeEqual(courses.size());
 
-        Course c = (Course)Course.findById(1);
+        Course c = Course.findById(1);
         List<Student> Students = c.getAll(Student.class);
         a(2).shouldBeEqual(Students.size());
 
-        c = (Course)Course.findById(2);
+        c = Course.findById(2);
         Students = c.getAll(Student.class);
         a(1).shouldBeEqual(Students.size());
     }

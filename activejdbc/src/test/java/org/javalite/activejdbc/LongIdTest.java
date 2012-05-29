@@ -18,7 +18,7 @@ public class LongIdTest extends ActiveJDBCTest {
     @Test
     public void shouldReturnValidLongId(){
         deleteAndPopulateTable("people");
-        Person p = (Person)Person.findById(1);
+        Person p = Person.findById(1);
         a(p.getLongId()).shouldBeEqual(1);
     }
 }

@@ -34,7 +34,7 @@ public class RemoveAssociatedChildTest extends ActiveJDBCTest {
     @Test
     public void shouldDeleteChildInOneToMany(){
         deleteAndPopulateTables("libraries", "books");
-        Library l = (Library)Library.findById(1);
+        Library l = Library.findById(1);
         List<Book> books = l.getAll(Book.class);
 
         int size = books.size();
@@ -48,7 +48,7 @@ public class RemoveAssociatedChildTest extends ActiveJDBCTest {
     @Test
     public void shouldClearJoinLinksWhenChildRemovedInMany2Many(){
         deleteAndPopulateTables("doctors", "patients", "doctors_patients");
-        Doctor doctor = (Doctor)Doctor.findById(1);        
+        Doctor doctor = Doctor.findById(1);
         List<Patient> patients = doctor.getAll(Patient.class);
         int initSize = patients.size();
 

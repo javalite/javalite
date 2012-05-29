@@ -40,7 +40,7 @@ public class PolymorphicAssociationsTest extends ActiveJDBCTest {
     @Test
     public void shouldAddPolymorphicChild() {
         deleteAndPopulateTables("articles", "posts", "comments");
-        Article a = (Article) Article.findById(1);
+        Article a = Article.findById(1);
         a.add(Comment.create("author", "ipolevoy", "content", "this is just a test comment text"));
         a(Comment.findAll().get(0).get("author")).shouldBeEqual("ipolevoy");
     }
@@ -48,7 +48,7 @@ public class PolymorphicAssociationsTest extends ActiveJDBCTest {
     @Test
     public void shouldFindAllPolymorphicChildren() {
         deleteAndPopulateTables("articles", "posts", "comments");
-        Article a = (Article) Article.findById(1);
+        Article a = Article.findById(1);
         a.add(Comment.create("author", "ipolevoy", "content", "this is just a test comment text"));
         a.add(Comment.create("author", "rkinderman", "content", "this is another test comment text"));
         List<Comment> comments = a.getAll(Comment.class).orderBy("id");
@@ -56,7 +56,7 @@ public class PolymorphicAssociationsTest extends ActiveJDBCTest {
         a(comments.size()).shouldBeEqual(2);
         a(comments.get(0).get("author")).shouldBeEqual("ipolevoy");
 
-        Post p = (Post) Post.findById(2);
+        Post p = Post.findById(2);
         p.add(Comment.create("author", "jjohnes", "content", "this is just a test comment text"));
         p.add(Comment.create("author", "alapsi", "content", "this is another test comment text"));
         p.add(Comment.create("author", "kmandy", "content", "this is just a test comment text"));
@@ -73,7 +73,7 @@ public class PolymorphicAssociationsTest extends ActiveJDBCTest {
     @Test
     public void shouldFindAllPolymorphicChildrenWithCriteria() {
         deleteAndPopulateTables("articles", "posts", "comments");
-        Article a = (Article) Article.findById(1);
+        Article a = Article.findById(1);
         a.add(Comment.create("author", "ipolevoy", "content", "this is just a test comment text"));
         a.add(Comment.create("author", "rkinderman", "content", "this is another test comment text"));
         List<Comment> comments = a.get(Comment.class, "author = ?", "ipolevoy");
@@ -85,7 +85,7 @@ public class PolymorphicAssociationsTest extends ActiveJDBCTest {
     @Test
     public void shouldRemovePolymorphicChildren() {
         deleteAndPopulateTables("articles", "posts", "comments");
-        Article a = (Article) Article.findById(1);
+        Article a = Article.findById(1);
         a.add(Comment.create("author", "ipolevoy", "content", "this is just a test comment text"));
         a.add(Comment.create("author", "rkinderman", "content", "this is another test comment text"));
         Comment c = (Comment) Comment.findAll().limit(1).orderBy("id").get(0);
@@ -97,7 +97,7 @@ public class PolymorphicAssociationsTest extends ActiveJDBCTest {
     @Test
     public void shouldInferPolymorphicNames() {
         deleteAndPopulateTables("articles", "posts", "comments");
-        Article a = (Article) Article.findById(1);
+        Article a = Article.findById(1);
         a.add(Comment.create("author", "ipolevoy", "content", "this is just a test comment text"));
         a.add(Comment.create("author", "rkinderman", "content", "this is another test comment text"));
 
@@ -108,7 +108,7 @@ public class PolymorphicAssociationsTest extends ActiveJDBCTest {
     @Test
     public void shouldFindPolymorphicParent() {
         deleteAndPopulateTables("articles", "posts", "comments");
-        Article article = (Article) Article.findById(1);
+        Article article = Article.findById(1);
         article.add(Comment.create("author", "ipolevoy", "content", "this is just a test comment text"));
         article.add(Comment.create("author", "rkinderman", "content", "this is another test comment text"));
         Article article1 = Comment.findAll().get(0).parent(Article.class);
@@ -119,7 +119,7 @@ public class PolymorphicAssociationsTest extends ActiveJDBCTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfWrongParentTypeRequested() {
         deleteAndPopulateTables("articles", "posts", "comments");
-        Article article = (Article) Article.findById(1);
+        Article article = Article.findById(1);
         article.add(Comment.create("author", "ipolevoy", "content", "this is just a test comment text"));
         article.add(Comment.create("author", "rkinderman", "content", "this is another test comment text"));
 
@@ -130,7 +130,7 @@ public class PolymorphicAssociationsTest extends ActiveJDBCTest {
     public void shouldFindPolymorphicParentWithInclude(){
 
         deleteAndPopulateTables("articles", "posts", "comments");
-        Article article = (Article) Article.findById(1);
+        Article article = Article.findById(1);
         article.add(Comment.create("author", "ipolevoy", "content", "this is just a test comment text"));
         article.add(Comment.create("author", "rkinderman", "content", "this is another test comment text"));
 
@@ -150,10 +150,10 @@ public class PolymorphicAssociationsTest extends ActiveJDBCTest {
     public void shouldBeAbleToIncludePolymorphicParent() {
         deleteAndPopulateTables("comments", "articles", "posts");
 
-        Post p = (Post) Post.findById(1);
+        Post p = Post.findById(1);
         p.add(Comment.create("author", "eleonard", "content", "this is just a test comment text"));
 
-        Article a = (Article) Article.findById(2);
+        Article a = Article.findById(2);
         a.add(Comment.create("author", "eleonard", "content", "this is just a test comment text"));
 
         final LazyList<Comment> comments = Comment.findAll().orderBy("id").include(Article.class, Post.class);

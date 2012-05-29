@@ -26,7 +26,7 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
         a(Room.count()).shouldBeEqual(4);
 
         //delete
-        User u = (User)User.findById(1);
+        User u = User.findById(1);
         u.deleteCascade();
         a(u).shouldBe("frozen");
         a(User.count()).shouldBeEqual(1);
@@ -49,12 +49,12 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
     public void shouldDeletePolymorphicChildren(){
 
         deleteAndPopulateTables("articles", "posts", "comments");
-        Article a = (Article) Article.findById(1);
+        Article a = Article.findById(1);
         a.add(Comment.create("author", "ipolevoy", "content", "this is just a test comment text"));
         a.add(Comment.create("author", "rkinderman", "content", "this is another test comment text"));
 
 
-        Post p = (Post) Post.findById(2);
+        Post p = Post.findById(2);
         p.add(Comment.create("author", "jjohnes", "content", "this is just a test comment text"));
         p.add(Comment.create("author", "alapsi", "content", "this is another test comment text"));
         p.add(Comment.create("author", "kmandy", "content", "this is just a test comment text"));
@@ -93,7 +93,7 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
 
         a(Prescription.count()).shouldBeEqual(5);
 
-        Doctor.<Model>findById(3).deleteCascade();
+        Doctor.findById(3).deleteCascade();
 
         a(Doctor.count()).shouldBeEqual(2);
         a(DoctorsPatients.count()).shouldBeEqual(3);
@@ -107,7 +107,7 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
         a(Prescription.count()).shouldBeEqual(5);
         a(Comment.count()).shouldBeEqual(2);
 
-        Doctor.<Model>findById(1).deleteCascade();
+        Doctor.findById(1).deleteCascade();
 
         a(Doctor.count()).shouldBeEqual(1);
         a(DoctorsPatients.count()).shouldBeEqual(1);
@@ -129,7 +129,7 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
         a(Patient.count()).shouldBeEqual(3);
         a(Prescription.count()).shouldBeEqual(5);
 
-        Patient.<Patient>findById(3).deleteCascadeExcept(Patient.getMetaModel().getAssociationForTarget("prescriptions"));
+        Patient.findById(3).deleteCascadeExcept(Patient.getMetaModel().getAssociationForTarget("prescriptions"));
 
         a(Doctor.count()).shouldBeEqual(2);
         a(Patient.count()).shouldBeEqual(2);
@@ -147,7 +147,7 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
         a(Room.count()).shouldBeEqual(4);
 
         //delete
-        User u = (User)User.findById(1);
+        User u = User.findById(1);
         u.deleteCascadeShallow();
         a(u).shouldBe("frozen");
         a(User.count()).shouldBeEqual(1);
@@ -171,7 +171,7 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
 
         a(Prescription.count()).shouldBeEqual(5);
 
-        Doctor.<Model>findById(3).deleteCascadeShallow();
+        Doctor.findById(3).deleteCascadeShallow();
 
         a(Doctor.count()).shouldBeEqual(2);
         a(DoctorsPatients.count()).shouldBeEqual(3);

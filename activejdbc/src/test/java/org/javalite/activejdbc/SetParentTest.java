@@ -74,7 +74,7 @@ public class SetParentTest extends ActiveJDBCTest {
         c.setParent(k);
         c.save();
 
-        c = (Computer)Computer.findById(c.getId());
+        c = Computer.findById(c.getId());
         a(c.get(m.getIdName())).shouldBeEqual(m.getId());
         a(c.get(k.getIdName())).shouldBeEqual(k.getId());
     }

@@ -36,7 +36,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
     @Test
     public void shouldGenerateSimpleJson() throws IOException {
         deleteAndPopulateTable("people");
-        Person p  = (Person)Person.findById(1);
+        Person p  = Person.findById(1);
         //test no indent
         String json = p.toJson(false, "name", "last_name", "dob");
         mapper.readTree(json);//check validity
@@ -112,7 +112,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
     public void shouldIncludeOnlyProvidedAttributes() throws IOException {
         deleteAndPopulateTables("users", "addresses");
 
-        User u = (User)User.findById(1);
+        User u = User.findById(1);
         String json = u.toJson(true, "email", "last_name");
         mapper.readTree(json);//check validity
         the(json).shouldBeEqual("{\n" +
@@ -149,7 +149,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
     public void shouldInjectCustomContentIntoJson() throws IOException {
         deleteAndPopulateTable("posts");
 
-        Post p = (Post)Post.findById(1);
+        Post p = Post.findById(1);
         String json = p.toJson(true, "title");
 
         Map map = mapper.readValue(json, Map.class);

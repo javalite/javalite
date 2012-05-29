@@ -29,7 +29,7 @@ public class Defect123Test extends ActiveJDBCTest {
     public void test() {
 
         deleteAndPopulateTable("people");
-        Person p = (Person)Person.findById(1);
+        Person p = Person.findById(1);
         Person.delete("id = 1");
         p.refresh();
     }
