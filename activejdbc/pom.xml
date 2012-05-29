@@ -177,7 +177,7 @@
                 <plugin>
                     <groupId>org.javalite</groupId>
                     <artifactId>activejdbc-instrumentation</artifactId>
-                    <version>1.4</version>
+                    <version>${project.version}</version>
                     <executions>
                         <execution>
                             <phase>process-test-classes</phase>
@@ -277,7 +277,7 @@
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>javalite-common</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>dom4j</groupId>
