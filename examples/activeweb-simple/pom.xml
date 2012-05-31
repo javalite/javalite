@@ -115,7 +115,7 @@
             <plugin>
                 <groupId>org.javalite</groupId>
                 <artifactId>activejdbc-instrumentation</artifactId>
-                <version>1.2.2</version>
+                <version>1.4.1</version>
                 <executions>
                     <execution>
                         <phase>process-classes</phase>
@@ -149,7 +149,7 @@
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>activejdbc</artifactId>
-            <version>1.2.2</version>
+            <version>1.4.1</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>

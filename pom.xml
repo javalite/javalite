@@ -84,7 +84,7 @@
             <dependency>
                 <groupId>org.javalite</groupId>
                 <artifactId>javalite-common</artifactId>
-                <version>1.2.2</version>
+                <version>1.4.1</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>

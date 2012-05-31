@@ -16,6 +16,8 @@ limitations under the License.
 
 package org.javalite.activeweb.freemarker;
 
+import org.javalite.activeweb.AppController;
+import org.javalite.activeweb.ControllerFactory;
 import org.javalite.activeweb.Router;
 import org.javalite.activeweb.ViewException;
 import freemarker.template.SimpleHash;
@@ -136,10 +138,9 @@ public class FormTag  extends FreeMarkerTag{
         if(params.get("controller") == null){// using current controller
             restful = ((TemplateBooleanModel)activeweb.get("restful")).getAsBoolean();
         }else{//using provided controller
-            restful = ((TemplateBooleanModel) ((SimpleHash) get("activeweb")).get("restful")).getAsBoolean();
+            AppController controllerInstance = (AppController) Class.forName(ControllerFactory.getControllerClassName(controllerPath)).newInstance();
+            restful = controllerInstance.restful();
         }
-
-
 
         String id = params.get("id") == null? null: params.get("id").toString();
 
