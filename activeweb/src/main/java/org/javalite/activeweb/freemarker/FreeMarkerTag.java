@@ -82,16 +82,15 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @return object or null if not found.
      */
     protected Object getUnwrapped(Object name) {
-        try{
-         return DeepUnwrap.unwrap(get(name));
-        }catch(ViewException e){
-            throw e;
-        }catch (TemplateException e){
+        try {
+            return DeepUnwrap.unwrap(get(name));
+        } catch (TemplateException e){
             throw new ViewException(e);
-
         }
-
-
+    }
+    
+    protected <T> T getUnwrapped(Object name, Class<T> clazz) {
+        return clazz.cast(getUnwrapped(name));
     }
 
     /**
@@ -100,7 +99,7 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @param params this is a list of parameters as provided to tag in HTML.
      * @param body body of tag
      * @param writer writer to write output to.
-     * @throws Exception
+     * @throws Exception if any
      */
     protected abstract void render(Map params, String body, Writer writer) throws Exception;
 

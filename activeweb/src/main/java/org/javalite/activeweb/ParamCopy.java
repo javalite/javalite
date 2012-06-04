@@ -28,6 +28,7 @@ import static org.javalite.common.Collections.map;
 /**
  * @author Igor Polevoy
  */
+@SuppressWarnings("unchecked")
 class ParamCopy {
     private static Logger logger = LoggerFactory.getLogger(ParamCopy.class.getName());
 
@@ -36,7 +37,8 @@ class ParamCopy {
         insertActiveWebParamsInto(assigns);
         copyRequestAttributesInto(assigns);
         copyRequestParamsInto(assigns);
-        copySessionAttrsInto(assigns);        
+        copySessionAttrsInto(assigns);
+        copyRequestProperties(assigns);
     }
 
 
@@ -84,5 +86,9 @@ class ParamCopy {
             Object value = Context.getHttpRequest().getAttribute(name.toString());
             assigns.put(name, value);
         }
+    }
+
+    private static void copyRequestProperties(Map assigns) {
+        assigns.put("request_props", map("url", Context.getHttpRequest().getRequestURL().toString()));
     }
 }
