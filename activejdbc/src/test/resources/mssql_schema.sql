@@ -292,3 +292,10 @@ BEGIN
     DROP TABLE [dbo].[Member]
 END
 CREATE TABLE Member (id INT IDENTITY PRIMARY KEY, name VARCHAR(56) NOT NULL);
+
+
+IF object_id('dbo.nodes') IS NOT NULL
+BEGIN
+    DROP TABLE [dbo].[nodes]
+END
+CREATE TABLE nodes (id INT IDENTITY PRIMARY KEY, name VARCHAR(56) NOT NULL, parent_id INT);

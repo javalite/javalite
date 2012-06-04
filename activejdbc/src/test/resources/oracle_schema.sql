@@ -821,10 +821,28 @@ ALTER TABLE Member ADD CONSTRAINT Member_pk PRIMARY KEY ( id )
 CREATE SEQUENCE Member_seq START WITH 1 INCREMENT BY 1
 -- BREAK
 CREATE OR REPLACE TRIGGER Member_trigger
-        BEFORE INSERT ON meals REFERENCING
+        BEFORE INSERT ON Member REFERENCING
         NEW AS new
         OLD AS old
         FOR EACH ROW
         begin
 select coalesce(:new.id, Member_seq.nextval) into :new.id from dual;
+end;
+
+
+
+-- BREAK
+CREATE TABLE nodes (id NUMBER NOT NULL, name VARCHAR(56) NOT NULL, parent_id NUMBER)
+-- BREAK
+ALTER TABLE nodes ADD CONSTRAINT nodes_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE nodes_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER nodes_trigger
+        BEFORE INSERT ON nodes REFERENCING
+        NEW AS new
+        OLD AS old
+        FOR EACH ROW
+        begin
+select coalesce(:new.id, nodes_seq.nextval) into :new.id from dual;
 end;

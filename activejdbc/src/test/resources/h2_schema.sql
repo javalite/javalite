@@ -144,3 +144,7 @@ CREATE TABLE meals (id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR
 
 DROP TABLE IF EXISTS Member;
 CREATE TABLE Member (id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR(56) NOT NULL);
+
+
+DROP TABLE IF EXISTS nodes;
+CREATE TABLE nodes (id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR(56) NOT NULL, parent_id int(11));

@@ -136,4 +136,23 @@ public class IncludesTest extends ActiveJDBCTest{
         a(recipe1).shouldBeTheSameAs(recipe2);
     }
 
+    @Test
+    public void shouldFixDefect163NeedsToIncludeChildrenAndParentsInTreeStructure(){
+        Node car = new Node("Car");
+        car.saveIt();
+
+        Node sedan = new Node("Sedan");
+        car.add(sedan);
+
+        Node sportsSedan = new Node("Sports sedan");
+        sedan.add(sportsSedan);
+
+        Node sedan1 = (Node) Node.find("name = ?", "Sedan").include(Node.class).get(0);
+
+        Node parent1 = sedan1.parent(Node.class);
+        Node parent2 = sedan1.parent(Node.class);
+
+        //should return cached parent in both cases
+        a(parent1).shouldBeTheSameAs(parent2);
+    }
 }

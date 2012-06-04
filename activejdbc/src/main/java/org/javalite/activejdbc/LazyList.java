@@ -158,12 +158,10 @@ public class LazyList<T extends Model> extends AbstractList<T>{
         //lets cache included classes and associations for future processing.
         for(Class includeClass: classes){
             String table = Registry.instance().getTableName(includeClass);
-            Association association = metaModel.getAssociationForTarget(table);
-            if(association == null){
-                throw new IllegalArgumentException("this model is not associated with " + includeClass);
+            List<Association> associations = metaModel.getAssociationsForTarget(table);
+            for (Association association : associations) {
+                includes.put(includeClass, association);
             }
-
-            includes.put(includeClass, association);
         }
 
         return (LazyList<E>)this;

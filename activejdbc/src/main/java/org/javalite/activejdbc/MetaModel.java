@@ -176,7 +176,7 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
      * Returns association of this table with the target table. Will return null if there is no association.
      *
      * @param target association of this table and the target table.
-     * @return association os this table with the target table. Will return null if there is no association with target
+     * @return association of this table with the target table. Will return null if there is no association with target
      * table and specified type.
      */
     public E getAssociationForTarget(String target){
@@ -187,6 +187,27 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
             }
         }
         return (E) result;
+    }
+
+
+    /**
+     * Returns associations of this table with the target table. It is possible
+     * to have more than one association to a target table if a target table is the same as source. Usually this
+     * happens when tree structures are stored in the same table (category has many categories).
+     *
+     * @param target association of this table and the target table.
+     * @return list of associations of this table with the target table. Will return empty list if none found.
+     * table and specified type.
+     */
+    public ArrayList<Association> getAssociationsForTarget(String target){
+        ArrayList<Association> result = new ArrayList<Association>();
+
+        for (Association association : associations) {
+            if (association.getTarget().equalsIgnoreCase(target)) {
+                result.add(association);
+            }
+        }
+        return result;
     }
 
     protected void addAssociation(Association association) {
