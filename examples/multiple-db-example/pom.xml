@@ -6,7 +6,7 @@
     <groupId>org.javalite</groupId>
     <artifactId>multiple-db-example</artifactId>
     <name>ActiveJDBC - Multiple Database Connections</name>
-    <version>1.2.2-SNAPSHOT</version>
+    <version>1.4.1</version>
     <packaging>jar</packaging>
 
     <build>
@@ -25,7 +25,7 @@
             <plugin>
                 <groupId>org.javalite</groupId>
                 <artifactId>activejdbc-instrumentation</artifactId>
-                <version>1.2.2-SNAPSHOT</version>
+                <version>1.4.1</version>
                 <executions>
                     <execution>
                         <phase>process-classes</phase>
@@ -48,7 +48,7 @@
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>activejdbc</artifactId>
-            <version>1.2.2-SNAPSHOT</version>
+            <version>1.4.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>opensymphony</groupId>

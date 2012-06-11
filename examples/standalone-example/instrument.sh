@@ -2,12 +2,9 @@
 # This script is an example of running instrumentation without Maven or Ant, just a simple command line.
 #
 
-#create classpath
-export OUTDIR=classes
+export CLASSPATH=classes
 
-export CLASSPATH=$OUTDIR
-export CLASSPATH=$CLASSPATH:build_time_libs/activejdbc-instrumentation-1.2.2-SNAPSHOT.jar
-export CLASSPATH=$CLASSPATH:build_time_libs/javassist-3.8.0.GA.jar
-export CLASSPATH=$CLASSPATH:lib/activejdbc-1.2.2-SNAPSHOT.jar
+for file in `ls lib` ; do export  CLASSPATH=$CLASSPATH:lib/$file; done
+for file in `ls build_time_libs` ; do export  CLASSPATH=$CLASSPATH:build_time_libs/$file; done
 
-java -cp $CLASSPATH -DoutputDirectory=$OUTDIR org.javalite.instrumentation.Main
+java -cp $CLASSPATH -DoutputDirectory=classes org.javalite.instrumentation.Main
