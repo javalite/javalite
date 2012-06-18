@@ -1,11 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.javalite</groupId>
     <artifactId>activeweb-root</artifactId>
     <packaging>pom</packaging>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1</version>
     <name>ActiveWeb - Root</name>
     <description>Root of ActiveWeb the project</description>
     <developers>
@@ -23,9 +22,9 @@
     </parent>
 
     <scm>
-        <connection>scm:svn:https://activeweb.googlecode.com/svn/trunk</connection>
-        <developerConnection>scm:svn:https://activeweb.googlecode.com/svn/trunk</developerConnection>
-        <url>https://activeweb.googlecode.com/svn/trunk/</url>
+        <connection>scm:svn:https://activeweb.googlecode.com/svn/tags/activeweb-root-1.1</connection>
+        <developerConnection>scm:svn:https://activeweb.googlecode.com/svn/tags/activeweb-root-1.1</developerConnection>
+        <url>https://activeweb.googlecode.com/svn/tags/activeweb-root-1.1</url>
     </scm>
 
 
