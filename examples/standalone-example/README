@@ -7,7 +7,5 @@ Usage:
 4. Execute run.sh - this will run the program
 5. Execute all.sh - this will perform all steps listed above
 
-Do not forget to replace the snapshots with latest build from:
-https://oss.sonatype.org/content/repositories/snapshots/org/javalite/
 
 
