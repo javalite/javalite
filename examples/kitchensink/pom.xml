@@ -6,7 +6,7 @@
     <groupId>org.javalite</groupId>
     <artifactId>kitchensink</artifactId>
     <packaging>war</packaging>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
     <name>ActiveWeb - KitchenSink WebApp</name>
     <developers>
         <developer>
@@ -236,18 +236,18 @@
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>activeweb</artifactId>
-            <version>${project.version}</version>
+            <version>1.1</version>
         </dependency>
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>activeweb-testing</artifactId>
-            <version>${project.version}</version>
+            <version>1.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>activeweb-gwt</artifactId>
-            <version>${project.version}</version>
+            <version>1.1</version>
         </dependency>        
         <dependency>
             <groupId>org.javalite</groupId>
@@ -284,36 +284,10 @@
 
     </dependencies>
 
-
-    <repositories>
-        <repository>
-            <id>sonatype-snapshots</id>
-            <name>Sonatype Snapshot Repo</name>
-            <layout>default</layout>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <checksumPolicy>warn</checksumPolicy>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </repository>
-    </repositories>
     <pluginRepositories>
-        <pluginRepository>
-            <id>sonatype-plugin-snapshots</id>
-            <name>Sonatype PLugin Snapshot Repo</name>
-            <layout>default</layout>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <checksumPolicy>warn</checksumPolicy>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </pluginRepository>
         <pluginRepository>
             <id>c5-public-repository</id>
             <url>http://mvn.carbonfive.com/public</url>
         </pluginRepository>
-
     </pluginRepositories>
 </project>
