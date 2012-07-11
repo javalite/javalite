@@ -273,14 +273,16 @@ public enum Registry {
     private Map<String, ColumnMetadata> fetchMetaParams(String table, String dbName) throws SQLException {
         Connection con = ConnectionsAccess.getConnection(dbName);
 
+        String schema = System.getProperty("activejdbc." + dbName + ".schema");
+
         //try upper case table name first - Oracle uses upper case
-        ResultSet rs = con.getMetaData().getColumns(null, null, table.toUpperCase(), null);
+        ResultSet rs = con.getMetaData().getColumns(null, schema, table.toUpperCase(), null);
         String dbProduct = con.getMetaData().getDatabaseProductName().toLowerCase();
         Map<String, ColumnMetadata> columns = getColumns(rs, dbProduct);
         rs.close();
         //if upper case not found, try lower case.
         if(columns.size() == 0){
-            rs = con.getMetaData().getColumns(null, null, table.toLowerCase(), null);
+            rs = con.getMetaData().getColumns(null, schema, table.toLowerCase(), null);
             columns = getColumns(rs, dbProduct);
             rs.close();
         }
