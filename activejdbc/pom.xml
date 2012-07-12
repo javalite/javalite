@@ -83,7 +83,7 @@
             <id>postgresql</id>
             <properties>
                 <jdbc.driver>org.postgresql.Driver</jdbc.driver>
-                <jdbc.url>jdbc:postgresql://localhost/postgres</jdbc.url>
+                <jdbc.url>jdbc:postgresql://192.168.0.55/postgres</jdbc.url>
                 <jdbc.user>postgres</jdbc.user>
                 <jdbc.password>p@ssw0rd</jdbc.password>
                 <db>postgresql</db>

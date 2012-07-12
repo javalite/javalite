@@ -148,3 +148,6 @@ CREATE TABLE Member (id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHA
 
 DROP TABLE IF EXISTS nodes;
 CREATE TABLE nodes (id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR(56) NOT NULL, parent_id int(11));
+
+DROP TABLE IF EXISTS images;
+CREATE TABLE images (id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR(56) NOT NULL, content BLOB);

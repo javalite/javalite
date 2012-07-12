@@ -299,3 +299,10 @@ BEGIN
     DROP TABLE [dbo].[nodes]
 END
 CREATE TABLE nodes (id INT IDENTITY PRIMARY KEY, name VARCHAR(56) NOT NULL, parent_id INT);
+
+
+IF object_id('dbo.images') IS NOT NULL
+BEGIN
+    DROP TABLE [dbo].[images]
+END
+CREATE TABLE images (id INT IDENTITY PRIMARY KEY, name VARCHAR(56) NOT NULL, content VARBINARY(MAX));

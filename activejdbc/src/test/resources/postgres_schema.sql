@@ -152,3 +152,6 @@ CREATE TABLE Member (id serial PRIMARY KEY, name VARCHAR(56) NOT NULL);
 
 DROP TABLE IF EXISTS nodes;
 CREATE TABLE nodes (id serial PRIMARY KEY, name VARCHAR(56) NOT NULL, parent_id INT);
+
+DROP TABLE IF EXISTS images;
+CREATE TABLE images (id serial PRIMARY KEY, name VARCHAR(56) NOT NULL, content BYTEA);

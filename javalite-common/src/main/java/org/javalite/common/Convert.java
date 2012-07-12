@@ -22,13 +22,13 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.math.BigDecimal;
-import java.sql.Clob;
-import java.sql.Time;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.text.*;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+
+import static org.javalite.common.Util.bytes;
 
 /**
  * Convenience class for type conversions. 
@@ -77,7 +77,6 @@ public class Convert {
             w.write(buffer, 0, n);
         }
     }
-
 
     /**
      * Returns true if the value is any numeric type and has a value of 1, or
@@ -224,6 +223,14 @@ public class Convert {
         }
     }
 
+    /**
+     * Converts value to Float if c it can. If value is a Float, it is returned, if it is a Number, it is
+     * promoted to Float and then returned, in all other cases, it converts the value to String,
+     * then tries to parse Float from it.
+     *
+     * @param value value to be converted to Float.
+     * @return value converted to Float.
+     */
     public static Float toFloat(Object value){
         if (value == null) {
             return null;        
@@ -240,6 +247,14 @@ public class Convert {
     }
 
 
+    /**
+     * Converts value to Long if c it can. If value is a Long, it is returned, if it is a Number, it is
+     * promoted to Long and then returned, in all other cases, it converts the value to String,
+     * then tries to parse Long from it.
+     *
+     * @param value value to be converted to Long.
+     * @return value converted to Long.
+     */
     public static Long toLong(Object value){
         if (value == null) {
             return null;
@@ -256,6 +271,14 @@ public class Convert {
     }
 
 
+   /**
+     * Converts value to Integer if c it can. If value is a Integer, it is returned, if it is a Number, it is
+     * promoted to Integer and then returned, in all other cases, it converts the value to String,
+     * then tries to parse Integer from it.
+     *
+     * @param value value to be converted to Integer.
+     * @return value converted to Integer.
+     */
     public static Integer toInteger(Object value){
         if (value == null) {
             return null;
@@ -271,6 +294,14 @@ public class Convert {
         }
     }
 
+    /**
+     * Converts value to BigDecimal if c it can. If value is a BigDecimal, it is returned, if it is a BigDecimal, it is
+     * promoted to BigDecimal and then returned, in all other cases, it converts the value to String,
+     * then tries to parse BigDecimal from it.
+     *
+     * @param value value to be converted to Integer.
+     * @return value converted to Integer.
+     */
     public static BigDecimal toBigDecimal(Object value){
         if (value == null) {
             return null;
@@ -278,6 +309,27 @@ public class Convert {
             return (BigDecimal) value;
         }else {
             return new BigDecimal(value.toString());
+        }
+    }
+
+    /**
+     * Converts value to bytes array if it can. If the value is byte array, it is simply returned,
+     * if it is a <code>java.sql.Blob</code>, then data is read from it as bytes.
+     * In all other cases the object is converted to <code>String</code>, then bytes are read from it.
+     *
+     * @param value value to be converted.
+     * @return value converted to byte array.
+     */
+    public static byte[] toBytes(Object value) {
+        try {
+            if (value instanceof Blob) {
+                Blob b = (Blob) value;
+                return bytes(b.getBinaryStream());
+            } else {
+                return value instanceof byte[] ? (byte[]) value : toString(value).getBytes();
+            }
+        } catch (Exception e) {
+            throw new ConversionException(e);
         }
     }
 }

@@ -11,6 +11,6 @@ public class LazyListTest extends ActiveJDBCTest {
 
     @Test
     public void shouldGenerateSql(){
-        System.out.println(Person.where("name = ?", "John").offset(200).limit(20).toSql(true));
+        System.out.println(Person.where("name = ?", "John").offset(200).limit(20).orderBy("name").toSql(true));
     }
 }

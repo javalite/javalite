@@ -1091,18 +1091,60 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return Convert.toString(value);
     }
 
+    /**
+     * Gets a value as bytes. If the column is Blob, bytes are
+     * read directly, if not, then the value is converted to String first, then
+     * string bytes are returned. Be careful out there,  this will read entire
+     * Blob onto memory.
+     *
+     * @param attribute name of attribute
+     * @return value as bytes.
+     */
+    public byte[] getBytes(String attribute) {
+        Object value = get(attribute);
+        return Convert.toBytes(value);
+    }
+
+    /**
+     * Converts Model value to <code>BigDecimal</code>
+     *
+     * @see {@link Convert#toBigDecimal}
+     * @param attribute name of attribute to convert
+     * @return converted value
+     */
     public BigDecimal getBigDecimal(String attribute) {
         return Convert.toBigDecimal(get(attribute));
     }
 
+    /**
+     * Converts Model value to <code>Integer</code>
+     *
+     * @see {@link Convert#toInteger}
+     * @param attribute name of attribute to convert
+     * @return converted value
+     */
     public Integer getInteger(String attribute) {
         return Convert.toInteger(get(attribute));
     }
 
+    /**
+     * Converts Model value to <code>Long</code>
+     *
+     * @see {@link Convert#toLong(Object)}
+     * @param attribute name of attribute to convert
+     * @return converted value
+     */
     public Long getLong(String attribute) {
         return Convert.toLong(get(attribute));
     }
 
+    /**
+     * Converts Model value to <code>Float</code>
+     *
+     * @see {@link Convert#toFloat(Object)}
+     * @param attribute name of attribute to convert
+     * @return converted value
+     */
     public Float getFloat(String attribute) {
         return Convert.toFloat(get(attribute));
     }
@@ -1120,17 +1162,16 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return Convert.toTimestamp(get(attribute));
     }
 
-
     /**
-     * Converts any value to <code>Double</code>.
-     * @param attribute attribute name
+     * Converts Model value to <code>Double</code>
      *
-     * @return converted double.
+     * @see {@link Convert#toDouble(Object)}
+     * @param attribute name of attribute to convert
+     * @return converted value
      */
     public Double getDouble(String attribute) {
         return Convert.toDouble(get(attribute));
     }
-
 
 
     /**
