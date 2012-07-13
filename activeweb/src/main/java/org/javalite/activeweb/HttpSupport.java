@@ -528,6 +528,11 @@ public class HttpSupport {
         return forwards[0].trim();
     }
 
+    protected String ipForwardedFor() {
+        String h = header("X-Forwarded-For");
+        return !Util.blank(h) ? h : remoteAddress();
+    }
+
     /**
      * Returns value of ID if one is present on a URL. Id is usually a part of a URI, such as: <code>/controller/action/id</code>.
      * This depends on a type of a URI, and whether controller is RESTful or not.
