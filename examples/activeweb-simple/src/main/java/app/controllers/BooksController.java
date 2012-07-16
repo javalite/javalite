@@ -27,7 +27,7 @@ import app.models.Book;
 public class BooksController extends AppController {                
 
     public void index(){
-        view("books", Book.findAll().toMaps());
+        view("books", Book.findAll());
     }
 
     public void show(){

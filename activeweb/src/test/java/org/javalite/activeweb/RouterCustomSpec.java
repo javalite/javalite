@@ -20,6 +20,8 @@ import app.controllers.*;
 import org.javalite.test.SystemStreamUtil;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.io.UnsupportedEncodingException;
 
@@ -257,5 +259,29 @@ public class RouterCustomSpec extends RequestSpec {
         execDispatcher();
 
         a(responseContent()).shouldContain("this is a save.ftl");
+    }
+
+
+    @Test
+    public void shouldResetControllerWhenMatchingRoute_defect_109() {
+
+        routeConfig = new AbstractRouteConfig() {
+            public void init(AppContext appContext) {
+                route("/da_value").get().to(SimpleValueController.class);
+            }
+        };
+        request.setServletPath("/da_value");
+        request.setParameter("name", "Joe");
+        request.setMethod("get");
+        execDispatcher();
+
+        a(responseContent()).shouldBeEqual("Joe");
+
+        request = new MockHttpServletRequest();
+        request.setServletPath("/da_value");
+        request.setMethod("get");
+        response = new MockHttpServletResponse();
+        execDispatcher();
+        a(responseContent()).shouldBeEqual("");
     }
 }

@@ -528,6 +528,11 @@ public class HttpSupport {
         return forwards[0].trim();
     }
 
+    /**
+     * Returns IP address that the web server forwarded request for.
+     *
+     * @return IP address that the web server forwarded request for.
+     */
     protected String ipForwardedFor() {
         String h = header("X-Forwarded-For");
         return !Util.blank(h) ? h : remoteAddress();
