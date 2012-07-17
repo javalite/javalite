@@ -64,9 +64,6 @@ public class RequestDispatcher implements Filter {
         }
 
         router = new Router(filterConfig.getInitParameter("root_controller"));
-
-        initRoutes(appContext);
-
         logger.info("ActiveWeb: starting the app in environment: " + Configuration.getEnv());
     }
 
@@ -97,6 +94,7 @@ public class RequestDispatcher implements Filter {
                 routeConfig = (AbstractRouteConfig) configClass.newInstance();
             }
 
+            routeConfig.clear();
             routeConfig.init(context);
             router.setRoutes(routeConfig.getRoutes());
             logger.info("Loaded routes from: " + routeConfigClassName);
@@ -162,10 +160,7 @@ public class RequestDispatcher implements Filter {
                 return;
             }
 
-
-            if(Configuration.activeReload()){
-                initRoutes(appContext);
-            }
+            initRoutes(appContext);
 
             Route route = router.recognize(uri, HttpMethod.getMethod(request));
 

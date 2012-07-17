@@ -8,6 +8,6 @@ import org.javalite.activeweb.AppController;
 public class HelloController extends AppController{
 
    public void show(){
-       respond("Hello...,  " + param("name"));
+       respond("Hello.. " + param("name"));
    }
 }

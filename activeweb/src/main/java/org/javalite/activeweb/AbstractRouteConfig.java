@@ -20,4 +20,8 @@ public abstract class AbstractRouteConfig implements AppConfig{
     protected List<Route> getRoutes() {
         return routes;
     }
+
+    protected void clear(){
+        routes = new ArrayList<Route>();
+    }
 }

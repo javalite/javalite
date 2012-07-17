@@ -59,8 +59,6 @@ class ControllerRunner {
                 if(Configuration.logRequestParams()){
                     logger.info("Executing controller: " + route.getController().getClass().getName() + "." + methodName);
                 }
-
-                route.getController().values().clear(); //custom routes cache controllers, need to reset their values for next request
                 executeAction(route.getController(), methodName);
             }
 
