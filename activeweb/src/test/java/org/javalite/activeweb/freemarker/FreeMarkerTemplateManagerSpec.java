@@ -118,4 +118,25 @@ public class FreeMarkerTemplateManagerSpec extends JSpecSupport {
         String generated = sw.toString();
         a(XPathHelper.count("//script", generated)).shouldEqual(3);
     }
+
+    @Test
+    public void shouldSelectTemplateForDefaultFormat() throws IOException, DocumentException {
+
+        manager.setDefaultLayout("/layouts/default_layout");
+
+        StringWriter sw = new StringWriter();
+
+        manager.merge(new HashMap(), "/formatting/index", sw);
+        String generated = sw.toString();
+
+        a(generated).shouldContain("default format - format value missing");
+    }
+
+    @Test
+    public void shouldSelectTemplateForProvidedFormat() throws IOException, DocumentException {
+
+        StringWriter sw = new StringWriter();
+        manager.merge(new HashMap(), "/formatting/index", "/layouts/default_layout", "xml", sw);
+        a(sw.toString()).shouldContain("XML");
+    }
 }

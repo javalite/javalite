@@ -98,7 +98,6 @@ public class RequestDispatcherSpec extends RequestSpec {
         a(fellThrough).shouldBeTrue();
     }
 
-
     /**
      * If there is exception in the FilterChain below RequestDispatcher, it should not
      * attempt to do anything to it. 
@@ -264,7 +263,6 @@ public class RequestDispatcherSpec extends RequestSpec {
         a(XPathHelper.selectText("//title", html)).shouldBeEqual("default layout");
     }
 
-
     @Test
     public void shouldRenderTemplateWithNoLayout() throws ServletException, IOException {
         request.setServletPath("/hello/no_layout");
@@ -273,7 +271,6 @@ public class RequestDispatcherSpec extends RequestSpec {
         String resp = response.getContentAsString();
         a(resp).shouldBeEqual("no layout");
     }
-
 
     @Test
     public void shouldRenderWithCustomLayout() throws ServletException, IOException {
@@ -296,7 +293,6 @@ public class RequestDispatcherSpec extends RequestSpec {
         a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("different");
     }
 
-
     @Test
     public void shouldRenderErrorWithoutLayoutIfRequestIsAjax() throws ServletException, IOException {
         request.setServletPath("/ajax");
@@ -306,7 +302,6 @@ public class RequestDispatcherSpec extends RequestSpec {
         String out = response.getContentAsString();
         the(out.contains("java.lang.ArithmeticException: / by zero")).shouldBeTrue();
     }
-
 
     @Test
     public void shouldCallDestroyOnAppBootstrap() throws ServletException, IOException {
@@ -324,4 +319,19 @@ public class RequestDispatcherSpec extends RequestSpec {
         a(response.getContentAsString()).shouldEqual("this is an issue 88");
     }
 
+    @Test
+    public void shouldRenderTemplateWithFormatInUri() throws IOException, ServletException {
+        request.setServletPath("/document.xml");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+        a(response.getContentAsString()).shouldBeEqual("<message>this is xml document</message>");
+    }
+
+        @Test
+    public void shouldRenderTemplateWithFormatInController() throws IOException, ServletException {
+        request.setServletPath("/document/show.xml");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+        a(response.getContentAsString()).shouldBeEqual("<message>XML from show action</message>");
+    }
 }

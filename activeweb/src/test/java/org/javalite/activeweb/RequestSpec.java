@@ -56,7 +56,7 @@ public abstract class RequestSpec extends JSpecSupport {
         config = new MockFilterConfig();
         Context.clear();
         Context.setTLs(request, response, config, new ControllerRegistry(new MockFilterConfig()),
-                                                                                new AppContext(),new RequestContext());
+                                                                                new AppContext(),new RequestContext(), null);
         Configuration.getTemplateManager().setTemplateLocation("src/test/views");
     }
 

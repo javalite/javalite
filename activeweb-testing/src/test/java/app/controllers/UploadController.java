@@ -42,7 +42,7 @@ public class UploadController extends AppController {
         List<Map> items = new ArrayList<Map>();
         while (iterator.hasNext()) {
             FormItem item = iterator.next();
-            items.add(map("name", item.getName(), "content", new String(item.getBytes())));
+            items.add(map("name", item.getFileName(), "content", new String(item.getBytes())));
         }
         view("items", items);
     }
@@ -55,7 +55,7 @@ public class UploadController extends AppController {
         List<Map> items = new ArrayList<Map>();
         while (iterator.hasNext()) {
             FormItem item = iterator.next();
-            items.add(map("name", item.getName(), "content", new String(item.getBytes())));
+            items.add(map("name", item.getFileName(), "content", new String(item.getBytes())));
         }
         view("items", items);
     }

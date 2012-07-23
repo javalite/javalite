@@ -38,7 +38,7 @@ public abstract class ViewSpec extends SpecHelper {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setContextPath("/test_context");
         Context.setTLs(request, new MockHttpServletResponse(), new MockFilterConfig(),
-                new ControllerRegistry(new MockFilterConfig()), new AppContext(), new RequestContext());
+                new ControllerRegistry(new MockFilterConfig()), new AppContext(), new RequestContext(), null);
     }
 
     @After

@@ -28,7 +28,7 @@ import org.javalite.activeweb.controller_filters.*;
 public class AppControllerConfig extends AbstractControllerConfig {
 
     public void init(AppContext context) {
-        addGlobalFilters(new TimingFilter());
+        addGlobalFilters(new TimingFilter(), new RequestPropertiesLogFilter());
         add(new DBConnectionFilter()).to(PostsController.class, RpostsController.class);
     }
 }

@@ -26,12 +26,13 @@ import java.util.Map;
  * @author Igor Polevoy
  */
 public class MockTemplateManager implements TemplateManager {
-    private Map values; String template; String layout;
+    private Map values; String template, layout, format;
 
-    public void merge(Map values, String template, String layout, Writer writer) {
+    public void merge(Map values, String template, String layout, String format, Writer writer) {
         this.values = values;
         this.template = template;
         this.layout = layout;
+        this.format = format;
     }
 
     public Map getValues() {

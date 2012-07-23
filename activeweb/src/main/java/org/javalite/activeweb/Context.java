@@ -35,7 +35,16 @@ class Context {
     private static ThreadLocal<Boolean> restful = new ThreadLocal<Boolean>();
     private static ThreadLocal<AppContext> appContext = new ThreadLocal<AppContext>();
     private static ThreadLocal<RequestContext> requestContext = new ThreadLocal<RequestContext>();
+    private static ThreadLocal<String> format = new ThreadLocal<String>();
 
+
+    public static String getFormat() {
+        return format.get();
+    }
+
+    public static void setFormat(String format) {
+        Context.format.set(format);
+    }
 
     public static RequestContext getRequestContext() {
         return requestContext.get();
@@ -118,13 +127,14 @@ class Context {
     }
 
     static void setTLs(HttpServletRequest req, HttpServletResponse resp, FilterConfig conf,
-                       ControllerRegistry reg, AppContext context, RequestContext requestContext) {
+                       ControllerRegistry reg, AppContext context, RequestContext requestContext, String format) {
         setHttpRequest(req);
         setHttpResponse(resp);
         setControllerRegistry(reg);
         setFilterConfig(conf);
         setAppContext(context);
         setRequestContext(requestContext);
+        setFormat(format);
     }
 
     static void setRoute(Route route) throws InstantiationException, IllegalAccessException {
@@ -145,5 +155,6 @@ class Context {
         controllerPath.set(null);
         filterConfig.set(null);
         requestContext.set(null);
+        format.set(null);
     }
 }

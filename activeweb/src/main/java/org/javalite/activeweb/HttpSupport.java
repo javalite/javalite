@@ -128,7 +128,7 @@ public class HttpSupport {
          * These can be "text/html". Value "text/html" is set by default.
          *
          * @param contentType content type value.
-         * @return HTTP Object
+         * @return instance of RenderBuilder
          */
         public HttpBuilder contentType(String contentType) {
             controllerResponse.setContentType(contentType);
@@ -140,6 +140,7 @@ public class HttpSupport {
          *
          * @param name name of header.
          * @param value value of header.
+         * @return instance of RenderBuilder
          */
         public HttpBuilder header(String name, String value){
             Context.getHttpResponse().setHeader(name, value);
@@ -171,6 +172,7 @@ public class HttpSupport {
          * Use this method to override a default layout configured.
          *
          * @param layout name of another layout.
+         * @return instance of RenderBuilder
          */
         public RenderBuilder layout(String layout){
             getRenderTemplateResponse().setLayout(layout);
@@ -182,10 +184,24 @@ public class HttpSupport {
         }
 
         /**
-         * call this method to turn off all layouts. The view will be rendered raw - no layouts.
+         * Call this method to turn off all layouts. The view will be rendered raw - no layouts.
+         * @return instance of RenderBuilder
          */
         public RenderBuilder noLayout(){
             getRenderTemplateResponse().setLayout(null);
+            return this;
+        }
+
+        /**
+         * Sets a format for the current request. This is a intermediate extension for the template file. For instance,
+         * if the name of template file is document.xml.ftl, then the "xml" part is set with this method, the
+         * "document" is a template name, and "ftl" extension is assumed in case you use FreeMarker template manager.
+         *
+         * @param format template format
+         * @return instance of RenderBuilder
+         */
+        public RenderBuilder format(String format){
+            Context.setFormat(format);
             return this;
         }
     }
@@ -203,7 +219,7 @@ public class HttpSupport {
      * @return instance of {@link RenderBuilder}, which is used to provide additional parameters.
      */
     protected RenderBuilder render(String template, Map values) {
-        RenderTemplateResponse resp = new RenderTemplateResponse(values, template);
+        RenderTemplateResponse resp = new RenderTemplateResponse(values, template, Context.getFormat());
         Context.setControllerResponse(resp);
         return new RenderBuilder(resp);
     }
@@ -1262,9 +1278,21 @@ public class HttpSupport {
     /**
      * Returns instance of {@link AppContext}.
      *
-     * @return
+     * @return instance of {@link AppContext}.
      */
     protected AppContext appContext(){
         return Context.getAppContext();
+    }
+
+    /**
+     * Returns a format part of the URI, or null if URI does not have a format part.
+     * A format part is defined as part of URI that is trailing after a last dot, as in:
+     *
+     * <code>/books.xml</code>, here "xml" is a format.
+     *
+     * @return format part of the URI, or nul if URI does not have it.
+     */
+    protected String format(){
+        return Context.getFormat();
     }
 }

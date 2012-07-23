@@ -146,9 +146,18 @@ public class RequestDispatcher implements Filter {
 
             HttpServletRequest request = (HttpServletRequest) req;
             HttpServletResponse response = (HttpServletResponse) resp;
-            Context.setTLs(request, response, filterConfig, getControllerRegistry(), appContext, new RequestContext());
 
-            String uri = request.getServletPath();
+            String path = request.getServletPath();
+            String format = null;
+            String uri = "/";
+            if(path.contains(".")){
+                uri = path.substring(0, path.lastIndexOf('.'));
+                format = path.substring(path.lastIndexOf('.') + 1);
+            }else{
+                uri = path;
+            }
+
+            Context.setTLs(request, response, filterConfig, getControllerRegistry(), appContext, new RequestContext(), format);
             if (Util.blank(uri)) {
                 uri = "/";//different servlet implementations, damn.
             }
@@ -242,7 +251,7 @@ public class RequestDispatcher implements Filter {
                     logger.error("Failed to send error response to client", ex);
                 }
             } else {
-                RenderTemplateResponse resp = new RenderTemplateResponse(getMapWithExceptionDataAndSession(e), template);
+                RenderTemplateResponse resp = new RenderTemplateResponse(getMapWithExceptionDataAndSession(e), template, null);
                 resp.setLayout(layout);
                 resp.setContentType("text/html");
                 resp.setStatus(status);

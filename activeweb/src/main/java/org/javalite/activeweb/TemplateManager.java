@@ -36,11 +36,11 @@ public interface TemplateManager {
      *
      * @param layout name of layout, <code>null</code> if no layout is needed.
      */
-    void merge(Map values, String template, String layout, Writer writer);
+    void merge(Map values, String template, String layout, String format, Writer writer);
 
 
     /**
-     * Same as {@link #merge(java.util.Map, String, String, java.io.Writer)}, but uses default layout.
+     * Same as {@link #merge(java.util.Map, String, String, String, java.io.Writer)}, but uses default layout and default format (html).
      */
     void merge(Map values, String template, Writer writer);
 

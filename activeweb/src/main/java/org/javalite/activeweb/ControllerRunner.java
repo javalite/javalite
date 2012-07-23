@@ -118,7 +118,7 @@ class ControllerRunner {
             String controllerPath = Router.getControllerPath(route.getController().getClass());
             String template =  controllerPath + "/" + route.getActionName();
 
-            RenderTemplateResponse resp = new RenderTemplateResponse(route.getController().values(), template);
+            RenderTemplateResponse resp = new RenderTemplateResponse(route.getController().values(), template, Context.getFormat());
     
             if(!Configuration.getDefaultLayout().equals(controllerLayout)){
                 resp.setLayout(controllerLayout);//could be a real layout ot null for no layout

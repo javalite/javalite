@@ -51,7 +51,7 @@ public class SpecHelper extends JSpecSupport{
         setTemplateLocation("src/main/webapp/WEB-INF/views");//default location of all views
 
         Context.setTLs(null, new MockHttpServletResponse(), new MockFilterConfig(),
-                new ControllerRegistry(new MockFilterConfig()), new AppContext(), new RequestContext());
+                new ControllerRegistry(new MockFilterConfig()), new AppContext(), new RequestContext(), null);
     }
 
     @After

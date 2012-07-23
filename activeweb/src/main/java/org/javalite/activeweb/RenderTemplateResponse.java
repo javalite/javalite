@@ -23,7 +23,7 @@ import java.util.Map;
  */
 class RenderTemplateResponse extends ControllerResponse{
     private Map values;
-    private String template;
+    private String template, format;
     private String layout = Configuration.getDefaultLayout();
     private TemplateManager templateManager;
 
@@ -41,11 +41,12 @@ class RenderTemplateResponse extends ControllerResponse{
      * first word is assumed to be a name of another controller.
      * Template cannot be <code>null</code>.
      */
-    protected RenderTemplateResponse(Map values, String template){
+    protected RenderTemplateResponse(Map values, String template, String format){
         if(template == null) throw new IllegalArgumentException("template cannot be null");
         if(values == null) throw new IllegalArgumentException("values cannot be null");
         this.values = values;
         this.template = template;
+        this.format = format;
     }
 
 
@@ -78,7 +79,7 @@ class RenderTemplateResponse extends ControllerResponse{
     @Override
     void doProcess() {
         try {
-            templateManager.merge(values, template, layout, Context.getHttpResponse().getWriter());
+            templateManager.merge(values, template, layout, format, Context.getHttpResponse().getWriter());
         }
         catch (IllegalStateException e){
             throw e;
