@@ -24,6 +24,8 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.logging.Logger;
 
 /**
  * @author Igor Polevoy
@@ -65,5 +67,9 @@ public class MockDataSource implements DataSource {
 
     public int getLoginTimeout() throws SQLException {
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

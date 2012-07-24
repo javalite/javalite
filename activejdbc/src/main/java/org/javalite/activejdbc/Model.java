@@ -59,6 +59,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return Registry.instance().getMetaModel(getTableName());
     }
 
+    protected Map<String, Object> getAttributes(){
+        return attributes;
+    }
+
+
+
     /**
      * Overrides attribute values from input map. The input map may have attributes whose name do not match the
      * attribute names (columns) of this model. Such attributes will be ignored. Those values whose names are
@@ -923,7 +929,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         List<String> attrs = getMetaModelLocal().getAttributeNamesSkip(getMetaModelLocal().getIdName());
         for (String name : attrs) {
-            other.attributes.put(name, get(name));
+            other.getAttributes().put(name, get(name));
         }
     }
 
@@ -941,11 +947,16 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @return
      */
-    private MetaModel getMetaModelLocal(){
+    protected MetaModel getMetaModelLocal(){
         if(metaModelLocal == null)
             metaModelLocal = getMetaModel();
 
         return metaModelLocal;
+    }
+
+
+    protected void setMetamodelLocal(MetaModel metamodelLocal){
+        this.metaModelLocal = metamodelLocal;
     }
 
     /**
@@ -2193,7 +2204,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     static <T extends Model> T instance(Map m, MetaModel metaModel) {
         try {
             T instance = (T) metaModel.getModelClass().newInstance();
-            instance.metaModelLocal = metaModel;
+            instance.setMetamodelLocal(metaModel);
             instance.hydrate(m);
             return instance;
         }
