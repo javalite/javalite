@@ -27,7 +27,7 @@ public class EncodingSpec extends RequestSpec {
         request.setMethod("GET");
         dispatcher.doFilter(request, response, filterChain);
         a(response.getContentAsString()).shouldBeEqual("hi");
-        a(response.getCharacterEncoding()).shouldBeEqual("UTF-16");
+        a(response.getCharacterEncoding()).shouldBeEqual("UTF-8");
     }
 
 }
