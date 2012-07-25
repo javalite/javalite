@@ -62,8 +62,18 @@ public class IncludesTest extends ActiveJDBCTest{
     public void shouldBeAbleToIncludeOtherInManyToMany() {
         deleteAndPopulateTables("doctors", "patients", "doctors_patients");
         LazyList<Doctor> doctors = Doctor.findAll().orderBy("id").include(Patient.class);
-        List<Map> doctorsMaps = doctors.toMaps();
 
+        Doctor doctor0 = doctors.get(0);
+        List<Patient> patientList = doctor0.getAll(Patient.class);
+        List<Patient> patientList1 = doctor0.getAll(Patient.class);
+
+        the(patientList.size()).shouldBeEqual(2);
+
+        //ensure cached:
+        the(patientList).shouldBeTheSameAs(patientList1);
+        the(patientList.get(0)).shouldBeTheSameAs(patientList1.get(0));
+
+        List<Map> doctorsMaps = doctors.toMaps();
 
         List<Map> patients = (List<Map>)doctorsMaps.get(0).get("patients");
         a(patients.size()).shouldBeEqual(2);
