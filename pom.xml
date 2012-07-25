@@ -4,7 +4,7 @@
     <groupId>org.javalite</groupId>
     <artifactId>activeweb-root</artifactId>
     <packaging>pom</packaging>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.3-SNAPSHOT</version>
     <name>ActiveWeb - Root</name>
     <description>Root of ActiveWeb the project</description>
     <developers>
