@@ -1,11 +1,11 @@
-Entire library is released with three commands:
-mvn release:clean
-mvn release:prepare
-mvn release:perform
 
+Release steps:
 
-After that, follow steps to release:
-https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide#SonatypeOSSMavenRepositoryUsageGuide-8.ReleaseIt
-
-After that, update and test all examples to the latest released version
+1. Test all examples to the latest released version
+2. mvn release:clean
+3. mvn release:prepare
+4. mvn release:perform
+5. Follow steps to release:
+    https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide#SonatypeOSSMavenRepositoryUsageGuide-8.ReleaseIt
+6. Update and test all examples to the latest released version
 
