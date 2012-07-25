@@ -327,7 +327,7 @@ public class RequestDispatcherSpec extends RequestSpec {
         a(response.getContentAsString()).shouldBeEqual("<message>this is xml document</message>");
     }
 
-        @Test
+    @Test
     public void shouldRenderTemplateWithFormatInController() throws IOException, ServletException {
         request.setServletPath("/document/show.xml");
         request.setMethod("GET");

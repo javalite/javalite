@@ -685,7 +685,27 @@ public class HttpSupport {
      * @param encoding character encoding for response.
      */
     protected void setEncoding(String encoding){
-        Context.getHttpResponse().setCharacterEncoding(encoding);
+        Context.setEncoding(encoding);
+    }
+
+    /**
+     * Synonym for {@link #setEncoding(String)}
+     *
+     * @param encoding encoding of response to client
+     */
+    protected void encoding(String encoding){
+        setEncoding(encoding);
+    }
+
+    /**
+     * Controllers can override this method to return encoding they require. Encoding set in method {@link #setEncoding(String)}
+     * trumps this setting.
+     *
+     * @return null. If this method is not overridden and encoding is not set from an action or filter,
+     * encoding will be set according to container implementation.
+     */
+    protected String getEncoding(){
+        return null;
     }
 
     /**

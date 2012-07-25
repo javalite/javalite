@@ -36,7 +36,16 @@ class Context {
     private static ThreadLocal<AppContext> appContext = new ThreadLocal<AppContext>();
     private static ThreadLocal<RequestContext> requestContext = new ThreadLocal<RequestContext>();
     private static ThreadLocal<String> format = new ThreadLocal<String>();
+    private static ThreadLocal<String> encoding = new ThreadLocal<String>();
 
+
+    public static String getEncoding() {
+        return encoding.get();
+    }
+
+    public static void setEncoding(String encoding) {
+        Context.encoding.set(encoding);
+    }
 
     public static String getFormat() {
         return format.get();
@@ -156,5 +165,6 @@ class Context {
         filterConfig.set(null);
         requestContext.set(null);
         format.set(null);
+        encoding.set(null);
     }
 }

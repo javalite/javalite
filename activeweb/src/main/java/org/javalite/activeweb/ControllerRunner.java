@@ -110,6 +110,14 @@ class ControllerRunner {
 
     private void renderResponse(Route route,  boolean integrateViews) throws InstantiationException, IllegalAccessException {
 
+        //set encoding. Priority: action, then controller
+        if (Context.getEncoding() != null) {
+            Context.getHttpResponse().setCharacterEncoding(Context.getEncoding());
+        } else if (route.getController().getEncoding() != null) {
+            Context.getHttpResponse().setCharacterEncoding(route.getController().getEncoding());
+        }
+
+
         //TODO: a bit of spaghetti code here...
         ControllerResponse controllerResponse = Context.getControllerResponse();
         String controllerLayout = route.getController().getLayout();
@@ -126,6 +134,8 @@ class ControllerRunner {
             if(resp.getContentType() == null){
                 resp.setContentType(route.getController().getContentType());
             }
+
+
 
 
             Context.setControllerResponse(resp);
