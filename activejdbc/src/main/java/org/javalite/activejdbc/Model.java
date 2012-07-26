@@ -414,7 +414,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         List<Model>  allMany2ManyChildren = new ArrayList<Model>();
         for (Association association : many2ManyAssociations) {
             String targetTableName = association.getTarget();
-            Class c = Registry.instance().getModelClass(targetTableName);
+            Class c = Registry.instance().getModelClass(targetTableName, false);
             if(c == null){// this model is probably not defined as a class, but the table exists!
                 logger.error("ActiveJDBC WARNING: failed to find a model class for: " + targetTableName + ", maybe model is not defined for this table?" +
                         " There might be a risk of running into integrity constrain violation if this model is not defined.");
@@ -483,7 +483,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     private void deleteChildrenDeep(List<Association> childAssociations){
         for (Association association : childAssociations) {
             String targetTableName = association.getTarget();
-            Class c = Registry.instance().getModelClass(targetTableName);
+            Class c = Registry.instance().getModelClass(targetTableName, false);
             if(c == null){// this model is probably not defined as a class, but the table exists!
                 logger.error("ActiveJDBC WARNING: failed to find a model class for: " + targetTableName + ", maybe model is not defined for this table?" +
                         " There might be a risk of running into integrity constrain violation if this model is not defined.");

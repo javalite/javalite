@@ -79,7 +79,7 @@ public class MetaModels {
 
 
     Class getModelClass(String tableName) {
-        return metaModelsByTableName.get(tableName).getModelClass();
+        return  metaModelsByTableName.containsKey(tableName) ? metaModelsByTableName.get(tableName).getModelClass() : null;
     }
 
     String getTableName(Class<? extends Model> modelClass) {

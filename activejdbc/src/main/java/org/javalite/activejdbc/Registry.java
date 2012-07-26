@@ -383,10 +383,17 @@ public enum Registry {
     }
 
 
-    protected Class<? extends Model> getModelClass(String table) {
+    /**
+     * Returns model class for a table name, null if not found.
+     *
+     * @param table table name
+     * @param suppressException true to suppress exception
+     * @return model class for a table name, null if not found.s
+     */
+    protected Class<? extends Model> getModelClass(String table, boolean suppressException) {
         Class modelClass = metaModels.getModelClass(table);
 
-        if(modelClass == null)
+        if(modelClass == null && !suppressException)
             throw new InitException("failed to locate meta model for: " + table + ", are you sure this is correct table name?");
 
         return modelClass;

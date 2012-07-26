@@ -165,4 +165,9 @@ public class IncludesTest extends ActiveJDBCTest{
         //should return cached parent in both cases
         a(parent1).shouldBeTheSameAs(parent2);
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldRejectClassWithNoAssociation(){
+        Ingredient.findAll().include(Article.class);
+    }
 }

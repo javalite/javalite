@@ -337,4 +337,25 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
     public Map<String, ColumnMetadata> getColumnMetadata() {
         return Collections.unmodifiableMap(columnMetadata);
     }
+
+
+    /**
+     * Checks if there is association to the target model class.,
+     *
+     * @param targetModelClass class of a model that will be checked for association from current model.
+     * @return true if any association exists such that the current model is a source and targetModelClass is a target.
+     */
+    public boolean isAssociatedTo(Class<? extends Model> targetModelClass) {
+        boolean associated = false;
+        for (Association association : associations) {
+            Class targetClass = null;
+
+            targetClass = Registry.instance().getModelClass(association.getTarget(), true);
+
+            if (targetClass != null && targetClass.equals(targetModelClass)) {
+                associated = true;
+            }
+        }
+        return associated;
+    }
 }
