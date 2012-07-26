@@ -16,7 +16,8 @@
     </developers>    
     
     <properties>
-        <gwt.version>2.3.0</gwt.version>        
+        <gwt.version>2.3.0</gwt.version>
+        <activejdbc.version>1.4.2</activejdbc.version>
     </properties>
 
     <profiles>        
@@ -213,7 +214,7 @@
             <plugin>
                 <groupId>org.javalite</groupId>
                 <artifactId>activejdbc-instrumentation</artifactId>
-                <version>1.4.1</version>
+                <version>${activejdbc.version}</version>
                 <executions>
                     <execution>
                         <phase>process-classes</phase>
@@ -252,7 +253,7 @@
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>activejdbc</artifactId>
-            <version>1.4.1</version>
+            <version>${activejdbc.version}</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>

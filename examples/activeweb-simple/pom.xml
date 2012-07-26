@@ -18,6 +18,8 @@
         <jdbc.test.url>jdbc:mysql://localhost/simple_test</jdbc.test.url>
         <jdbc.test.user>root</jdbc.test.user>
         <jdbc.test.password>p@ssw0rd</jdbc.test.password>
+
+        <activejdbc.version>1.4.2</activejdbc.version>
     </properties>
     
     <build>
@@ -115,7 +117,7 @@
             <plugin>
                 <groupId>org.javalite</groupId>
                 <artifactId>activejdbc-instrumentation</artifactId>
-                <version>1.4.1</version>
+                <version>${activejdbc.version}</version>
                 <executions>
                     <execution>
                         <phase>process-classes</phase>
@@ -149,7 +151,7 @@
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>activejdbc</artifactId>
-            <version>1.4.1</version>
+            <version>${activejdbc.version}</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
