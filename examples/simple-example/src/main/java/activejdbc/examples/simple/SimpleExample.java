@@ -7,6 +7,9 @@ import org.slf4j.LoggerFactory;
 public class SimpleExample {
     final static Logger logger = LoggerFactory.getLogger(SimpleExample.class);
     public static void main(String[] args) {
+
+       System.getProperties().list(System.out);
+
         Base.open("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/test", "root", "p@ssw0rd");
 
         createEmployee();
