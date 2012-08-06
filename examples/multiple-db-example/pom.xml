@@ -6,7 +6,7 @@
     <groupId>org.javalite</groupId>
     <artifactId>multiple-db-example</artifactId>
     <name>ActiveJDBC - Multiple Database Connections</name>
-    <version>1.4.1</version>
+    <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <build>
@@ -25,7 +25,7 @@
             <plugin>
                 <groupId>org.javalite</groupId>
                 <artifactId>activejdbc-instrumentation</artifactId>
-                <version>1.4.1</version>
+                <version>1.4.2</version>
                 <executions>
                     <execution>
                         <phase>process-classes</phase>
@@ -48,13 +48,7 @@
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>activejdbc</artifactId>
-            <version>1.4.1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>opensymphony</groupId>
-                    <artifactId>oscache</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>1.4.2</version>
         </dependency>
 
         <!--need both drivers: to connect to MySQL and Oracle-->
@@ -74,37 +68,8 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.5.10</version>
+            <version>1.6.4</version>
         </dependency>
     </dependencies>
 
-     <repositories>
-        <repository>
-            <id>sonatype-snapshots</id>
-            <name>Sonatype Snapshot Repo</name>
-            <layout>default</layout>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <checksumPolicy>warn</checksumPolicy>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>sonatype-plugin-snapshots</id>
-            <name>Sonatype Snapshot Repo</name>
-            <layout>default</layout>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <checksumPolicy>warn</checksumPolicy>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
-    
 </project>

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.javalite</groupId>
     <artifactId>simple-example</artifactId>
-    <version>1.4.1</version>
+    <version>1.0-SNAPSHOT</version>
     <name>ActiveJDBC - Simple Maven Example</name>
     <packaging>jar</packaging>
 
@@ -69,35 +69,4 @@
             <version>1.6.4</version>
         </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>sonatype-snapshots</id>
-            <name>Sonatype Snapshot Repo</name>
-            <layout>default</layout>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <checksumPolicy>warn</checksumPolicy>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>sonatype-plugin-snapshots</id>
-            <name>Sonatype Snapshot Repo</name>
-            <layout>default</layout>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <checksumPolicy>warn</checksumPolicy>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
-    
-   
 </project>
