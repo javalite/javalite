@@ -147,7 +147,9 @@ class Context {
     }
 
     static void setRoute(Route route) throws InstantiationException, IllegalAccessException {
-        if(route != null && route.getId() != null){
+        if (route == null)
+            throw new IllegalArgumentException("Route could not be null");
+        if (route.getId() != null){
             getHttpRequest().setAttribute("id", route.getId());
         }
         setControllerPath(Router.getControllerPath(route.getController().getClass()));
@@ -166,5 +168,6 @@ class Context {
         requestContext.set(null);
         format.set(null);
         encoding.set(null);
+        appContext.set(null);
     }
 }
