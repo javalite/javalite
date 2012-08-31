@@ -26,15 +26,13 @@ import com.google.inject.Inject;
 
 public class GreetingController  extends AppController {
 
+    @Inject
     private Greeter greeter;
 
     public void index(){
-        view("greeting", greeter.greet());
+        view("greeting", "Hello from That Conference: " + greeter.greet());
     }
 
 
-    @Inject
-    public void setGreeter(Greeter greeter){
-        this.greeter = greeter;
-    }
+
 }
