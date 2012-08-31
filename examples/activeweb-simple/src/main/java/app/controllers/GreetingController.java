@@ -30,7 +30,7 @@ public class GreetingController  extends AppController {
     private Greeter greeter;
 
     public void index(){
-        view("greeting", "Hello from That Conference: " + greeter.greet());
+        view("greeting", greeter.greet());
     }
 
 

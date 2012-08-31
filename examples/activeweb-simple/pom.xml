@@ -140,12 +140,12 @@
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>activeweb</artifactId>
-            <version>1.3</version>
+            <version>1.4</version>
         </dependency>
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>activeweb-testing</artifactId>
-            <version>1.3</version>
+            <version>1.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
