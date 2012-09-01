@@ -64,6 +64,9 @@ public class CreatedAtUpdatedAtTest extends ActiveJDBCTest {
 
     @Test
     public void shouldResetUpdatedAtByBatchClassMethods(){
+        //this is to set the system time from program env rather than DB
+        Person.update("last_name = ?", "name like '%%'", "Smith");
+
         List<Person> people = Person.findAll();
         Timestamp updated_at = people.get(0).getTimestamp("updated_at");
 

@@ -974,7 +974,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Returns a value for attribute. Besides returning direct attributes of this model, this method is also
+     * Returns a value for attribute.
+     *
+     * <h3>Infer relationship from name of argument</h3>
+     * Besides returning direct attributes of this model, this method is also
      * aware of relationships and can return collections based on naming conventions. For example, if a model User has a
      * one to many relationship with a model Address, then the following code will work:
      * <pre>
@@ -983,14 +986,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * </pre>
      * Conversely, this will also work:
      * <pre>
-     * List<Address> addresses = (List<Address>)user.get("addresses");
+     * List&lt;Address&gt; addresses = (List&lt;Address&gt;)user.get(&quot;addresses&quot;);
      * </pre>
      *
      * The same would also work for many to many relationships:
      * <pre>
-     * List<Doctor> doctors = (List<Doctor>)patient.get("doctors");
+     * List&lt;Doctor&gt; doctors = (List&lt;Doctor&gt;)patient.get(&quot;doctors&quot;);
      * ...
-     * List<Patient> patients = (List<Patient>)doctor.get("patients");
+     * List&lt;Patient&gt; patients = (List&lt;Patient&gt;)doctor.get(&quot;patients&quot;);
      * </pre>
      *
      * This methods will try to infer a name if a table by using {@link org.javalite.common.Inflector} to try to
@@ -998,8 +1001,19 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * with another model, if one is found. This method of finding of relationships is best used in templating
      * technologies, such as JSPs. For standard cases, please use {@link #parent(Class)}, and {@link #getAll(Class)}.
      *
+     * <h3>Suppressing inference for performance</h3>
+     * <p>
+     *     In some cases, the inference of relationships might take a toll on performance, and if a project is not using
+     *     the getter method for inference, than it is wise to turn it off with a system property <code>activejdbc.get.inference</code>:
      *
-     * @param attribute name of attribute.
+     *     <pre>
+     *         -Dactivejdbc.get.inference = false
+     *     </pre>
+     *     If inference is turned off, only a value of the attribute is returned.
+     *
+     * </p>
+     *
+     * @param attribute name of attribute of name of related object.
      * @return value for attribute.
      */
     public Object get(String attribute) {
@@ -1016,21 +1030,30 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         Object returnValue;
         String attributeName = attribute.toLowerCase();
-        if((returnValue = attributes.get(attributeName.toLowerCase())) != null){
-            return returnValue;
-        }else if((returnValue = tryParent(attributeName)) != null){
-            return returnValue;
-        }else if((returnValue = tryPolymorphicParent(attributeName)) != null){
-            return returnValue;
-        }else if((returnValue = tryChildren(attributeName)) != null){
-            return returnValue;
-        }else if((returnValue = tryPolymorphicChildren(attributeName)) != null){
-            return returnValue;
-        }else if((returnValue = tryOther(attributeName)) != null){
-            return returnValue;
-        }else{
-            getMetaModelLocal().checkAttributeOrAssociation(attributeName);
-            return null;
+
+        String getInferenceProperty = System.getProperty("activejdbc.get.inference");
+
+        boolean  getInference = getInferenceProperty  == null || getInferenceProperty.equals("true");
+
+        if (getInference) {
+            if ((returnValue = attributes.get(attributeName)) != null) {
+                return returnValue;
+            } else if ((returnValue = tryParent(attributeName)) != null) {
+                return returnValue;
+            } else if ((returnValue = tryPolymorphicParent(attributeName)) != null) {
+                return returnValue;
+            } else if ((returnValue = tryChildren(attributeName)) != null) {
+                return returnValue;
+            } else if ((returnValue = tryPolymorphicChildren(attributeName)) != null) {
+                return returnValue;
+            } else if ((returnValue = tryOther(attributeName)) != null) {
+                return returnValue;
+            } else {
+                getMetaModelLocal().checkAttributeOrAssociation(attributeName);
+                return null;
+            }
+        } else {
+            return attributes.get(attributeName);
         }
     }
 
