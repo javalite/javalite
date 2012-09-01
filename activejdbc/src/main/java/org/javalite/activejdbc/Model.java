@@ -1013,7 +1013,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * </p>
      *
-     * @param attribute name of attribute of name of related object.
+     * @param attribute name of attribute of name or related object.
      * @return value for attribute.
      */
     public Object get(String attribute) {
