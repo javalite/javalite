@@ -3,7 +3,7 @@
     <groupId>org.javalite</groupId>
     <artifactId>activejdbc</artifactId>
     <packaging>jar</packaging>
-    <version>1.4.4-SNAPSHOT</version>
+    <version>1.4.5-SNAPSHOT</version>
     <name>ActiveJDBC - Da Framework</name>
 
 
