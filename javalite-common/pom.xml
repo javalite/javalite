@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.javalite</groupId>
     <artifactId>javalite-common</artifactId>
-    <version>1.4.4-SNAPSHOT</version>
+    <version>1.4.4</version>
     <packaging>jar</packaging>
     <name>JavaLite Common Classes</name>
 
@@ -14,9 +14,9 @@
     </parent>
   
      <scm>
-       <connection>scm:svn:https://activejdbc.googlecode.com/svn/trunk/javalite-common/</connection>
-       <developerConnection>scm:svn:https://activejdbc.googlecode.com/svn/trunk/javalite-common/</developerConnection>
-       <url>https://activejdbc.googlecode.com/svn/trunk/javalite-common/</url>
+       <connection>scm:svn:https://activejdbc.googlecode.com/svn/tags/activejdbc-root-1.4.4/javalite-common</connection>
+       <developerConnection>scm:svn:https://activejdbc.googlecode.com/svn/tags/activejdbc-root-1.4.4/javalite-common</developerConnection>
+       <url>https://activejdbc.googlecode.com/svn/tags/activejdbc-root-1.4.4/javalite-common</url>
      </scm>
 
     <build>
