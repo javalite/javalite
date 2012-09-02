@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.javalite</groupId>
     <artifactId>javalite-common</artifactId>
-    <version>1.4.4</version>
+    <version>1.4.4-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>JavaLite Common Classes</name>
 
