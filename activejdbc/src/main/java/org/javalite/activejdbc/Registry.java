@@ -275,11 +275,19 @@ public enum Registry {
 
         String schema = System.getProperty("activejdbc." + dbName + ".schema");
 
-        //try upper case table name first - Oracle uses upper case
-        ResultSet rs = con.getMetaData().getColumns(null, schema, table.toUpperCase(), null);
+        ResultSet rs = con.getMetaData().getColumns(null, schema, table, null);
         String dbProduct = con.getMetaData().getDatabaseProductName().toLowerCase();
         Map<String, ColumnMetadata> columns = getColumns(rs, dbProduct);
         rs.close();
+
+        //try upper case table name - Oracle uses upper case
+        if (columns.size() == 0) {
+            rs = con.getMetaData().getColumns(null, schema, table.toUpperCase(), null);
+            dbProduct = con.getMetaData().getDatabaseProductName().toLowerCase();
+            columns = getColumns(rs, dbProduct);
+            rs.close();
+        }
+
         //if upper case not found, try lower case.
         if(columns.size() == 0){
             rs = con.getMetaData().getColumns(null, schema, table.toLowerCase(), null);
@@ -353,9 +361,7 @@ public enum Registry {
         MetaModel sourceMM = getMetaModel(source);
 
         for (String target : metaModels.getTableNames(dbName)) {
-            if(target.equalsIgnoreCase("Member")){
-                int i =0;
-            }
+
             MetaModel targetMM = getMetaModel(target);
 
             String sourceFKName = getMetaModel(source).getFKName();
