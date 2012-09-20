@@ -148,8 +148,15 @@ public class RequestDispatcher implements Filter {
             HttpServletResponse response = (HttpServletResponse) resp;
 
             String path = request.getServletPath();
+
+            if(excluded(path)){
+                chain.doFilter(req, resp);
+                logger.debug("URI excluded: " + path);
+                return;
+            }
+
             String format = null;
-            String uri = "/";
+            String uri;
             if(path.contains(".")){
                 uri = path.substring(0, path.lastIndexOf('.'));
                 format = path.substring(path.lastIndexOf('.') + 1);
@@ -160,13 +167,6 @@ public class RequestDispatcher implements Filter {
             Context.setTLs(request, response, filterConfig, getControllerRegistry(), appContext, new RequestContext(), format);
             if (Util.blank(uri)) {
                 uri = "/";//different servlet implementations, damn.
-            }
-
-            boolean excluded = excluded(uri);
-            if(excluded){
-                chain.doFilter(req, resp);
-                logger.debug("URI excluded: " + uri);
-                return;
             }
 
             initRoutes(appContext);

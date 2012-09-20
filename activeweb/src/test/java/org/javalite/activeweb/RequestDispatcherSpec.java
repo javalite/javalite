@@ -98,6 +98,18 @@ public class RequestDispatcherSpec extends RequestSpec {
         a(fellThrough).shouldBeTrue();
     }
 
+    @Test
+    public void shouldExcludeHtmlExclusions() throws IOException, ServletException {
+
+        request.setServletPath("/index.html");
+        request.setMethod("GET");
+        config.addInitParameter("exclusions", "css,images,js,html");
+        dispatcher.init(config);
+        dispatcher.doFilter(request, response, filterChain);
+
+        a(fellThrough).shouldBeTrue();
+    }
+
     /**
      * If there is exception in the FilterChain below RequestDispatcher, it should not
      * attempt to do anything to it. 
