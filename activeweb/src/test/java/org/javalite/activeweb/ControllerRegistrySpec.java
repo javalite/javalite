@@ -37,6 +37,6 @@ public class ControllerRegistrySpec {
         ControllerMetaData cmd = r.getMetaData(MockController.class);
         a(cmd).shouldNotBeNull();
         r.addGlobalFilters(new MockFilter1(), new MockFilter2());
-        a(r.getGlobalFilters().size()).shouldBeEqual(2);
+        a(r.getGlobalFilterLists().get(0).getFilters().size()).shouldBeEqual(2);
     }
 }

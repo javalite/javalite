@@ -28,7 +28,7 @@ import com.google.inject.Injector;
  *
  * @author Igor Polevoy
  */
-public abstract class Bootstrap implements AppConfig{
+public abstract class Bootstrap extends AppConfig{
 
     @Deprecated
     protected void registerTag(String name, FreeMarkerTag tag){

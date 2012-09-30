@@ -16,14 +16,15 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import org.javalite.activeweb.controller_filters.ControllerFilter;
-
 import org.javalite.activeweb.mock.*;
-import static org.javalite.test.jspec.JSpec.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockFilterConfig;
 
 import java.util.List;
+
+import static org.javalite.test.jspec.JSpec.a;
+import static org.javalite.test.jspec.JSpec.the;
 
 
 /**
@@ -48,16 +49,18 @@ public class AbstractControllerConfigSpec {
             public void init(AppContext config) {
                 addGlobalFilters(new AbcFilter());
             }
+
         };
 
         //init config.
         config.init(new AppContext());
+        config.completeInit();
 
+        List<ControllerRegistry.FilterList> filterLists = Context.getControllerRegistry().getGlobalFilterLists();
 
-        List<ControllerFilter> filters = Context.getControllerRegistry().getGlobalFilters();
-
-        a(filters.size()).shouldBeEqual(1);
-        a(filters.get(0).getClass()).shouldBeTheSameAs(AbcFilter.class);
+        a(filterLists.size()).shouldBeEqual(1);
+        a(filterLists.get(0).getFilters().size()).shouldBeEqual(1);
+        a(filterLists.get(0).getFilters().get(0).getClass()).shouldBeTheSameAs(AbcFilter.class);
     }
 
     @Test

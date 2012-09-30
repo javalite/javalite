@@ -16,6 +16,8 @@ limitations under the License.
 
 package app.config;
 
+import app.controllers.ExcludeController;
+import app.filters.IncludeExcludeFilter;
 import org.javalite.activeweb.AbstractControllerConfig;
 import org.javalite.activeweb.AppContext;
 import org.javalite.activeweb.controller_filters.TimingFilter;
@@ -26,7 +28,10 @@ import app.filters.InjectionRedirectFilter;
  */
 public class AppControllerConfig extends AbstractControllerConfig {
 
-    public void init(AppContext context) {
+    public void init(AppContext appContext) {
         addGlobalFilters(new TimingFilter(), new InjectionRedirectFilter());
+
+        //this filter will apply to the IncludeController
+        addGlobalFilters(new IncludeExcludeFilter()).exceptFor(ExcludeController.class);
     }
 }

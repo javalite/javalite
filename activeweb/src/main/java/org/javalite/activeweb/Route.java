@@ -312,7 +312,7 @@ public class Route {
      * @return the name inside the braces, "user_id", "fav_color", etc.
      * Returns null if no pattern match: {xxx}.
      */
-    String getUserSegmentName(String segment){
+    protected String getUserSegmentName(String segment){
         Matcher m = USER_SEGMENT_PATTERN.matcher(segment);
         if(m.find()){
             String value = m.group(0);

@@ -2,7 +2,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-
     <groupId>org.javalite</groupId>
     <artifactId>activeweb-simple</artifactId>
     <packaging>war</packaging>
@@ -16,10 +15,8 @@
         <jdbc.password>p@ssw0rd</jdbc.password>
 
         <jdbc.test.url>jdbc:mysql://localhost/simple_test</jdbc.test.url>
-        <jdbc.test.user>root</jdbc.test.user>
-        <jdbc.test.password>p@ssw0rd</jdbc.test.password>
 
-        <activejdbc.version>1.4.2</activejdbc.version>
+        <activeweb.version>1.4</activeweb.version>
     </properties>
     
     <build>
@@ -77,10 +74,7 @@
                         </goals>
                         <phase>validate</phase>
                         <configuration>
-                            <url>${jdbc.test.url}</url>
-                            <username>${jdbc.test.user}</username>
-                            <password>${jdbc.test.password}</password>
-                            <driver>${jdbc.driver}</driver>
+                            <url>${jdbc.test.url}</url><!--override location of test DB-->
                         </configuration>
                     </execution>
                 </executions>
@@ -117,7 +111,6 @@
             <plugin>
                 <groupId>org.javalite</groupId>
                 <artifactId>activejdbc-instrumentation</artifactId>
-                <version>${activejdbc.version}</version>
                 <executions>
                     <execution>
                         <phase>process-classes</phase>
@@ -140,19 +133,15 @@
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>activeweb</artifactId>
-            <version>1.4</version>
+            <version>${activeweb.version}</version>
         </dependency>
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>activeweb-testing</artifactId>
-            <version>1.4</version>
+            <version>${activeweb.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.javalite</groupId>
-            <artifactId>activejdbc</artifactId>
-            <version>${activejdbc.version}</version>
-        </dependency>
+
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -161,7 +150,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.5.6</version>
+            <version>1.6.4</version>
         </dependency>
         <dependency>
             <groupId>com.sun</groupId>
@@ -170,37 +159,13 @@
             <scope>system</scope>
             <systemPath>${java.home}/../lib/tools.jar</systemPath>
         </dependency>
-        <dependency>
-            <groupId>opensymphony</groupId>
-            <artifactId>oscache</artifactId>
-            <version>2.4</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.jms</groupId>
-                    <artifactId>jms</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>servlet-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.hibernate</groupId>
-                    <artifactId>hibernate</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
     </dependencies>
 
-  <pluginRepositories>
+    <pluginRepositories>
         <pluginRepository>
             <id>c5-public-repository</id>
             <url>http://mvn.carbonfive.com/public</url>
         </pluginRepository>
     </pluginRepositories>
-
 
 </project>

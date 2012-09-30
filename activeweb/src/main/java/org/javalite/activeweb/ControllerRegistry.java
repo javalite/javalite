@@ -28,7 +28,7 @@ import java.util.*;
  */
 class ControllerRegistry {
     private Map<String, ControllerMetaData> metaDataMap = new HashMap<String, ControllerMetaData>();
-    private List<ControllerFilter> globalFilters = new ArrayList<ControllerFilter>();
+    private List<FilterList> globalFilterLists = new ArrayList<FilterList>();
     private Injector injector;
 
     // these are not full package names, just partial package names between "app.controllers"
@@ -36,6 +36,9 @@ class ControllerRegistry {
     private List<String> controllerPackages;
 
     private final Object token = new Object();
+
+    private boolean filtersInjected = false;
+
 
     protected ControllerRegistry(FilterConfig config) {
         controllerPackages = ControllerPackageLocator.locateControllerPackages(config);
@@ -56,11 +59,15 @@ class ControllerRegistry {
     }
 
     protected void addGlobalFilters(ControllerFilter... filters) {
-        globalFilters.addAll(Arrays.asList(filters));
+        globalFilterLists.add(new FilterList(Arrays.asList(filters), new ArrayList()));
     }
 
-    protected List<ControllerFilter> getGlobalFilters() {
-        return Collections.unmodifiableList(globalFilters);
+    protected void addGlobalFilters(List<ControllerFilter> filters, List<Class<? extends AppController>> excludeControllerClasses) {
+        globalFilterLists.add(new FilterList(filters, excludeControllerClasses));
+    }
+
+    protected List<FilterList> getGlobalFilterLists() {
+        return Collections.unmodifiableList(globalFilterLists);
     }
 
     protected void setInjector(Injector injector) {
@@ -71,7 +78,6 @@ class ControllerRegistry {
         return injector;
     }
 
-    private boolean filtersInjected = false;
 
     public void injectFilters() {
 
@@ -79,10 +85,12 @@ class ControllerRegistry {
             synchronized (token) {
                 if (injector != null) {
                     //inject global filters:
-                    for (ControllerFilter controllerFilter : globalFilters) {
-                        injector.injectMembers(controllerFilter);
+                    for (FilterList filterList : globalFilterLists) {
+                        List<ControllerFilter> filters = filterList.getFilters();
+                        for (ControllerFilter controllerFilter : filters) {
+                            injector.injectMembers(controllerFilter);
+                        }
                     }
-
                     //inject specific controller filters:
                     for (String key : metaDataMap.keySet()) {
                         ControllerMetaData controllerMetaData = metaDataMap.get(key);
@@ -93,12 +101,36 @@ class ControllerRegistry {
                 }
                 filtersInjected = true;
             }
-
         }
-
     }
 
     public List<String> getControllerPackages() {
         return controllerPackages;
+    }
+
+    // instance contains a list of filters and corresponding  list of controllers for which these filters
+    // need to be excluded.
+    class FilterList<T extends AppController>{
+        private List<ControllerFilter> filters = new ArrayList<ControllerFilter>();
+        private List<Class<T>> excludedControllers = new ArrayList<Class<T>>();
+
+        FilterList(List<ControllerFilter> filters, List<Class<T>> excludedControllers) {
+            this.filters = filters;
+            this.excludedControllers = excludedControllers;
+        }
+
+        public List<ControllerFilter> getFilters() {
+            return Collections.unmodifiableList(filters);
+        }
+
+        public boolean excludesController(AppController controller) {
+
+            for (Class<T> clazz : excludedControllers) {
+                //must use string here, because when controller re-compiles, class instance is different
+                if(clazz.getName().equals(controller.getClass().getName()))
+                    return true;
+            }
+            return false;
+        }
     }
 }

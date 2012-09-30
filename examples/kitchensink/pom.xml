@@ -17,7 +17,7 @@
     
     <properties>
         <gwt.version>2.3.0</gwt.version>
-        <activejdbc.version>1.4.2</activejdbc.version>
+        <activeweb.version>1.4</activeweb.version>
     </properties>
 
     <profiles>        
@@ -34,8 +34,7 @@
                 <jdbc.password>p@ssw0rd</jdbc.password>
 
                 <jdbc.test.url>jdbc:mysql://localhost/kitchensink_test</jdbc.test.url>
-                <jdbc.test.user>root</jdbc.test.user>
-                <jdbc.test.password>p@ssw0rd</jdbc.test.password>
+
             </properties>
         </profile>        
         <profile>
@@ -143,9 +142,6 @@
                         <phase>validate</phase>
                         <configuration>
                             <url>${jdbc.test.url}</url>
-                            <username>${jdbc.test.user}</username>
-                            <password>${jdbc.test.password}</password>
-                            <driver>${jdbc.driver}</driver>
                         </configuration>
                     </execution>
                 </executions>
@@ -214,7 +210,6 @@
             <plugin>
                 <groupId>org.javalite</groupId>
                 <artifactId>activejdbc-instrumentation</artifactId>
-                <version>${activejdbc.version}</version>
                 <executions>
                     <execution>
                         <phase>process-classes</phase>
@@ -237,23 +232,18 @@
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>activeweb</artifactId>
-            <version>1.4</version>
+            <version>${activeweb.version}</version>
         </dependency>
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>activeweb-testing</artifactId>
-            <version>1.4</version>
+            <version>${activeweb.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>activeweb-gwt</artifactId>
-            <version>1.4</version>
-        </dependency>        
-        <dependency>
-            <groupId>org.javalite</groupId>
-            <artifactId>activejdbc</artifactId>
-            <version>${activejdbc.version}</version>
+            <version>${activeweb.version}</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>

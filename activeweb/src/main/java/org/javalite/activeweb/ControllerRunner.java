@@ -41,13 +41,13 @@ class ControllerRunner {
 
     protected void run(Route route, boolean integrateViews) throws Exception {
         ControllerRegistry controllerRegistry = Context.getControllerRegistry();
-        List<ControllerFilter> globalFilters = controllerRegistry.getGlobalFilters();
+        List<ControllerRegistry.FilterList> globalFilterLists = controllerRegistry.getGlobalFilterLists();
         List<ControllerFilter> controllerFilters = controllerRegistry.getMetaData(route.getController().getClass()).getFilters();
         List<ControllerFilter> actionFilters = controllerRegistry.getMetaData(route.getController().getClass()).getFilters(route.getActionName());        
         Context.getControllerRegistry().injectFilters();
 
         try {
-            filterBefore(globalFilters, controllerFilters, actionFilters);
+            filterBefore(route, globalFilterLists, controllerFilters, actionFilters);
 
             if (Context.getControllerResponse() == null) {//execute controller... only if a filter did not respond
 
@@ -55,7 +55,7 @@ class ControllerRunner {
                 checkActionMethod(route.getController(), methodName);
 
                 //Configuration.getTemplateManager().
-                inject(route.getController());
+                injectController(route.getController());
                 if(Configuration.logRequestParams()){
                     logger.info("Executing controller: " + route.getController().getClass().getName() + "." + methodName);
                 }
@@ -67,7 +67,7 @@ class ControllerRunner {
             processFlash();
 
             //run filters in opposite order
-            filterAfter(actionFilters, controllerFilters, globalFilters);
+            filterAfter(route, globalFilterLists, controllerFilters, actionFilters);
         }
         catch(ActionNotFoundException e){
             throw e;
@@ -75,7 +75,7 @@ class ControllerRunner {
         catch (RuntimeException e) {
             Context.setControllerResponse(null);//must blow away, as this response is not valid anymore.
 
-            if (exceptionHandled(e, globalFilters, controllerFilters, actionFilters)) {
+            if (exceptionHandled(e, route, globalFilterLists, controllerFilters, actionFilters)) {
                 logger.debug("A filter has called render(..) method, proceeding to render it...");
                 renderResponse(route, integrateViews);//a filter has created an instance of a controller response, need to render it.
             }else{
@@ -84,10 +84,12 @@ class ControllerRunner {
         }
     }
 
+    /**
+     * Injects FreeMarker tags with dependencies from Guice module.
+     */
     private void injectFreemarkerTags() {
         if(!tagsInjected){
             AbstractFreeMarkerConfig freeMarkerConfig = Configuration.getFreeMarkerConfig();
-
 
             Injector injector = Context.getControllerRegistry().getInjector();
             tagsInjected = true;
@@ -95,12 +97,13 @@ class ControllerRunner {
                 return;
             }
             freeMarkerConfig.inject(injector);
-
         }
-
     }
 
-    private void inject(AppController controller) {
+    /**
+     * Injects controller with dependencies from Guice module.
+     */
+    private void injectController(AppController controller) {
         Injector injector = Context.getControllerRegistry().getInjector();
         if (injector != null) {
             injector.injectMembers(controller);
@@ -117,44 +120,15 @@ class ControllerRunner {
             Context.getHttpResponse().setCharacterEncoding(route.getController().getEncoding());
         }
 
-
-        //TODO: a bit of spaghetti code here...
         ControllerResponse controllerResponse = Context.getControllerResponse();
         String controllerLayout = route.getController().getLayout();
-        if (controllerResponse == null) {//this is implicit processing - default behavior, really
-
-            String controllerPath = Router.getControllerPath(route.getController().getClass());
-            String template =  controllerPath + "/" + route.getActionName();
-
-            RenderTemplateResponse resp = new RenderTemplateResponse(route.getController().values(), template, Context.getFormat());
-    
-            if(!Configuration.getDefaultLayout().equals(controllerLayout)){
-                resp.setLayout(controllerLayout);//could be a real layout ot null for no layout
-            }
-            if(resp.getContentType() == null){
-                resp.setContentType(route.getController().getContentType());
-            }
-
-
-
-
-            Context.setControllerResponse(resp);
-            resp.setTemplateManager(Configuration.getTemplateManager());
+        if (controllerResponse == null) {
+            createDefaultResponse(route, controllerLayout);
         } else if (controllerResponse instanceof RenderTemplateResponse) {
-            RenderTemplateResponse resp = (RenderTemplateResponse) controllerResponse;
-
-            String responseLayout = resp.getLayout();
-            if(!Configuration.getDefaultLayout().equals(controllerLayout) && Configuration.getDefaultLayout().equals(responseLayout)){
-                resp.setLayout(controllerLayout);
-            }
-            if(resp.getContentType() == null){
-                resp.setContentType(route.getController().getContentType());
-            }
-            resp.setTemplateManager(Configuration.getTemplateManager());
+            configureExplicitResponse(route, controllerLayout, (RenderTemplateResponse) controllerResponse);
         }
 
         controllerResponse = Context.getControllerResponse();
-        
         if (integrateViews && controllerResponse instanceof RenderTemplateResponse) {
             ParamCopy.copyInto((controllerResponse.values()));
             controllerResponse.process();
@@ -164,6 +138,34 @@ class ControllerRunner {
             }
             controllerResponse.process();
         }
+    }
+
+    //this is configuration of explicit response. If render() method was called in controller, we already have instance of
+    // response on current thread.
+    private void configureExplicitResponse(Route route, String controllerLayout, RenderTemplateResponse resp) throws InstantiationException, IllegalAccessException {
+            String responseLayout = resp.getLayout();
+            if(!Configuration.getDefaultLayout().equals(controllerLayout) && Configuration.getDefaultLayout().equals(responseLayout)){
+                resp.setLayout(controllerLayout);
+            }
+            if(resp.getContentType() == null){
+                resp.setContentType(route.getController().getContentType());
+            }
+            resp.setTemplateManager(Configuration.getTemplateManager());
+    }
+
+    // this is implicit processing - default behavior, really
+    private void createDefaultResponse(Route route, String controllerLayout) throws InstantiationException, IllegalAccessException {
+           String controllerPath = Router.getControllerPath(route.getController().getClass());
+            String template =  controllerPath + "/" + route.getActionName();
+            RenderTemplateResponse resp = new RenderTemplateResponse(route.getController().values(), template, Context.getFormat());
+            if(!Configuration.getDefaultLayout().equals(controllerLayout)){
+                resp.setLayout(controllerLayout);//could be a real layout ot null for no layout
+            }
+            if(resp.getContentType() == null){
+                resp.setContentType(route.getController().getContentType());
+            }
+            Context.setControllerResponse(resp);
+            resp.setTemplateManager(Configuration.getTemplateManager());
     }
 
 
@@ -195,8 +197,19 @@ class ControllerRunner {
         }
     }
 
-    private boolean exceptionHandled(Exception e, List<ControllerFilter> ... filters) throws Exception{
-        for(List<ControllerFilter> filterGroup: filters){
+    private boolean exceptionHandled(Exception e, Route route, List<ControllerRegistry.FilterList> globalFilterLists, List<ControllerFilter> ... filterGroups) throws Exception{
+
+        //first, process global filters and account for exceptions
+        for (ControllerRegistry.FilterList filterList : globalFilterLists) {
+            if (!filterList.excludesController(route.getController())) {
+                List<ControllerFilter> filters = filterList.getFilters();
+                for (ControllerFilter controllerFilter : filters) {
+                    controllerFilter.onException(e);
+                }
+            }
+        }
+
+        for(List<ControllerFilter> filterGroup: filterGroups){
             for (ControllerFilter controllerFilter : filterGroup) {
                 controllerFilter.onException(e);
             }
@@ -204,9 +217,21 @@ class ControllerRunner {
         return Context.getControllerResponse() != null;
     }
 
-    private void filterBefore(List<ControllerFilter> ... filters) {
+    private void filterBefore(Route route, List<ControllerRegistry.FilterList> globalFilterLists, List<ControllerFilter>... filterGroups) {
         try {
-            for (List<ControllerFilter> filterGroup : filters) {
+
+            //first, process global filters and account for exceptions
+            for (ControllerRegistry.FilterList filterList : globalFilterLists) {
+                if(!filterList.excludesController(route.getController())){
+                    List<ControllerFilter> filters = filterList.getFilters();
+                    for (ControllerFilter controllerFilter : filters) {
+                        controllerFilter.before();
+                    }
+                }
+            }
+
+            //then process all other filters
+            for (List<ControllerFilter> filterGroup : filterGroups) {
                 for (ControllerFilter controllerFilter : filterGroup) {
                     if (Configuration.logRequestParams()) {
                         logger.debug("Executing filter: " + controllerFilter.getClass().getName() + "#before");
@@ -222,9 +247,20 @@ class ControllerRunner {
         }
     }
 
-    private void filterAfter(List<ControllerFilter>... filters) {
+    private void filterAfter(Route route, List<ControllerRegistry.FilterList> globalFilterLists, List<ControllerFilter>... filterGroups) {
         try {
-            for (List<ControllerFilter> filterGroup : filters) {
+
+            //first, process global filters and account for exceptions
+            for (ControllerRegistry.FilterList filterList : globalFilterLists) {
+                if(!filterList.excludesController(route.getController())){
+                    List<ControllerFilter> filters = filterList.getFilters();
+                    for (ControllerFilter controllerFilter : filters) {
+                        controllerFilter.after();
+                    }
+                }
+            }
+
+            for (List<ControllerFilter> filterGroup : filterGroups) {
                 for (int i = filterGroup.size() - 1; i >= 0; i--) {
                     if(Configuration.logRequestParams()){
                         logger.debug("Executing filter: " + filterGroup.get(i).getClass().getName() + "#after" );

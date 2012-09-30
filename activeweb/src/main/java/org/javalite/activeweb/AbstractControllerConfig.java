@@ -17,6 +17,10 @@ package org.javalite.activeweb;
 
 import org.javalite.activeweb.controller_filters.ControllerFilter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * This class is to be sub-classed by the application level class called <code>app.config.AppControllerConfig</code>.
  * This class provides ways to bind filters to controllers. It has coarse grain methods for binding as well as
@@ -49,7 +53,7 @@ import org.javalite.activeweb.controller_filters.ControllerFilter;
  *
  * @author Igor Polevoy
  */
-public abstract class AbstractControllerConfig implements AppConfig {
+public abstract class AbstractControllerConfig extends AppConfig {
 
     public class FilterBuilder {
         private ControllerFilter[] filters;
@@ -117,8 +121,46 @@ public abstract class AbstractControllerConfig implements AppConfig {
      *
      * @param filters filters to be added.
      */
-    protected void addGlobalFilters(ControllerFilter... filters) {
-        Context.getControllerRegistry().addGlobalFilters(filters);
+    protected ExcludeBuilder addGlobalFilters(ControllerFilter... filters) {
+        ExcludeBuilder excludeBuilder = new ExcludeBuilder(filters);
+        excludeBuilders.add(excludeBuilder);
+        return excludeBuilder;
     }
-    
+
+    @Override
+    public void completeInit() {
+
+        for (ExcludeBuilder excludeBuilder : excludeBuilders) {
+            Context.getControllerRegistry().addGlobalFilters(excludeBuilder.getFilters(), excludeBuilder.getExcludeControllerClasses());
+        }
+    }
+
+    List<ExcludeBuilder> excludeBuilders = new ArrayList<ExcludeBuilder>();
+
+    public class ExcludeBuilder{
+
+        private List<Class<? extends AppController>> excludeControllerClasses = new ArrayList<Class<? extends AppController>>();
+        private List<ControllerFilter> filters = new ArrayList<ControllerFilter>();
+
+        public ExcludeBuilder(ControllerFilter[] filters) {
+            this.filters.addAll(Arrays.asList(filters));
+        }
+
+        /**
+         * Pass controllers to this method if you want to exclude supplied filters to be applied to them.
+         *
+         * @param excludeControllerClasses list of controllers to which these filters do not apply.
+         */
+        public void exceptFor(Class<? extends AppController>... excludeControllerClasses) {
+            this.excludeControllerClasses.addAll(Arrays.asList(excludeControllerClasses));
+        }
+
+        public List<Class<? extends AppController>> getExcludeControllerClasses() {
+            return excludeControllerClasses;
+        }
+
+        public List<ControllerFilter> getFilters() {
+            return filters;
+        }
+    }
 }

@@ -117,7 +117,7 @@ public class RequestDispatcher implements Filter {
 
     private void initAppConfig(String configClassName, AppContext context, boolean fail){
 
-        AppConfig appConfig = null;
+        AppConfig appConfig;
         try {
             Class c = Class.forName(configClassName);
             appConfig = (AppConfig) c.newInstance();
@@ -125,6 +125,7 @@ public class RequestDispatcher implements Filter {
                 appBootstrap = (Bootstrap) appConfig;
             }
             appConfig.init(context);
+            appConfig.completeInit();
         }
         catch (Throwable e) {
             if(fail){
