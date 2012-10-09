@@ -9,13 +9,17 @@
     <name>ActiveJDBC - Simple Maven Example</name>
     <packaging>jar</packaging>
 
+    <properties>
+        <activejdbc.version>1.4.5</activejdbc.version>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.6</source>
+                    <target>1.6</target>
                     <fork>true</fork>
                     <meminitial>128m</meminitial>
                     <maxmem>512m</maxmem>
@@ -25,7 +29,7 @@
             <plugin>
                 <groupId>org.javalite</groupId>
                 <artifactId>activejdbc-instrumentation</artifactId>
-                <version>1.4.3</version>
+                <version>${activejdbc.version}</version>
                 <executions>
                     <execution>
                         <phase>process-classes</phase>
@@ -48,7 +52,7 @@
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>activejdbc</artifactId>
-            <version>1.4.3</version>
+            <version>${activejdbc.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>opensymphony</groupId>
