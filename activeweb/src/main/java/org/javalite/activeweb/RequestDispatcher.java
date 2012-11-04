@@ -97,7 +97,7 @@ public class RequestDispatcher implements Filter {
             routeConfig.clear();
             routeConfig.init(context);
             router.setRoutes(routeConfig.getRoutes());
-            logger.info("Loaded routes from: " + routeConfigClassName);
+            logger.debug("Loaded routes from: " + routeConfigClassName);
         } catch (Exception e) {
             logger.info("Did not find custom routes. Going with built in defaults: " + getCauseMessage(e));
         }
