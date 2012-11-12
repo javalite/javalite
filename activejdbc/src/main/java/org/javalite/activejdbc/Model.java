@@ -196,6 +196,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
     }
 
+    /**
+     * Sets a value of an attribute.
+     *
+     * @param attribute name of attribute to set. Names not related to this model will be rejected (those not matching table columns).
+     * @param value value of attribute. Feel free to set any type, as long as it can be accepted by your driver.
+     * @return reference to self, so you can string these methods one after another.
+     */
     public Model set(String attribute, Object value) {
         if(attribute.equalsIgnoreCase("created_at")) throw new IllegalArgumentException("cannot set 'created_at'");
 
@@ -2041,7 +2048,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         boolean result;
         if (blank(getId())) {
-            result =  insert();
+            result =  doInsert();
         } else {
             result = update();
         }
@@ -2102,18 +2109,23 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     /**
      * @return attributes names that have been set by client code.
      */
-    private List<String> getValueAttributeNames() {
+    private List<String> getValueAttributeNames(boolean includeId) {
         List<String> attributeNames = new ArrayList<String>();
 
         for(String name: attributes.keySet()){
-            if (!name.equalsIgnoreCase("record_version") && !name.equalsIgnoreCase(getMetaModelLocal().getIdName()))
-                attributeNames.add(name);
+            if(includeId){
+                if (!name.equalsIgnoreCase("record_version"))
+                    attributeNames.add(name);
+            }else{
+                if (!name.equalsIgnoreCase("record_version") && !name.equalsIgnoreCase(getMetaModelLocal().getIdName()))
+                    attributeNames.add(name);
+            }
         }
         return attributeNames;
       }
 
 
-    private boolean insert() {
+    private boolean doInsert() {
 
         fireBeforeCreate(this);
         doCreatedAt();
@@ -2121,7 +2133,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         //TODO: need to invoke checkAttributes here too, and maybe rely on MetaModel for this.
 
-        List<String> valueAttributes = getValueAttributeNames();
+        List<String> valueAttributes = getValueAttributeNames(false);
 
         List<Object> values = new ArrayList<Object>();
         for (String attribute : valueAttributes) {
@@ -2150,6 +2162,46 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
     }
 
+
+    /**
+     * This method will save a model as new. In other words, it will not try to guess if this is a
+     * new record or a one that exists in the table. It does not have "belt and suspenders", it will
+     * simply generate and execute insert statement, assuming that developer knows what he/she is doing.
+     *
+     * @return true if model was saved, false if not
+     */
+    public boolean insert() {
+
+        fireBeforeCreate(this);
+        doCreatedAt();
+        doUpdatedAt();
+
+        List<String> valueAttributes = getValueAttributeNames(true);
+
+        List<Object> values = new ArrayList<Object>();
+        for (String attribute : valueAttributes) {
+            values.add(this.attributes.get(attribute));
+        }
+        String query = getMetaModelLocal().getDialect().createParametrizedInsertIdUnmanaged(getMetaModelLocal(), valueAttributes);
+        try {
+            long recordsUpdated = new DB(getMetaModelLocal().getDbName()).exec(query, values.toArray());
+            if(getMetaModelLocal().cached()){
+                QueryCache.instance().purgeTableCache(getMetaModelLocal().getTableName());
+            }
+
+            fireAfterCreate(this);
+
+            if(getMetaModelLocal().isVersioned()){
+                set("record_version", 1);
+            }
+
+            return recordsUpdated == 1;
+        } catch (DBException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new DBException(e.getMessage(), e);
+        }
+    }
 
     private void doCreatedAt() {
         if(getMetaModelLocal().hasAttribute("created_at")){

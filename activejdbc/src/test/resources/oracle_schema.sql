@@ -846,3 +846,11 @@ CREATE OR REPLACE TRIGGER nodes_trigger
         begin
 select coalesce(:new.id, nodes_seq.nextval) into :new.id from dual;
 end;
+
+
+
+-- BREAK
+CREATE TABLE apples (id NUMBER NOT NULL, apple_type VARCHAR(56) NOT NULL)
+-- BREAK
+ALTER TABLE apples ADD CONSTRAINT apples_pk PRIMARY KEY ( id );
+-- BREAK

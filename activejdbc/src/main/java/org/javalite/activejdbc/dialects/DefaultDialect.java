@@ -71,6 +71,17 @@ public class DefaultDialect {
         return query; 
     }
 
+    public String createParametrizedInsertIdUnmanaged(MetaModel mm, List<String> nonNullAttributes){
+        String query = "INSERT INTO " + mm.getTableName() + " (" + Util.join(nonNullAttributes, ", ");
+        query += mm.isVersioned()? ", " + "record_version" :"";
+        query += ") VALUES ("+ getQuestions(nonNullAttributes.size());
+        query += mm.isVersioned()? ", " + 1 :"";
+        query +=")";
+
+        return query;
+    }
+
+
     private String getQuestions(int count){
         String [] questions = new String[count];
         for(int i = 0; i < count; i++){

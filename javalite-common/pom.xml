@@ -52,6 +52,7 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.8.2</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>dom4j</groupId>

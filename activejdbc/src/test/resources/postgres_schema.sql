@@ -155,3 +155,7 @@ CREATE TABLE nodes (id serial PRIMARY KEY, name VARCHAR(56) NOT NULL, parent_id 
 
 DROP TABLE IF EXISTS images;
 CREATE TABLE images (id serial PRIMARY KEY, name VARCHAR(56) NOT NULL, content BYTEA);
+
+DROP TABLE IF EXISTS apples;
+CREATE TABLE apples (id serial PRIMARY KEY, apple_type VARCHAR(56) NOT NULL );
+

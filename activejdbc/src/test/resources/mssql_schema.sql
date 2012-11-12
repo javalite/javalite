@@ -306,3 +306,12 @@ BEGIN
     DROP TABLE [dbo].[images]
 END
 CREATE TABLE images (id INT IDENTITY PRIMARY KEY, name VARCHAR(56) NOT NULL, content VARBINARY(MAX));
+
+
+
+
+IF object_id('dbo.apples') IS NOT NULL
+BEGIN
+    DROP TABLE [dbo].[apples]
+END
+CREATE TABLE apples (id INT PRIMARY KEY, apple_type VARCHAR(56) NOT NULL, content VARBINARY(MAX));

@@ -151,3 +151,6 @@ CREATE TABLE nodes (id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR
 
 DROP TABLE IF EXISTS images;
 CREATE TABLE images (id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR(56) NOT NULL, content BLOB);
+
+DROP TABLE IF EXISTS apples;
+CREATE TABLE apples (id int(11) NOT NULL PRIMARY KEY, apple_type VARCHAR(56) NOT NULL );
