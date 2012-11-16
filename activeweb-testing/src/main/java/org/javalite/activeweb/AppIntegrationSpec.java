@@ -42,7 +42,6 @@ public abstract class AppIntegrationSpec extends IntegrationSpec{
     @Before
     public void beforeAppIntegrationSpec() throws ServletException {
         requestDispatcher.init(new MockFilterConfig());
-        requestDispatcher.initApp(context);
 
         if(!suppressDb){
             Configuration.setTesting(true);
