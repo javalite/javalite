@@ -17,7 +17,7 @@
     
     <properties>
         <gwt.version>2.3.0</gwt.version>
-        <activeweb.version>1.4</activeweb.version>
+        <activeweb.version>1.7-SNAPSHOT</activeweb.version>
     </properties>
 
     <profiles>        

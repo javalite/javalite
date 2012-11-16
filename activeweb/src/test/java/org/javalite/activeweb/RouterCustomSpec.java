@@ -42,7 +42,6 @@ public class RouterCustomSpec extends RequestSpec {
         try {
             dispatcher.setRouteConfig(routeConfig);
             dispatcher.init(config);
-            routeConfig.init(null);
             dispatcher.doFilter(request, response, filterChain);
         }catch(IllegalArgumentException e){
             throw e;
@@ -200,8 +199,8 @@ public class RouterCustomSpec extends RequestSpec {
     }
 
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldRejectRouteIfBothToMethodAndControllerSegmentUsed() throws ClassLoadException, IllegalAccessException, InstantiationException {
+    @Test
+    public void shouldRejectRouteIfBothToMethodAndControllerSegmentUsed() throws ClassLoadException, IllegalAccessException, InstantiationException, UnsupportedEncodingException {
 
         routeConfig = new AbstractRouteConfig() {
             public void init(AppContext appContext) {
@@ -212,10 +211,12 @@ public class RouterCustomSpec extends RequestSpec {
         request.setServletPath("/photos/12");
         execDispatcher();
 
+        a(response.getContentAsString()).shouldBeEqual("Cannot combine {controller} segment and .to(\"...\") method. Failed route: /photos/{controller}");
+
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldRejectRouteIfBothActionMethodAndActionSegmentUsed() throws ClassLoadException, IllegalAccessException, InstantiationException {
+    @Test
+    public void shouldRejectRouteIfBothActionMethodAndActionSegmentUsed() throws ClassLoadException, IllegalAccessException, InstantiationException, UnsupportedEncodingException {
 
         routeConfig = new AbstractRouteConfig() {
             public void init(AppContext appContext) {
@@ -225,6 +226,7 @@ public class RouterCustomSpec extends RequestSpec {
 
         request.setServletPath("/photos/12");
         execDispatcher();
+        a(response.getContentAsString()).shouldBeEqual("Cannot combine {action} segment and .action(\"...\") method. Failed route: /photos/{action}");
     }
 
 

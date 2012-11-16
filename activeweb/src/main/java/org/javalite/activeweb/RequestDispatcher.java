@@ -42,7 +42,6 @@ public class RequestDispatcher implements Filter {
     private ControllerRunner runner = new ControllerRunner();
     private AppContext appContext;
     private Bootstrap appBootstrap;
-    private Router router;
 
     public void init(FilterConfig filterConfig) throws ServletException {
         this.filterConfig = filterConfig;        
@@ -53,7 +52,6 @@ public class RequestDispatcher implements Filter {
         Context.setControllerRegistry(registry);//bootstrap below requires it
         appContext = new AppContext();
         filterConfig.getServletContext().setAttribute("appContext", appContext);
-        initApp(appContext);
 
         String exclusionsParam = filterConfig.getInitParameter("exclusions");
         if (exclusionsParam != null) {
@@ -62,8 +60,7 @@ public class RequestDispatcher implements Filter {
                 exclusions.set(i, exclusions.get(i).trim());
             }
         }
-
-        router = new Router(filterConfig.getInitParameter("root_controller"));
+        initApp(appContext);
         logger.info("ActiveWeb: starting the app in environment: " + Configuration.getEnv());
     }
 
@@ -72,37 +69,36 @@ public class RequestDispatcher implements Filter {
         //these are optional config classes:
         initAppConfig(Configuration.getControllerConfigClassName(), context, false);
         initAppConfig(Configuration.getDbConfigClassName(), context, false);
-
     }
 
     //this exists for testing only
     private AbstractRouteConfig routeConfig;
-
-    private boolean runMode = true;
+    private boolean testMode = false;
     protected void setRouteConfig(AbstractRouteConfig routeConfig) {
         this.routeConfig = routeConfig;
-        runMode = false;
+        testMode = true;
     }
 
-    protected void initRoutes(AppContext context){
-
+    private Router getRouter(AppContext context){
         String routeConfigClassName = Configuration.getRouteConfigClassName();
+        Router router = new Router(filterConfig.getInitParameter("root_controller"));
         try {
-
-            if(runMode){
+            if(!testMode){
                 Class configClass = ControllerFactory.getCompiledClass(routeConfigClassName);
                 routeConfig = (AbstractRouteConfig) configClass.newInstance();
             }
-
             routeConfig.clear();
             routeConfig.init(context);
             router.setRoutes(routeConfig.getRoutes());
             logger.debug("Loaded routes from: " + routeConfigClassName);
-        } catch (Exception e) {
-            logger.info("Did not find custom routes. Going with built in defaults: " + getCauseMessage(e));
-        }
-    }
 
+        } catch (IllegalArgumentException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.debug("Did not find custom routes. Going with built in defaults: " + getCauseMessage(e));
+        }
+        return router;
+    }
 
     //TODO: refactor to some util class. This is stolen...ehrr... borrowed from Apache ExceptionUtils
     static String getCauseMessage(Throwable throwable) {
@@ -114,9 +110,7 @@ public class RequestDispatcher implements Filter {
         return list.get(0).getMessage();
     }
 
-
     private void initAppConfig(String configClassName, AppContext context, boolean fail){
-
         AppConfig appConfig;
         try {
             Class c = Class.forName(configClassName);
@@ -170,17 +164,14 @@ public class RequestDispatcher implements Filter {
                 uri = "/";//different servlet implementations, damn.
             }
 
-            initRoutes(appContext);
-
+            Router router = getRouter(appContext);
             Route route = router.recognize(uri, HttpMethod.getMethod(request));
 
             if (route != null) {
                 Context.setRoute(route);
-
                 if (Configuration.logRequestParams()) {
                     logger.info("================ New request: " + new Date() + " ================");
                 }
-
                 runner.run(route, true);
             } else {
                 //TODO: theoretically this will never happen, because if the route was not excluded, the router.recognize() would throw some kind

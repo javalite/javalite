@@ -47,6 +47,11 @@ public class Router {
         this.rootControllerName = rootControllerName;
     }
 
+    /**
+     * Sets custom routes
+     *
+     * @param routes se of custom routes defined for app.
+     */
     public void setRoutes(List<Route> routes) {
         this.routes = routes;
     }

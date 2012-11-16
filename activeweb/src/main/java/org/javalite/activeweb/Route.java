@@ -71,7 +71,7 @@ public class Route {
     protected Route(String routeConfig) {
         String[] segmentsArr = Util.split(routeConfig, '/');
         for (String segment : segmentsArr) {
-            segments.add(new Segment(segment, routeConfig));
+            segments.add(new Segment(segment));
         }
         this.routeConfig = routeConfig;
 
@@ -259,7 +259,7 @@ public class Route {
         private String segment, userSegmentName;
         private boolean controller, action, id, user, mandatory = true, staticSegment;
 
-        Segment(String segment, String routeConfig) {
+        Segment(String segment) {
             this.segment = segment;
             controller = segment.equals("{controller}");
             action = segment.equals("{action}");

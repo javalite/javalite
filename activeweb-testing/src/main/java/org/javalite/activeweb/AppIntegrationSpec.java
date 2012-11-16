@@ -18,6 +18,9 @@ package org.javalite.activeweb;
 
 import org.junit.After;
 import org.junit.Before;
+import org.springframework.mock.web.MockFilterConfig;
+
+import javax.servlet.ServletException;
 
 /**
  *
@@ -37,7 +40,8 @@ public abstract class AppIntegrationSpec extends IntegrationSpec{
     private RequestDispatcher requestDispatcher = new RequestDispatcher();
 
     @Before
-    public void beforeAppIntegrationSpec(){
+    public void beforeAppIntegrationSpec() throws ServletException {
+        requestDispatcher.init(new MockFilterConfig());
         requestDispatcher.initApp(context);
 
         if(!suppressDb){
