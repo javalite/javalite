@@ -4,7 +4,7 @@
     <groupId>org.javalite</groupId>
     <artifactId>activeweb</artifactId>
     <packaging>jar</packaging>
-    <version>1.7-SNAPSHOT</version>
+    <version>1.7</version>
     <name>ActiveWeb - Framework</name>
     <description>Core functionality of the framework</description>
     <developers>
@@ -17,7 +17,7 @@
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>activeweb-root</artifactId>
-        <version>1.7-SNAPSHOT</version>
+        <version>1.7</version>
     </parent>
 
     <dependencies>
