@@ -353,7 +353,7 @@ public class HttpSupport {
      * Method:
      * <pre>
      * <code>
-     * redirect(app.controllers.PersonController.class,  javalite.collections.map("action", "show", "id", 123, "format", "json", "restrict", "true"));
+     * redirect(app.controllers.PersonController.class,  org.javalite.common.Collections.map("action", "show", "id", 123, "format", "json", "restrict", "true"));
      * </code>
      * </pre>
      * will generate the following URI:
