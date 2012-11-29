@@ -103,7 +103,6 @@ public class PostsController extends AppController {
 
     @POST
     public void save(){
-       boolean valid = true;
 
         Post p = new Post();
         p.fromMap(params1st());
