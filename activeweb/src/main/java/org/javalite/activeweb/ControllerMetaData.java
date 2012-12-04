@@ -15,6 +15,7 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
+import com.google.inject.Injector;
 import org.javalite.activeweb.controller_filters.ControllerFilter;
 
 import java.util.*;
@@ -28,6 +29,7 @@ class ControllerMetaData {
 
     private List<ControllerFilter> controllerFilters = new LinkedList<ControllerFilter>();
     private HashMap<String, List<ControllerFilter>> actionFilterMap = new HashMap<String, List<ControllerFilter>>();
+    private HashMap<String, List<ControllerFilter>> excludedActionFilterMap = new HashMap<String, List<ControllerFilter>>();
 
 
     void addFilters(ControllerFilter[] filters) {
@@ -38,7 +40,14 @@ class ControllerMetaData {
         controllerFilters.add(filter);
     }
 
-    
+
+    void addFiltersWithExcludedActions(ControllerFilter[] filters, String[] excludedActions) {
+
+        for (String action : excludedActions) {
+            excludedActionFilterMap.put(action, Arrays.asList(filters));
+        }
+    }
+
     void addFilters(ControllerFilter[] filters, String[] actionNames) {
         //here we need to remove filters added to this controller if we are adding these filters to actions
         // of this controller.
@@ -49,23 +58,54 @@ class ControllerMetaData {
         }
     }
 
-    /**
-     * Returns a collection of filters for this controller. The returned collection will not contain
-     * filters for specific actions, only those declared for a controller.
-     *
-     * @return list of filters in the order in which they were added.
-     */
-    List<ControllerFilter> getFilters() {
-        return Collections.unmodifiableList(controllerFilters);
+//    /**
+//     * Returns a collection of filters for this controller. The returned collection will not contain
+//     * filters for specific actions, only those declared for a controller.
+//     *
+//     * @return list of filters in the order in which they were added.
+//     */
+//    List<ControllerFilter> getFilters() {
+//        return Collections.unmodifiableList(controllerFilters);
+//    }
+
+
+    @SuppressWarnings("unchecked")
+    protected List<ControllerFilter> getFilters(String action) {
+        LinkedList result = new LinkedList();
+        result.addAll(controllerFilters);
+
+        List<ControllerFilter> actionFilters = actionFilterMap.get(action);
+        if (actionFilters != null) {
+            result.addAll(actionFilters);
+        }
+
+        List<ControllerFilter> excludedFilters = excludedActionFilterMap.get(action);
+        if (excludedFilters != null) {
+            for (ControllerFilter excludedFilter : excludedFilters) {
+                result.remove(excludedFilter);
+            }
+        }
+        return result;
     }
 
 
-    protected List<ControllerFilter> getFilters(String action) {
-        List<ControllerFilter> filters = actionFilterMap.get(action);
-        if (filters != null) {
-            return Collections.unmodifiableList(filters);
+    protected List<ControllerFilter> getFilters(){
+        List<ControllerFilter> allFilters = new LinkedList<ControllerFilter>();
+        allFilters.addAll(controllerFilters);
+        for(List<ControllerFilter> filters: actionFilterMap.values()){
+            allFilters.addAll(filters);
         }
-        return new ArrayList<ControllerFilter>();
+
+        for(List<ControllerFilter> filters: excludedActionFilterMap.values()){
+            allFilters.addAll(filters);
+        }
+        return allFilters;
+    }
+
+    protected void injectFilters(Injector injector) {
+        for (ControllerFilter controllerFilter : getFilters()) {
+            injector.injectMembers(controllerFilter);
+        }
     }
 }
 

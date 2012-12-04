@@ -42,12 +42,13 @@ class ControllerRunner {
     protected void run(Route route, boolean integrateViews) throws Exception {
         ControllerRegistry controllerRegistry = Context.getControllerRegistry();
         List<ControllerRegistry.FilterList> globalFilterLists = controllerRegistry.getGlobalFilterLists();
-        List<ControllerFilter> controllerFilters = controllerRegistry.getMetaData(route.getController().getClass()).getFilters();
-        List<ControllerFilter> actionFilters = controllerRegistry.getMetaData(route.getController().getClass()).getFilters(route.getActionName());        
-        Context.getControllerRegistry().injectFilters();
+        //List<ControllerFilter> controllerFilters = controllerRegistry.getMetaData(route.getController().getClass()).getFilters();
+        List<ControllerFilter> controllerFilters = controllerRegistry.getMetaData(route.getController().getClass()).getFilters(route.getActionName());
+
+        Context.getControllerRegistry().injectFilters(); //will execute once, really filters are persistent
 
         try {
-            filterBefore(route, globalFilterLists, controllerFilters, actionFilters);
+            filterBefore(route, globalFilterLists, controllerFilters);
 
             if (Context.getControllerResponse() == null) {//execute controller... only if a filter did not respond
 
@@ -67,7 +68,7 @@ class ControllerRunner {
             processFlash();
 
             //run filters in opposite order
-            filterAfter(route, globalFilterLists, controllerFilters, actionFilters);
+            filterAfter(route, globalFilterLists, controllerFilters);
         }
         catch(ActionNotFoundException e){
             throw e;
@@ -75,7 +76,7 @@ class ControllerRunner {
         catch (RuntimeException e) {
             Context.setControllerResponse(null);//must blow away, as this response is not valid anymore.
 
-            if (exceptionHandled(e, route, globalFilterLists, controllerFilters, actionFilters)) {
+            if (exceptionHandled(e, route, globalFilterLists, controllerFilters)) {
                 logger.debug("A filter has called render(..) method, proceeding to render it...");
                 renderResponse(route, integrateViews);//a filter has created an instance of a controller response, need to render it.
             }else{

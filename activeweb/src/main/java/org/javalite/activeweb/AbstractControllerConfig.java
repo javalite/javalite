@@ -96,6 +96,22 @@ public abstract class AbstractControllerConfig extends AppConfig {
                 Context.getControllerRegistry().getMetaData(controllerClass).addFilters(filters, actionNames);
             }
         }
+
+        /**
+         * Excludes actions from filter configuration. Opposite of {@link #forActions(String...)}.
+         *
+         * @param excludedActions list of actions for which this filter will not apply.
+         */
+        public void excludeActions(String... excludedActions) {
+            if (controllerClasses == null)
+                throw new IllegalArgumentException("controller classes not provided. Please call 'to(controllers)' before 'exceptAction(actions)'");
+
+            for (Class<? extends AppController> controllerClass : controllerClasses) {
+                Context.getControllerRegistry().getMetaData(controllerClass).addFiltersWithExcludedActions(filters, excludedActions);
+            }
+
+
+        }
     }
 
 
@@ -162,5 +178,6 @@ public abstract class AbstractControllerConfig extends AppConfig {
         public List<ControllerFilter> getFilters() {
             return filters;
         }
+
     }
 }

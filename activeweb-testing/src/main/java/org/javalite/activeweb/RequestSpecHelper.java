@@ -159,7 +159,8 @@ public class RequestSpecHelper extends SpecHelper{
         if(Context.getControllerResponse() == null){
             throw new TestException("There is no controller response, did you actually invoke a controller/action?");
         }
-        return Context.getControllerResponse().values().get(name);
+        Object val = Context.getControllerResponse().values().get(name);
+        return val == null? Context.getHttpRequest().getAttribute(name): val;
     }
 
     /**

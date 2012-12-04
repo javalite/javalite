@@ -40,10 +40,12 @@ public class ControllerMetadataSpec {
         a(filters[0]).shouldBeTheSameAs(filtersList.get(0));
         a(filters[1]).shouldBeTheSameAs(filtersList.get(1));
 
-        filters = new ControllerFilter[]{new LogFilter(), new DefFilter()};
-        cmd.addFilters(filters, new String[]{"index", "list"});
+        ControllerFilter[] filters1 = new ControllerFilter[]{new LogFilter(), new DefFilter()};
+        cmd.addFilters(filters1, new String[]{"index", "list"});
 
         a(filters[0]).shouldBeTheSameAs(cmd.getFilters("index").get(0));
         a(filters[1]).shouldBeTheSameAs(cmd.getFilters("index").get(1));
+        a(filters1[0]).shouldBeTheSameAs(cmd.getFilters("index").get(2));
+        a(filters1[1]).shouldBeTheSameAs(cmd.getFilters("index").get(3));
     }
 }

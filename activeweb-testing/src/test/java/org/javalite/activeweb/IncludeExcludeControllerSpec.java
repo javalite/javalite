@@ -8,7 +8,7 @@ import org.junit.Test;
 /**
  * @author Igor Polevoy: 9/30/12 12:18 AM
  */
-public class Issue5Spec extends AppIntegrationSpec {
+public class IncludeExcludeControllerSpec extends AppIntegrationSpec {
 
     @Before
     public void before(){
@@ -27,5 +27,15 @@ public class Issue5Spec extends AppIntegrationSpec {
     public void shouldExcludeControllersForGlobalFilter() {
         controller("exclude").get("index");
         a(responseContent()).shouldNotContain("I'm included!");
+    }
+
+
+    @Test
+    public void shouldExcludeControllerActionForGlobalFilter() {
+        controller("exclude_action").integrateViews(false).get("include");
+        a(val("the_message")).shouldContain("Whohoo!");
+
+        controller("exclude_action").integrateViews(false).get("exclude");
+        a(val("the_message")).shouldNotContain("Whohoo!");
     }
 }

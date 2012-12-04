@@ -16,7 +16,9 @@ limitations under the License.
 
 package app.config;
 
+import app.controllers.ExcludeActionController;
 import app.controllers.ExcludeController;
+import app.filters.IncludeExcludeActionFilter;
 import app.filters.IncludeExcludeFilter;
 import org.javalite.activeweb.AbstractControllerConfig;
 import org.javalite.activeweb.AppContext;
@@ -33,5 +35,9 @@ public class AppControllerConfig extends AbstractControllerConfig {
 
         //this filter will apply to the IncludeController
         addGlobalFilters(new IncludeExcludeFilter()).exceptFor(ExcludeController.class);
+
+
+        add(new IncludeExcludeActionFilter()).to(ExcludeActionController.class).excludeActions("exclude");
+
     }
 }

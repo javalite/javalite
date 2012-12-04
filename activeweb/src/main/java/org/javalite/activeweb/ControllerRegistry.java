@@ -27,6 +27,10 @@ import java.util.*;
  * @author Igor Polevoy
  */
 class ControllerRegistry {
+
+    /**
+     * key - controller class name, value ControllerMetaData.
+     */
     private Map<String, ControllerMetaData> metaDataMap = new HashMap<String, ControllerMetaData>();
     private List<FilterList> globalFilterLists = new ArrayList<FilterList>();
     private Injector injector;
@@ -79,7 +83,7 @@ class ControllerRegistry {
     }
 
 
-    public void injectFilters() {
+    protected void injectFilters() {
 
         if (!filtersInjected) {
             synchronized (token) {
@@ -93,10 +97,7 @@ class ControllerRegistry {
                     }
                     //inject specific controller filters:
                     for (String key : metaDataMap.keySet()) {
-                        ControllerMetaData controllerMetaData = metaDataMap.get(key);
-                        for (ControllerFilter filter : controllerMetaData.getFilters()) {
-                            injector.injectMembers(filter);
-                        }
+                        metaDataMap.get(key).injectFilters(injector);
                     }
                 }
                 filtersInjected = true;
@@ -104,7 +105,7 @@ class ControllerRegistry {
         }
     }
 
-    public List<String> getControllerPackages() {
+    protected List<String> getControllerPackages() {
         return controllerPackages;
     }
 
