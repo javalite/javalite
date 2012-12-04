@@ -72,24 +72,29 @@ public class RequestDispatcher implements Filter {
     }
 
     //this exists for testing only
-    private AbstractRouteConfig routeConfig;
+    private AbstractRouteConfig routeConfigTest;
     private boolean testMode = false;
     protected void setRouteConfig(AbstractRouteConfig routeConfig) {
-        this.routeConfig = routeConfig;
+        this.routeConfigTest = routeConfig;
         testMode = true;
     }
 
     private Router getRouter(AppContext context){
         String routeConfigClassName = Configuration.getRouteConfigClassName();
         Router router = new Router(filterConfig.getInitParameter("root_controller"));
+
+        AbstractRouteConfig routeConfigLocal;
+
         try {
-            if(!testMode){
+            if(testMode){
+                routeConfigLocal = routeConfigTest;
+            }else{
                 Class configClass = ControllerFactory.getCompiledClass(routeConfigClassName);
-                routeConfig = (AbstractRouteConfig) configClass.newInstance();
+                routeConfigLocal = (AbstractRouteConfig) configClass.newInstance();
             }
-            routeConfig.clear();
-            routeConfig.init(context);
-            router.setRoutes(routeConfig.getRoutes());
+            routeConfigLocal.clear();
+            routeConfigLocal.init(context);
+            router.setRoutes(routeConfigLocal.getRoutes());
             logger.debug("Loaded routes from: " + routeConfigClassName);
 
         } catch (IllegalArgumentException e) {
