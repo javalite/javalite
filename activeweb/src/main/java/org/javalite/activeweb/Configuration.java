@@ -75,8 +75,37 @@ public class Configuration {
 
     /**
      * Set to true if you want ActiveWeb to wrap the errors, such as 404, and 500 in a default layout.
-     * False will ensure that these pages will render without default layout. If you need custom dynamic layout
-     * wrapping these pages, use "@wrap" tag and conditions.
+     * False will ensure that these pages will render without default layout.
+     *
+     * <h2>System errors</h2>
+     * The following system errors are affected by this setting:
+     *
+     * <ul>
+     *     <li>CompilationException - when there are compilation errors in controller</li>
+     *     <li>ClassLoadException - failure to load a controller class for any reason </li>
+     *     <li>ActionNotFoundException - action method is not found in controller class</li>
+     *     <li>ViewMissingException - corresponding view is missing</li>
+     *     <li>ViewException - FreeMarker barfed on the view</li>
+     * </ul>
+     *
+     * If you need custom dynamic layout for error.ftl and 404.ftl, use "@wrap" tag and conditions inside the error templates.
+     *
+     * <h2>Application level</h2>
+     * This method does <em>not</em> affect application errors (exceptions thrown by your code).
+     * However, it is typical for an ActiveWeb project to define a top controller filter called CatchAllFilter and process
+     * application level exceptions in that filter:
+     * <pre>
+            package app.controllers;
+            import org.javalite.activeweb.controller_filters.HttpSupportFilter;
+            import static org.javalite.common.Collections.map;
+            public class CatchAllFilter extends HttpSupportFilter {
+                public void onException(Exception e) {
+                    render("/system/error", map("message", e.getMessage())).layout("error_layout");
+                }
+            }
+     * </pre>
+     *
+     * This way you have a complete control over how your error messages are displayed.
      *
      * @param useDefaultLayoutForErrors true to use default layout, false no not to use it.
      */
