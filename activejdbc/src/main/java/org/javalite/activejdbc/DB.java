@@ -218,17 +218,12 @@ public class DB {
                 throw new DBException("cannot close connection '" + dbName + "' because it is not available");
             }
             StatementCache.instance().cleanStatementCache(connection);
-
-            if(connection != null){
-                connection.close();
-                LogFilter.log(logger, "Closed connection: " + connection);
-                ConnectionsAccess.detach(dbName);
-            }else{
-                logger.warn("Cannot close connection if it is null");
-            }
-
+            connection.close();
+            LogFilter.log(logger, "Closed connection: " + connection);
         } catch (Exception e) {
-            logger.warn("Could not close connection: " + e);
+            logger.warn("Could not close connection! MUST INVESTIGATE POTENTIAL CONNECTION LEAK!", e);
+        }finally{
+            ConnectionsAccess.detach(dbName);// lets free the thread from connection
         }
     }
 
