@@ -679,6 +679,30 @@ public class HttpSupport {
         return params;
     }
 
+
+    /**
+     * Sets character encoding for request. Has to be called before reading any parameters of getting input
+     * stream.
+     * @param encoding encoding to be set.
+     *
+     * @throws UnsupportedEncodingException
+     */
+    protected void setRequestEncoding(String encoding) throws UnsupportedEncodingException {
+        Context.getHttpRequest().setCharacterEncoding(encoding);
+    }
+
+
+    /**
+     * Sets character encoding for response.
+     *
+     * @param encoding encoding to be set.
+     */
+    protected void setResponseEncoding(String encoding) {
+        Context.getHttpResponse().setCharacterEncoding(encoding);
+    }
+
+
+
     /**
      * Sets character encoding on the response.
      *

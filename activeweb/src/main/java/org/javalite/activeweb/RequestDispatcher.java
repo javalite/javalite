@@ -42,6 +42,7 @@ public class RequestDispatcher implements Filter {
     private ControllerRunner runner = new ControllerRunner();
     private AppContext appContext;
     private Bootstrap appBootstrap;
+    private String encoding;
 
     public void init(FilterConfig filterConfig) throws ServletException {
         this.filterConfig = filterConfig;        
@@ -61,6 +62,7 @@ public class RequestDispatcher implements Filter {
             }
         }
         initApp(appContext);
+        encoding = filterConfig.getInitParameter("encoding");
         logger.info("ActiveWeb: starting the app in environment: " + Configuration.getEnv());
     }
 
@@ -146,6 +148,12 @@ public class RequestDispatcher implements Filter {
 
             HttpServletRequest request = (HttpServletRequest) req;
             HttpServletResponse response = (HttpServletResponse) resp;
+
+            if(encoding != null){
+                logger.debug("Setting encoding: " + encoding);
+                request.setCharacterEncoding(encoding);
+                response.setCharacterEncoding(encoding);
+            }
 
             String path = request.getServletPath();
 

@@ -42,7 +42,6 @@ class ControllerRunner {
     protected void run(Route route, boolean integrateViews) throws Exception {
         ControllerRegistry controllerRegistry = Context.getControllerRegistry();
         List<ControllerRegistry.FilterList> globalFilterLists = controllerRegistry.getGlobalFilterLists();
-        //List<ControllerFilter> controllerFilters = controllerRegistry.getMetaData(route.getController().getClass()).getFilters();
         List<ControllerFilter> controllerFilters = controllerRegistry.getMetaData(route.getController().getClass()).getFilters(route.getActionName());
 
         Context.getControllerRegistry().injectFilters(); //will execute once, really filters are persistent
