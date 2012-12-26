@@ -3,7 +3,7 @@
     <groupId>org.javalite</groupId>
     <artifactId>activejdbc</artifactId>
     <packaging>jar</packaging>
-    <version>1.4.6-SNAPSHOT</version>
+    <version>1.4.6</version>
     <name>ActiveJDBC - Da Framework</name>
 
 
@@ -14,9 +14,9 @@
     </parent>
 
     <scm>
-       <connection>scm:svn:https://activejdbc.googlecode.com/svn/trunk/</connection>
-       <developerConnection>scm:svn:https://activejdbc.googlecode.com/svn/trunk/</developerConnection>
-       <url>https://activejdbc.googlecode.com/svn/trunk//</url>
+       <connection>scm:svn:https://activejdbc.googlecode.com/svn/tags/activejdbc-root-1.4.6/trunk</connection>
+       <developerConnection>scm:svn:https://activejdbc.googlecode.com/svn/tags/activejdbc-root-1.4.6/trunk</developerConnection>
+       <url>https://activejdbc.googlecode.com/svn/tags/activejdbc-root-1.4.6</url>
      </scm>
 
 
