@@ -35,7 +35,7 @@ public class ModelFinder {
     void findModels(String dbName) throws IOException, ClassNotFoundException {
 
         List<String> models = Registry.instance().getConfiguration().getModelNames(dbName);
-        if (models.size() != 0) {
+        if (models != null && models.size() != 0) {
             for (String model : models) {
                 classFound(model);
             }
