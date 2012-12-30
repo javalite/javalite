@@ -33,13 +33,12 @@ public class LogFilter {
 
     static{
         String logFlag = System.getProperty("activejdbc.log");
-        if(logFlag != null && logFlag.equals("")){
+        if (logFlag != null && logFlag.equals("")) {
             //match anything
             setLogExpression(".*");
-        }else if(logFlag != null ){//match by provided value
+        } else if (logFlag != null ) {//match by provided value
             setLogExpression(logFlag);
-        }
-        else{//match nothing
+        } else {//match nothing
             setLogExpression("a{10000000}");
         }
     }
@@ -52,19 +51,19 @@ public class LogFilter {
 
         long time = System.currentTimeMillis() - queryStartTime;
 
-        if(Registry.instance().getConfiguration().collectStatistics()){
+        if (Registry.instance().getConfiguration().collectStatistics()) {
             Registry.instance().getStatisticsQueue().enqueue(new QueryExecutionEvent(query, time));
         }
         
-        StringBuffer log =  new StringBuffer("Query: \"").append(query).append("\"");
-        if(params != null && params.length != 0)
+        StringBuilder log =  new StringBuilder("Query: \"").append(query).append("\"");
+        if (params != null && params.length != 0)
            log.append(", with parameters: ").append("<").append(Util.join(Arrays.asList(params), ">, <")).append(">");
 
         log(logger, log.append(", took: ").append(time).append(" milliseconds").toString());
     }
 
     public static void log(Logger logger, String log){
-        if(pattern.matcher(log).matches()){
+        if (pattern.matcher(log).matches()) {
            logger.info(log);
         }
     }

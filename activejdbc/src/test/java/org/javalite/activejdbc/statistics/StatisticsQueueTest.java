@@ -19,7 +19,6 @@ package org.javalite.activejdbc.statistics;
 
 import static org.javalite.test.jspec.JSpec.a;
 import org.junit.Test;
-
 import java.util.List;
 
 /**
@@ -29,24 +28,17 @@ public class StatisticsQueueTest {
 
     @Test
     public void shouldCollectAndSortStatistics(){
-
         StatisticsQueue queue = new StatisticsQueue();
-        queue.start();
 
-        for(int i = 0; i < 10; i++){
+        for (int i = 0; i < 10; i++) {
             queue.enqueue(new QueryExecutionEvent("test", 10 + i));
-        }
-
-        for(int i = 0; i < 10; i++){
             queue.enqueue(new QueryExecutionEvent("test1", 20 + i));
-        }
-
-        for(int i = 0; i < 10; i++){
             queue.enqueue(new QueryExecutionEvent("test2", 30 + i));
         }
 
-        //could be a race condition, let's wait till all messages are processed
-        try{Thread.sleep(1000);}catch(Exception e){/* ignore*/}
+        //could be a race condition, lets wait till all messages are processed
+        try { Thread.sleep(1000); } catch (Exception ignored) {}
+        queue.shutdownNow();
 
         List<QueryStats> report = queue.getReportSortedBy("avg");
 
@@ -57,7 +49,6 @@ public class StatisticsQueueTest {
         a(report.get(0).getMin()).shouldBeEqual(30);
         a(report.get(0).getMax()).shouldBeEqual(39);
 
-
         a(report.get(1).getQuery()).shouldBeEqual("test1");
         a(report.get(1).getAvg()).shouldBeEqual(25);
         a(report.get(1).getTotal()).shouldBeEqual(245);
@@ -66,15 +57,11 @@ public class StatisticsQueueTest {
         a(report.get(1).getMax()).shouldBeEqual(29);
         //TODO: add checks of all values - total, avg, count, etc.
 
-
         a(report.get(2).getQuery()).shouldBeEqual("test");
         a(report.get(2).getAvg()).shouldBeEqual(15);
         a(report.get(2).getTotal()).shouldBeEqual(145);
         a(report.get(2).getCount()).shouldBeEqual(10);
         a(report.get(2).getMin()).shouldBeEqual(10);
         a(report.get(2).getMax()).shouldBeEqual(19);
-
-        queue.stop();
-        try{Thread.sleep(1000);}catch(Exception e){/* ignore*/} //wait till the queue stops
     }
 }

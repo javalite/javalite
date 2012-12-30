@@ -19,126 +19,78 @@ package org.javalite.activejdbc.statistics;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * @author Igor Polevoy
  */
-public class StatisticsQueue implements Runnable {
-    final static Logger logger = LoggerFactory.getLogger(StatisticsQueue.class);
-    private ConcurrentLinkedQueue<QueryExecutionEvent> queue;
-    private boolean run = false;
-    private Map<String, QueryStats> queryStatsMap = new HashMap<String, QueryStats>();
+public class StatisticsQueue {
+
+    private final ExecutorService worker;
+    private final ConcurrentMap<String, QueryStats> statsByQuery = new ConcurrentHashMap<String, QueryStats>();
+
+    private static final Logger logger = LoggerFactory.getLogger(StatisticsQueue.class);
 
     public StatisticsQueue() {
-        this.queue = new ConcurrentLinkedQueue<QueryExecutionEvent>();
-    }
-
-    public void enqueue(QueryExecutionEvent event) {
-        if (!run) return;
-
-        queue.add(event);
+        worker = Executors.newFixedThreadPool(1, new ThreadFactory() {
+            public Thread newThread(Runnable runnable) {
+                Thread res = new Thread(runnable);
+                res.setDaemon(true);
+                res.setName("Statistics queue thread");
+                return res;
+            }
+        });
     }
 
     /**
-     * Stops the thread that picks events from the queue.
-     * In a web container, there needs to be a lifecycle listener that should call this method to stop the
-     * queue thread.
+     * Shutdowns StatisticsQueue completely, new StatisticsQueue should be created to start gathering statistics again
      */
-    public void stop() {
-        run = false;
+    public void shutdownNow() {
+        int notProcessed = worker.shutdownNow().size();
+        if (notProcessed != 0) {
+            logger.info("Worker exiting, " + notProcessed + " execution events remaining, time:" + System.currentTimeMillis());
+        }
     }
 
-    public void start() {
-        run = true;
-        new Thread(this).start();// this is anathema of J2EE development, but should just work.
-    }
-
-    public void reset(){
-        queryStatsMap = new HashMap<String, QueryStats>();
-    }
-
-    public void run() {
-        while (run) {
-            QueryExecutionEvent event = queue.poll();
-            if (event == null) {
-                try {Thread.sleep(500);} catch (Exception e) {}
-                continue;
+    public void enqueue(final QueryExecutionEvent event) {
+        worker.submit(new Runnable() {
+            public void run() {
+                QueryStats queryStats = statsByQuery.get(event.getQuery());
+                if (queryStats == null) {
+                    statsByQuery.put(event.getQuery(), queryStats = new QueryStats(event.getQuery()));
+                }
+                queryStats.addQueryTime(event.getTime());
             }
-            process(event);
-        }
-        logger.info("Worker exiting, " + queue.size() + " objects remaining, time:" + System.currentTimeMillis());
+        });
     }
 
-    private void process(QueryExecutionEvent event) {
-
-        QueryStats queryStats = queryStatsMap.get(event.getQuery());
-
-        if (queryStats == null) {
-            queryStats = new QueryStats(event.getQuery());
-            queryStatsMap.put(event.getQuery(), queryStats);
-        }
-        queryStats.addQueryTime(event.getTime());
-    }
-
-    public String[] getAllowedSortBys(){
-        return new String[]{"total", "avg", "min", "max", "count"};
+    public void reset() {
+        statsByQuery.clear();
     }
 
     /**
      *
-     * @param sortBy - allowed values: "total", "avg", "min", "max", "count"
-     * @return
+     * @param sortByVal - allowed values: "total", "avg", "min", "max", "count"
+     * @return  sort of query stats
      */
-    public List<QueryStats> getReportSortedBy(String sortBy) {
+    public List<QueryStats> getReportSortedBy(String sortByVal) {
+        SortBy sortBy;
+        try {
+            sortBy = SortBy.valueOf(sortByVal);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("allowed values are: " + Arrays.toString(SortBy.values()));
+        }
 
-        ArrayList<String> allowed = new ArrayList<String>(Arrays.asList(getAllowedSortBys()));
-        if (!allowed.contains(sortBy))
-            throw new IllegalArgumentException("allowed values are: " + allowed);
-
-        Comparator comparator;
-
-        if (sortBy.equals("min")) {
-            comparator = new Comparator<QueryStats>() {
-                public int compare(QueryStats o1, QueryStats o2) {
-                    return o2.getMin().compareTo(o1.getMin());
-                }
-            };
-        }else if (sortBy.equals("max")) {
-                comparator = new Comparator<QueryStats>() {
-                public int compare(QueryStats o1, QueryStats o2) {
-                    return o2.getMax().compareTo(o1.getMax());
-                }
-            };
-        }else if (sortBy.equals("total")) {
-                comparator = new Comparator<QueryStats>() {
-                public int compare(QueryStats o1, QueryStats o2) {
-                    return o2.getTotal().compareTo(o1.getTotal());
-                }
-            };
-        }else if (sortBy.equals("count")) {
-                comparator = new Comparator<QueryStats>() {
-                public int compare(QueryStats o1, QueryStats o2) {
-                    return o2.getCount().compareTo(o1.getCount());
-                }
-            };
-        }else if (sortBy.equals("avg")) {
-                comparator = new Comparator<QueryStats>() {
-                public int compare(QueryStats o1, QueryStats o2) {
-                    return o2.getAvg().compareTo(o1.getAvg());
-                }
-            };
-        }else throw new RuntimeException("this should never happen...");
-
-        return report(comparator);
-    }
-
-    private List<QueryStats> report(Comparator comparator){
-        List<QueryStats> queryStatsList = Collections.list(Collections.enumeration(queryStatsMap.values()));
-        Collections.sort(queryStatsList, comparator);
-
-        return queryStatsList;
+        List<QueryStats> res = new ArrayList<QueryStats>(statsByQuery.values());
+        Collections.sort(res, sortBy.getComparator());
+        return res;
     }
 }

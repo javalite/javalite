@@ -21,8 +21,8 @@ package org.javalite.activejdbc.statistics;
  * @author Igor Polevoy
  */
 public class QueryExecutionEvent {
-    private String query;
-    private long time;
+    private final String query;
+    private final long time;
 
     public QueryExecutionEvent(String query, long time) {
         this.query = query;

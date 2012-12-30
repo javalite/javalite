@@ -52,22 +52,21 @@ public enum Registry {
     private Set<String> initedDbs = new HashSet<String>();
 
     private Registry() {
-        if(configuration.collectStatistics()){
+        if (configuration.collectStatistics()) {
             statisticsQueue = new StatisticsQueue();
-            statisticsQueue.start();
         }
     }
 
-    public boolean initialized(){
-           return !initedDbs.isEmpty();
+    public boolean initialized() {
+        return !initedDbs.isEmpty();
     }
 
     public static Registry instance() {
         return INSTANCE;
     }
 
-    public StatisticsQueue getStatisticsQueue(){
-        if(statisticsQueue == null){
+    public StatisticsQueue getStatisticsQueue() {
+        if (statisticsQueue == null) {
             throw new InitException("cannot collect statistics if this was not configured in activejdbc.properties file. Add 'collectStatistics = true' to it.");
         }
         return statisticsQueue;
