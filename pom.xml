@@ -35,7 +35,7 @@
     </modules>
 
     <properties>
-        <activejdbc.version>1.4.4</activejdbc.version>
+        <activejdbc.version>1.4.6</activejdbc.version>
     </properties>
 
     <build>
