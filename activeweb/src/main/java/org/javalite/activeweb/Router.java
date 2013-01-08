@@ -41,7 +41,7 @@ public class Router {
     public static final String PACKAGE_SUFFIX = "package_suffix";
 
     private String rootControllerName;
-    private List<Route> routes = new ArrayList<Route>();
+    private List<RouteBuilder> routes = new ArrayList<RouteBuilder>();
 
     protected Router(String rootControllerName) {
         this.rootControllerName = rootControllerName;
@@ -52,7 +52,7 @@ public class Router {
      *
      * @param routes se of custom routes defined for app.
      */
-    public void setRoutes(List<Route> routes) {
+    public void setRoutes(List<RouteBuilder> routes) {
         this.routes = routes;
     }
 
@@ -93,9 +93,9 @@ public class Router {
 
     private Route matchCustom(String uri, HttpMethod httpMethod) throws ClassLoadException {
 
-        for (Route route : routes) {
-            if (route.matches(uri, httpMethod)) {
-                return route;
+        for (RouteBuilder builder : routes) {
+            if (builder.matches(uri, httpMethod)) {
+                return new Route(builder);
             }
         }
         return null;

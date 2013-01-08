@@ -135,8 +135,7 @@ public abstract class ViewSpec extends SpecHelper {
     protected <T extends AppController> void setCurrentController(Class<T> controllerClass){
         try{
             AppController instance = controllerClass.newInstance();
-            Context.setRestful(instance.restful());
-            Context.setControllerPath(Router.getControllerPath(controllerClass));
+            Context.setRoute(new Route(instance));
 
         }catch(Exception e){
             throw new ViewException(e);

@@ -41,13 +41,19 @@ class ParamCopy {
         copyRequestProperties(assigns);
     }
 
-
     private static void insertActiveWebParamsInto(Map assigns) {
         assigns.put("context_path", Context.getHttpRequest().getContextPath());
-        assigns.put("activeweb", map("controller", Context.getControllerPath(),
-                                      "action", Context.getActionName(),
-                                      "restful", Context.isRestful(),
-                                      "environment", Configuration.getEnv()));
+        //in some cases the Route is missing - for example, when exception happened before Router was invoked.
+        Route route = Context.getRoute();
+
+        Map params = map("environment", Configuration.getEnv());
+
+        if(route != null){
+            params.put("controller", Context.getRoute().getControllerPath());
+            params.put("action", Context.getRoute().getActionName());
+            params.put("restful", Context.getRoute().getController().restful());
+        }
+        assigns.put("activeweb", params);
     }
 
 

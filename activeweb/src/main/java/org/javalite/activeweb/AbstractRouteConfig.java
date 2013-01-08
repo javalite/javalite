@@ -8,20 +8,20 @@ import java.util.List;
  */
 public abstract class AbstractRouteConfig extends AppConfig{
 
-    private List<Route> routes = new ArrayList<Route>();
+    private List<RouteBuilder> routes = new ArrayList<RouteBuilder>();
 
 
-    public Route route(String route){
-        Route matchedRoute = new Route(route);
+    public RouteBuilder route(String route){
+        RouteBuilder matchedRoute = new RouteBuilder(route);
         routes.add(matchedRoute);
         return matchedRoute;
     }
 
-    protected List<Route> getRoutes() {
+    protected List<RouteBuilder> getRoutes() {
         return routes;
     }
 
     protected void clear(){
-        routes = new ArrayList<Route>();
+        routes = new ArrayList<RouteBuilder>();
     }
 }

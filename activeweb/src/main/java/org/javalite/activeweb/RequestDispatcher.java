@@ -132,7 +132,7 @@ public class RequestDispatcher implements Filter {
             if(fail){
                 throw new InitException("Failed to create and init a new instance of class: " + configClassName, e);
             }else{
-                logger.warn("Failed to create and init a new instance of class: " + configClassName
+                logger.debug("Failed to create and init a new instance of class: " + configClassName
                         + ", proceeding without it. " + e);
             }
         }
@@ -265,10 +265,12 @@ public class RequestDispatcher implements Filter {
                 resp.process();
             }
         }catch(Throwable t){
+
             if(t instanceof IllegalStateException){
                 logger.error("Failed to render a template: '" + template + "' because templates are rendered with Writer, but you probably already used OutputStream");
+            }else{
+                logger.error("ActiveWeb internal error: ", t);
             }
-            logger.error(t.toString(), t);
             try{
                 Context.getHttpResponse().getOutputStream().print("<div style='background-color:pink;'>internal error</div>");
             }catch(Exception ex){

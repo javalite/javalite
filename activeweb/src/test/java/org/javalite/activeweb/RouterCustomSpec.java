@@ -60,7 +60,7 @@ public class RouterCustomSpec extends RequestSpec {
 
     @Test
     public void shouldExtractUserSegmentName(){
-        Route r = new Route("");
+        RouteBuilder r = new RouteBuilder("");
         a(r.getUserSegmentName("{user_name}")).shouldBeEqual("user_name");
     }
 

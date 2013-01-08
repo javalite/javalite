@@ -95,7 +95,7 @@ public abstract class AppController extends HttpSupport {
      */
     protected RenderBuilder render(){
 
-        String template = Router.getControllerPath(getClass()) + "/" + Context.getActionName();
+        String template = Router.getControllerPath(getClass()) + "/" + Context.getRoute().getActionName();
         return super.render(template, values());
     }
 

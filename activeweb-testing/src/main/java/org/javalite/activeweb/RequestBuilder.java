@@ -342,7 +342,6 @@ public class RequestBuilder {
             //must reset these two because in tests, we can execute multiple controllers in the same test method.
             Context.setControllerResponse(null);
             Context.setHttpResponse(new MockHttpServletResponse());
-            Context.setActionName(actionName);
 
             runner.run(new Route(controller, actionName),  integrateViews);
         }catch(WebException e){

@@ -16,17 +16,16 @@ limitations under the License.
 package org.javalite.activeweb;
 
 
-import org.javalite.common.Convert;
-import org.javalite.common.Util;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.javalite.common.Convert;
+import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.URL;
-import java.security.Key;
 import java.util.*;
 
 import static java.util.Arrays.asList;
@@ -1338,5 +1337,15 @@ public class HttpSupport {
      */
     protected String format(){
         return Context.getFormat();
+    }
+
+
+    /**
+     * Returns instance of {@link Route} to be used for potential conditional logic inside controller filters.
+     *
+     * @return instance of {@link Route}
+     */
+    protected Route getRoute(){
+        return Context.getRoute();
     }
 }

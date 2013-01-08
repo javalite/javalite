@@ -30,13 +30,11 @@ class Context {
     private static ThreadLocal<HttpServletResponse> response = new ThreadLocal<HttpServletResponse>();
     private static ThreadLocal<FilterConfig> filterConfig = new ThreadLocal<FilterConfig>();
     private static ThreadLocal<ControllerResponse> controllerResponse = new ThreadLocal<ControllerResponse>();
-    private static ThreadLocal<String> actionName = new ThreadLocal<String>();
-    private static ThreadLocal<String> controllerPath = new ThreadLocal<String>();
-    private static ThreadLocal<Boolean> restful = new ThreadLocal<Boolean>();
     private static ThreadLocal<AppContext> appContext = new ThreadLocal<AppContext>();
     private static ThreadLocal<RequestContext> requestContext = new ThreadLocal<RequestContext>();
     private static ThreadLocal<String> format = new ThreadLocal<String>();
     private static ThreadLocal<String> encoding = new ThreadLocal<String>();
+    private static ThreadLocal<Route> route = new ThreadLocal<Route>();
 
 
     public static String getEncoding() {
@@ -103,21 +101,10 @@ class Context {
         controllerResponse.set(resp);
     }
 
-    static String getActionName(){
-        return actionName.get();
+    static Route getRoute(){
+        return route.get();
     }
 
-    static void setActionName(String name){
-        actionName.set(name);
-    }
-
-    static String getControllerPath(){
-        return controllerPath.get();
-    }
-
-    static void setControllerPath(String cPath){
-        controllerPath.set(cPath);
-    }
 
     static FilterConfig getFilterConfig() {
         return filterConfig.get();
@@ -125,14 +112,6 @@ class Context {
 
     static void setFilterConfig(FilterConfig config) {
         filterConfig.set(config);
-    }
-
-    static Boolean isRestful() {
-        return restful.get();
-    }
-
-    static void setRestful(Boolean restfulVal) {
-        restful.set(restfulVal);
     }
 
     static void setTLs(HttpServletRequest req, HttpServletResponse resp, FilterConfig conf,
@@ -152,9 +131,7 @@ class Context {
         if (route.getId() != null){
             getHttpRequest().setAttribute("id", route.getId());
         }
-        setControllerPath(Router.getControllerPath(route.getController().getClass()));
-        setActionName(route.getActionName());
-        setRestful(route.getController().restful());
+        Context.route.set(route);
     }
 
     static void clear() {
@@ -162,8 +139,7 @@ class Context {
         request.set(null);
         response.set(null);
         controllerResponse.set(null);
-        actionName.set(null);
-        controllerPath.set(null);
+        route.set(null);
         filterConfig.set(null);
         requestContext.set(null);
         format.set(null);
