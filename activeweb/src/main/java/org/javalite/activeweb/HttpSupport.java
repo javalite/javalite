@@ -317,7 +317,20 @@ public class HttpSupport {
     }
 
     /**
-     * Convenience method for {@link #redirect(Class, java.util.Map)}.
+     * Redirects to the same controller, and action "index". This is equivalent to
+     * <pre>
+     *     redirect(BooksController.class);
+     * </pre>
+     * given that the current controller is <code>BooksController</code>.
+     *
+     * @return {@link HttpSupport.HttpBuilder}, to accept additional information.
+     */
+    protected HttpBuilder redirect() {
+        return redirect(getRoute().getController().getClass());
+    }
+
+    /**
+     * Redirects to given controller, action "index" without any parameters.
      *
      * @param controllerClass controller class where to send redirect.
      * @return {@link HttpSupport.HttpBuilder}, to accept additional information.
