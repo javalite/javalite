@@ -30,6 +30,19 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 /**
+ * This class will collect statistics on executed queries and then can produce reports sorted by
+ * various parameters. Configuration is simple, add this line:
+ * <pre>
+ *     collectStatistics=true
+ * </pre>
+ * to the file<code>activejdbc.properties</code> on the command line.
+ * <p></p>
+ * After that, simply collect reports like this:
+ * <pre>
+ *     List<QueryStats>  totals = Registry.getStatisticsQueue().getReportSortedBy("total") {
+ * </pre>
+ *
+ *
  * @author Igor Polevoy
  */
 public class StatisticsQueue {
@@ -53,12 +66,17 @@ public class StatisticsQueue {
     /**
      * Shutdowns StatisticsQueue completely, new StatisticsQueue should be created to start gathering statistics again
      */
-    public void shutdownNow() {
+    public void stop() {
         int notProcessed = worker.shutdownNow().size();
         if (notProcessed != 0) {
             logger.info("Worker exiting, " + notProcessed + " execution events remaining, time:" + System.currentTimeMillis());
         }
     }
+
+    /**
+     * @deprecated this method is deprecated and blank - does nothing. It will be removed in future versions
+     */
+    public void run(){}
 
     public void enqueue(final QueryExecutionEvent event) {
         worker.submit(new Runnable() {
@@ -77,9 +95,10 @@ public class StatisticsQueue {
     }
 
     /**
+     * Produces a report sorted by one of the accepted value.
      *
      * @param sortByVal - allowed values: "total", "avg", "min", "max", "count"
-     * @return  sort of query stats
+     * @return  sorted list of query stats
      */
     public List<QueryStats> getReportSortedBy(String sortByVal) {
         SortBy sortBy;

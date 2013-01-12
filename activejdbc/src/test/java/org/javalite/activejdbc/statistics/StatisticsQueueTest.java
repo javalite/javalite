@@ -38,7 +38,7 @@ public class StatisticsQueueTest {
 
         //could be a race condition, lets wait till all messages are processed
         try { Thread.sleep(1000); } catch (Exception ignored) {}
-        queue.shutdownNow();
+        queue.stop();
 
         List<QueryStats> report = queue.getReportSortedBy("avg");
 
