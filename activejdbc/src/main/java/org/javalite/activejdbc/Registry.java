@@ -43,7 +43,7 @@ public enum Registry {
     INSTANCE;
 
     private final static Logger logger = LoggerFactory.getLogger(Registry.class);
-    private final static HashMap<Class, List<Validator>> validators = new HashMap<Class, List<Validator>>();
+    private final static HashMap<String, List<Validator>> validators = new HashMap<String, List<Validator>>();
     private final static HashMap<Class, List<CallbackListener>> listeners = new HashMap<Class, List<CallbackListener>>();
     private MetaModels metaModels = new MetaModels();
     private Configuration configuration = new Configuration();
@@ -414,7 +414,7 @@ public enum Registry {
         return tableName;
     }
 
-    protected List<Validator> getValidators(Class<Model> daClass) {
+    protected List<Validator> getValidators(String daClass) {
 
         //TODO: this can be optimized - cached
         List<Validator> validatorList = validators.get(daClass);
@@ -425,12 +425,17 @@ public enum Registry {
         return validatorList;
     }
 
-    public void addValidators(Class<Model> daClass, List<? extends Validator> modelValidators) {
+    @Deprecated
+    public void addValidators(Class<? extends Model> daClass, List<? extends Validator> modelValidators) {
+        getValidators(daClass.getName()).addAll(modelValidators);
+    }
+
+    public void addValidators(String daClass, List<? extends Validator> modelValidators) {
         getValidators(daClass).addAll(modelValidators);
     }
 
     public void removeValidator(Class<Model> daClass, Validator validator) {
-        getValidators(daClass).remove(validator);
+        getValidators(daClass.getName()).remove(validator);
     }
 
     /**

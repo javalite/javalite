@@ -1414,7 +1414,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     protected static NumericValidationBuilder validateNumericalityOf(String... attributes) {
-        return ValidationHelper.addNumericalityValidators(Model.<Model>getDaClass(), ModelDelegate.toLowerCase(attributes));
+        return ValidationHelper.addNumericalityValidators(getClassName(), ModelDelegate.toLowerCase(attributes));
     }
 
     /**
@@ -1424,7 +1424,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return
      */
     public static ValidationBuilder addValidator(Validator validator){
-        return ValidationHelper.addValidator(Model.<Model>getDaClass(), validator);
+        return ValidationHelper.addValidator(getClassName(), validator);
     }
 
     /**
@@ -1443,7 +1443,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     public static List<Validator> getValidators(Class<Model> daClass){
-        return Registry.instance().getValidators(daClass);
+        return Registry.instance().getValidators(daClass.getName());
     }
 
 
@@ -1455,7 +1455,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return
      */
     protected static ValidationBuilder validateRegexpOf(String attribute, String pattern) {
-        return ValidationHelper.addRegexpValidator(Model.<Model>getDaClass(), attribute.toLowerCase(), pattern);
+        return ValidationHelper.addRegexpValidator(getClassName(), attribute.toLowerCase(), pattern);
     }
 
     /**
@@ -1465,7 +1465,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return
      */
     protected static ValidationBuilder validateEmailOf(String attribute) {
-        return ValidationHelper.addEmailValidator(Model.<Model>getDaClass(), attribute.toLowerCase());
+        return ValidationHelper.addEmailValidator(getClassName(), attribute.toLowerCase());
     }
 
     /**
@@ -1478,7 +1478,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return
      */
     protected static ValidationBuilder validateRange(String attribute, Number min, Number max) {
-        return ValidationHelper.addRangevalidator(Model.<Model>getDaClass(), attribute.toLowerCase(), min, max);
+        return ValidationHelper.addRangevalidator(getClassName(), attribute.toLowerCase(), min, max);
     }
 
     /**
@@ -1488,7 +1488,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return
      */
     protected static ValidationBuilder validatePresenceOf(String... attributes) {
-        return ValidationHelper.addPresensevalidators(Model.<Model>getDaClass(), ModelDelegate.toLowerCase(attributes));
+        return ValidationHelper.addPresensevalidators(getClassName(), ModelDelegate.toLowerCase(attributes));
     }
 
     /**
@@ -1509,7 +1509,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return message passing for custom validation message.
      */
     protected static ValidationBuilder convertDate(String attributeName, String format){
-        return ValidationHelper.addDateConverter(Model.<Model>getDaClass(), attributeName, format);
+        return ValidationHelper.addDateConverter(getClassName(), attributeName, format);
     }
 
     /**
@@ -1521,7 +1521,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return message passing for custom validation message.
      */
     protected static ValidationBuilder convertTimestamp(String attributeName, String format){
-        return ValidationHelper.addTimestampConverter(Model.<Model>getDaClass(), attributeName, format);
+        return ValidationHelper.addTimestampConverter(getClassName(), attributeName, format);
     }
 
     public static boolean belongsTo(Class<? extends Model> targetClass) {
@@ -1554,7 +1554,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public void validate() {
         fireBeforeValidation(this);
         errors = new Errors();
-        List<Validator> theValidators = Registry.instance().getValidators((Class<Model>)getClass());
+        List<Validator> theValidators = Registry.instance().getValidators(getClass().getName());
         if(theValidators != null){
             for (Validator validator : theValidators) {
                 validator.validate(this);

@@ -24,12 +24,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is a helper class, only exists to pare down the Model class.
+ * This is a helper class, only exists to pare down the Model class. Method that take Class<Model> should not be called from static initializer,
+ * otherwise there is a dead-lock possibility between Registry.init() and Class.forName().
  * 
  * @author Igor Polevoy
  */
 public class ValidationHelper {
+
+    @Deprecated
     public static NumericValidationBuilder addNumericalityValidators(Class<Model> modelClass, String... attributes) {
+        return addNumericalityValidators(modelClass.getName(), attributes);
+    }
+
+    public static NumericValidationBuilder addNumericalityValidators(String modelClass, String... attributes) {
         List<NumericValidator> validators = new ArrayList<NumericValidator>();
 
         for (String attribute : attributes) {
@@ -39,29 +46,48 @@ public class ValidationHelper {
         return new NumericValidationBuilder(validators);
     }
 
+    @Deprecated
+    public static ValidationBuilder addRegexpValidator(Class<Model> modelClass, String attribute, String pattern) {
+        return addRegexpValidator(modelClass.getName(), attribute, pattern);
+    }
 
-     public static ValidationBuilder addRegexpValidator(Class<Model> modelClass, String attribute, String pattern) {
+    public static ValidationBuilder addRegexpValidator(String modelClass, String attribute, String pattern) {
         List<Validator> validators = new ArrayList<Validator>();
         validators.add(new RegexpValidator(attribute, pattern));
         Registry.instance().addValidators(modelClass, validators);
         return new ValidationBuilder(validators);
     }
 
-     public static ValidationBuilder addValidator(Class<Model> modelClass, Validator validator) {
+    @Deprecated
+    public static ValidationBuilder addValidator(Class<Model> modelClass, Validator validator) {
+        return addValidator(modelClass.getName(), validator);
+    }
+
+    public static ValidationBuilder addValidator(String modelClass, Validator validator) {
         List<Validator> validators = new ArrayList<Validator>();
         validators.add(validator);
         Registry.instance().addValidators(modelClass, validators);
         return new ValidationBuilder(validators);
     }
 
+    @Deprecated
     public static ValidationBuilder addEmailValidator(Class<Model> modelClass, String attribute) {
+        return addEmailValidator(modelClass.getName(), attribute);
+    }
+
+    public static ValidationBuilder addEmailValidator(String modelClass, String attribute) {
         List<Validator> validators = new ArrayList<Validator>();
         validators.add(new EmailValidator(attribute));
         Registry.instance().addValidators(modelClass, validators);
         return new ValidationBuilder(validators);
     }
 
+    @Deprecated
     public static ValidationBuilder addRangevalidator(Class<Model> modelClass, String attribute, Number min, Number max) {
+        return addRangevalidator(modelClass.getName(), attribute, min, max);
+    }
+
+    public static ValidationBuilder addRangevalidator(String modelClass, String attribute, Number min, Number max) {
         List<Validator> validators = new ArrayList<Validator>();
 
         validators.add(new RangeValidator(attribute, min, max));
@@ -69,7 +95,12 @@ public class ValidationHelper {
         return new ValidationBuilder(validators);
     }
 
+    @Deprecated
     public static ValidationBuilder addPresensevalidators(Class<Model> modelClass, String... attributes) {
+        return addPresensevalidators(modelClass.getName(), attributes);
+    }
+
+    public static ValidationBuilder addPresensevalidators(String modelClass, String... attributes) {
         List<Validator> validators = new ArrayList<Validator>();
 
         for (String attribute : attributes) {
@@ -79,14 +110,24 @@ public class ValidationHelper {
         return new ValidationBuilder(validators);
     }
 
-    public static ValidationBuilder addDateConverter(Class<Model> modelClass, String attributeName, String format){
+    @Deprecated
+    public static ValidationBuilder addDateConverter(Class<Model> modelClass, String attributeName, String format) {
+        return addDateConverter(modelClass.getName(), attributeName, format);
+    }
+
+    public static ValidationBuilder addDateConverter(String modelClass, String attributeName, String format) {
         List<Validator> validators = new ArrayList<Validator>();
         validators.add(new DateConverter(attributeName, format));
         Registry.instance().addValidators(modelClass, validators);
         return new ValidationBuilder(validators);
     }
 
-    public static ValidationBuilder addTimestampConverter(Class<Model> modelClass, String attributeName, String format){
+    @Deprecated
+    public static ValidationBuilder addTimestampConverter(Class<Model> modelClass, String attributeName, String format) {
+        return addTimestampConverter(modelClass.getName(), attributeName, format);
+    }
+
+    public static ValidationBuilder addTimestampConverter(String modelClass, String attributeName, String format) {
         List<Validator> validators = new ArrayList<Validator>();
         validators.add(new TimestampConverter(attributeName, format));
         Registry.instance().addValidators(modelClass, validators);
