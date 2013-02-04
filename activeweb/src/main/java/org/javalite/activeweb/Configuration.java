@@ -128,7 +128,7 @@ public class Configuration {
     
     public static String getEnv(){
         if(ENV == null){
-            ENV = System.getenv().get("ACTIVE_ENV");
+            ENV = System.getProperty("ACTIVE_ENV") == null? System.getenv().get("ACTIVE_ENV"): System.getProperty("ACTIVE_ENV");
             if(blank(ENV)){                
                 ENV = "development";
                 LOGGER.warn("Environment variable ACTIVE_ENV not provided, defaulting to '" + ENV + "'");
