@@ -37,7 +37,7 @@ import static org.javalite.common.Collections.map;
 public abstract class AppController extends HttpSupport {
     
     
-    private HashMap<String, Object> values = new HashMap<String, Object>();
+
 
     /**
      * Assigns value that will be passed into view.
@@ -48,7 +48,7 @@ public abstract class AppController extends HttpSupport {
     protected void assign(String name, Object value) {
 
         KeyWords.check(name);
-        values.put(name, value);
+        Context.getValues().put(name, value);
     }
 
     /**
@@ -63,7 +63,7 @@ public abstract class AppController extends HttpSupport {
     
 
     protected Map values() {
-        return values;
+        return Context.getValues();
     }
 
     /**

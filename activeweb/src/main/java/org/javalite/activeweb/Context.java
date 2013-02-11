@@ -18,6 +18,8 @@ package org.javalite.activeweb;
 import javax.servlet.FilterConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -35,7 +37,12 @@ class Context {
     private static ThreadLocal<String> format = new ThreadLocal<String>();
     private static ThreadLocal<String> encoding = new ThreadLocal<String>();
     private static ThreadLocal<Route> route = new ThreadLocal<Route>();
+    private static ThreadLocal<Map<String, Object>> values =new ThreadLocal<Map<String, Object>>();
 
+
+    public static Map<String, Object> getValues() {
+        return values.get();
+    }
 
     public static String getEncoding() {
         return encoding.get();
@@ -132,6 +139,8 @@ class Context {
             getHttpRequest().setAttribute("id", route.getId());
         }
         Context.route.set(route);
+        Context.values.set(new HashMap<String, Object>());
+
     }
 
     static void clear() {
@@ -145,5 +154,6 @@ class Context {
         format.set(null);
         encoding.set(null);
         appContext.set(null);
+        values.set(null);
     }
 }

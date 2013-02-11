@@ -77,7 +77,7 @@ public class HttpSupport {
      */
     protected void assign(String name, Object value) {
         KeyWords.check(name);
-        Context.getHttpRequest().setAttribute(name, value);
+        Context.getValues().put(name, value);
     }
 
     /**
