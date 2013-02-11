@@ -24,13 +24,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is a helper class, only exists to pare down the Model class. Method that take Class<Model> should not be called from static initializer,
- * otherwise there is a dead-lock possibility between Registry.init() and Class.forName().
+ * This is a helper class, only exists to pare down the Model class.
  * 
  * @author Igor Polevoy
  */
 public class ValidationHelper {
 
+    /**
+     * @deprecated  this method is deprecated and will be removed in future versions. D
+     *
+     */
     @Deprecated
     public static NumericValidationBuilder addNumericalityValidators(Class<Model> modelClass, String... attributes) {
         return addNumericalityValidators(modelClass.getName(), attributes);

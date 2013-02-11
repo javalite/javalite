@@ -64,7 +64,7 @@ public class DB {
             Connection connection = DriverManager.getConnection(url, user, password);
             ConnectionsAccess.attach(dbName, connection);
         } catch (Exception e) {
-            throw new InitException(e);
+            throw new InitException("Failed to connect to JDBC URL: " + url, e);
         }
     }
 
@@ -82,7 +82,7 @@ public class DB {
             Connection connection = DriverManager.getConnection(url, props);
             ConnectionsAccess.attach(dbName, connection);
         } catch (Exception e) {
-            throw new InitException(e);
+            throw new InitException("Failed to connect to JDBC URL: " + url, e);
         }
     }
 
@@ -100,7 +100,7 @@ public class DB {
             Connection connection = ds.getConnection();
             ConnectionsAccess.attach(dbName, connection);
         } catch (Exception e) {
-            throw new InitException(e);
+            throw new InitException("Failed to connect to JNDI name: " + jndiName, e);
         }
     }
 
@@ -136,7 +136,7 @@ public class DB {
             Connection connection = ds.getConnection();
             ConnectionsAccess.attach(dbName, connection);
         } catch (Exception e) {
-            throw new InitException(e);
+            throw new InitException("Failed to connect to JNDI name: " + jndiName, e);
         }
     }
 
@@ -203,7 +203,7 @@ public class DB {
             Connection connection = ds.getConnection();
             ConnectionsAccess.attach(dbName, connection);
         } catch (Exception e) {
-            throw new InitException(e);
+            throw new InitException("Failed to connect to JNDI name: " + jndiName, e);
         }
     }
 
