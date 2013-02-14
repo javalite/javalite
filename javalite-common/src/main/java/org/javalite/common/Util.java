@@ -104,19 +104,14 @@ public class Util {
 
 
     /**
-     * Reads contents of the input stream fully and returns it as String. Uses default encoding.
+     * Reads contents of the input stream fully and returns it as String. Sets UTF-8 encoding internally.
      *
      * @param in InputStream to read from.
      * @return contents of the input stream fully as String.
      * @throws IOException in case of IO error
      */
     public static String read(InputStream in) throws IOException {
-        if(in == null) throw new IllegalArgumentException("input stream cannot be null");
-
-        StringBuilder sb = new StringBuilder();
-        for (int x = in.read(); x != -1; x = in.read()) sb.append((char) x);
-
-        return sb.toString();
+        return read(in, "UTF-8");
     }
 
 
@@ -130,12 +125,13 @@ public class Util {
      */
     public static String read(InputStream in, String charset) throws IOException {
         if(in == null) throw new IllegalArgumentException("input stream cannot be null");
-
         InputStreamReader reader = new InputStreamReader(in, charset);
-
+        char[] buffer = new char[1024];
         StringBuilder sb = new StringBuilder();
-        for (int x = reader.read(); x != -1; x = reader.read()) sb.append((char) x);
 
+        for (int x = reader.read(buffer); x != -1; x = reader.read(buffer)) {
+            sb.append(buffer, 0, x);
+        }
         return sb.toString();
     }
 

@@ -24,6 +24,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
+import static org.javalite.common.Util.read;
+import static org.javalite.common.Util.readResource;
+
 /**
  * @author Igor Polevoy
  */
@@ -68,9 +71,16 @@ public class UtilTest extends JSpecSupport {
 
     @Test
     public void shouldReadUTF8() throws IOException {
-        String hello = "hello world";
-        ByteArrayInputStream bin = new ByteArrayInputStream(hello.getBytes());
 
-        a(Util.read(this.getClass().getResourceAsStream("/test.txt"), "UTF-8")).shouldBeEqual("чебурашка");
+        it(read(getClass().getResourceAsStream("/test.txt"), "UTF-8")).shouldBeEqual("чебурашка");
+        it(read(getClass().getResourceAsStream("/test.txt"))).shouldBeEqual("чебурашка");
+    }
+
+    @Test
+    public void shouldReadLargeUTF8() throws IOException {
+
+
+        System.out.println(readResource("/large.txt"));
+
     }
 }
