@@ -50,7 +50,6 @@ public class UtilTest extends JSpecSupport {
         a(new String(bytes)).shouldBeEqual("hello");
     }
 
-
     @Test
     public void shouldReadBytesFromResource() throws IOException {
 
@@ -65,5 +64,13 @@ public class UtilTest extends JSpecSupport {
 
         Util.saveTo("target/test.txt", bin);
         a(Util.readFile("target/test.txt")).shouldBeEqual(hello);
+    }
+
+    @Test
+    public void shouldReadUTF8() throws IOException {
+        String hello = "hello world";
+        ByteArrayInputStream bin = new ByteArrayInputStream(hello.getBytes());
+
+        a(Util.read(this.getClass().getResourceAsStream("/test.txt"), "UTF-8")).shouldBeEqual("чебурашка");
     }
 }

@@ -159,6 +159,25 @@ public abstract class Request<T extends Request> {
     }
 
     /**
+     * Fetches response content from server as String.
+     *
+     * @param encoding - name of supported charset to apply when reading data.
+     *
+     * @return response content from server as String.
+     */
+    public String text(String encoding) {
+        try {
+            connect();
+            String result = responseCode() >= 400 ? read(connection.getErrorStream()) : read(connection.getInputStream(), encoding);
+            dispose();
+            return result;
+        } catch (IOException e) {
+            throw new HttpException("Failed URL: " + url, e);
+        }
+    }
+
+
+    /**
      * This method is already called from {@link #text()} and {@link #bytes()}, you do not have to call it if you use
      * those methods.
      * <p/> 

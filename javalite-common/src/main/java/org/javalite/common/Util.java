@@ -56,6 +56,21 @@ public class Util {
     }
 
     /**
+     * Reads contents of resource fully into a string.
+     *
+     * @param resourceName resource name.
+     * @param charset name of supported charset
+     * @return entire contents of resource as string.
+     */
+    public static String readResource(String resourceName, String charset) {
+        try {
+            return read(Util.class.getResourceAsStream(resourceName), charset);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    /**
      * Reads contents of file fully and returns as string.
      *
      * @param fileName file name.
@@ -71,9 +86,25 @@ public class Util {
         }
     }
 
+    /**
+         * Reads contents of file fully and returns as string.
+         *
+         * @param fileName file name.
+         * @return contents of entire file.
+         */
+        public static String readFile(String fileName, String charset) {
+            try {
+                FileInputStream fin = new FileInputStream(fileName);
+                return read(fin, charset);
+            }
+            catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
 
     /**
-     * Reads contents of the input stream fully and returns it as String.
+     * Reads contents of the input stream fully and returns it as String. Uses default encoding.
      *
      * @param in InputStream to read from.
      * @return contents of the input stream fully as String.
@@ -84,6 +115,26 @@ public class Util {
 
         StringBuilder sb = new StringBuilder();
         for (int x = in.read(); x != -1; x = in.read()) sb.append((char) x);
+
+        return sb.toString();
+    }
+
+
+    /**
+     * Reads contents of the input stream fully and returns it as String.
+     *
+     * @param in InputStream to read from.
+     * @param charset name of supported charset to use
+     * @return contents of the input stream fully as String.
+     * @throws IOException in case of IO error
+     */
+    public static String read(InputStream in, String charset) throws IOException {
+        if(in == null) throw new IllegalArgumentException("input stream cannot be null");
+
+        InputStreamReader reader = new InputStreamReader(in, charset);
+
+        StringBuilder sb = new StringBuilder();
+        for (int x = reader.read(); x != -1; x = reader.read()) sb.append((char) x);
 
         return sb.toString();
     }
