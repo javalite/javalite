@@ -420,10 +420,12 @@ public class DB {
         Statement s = null;
         ResultSet rs = null;
         try {
+            long start = System.currentTimeMillis();
             s = connection().createStatement();
             rs = s.executeQuery(sql);
             RowProcessor p = new RowProcessor(rs, s);
             p.with(listener);
+            LogFilter.logQuery(logger, sql, null, start);
         }
         catch (Exception e) {
             throw new DBException(sql, null, e);
