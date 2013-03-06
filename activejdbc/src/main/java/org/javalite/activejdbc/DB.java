@@ -395,6 +395,7 @@ public class DB {
         ResultSet rs = null;
         try {
             ps = connection().prepareStatement(query);
+            ps.setFetchSize(Integer.MIN_VALUE);
             for (int index = 0; index < params.length; index++) {
                 Object param = params[index];
                 ps.setObject(index + 1, param);
@@ -421,6 +422,7 @@ public class DB {
         ResultSet rs = null;
         try {
             s = connection().createStatement();
+            s.setFetchSize(Integer.MIN_VALUE);
             rs = s.executeQuery(sql);
             RowProcessor p = new RowProcessor(rs, s);
             p.with(listener);
