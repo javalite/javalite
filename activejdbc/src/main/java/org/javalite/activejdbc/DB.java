@@ -391,10 +391,10 @@ public class DB {
         if(!query.toLowerCase().contains("select"))throw new IllegalArgumentException("query must be 'select' query");
 
         //TODO: cache prepared statements here too
-        PreparedStatement ps = null;
-        ResultSet rs = null;
+        PreparedStatement ps;
+        ResultSet rs;
         try {
-            ps = connection().prepareStatement(query);
+            ps = connection().prepareStatement(query, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             ps.setFetchSize(Integer.MIN_VALUE);
             for (int index = 0; index < params.length; index++) {
                 Object param = params[index];
@@ -421,7 +421,7 @@ public class DB {
         Statement s = null;
         ResultSet rs = null;
         try {
-            s = connection().createStatement();
+            s = connection().createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             s.setFetchSize(Integer.MIN_VALUE);
             rs = s.executeQuery(sql);
             RowProcessor p = new RowProcessor(rs, s);
