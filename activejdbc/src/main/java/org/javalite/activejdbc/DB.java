@@ -394,7 +394,8 @@ public class DB {
         PreparedStatement ps;
         ResultSet rs;
         try {
-            ps = connection().prepareStatement(query);
+            ps = connection().prepareStatement(query, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            ps.setFetchSize(Integer.MIN_VALUE);
             for (int index = 0; index < params.length; index++) {
                 Object param = params[index];
                 ps.setObject(index + 1, param);
@@ -420,7 +421,8 @@ public class DB {
         Statement s = null;
         ResultSet rs = null;
         try {
-            s = connection().createStatement();
+            s = connection().createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            s.setFetchSize(Integer.MIN_VALUE);
             rs = s.executeQuery(sql);
             RowProcessor p = new RowProcessor(rs, s);
             p.with(listener);
