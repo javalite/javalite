@@ -1400,11 +1400,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             subQuery = oneToManyAssociation.getFkName() + " = " + getId() + additionalCriteria;
         } else if (manyToManyAssociation != null) {
             String targetId = Registry.instance().getMetaModel(targetTable).getIdName();
+            String joinTable = manyToManyAssociation.getJoin();
 
-            subQuery = targetId + " IN ( SELECT " +
-                manyToManyAssociation.getTargetFkName() + " FROM " + manyToManyAssociation.getJoin() + " WHERE " +
-                manyToManyAssociation.getSourceFkName() + " = " + getId() + additionalCriteria + ")"   ;
-
+            String query = "SELECT " + targetTable + ".* FROM " + targetTable + ", " + joinTable +
+                " WHERE " + targetTable + "." + targetId + " = " + joinTable + "." + manyToManyAssociation.getTargetFkName() +
+                " AND " + joinTable + "." + manyToManyAssociation.getSourceFkName() + " = " + getId() + additionalCriteria;
+            return new LazyList<T>(true, Registry.instance().getMetaModel(targetTable), query, params);
         } else if (oneToManyPolymorphicAssociation != null) {
             subQuery = "parent_id = " + getId() + " AND " + " parent_type = '" + oneToManyPolymorphicAssociation.getTypeLabel() + "'" + additionalCriteria;
         } else {
