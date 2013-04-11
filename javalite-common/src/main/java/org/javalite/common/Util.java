@@ -32,11 +32,13 @@ public class Util {
      * @return entire contents of resource as byte array.
      */
     public static byte[] readResourceBytes(String resourceName) {
+        InputStream is = Util.class.getResourceAsStream(resourceName);
         try {
-            return bytes(Util.class.getResourceAsStream(resourceName));
-        }
-        catch (Exception e) {
+            return bytes(is);
+        } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
+        } finally {
+            close(is);
         }
     }
 
@@ -47,11 +49,13 @@ public class Util {
      * @return entire contents of resource as string.
      */
     public static String readResource(String resourceName) {
+        InputStream is = Util.class.getResourceAsStream(resourceName);
         try {
-            return read(Util.class.getResourceAsStream(resourceName));
-        }
-        catch (Exception e) {
+            return read(is);
+        } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
+        } finally {
+            close(is);
         }
     }
 
@@ -63,10 +67,13 @@ public class Util {
      * @return entire contents of resource as string.
      */
     public static String readResource(String resourceName, String charset) {
+        InputStream is = Util.class.getResourceAsStream(resourceName);
         try {
-            return read(Util.class.getResourceAsStream(resourceName), charset);
+            return read(is, charset);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
+        } finally {
+            close(is);
         }
     }
 
@@ -77,30 +84,43 @@ public class Util {
      * @return contents of entire file.
      */
     public static String readFile(String fileName) {
+        FileInputStream in = null;
         try {
-            FileInputStream fin = new FileInputStream(fileName);
-            return read(fin);
-        }
-        catch (Exception e) {
+            in = new FileInputStream(fileName);
+            return read(in);
+        } catch (Exception e) {
             throw new RuntimeException(e);
+        } finally {
+            close(in);
         }
     }
 
     /**
-         * Reads contents of file fully and returns as string.
-         *
-         * @param fileName file name.
-         * @return contents of entire file.
-         */
-        public static String readFile(String fileName, String charset) {
-            try {
-                FileInputStream fin = new FileInputStream(fileName);
-                return read(fin, charset);
-            }
-            catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+     * Reads contents of file fully and returns as string.
+     *
+     * @param fileName file name.
+     * @return contents of entire file.
+     */
+    public static String readFile(String fileName, String charset) {
+        FileInputStream in = null;
+        try {
+            in = new FileInputStream(fileName);
+            return read(in, charset);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            close(in);
         }
+    }
+
+    public static void close(Closeable c) {
+        try {
+            if (c != null)
+                c.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
     /**
@@ -124,7 +144,9 @@ public class Util {
      * @throws IOException in case of IO error
      */
     public static String read(InputStream in, String charset) throws IOException {
-        if(in == null) throw new IllegalArgumentException("input stream cannot be null");
+        if(in == null)
+            throw new IllegalArgumentException("input stream cannot be null");
+
         InputStreamReader reader = new InputStreamReader(in, charset);
         char[] buffer = new char[1024];
         StringBuilder sb = new StringBuilder();
@@ -144,11 +166,11 @@ public class Util {
      * @throws IOException in case of IO error
      */
     public static byte[] bytes(InputStream in) throws IOException {
-        if(in == null) throw new IllegalArgumentException("input stream cannot be null");
-
+        if(in == null)
+            throw new IllegalArgumentException("input stream cannot be null");
 
         ByteArrayOutputStream bout = new ByteArrayOutputStream(1024);
-        byte[] bytes = new byte[128];
+        byte[] bytes = new byte[1024];
 
         for (int x = in.read(bytes); x != -1; x = in.read(bytes))
             bout.write(bytes, 0, x);
@@ -164,7 +186,12 @@ public class Util {
      * @throws java.io.IOException
      */
     public static byte[] read(File file) throws IOException {
-        return bytes(new FileInputStream(file));
+        FileInputStream is = new FileInputStream(file);
+        try {
+            return bytes(is);
+        } finally {
+            close(is);
+        }
     }
 
     /**
@@ -175,12 +202,15 @@ public class Util {
      * @throws java.io.IOException in case of IO error
      */
     public static List<String> getResourceLines(String resourceName) throws IOException {
-
         List<String> lines = new ArrayList<String>();
         BufferedReader reader = new BufferedReader(new InputStreamReader(Util.class.getResourceAsStream(resourceName)));
-        String tmp;
-        while ((tmp = reader.readLine()) != null) {
-            lines.add(tmp);
+        try {
+            String tmp;
+            while ((tmp = reader.readLine()) != null) {
+                lines.add(tmp);
+            }
+        } finally {
+            close(reader);
         }
         return lines;
     }
@@ -250,19 +280,19 @@ public class Util {
      * @param in  input stream to read content from.
      */
     public static void saveTo(String path, InputStream in) throws IOException {
+        if (in == null)
+            throw new IllegalArgumentException("input stream cannot be null");
+        if (path == null)
+            throw new IllegalArgumentException("path cannot be null");
 
-        if (in == null) throw new IllegalArgumentException("input stream cannot be null");
-
-        if (path == null) throw new IllegalArgumentException("path cannot be null");
-
-        byte[] bytes = new byte[128];
-
-        FileOutputStream fout = new FileOutputStream(path);
-        for (int x = in.read(bytes); x != -1; x = in.read(bytes))
-            fout.write(bytes, 0, x);
-
-        fout.flush();
-        fout.close();
+        FileOutputStream out = new FileOutputStream(path);
+        try {
+            byte[] bytes = new byte[1024];
+            for (int x = in.read(bytes); x != -1; x = in.read(bytes))
+                out.write(bytes, 0, x);
+        } finally {
+            close(out);
+        }
     }
 
 
