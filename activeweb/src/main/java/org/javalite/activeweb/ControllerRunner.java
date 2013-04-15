@@ -51,15 +51,15 @@ class ControllerRunner {
 
             if (Context.getControllerResponse() == null) {//execute controller... only if a filter did not respond
 
-                String methodName = Inflector.camelize(route.getActionName().replace('-', '_'), false);
-                checkActionMethod(route.getController(), methodName);
+                String actionMethod = Inflector.camelize(route.getActionName().replace('-', '_'), false);
+                checkActionMethod(route.getController(), actionMethod);
 
                 //Configuration.getTemplateManager().
                 injectController(route.getController());
                 if(Configuration.logRequestParams()){
-                    logger.info("Executing controller: " + route.getController().getClass().getName() + "." + methodName);
+                    logger.info("Executing controller: " + route.getController().getClass().getName() + "." + actionMethod);
                 }
-                executeAction(route.getController(), methodName);
+                executeAction(route.getController(), actionMethod);
             }
 
             injectFreemarkerTags();
@@ -184,16 +184,10 @@ class ControllerRunner {
         }
     }
 
-    private void checkActionMethod(AppController controller, String methodName){
-
-        HttpMethod actionHttpMethod = controller.getActionHttpMethod(methodName);
-
-        String requestMethod = HttpMethod.getMethod(Context.getHttpRequest()).toString();
-        String actionMethod = actionHttpMethod.toString();
-        
-        if(!requestMethod.equalsIgnoreCase(actionMethod)){
-            throw new ControllerException("Cannot access action " + controller.getClass().getName() + "." + methodName + " with HTTP method: '" + requestMethod +
-                    "' because it is configured for method: '" + actionMethod + "'");
+    private void checkActionMethod(AppController controller, String actionMethod){
+        HttpMethod method = HttpMethod.getMethod(Context.getHttpRequest());
+        if(!controller.actionSupportsHttpMethod(actionMethod, method)){
+            throw new ControllerException("Cannot access action " + controller.getClass().getName() + "." + actionMethod + " with HTTP method: '" + method.toString() + "'");
         }
     }
 

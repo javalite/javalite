@@ -15,10 +15,7 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
-import org.javalite.activeweb.annotations.DELETE;
-import org.javalite.activeweb.annotations.GET;
-import org.javalite.activeweb.annotations.POST;
-import org.javalite.activeweb.annotations.PUT;
+import org.javalite.activeweb.annotations.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.annotation.Annotation;
@@ -27,32 +24,32 @@ import java.lang.annotation.Annotation;
  * @author Igor Polevoy
  */
 public enum HttpMethod {
-    GET, POST, PUT, DELETE;
+    GET, POST, PUT, DELETE, HEAD;
 
+    /**
+     * Detects a method from annotation
+     *
+     * @param annotation class annotation
+     * @return method instance corresponding to the annotation type.
+     */
     public static HttpMethod method(Annotation annotation){
-
         if(annotation instanceof GET){
             return GET;
-        }
-        else if(annotation instanceof POST){
+        }else if(annotation instanceof POST){
             return POST;
-        }
-        if(annotation instanceof PUT){
+        }else if(annotation instanceof PUT){
             return PUT;
-        }
-        if(annotation instanceof DELETE){
+        }else if(annotation instanceof DELETE){
             return DELETE;
-        }
-        else{
-            throw new IllegalArgumentException("allowable annotations: @GET, @POST, @PUT, @DELETE, all from 'activeweb.annotations' package.");
+        }else if (annotation instanceof HEAD) {
+            return HEAD;
+        }else{
+            throw new IllegalArgumentException("allowable annotations: @GET, @POST, @PUT, @DELETE, @HEAD, all from 'activeweb.annotations' package.");
         }
     }
 
     /**
      * Detects an HTTP method from a request.
-     *
-     * @param request
-     * @return
      */
     static HttpMethod getMethod(HttpServletRequest request){
         String methodParam = request.getParameter("_method");

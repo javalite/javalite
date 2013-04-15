@@ -344,7 +344,7 @@ public class Router {
             temp = temp.substring(pack.length() + 1);
 
         if (temp.equals("") || temp.equals(pack))
-            throw new ControllerException("You defined a controller package '" + pack + "', and this request does not specify controller name");
+            throw new ControllerException("You defined a controller package '" + pack + "', but this request does not specify controller name");
 
         return temp.split("\\.")[0];
     }

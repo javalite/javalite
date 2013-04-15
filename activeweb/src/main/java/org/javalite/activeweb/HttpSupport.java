@@ -1083,6 +1083,55 @@ public class HttpSupport {
     }
 
     /**
+     * True if this request uses HTTP GET method, false otherwise.
+     *
+     * @return True if this request uses HTTP GET method, false otherwise.
+     */
+    protected boolean isGet() {
+        return Context.getHttpRequest().getMethod().equalsIgnoreCase("get");
+    }
+
+
+    /**
+     * True if this request uses HTTP POST method, false otherwise.
+     *
+     * @return True if this request uses HTTP POST method, false otherwise.
+     */
+    protected boolean isPost() {
+        return Context.getHttpRequest().getMethod().equalsIgnoreCase("post");
+    }
+
+
+    /**
+     * True if this request uses HTTP PUT method, false otherwise.
+     *
+     * @return True if this request uses HTTP PUT method, false otherwise.
+     */
+    protected boolean isPut() {
+        return Context.getHttpRequest().getMethod().equalsIgnoreCase("put");
+    }
+
+
+    /**
+     * True if this request uses HTTP DELETE method, false otherwise.
+     *
+     * @return True if this request uses HTTP DELETE method, false otherwise.
+     */
+    protected boolean isDelete() {
+        return Context.getHttpRequest().getMethod().equalsIgnoreCase("delete");
+    }
+
+
+    /**
+     * True if this request uses HTTP HEAD method, false otherwise.
+     *
+     * @return True if this request uses HTTP HEAD method, false otherwise.
+     */
+    protected boolean isHead() {
+        return Context.getHttpRequest().getMethod().equalsIgnoreCase("head");
+    }
+
+    /**
      * Provides a context of the request - usually an app name (as seen on URL of request). Example:
      * <code>/mywebapp</code>
      *

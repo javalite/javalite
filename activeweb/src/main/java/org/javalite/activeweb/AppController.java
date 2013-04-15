@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -204,71 +205,65 @@ public abstract class AppController extends HttpSupport {
         return "text/html";
     }
 
-/**
-     * Returns HttpMethod for an action. By default if actions do not specify a method, and the controller is not
-     * {@link org.javalite.activeweb.annotations.RESTful}, then an action is open for GET requests. If a controller is
-     * {@link org.javalite.activeweb.annotations.RESTful}, then the actions will conform to the restful routes.
+    /**
+     * Checks if the action supports an HTTP method, according to its configuration.
      *
      * @param actionMethodName name of action method.
-     * @return {@link HttpMethod} this action will respond to.
+     * @param httpMethod http method
+     * @return true if supports, false if does not.
      */
-    public HttpMethod getActionHttpMethod(String actionMethodName) {
+    public boolean actionSupportsHttpMethod(String actionMethodName, HttpMethod httpMethod) {
         if (restful()) {
-            HttpMethod method = getRestfulActionMethod(actionMethodName);
-            return method != null ? method : getNonRestfulActionHttpMethod(actionMethodName);
+            return restfulActionSupportsHttpMethod(actionMethodName, httpMethod) ? true : standardActionSupportsHttpMethod(actionMethodName, httpMethod);
         } else {
-            return getNonRestfulActionHttpMethod(actionMethodName);
+            return standardActionSupportsHttpMethod(actionMethodName, httpMethod);
         }
     }
 
-    private HttpMethod getNonRestfulActionHttpMethod(String actionMethodName){
+    protected boolean standardActionSupportsHttpMethod(String actionMethodName, HttpMethod httpMethod){
         try {
-            //TODO: this is using reflection twice for the same thing within one request, refactor please
             Method method = getClass().getMethod(actionMethodName);
             Annotation[] annotations = method.getAnnotations();
 
-            if (annotations.length > 1) {
-                throw new InitException("Controller: " + getClass() + " is mis-configured. Actions cannot " +
-                        "specify more than one HTTP method. Only one of these annotations allowed on any action:" +
-                        "@GET, @POST, @PUT, @DELETE");
-            }
-
             //default behavior: GET method!
-            if (annotations.length == 0) {
-                return HttpMethod.GET;
+            if (annotations.length == 0 && httpMethod.equals(HttpMethod.GET)) {
+                return true;
             } else {
-                return HttpMethod.method(annotations[0]);
+                for (Annotation annotation : annotations) {
+
+
+                    if(HttpMethod.valueOf(annotation.annotationType().getSimpleName()).equals(httpMethod))
+                        return true;
+                }
+                return false;
             }
-        }
-        catch (NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
             throw new ActionNotFoundException(e);
         }
     }
 
-    /**
-     * @return will return null if action is none of the restful actions.
-     */
-    private HttpMethod getRestfulActionMethod(String action) {
-        if (action.equals("index")) {
-            return HttpMethod.GET;
-        } else if (action.equals("newForm")) {
-            return HttpMethod.GET;
-        } else if (action.equals("create")) {
-            return HttpMethod.POST;
-        } else if (action.equals("show")) {
-            return HttpMethod.GET;
-        } else if (action.equals("editForm")) {
-            return HttpMethod.GET;
-        } else if (action.equals("update")) {
-            return HttpMethod.PUT;
-        } else if (action.equals("destroy")) {
-            return HttpMethod.DELETE;
-        } else{
+    private boolean restfulActionSupportsHttpMethod(String action, HttpMethod httpMethod) {
+        if (action.equals("index") && httpMethod.equals(HttpMethod.GET)) {
+            return true;
+        } else if (action.equals("newForm") && httpMethod.equals(HttpMethod.GET)) {
+            return true;
+        } else if (action.equals("create") && httpMethod.equals(HttpMethod.POST)) {
+            return true;
+        } else if (action.equals("show") && httpMethod.equals(HttpMethod.GET)) {
+            return true;
+        } else if (action.equals("editForm") && httpMethod.equals(HttpMethod.GET)) {
+            return true;
+        } else if (action.equals("update") && httpMethod.equals(HttpMethod.PUT)) {
+            return true;
+        } else if (action.equals("destroy") && httpMethod.equals(HttpMethod.DELETE)) {
+            return true;
+        } else {
             logDebug("You might want to execute a non-restful action on a restful controller. It is recommended that you " +
                     "use the following methods on restful controllers: index, newForm, create, show, editForm, update, destroy");
-            return null;
+            return false;
         }
     }
+
 
 
     /**

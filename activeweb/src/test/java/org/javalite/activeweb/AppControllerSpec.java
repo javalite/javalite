@@ -32,31 +32,24 @@ public class AppControllerSpec {
     SimpleController simpleController = new SimpleController();
     RestfulController restfulController = new RestfulController();
 
-
-
     //////////////// START STANDARD ACTIONS //////////////////////////////
     @Test
     public void shouldReturnGETMethodForActionWithoutAnnotation(){
-        a(simpleController.getActionHttpMethod("index")).shouldBeEqual(HttpMethod.GET);
-        a(simpleController.getActionHttpMethod("new1")).shouldBeEqual(HttpMethod.GET);
-        a(simpleController.getActionHttpMethod("destroy")).shouldBeEqual(HttpMethod.DELETE);
-        a(simpleController.getActionHttpMethod("create")).shouldBeEqual(HttpMethod.POST);
-        a(simpleController.getActionHttpMethod("update")).shouldBeEqual(HttpMethod.PUT);
-        a(simpleController.getActionHttpMethod("destroy")).shouldBeEqual(HttpMethod.DELETE);
+        a(simpleController.actionSupportsHttpMethod("index", HttpMethod.GET)).shouldBeTrue();
+        a(simpleController.actionSupportsHttpMethod("new1",HttpMethod.GET)).shouldBeTrue();
+        a(simpleController.actionSupportsHttpMethod("destroy", HttpMethod.DELETE)).shouldBeTrue();
+        a(simpleController.actionSupportsHttpMethod("create", HttpMethod.POST)).shouldBeTrue();
+        a(simpleController.actionSupportsHttpMethod("update", HttpMethod.PUT)).shouldBeTrue();
+        a(simpleController.actionSupportsHttpMethod("destroy", HttpMethod.DELETE)).shouldBeTrue();
     }
 
-    
     @Test(expected = ActionNotFoundException.class)
     public void shouldThrowExceptionForNonExistentAction(){
-        simpleController.getActionHttpMethod("blah");
+        simpleController.actionSupportsHttpMethod("blah", HttpMethod.GET);
     }
 
-    @Test(expected = InitException.class)
-    public void shouldThrowExceptionIfMultipleAnnotationsArePresentOnOneAction(){
-        simpleController.getActionHttpMethod("list");
-    }
+
     //////////////// END STANDARD ACTIONS //////////////////////////////
-
 
     @Test
     public void shouldDetectRestfulController(){
@@ -80,16 +73,13 @@ DELETE 	/photos/:id 	        destroy         delete a specific photo
 
     @Test
     public void shouldDetectRestfulControllersIndexGET(){
-        a(restfulController.getActionHttpMethod("index")).shouldBeEqual(HttpMethod.GET);
+        a(restfulController.actionSupportsHttpMethod("index", HttpMethod.GET)).shouldBeTrue();
 
-        a(restfulController.getActionHttpMethod("newForm")).shouldBeEqual(HttpMethod.GET);
-        a(restfulController.getActionHttpMethod("create")).shouldBeEqual(HttpMethod.POST);
-        a(restfulController.getActionHttpMethod("show")).shouldBeEqual(HttpMethod.GET);
-        a(restfulController.getActionHttpMethod("editForm")).shouldBeEqual(HttpMethod.GET);
-        a(restfulController.getActionHttpMethod("update")).shouldBeEqual(HttpMethod.PUT);
-        a(restfulController.getActionHttpMethod("destroy")).shouldBeEqual(HttpMethod.DELETE);
+        a(restfulController.actionSupportsHttpMethod("newForm", HttpMethod.GET)).shouldBeTrue();
+        a(restfulController.actionSupportsHttpMethod("create", HttpMethod.POST)).shouldBeTrue();
+        a(restfulController.actionSupportsHttpMethod("show", HttpMethod.GET)).shouldBeTrue();
+        a(restfulController.actionSupportsHttpMethod("editForm", HttpMethod.GET)).shouldBeTrue();
+        a(restfulController.actionSupportsHttpMethod("update", HttpMethod.PUT)).shouldBeTrue();
+        a(restfulController.actionSupportsHttpMethod("destroy", HttpMethod.DELETE)).shouldBeTrue();
     }
-
-
-
 }
