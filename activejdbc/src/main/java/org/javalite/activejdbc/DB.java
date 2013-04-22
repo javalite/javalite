@@ -394,8 +394,7 @@ public class DB {
         PreparedStatement ps;
         ResultSet rs;
         try {
-            ps = connection().prepareStatement(query, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            ps.setFetchSize(Integer.MIN_VALUE);
+            ps = createStreamingPreparedStatement(query);
             for (int index = 0; index < params.length; index++) {
                 Object param = params[index];
                 ps.setObject(index + 1, param);
@@ -404,10 +403,20 @@ public class DB {
             rs = ps.executeQuery();
             return new RowProcessor(rs, ps);
 
-        } catch (Exception e) {throw new DBException(query, params, e);}
-
+        } catch (Exception e) { throw new DBException(query, params, e); }
     }
 
+    private PreparedStatement createStreamingPreparedStatement(String query) throws SQLException {
+        Connection conn = connection();
+        PreparedStatement res;
+        if ("mysql".equalsIgnoreCase(conn.getMetaData().getDatabaseProductName())) {
+            res = conn.prepareStatement(query, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            res.setFetchSize(Integer.MIN_VALUE);
+        } else {
+            res = conn.prepareStatement(query);
+        }
+        return res;
+    }
 
     /**
      * Executes a raw query and calls instance of <code>RowListener</code> with every row found.
@@ -421,18 +430,29 @@ public class DB {
         Statement s = null;
         ResultSet rs = null;
         try {
-            s = connection().createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            s.setFetchSize(Integer.MIN_VALUE);
+            s = createStreamingStatement();
             rs = s.executeQuery(sql);
             RowProcessor p = new RowProcessor(rs, s);
             p.with(listener);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new DBException(sql, null, e);
+        } finally {
+            try { if(rs != null) rs.close(); } catch (Exception e) {/*ignore*/}
+            try { if (s != null) s.close(); } catch (Exception e) {/*ignore*/}
         }
-        finally{try{rs.close();}catch(Exception e){/*ignore*/} try{s.close();}catch(Exception e){/*ignore*/}}
     }
 
+    private Statement createStreamingStatement() throws SQLException {
+        Connection conn = connection();
+        Statement res;
+        if ("mysql".equalsIgnoreCase(conn.getMetaData().getDatabaseProductName())) {
+            res = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            res.setFetchSize(Integer.MIN_VALUE);
+        } else {
+            res = conn.createStatement();
+        }
+        return res;
+    }
 
     /**
      * Executes DML. Use it for inserts and updates.
@@ -451,8 +471,9 @@ public class DB {
         } catch (SQLException e) {
             logger.error("Query failed: " + query, e);
             throw new DBException(query, null, e);
+        } finally {
+            try { if (s != null) s.close(); } catch (Exception e) {/*ignore*/}
         }
-        finally{try{s.close();}catch(Exception e){/*ignore*/}}
     }
 
 
@@ -482,8 +503,9 @@ public class DB {
             return count;
         } catch (Exception e) {
             throw new DBException(query, params, e);
+        } finally {
+            try { if (ps != null) ps.close(); } catch (Exception e) {/*ignore*/}
         }
-        finally{try{ps.close();}catch(Exception e){/*ignore*/}}
 
     }
 
@@ -503,7 +525,7 @@ public class DB {
             throw new IllegalArgumentException("this method is only for inserts");
 
         long start = System.currentTimeMillis();
-        PreparedStatement ps = null;
+        PreparedStatement ps;
         try {
             Connection connection = connection();
             ps = StatementCache.instance().getPreparedStatement(connection, query);
@@ -527,11 +549,12 @@ public class DB {
                 } else {
                     return -1;
                 }
-            }
-            catch(Exception e){
+            } catch (Exception e) {
                 logException("Failed to find out the auto-incremented value, returning -1, query: " + query, e);
                 return -1;
-            }finally{try{rs.close();}catch(Exception e){/*ignore*/}}
+            } finally {
+                try { if (rs != null) rs.close(); } catch (Exception e) {/*ignore*/}
+            }
         } catch (Exception e) {
             throw new DBException(query, params, e);
         }
