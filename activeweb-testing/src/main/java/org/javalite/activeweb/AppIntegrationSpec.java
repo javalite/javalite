@@ -41,10 +41,11 @@ public abstract class AppIntegrationSpec extends IntegrationSpec{
 
     @Before
     public void beforeAppIntegrationSpec() throws ServletException {
+        Configuration.setTesting(true);
+
         requestDispatcher.init(new MockFilterConfig());
 
         if(!suppressDb){
-            Configuration.setTesting(true);
             DBSpecHelper.openTestConnections();
         }
     }

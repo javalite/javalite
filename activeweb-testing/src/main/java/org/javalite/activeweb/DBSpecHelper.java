@@ -16,10 +16,6 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import org.javalite.activejdbc.DB;
-import org.javalite.activeweb.AppContext;
-import org.javalite.activeweb.Configuration;
-import org.javalite.activeweb.ConnectionSpecWrapper;
-import org.javalite.activeweb.InitException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +32,9 @@ public class DBSpecHelper {
     private static Logger logger = LoggerFactory.getLogger(DBSpecHelper.class);
 
     public static void initDBConfig() {
+
+        Configuration.setTesting(true);
+
         String dbConfigClassName = Configuration.get("dbconfig");
         try {
             Object dbconfig = Class.forName(dbConfigClassName).newInstance();
@@ -43,12 +42,10 @@ public class DBSpecHelper {
         } catch (ClassNotFoundException e) {
             logger.warn("Failed to locate class: " + dbConfigClassName + ", proceeding without it...");
 
-    } catch (Exception e) {
-        throw new RuntimeException("failed to initialize class " + dbConfigClassName
-                + " are you sure you defined this class?", e);
-    }
-
-        Configuration.setTesting(true);
+        } catch (Exception e) {
+            throw new RuntimeException("failed to initialize class " + dbConfigClassName
+                    + " are you sure you defined this class?", e);
+        }
     }
 
     public static void clearConnectionWrappers() {
