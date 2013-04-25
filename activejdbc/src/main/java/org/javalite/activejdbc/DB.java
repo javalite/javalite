@@ -386,7 +386,7 @@ public class DB {
 
         //TODO: count ? signs and number of params, throw exception if do not match
 
-        if(query.indexOf('?') != -1 && params.length == 0) throw new IllegalArgumentException("you have placeholders (?) in the query, but no arguments are passed");
+
         if(query.indexOf('?') == -1 && params.length != 0) throw new IllegalArgumentException("you passed arguments, but the query does not have placeholders: (?)");
         if(!query.toLowerCase().contains("select"))throw new IllegalArgumentException("query must be 'select' query");
 
