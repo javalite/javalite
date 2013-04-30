@@ -73,6 +73,10 @@ public class RequestDispatcher implements Filter {
         initAppConfig(Configuration.getDbConfigClassName(), context, false);
     }
 
+    public AppContext getContext() {
+        return appContext;
+    }
+
     //this exists for testing only
     private AbstractRouteConfig routeConfigTest;
     private boolean testMode = false;
@@ -91,7 +95,7 @@ public class RequestDispatcher implements Filter {
             if(testMode){
                 routeConfigLocal = routeConfigTest;
             }else{
-                Class configClass = ControllerFactory.getCompiledClass(routeConfigClassName);
+                Class configClass = DynamicClassFactory.getCompiledClass(routeConfigClassName);
                 routeConfigLocal = (AbstractRouteConfig) configClass.newInstance();
             }
             routeConfigLocal.clear();

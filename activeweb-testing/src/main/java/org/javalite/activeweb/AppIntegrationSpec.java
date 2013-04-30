@@ -36,14 +36,17 @@ import javax.servlet.ServletException;
 public abstract class AppIntegrationSpec extends IntegrationSpec{
 
     private boolean suppressDb = false;
-    private AppContext context = new AppContext();
+    private AppContext context;
     private RequestDispatcher requestDispatcher = new RequestDispatcher();
 
     @Before
     public void beforeAppIntegrationSpec() throws ServletException {
+
         Configuration.setTesting(true);
 
         requestDispatcher.init(new MockFilterConfig());
+
+        context = requestDispatcher.getContext();
 
         if(!suppressDb){
             DBSpecHelper.openTestConnections();
@@ -52,10 +55,13 @@ public abstract class AppIntegrationSpec extends IntegrationSpec{
 
     @After
     public void afterAppIntegrationSpec() {
+
         if(!suppressDb){
             DBSpecHelper.closeTestConnections();
             DBSpecHelper.clearConnectionWrappers();
         }
+
+        requestDispatcher.destroy();
     }
 
     /**
