@@ -285,7 +285,7 @@ public class RouteBuilder {
 
                 if(type == null){//in case controller not provided in config, we infer it from the segment.
                     String controllerClassName = ControllerFactory.getControllerClassName("/" + requestSegment);
-                    type = ControllerFactory.getCompiledClass(controllerClassName);
+                    type = DynamicClassFactory.getCompiledClass(controllerClassName);
                     return true;
                 }
                 return requestSegment.equals(Router.getControllerPath(type).substring(1));
