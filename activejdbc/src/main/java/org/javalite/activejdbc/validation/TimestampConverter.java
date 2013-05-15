@@ -43,7 +43,7 @@ public class TimestampConverter extends Converter{
     public void convert(Model m) {
 
         Object val = m.get(attributeName);
-        if(!Util.blank(val)){
+        if(!Util.blank(val) &&  !(val instanceof Timestamp)){
             try{
                 long time = df.parse(val.toString()).getTime();
                 Timestamp t = new Timestamp(time);

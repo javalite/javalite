@@ -42,7 +42,7 @@ public class DateConverter extends Converter{
     public void convert(Model m) {
 
         Object val = m.get(attributeName);
-        if(!Util.blank(val)){
+        if(!Util.blank(val) &&  !(val instanceof java.util.Date)){
             try{
                 long time = df.parse(val.toString()).getTime();
                 java.sql.Date d = new java.sql.Date(time);
