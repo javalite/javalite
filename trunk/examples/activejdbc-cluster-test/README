@@ -1,0 +1,6 @@
+
+There are hard-coded IP addresses in:
+* oscache.properties file.
+* ClusterTest.main()
+
+You might want to adjust them for your environment.
