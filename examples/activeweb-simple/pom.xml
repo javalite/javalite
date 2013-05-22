@@ -13,10 +13,8 @@
         <jdbc.url>jdbc:mysql://localhost/simple_development</jdbc.url>
         <jdbc.user>root</jdbc.user>
         <jdbc.password>p@ssw0rd</jdbc.password>
-
         <jdbc.test.url>jdbc:mysql://localhost/simple_test</jdbc.test.url>
-
-        <activeweb.version>1.4</activeweb.version>
+        <activeweb.version>1.9-SNAPSHOT</activeweb.version>
     </properties>
     
     <build>

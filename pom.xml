@@ -35,7 +35,7 @@
     </modules>
 
     <properties>
-        <activejdbc.version>1.4.6</activejdbc.version>
+        <activejdbc.version>1.4.8</activejdbc.version>
     </properties>
 
     <build>
@@ -97,7 +97,7 @@
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-test</artifactId>
-                <version>2.5.6</version>
+                <version>3.2.3.RELEASE</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -110,13 +110,13 @@
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-core</artifactId>
-                <version>2.5.6</version>
+                <version>3.2.3.RELEASE</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.freemarker</groupId>
                 <artifactId>freemarker</artifactId>
-                <version>2.3.16</version>
+                <version>2.3.19</version>
             </dependency>
             <dependency>
                 <groupId>dom4j</groupId>
@@ -127,7 +127,7 @@
             <dependency>
                 <groupId>jaxen</groupId>
                 <artifactId>jaxen</artifactId>
-                <version>1.1.1</version>
+                <version>1.1.4</version>
                 <scope>test</scope>
                 <exclusions>
                     <exclusion>
@@ -147,22 +147,20 @@
             <dependency>
                 <groupId>com.google.inject</groupId>
                 <artifactId>guice</artifactId>
-                <version>2.0</version>
+                <version>3.0</version>
             </dependency>
 
             <dependency>
                 <groupId>com.google.gwt</groupId>
                 <artifactId>gwt-user</artifactId>
-                <version>2.2.0</version>
+                <version>2.5.1</version>
             </dependency>
 
             <dependency>
                 <groupId>commons-fileupload</groupId>
                 <artifactId>commons-fileupload</artifactId>
-                <version>1.2.2</version>
+                <version>1.3</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-
 </project>
