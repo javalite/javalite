@@ -106,9 +106,12 @@ public class Configuration {
         return modelsMap.get(dbName);
     }
 
-
-    public boolean collectStatistics(){
+    public boolean collectStatistics() {
         return properties.getProperty("collectStatistics", "false").equals("true");
+    }
+
+    public boolean collectStatisticsOnHold() {
+        return properties.getProperty("collectStatisticsOnHold", "false").equals("true");
     }
 
     public boolean cacheEnabled(){

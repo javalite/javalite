@@ -50,9 +50,12 @@ public class StatisticsQueue {
     private final ExecutorService worker;
     private final ConcurrentMap<String, QueryStats> statsByQuery = new ConcurrentHashMap<String, QueryStats>();
 
+    private volatile boolean paused;
+
     private static final Logger logger = LoggerFactory.getLogger(StatisticsQueue.class);
 
-    public StatisticsQueue() {
+    public StatisticsQueue(boolean paused) {
+        this.paused = paused;
         worker = Executors.newFixedThreadPool(1, new ThreadFactory() {
             public Thread newThread(Runnable runnable) {
                 Thread res = new Thread(runnable);
@@ -61,6 +64,10 @@ public class StatisticsQueue {
                 return res;
             }
         });
+    }
+
+    public boolean isPaused() {
+        return paused;
     }
 
     /**
@@ -76,18 +83,24 @@ public class StatisticsQueue {
     /**
      * @deprecated this method is deprecated and blank - does nothing. It will be removed in future versions
      */
-    public void run(){}
+    public void run() {}
+
+    public void pause(boolean val) {
+        paused = val;
+    }
 
     public void enqueue(final QueryExecutionEvent event) {
-        worker.submit(new Runnable() {
-            public void run() {
-                QueryStats queryStats = statsByQuery.get(event.getQuery());
-                if (queryStats == null) {
-                    statsByQuery.put(event.getQuery(), queryStats = new QueryStats(event.getQuery()));
+        if (!paused) {
+            worker.submit(new Runnable() {
+                public void run() {
+                    QueryStats queryStats = statsByQuery.get(event.getQuery());
+                    if (queryStats == null) {
+                        statsByQuery.put(event.getQuery(), queryStats = new QueryStats(event.getQuery()));
+                    }
+                    queryStats.addQueryTime(event.getTime());
                 }
-                queryStats.addQueryTime(event.getTime());
-            }
-        });
+            });
+        }
     }
 
     public void reset() {

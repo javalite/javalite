@@ -17,19 +17,20 @@ limitations under the License.
 
 package org.javalite.activejdbc.statistics;
 
-import static org.javalite.test.jspec.JSpec.a;
 import org.junit.Test;
 import java.util.List;
+
+import static org.javalite.test.jspec.JSpec.a;
 
 /**
  * @author Igor Polevoy
  */
 public class StatisticsQueueTest {
 
-    @Test
-    public void shouldCollectAndSortStatistics(){
-        StatisticsQueue queue = new StatisticsQueue();
+    private static StatisticsQueue queue = new StatisticsQueue(false);
 
+    @Test
+    public void shouldCollectAndSortStatistics() {
         for (int i = 0; i < 10; i++) {
             queue.enqueue(new QueryExecutionEvent("test", 10 + i));
             queue.enqueue(new QueryExecutionEvent("test1", 20 + i));
@@ -38,7 +39,6 @@ public class StatisticsQueueTest {
 
         //could be a race condition, lets wait till all messages are processed
         try { Thread.sleep(1000); } catch (Exception ignored) {}
-        queue.stop();
 
         List<QueryStats> report = queue.getReportSortedBy("avg");
 
@@ -63,5 +63,15 @@ public class StatisticsQueueTest {
         a(report.get(2).getCount()).shouldBeEqual(10);
         a(report.get(2).getMin()).shouldBeEqual(10);
         a(report.get(2).getMax()).shouldBeEqual(19);
+    }
+
+    @Test
+    public void shouldPause() {
+        int reportSize = queue.getReportSortedBy("avg").size();
+        queue.pause(true);
+        queue.enqueue(new QueryExecutionEvent("QUERY", 1));
+        //could be a race condition, lets wait till all messages are processed
+        try { Thread.sleep(100); } catch (Exception ignored) {}
+        a(queue.getReportSortedBy("avg").size()).shouldBeEqual(reportSize);
     }
 }

@@ -53,7 +53,7 @@ public enum Registry {
 
     private Registry() {
         if (configuration.collectStatistics()) {
-            statisticsQueue = new StatisticsQueue();
+            statisticsQueue = new StatisticsQueue(configuration.collectStatisticsOnHold());
         }
     }
 
