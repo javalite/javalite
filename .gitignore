@@ -1,0 +1,16 @@
+*.iml
+*.iws
+*.ipr
+target
+.idea/
+./examples/ant-example/TEST-activejdbc.ant.example.EmployeeSpec.txt
+./examples/ant-example/TEST-./javalite-common/target
+./examples/simple-example/target
+./activejdbc/target
+./activejdbc-instrumentation/target
+./activejdbc.ant.example.EmployeeSpec.txt
+./examples/ant-example/build/
+./examples/ant-example/dist/
+./examples/standalone-example/classes/
+
+
