@@ -1,4 +1,4 @@
-activejdbc
+ActiveJDBC &mdash; ActiveRecord for Java
 ==========
 
 
