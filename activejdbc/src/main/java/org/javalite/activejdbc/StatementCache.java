@@ -19,29 +19,26 @@ package org.javalite.activejdbc;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * @author Igor Polevoy
  */
 class StatementCache {
 
-    private static StatementCache  instance = new StatementCache();
-    private StatementCache (){}
+    private static final StatementCache instance = new StatementCache();
+    static StatementCache instance() { return instance; }
 
-    static StatementCache instance(){return instance;}
+    private ConcurrentMap<Connection, Map<String, PreparedStatement>> statementCache = new ConcurrentHashMap<Connection, Map<String, PreparedStatement>>();
 
-    private HashMap<Connection, HashMap<String, PreparedStatement>> statementCache = new HashMap<Connection, HashMap<String, PreparedStatement>>();
-
-    PreparedStatement getPreparedStatement(Connection connection, String query) throws SQLException {
-
+    PreparedStatement getPreparedStatement(Connection connection, String query) {
         if (!statementCache.containsKey(connection)) {
-            statementCache.put(connection, new HashMap<String, PreparedStatement>());
+            statementCache.putIfAbsent(connection, new HashMap<String, PreparedStatement>());
         }
-
-        HashMap<String, PreparedStatement> preparedStatementMap = statementCache.get(connection);
-        return preparedStatementMap.get(query);
+        return statementCache.get(connection).get(query);
     }
 
     public void cache(Connection connection, String query, PreparedStatement ps) {
