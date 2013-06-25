@@ -753,10 +753,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         sw.write(indent + "{" + (pretty ? "" + indent : ""));
 
-        if(attrList.size() == 0){
-            sw.write("\"model_class\":\"" + getClass().getName() + "\",");
-        }
-
         List<String> attributeStrings = new ArrayList<String>();
 
         if (attrList.size() == 0) {
