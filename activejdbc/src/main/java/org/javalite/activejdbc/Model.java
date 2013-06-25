@@ -748,8 +748,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     private static DateFormat isoDateFormater;
     static {
-    	isoDateFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
-    	isoDateFormater.setTimeZone(TimeZone.getTimeZone("UTC"));
+        isoDateFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+        isoDateFormater.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
     protected  String toJsonP(boolean pretty, String indent, String... attrs) {
         Collection<String> attrList = Arrays.asList(attrs);
@@ -784,7 +784,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                       .replaceAll("\t", "\\\\t")      // \t
                       + "\"";
             }
-            attributeStrings.add((pretty ? "\n  " + indent : "") + "\"" + name + "\":" + val + "");
+            attributeStrings.add((pretty ? "\n  " + indent : "") + "\"" + name + "\":" + val);
         }
 
         sw.write(Util.join(attributeStrings, ","));
