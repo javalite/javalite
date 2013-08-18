@@ -272,16 +272,33 @@ public enum Registry {
     private Map<String, ColumnMetadata> fetchMetaParams(String table, String dbName) throws SQLException {
         Connection con = ConnectionsAccess.getConnection(dbName);
 
-        String schema = System.getProperty("activejdbc." + dbName + ".schema");
+      /*
+       * Valid table name format: tablename or schemanae.tablename
+       */
+        String[] vals = table.split("\\.");
+        String schema = null;
+        String tableName = null;
 
-        ResultSet rs = con.getMetaData().getColumns(null, schema, table, null);
+        if(vals.length == 1) {
+            tableName = vals[0];
+        } else if (vals.length == 2) {
+            schema = vals[0];
+            tableName = vals[1];
+            if (schema.length() == 0 || tableName.length() == 0) {
+                throw new DBException("invalid table name : " + table);
+            }
+        } else {
+            throw new DBException("invalid table name: " + table);
+        }
+
+        ResultSet rs = con.getMetaData().getColumns(null, schema, tableName, null);
         String dbProduct = con.getMetaData().getDatabaseProductName().toLowerCase();
         Map<String, ColumnMetadata> columns = getColumns(rs, dbProduct);
         rs.close();
 
         //try upper case table name - Oracle uses upper case
         if (columns.size() == 0) {
-            rs = con.getMetaData().getColumns(null, schema, table.toUpperCase(), null);
+            rs = con.getMetaData().getColumns(null, schema, tableName.toUpperCase(), null);
             dbProduct = con.getMetaData().getDatabaseProductName().toLowerCase();
             columns = getColumns(rs, dbProduct);
             rs.close();
@@ -289,7 +306,7 @@ public enum Registry {
 
         //if upper case not found, try lower case.
         if(columns.size() == 0){
-            rs = con.getMetaData().getColumns(null, schema, table.toLowerCase(), null);
+            rs = con.getMetaData().getColumns(null, schema, tableName.toLowerCase(), null);
             columns = getColumns(rs, dbProduct);
             rs.close();
         }
