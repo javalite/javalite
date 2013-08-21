@@ -28,6 +28,8 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.sql.Clob;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Collections;
 
@@ -744,34 +746,47 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return toJsonP(pretty, "", attrs);
     }
 
+    private static DateFormat isoDateFormater;
+    static {
+        isoDateFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+        isoDateFormater.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
     protected  String toJsonP(boolean pretty, String indent, String... attrs) {
-
-        List<String> attrList = Arrays.asList(attrs);
-        Collections.sort(attrList);
+        Collection<String> attrList = Arrays.asList(attrs);
 
         StringWriter sw = new StringWriter();
-
         sw.write(indent + "{" + (pretty ? "" + indent : ""));
-
-        if(attrList.size() == 0){
-            sw.write("\"model_class\":\"" + getClass().getName() + "\",");
-        }
 
         List<String> attributeStrings = new ArrayList<String>();
 
         if (attrList.size() == 0) {
-            for (String name : attributes.keySet()) {
-                String val = getString(name);
-                val = val == null ? val : val.replaceAll("\"", "\\\\\"");
-                attributeStrings.add((pretty ? "\n  " + indent : "") + "\"" + name + "\":\"" + val + "\"");
-            }
-        } else {
-            for (String name : attrList) {
-                String val = getString(name);
-                val = val == null ? val : val.replaceAll("\"", "\\\\\"");
-                attributeStrings.add((pretty ? "\n  " + indent : "") + "\"" + name + "\":\"" + val + "\"");
-            }
+            attrList = attributes.keySet();
         }
+
+        for (String name : attrList) {
+            Object v = get(name);
+            String val = null;
+            if (v == null) {
+                val = "null";
+            } else if (v instanceof Number || v instanceof Boolean) {
+                val = v.toString();
+            } else if (v instanceof Date) {
+                val = "\"" + isoDateFormater.format((Date) v) + "\"";
+            } else {
+                val = "\"" + v.toString()
+                      .replaceAll("\\\\", "\\\\\\\\") // \
+                      .replaceAll("\"", "\\\\\"")     // "
+                      .replaceAll("/", "\\\\/")       // /
+                      .replaceAll("\b", "\\\\b")      // \b
+                      .replaceAll("\f", "\\\\f")      // \f
+                      .replaceAll("\n", "\\\\n")      // \n
+                      .replaceAll("\r", "\\\\r")      // \r
+                      .replaceAll("\t", "\\\\t")      // \t
+                      + "\"";
+            }
+            attributeStrings.add((pretty ? "\n  " + indent : "") + "\"" + name + "\":" + val);
+        }
+
         sw.write(Util.join(attributeStrings, ","));
 
         if (cachedChildren != null && cachedChildren.size() > 0) {
