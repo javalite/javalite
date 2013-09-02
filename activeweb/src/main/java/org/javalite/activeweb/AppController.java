@@ -22,11 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
-
-import static org.javalite.common.Collections.map;
 
 
 /**
@@ -144,44 +140,6 @@ public abstract class AppController extends HttpSupport {
         return Util.bytes(Context.getHttpRequest().getInputStream());
     }
 
-
-    /**
-     * Convenience method, takes in a map of values to flash.
-     *
-     * @see #flash(String, Object)
-     *
-     * @param values values to flash.
-     */
-    protected void flash(Map values){
-        for(Object key:values.keySet() ){
-            flash(key.toString(), values.get(key));
-        }
-    }
-
-    /**
-     * Convenience method, takes in a vararg of values to flash.
-     * Number of values must be even.
-     *
-     * @see #flash(String, Object)
-     * @param values values to flash.
-     */
-    protected void flash(Object ... values){
-        flash(map(values));
-    }
-
-    /**
-     * Sends value to flash. Flash survives one more request.  Using flash is typical
-     * for POST/GET pattern,
-     *
-     * @param name name of value to flash
-     * @param value value to live for one more request in curent session.
-     */
-    protected void flash(String name, Object value) {
-        if (session().get("flasher") == null) {
-            session().put("flasher", new HashMap());
-        }
-        ((Map) session().get("flasher")).put(name, value);
-    }
 
     /**
      * Returns a name for a default layout as provided in  <code>activeweb_defaults.properties</code> file.
