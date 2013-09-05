@@ -270,6 +270,13 @@ public class HttpSupport {
      * @return instance of {@link HttpSupport.HttpBuilder} to accept additional information.
      */
     protected HttpBuilder redirect(String path) {
+
+        //TODO shouldn't this have the same code?
+        //But I dont understand this method well enough to write it
+        //Is this supposed to do a relative redirect?
+        // The spec isn't very clear.. see my additional notes there.
+
+
         RedirectResponse resp = new RedirectResponse(path);
         Context.setControllerResponse(resp);
         return new HttpBuilder(resp);
@@ -422,6 +429,7 @@ public class HttpSupport {
      */
     protected <T extends AppController> HttpBuilder redirect(Class<T> controllerClass, Map params){
         String controllerPath = Router.getControllerPath(controllerClass);
+
         String contextPath = Context.getHttpRequest().getContextPath();
         String action = params.get("action") != null? params.get("action").toString() : null;
         String id = params.get("id") != null? params.get("id").toString() : null;
@@ -429,11 +437,39 @@ public class HttpSupport {
         params.remove("action");
         params.remove("id");
 
-        String uri = contextPath + Router.generate(controllerPath, action, id, restful, params);
+        String uri = "";
+
+        if(isForwarded()) {
+            String requestProtocol = getRequestProtocol();
+            int requestPort = getRequestPort();
+            String requestHost = getRequestHost();
+            uri += requestProtocol + "://" + requestHost;
+            if(!isDefaultPort(requestProtocol, requestPort)) {
+                uri += ":" + requestPort;
+            }
+        }
+
+        uri += contextPath + Router.generate(controllerPath, action, id, restful, params);
 
         RedirectResponse resp = new RedirectResponse(uri);
         Context.setControllerResponse(resp);
         return new HttpBuilder(resp);
+    }
+
+    private boolean isForwarded() {
+        String header = header("X-FORWARDED-FOR");
+        return header != null;
+    }
+
+    private boolean isDefaultPort(String protocol, int port) {
+        boolean isDefaultPort = false;
+        if("http".equals(protocol)) {
+            isDefaultPort = port == 80;
+        }
+        else if("https".equals(protocol)) {
+            isDefaultPort = port == 443;
+        }
+        return isDefaultPort;
     }
 
     /**
@@ -540,6 +576,9 @@ public class HttpSupport {
      * protocol.
      */
     protected String getRequestProtocol(){
+        //TODO is this used anywhere? the value of the header looks like "https", but the value of the protocol method
+        //looks like "HTTP/1.1" - totally different formats!
+
         String protocol = header("X-Forwarded-Proto");
         return Util.blank(protocol)? protocol(): protocol;
     }
