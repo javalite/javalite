@@ -30,7 +30,7 @@ class RedirectResponse extends ControllerResponse {
     }
 
     protected RedirectResponse(String path) {
-        if(path == null) throw new IllegalArgumentException("url can't be null");
+        if(path == null) throw new IllegalArgumentException("path can't be null");
         this.path = path;
     }
 
