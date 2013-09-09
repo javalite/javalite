@@ -132,10 +132,6 @@ public class HttpSupportSpec extends RequestSpec{
     @Test
     public void shouldRedirectToDifferentAction() throws IOException, ServletException {
 
-        //TODO the name of this method is "different action" but the assertion statement says "different_controller"
-        //so i'm not sure what this spec is actually asserting! So I can't confidently modify it for this change
-        //Help please?
-
         request.setServletPath("/http_support/will_redirect");
         request.setMethod("GET");
         dispatcher.doFilter(request, response, filterChain);
@@ -157,16 +153,6 @@ public class HttpSupportSpec extends RequestSpec{
         request.setMethod("GET");
         dispatcher.doFilter(request, response, filterChain);
         a(response.getRedirectedUrl()).shouldBeEqual("/test_context/hello/abc_action/123?name=john");
-    }
-
-    @Test
-    public void shouldRedirectToControllerForwarded() throws IOException, ServletException {
-
-        request.setServletPath("/http_support/will_redirect_to_controller");
-        request.addHeader("X-FORWARDED-FOR", "x.x.x.x");
-        request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
-        a(response.getRedirectedUrl()).shouldBeEqual("http://localhost/test_context/hello/abc_action/123?name=john");
     }
 
     @Test
