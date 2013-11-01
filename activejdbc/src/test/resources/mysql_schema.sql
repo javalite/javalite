@@ -160,3 +160,23 @@ DROP TABLE IF EXISTS apples;
 CREATE TABLE apples (id int(11) NOT NULL PRIMARY KEY, apple_type VARCHAR(56) NOT NULL ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+DROP TABLE IF EXISTS `padlocks`;
+CREATE  TABLE IF NOT EXISTS `padlocks` (
+  `id` VARCHAR(36) ,
+  `description` TEXT,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB;
+
+DROP TRIGGER IF EXISTS `before_insert_padlocks`;
+CREATE TRIGGER before_insert_padlocks
+  BEFORE INSERT ON padlocks
+  FOR EACH ROW
+  SET new.id = uuid();
+
+
+CREATE  TABLE IF NOT EXISTS `keys` (
+  `id` VARCHAR(36) NULL ,
+  `description` TEXT,
+  `padlock_id` VARCHAR(36),
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB;

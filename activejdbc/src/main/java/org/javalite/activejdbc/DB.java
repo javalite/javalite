@@ -543,7 +543,9 @@ public class DB {
             try{
                 rs = ps.getGeneratedKeys();
                 if (rs.next()) {
-                    long id = rs.getLong(1);
+
+                    Object o = rs.getObject(1);
+                    long id = (Long)o;
                     LogFilter.logQuery(logger, query, params, start);
                     return id;
                 } else {
