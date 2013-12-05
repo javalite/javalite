@@ -120,42 +120,42 @@ public enum Registry {
 
      synchronized void init(String dbName) {
 
-            if (initedDbs.contains(dbName)) {
-                return;
-            } else {
-                initedDbs.add(dbName);
+        if (initedDbs.contains(dbName)) {
+            return;
+        } else {
+            initedDbs.add(dbName);
+        }
+
+        try {
+            mf.findModels(dbName);
+            Connection c = ConnectionsAccess.getConnection(dbName);
+            if(c == null){
+                throw new DBException("Failed to retrieve metadata from DB, connection: '" + dbName + "' is not available");
+            }
+            String dbType = c.getMetaData().getDatabaseProductName();
+            registerModels(dbName, mf.getModelsForDb(dbName), dbType);
+            String[] tables = metaModels.getTableNames(dbName);
+
+            for (String table : tables) {
+                Map<String, ColumnMetadata> metaParams = fetchMetaParams(table, dbName);
+                registerColumnMetadata(table, metaParams);
             }
 
-            try {
-                mf.findModels(dbName);
-                Connection c = ConnectionsAccess.getConnection(dbName);
-                if(c == null){
-                    throw new DBException("Failed to retrieve metadata from DB, connection: '" + dbName + "' is not available");
-                }
-                String dbType = c.getMetaData().getDatabaseProductName();
-                registerModels(dbName, mf.getModelsForDb(dbName), dbType);
-                String[] tables = metaModels.getTableNames(dbName);
+            processOverrides(mf.getModelsForDb(dbName));
 
-                for (String table : tables) {
-                    Map<String, ColumnMetadata> metaParams = fetchMetaParams(table, dbName);
-                    registerColumnMetadata(table, metaParams);
-                }
-
-                processOverrides(mf.getModelsForDb(dbName));
-
-                for (String table : tables) {
-                    discoverAssociationsFor(table, dbName);
-                }
-            } catch (Exception e) {
-                if (e instanceof InitException) {
-                    throw (InitException) e;
-                }
-                if (e instanceof DBException) {
-                    throw (DBException) e;
-                } else {
-                    throw new InitException(e);
-                }
-
+            for (String table : tables) {
+                discoverAssociationsFor(table, dbName);
+            }
+        } catch (Exception e) {
+            initedDbs.remove(dbName);
+            if (e instanceof InitException) {
+                throw (InitException) e;
+            }
+            if (e instanceof DBException) {
+                throw (DBException) e;
+            } else {
+                throw new InitException(e);
+            }
         }
     }
 
