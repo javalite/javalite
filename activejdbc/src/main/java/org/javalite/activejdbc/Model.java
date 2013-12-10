@@ -544,6 +544,21 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
+     * Returns true if there is a single record matching the subquery in the DB
+     * @param subquery selection criteria, example:
+     * <pre>
+     * boolean exists = Person.exists("name = ? and age &lt 13", "John")
+     * </pre>
+     * @param params list of parameters if question marks are used as placeholders
+     * @return true if a single matching record exists, false otherwise.
+     */
+    public static boolean exists(String subquery, Object... params){
+        MetaModel metaModel = getMetaModel();
+        return null != new DB(metaModel.getDbName()).firstCell("SELECT EXISTS (SELECT 1 FROM " + metaModel.getTableName()
+                + " WHERE " + subquery + ")", params);
+    }
+
+    /**
      * Returns true if record corresponding to the id of this instance exists in  the DB.
      *
      * @return true if corresponding record exists in DB, false if it does not.
