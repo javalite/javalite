@@ -549,13 +549,20 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <pre>
      * boolean exists = Person.exists("name = ? and age &lt 13", "John")
      * </pre>
+     * @param param1 requires at least one param to differentiate from {@link #exists(Object)}
      * @param params list of parameters if question marks are used as placeholders
      * @return true if a single matching record exists, false otherwise.
      */
-    public static boolean exists(String subquery, Object... params){
+    public static boolean exists(String subquery, Object param1, Object... params){
         MetaModel metaModel = getMetaModel();
-        return null != new DB(metaModel.getDbName()).firstCell("SELECT EXISTS (SELECT 1 FROM " + metaModel.getTableName()
-                + " WHERE " + subquery + ")", params);
+
+        Object[] objects = new Object[params.length + 1];
+        objects[0]=param1;
+        System.arraycopy(params, 0, objects, 1, params.length);
+
+        Object o = new DB(metaModel.getDbName()).firstCell("SELECT EXISTS (SELECT 1 FROM " + metaModel.getTableName()
+                + " WHERE " + subquery + ")", objects);
+        return o.equals(1l);
     }
 
     /**

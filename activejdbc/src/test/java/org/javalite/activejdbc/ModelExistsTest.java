@@ -44,9 +44,10 @@ public class ModelExistsTest extends ActiveJDBCTest {
     @Test
     public void testExistsWithWhereClause(){
         deleteAndPopulateTable("people");
-        a(Person.exists("id = 10000")).shouldBeFalse();
+        a(Person.exists("id = ?", 10000)).shouldBeFalse();
         Person p = Person.<Person>findAll().get(0);
         a(Person.exists("id = ?", p.getId())).shouldBeTrue();
         a(Person.exists("name = ?", "John")).shouldBeTrue();
+        a(Person.exists("name = ? and last_name = ?", "John", "Smith")).shouldBeTrue();
     }
 }
