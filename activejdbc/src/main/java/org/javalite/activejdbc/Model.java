@@ -555,14 +555,32 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public static boolean exists(String subquery, Object param1, Object... params){
         MetaModel metaModel = getMetaModel();
+        params = prefixArray(param1, params);
+        Object o = new DB(metaModel.getDbName()).firstCell("SELECT EXISTS (SELECT 1 FROM " + metaModel.getTableName()
+                + " WHERE " + subquery + ")", params);
+        return interpretMultipleBooleanReturnValues(o);
+    }
 
+    private static Object[] prefixArray(Object param1, Object[] params) {
         Object[] objects = new Object[params.length + 1];
         objects[0]=param1;
         System.arraycopy(params, 0, objects, 1, params.length);
+        return objects;
+    }
 
-        Object o = new DB(metaModel.getDbName()).firstCell("SELECT EXISTS (SELECT 1 FROM " + metaModel.getTableName()
-                + " WHERE " + subquery + ")", objects);
-        return o.equals(1l);
+    private static boolean interpretMultipleBooleanReturnValues(Object o) {
+        //MySQL returns 0/1 as a Long
+        if(o instanceof Long) {
+            return o.equals(1L);
+        }
+        //H2 returns Boolean
+        else if(o instanceof Boolean) {
+            return (Boolean) o;
+        }
+        //Catch-all in case we get back a string with another DB.
+        else {
+            return o instanceof String && ("true".equalsIgnoreCase((String) o) || "1".equals(o));
+        }
     }
 
     /**
