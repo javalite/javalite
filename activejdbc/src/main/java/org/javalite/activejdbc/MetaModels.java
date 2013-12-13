@@ -33,13 +33,16 @@ public class MetaModels {
     Map<String, MetaModel> metaModelsByTableName = new HashMap<String, MetaModel>();
     Map<Class<? extends Model>, MetaModel> metaModelsByClass = new HashMap<Class<? extends Model>, MetaModel>();
     Map<String, MetaModel> metaModelsByClassName = new HashMap<String, MetaModel>();
+    //these are all many to many associations across all models.
+    private List<Many2ManyAssociation> many2ManyAssociations = new ArrayList<Many2ManyAssociation>();
 
-    void addMetaModel(MetaModel mm, String tableName, Class<? extends Model> modelClass) {
+    void addMetaModel(MetaModel<?, ?> mm, String tableName, Class<? extends Model> modelClass) {
         Object o = metaModelsByClass.put(modelClass, mm);
         if (o != null) {
             logger.warn("Double-register: " + modelClass + ": " + o);
         }
         o = metaModelsByTableName.put(tableName, mm);
+        many2ManyAssociations.addAll(mm.getManyToManyAssociations(Collections.<Association>emptyList()));
         if (o != null) {
             logger.warn("Double-register: " + tableName + ": " + o);
         }
@@ -57,11 +60,11 @@ public class MetaModels {
 
     MetaModel getMetaModel(String tableName) {
         MetaModel mm = metaModelsByTableName.get(tableName);
-        if(mm != null){
+        if (mm != null) {
             return mm;
         }
         mm = metaModelsByTableName.get(tableName.toLowerCase());
-        if(mm != null){
+        if (mm != null) {
             return mm;
         }
         return metaModelsByTableName.get(tableName.toUpperCase());
@@ -74,9 +77,8 @@ public class MetaModels {
             if (metaModel.getDbName().equals(dbName))
                 tableNames.add(metaModel.getTableName());
         }
-        return tableNames.toArray(new String[]{});
+        return tableNames.toArray(new String[tableNames.size()]);
     }
-
 
     Class getModelClass(String tableName) {
         return  metaModelsByTableName.containsKey(tableName) ? metaModelsByTableName.get(tableName).getModelClass() : null;
@@ -91,26 +93,14 @@ public class MetaModels {
         metaModelsByTableName.get(table).setColumnMetadata(metaParams);
     }
 
-    //these are all many to many associations across all models.
-    private List<Many2ManyAssociation> many2ManyAssociations = new ArrayList<Many2ManyAssociation>();
-
     protected List<String> getEdges(String join) {
-
         List<String> results = new ArrayList<String>();
-        if (many2ManyAssociations.size() == 0) {
-            for (String table : metaModelsByTableName.keySet()) {
-                MetaModel mm = metaModelsByTableName.get(table);
-                many2ManyAssociations.addAll(mm.getManyToManyAssociations(new ArrayList<Association>()));
+        for (Many2ManyAssociation a : many2ManyAssociations) {
+            if (a.getJoin().equalsIgnoreCase(join)){
+                results.add(a.getSource());
+                results.add(a.getTarget());
             }
         }
-
-        for(Many2ManyAssociation ass: many2ManyAssociations){
-            if(ass.getJoin().equalsIgnoreCase(join)){
-                results.add(ass.getSource());
-                results.add(ass.getTarget());
-            }
-        }
-
         return results;
     }
 }
