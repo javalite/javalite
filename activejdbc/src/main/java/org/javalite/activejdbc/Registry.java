@@ -165,7 +165,6 @@ public enum Registry {
      * @param dbType this is a name of a DBMS as returned by JDBC driver, such as Oracle, MySQL, etc.
      */
     private void registerModels(String dbName, List<Class<? extends Model>> modelClasses, String dbType) {
-
         for (Class<? extends Model> modelClass : modelClasses) {
             String idName = findIdName(modelClass);
             String tableName = findTableName(modelClass);
@@ -464,10 +463,8 @@ public enum Registry {
      * @param join name of join table;
      * @return edges for a join
      */
-    protected List<String> getEdges(String join){
-
+    protected List<String> getEdges(String join) {
         return metaModels.getEdges(join);
-
     }
 
     private void registerColumnMetadata(String table, Map<String, ColumnMetadata> metaParams) {
@@ -475,11 +472,12 @@ public enum Registry {
     }
 
     protected List<CallbackListener> getListeners(Class modelClass){
-        if(listeners.get(modelClass) == null){
+        if (listeners.get(modelClass) == null) {
             listeners.put(modelClass, new ArrayList<CallbackListener>());
         }
         return listeners.get(modelClass);
     }
+
     public void addListener(Class modelClass, CallbackListener listener) {
         getListeners(modelClass).add(listener);
     }
