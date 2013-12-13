@@ -40,7 +40,7 @@ import static org.javalite.common.Collections.list;
 public class LazyList<T extends Model> extends AbstractList<T>{
 
     final static Logger logger = LoggerFactory.getLogger(LazyList.class);
-    protected ArrayList<T> delegate = new ArrayList<T>();
+    protected List<T> delegate = new ArrayList<T>();
     private List<String> orderBys = new ArrayList<String>();
     private boolean hydrated = false;
     private MetaModel metaModel;
@@ -294,7 +294,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
         String sql= toSql(false);
 
         if(metaModel.cached()){        
-            ArrayList<T> cached = (ArrayList<T>) QueryCache.instance().getItem(metaModel.getTableName(), sql, params);
+            List<T> cached = (List<T>) QueryCache.instance().getItem(metaModel.getTableName(), sql, params);
             if(cached != null){
                 delegate = cached;
                 return;
@@ -309,6 +309,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
         });
         LogFilter.logQuery(logger, sql, params, start);
         if(metaModel.cached()){
+            delegate = Collections.unmodifiableList(delegate);
             QueryCache.instance().addItem(metaModel.getTableName(), sql, params, delegate);
         }
         hydrated = true;
