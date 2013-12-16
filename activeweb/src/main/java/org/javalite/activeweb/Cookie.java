@@ -24,6 +24,7 @@ public class Cookie {
     private java.lang.String value;
 
     private int maxAge = -1;
+    private java.lang.String domain = null;
     private java.lang.String path = "/";
     private boolean secure;
     private int version;
@@ -40,6 +41,10 @@ public class Cookie {
     public void setPath(String path) {this.path = path;}
 
     public java.lang.String getPath() {return path;}
+
+    public void setDomain(String domain) {this.domain = domain;}
+
+    public java.lang.String getDomain() {return domain;}
 
     public void setSecure(boolean secure) {this.secure = secure;}
 
@@ -61,6 +66,7 @@ public class Cookie {
                 "name='" + name + '\'' +
                 ", value='" + value + '\'' +
                 ", maxAge=" + maxAge +
+                ", domain='" + domain + '\'' +
                 ", path='" + path + '\'' +
                 ", secure=" + secure +
                 ", version=" + version +
@@ -70,6 +76,7 @@ public class Cookie {
     static Cookie fromServletCookie(javax.servlet.http.Cookie servletCookie){
         Cookie cookie = new Cookie(servletCookie.getName(), servletCookie.getValue());
         cookie.setMaxAge(servletCookie.getMaxAge());
+        cookie.setDomain(servletCookie.getDomain());
         cookie.setPath(servletCookie.getPath());
         cookie.setSecure(servletCookie.getSecure());
         cookie.setVersion(servletCookie.getVersion());
@@ -79,6 +86,8 @@ public class Cookie {
     static javax.servlet.http.Cookie toServletCookie(Cookie cookie){
         javax.servlet.http.Cookie servletCookie = new javax.servlet.http.Cookie(cookie.getName(), cookie.getValue());
         servletCookie.setMaxAge(cookie.getMaxAge());
+        if (cookie.getDomain() != null)
+                servletCookie.setDomain(cookie.getDomain());
         servletCookie.setPath(cookie.getPath());
         servletCookie.setSecure(cookie.isSecure());
         servletCookie.setVersion(cookie.getVersion());
