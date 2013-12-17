@@ -673,4 +673,50 @@ public class DB {
     public static Map<String, Connection> connections(){
         return ConnectionsAccess.getConnectionMap();
     }
+
+    /**
+     * Creates a <code>java.sql.PreparedStatement</code> to be used in batch executions later.
+     *
+     * @param parametrizedStatement Example of a statement: <code>INSERT INTO employees VALUES (?, ?)</code>.
+     * @return instance of <code>java.sql.PreparedStatement</code> with compiled query.
+     */
+    public PreparedStatement startBatch(String parametrizedStatement){
+        try {
+            return connection().prepareStatement(parametrizedStatement);
+        } catch (SQLException e) {
+            throw new DBException(e);
+        }
+    }
+
+    /**
+     * Adds a batch statement using given <code>java.sql.PreparedStatement</code> and parameters.
+     * @param ps <code>java.sql.PreparedStatement</code> to add batch to.
+     * @param parameters parameters for the query in <code>java.sql.PreparedStatement</code>. Parameters will be
+     * set on the statement in the same order as provided here.
+     */
+    public void addBatch(PreparedStatement ps, Object ... parameters){
+        try {
+
+            for (int i = 0; i < parameters.length; i++) {
+                ps.setObject((i + 1), parameters[(i)]);
+            }
+            ps.addBatch();
+        } catch (SQLException e) {
+            throw new DBException(e);
+        }
+    }
+
+    /**
+     * Executes a batch on <code>java.sql.PreparedStatement</code>.
+     *
+     * @param ps <code>java.sql.PreparedStatement</code> to execute batch on.
+     */
+    public void executeBatch(PreparedStatement ps){
+        try {
+            ps.executeBatch();
+            ps.clearParameters();
+        } catch (SQLException e) {
+            throw new DBException(e);
+        }
+    }
 }
