@@ -28,9 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 public class BatchExecTest extends ActiveJDBCTest {
-
-
-
         @Override
         public void before() throws Exception {
             super.before();
@@ -51,5 +48,4 @@ public class BatchExecTest extends ActiveJDBCTest {
             the(people.get(0).get("name")).shouldBeEqual("Marilyn");
             the(people.get(1).get("name")).shouldBeEqual("Mic");
         }
-
 }
