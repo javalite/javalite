@@ -19,6 +19,8 @@ package org.javalite.activejdbc;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -295,4 +297,34 @@ public class Base {
     public static void rollbackTransaction() {
         new DB(DEFAULT_DB_NAME).rollbackTransaction();
     }
+
+    /**
+     * Creates a <code>java.sql.PreparedStatement</code> to be used in batch executions later.
+     *
+     * @param parametrizedStatement Example of a statement: <code>INSERT INTO employees VALUES (?, ?)</code>.
+     * @return instance of <code>java.sql.PreparedStatement</code> with compiled query.
+     */
+    public static PreparedStatement startBatch(String parametrizedStatement){
+        return new DB(DEFAULT_DB_NAME).startBatch(parametrizedStatement);
+    }
+
+    /**
+     * Adds a batch statement using given <code>java.sql.PreparedStatement</code> and parameters.
+     * @param ps <code>java.sql.PreparedStatement</code> to add batch to.
+     * @param parameters parameters for the query in <code>java.sql.PreparedStatement</code>. Parameters will be
+     * set on the statement in the same order as provided here.
+     */
+    public static void addBatch(PreparedStatement ps, Object ... parameters){
+        new DB(DEFAULT_DB_NAME).addBatch(ps, parameters);
+    }
+
+    /**
+     * Executes a batch on <code>java.sql.PreparedStatement</code>.
+     *
+     * @param ps <code>java.sql.PreparedStatement</code> to execute batch on.
+     */
+    public static void executeBatch(PreparedStatement ps){
+        new DB(DEFAULT_DB_NAME).executeBatch(ps);
+    }
+
 }
