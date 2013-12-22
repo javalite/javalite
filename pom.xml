@@ -51,6 +51,7 @@
               <configuration>
                  <stylesheetfile>javadoc/stylesheet.css</stylesheetfile>
                 <javadocDirectory>javadoc</javadocDirectory>
+		        <!--<header>&lt;b&gt;test test&lt;b&gt;</header>-->
 
               </configuration>
             </plugin>
