@@ -249,7 +249,12 @@ public class RequestDispatcher implements Filter {
 
     private void renderSystemError(String template, String layout, int status, Throwable e) {
         try{
-            logger.error("ActiveWeb ERROR: \n" + getRequestProperties(), e);
+            if(status == 404){
+                logger.warn("ActiveWeb WARNING: \n" + getRequestProperties() + e);
+            }else{
+                logger.error("ActiveWeb ERROR: \n" + getRequestProperties(), e);
+            }
+
             if (Context.getHttpRequest().getHeader("x-requested-with") != null
                     || Context.getHttpRequest().getHeader("X-Requested-With") != null) {
 
