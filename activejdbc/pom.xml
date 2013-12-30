@@ -348,10 +348,5 @@
             <version>2.4.5</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>oracle</groupId>
-            <artifactId>ojdbc14</artifactId>
-            <version>10.2.0.4</version>
-        </dependency>
     </dependencies>
 </project>
