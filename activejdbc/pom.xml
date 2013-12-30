@@ -51,8 +51,8 @@
             <properties>
                 <jdbc.driver>oracle.jdbc.OracleDriver</jdbc.driver>
                 <jdbc.url>jdbc:oracle:thin:@//n2.antura.it:1544/svil.antura.it</jdbc.url>
-                <jdbc.user>actweb</jdbc.user>
-                <jdbc.password>ajdbc</jdbc.password>
+                <jdbc.user>${env.AJ_ORACLE_USER}</jdbc.user>
+                <jdbc.password>${env.AJ_ORACLE_PASSWORD}</jdbc.password>
                 <db>oracle</db>
             </properties>
             <dependencies>
