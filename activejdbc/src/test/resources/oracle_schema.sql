@@ -852,5 +852,5 @@ end;
 -- BREAK
 CREATE TABLE apples (id NUMBER NOT NULL, apple_type VARCHAR(56) NOT NULL)
 -- BREAK
-ALTER TABLE apples ADD CONSTRAINT apples_pk PRIMARY KEY ( id );
+ALTER TABLE apples ADD CONSTRAINT apples_pk PRIMARY KEY ( id )
 -- BREAK

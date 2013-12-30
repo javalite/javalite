@@ -4,7 +4,7 @@
     <artifactId>activejdbc-root</artifactId>
     <packaging>pom</packaging>
     <version>1.4.9-SNAPSHOT</version>
-    <name>ActiveJDBC - Framework Root</name>
+    <name>JavaLite - ActiveJDBC Root</name>
     <url>http://code.google.com/p/activejdbc/</url>
 
     <parent>
@@ -13,11 +13,27 @@
         <version>7</version>
     </parent>
 
+
+    <organization>
+        <name>JavaLite</name>
+        <url>http://javalite.io</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>Apache License 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+
     <scm>
-       <connection>scm:svn:https://activejdbc.googlecode.com/svn/trunk/</connection>
-       <developerConnection>scm:svn:https://activejdbc.googlecode.com/svn/trunk/</developerConnection>
-       <url>https://activejdbc.googlecode.com/svn/trunk//</url>
+       <connection>scm:git@github.com:javalite/activejdbc.git</connection>
+       <developerConnection>scm:git@github.com:javalite/activejdbc.git</developerConnection>
+       <url>scm:git@github.com:javalite/activejdbc.git</url>
      </scm>
+
 
     <profiles>
         <profile>
@@ -51,17 +67,21 @@
               <configuration>
                  <stylesheetfile>javadoc/stylesheet.css</stylesheetfile>
                 <javadocDirectory>javadoc</javadocDirectory>
-		        <!--<header>&lt;b&gt;test test&lt;b&gt;</header>-->
-
               </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.4.2</version>
             </plugin>
 
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
+                    <source>1.6</source>
+                    <target>1.6</target>
                     <fork>true</fork>
                     <meminitial>128m</meminitial>
                     <maxmem>512m</maxmem>
@@ -73,6 +93,7 @@
         <module>javalite-common</module>
         <module>activejdbc-instrumentation</module>
         <module>activejdbc</module>
+        <module>db-migrator</module>
     </modules>
 
     <pluginRepositories>

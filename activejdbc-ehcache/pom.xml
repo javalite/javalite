@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.javalite</groupId>
     <artifactId>activejdbc-ehcache</artifactId>
-    <version>1.2.2-SNAPSHOT</version>
+    <version>1.4.9-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>ActiveJDBC - EHCache Test</name>
     <description>This module is a test for EHCache integration, do not add this
@@ -16,8 +16,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
+                    <source>1.6</source>
+                    <target>1.6</target>
                     <fork>true</fork>
                     <meminitial>128m</meminitial>
                     <maxmem>512m</maxmem>
@@ -63,13 +63,13 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.0.4</version>
+            <version>5.1.25</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.5.10</version>
+            <version>1.7.5</version>
         </dependency>
     </dependencies>
 
