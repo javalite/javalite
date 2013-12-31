@@ -7,8 +7,6 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.sql.SQLException;
 
-import static org.apache.commons.lang.StringUtils.containsIgnoreCase;
-import static org.apache.commons.lang.StringUtils.startsWithIgnoreCase;
 
 public class Migration implements Comparable {
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -47,7 +45,7 @@ public class Migration implements Comparable {
 
                 if (line.length() < 1) {
                     // Do nothing, it's an empty line.
-                } else if (line.startsWith("--") || line.startsWith("#") || line.startsWith("//")) {
+                } else if (commentLine(line)) {
                     logger.debug(line);
                 } else {
                     if (startsWithIgnoreCase(line, DEFAULT_DELIMITER_KEYWORD)) {
@@ -80,10 +78,17 @@ public class Migration implements Comparable {
             }
 
         } catch (Exception e) {
-            e.fillInStackTrace();
             logger.error("Error executing: " + command, e);
             throw e;
         }
+    }
+
+    private boolean containsIgnoreCase(String line, String sub) {
+        return line.toLowerCase().contains(sub.toLowerCase());
+    }
+
+    private boolean startsWithIgnoreCase(String line, String sub) {
+        return line.toLowerCase().startsWith(sub.toLowerCase());
     }
 
     private boolean commentLine(String line) {

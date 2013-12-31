@@ -62,14 +62,14 @@ public class MockDataSource implements DataSource {
     }
 
     public void setLoginTimeout(int seconds) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public int getLoginTimeout() throws SQLException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return 0;
     }
 
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 }

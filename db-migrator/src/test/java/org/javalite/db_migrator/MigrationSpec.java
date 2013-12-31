@@ -1,7 +1,9 @@
 package org.javalite.db_migrator;
 
-import com.mockrunner.mock.jdbc.MockConnection;
+
 import org.javalite.activejdbc.Base;
+import org.javalite.db_migrator.mock.MockConnection;
+import org.javalite.db_migrator.mock.MockDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +39,7 @@ public class MigrationSpec {
     }
 
     private List getStatements() {
-        return ((MockConnection) Base.connection()).getStatementResultSetHandler().getExecutedStatements();
+        return ((MockConnection) Base.connection()).getExecutedStatements();
     }
 
 

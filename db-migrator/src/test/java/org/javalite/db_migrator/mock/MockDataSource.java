@@ -18,10 +18,8 @@ limitations under the License.
  * @author Igor Polevoy: 12/27/13 1:04 AM
  */
 
-package org.javalite.db_migrator;
+package org.javalite.db_migrator.mock;
 
-
-import com.mockrunner.mock.jdbc.MockConnection;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
