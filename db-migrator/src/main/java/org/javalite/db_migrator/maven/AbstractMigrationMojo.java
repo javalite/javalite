@@ -62,14 +62,14 @@ public abstract class AbstractMigrationMojo extends AbstractMojo {
         }
 
         if (!getClass().equals(NewMojo.class)) {
+            validateConfiguration();
+
             password = blank(password) ? "" : password;
             if (blank(driver))
                 driver = DatabaseUtils.driverClass(url);
 
             databaseType = DatabaseUtils.databaseType(url).toString();
-            validateConfiguration();
         }
-
         executeMojo();
     }
 
