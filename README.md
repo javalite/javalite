@@ -64,4 +64,5 @@ String johnsLastName = aJohn.get("last_name");
 ```
 
 ## Documentation
-All documentation is  placed here: [http://javalt.org/p/activejdbc](http://javalt.org/p/activejdbc)
+
+For more information, follow here: http://javalite.io

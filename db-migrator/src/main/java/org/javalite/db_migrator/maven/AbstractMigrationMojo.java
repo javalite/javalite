@@ -61,13 +61,14 @@ public abstract class AbstractMigrationMojo extends AbstractMojo {
             return;
         }
 
-        password = blank(password) ? "" : password;
+        if (!getClass().equals(NewMojo.class)) {
+            password = blank(password) ? "" : password;
+            if (blank(driver))
+                driver = DatabaseUtils.driverClass(url);
 
-        if (blank(driver)) driver = DatabaseUtils.driverClass(url);
-
-        databaseType = DatabaseUtils.databaseType(url).toString();
-
-        validateConfiguration();
+            databaseType = DatabaseUtils.databaseType(url).toString();
+            validateConfiguration();
+        }
 
         executeMojo();
     }
@@ -88,7 +89,7 @@ public abstract class AbstractMigrationMojo extends AbstractMojo {
         }
 
         try {
-            if(!blank(databaseType))
+            if (!blank(databaseType))
                 DatabaseType.valueOf(databaseType);
         } catch (IllegalArgumentException e) {
             throw new MojoExecutionException(
