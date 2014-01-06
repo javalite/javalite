@@ -14,12 +14,6 @@
         <version>7</version>
     </parent>
 
-    <scm>
-        <connection>scm:svn:https://activejdbc.googlecode.com/svn/trunk/javalite-common/</connection>
-        <developerConnection>scm:svn:https://activejdbc.googlecode.com/svn/trunk/javalite-common/</developerConnection>
-        <url>https://activejdbc.googlecode.com/svn/trunk/javalite-common/</url>
-    </scm>
-
     <build>
         <plugins>
             <plugin>
