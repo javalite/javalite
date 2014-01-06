@@ -27,7 +27,7 @@
         <profile>
             <id>mysql</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <activeByDefault>false</activeByDefault>
             </activation>
             <properties>
                 <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
@@ -50,16 +50,21 @@
 
             <properties>
                 <jdbc.driver>oracle.jdbc.OracleDriver</jdbc.driver>
-                <jdbc.url>jdbc:oracle:thin:@//n2.antura.it:1544/svil.antura.it</jdbc.url>
-                <jdbc.user>${env.AJ_ORACLE_USER}</jdbc.user>
-                <jdbc.password>${env.AJ_ORACLE_PASSWORD}</jdbc.password>
+                <!--<jdbc.url>jdbc:oracle:thin:@//n2.antura.it:1544/svil.antura.it</jdbc.url>-->
+                <!--<jdbc.user>${env.AJ_ORACLE_USER}</jdbc.user>-->
+                <!--<jdbc.password>${env.AJ_ORACLE_PASSWORD}</jdbc.password>-->
+
+                <jdbc.url>jdbc:oracle:thin:@//192.168.0.111:1521/orcl</jdbc.url>
+                <jdbc.user>scott</jdbc.user>
+                <jdbc.password>oracle</jdbc.password>
+
                 <db>oracle</db>
             </properties>
             <dependencies>
                 <dependency>
                     <groupId>oracle</groupId>
-                    <artifactId>ojdbc14</artifactId>
-                    <version>10.2.0.4</version>
+                    <artifactId>jdbc-driver</artifactId>
+                    <version>7</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>

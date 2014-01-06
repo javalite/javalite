@@ -19,15 +19,17 @@ package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.associations.NotAssociatedException;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
+import org.javalite.activejdbc.test_models.*;
 import org.javalite.common.Convert;
 import org.javalite.test.jspec.DifferenceExpectation;
 import org.javalite.test.jspec.ExceptionExpectation;
-import org.javalite.activejdbc.test_models.*;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.*;
-import java.util.*;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
 
 import static org.javalite.common.Collections.map;
 
@@ -441,8 +443,11 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void shouldGenerateCorrectInsertSQL(){
-        deleteAndPopulateTables("students", "courses", "registrations");
-        Student s = Student.findById(1);
+        Student s = new Student();
+        s.set("first_name", "Jim");
+        s.set("last_name", "Cary");
+        s.set("dob", new java.sql.Date(getDate(1965, 12, 1).getTime()));
+        s.set("id", 1);
         String insertSQL = s.toInsert();
 
         the(insertSQL).shouldBeEqual("INSERT INTO students (dob, first_name, id, last_name) VALUES ('1965-12-01', 'Jim', 1, 'Cary')");

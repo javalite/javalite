@@ -535,7 +535,18 @@ public class DB {
             }
             for (int index = 0; index < params.length; index++) {
                 Object param = params[index];
-                ps.setObject(index + 1, param);
+                if (param instanceof byte[]) {
+                    byte[] bytes = (byte[]) param;
+                    try {
+                        Blob b = connection.createBlob();
+                        b.setBytes(1, bytes);
+                        ps.setBlob(index + 1, b);
+                    } catch (AbstractMethodError e) {// net.sourceforge.jtds.jdbc.ConnectionJDBC2.createBlob is abstract :)
+                        ps.setObject(index + 1, param);
+                    }
+                }else{
+                    ps.setObject(index + 1, param);
+                }
             }
             ps.executeUpdate();
 

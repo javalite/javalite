@@ -23,7 +23,10 @@ package org.javalite.activejdbc;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.junit.Test;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
@@ -38,8 +41,9 @@ public class BatchExecTest extends ActiveJDBCTest {
         public void shouldInsertAsBatch() {
 
             PreparedStatement ps = Base.startBatch("insert into people (NAME, LAST_NAME, DOB) values(?, ?, ?)");
-            Base.addBatch(ps, "Mic", "Jagger", "1962-01-01");
-            Base.addBatch(ps, "Marilyn", "Monroe", "1932-01-01");
+
+            Base.addBatch(ps, "Mic", "Jagger", new Date(getTime(1962, 1, 1)));
+            Base.addBatch(ps, "Marilyn", "Monroe", new Date(getTime(1932, 1, 1)));
             Base.executeBatch(ps);
 
             List<Map> people = Base.findAll("select * from people order by name");
