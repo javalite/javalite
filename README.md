@@ -22,24 +22,4 @@ Watch a quick video on Youtube that demonstrates ActiveWeb's ability to add code
 
 ## Documentation
 
-All documentation is placed here: [http://javalt.org/p/activeweb](http://javalt.org/p/activeweb)
-
-
-## News
-__September 20 2012__: released version 1.5, which includes a fix for [Issue 114](https://github.com/javalite/activeweb/issues/114) 
-
-__August 21 2012__: Presented ActiveJDBC and ActiveWeb to San Diego Java User Group: [http://www.sdjug.org/2012-08-21](http://www.sdjug.org/2012-08-21)
-
-__August 13 2012__: speaker at the That Conference presenting ActiveJDBC and ActiveWeb?: [http://www.thatconference.com/Sessions/session_269](http://www.thatconference.com/Sessions/session_269)
-
-__July 26 2012__: new release 1.3 was pushed to Maven Central repository. It contains a defect fix for [https://github.com/javalite/activeweb/issues/109](https://github.com/javalite/activeweb/issues/109). Anyone using custom routes are encouraged to switch to the latest version.
-
-__July 16 2012__: new release 1.2 was pushed to Maven Central repository. It contains a few minor defects, as well as fix for [https://github.com/javalite/activeweb/issues/5](https://github.com/javalite/activeweb/issues/5)
-
-__March 20 2012__: ActiveWeb and ActiveJDBC were presented to the Software Craftsmanship McHenry County - got great reception. Part of the presentation was to build a simple live application with test coverage.
-
-__January 25 2012__: support for flexible routing model added.
-
-__January 5 2012__: Igor Polevoy presented ActiveWeb to the [Groupon Geekfest](http://geekfest.gathers.us/events/geekfest-activeweb-and-activejdbc) and got a warm welcome from the crowd. One group got so excited about ActiveJDBC that they offered a helping hand in adding MSSQL support, which they did a week later.
-
-__August 16 2011__: Igor Polevoy presented ActiveWeb to the [Chicago Java User Group](http://blog.cjug.org/). You can find slides of the presentation in [SideShare](http://www.slideshare.net/ipolevoy/activeweb-chicago-java-user-group-presentation).
+All documentation is placed here: [http://javalite.io](http://javalite.io)
