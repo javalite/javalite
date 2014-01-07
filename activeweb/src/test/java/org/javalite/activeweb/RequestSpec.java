@@ -17,8 +17,8 @@ limitations under the License.
 package org.javalite.activeweb;
 
 
-import app.controllers.HomeController;
 import org.javalite.test.jspec.JSpecSupport;
+import org.junit.After;
 import org.junit.Before;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -29,6 +29,9 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import java.io.IOException;
+
+import static org.javalite.test.SystemStreamUtil.replaceError;
+import static org.javalite.test.SystemStreamUtil.restoreSystemErr;
 
 /**
  * @author Igor Polevoy
@@ -48,6 +51,7 @@ public abstract class RequestSpec extends JSpecSupport {
 
     @Before
     public void before() throws ServletException, IOException, IllegalAccessException, InstantiationException {
+        replaceError();
         dispatcher = new RequestDispatcher();
         request = new MockHttpServletRequest();
         request.setContextPath("/test_context");
@@ -56,8 +60,13 @@ public abstract class RequestSpec extends JSpecSupport {
         config = new MockFilterConfig();
         Context.clear();
         Context.setTLs(request, response, config, new ControllerRegistry(new MockFilterConfig()),
-                                                                                new AppContext(),new RequestContext(), null);
+                new AppContext(), new RequestContext(), null);
         Configuration.getTemplateManager().setTemplateLocation("src/test/views");
+    }
+
+    @After
+    public void after() {
+        restoreSystemErr();
     }
 
 }

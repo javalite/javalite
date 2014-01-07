@@ -28,9 +28,7 @@ import javax.servlet.ServletResponse;
 
 import java.io.IOException;
 
-import static org.javalite.test.SystemStreamUtil.getSystemErr;
-import static org.javalite.test.SystemStreamUtil.replaceError;
-import static org.javalite.test.SystemStreamUtil.restoreSystemErr;
+import static org.javalite.test.SystemStreamUtil.*;
 
 
 /**
@@ -56,13 +54,9 @@ public class RequestDispatcherSpec extends RequestSpec {
                 throw new RuntimeException("I'm a bad... bad exception!");
             }
         };
-
-        replaceError();
+        Configuration.setUseDefaultLayoutForErrors(true);
     }
 
-    public void after(){
-        restoreSystemErr();
-    }
 
     @Test
     public void shouldFallThroughIfRootControllerMissingAndRootPathRequired() throws IOException, ServletException {

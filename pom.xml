@@ -6,14 +6,13 @@
     <packaging>pom</packaging>
     <version>1.10-SNAPSHOT</version>
     <name>ActiveWeb - Root</name>
-    <description>Root of ActiveWeb the project</description>
+    <description>ActiveWeb  - Java Web Framework inspired by Ruby on Rails</description>
     <developers>
         <developer>
             <name>Igor Polevoy</name>
             <email>igor at polevoy dot org</email>
         </developer>
     </developers>
-
 
     <parent>
         <groupId>org.sonatype.oss</groupId>
@@ -22,11 +21,10 @@
     </parent>
 
     <scm>
-        <connection>scm:svn:https://activeweb.googlecode.com/svn/trunk</connection>
-        <developerConnection>scm:svn:https://activeweb.googlecode.com/svn/trunk</developerConnection>
-        <url>https://activeweb.googlecode.com/svn/trunk/</url>
+        <connection>scm:git:git@github.com:javalite/activeweb.git</connection>
+        <developerConnection>scm:git:git@github.com:javalite/activeweb.git</developerConnection>
+        <url>git@github.com:javalite/activeweb.git</url>
     </scm>
-
 
     <modules>
         <module>activeweb</module>
@@ -35,7 +33,7 @@
     </modules>
 
     <properties>
-        <activejdbc.version>1.4.8</activejdbc.version>
+        <activejdbc.version>1.4.9</activejdbc.version>
     </properties>
 
     <build>
@@ -54,11 +52,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
-                    <fork>true</fork>
-                    <meminitial>128m</meminitial>
-                    <maxmem>512m</maxmem>
+                    <source>1.6</source>
+                    <target>1.6</target>
                 </configuration>
             </plugin>
 
@@ -85,7 +80,7 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.8.1</version>
+                <version>4.11</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -116,7 +111,6 @@
                 <version>1.6.4</version>
                 <scope>test</scope>
             </dependency>
-
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-core</artifactId>
@@ -131,6 +125,9 @@
             <dependency>
                 <groupId>dom4j</groupId>
                 <artifactId>dom4j</artifactId>
+                <!-- This must be 1.6.1 for now, because slf4j broke backwards compatibility and now SystemStreamUtil does not work as expected.
+                     For now, we are stuck with this version.
+                -->
                 <version>1.6.1</version>
                 <scope>test</scope>
             </dependency>
@@ -159,13 +156,11 @@
                 <artifactId>guice</artifactId>
                 <version>3.0</version>
             </dependency>
-
             <dependency>
                 <groupId>com.google.gwt</groupId>
                 <artifactId>gwt-user</artifactId>
                 <version>2.5.1</version>
             </dependency>
-
             <dependency>
                 <groupId>commons-fileupload</groupId>
                 <artifactId>commons-fileupload</artifactId>
