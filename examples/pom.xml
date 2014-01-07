@@ -19,6 +19,7 @@
         <module>activeweb-example-zip</module>
         <module>activeweb-simple</module>
         <module>kitchensink</module>
+        <module>activeweb-bootstrap</module>
     </modules>
 
 </project>
