@@ -27,11 +27,10 @@
         </license>
     </licenses>
 
-
     <scm>
-       <connection>scm:git@github.com:javalite/activejdbc.git</connection>
-       <developerConnection>scm:git@github.com:javalite/activejdbc.git</developerConnection>
-       <url>scm:git@github.com:javalite/activejdbc.git</url>
+       <connection>scm:git:git@github.com:javalite/activejdbc.git</connection>
+       <developerConnection>scm:git:git@github.com:javalite/activejdbc.git</developerConnection>
+       <url>git@github.com:javalite/activejdbc.git</url>
      </scm>
 
 
