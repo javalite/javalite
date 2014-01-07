@@ -3,7 +3,7 @@
     <groupId>org.javalite</groupId>
     <artifactId>activejdbc-root</artifactId>
     <packaging>pom</packaging>
-    <version>1.4.9</version>
+    <version>1.4.10-SNAPSHOT</version>
     <name>JavaLite - ActiveJDBC Root</name>
     <url>http://code.google.com/p/activejdbc/</url>
 

@@ -3,7 +3,7 @@
     <groupId>org.javalite</groupId>
     <artifactId>activejdbc</artifactId>
     <packaging>jar</packaging>
-    <version>1.4.9</version>
+    <version>1.4.10-SNAPSHOT</version>
     <name>JavaLite - ActiveJDBC ORM Framework</name>
 
     <parent>
