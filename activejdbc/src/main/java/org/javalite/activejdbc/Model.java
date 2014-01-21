@@ -1195,6 +1195,17 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
+         * Converts Model value to <code>Short</code>
+         *
+         * @see {@link Convert#toShort(Object)}
+         * @param attribute name of attribute to convert
+         * @return converted value
+         */
+        public Short getShort(String attribute) {
+            return Convert.toShort(get(attribute));
+        }
+
+    /**
      * Converts Model value to <code>Float</code>
      *
      * @see {@link Convert#toFloat(Object)}

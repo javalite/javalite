@@ -159,7 +159,7 @@ public class ConvertTest extends JSpecSupport {
     }
 
     @Test
-    public void shouldCovertToInteger() throws ParseException {
+    public void shouldCovertToFloat() throws ParseException {
 
         //float
         Object o= Convert.toFloat(1F);
@@ -180,6 +180,31 @@ public class ConvertTest extends JSpecSupport {
         o= Convert.toFloat(new BigDecimal(1));
         a(o instanceof Float).shouldBeTrue();
         a(o).shouldBeEqual(1);
+    }
+
+    @Test
+    public void shouldCovertToShort() throws ParseException {
+
+        //float
+        Object o= Convert.toShort(1F);
+        a(o instanceof Short).shouldBeTrue();
+        a(o).shouldBeEqual(1);
+
+        //string
+        o= Convert.toShort("1");
+        a(o instanceof Short).shouldBeTrue();
+        a(o).shouldBeEqual(1);
+
+        //long
+        o= Convert.toShort(1L);
+        a(o instanceof Short).shouldBeTrue();
+        a(o).shouldBeEqual(1);
+
+        //BigDecimal
+        o= Convert.toShort(new BigDecimal(1));
+        a(o instanceof Short).shouldBeTrue();
+        a(o).shouldBeEqual(1);
+
     }
 
     @Test
