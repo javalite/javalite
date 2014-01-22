@@ -93,10 +93,8 @@ public class Convert {
             return (Boolean) value;
         } else if (value instanceof BigDecimal) {
             return value.equals(BigDecimal.ONE);
-        } else if (value instanceof Long) {
-            return value.equals(1L);
-        } else if (value instanceof Integer) {
-            return value.equals(1);
+        } else if (value instanceof Number) {
+            return ((Number)value).intValue() == 1;
         } else if (value instanceof Character) {
             return value.equals('y') || value.equals('Y')
                     || value.equals('t') || value.equals('T');
