@@ -286,6 +286,13 @@ public class DB {
 
 
     /**
+     * Alias to {@link #findAll(String, Object...)}
+     */
+    public List<Map> all(String query, Object ... params) {
+        return findAll(query, params);
+    }
+
+    /**
      * This method returns entire resultset as one list. Do not use it for large result sets.
      * Example:
      * <pre>
@@ -344,6 +351,13 @@ public class DB {
 
         LogFilter.logQuery(logger, query, params, start);
         return results;
+    }
+
+    /**
+     * Alias to {@link #findAll(String)}
+     */
+    public List<Map> all(String query) {
+        return findAll(query);
     }
 
     /**
@@ -469,7 +483,7 @@ public class DB {
             LogFilter.logQuery(logger, query, null, start);
             return count;
         } catch (SQLException e) {
-            logger.error("Query failed: " + query, e);
+            logException("Query failed: " + query, e);
             throw new DBException(query, null, e);
         } finally {
             try { if (s != null) s.close(); } catch (Exception e) {/*ignore*/}
@@ -502,6 +516,7 @@ public class DB {
             LogFilter.logQuery(logger, query, params, start);
             return count;
         } catch (Exception e) {
+            logException("Failed query: " + query, e);
             throw new DBException(query, params, e);
         } finally {
             try { if (ps != null) ps.close(); } catch (Exception e) {/*ignore*/}
@@ -561,7 +576,7 @@ public class DB {
                     return -1;
                 }
             } catch (Exception e) {
-                logException("Failed to find out the auto-incremented value, returning -1, query: " + query, e);
+                logger.error("Failed to find out the auto-incremented value, returning -1, query: " + query, e);
                 return -1;
             } finally {
                 try { if (rs != null) rs.close(); } catch (Exception e) {/*ignore*/}
@@ -571,8 +586,9 @@ public class DB {
         }
     }
 
-    private void logException(String message, Exception e){
-        logger.error(message, e);
+    private void logException(String message, Exception e) {
+        if (Convert.toBoolean(System.getProperty("activejdbc.log_exception")))
+            logger.error(message, e);
     }
 
     /**
