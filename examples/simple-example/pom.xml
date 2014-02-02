@@ -10,7 +10,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <activejdbc.version>1.4.6</activejdbc.version>
+        <activejdbc.version>1.4.9</activejdbc.version>
     </properties>
 
     <build>
