@@ -33,7 +33,7 @@ public class HelpMojo extends AbstractMigrationMojo {
         getLog().info("  drops/re-creates the database, and runs all migrations, " +
                 "effectively resetting database to pristine state");
         getLog().info("db-migrator:help");
-        getLog().info("  printes this message");
+        getLog().info("  prints this message");
 
 
     }
