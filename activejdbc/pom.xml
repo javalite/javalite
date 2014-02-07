@@ -53,7 +53,7 @@
                 <!--<jdbc.user>${env.AJ_ORACLE_USER}</jdbc.user>-->
                 <!--<jdbc.password>${env.AJ_ORACLE_PASSWORD}</jdbc.password>-->
 
-                <jdbc.url>jdbc:oracle:thin:@//192.168.0.111:1521/orcl</jdbc.url>
+                <jdbc.url>jdbc:oracle:thin:@//192.168.0.112:1521/orcl</jdbc.url>
                 <jdbc.user>scott</jdbc.user>
                 <jdbc.password>oracle</jdbc.password>
 

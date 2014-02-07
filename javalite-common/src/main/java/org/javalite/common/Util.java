@@ -279,18 +279,22 @@ public class Util {
      * @param path path to file.
      * @param in  input stream to read content from.
      */
-    public static void saveTo(String path, InputStream in) throws IOException {
+    public static void saveTo(String path, InputStream in) {
         if (in == null)
             throw new IllegalArgumentException("input stream cannot be null");
         if (path == null)
             throw new IllegalArgumentException("path cannot be null");
 
-        FileOutputStream out = new FileOutputStream(path);
+        FileOutputStream out = null;
         try {
+            out = new FileOutputStream(path);
             byte[] bytes = new byte[1024];
             for (int x = in.read(bytes); x != -1; x = in.read(bytes))
                 out.write(bytes, 0, x);
-        } finally {
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+        finally {
             close(out);
         }
     }
@@ -309,5 +313,15 @@ public class Util {
         throwable.printStackTrace(pw);
         pw.flush();
         return sw.toString();
+    }
+
+    /**
+     * Saves content of byte array to file.
+     *
+     * @param path path to file - can be absolute or relative to current.
+     * @param content bytes to save.
+     */
+    public static void saveTo(String path, byte[] content){
+        saveTo(path, new ByteArrayInputStream(content));
     }
 }
