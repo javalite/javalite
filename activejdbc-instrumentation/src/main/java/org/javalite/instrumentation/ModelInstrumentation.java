@@ -19,7 +19,8 @@ package org.javalite.instrumentation;
 
 import javassist.*;
 import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.URI;
+import java.io.File;
 
 
 public class ModelInstrumentation{
@@ -52,12 +53,12 @@ public class ModelInstrumentation{
     }
 
     private String getOutputDirectory(CtClass modelClass) throws NotFoundException, URISyntaxException {
-        URL u = modelClass.getURL();
-        String file = u.getFile();
-        file = file.substring(0, file.length() - 6);
+        URI u = modelClass.getURL().toURI();
+        File f = new File(u);
+        String fp = f.getPath();
         String className = modelClass.getName();
         className = className.replace(".", "/");
-        return file.substring(0, file.indexOf(className));
+        return fp.substring(0, fp.indexOf(className));
     }
 
     private void addDelegates(CtClass target) throws NotFoundException, CannotCompileException {
