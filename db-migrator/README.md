@@ -76,7 +76,7 @@ Here is an example of simple configuration:
     <configuration>
         <driver>com.mysql.jdbc.Driver</driver>
         <url>jdbc:mysql://localhost/test_project</url>
-        <username>.your user</username>
+        <username>your user</username>
         <password>your password</password>
     </configuration>
     <dependencies>
