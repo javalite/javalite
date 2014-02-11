@@ -126,7 +126,14 @@ where user, password and driver are configured as project properties.
     <artifactId>db-migrator-maven-plugin</artifactId>
     <executions>
         <execution>
-            <id>tst_migrations</id>
+            <id>dev_migrations</id>
+            <phase>validate</phase>
+            <goals>
+                <goal>migrate</goal>
+            </goals>
+        </execution>
+        <execution>
+            <id>test_migrations</id>
             <phase>validate</phase>
             <goals>
                 <goal>migrate</goal>
@@ -139,7 +146,9 @@ where user, password and driver are configured as project properties.
 </plugin>
 ```
 As you can see, the plugin tied to validate phase, which will ensure that it will migrate
-schema at the very start of the build. Add more executions to run against multiple databases.
+schema at the very start of the build. Add more executions to run against multiple databases. You can use Maven profiles
+with this plugin to migrate databases in different environments, such as production.
+
 
 
 ## Configuration properties
