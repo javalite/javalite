@@ -139,7 +139,7 @@ where user, password and driver are configured as project properties.
 </plugin>
 ```
 As you can see, the plugin tied to validate phase, which will ensure that it will migrate
-schema at the very start of the build.
+schema at the very start of the build. Add more executions to run against multiple databases.
 
 
 ## Configuration properties
