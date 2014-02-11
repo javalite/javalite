@@ -5,7 +5,7 @@ understand what database migration is.
 
 ## Maven plugin
 
-Current implementation of this project is a Maven Plugin
+Current implementation of this project is a Maven Plugin. Future releases will include a standalone library for non-Maven projects.
 
 ## How to use
 
@@ -64,7 +64,7 @@ You can execute plugin help goal to get all information on all other goals:
 Generally, just add a plugin configuration to your pom, as described below. If you want to download, you can
 do so here: <a href="http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22db-migrator-maven-plugin%22">db-migrator-maven-plugin</a>
 
-## How to configure
+## Maven configuration
 
 Here is an example of simple configuration:
 
@@ -140,3 +140,14 @@ where user, password and driver are configured as project properties.
 ```
 As you can see, the plugin tied to validate phase, which will ensure that it will migrate
 schema at the very start of the build.
+
+
+## Configuration properties
+
+* `url` - JDBC connection URL
+* `driver` - JDBC connection driver
+* `username` - JDBC connection user name
+* `password` - JDBC connection password
+* `migrationsPath` - location of migration files, defaults to  `src/migrations/`
+* `createSql` - create database SQL, defaults to `create database {$your database}`
+* `dropSql` - drop database SQL, defaults to `drop database {$your database}`
