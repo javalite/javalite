@@ -1045,7 +1045,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         // NOTE: this is a workaround for JSP pages. JSTL in cases ${item.id} does not call the getId() method, instead
         //calls item.get("id"), considering that this is a map only!        
-        if(attribute.equalsIgnoreCase("id")){
+        if(!attributes.containsKey("id") && attribute.equalsIgnoreCase("id")){
             String idName = getMetaModelLocal().getIdName();
             return attributes.get(idName.toLowerCase());
         }
