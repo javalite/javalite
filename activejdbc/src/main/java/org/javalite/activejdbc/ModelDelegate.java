@@ -47,7 +47,7 @@ class ModelDelegate {
         int j = 0;
         for (int i = 0; i < namesAndValues.length - 1; i += 2, j++) {
             if (namesAndValues[i] == null) throw new IllegalArgumentException("attribute names cannot be nulls");
-            names[j] = (String) namesAndValues[i];
+            names[j] = namesAndValues[i].toString();
             values[j] = namesAndValues[i + 1];
         }
         m.set(names, values);
