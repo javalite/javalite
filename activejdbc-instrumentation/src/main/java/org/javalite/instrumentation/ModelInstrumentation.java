@@ -55,7 +55,7 @@ public class ModelInstrumentation{
     private String getOutputDirectory(CtClass modelClass) throws NotFoundException, URISyntaxException {
         URI u = modelClass.getURL().toURI();
         File f = new File(u);
-        String fp = f.getPath();
+        String fp = f.getPath().replace("\\", "/");
         String className = modelClass.getName();
         className = className.replace(".", "/");
         return fp.substring(0, fp.indexOf(className));
