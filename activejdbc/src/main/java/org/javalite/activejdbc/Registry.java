@@ -29,6 +29,7 @@ import java.util.*;
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import org.javalite.activejdbc.dialects.DefaultDialect;
 
 import org.javalite.common.Inflector;
 import org.slf4j.Logger;
@@ -323,10 +324,12 @@ public enum Registry {
 
     private Map<String, ColumnMetadata> getColumns(ResultSet rs, String dbProduct) throws SQLException {
          Map<String, ColumnMetadata> columns = new HashMap<String, ColumnMetadata>();
+         // I'm not sure if Model.getMetaModel() returns always correct MetaModel instance here.
+         DefaultDialect dialect = getConfiguration().getDialect(Model.getMetaModel());
         while (rs.next()) {
         	
         	if (dbProduct.equals("h2") && "INFORMATION_SCHEMA".equals(rs.getString("TABLE_SCHEMA"))) continue; //skip h2 INFORMATION_SCHEMA table columns.
-            ColumnMetadata cm = new ColumnMetadata(rs.getString("COLUMN_NAME").toLowerCase(), rs.getString("TYPE_NAME"), rs.getInt("COLUMN_SIZE"));
+            ColumnMetadata cm = new ColumnMetadata(dialect.getDefaultConvertedCase(rs.getString("COLUMN_NAME")), rs.getString("TYPE_NAME"), rs.getInt("COLUMN_SIZE"));
             columns.put(cm.getColumnName(), cm);
         }
         return columns;

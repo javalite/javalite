@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
+import org.javalite.activejdbc.dialects.DefaultDialect;
 
 import static org.javalite.common.Collections.list;
 
@@ -498,9 +499,10 @@ public class LazyList<T extends Model> extends AbstractList<T>{
         final Map<Object, List<Model>> childrenByParentId = new HashMap<Object, List<Model>>();
 
         List ids = collect(metaModel.getIdName());
+        DefaultDialect dialect = Registry.instance().getConfiguration().getDialect(childMM);
         
-        String sql =  "SELECT " + association.getTarget() + ".*, t." + association.getSourceFkName() + " AS the_parent_record_id FROM " + association.getTarget() +
-        " INNER JOIN " + association.getJoin() + " t ON " + association.getTarget() + "." + association.getTargetPk() + " = t." + association.getTargetFkName() + " WHERE (t." + association.getSourceFkName()
+        String sql =  "SELECT " + dialect.getQuotedIdentifier(association.getTarget()) + ".*, t." + dialect.getQuotedIdentifier(association.getSourceFkName()) + " AS the_parent_record_id FROM " + dialect.getQuotedIdentifier(association.getTarget()) +
+        " INNER JOIN " + dialect.getQuotedIdentifier(association.getJoin()) + " t ON " + dialect.getQuotedIdentifier(association.getTarget()) + "." + dialect.getQuotedIdentifier(association.getTargetPk()) + " = t." + dialect.getQuotedIdentifier(association.getTargetFkName()) + " WHERE (t." + dialect.getQuotedIdentifier(association.getSourceFkName())
                 + "  IN (" + Util.join(ids, ", ") + "))";
 
 

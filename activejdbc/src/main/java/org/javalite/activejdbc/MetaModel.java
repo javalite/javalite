@@ -44,13 +44,13 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
     private List<String> attributeNamesNoId;
 
     protected MetaModel(String dbName, String tableName, String idName, Class<T> modelClass, String dbType, boolean cached, String idGeneratorCode) {
-        this.idName = idName.toLowerCase();
         this.tableName = tableName;
         this.modelClass = modelClass;
         this.dbType = dbType;
         this.cached = cached;
         this.dbName = dbName;
         this.idGeneratorCode = idGeneratorCode;
+        this.idName = getDialect().getDefaultConvertedCase(idName);
     }
 
     public String getIdGeneratorCode(){
@@ -102,7 +102,7 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
     public List<String> getAttributeNamesSkipGenerated() {
         //TODO: can cache this
         List<String> attributes = getAttributeNames();
-        attributes.remove(getIdName().toLowerCase());
+        attributes.remove(getDialect().getDefaultConvertedCase(getIdName()));
         attributes.remove("created_at");
         attributes.remove("updated_at");
         attributes.remove("record_version");
@@ -117,7 +117,7 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
     public List<String> getAttributeNamesSkip(String ... names) {
         List<String> attributes = getAttributeNames();
         for(String name:names){
-            attributes.remove(name.toLowerCase());
+            attributes.remove(getDialect().getDefaultConvertedCase(name));
         }
         return attributes;
     }
@@ -224,7 +224,7 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
      * @return true if this attribute is present in this meta model, false of not.
      */
     boolean hasAttribute(String attribute) {
-        return columnMetadata != null && columnMetadata.containsKey(attribute.toLowerCase());
+        return columnMetadata != null && columnMetadata.containsKey(getDialect().getDefaultConvertedCase(attribute));
     }
 
     protected boolean hasAssociation(String table, Class<? extends Association> associationClass){
@@ -255,7 +255,7 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
      * @return foreign key name used in relationships as a foreign key column in a child table.
      */
     public String getFKName() {
-        return singularize(getTableName()).toLowerCase() + "_id";
+        return getDialect().getDefaultConvertedCase(singularize(getTableName())) + "_id";
     }
 
     protected List<OneToManyAssociation>  getOneToManyAssociations(List<Association> exclusions) {

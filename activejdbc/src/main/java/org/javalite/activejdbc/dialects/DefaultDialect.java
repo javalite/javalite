@@ -32,7 +32,7 @@ public class DefaultDialect {
     protected final Pattern groupByPattern = Pattern.compile("^group *by", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
     public String selectStar(String table, String query){        
-        return query != null? "SELECT * FROM " + table + " WHERE " + query : "SELECT * FROM " + table;
+        return query != null? "SELECT * FROM " + getQuotedIdentifier(table) + " WHERE " + query : "SELECT * FROM " + getQuotedIdentifier(table);
     }
 
     /**
@@ -50,7 +50,7 @@ public class DefaultDialect {
      * @return something like: "select * from table_name where name = ? and last_name = ? ..."
      */
     public String selectStarParametrized(String table, String ... parameters) {
-        String sql = "SELECT * FROM " + table + " WHERE ";
+        String sql = "SELECT * FROM " + getQuotedIdentifier(table) + " WHERE ";
 
         for(String parameter:parameters){
             sql += parameter + " = ? AND ";
@@ -60,7 +60,7 @@ public class DefaultDialect {
 
     public String createParametrizedInsert(MetaModel mm, List<String> nonNullAttributes){
 
-        String query = "INSERT INTO " + mm.getTableName() + " (" + Util.join(nonNullAttributes, ", ");
+        String query = "INSERT INTO " + getQuotedIdentifier(mm.getTableName()) + " (" + Util.join(nonNullAttributes, ", ");
         query += mm.getIdGeneratorCode()!= null ? ", " + mm.getIdName() :"";
         query += mm.isVersioned()? ", " + "record_version" :"";
         query += ") VALUES ("+ getQuestions(nonNullAttributes.size());
@@ -72,7 +72,7 @@ public class DefaultDialect {
     }
 
     public String createParametrizedInsertIdUnmanaged(MetaModel mm, List<String> nonNullAttributes){
-        String query = "INSERT INTO " + mm.getTableName() + " (" + Util.join(nonNullAttributes, ", ");
+        String query = "INSERT INTO " + getQuotedIdentifier(mm.getTableName()) + " (" + Util.join(nonNullAttributes, ", ");
         query += mm.isVersioned()? ", " + "record_version" :"";
         query += ") VALUES ("+ getQuestions(nonNullAttributes.size());
         query += mm.isVersioned()? ", " + 1 :"";
@@ -82,7 +82,7 @@ public class DefaultDialect {
     }
 
 
-    private String getQuestions(int count){
+    protected String getQuestions(int count){
         String [] questions = new String[count];
         for(int i = 0; i < count; i++){
             questions[i] = "?";
@@ -92,7 +92,7 @@ public class DefaultDialect {
 
    public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
 
-        String fullQuery = "SELECT * FROM " + tableName;
+        String fullQuery = "SELECT * FROM " + getQuotedIdentifier(tableName);
 
         if(!Util.blank(subQuery)){
             String where = " WHERE ";
@@ -112,5 +112,12 @@ public class DefaultDialect {
    
    public Object overrideDriverTypeConversion(MetaModel mm, String attributeName, Object value) {
 	   return value;
+   }
+   
+   public String getQuotedIdentifier(String identifier){
+       return identifier;
+   }
+   public String getDefaultConvertedCase(String string){
+       return string.toLowerCase();
    }
 }
