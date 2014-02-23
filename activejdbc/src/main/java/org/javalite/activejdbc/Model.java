@@ -277,8 +277,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public boolean delete() {
         fireBeforeDelete(this);
         boolean result;
-        if( 1 == new DB(getMetaModelLocal().getDbName()).exec("DELETE FROM " + getDialect().getQuotedIdentifier(getMetaModelLocal().getTableName())
-                + " WHERE " + getDialect().getQuotedIdentifier(getMetaModelLocal().getIdName()) + "= ?", getId())) {
+        if( 1 == new DB(getMetaModelLocal().getDbName()).exec(
+                getDialect().Model_delete(getMetaModelLocal().getTableName(), getMetaModelLocal().getIdName()),
+                getId())) {
 
             frozen = true;
             if(getMetaModelLocal().cached()){
@@ -471,17 +472,15 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         for (Association association : associations) {
             String join = ((Many2ManyAssociation)association).getJoin();
             String sourceFK = ((Many2ManyAssociation)association).getSourceFkName();
-            String query = "DELETE FROM " + getDialect().getQuotedIdentifier(join) + " WHERE " + getDialect().getQuotedIdentifier(sourceFK) + " = " + getId();
-            new DB(getMetaModelLocal().getDbName()).exec(query);
+            new DB(getMetaModelLocal().getDbName()).exec(getDialect().Model_deleteJoinsForManyToMany(join, sourceFK, getId().toString()));
         }
     }
 
     private void deleteOne2ManyChildrenShallow() {
         List<OneToManyAssociation> childAssociations = getMetaModelLocal().getOneToManyAssociations(Collections.<Association>emptyList());
         for (OneToManyAssociation association : childAssociations) {
-            String  target = association.getTarget();
-            String query = "DELETE FROM " + getDialect().getQuotedIdentifier(target) + " WHERE " + getDialect().getQuotedIdentifier(association.getFkName()) + " = ?";
-            new DB(getMetaModelLocal().getDbName()).exec(query, getId());
+            new DB(getMetaModelLocal().getDbName()).exec(
+                    getDialect().Model_deleteOne2ManyChildrenShallow(association.getTarget(), association.getFkName()), getId());
         }
     }
 
@@ -490,8 +489,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         for (OneToManyPolymorphicAssociation association : polymorphics) {
             String  target = association.getTarget();
             String parentType = association.getTypeLabel();
-            String query = "DELETE FROM " + getDialect().getQuotedIdentifier(target) + " WHERE parent_id = ? AND parent_type = ?";
-            new DB(getMetaModelLocal().getDbName()).exec(query, getId(), parentType);
+            new DB(getMetaModelLocal().getDbName()).exec(getDialect().Model_deletePolymorphicChildrenShallow(target), getId(), parentType);
         }
     }
 
@@ -529,8 +527,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public static int delete(String query, Object... params) {
         MetaModel metaModel = getMetaModel();
-        int count =  params == null || params.length == 0? new DB(metaModel.getDbName()).exec("DELETE FROM " + metaModel.getDialect().getQuotedIdentifier(metaModel.getTableName()) + " WHERE " + query) :
-        new DB(metaModel.getDbName()).exec("DELETE FROM " + metaModel.getDialect().getQuotedIdentifier(metaModel.getTableName()) + " WHERE " + query, params);
+        int count =  params == null || params.length == 0? new DB(metaModel.getDbName()).exec(
+                metaModel.getDialect().Model_staticDelete(metaModel.getTableName(), query)) :
+        new DB(metaModel.getDbName()).exec(metaModel.getDialect().Model_staticDelete(metaModel.getTableName(), query), params);
         if(metaModel.cached()){
             QueryCache.instance().purgeTableCache(metaModel.getTableName());
         }
@@ -546,8 +545,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public static boolean exists(Object id){
         MetaModel metaModel = getMetaModel();
-        return null != new DB(metaModel.getDbName()).firstCell("SELECT " + metaModel.getDialect().getQuotedIdentifier(metaModel.getIdName()) + " FROM " + metaModel.getDialect().getQuotedIdentifier(metaModel.getTableName())
-                + " WHERE " + metaModel.getDialect().getQuotedIdentifier(metaModel.getIdName()) + " = ?", id);
+        return null != new DB(metaModel.getDbName()).firstCell(metaModel.getDialect().Model_exists(metaModel.getIdName(), metaModel.getTableName()), id);
     }
 
     /**
@@ -557,8 +555,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public boolean exists(){
         MetaModel metaModel = getMetaModelLocal();
-        return null != new DB(metaModel.getDbName()).firstCell("SELECT " + metaModel.getDialect().getQuotedIdentifier(metaModel.getIdName()) + " FROM " + metaModel.getDialect().getQuotedIdentifier(metaModel.getTableName())
-                + " WHERE " + metaModel.getDialect().getQuotedIdentifier(metaModel.getIdName()) + " = ?", getId());
+        return null != new DB(metaModel.getDbName()).firstCell(metaModel.getDialect().Model_exists(metaModel.getIdName(), metaModel.getTableName()), getId());
     }
 
     /**
@@ -568,7 +565,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public static int deleteAll() {
         MetaModel metaModel = getMetaModel();
-        int count = new DB(metaModel.getDbName()).exec("DELETE FROM " + metaModel.getDialect().getQuotedIdentifier(metaModel.getTableName()));
+        int count = new DB(metaModel.getDbName()).exec(metaModel.getDialect().Model_deleteAll(metaModel.getTableName()));
         if(metaModel.cached()){
             QueryCache.instance().purgeTableCache(metaModel.getTableName());
         }
@@ -1435,9 +1432,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             String targetId = Registry.instance().getMetaModel(targetTable).getIdName();
             String joinTable = manyToManyAssociation.getJoin();
 
-            String query = "SELECT " + getDialect().getQuotedIdentifier(targetTable) + ".* FROM " + getDialect().getQuotedIdentifier(targetTable) + ", " + getDialect().getQuotedIdentifier(joinTable) +
-                " WHERE " + getDialect().getQuotedIdentifier(targetTable) + "." + getDialect().getQuotedIdentifier(targetId) + " = " + getDialect().getQuotedIdentifier(joinTable) + "." + getDialect().getQuotedIdentifier(manyToManyAssociation.getTargetFkName()) +
-                " AND " + getDialect().getQuotedIdentifier(joinTable) + "." + getDialect().getQuotedIdentifier(manyToManyAssociation.getSourceFkName()) + " = " + getId() + additionalCriteria;
+            String query = getDialect().Model_get(targetTable, joinTable, targetId, manyToManyAssociation.getTargetFkName(),
+                    manyToManyAssociation.getSourceFkName(), getId().toString(), additionalCriteria);
             return new LazyList<T>(true, Registry.instance().getMetaModel(targetTable), query, params);
         } else if (oneToManyPolymorphicAssociation != null) {
             subQuery = "parent_id = " + getId() + " AND " + " parent_type = '" + oneToManyPolymorphicAssociation.getTypeLabel() + "'" + additionalCriteria;
@@ -1921,7 +1917,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
                 MetaModel joinMM = Registry.instance().getMetaModel(join);
                 if(joinMM == null){
-                    new DB(metaModel.getDbName()).exec("INSERT INTO " + getDialect().getQuotedIdentifier(join) + " ( " + getDialect().getQuotedIdentifier(sourceFkName) + ", " + getDialect().getQuotedIdentifier(targetFkName) + " ) VALUES ( " + getId()+ ", " + child.getId() + ")");
+                    new DB(metaModel.getDbName()).exec(getDialect().Model_add(join, sourceFkName, targetFkName, getId().toString(), child.getId().toString()));
                 }else{
                     //TODO: write a test to cover this case:
                     //this is for Oracle, many 2 many, and all annotations used, including @IdGenerator. In this case,
@@ -1992,8 +1988,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 String join = ass.getJoin();
                 String sourceFkName = ass.getSourceFkName();
                 String targetFkName = ass.getTargetFkName();
-                new DB(metaModel.getDbName()).exec("DELETE FROM " + getDialect().getQuotedIdentifier(join) + " WHERE " + getDialect().getQuotedIdentifier(sourceFkName) + " = ? AND "
-                        + getDialect().getQuotedIdentifier(targetFkName) + " = ?", getId(), child.getId());
+                new DB(metaModel.getDbName()).exec(getDialect().Model_remove(join, sourceFkName, targetFkName), getId(), child.getId());
             }else
                 throw new NotAssociatedException(metaModel.getTableName(), childTable);
         } else {
@@ -2097,7 +2092,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public static Long count() {
         MetaModel metaModel = getMetaModel();
-        String sql = "SELECT COUNT(*) FROM " + metaModel.getDialect().getQuotedIdentifier(metaModel.getTableName());
+        String sql = metaModel.getDialect().Model_count(metaModel.getTableName());
         Long result;
         if(metaModel.cached()){
          result = (Long)QueryCache.instance().getItem(metaModel.getTableName(), sql, null);
@@ -2124,7 +2119,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         MetaModel metaModel = getMetaModel();
 
         //attention: this SQL is only used for caching, not for real queries.
-        String sql = "SELECT COUNT(*) FROM " + metaModel.getDialect().getQuotedIdentifier(metaModel.getTableName()) + " WHERE " + query;
+        String sql = metaModel.getDialect().Model_count(metaModel.getTableName(), query);
 
         Long result;
         if(metaModel.cached()){
@@ -2260,15 +2255,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         doUpdatedAt();
 
         MetaModel metaModel = getMetaModelLocal();
-        String query = "UPDATE " + getDialect().getQuotedIdentifier(metaModel.getTableName()) + " SET ";
-        List<String> names = metaModel.getAttributeNamesSkipGenerated();
-        for (int i = 0; i < names.size(); i++) {
-            String name = names.get(i);
-            query += getDialect().getQuotedIdentifier(name) + "= ?";
-            if (i < names.size() - 1) {
-                query += ", ";
-            }
-        }
+        String query = getDialect().Model_updatePartial(metaModel.getTableName(), metaModel.getAttributeNamesSkipGenerated());
 
         List values = getAttributeValuesSkipGenerated();
 
@@ -2446,10 +2433,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 }
             }
         }
-        return new StringBuffer("INSERT INTO ")
-                .append(getDialect().getQuotedIdentifier(getMetaModelLocal().getTableName())).append(" (")
-                .append(getDialect().getQuotedIdentifier(Util.join(names, getDialect().getQuotedIdentifier(", "))))
-                .append(") VALUES (").append(Util.join(values, ", ")).append(")").toString();
+        return getDialect().Model_toInsert(getMetaModelLocal().getTableName(), names, values);
     }
 
     /**

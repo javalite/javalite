@@ -236,8 +236,7 @@ public class DB {
      * @return count of rows in table.
      */
     public Long count(String table){
-        String sql = "SELECT COUNT(*) FROM " + getDialect().getQuotedIdentifier(table);
-        return Convert.toLong(firstCell(sql));
+        return Convert.toLong(firstCell(getDialect().DB_count(table)));
     }
 
     /**
@@ -258,8 +257,8 @@ public class DB {
             throw new IllegalArgumentException("cannot use '*' and parameters");
         }
 
-        String sql = "SELECT COUNT(*) FROM " + getDialect().getQuotedIdentifier(table) + " WHERE " + query;
-        return Convert.toLong(firstCell(sql, params));
+        
+        return Convert.toLong(firstCell(getDialect().DB_count(table, query), params));
     }
 
 

@@ -25,7 +25,7 @@ class ModelDelegate {
         } else {
             allParams = params;
         }
-        String sql = "UPDATE " + metaModel.getDialect().getQuotedIdentifier(metaModel.getTableName()) + " SET " + updates + ((conditions != null) ? " WHERE " + conditions : "");
+        String sql = metaModel.getDialect().ModelDelegate_update(metaModel.getTableName(), updates, conditions);
         int count = new DB(metaModel.getDbName()).exec(sql, allParams);
         if (metaModel.cached()) {
             QueryCache.instance().purgeTableCache(metaModel.getTableName());

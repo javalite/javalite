@@ -499,13 +499,11 @@ public class LazyList<T extends Model> extends AbstractList<T>{
         final Map<Object, List<Model>> childrenByParentId = new HashMap<Object, List<Model>>();
 
         List ids = collect(metaModel.getIdName());
-        DefaultDialect dialect = Registry.instance().getConfiguration().getDialect(childMM);
         
-        String sql =  "SELECT " + dialect.getQuotedIdentifier(association.getTarget()) + ".*, t." + dialect.getQuotedIdentifier(association.getSourceFkName()) + " AS the_parent_record_id FROM " + dialect.getQuotedIdentifier(association.getTarget()) +
-        " INNER JOIN " + dialect.getQuotedIdentifier(association.getJoin()) + " t ON " + dialect.getQuotedIdentifier(association.getTarget()) + "." + dialect.getQuotedIdentifier(association.getTargetPk()) + " = t." + dialect.getQuotedIdentifier(association.getTargetFkName()) + " WHERE (t." + dialect.getQuotedIdentifier(association.getSourceFkName())
-                + "  IN (" + Util.join(ids, ", ") + "))";
-
-
+        String sql =   Registry.instance().getConfiguration().getDialect(childMM).
+                LazyList_processOther(association.getTarget(), association.getSourceFkName(), association.getJoin(), association.getTargetPk(), 
+                        association.getTargetFkName(), ids);
+ 
         List<Map> childResults = new DB(childMM.getDbName()).findAll(sql);
 
         for(Map res: childResults){
