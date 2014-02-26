@@ -1,0 +1,4 @@
+Testsuite: activejdbc.ant.example.EmployeeSpec
+Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 0.245 sec
+
+Testcase: shouldValidateMandatoryFields took 0.235 sec
