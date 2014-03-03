@@ -22,7 +22,7 @@ import org.javalite.activejdbc.Registry;
 
 
 public class UniquenessValidator extends ValidatorAdapter {
-    private final String attribute;
+    private String attribute;
     public UniquenessValidator(String attribute) {
         this.attribute = attribute;
         setMessage("should be unique");
