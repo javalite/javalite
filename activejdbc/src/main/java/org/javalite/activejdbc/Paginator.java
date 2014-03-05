@@ -87,8 +87,7 @@ public class Paginator implements Serializable {
 
         this.fullQuery = query.trim().toLowerCase().startsWith("select");
 
-        countQuery = fullQuery ? "SELECT COUNT(*) " + query.substring(query.toLowerCase().indexOf("from"))
-                               : "SELECT COUNT(*) FROM " + metaModel.getTableName() + " WHERE " + query;
+        countQuery = metaModel.getDialect().Paginator_Paginator(fullQuery, query, metaModel.getTableName());
     }
 
     /**

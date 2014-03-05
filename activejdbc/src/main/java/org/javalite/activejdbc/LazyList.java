@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
+import org.javalite.activejdbc.dialects.DefaultDialect;
 
 import static org.javalite.common.Collections.list;
 
@@ -499,11 +500,10 @@ public class LazyList<T extends Model> extends AbstractList<T>{
 
         List ids = collect(metaModel.getIdName());
         
-        String sql =  "SELECT " + association.getTarget() + ".*, t." + association.getSourceFkName() + " AS the_parent_record_id FROM " + association.getTarget() +
-        " INNER JOIN " + association.getJoin() + " t ON " + association.getTarget() + "." + association.getTargetPk() + " = t." + association.getTargetFkName() + " WHERE (t." + association.getSourceFkName()
-                + "  IN (" + Util.join(ids, ", ") + "))";
-
-
+        String sql =   Registry.instance().getConfiguration().getDialect(childMM).
+                LazyList_processOther(association.getTarget(), association.getSourceFkName(), association.getJoin(), association.getTargetPk(), 
+                        association.getTargetFkName(), ids);
+ 
         List<Map> childResults = new DB(childMM.getDbName()).findAll(sql);
 
         for(Map res: childResults){

@@ -4,6 +4,7 @@ import org.javalite.activejdbc.cache.QueryCache;
 
 import java.sql.Timestamp;
 import java.util.List;
+import org.javalite.activejdbc.dialects.DefaultDialect;
 
 /**
  * @author Igor Polevoy: 4/25/12 2:45 AM
@@ -24,7 +25,7 @@ class ModelDelegate {
         } else {
             allParams = params;
         }
-        String sql = "UPDATE " + metaModel.getTableName() + " SET " + updates + ((conditions != null) ? " WHERE " + conditions : "");
+        String sql = metaModel.getDialect().ModelDelegate_update(metaModel.getTableName(), updates, conditions);
         int count = new DB(metaModel.getDbName()).exec(sql, allParams);
         if (metaModel.cached()) {
             QueryCache.instance().purgeTableCache(metaModel.getTableName());
@@ -32,10 +33,10 @@ class ModelDelegate {
         return count;
     }
 
-    static String[] toLowerCase(String[] arr) {
+    static String[] toDefaultCase(DefaultDialect dialect, String[] arr) {
         String[] newArr = new String[arr.length];
         for (int i = 0; i < newArr.length; i++) {
-            newArr[i] = arr[i].toLowerCase();
+            newArr[i] = dialect.getDefaultConvertedCase(arr[i]);
         }
         return newArr;
     }

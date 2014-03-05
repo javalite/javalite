@@ -26,6 +26,7 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.*;
+import org.javalite.activejdbc.dialects.DefaultDialect;
 
 /**
  * This class provides a number of convenience methods for opening/closing database connections, running various 
@@ -235,8 +236,7 @@ public class DB {
      * @return count of rows in table.
      */
     public Long count(String table){
-        String sql = "SELECT COUNT(*) FROM " + table ;
-        return Convert.toLong(firstCell(sql));
+        return Convert.toLong(firstCell(getDialect().DB_count(table)));
     }
 
     /**
@@ -257,8 +257,8 @@ public class DB {
             throw new IllegalArgumentException("cannot use '*' and parameters");
         }
 
-        String sql = "SELECT COUNT(*) FROM " + table + " WHERE " + query;
-        return Convert.toLong(firstCell(sql, params));
+        
+        return Convert.toLong(firstCell(getDialect().DB_count(table, query), params));
     }
 
 
@@ -745,5 +745,9 @@ public class DB {
         } catch (SQLException e) {
             throw new DBException(e);
         }
+    }
+    private DefaultDialect getDialect(){
+        // I'm not sure if Model.getMetaModel() returns always correct MetaModel instance here.
+        return Registry.instance().getConfiguration().getDialect(Model.getMetaModel());
     }
 }

@@ -82,7 +82,7 @@ public class DefaultDialect {
     }
 
 
-    private String getQuestions(int count){
+    protected String getQuestions(int count){
         String [] questions = new String[count];
         for(int i = 0; i < count; i++){
             questions[i] = "?";
@@ -112,5 +112,98 @@ public class DefaultDialect {
    
    public Object overrideDriverTypeConversion(MetaModel mm, String attributeName, Object value) {
 	   return value;
+   }
+   
+   
+   
+   
+   
+   
+   
+   public String DB_count(String table){
+        return "SELECT COUNT(*) FROM " + table;
+    }
+   public String DB_count(String table, String where){
+        return "SELECT COUNT(*) FROM " + table + " WHERE " + where;
+    }
+   public String LazyList_processOther(String target, String sourceFkName, String join, String targetPk, String targetFkName, List ids){
+        return "SELECT " + target + ".*, t." + sourceFkName + " AS the_parent_record_id FROM " + target +
+        " INNER JOIN " + join + " t ON " + target + "." + targetPk + " = t." + targetFkName + " WHERE (t." + sourceFkName
+                + "  IN (" + Util.join(ids, ", ") + "))";
+    }
+   public String ModelDelegate_update(String tableName, String updates, String conditions){
+       return "UPDATE " + tableName + " SET " + updates + ((conditions != null) ? " WHERE " + conditions : "");
+   }
+   public String Model_delete(String tableName, String idName){
+       return "DELETE FROM " + tableName + " WHERE " + idName + "= ?";
+   }
+   public String Model_deleteJoinsForManyToMany(String join, String sourceFK, String id){
+       return "DELETE FROM " + join + " WHERE " + sourceFK + " = " + id;
+   }
+   public String Model_deleteOne2ManyChildrenShallow(String target, String fkName){
+       return "DELETE FROM " + target + " WHERE " + fkName + " = ?";
+   }
+   public String Model_deletePolymorphicChildrenShallow(String target){
+       return "DELETE FROM " + target + " WHERE parent_id = ? AND parent_type = ?";
+   }
+   public String Model_staticDelete(String tableName, String query){
+       return "DELETE FROM " + tableName + " WHERE " + query;
+   }
+   public String Model_exists(String idName, String tableName){
+       return "SELECT " + idName + " FROM " + tableName
+                + " WHERE " + idName + " = ?";
+   }
+   public String Model_deleteAll(String tableName){
+       return "DELETE FROM " + tableName;
+   }
+   public String Model_get(String targetTable, String joinTable, String targetId, String targetFkName, String sourceFkName, String id, String additionalCriteria){
+       return "SELECT " + targetTable + ".* FROM " + targetTable + ", " + joinTable +
+                " WHERE " + targetTable + "." + targetId + " = " + joinTable + "." + targetFkName +
+                " AND " + joinTable + "." + sourceFkName + " = " + id + additionalCriteria;
+   }
+   public String Model_add(String join, String sourceFkName, String targetFkName, String id, String childId){
+       return "INSERT INTO " + join + " ( " + sourceFkName + ", " + targetFkName + " ) VALUES ( " + id + ", " + childId + ")";
+   }
+   public String Model_remove(String join, String sourceFkName, String targetFkName){
+       return "DELETE FROM " + join + " WHERE " + sourceFkName + " = ? AND "
+                        + targetFkName + " = ?";
+   }
+   public String Model_count(String tableName){
+       return "SELECT COUNT(*) FROM " + tableName;
+   }
+   public String Model_count(String tableName, String query){
+       return "SELECT COUNT(*) FROM " + tableName + " WHERE " + query;
+   }
+   public String Model_updatePartial(String tableName, List<String> names){
+       String query = "UPDATE " + tableName + " SET ";
+        for (int i = 0; i < names.size(); i++) {
+            String name = names.get(i);
+            query += name + "= ?";
+            if (i < names.size() - 1) {
+                query += ", ";
+            }
+        }
+        return query;
+   }
+   public String Model_toInsert(String tableName, List<String> names, List<Object> values){
+       return new StringBuffer("INSERT INTO ")
+                .append(tableName).append(" (")
+                .append(Util.join(names, ", "))
+                .append(") VALUES (").append(Util.join(values, ", ")).append(")").toString();
+   }
+   public String Paginator_Paginator(boolean fullQuery, String query, String tableName){
+       return fullQuery ? "SELECT COUNT(*) " + query.substring(query.toLowerCase().indexOf("from"))
+                               : "SELECT COUNT(*) FROM " + tableName + " WHERE " + query;
+   }
+   
+   
+   
+   
+   
+   
+   
+   
+   public String getDefaultConvertedCase(String string){
+       return string.toLowerCase();
    }
 }
