@@ -125,7 +125,7 @@ public abstract class AbstractMigrationMojo extends AbstractMojo {
     }
 
     public String getMigrationsPath() {
-        return migrationsPath;
+        return project == null? migrationsPath: project.getBasedir() + System.getProperty("file.separator") + migrationsPath;
     }
 
     public String getCreateSql() {

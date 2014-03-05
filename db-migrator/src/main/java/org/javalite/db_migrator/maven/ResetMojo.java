@@ -22,7 +22,7 @@ public class ResetMojo extends AbstractMigrationMojo {
             createMojo.executeMojo();
             migrateMojo.executeMojo();
         } catch (Exception e) {
-            throw new MojoExecutionException("Failed to reset database " + getUrl() + ", " + e.getMessage());
+            throw new MojoExecutionException("Failed to reset database " + getUrl(), e);
         }
     }
 

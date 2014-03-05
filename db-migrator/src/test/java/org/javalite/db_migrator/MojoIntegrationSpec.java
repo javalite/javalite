@@ -56,10 +56,7 @@ public class MojoIntegrationSpec {
         reCreateProject();
         String output = execute("mvn", "db-migrator:migrate");
 
-
-
-        the(output ).shouldContain("[INFO] Migrating jdbc:mysql://localhost/test_project using migrations at src/migrations/\n" +
-                "[INFO] Migrating database, applying 4 migration(s)\n" +
+        the(output).shouldContain("[INFO] Migrating database, applying 4 migration(s)\n" +
                 "[INFO] Running migration 20080718214030_base_schema.sql\n" +
                 "[INFO] Running migration 20080718214031_new_functions.sql\n" +
                 "[INFO] Running migration 20080718214032_new_proceedure.sql\n" +
@@ -87,10 +84,9 @@ public class MojoIntegrationSpec {
 
         System.out.println(output);
 
-        the(output).shouldContain("[INFO] Validating jdbc:mysql://localhost/test_project using migrations at src/migrations/\n" +
-                                    "[INFO] Database: jdbc:mysql://localhost/test_project\n" +
-                                    "[INFO] Up-to-date: true\n" +
-                                    "[INFO] No pending migrations found");
+        the(output).shouldContain("[INFO] Database: jdbc:mysql://localhost/test_project\n" +
+                "[INFO] Up-to-date: true\n" +
+                "[INFO] No pending migrations found");
 
         Base.close();
     }

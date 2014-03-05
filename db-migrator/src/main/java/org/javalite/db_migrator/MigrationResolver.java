@@ -21,13 +21,12 @@ public class MigrationResolver {
 
     public List<Migration> resolve() {
         File location = new File(migrationsLocation);
-        assert location.isDirectory();
+        logger.info("Trying migrations at: " + location.getAbsolutePath());
 
         //assume flat directory of migrations
-
         File[] files = location.listFiles();
 
-        if(files == null || files.length == 0) throw  new MigrationException("No migrations are found at: " + migrationsLocation);
+        if(files == null || files.length == 0) throw  new MigrationException("No migrations are found at: " + location.getAbsolutePath());
 
         //filter out garbage
         List<File> migrationsFiles = new ArrayList<File>();
