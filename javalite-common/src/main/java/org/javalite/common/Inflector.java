@@ -186,7 +186,7 @@ public class Inflector {
             }
         }
 
-        StringBuffer b = new StringBuffer(camel);
+        StringBuilder b = new StringBuilder(camel);
         for (int i = upper.size() - 1; i >= 0; i--) {
             Integer index = upper.get(i);
             if (index != 0)
@@ -238,11 +238,6 @@ public class Inflector {
 
     public static String shortName(String className) {
         return className.substring(className.lastIndexOf('.') + 1);
-    }
-
-    public static String getIdName(String tableName) {
-        String idName = Inflector.singularize(tableName) + "_id";
-        return idName.toLowerCase();
     }
 
     /**

@@ -76,16 +76,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * are new values for it.
      */
     public void fromMap(Map input){
-
         List<String> attributeNames = getMetaModelLocal().getAttributeNames();
-        
-        for (String attrName : attributeNames) {            
-            Object value = input.get(attrName.toLowerCase());
-            if (value == null) {
-                value = input.get(attrName.toUpperCase());
+        for (String attrName : attributeNames) {
+            if (input.containsKey(attrName)) {
+                attributes.put(attrName.toLowerCase(), input.get(attrName));
             }
-            if(input.containsKey(attrName.toLowerCase()) || input.containsKey(attrName.toUpperCase()))
-                attributes.put(attrName.toLowerCase(), value);
         }
     }
 
@@ -112,10 +107,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 continue;//skip ID, already set.
             }
 
-            Object value = attributesMap.get(attrName.toLowerCase());
-            if (value == null) {
-                value = attributesMap.get(attrName.toUpperCase());
-            }
+            Object value = attributesMap.get(attrName);
 
             //it is necessary to cache contents of a clob, because if a clob instance itself is cached, and accessed later,
             //it will not be able to connect back to that same connection from which it came.
@@ -123,7 +115,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             //Should the Blob behavior be the same?
             //TODO: write about this in future tutorial
             if( value instanceof Clob && getMetaModelLocal().cached() ){
-                this.attributes.put(attrName.toLowerCase(), Convert.toString(value));
+                this.attributes.put(attrName, Convert.toString(value));
             }else {
         		this.attributes.put(attrName, getMetaModelLocal().getDialect().overrideDriverTypeConversion(getMetaModelLocal(), attrName, value));
             }
@@ -210,7 +202,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         getMetaModelLocal().checkAttributeOrAssociation(attribute);
 
-        attributes.put(attribute.toLowerCase(), value);
+        attributes.put(attribute, value);
         return this;
     }
 
@@ -637,9 +629,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 continue;
 
             if(attributes.get(key) instanceof Clob){
-                retVal.put(key.toLowerCase(), getString(key));
+                retVal.put(key, getString(key));
             }else{
-                retVal.put(key.toLowerCase(), attributes.get(key));
+                retVal.put(key, attributes.get(key));
             }
         }
         for(Class parentClass: cachedParents.keySet()){
@@ -794,7 +786,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             sw.write("," + (pretty ? "\n  " + indent : "") + "\"children\" : {");
 
             for (Class childClass : cachedChildren.keySet()) {
-                String name = Inflector.pluralize(childClass.getSimpleName()).toLowerCase();
+                String name = Inflector.pluralize(childClass.getSimpleName());
                 sw.write((pretty ? "\n" + indent + "    " : "") + "\"" + name + "\" : [");
                 List<String> childrenList = new ArrayList<String>();
                 for (Model child : cachedChildren.get(childClass)) {
@@ -1047,11 +1039,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         //calls item.get("id"), considering that this is a map only!        
         if(!attributes.containsKey("id") && attribute.equalsIgnoreCase("id")){
             String idName = getMetaModelLocal().getIdName();
-            return attributes.get(idName.toLowerCase());
+            return attributes.get(idName);
         }
 
         Object returnValue;
-        String attributeName = attribute.toLowerCase();
+        String attributeName = attribute;
 
         String getInferenceProperty = System.getProperty("activejdbc.get.inference");
 
@@ -1441,7 +1433,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     protected static NumericValidationBuilder validateNumericalityOf(String... attributes) {
-        return ValidationHelper.addNumericalityValidators(getClassName(), ModelDelegate.toLowerCase(attributes));
+        return ValidationHelper.addNumericalityValidators(getClassName(), attributes);
     }
 
     /**
@@ -1482,7 +1474,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return
      */
     protected static ValidationBuilder validateRegexpOf(String attribute, String pattern) {
-        return ValidationHelper.addRegexpValidator(getClassName(), attribute.toLowerCase(), pattern);
+        return ValidationHelper.addRegexpValidator(getClassName(), attribute, pattern);
     }
 
     /**
@@ -1492,7 +1484,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return
      */
     protected static ValidationBuilder validateEmailOf(String attribute) {
-        return ValidationHelper.addEmailValidator(getClassName(), attribute.toLowerCase());
+        return ValidationHelper.addEmailValidator(getClassName(), attribute);
     }
 
     /**
@@ -1505,7 +1497,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return
      */
     protected static ValidationBuilder validateRange(String attribute, Number min, Number max) {
-        return ValidationHelper.addRangevalidator(getClassName(), attribute.toLowerCase(), min, max);
+        return ValidationHelper.addRangevalidator(getClassName(), attribute, min, max);
     }
 
     /**
@@ -1515,7 +1507,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return
      */
     protected static ValidationBuilder validatePresenceOf(String... attributes) {
-        return ValidationHelper.addPresensevalidators(getClassName(), ModelDelegate.toLowerCase(attributes));
+        return ValidationHelper.addPresensevalidators(getClassName(), attributes);
     }
 
     /**

@@ -54,7 +54,7 @@ public class RowProcessor {
         while (rs.next()) {
             HashMap<String, Object> row = new HashMap<String, Object>();
             for (String label : labels) {                
-                row.put(label.toLowerCase(), rs.getObject(label));
+                row.put(label, rs.getObject(label));
             }
             if(!listener.next(row)) break;
         }

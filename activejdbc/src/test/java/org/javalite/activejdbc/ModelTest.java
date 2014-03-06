@@ -502,16 +502,13 @@ public class ModelTest extends ActiveJDBCTest {
         a(user.get(Address.class, "address1 = ? or address2 = ?", "456 Brook St.", "apt 21").size()).shouldEqual(1);
     }
 
-    @Test
-    public void shouldAcceptUpperCaseAttributeName(){
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAcceptUpperCaseAttributeName(){
 
         Person.deleteAll();
         
         Person p = new Person();
-        p.set("NAME", "John");//before the upper case caused exception
-        p.set("last_name", "Deer");
-        p.saveIt();
-        a(Person.count()).shouldBeEqual(1);
+        p.set("Name", "John");//before the upper case caused exception
     }
 
 
@@ -574,6 +571,9 @@ public class ModelTest extends ActiveJDBCTest {
         a(c.get(Calendar.MILLISECOND)).shouldBeEqual(0);
         
     }
+
+
+
 }
 
 

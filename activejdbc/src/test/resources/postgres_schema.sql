@@ -1,6 +1,10 @@
 DROP TABLE IF EXISTS people;
 CREATE TABLE people (id serial PRIMARY KEY, name VARCHAR(56) NOT NULL, last_name VARCHAR(56), dob DATE, graduation_date DATE, created_at TIMESTAMP, updated_at TIMESTAMP);
 
+DROP TABLE IF EXISTS "MixedCase";
+CREATE TABLE "MixedCase" ("Id" serial PRIMARY KEY, "Name" VARCHAR(56) NOT NULL, "last_name" VARCHAR(56), "dob" DATE, "graduation_date" DATE, created_at TIMESTAMP, updated_at TIMESTAMP);
+
+
 DROP TABLE IF EXISTS accounts;
 CREATE TABLE accounts (id  serial PRIMARY KEY, account VARCHAR(56), description VARCHAR(56), amount DECIMAL(10,2), total DECIMAL(10,2));
 

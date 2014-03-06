@@ -39,12 +39,15 @@ public class OracleDBReset {
 
         List<Map> triggers = Base.findAll("select trigger_name from user_triggers");
         for (Map trigger : triggers) {
-            if(trigger.get("trigger_name").toString().contains("$")){
+
+
+
+            if(trigger != null && trigger.get("TRIGGER_NAME").toString().contains("$")){
                 continue;   
             }
             Statement s = Base.connection().createStatement();
-            String sql = "drop trigger " + trigger.get("trigger_name");
-            System.out.println("Dropping trigger: " + trigger.get("trigger_name"));
+            String sql = "drop trigger " + trigger.get("TRIGGER_NAME");
+            System.out.println("Dropping trigger: " + trigger.get("TRIGGER_NAME"));
             s.execute(sql);
             s.close();
         }
@@ -55,8 +58,8 @@ public class OracleDBReset {
         List<Map> sequences = Base.findAll("select sequence_name from user_sequences");
         for (Map sequence : sequences) {
             Statement s = Base.connection().createStatement();
-            s.execute("drop sequence " + sequence.get("sequence_name"));
-            System.out.println("Dropping sequence: " + sequence.get("sequence_name"));
+            s.execute("drop sequence " + sequence.get("SEQUENCE_NAME"));
+            System.out.println("Dropping sequence: " + sequence.get("SEQUENCE_NAME"));
             s.close();
         }
     }
@@ -65,8 +68,8 @@ public class OracleDBReset {
         List<Map> tables = Base.findAll("select table_name from user_tables");
         for (Map table : tables) {
             Statement s = Base.connection().createStatement();
-            s.execute("drop table " + table.get("table_name") + " cascade constraints");
-            System.out.println("Dropping table: " + table.get("table_name"));
+            s.execute("drop table " + table.get("TABLE_NAME") + " cascade constraints");
+            System.out.println("Dropping table: " + table.get("TABLE_NAME"));
             s.close();
         }
     }

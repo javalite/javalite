@@ -136,6 +136,9 @@ public enum Registry {
             registerModels(dbName, mf.getModelsForDb(dbName), dbType);
             String[] tables = metaModels.getTableNames(dbName);
 
+            //DO NOT REMOVE, this is useful in debugging
+//            listTablesFromDatabase(c);
+
             for (String table : tables) {
                 Map<String, ColumnMetadata> metaParams = fetchMetaParams(table, dbName);
                 registerColumnMetadata(table, metaParams);
@@ -156,6 +159,23 @@ public enum Registry {
             } else {
                 throw new InitException(e);
             }
+        }
+    }
+
+    private void listTablesFromDatabase(Connection con) throws SQLException {
+        System.out.println("Driver : ");
+        System.out.println("   " + con.getMetaData().getDatabaseProductName());
+        System.out.println("   " + con.getMetaData().getDatabaseProductVersion());
+        ResultSet catalogRs = con.getMetaData().getCatalogs();
+
+        while (catalogRs.next()) {
+            String catalog = catalogRs.getString(1);
+            System.out.println("Catalog: " + catalog);
+            ResultSet tablesRS = con.getMetaData().getTables(null, null, "%", new String[]{"TABLE"});
+            while (tablesRS.next()) {
+                System.out.println("=====>> " + tablesRS.getObject(3));
+            }
+
         }
     }
 
@@ -272,7 +292,7 @@ public enum Registry {
         Connection con = ConnectionsAccess.getConnection(dbName);
 
       /*
-       * Valid table name format: tablename or schemanae.tablename
+       * Valid table name format: tablename or schemaname.tablename
        */
         String[] vals = table.split("\\.");
         String schema = null;
@@ -290,15 +310,24 @@ public enum Registry {
             throw new DBException("invalid table name: " + table);
         }
 
+        //remove quotes  - needed by PostgreSQL
+        if(tableName.startsWith("\"") && tableName.endsWith("\"")){
+            tableName = tableName.substring(1, tableName.length() - 1);
+        }
+
         ResultSet rs = con.getMetaData().getColumns(null, schema, tableName, null);
-        String dbProduct = con.getMetaData().getDatabaseProductName().toLowerCase();
+        String dbProduct = con.getMetaData().getDatabaseProductName();
         Map<String, ColumnMetadata> columns = getColumns(rs, dbProduct);
+        rs.close();
+
+        //try native case table name
+        rs = con.getMetaData().getColumns(null, schema, tableName, null);
+        columns = getColumns(rs, dbProduct);
         rs.close();
 
         //try upper case table name - Oracle uses upper case
         if (columns.size() == 0) {
             rs = con.getMetaData().getColumns(null, schema, tableName.toUpperCase(), null);
-            dbProduct = con.getMetaData().getDatabaseProductName().toLowerCase();
             columns = getColumns(rs, dbProduct);
             rs.close();
         }
@@ -326,7 +355,7 @@ public enum Registry {
         while (rs.next()) {
         	
         	if (dbProduct.equals("h2") && "INFORMATION_SCHEMA".equals(rs.getString("TABLE_SCHEMA"))) continue; //skip h2 INFORMATION_SCHEMA table columns.
-            ColumnMetadata cm = new ColumnMetadata(rs.getString("COLUMN_NAME").toLowerCase(), rs.getString("TYPE_NAME"), rs.getInt("COLUMN_SIZE"));
+            ColumnMetadata cm = new ColumnMetadata(rs.getString("COLUMN_NAME"), rs.getString("TYPE_NAME"), rs.getInt("COLUMN_SIZE"));
             columns.put(cm.getColumnName(), cm);
         }
         return columns;

@@ -32,13 +32,6 @@ class ModelDelegate {
         return count;
     }
 
-    static String[] toLowerCase(String[] arr) {
-        String[] newArr = new String[arr.length];
-        for (int i = 0; i < newArr.length; i++) {
-            newArr[i] = arr[i].toLowerCase();
-        }
-        return newArr;
-    }
 
     static void setNamesAndValues(Model m, Object... namesAndValues) {
 

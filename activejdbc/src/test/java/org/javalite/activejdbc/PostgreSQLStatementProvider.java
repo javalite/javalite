@@ -11,12 +11,12 @@ public class PostgreSQLStatementProvider implements StatementProvider{
     public List<String> getPopulateStatements(String table) {
         
         List<String> statements = new ArrayList<String>();
-        if (table.equals("people")) {
+        if (table.equals("\"People\"")) {
             statements =  Arrays.asList(
-                    "INSERT INTO people ( name, last_name, dob, graduation_date, created_at, updated_at) VALUES('John', 'Smith', '1934-12-01', '1954-12-01', now(), now());",
-                    "INSERT INTO people (name, last_name, dob, graduation_date, created_at, updated_at) values('Leylah', 'Jonston', '1954-04-03', '1974-04-03', now(), now());",
-                    "INSERT INTO people (name, last_name, dob, graduation_date, created_at, updated_at) values('Muhammad', 'Ali', '1943-01-04', '1963-01-04', now(), now());",
-                    "INSERT INTO people (name, last_name, dob, graduation_date, created_at, updated_at) values('Joe', 'Pesci', '1944-02-23','1964-02-23', now(), now());"
+                    "INSERT INTO \"People\" ( name, last_name, dob, graduation_date, created_at, updated_at) VALUES('John', 'Smith', '1934-12-01', '1954-12-01', now(), now());",
+                    "INSERT INTO \"People\" (name, last_name, dob, graduation_date, created_at, updated_at) values('Leylah', 'Jonston', '1954-04-03', '1974-04-03', now(), now());",
+                    "INSERT INTO \"People\" (name, last_name, dob, graduation_date, created_at, updated_at) values('Muhammad', 'Ali', '1943-01-04', '1963-01-04', now(), now());",
+                    "INSERT INTO \"People\" (name, last_name, dob, graduation_date, created_at, updated_at) values('Joe', 'Pesci', '1944-02-23','1964-02-23', now(), now());"
             );
         } else if (table.equals("accounts")) {
             statements =  Arrays.asList(
