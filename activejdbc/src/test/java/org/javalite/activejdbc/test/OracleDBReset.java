@@ -26,17 +26,10 @@ public class OracleDBReset {
                 st = Base.connection().createStatement();
                 try{
                     st.executeUpdate(statement);
-
-                    if(statement.contains("ingredients_trigger")){
-                        System.out.println("STATEMENT:");
-                        System.out.println(statement);
-                    }
-
                 }catch(SQLException e){
                     System.out.println("Problem statement: " + statement);
                     throw e;
                 }
-
                 st.close();
             }
     }
@@ -51,6 +44,7 @@ public class OracleDBReset {
             }
             Statement s = Base.connection().createStatement();
             String sql = "drop trigger " + trigger.get("trigger_name");
+            System.out.println("Dropping trigger: " + trigger.get("trigger_name"));
             s.execute(sql);
             s.close();
         }
@@ -62,6 +56,7 @@ public class OracleDBReset {
         for (Map sequence : sequences) {
             Statement s = Base.connection().createStatement();
             s.execute("drop sequence " + sequence.get("sequence_name"));
+            System.out.println("Dropping sequence: " + sequence.get("sequence_name"));
             s.close();
         }
     }
@@ -71,6 +66,7 @@ public class OracleDBReset {
         for (Map table : tables) {
             Statement s = Base.connection().createStatement();
             s.execute("drop table " + table.get("table_name") + " cascade constraints");
+            System.out.println("Dropping table: " + table.get("table_name"));
             s.close();
         }
     }

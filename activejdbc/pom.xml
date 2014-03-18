@@ -3,22 +3,14 @@
     <groupId>org.javalite</groupId>
     <artifactId>activejdbc</artifactId>
     <packaging>jar</packaging>
-    <version>1.4.9-SNAPSHOT</version>
-    <name>ActiveJDBC - Da Framework</name>
-
+    <version>1.4.10-SNAPSHOT</version>
+    <name>JavaLite - ActiveJDBC ORM Framework</name>
 
     <parent>
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
         <version>7</version>
     </parent>
-
-    <scm>
-       <connection>scm:svn:https://activejdbc.googlecode.com/svn/trunk/</connection>
-       <developerConnection>scm:svn:https://activejdbc.googlecode.com/svn/trunk/</developerConnection>
-       <url>https://activejdbc.googlecode.com/svn/trunk//</url>
-     </scm>
-
 
     <!--Default to MySQL if no profile provided-->
     <properties>
@@ -34,7 +26,7 @@
         <profile>
             <id>mysql</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <activeByDefault>false</activeByDefault>
             </activation>
             <properties>
                 <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
@@ -47,25 +39,31 @@
                 <dependency>
                     <groupId>mysql</groupId>
                     <artifactId>mysql-connector-java</artifactId>
-                    <version>5.0.4</version>
+                    <version>5.1.25</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
         </profile>
         <profile>
             <id>oracle</id>
+
             <properties>
-                <jdbc.driver>oracle.jdbc.driver.OracleDriver</jdbc.driver>
-                <jdbc.url>jdbc:oracle:thin:@localhost:1521:xe</jdbc.url>
-                <jdbc.user>activejdbc</jdbc.user>
-                <jdbc.password>activejdbc</jdbc.password>
+                <jdbc.driver>oracle.jdbc.OracleDriver</jdbc.driver>
+                <!--<jdbc.url>jdbc:oracle:thin:@//n2.antura.it:1544/svil.antura.it</jdbc.url>-->
+                <!--<jdbc.user>${env.AJ_ORACLE_USER}</jdbc.user>-->
+                <!--<jdbc.password>${env.AJ_ORACLE_PASSWORD}</jdbc.password>-->
+
+                <jdbc.url>jdbc:oracle:thin:@//192.168.0.112:1521/orcl</jdbc.url>
+                <jdbc.user>scott</jdbc.user>
+                <jdbc.password>oracle</jdbc.password>
+
                 <db>oracle</db>
             </properties>
             <dependencies>
                 <dependency>
                     <groupId>oracle</groupId>
-                    <artifactId>ojdbc14</artifactId>
-                    <version>10.2.0.4</version>
+                    <artifactId>jdbc-driver</artifactId>
+                    <version>7</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
@@ -76,8 +74,6 @@
                     <url>http://192.168.0.55:8084/nexus/content/repositories/oracle/</url>
                 </repository>
             </repositories>
-
-
         </profile>
         <profile>
             <id>postgresql</id>
@@ -110,7 +106,7 @@
                 <dependency>
                     <groupId>com.h2database</groupId>
                     <artifactId>h2</artifactId>
-                    <version>1.3.154</version>
+                    <version>1.3.171</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
@@ -155,7 +151,7 @@
                 <dependency>
                     <groupId>com.microsoft.sqljdbc</groupId>
                     <artifactId>sqljdbc4</artifactId>
-                    <version>4.0.2</version>
+                    <version>4.0.3</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
@@ -204,8 +200,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
+                    <source>1.6</source>
+                    <target>1.6</target>
                     <fork>true</fork>
                     <meminitial>128m</meminitial>
                     <maxmem>512m</maxmem>
@@ -254,18 +250,18 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.6.4</version>
+            <version>1.7.5</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
-            <version>1.6.4</version>
+            <version>1.7.5</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.6.4</version>
+            <version>1.7.5</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -298,7 +294,7 @@
         <dependency>
             <groupId>jaxen</groupId>
             <artifactId>jaxen</artifactId>
-            <version>1.1.1</version>
+            <version>1.1.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -307,10 +303,10 @@
             <version>2.4</version>
             <scope>provided</scope>
             <exclusions>
-              <exclusion>
-                <groupId>javax.jms</groupId>
-                <artifactId>jms</artifactId>
-              </exclusion>
+                <exclusion>
+                    <groupId>javax.jms</groupId>
+                    <artifactId>jms</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>javax.servlet</groupId>
                     <artifactId>servlet-api</artifactId>
@@ -319,18 +315,18 @@
                     <groupId>org.hibernate</groupId>
                     <artifactId>hibernate</artifactId>
                 </exclusion>
-              <exclusion>
-                <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId>
-              </exclusion>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
-        	<groupId>com.h2database</groupId>
-        	<artifactId>h2</artifactId>
-        	<version>1.3.154</version>
-        	<type>jar</type>
-        	<scope>test</scope>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.3.171</version>
+            <type>jar</type>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>

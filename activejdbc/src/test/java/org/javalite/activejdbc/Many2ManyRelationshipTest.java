@@ -74,7 +74,7 @@ public class Many2ManyRelationshipTest extends ActiveJDBCTest {
         doctor.add(jimThePatient);
         a(DoctorsPatients.count()).shouldBeEqual(5);
 
-        List<Patient> patients = doctor.getAll(Patient.class).orderBy("id");
+        List<Patient> patients = doctor.getAll(Patient.class).orderBy("patients.id");
         a(patients.size()).shouldBeEqual(3);
         a(patients.get(2).get("last_name")).shouldBeEqual("Smith");
     }

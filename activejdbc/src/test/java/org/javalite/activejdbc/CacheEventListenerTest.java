@@ -60,28 +60,19 @@ public class CacheEventListenerTest extends ActiveJDBCTest {
 
     @Test
     public void shouldNotBreakIfListenerThrowsException() throws IOException {
+
+        final boolean[] triggered = {false};
+
         class BadEventListener implements CacheEventListener {
             public void onFlush(CacheEvent event) {
+                triggered[0] = true;
                 throw new RuntimeException("I'm a bad, baaad listener...."); 
             }
         }
         BadEventListener listener = new BadEventListener();
         Registry.cacheManager().addCacheEventListener(listener);
-
-        PrintStream errOrig = System.err;
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        PrintStream err = new PrintStream(bout);
-        System.setErr(err);
-
         Person.createIt("name", "Matt", "last_name", "Diamont", "dob", "1962-01-01");
 
-        err.flush();
-        bout.flush();
-        String exception = bout.toString();
-
-        a(exception.contains(" I'm a bad, baaad listener")).shouldBeTrue();
-
-        System.setErr(errOrig);
-
+        a(triggered[0]).shouldBeTrue();
     }
 }

@@ -141,6 +141,19 @@ public class ValidatorsTest extends ActiveJDBCTest {
             }
         });
     }
+    
+    @Test
+    public void testUniquenessValidator(){
+        deleteAndPopulateTables("users", "addresses");
+        // create a new user
+        new User().set("email", "igor@polevoy.org").saveIt();
+        
+        // attempt creating another user with the same email
+        User u = new User();
+        u.set("email", "igor@polevoy.org").saveIt();
+        a(u).shouldNotBe("valid");
+        a(u.errors().get("email")).shouldBeEqual("This email is already taken.");
+    }
 
     @Test
     public void shouldConvertEmptyStringToNull(){

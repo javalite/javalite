@@ -286,6 +286,13 @@ public class DB {
 
 
     /**
+     * Alias to {@link #findAll(String, Object...)}
+     */
+    public List<Map> all(String query, Object ... params) {
+        return findAll(query, params);
+    }
+
+    /**
      * This method returns entire resultset as one list. Do not use it for large result sets.
      * Example:
      * <pre>
@@ -344,6 +351,13 @@ public class DB {
 
         LogFilter.logQuery(logger, query, params, start);
         return results;
+    }
+
+    /**
+     * Alias to {@link #findAll(String)}
+     */
+    public List<Map> all(String query) {
+        return findAll(query);
     }
 
     /**
@@ -469,7 +483,7 @@ public class DB {
             LogFilter.logQuery(logger, query, null, start);
             return count;
         } catch (SQLException e) {
-            logger.error("Query failed: " + query, e);
+            logException("Query failed: " + query, e);
             throw new DBException(query, null, e);
         } finally {
             try { if (s != null) s.close(); } catch (Exception e) {/*ignore*/}
@@ -502,6 +516,7 @@ public class DB {
             LogFilter.logQuery(logger, query, params, start);
             return count;
         } catch (Exception e) {
+            logException("Failed query: " + query, e);
             throw new DBException(query, params, e);
         } finally {
             try { if (ps != null) ps.close(); } catch (Exception e) {/*ignore*/}
@@ -535,7 +550,18 @@ public class DB {
             }
             for (int index = 0; index < params.length; index++) {
                 Object param = params[index];
-                ps.setObject(index + 1, param);
+                if (param instanceof byte[]) {
+                    byte[] bytes = (byte[]) param;
+                    try {
+                        Blob b = connection.createBlob();
+                        b.setBytes(1, bytes);
+                        ps.setBlob(index + 1, b);
+                    } catch (AbstractMethodError e) {// net.sourceforge.jtds.jdbc.ConnectionJDBC2.createBlob is abstract :)
+                        ps.setObject(index + 1, param);
+                    }
+                }else{
+                    ps.setObject(index + 1, param);
+                }
             }
             ps.executeUpdate();
 
@@ -550,7 +576,7 @@ public class DB {
                     return -1;
                 }
             } catch (Exception e) {
-                logException("Failed to find out the auto-incremented value, returning -1, query: " + query, e);
+                logger.error("Failed to find out the auto-incremented value, returning -1, query: " + query, e);
                 return -1;
             } finally {
                 try { if (rs != null) rs.close(); } catch (Exception e) {/*ignore*/}
@@ -560,8 +586,9 @@ public class DB {
         }
     }
 
-    private void logException(String message, Exception e){
-        logger.error(message, e);
+    private void logException(String message, Exception e) {
+        if (Convert.toBoolean(System.getProperty("activejdbc.log_exception")))
+            logger.error(message, e);
     }
 
     /**
@@ -672,5 +699,51 @@ public class DB {
      */
     public static Map<String, Connection> connections(){
         return ConnectionsAccess.getConnectionMap();
+    }
+
+    /**
+     * Creates a <code>java.sql.PreparedStatement</code> to be used in batch executions later.
+     *
+     * @param parametrizedStatement Example of a statement: <code>INSERT INTO employees VALUES (?, ?)</code>.
+     * @return instance of <code>java.sql.PreparedStatement</code> with compiled query.
+     */
+    public PreparedStatement startBatch(String parametrizedStatement){
+        try {
+            return connection().prepareStatement(parametrizedStatement);
+        } catch (SQLException e) {
+            throw new DBException(e);
+        }
+    }
+
+    /**
+     * Adds a batch statement using given <code>java.sql.PreparedStatement</code> and parameters.
+     * @param ps <code>java.sql.PreparedStatement</code> to add batch to.
+     * @param parameters parameters for the query in <code>java.sql.PreparedStatement</code>. Parameters will be
+     * set on the statement in the same order as provided here.
+     */
+    public void addBatch(PreparedStatement ps, Object ... parameters){
+        try {
+
+            for (int i = 0; i < parameters.length; i++) {
+                ps.setObject((i + 1), parameters[(i)]);
+            }
+            ps.addBatch();
+        } catch (SQLException e) {
+            throw new DBException(e);
+        }
+    }
+
+    /**
+     * Executes a batch on <code>java.sql.PreparedStatement</code>.
+     *
+     * @param ps <code>java.sql.PreparedStatement</code> to execute batch on.
+     */
+    public void executeBatch(PreparedStatement ps){
+        try {
+            ps.executeBatch();
+            ps.clearParameters();
+        } catch (SQLException e) {
+            throw new DBException(e);
+        }
     }
 }

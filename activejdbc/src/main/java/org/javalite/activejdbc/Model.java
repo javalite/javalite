@@ -460,8 +460,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
 
     private void deleteJoinsForManyToMany() {
-        List<Association> associations = getMetaModelLocal().getManyToManyAssociations(new ArrayList<Association>());
-        for(Association association:associations){
+        List<? extends Association> associations = getMetaModelLocal().getManyToManyAssociations(Collections.<Association>emptyList());
+        for (Association association : associations) {
             String join = ((Many2ManyAssociation)association).getJoin();
             String sourceFK = ((Many2ManyAssociation)association).getSourceFkName();
             String query = "DELETE FROM " + join + " WHERE " + sourceFK + " = " + getId();
@@ -470,7 +470,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     private void deleteOne2ManyChildrenShallow() {
-        List<OneToManyAssociation> childAssociations = getMetaModelLocal().getOneToManyAssociations(new ArrayList<Association>());
+        List<OneToManyAssociation> childAssociations = getMetaModelLocal().getOneToManyAssociations(Collections.<Association>emptyList());
         for (OneToManyAssociation association : childAssociations) {
             String  target = association.getTarget();
             String query = "DELETE FROM " + target + " WHERE " + association.getFkName() + " = ?";
@@ -489,7 +489,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
 
-    private void deleteChildrenDeep(List<Association> childAssociations){
+    private void deleteChildrenDeep(List<? extends Association> childAssociations){
         for (Association association : childAssociations) {
             String targetTableName = association.getTarget();
             Class c = Registry.instance().getModelClass(targetTableName, false);
@@ -969,7 +969,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @return
      */
-    protected MetaModel getMetaModelLocal(){
+    protected MetaModel<?, ?> getMetaModelLocal(){
         if(metaModelLocal == null)
             metaModelLocal = getMetaModel();
 
@@ -1045,7 +1045,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         // NOTE: this is a workaround for JSP pages. JSTL in cases ${item.id} does not call the getId() method, instead
         //calls item.get("id"), considering that this is a map only!        
-        if(attribute.equalsIgnoreCase("id")){
+        if(!attributes.containsKey("id") && attribute.equalsIgnoreCase("id")){
             String idName = getMetaModelLocal().getIdName();
             return attributes.get(idName.toLowerCase());
         }
@@ -1193,6 +1193,17 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public Long getLong(String attribute) {
         return Convert.toLong(get(attribute));
     }
+
+    /**
+         * Converts Model value to <code>Short</code>
+         *
+         * @see {@link Convert#toShort(Object)}
+         * @param attribute name of attribute to convert
+         * @return converted value
+         */
+        public Short getShort(String attribute) {
+            return Convert.toShort(get(attribute));
+        }
 
     /**
      * Converts Model value to <code>Float</code>

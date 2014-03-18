@@ -59,7 +59,7 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
         try {
             Base.connection().rollback();
         } catch (SQLException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
         Base.close();
     }

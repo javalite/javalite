@@ -89,22 +89,22 @@ public class ConvertTest extends JSpecSupport {
     public void shouldCovertToBigDecimal() throws ParseException {
 
         //integer
-        Object o= Convert.toBigDecimal(1);
+        Object o = Convert.toBigDecimal(1);
         a(o instanceof BigDecimal).shouldBeTrue();
         a(o).shouldBeEqual(1);
 
         //string
-        o= Convert.toBigDecimal("1");
+        o = Convert.toBigDecimal("1");
         a(o instanceof BigDecimal).shouldBeTrue();
         a(o).shouldBeEqual(1);
 
         //double
-        o= Convert.toBigDecimal(1d);
+        o = Convert.toBigDecimal(1d);
         a(o instanceof BigDecimal).shouldBeTrue();
         a(o).shouldBeEqual(1);
 
         //long
-        o= Convert.toBigDecimal(1L);
+        o = Convert.toBigDecimal(1L);
         a(o instanceof BigDecimal).shouldBeTrue();
         a(o).shouldBeEqual(1);
     }
@@ -113,22 +113,22 @@ public class ConvertTest extends JSpecSupport {
     public void shouldCovertToLong() throws ParseException {
 
         //integer
-        Object o= Convert.toLong(1);
+        Object o = Convert.toLong(1);
         a(o instanceof Long).shouldBeTrue();
         a(o).shouldBeEqual(1);
 
         //string
-        o= Convert.toLong("1");
+        o = Convert.toLong("1");
         a(o instanceof Long).shouldBeTrue();
         a(o).shouldBeEqual(1);
 
         //double
-        o= Convert.toLong(1d);
+        o = Convert.toLong(1d);
         a(o instanceof Long).shouldBeTrue();
         a(o).shouldBeEqual(1);
 
         //BigDecimal
-        o= Convert.toLong(new BigDecimal(1));
+        o = Convert.toLong(new BigDecimal(1));
         a(o instanceof Long).shouldBeTrue();
         a(o).shouldBeEqual(1);
     }
@@ -138,48 +138,73 @@ public class ConvertTest extends JSpecSupport {
     public void shouldCovertToDouble() throws ParseException {
 
         //integer
-        Object o= Convert.toDouble(1);
+        Object o = Convert.toDouble(1);
         a(o instanceof Double).shouldBeTrue();
         a(o).shouldBeEqual(1);
 
         //string
-        o= Convert.toDouble("1");
+        o = Convert.toDouble("1");
         a(o instanceof Double).shouldBeTrue();
         a(o).shouldBeEqual(1);
 
         //long
-        o= Convert.toDouble(1L);
+        o = Convert.toDouble(1L);
         a(o instanceof Double).shouldBeTrue();
         a(o).shouldBeEqual(1);
 
         //BigDecimal
-        o= Convert.toDouble(new BigDecimal(1));
+        o = Convert.toDouble(new BigDecimal(1));
         a(o instanceof Double).shouldBeTrue();
         a(o).shouldBeEqual(1);
     }
 
     @Test
-    public void shouldCovertToInteger() throws ParseException {
+    public void shouldCovertToFloat() throws ParseException {
 
         //float
-        Object o= Convert.toFloat(1F);
+        Object o = Convert.toFloat(1F);
         a(o instanceof Float).shouldBeTrue();
         a(o).shouldBeEqual(1);
 
         //string
-        o= Convert.toFloat("1");
+        o = Convert.toFloat("1");
         a(o instanceof Float).shouldBeTrue();
         a(o).shouldBeEqual(1);
 
         //long
-        o= Convert.toFloat(1L);
+        o = Convert.toFloat(1L);
         a(o instanceof Float).shouldBeTrue();
         a(o).shouldBeEqual(1);
 
         //BigDecimal
-        o= Convert.toFloat(new BigDecimal(1));
+        o = Convert.toFloat(new BigDecimal(1));
         a(o instanceof Float).shouldBeTrue();
         a(o).shouldBeEqual(1);
+    }
+
+    @Test
+    public void shouldCovertToShort() throws ParseException {
+
+        //float
+        Object o = Convert.toShort(1F);
+        a(o instanceof Short).shouldBeTrue();
+        a(o).shouldBeEqual(1);
+
+        //string
+        o = Convert.toShort("1");
+        a(o instanceof Short).shouldBeTrue();
+        a(o).shouldBeEqual(1);
+
+        //long
+        o = Convert.toShort(1L);
+        a(o instanceof Short).shouldBeTrue();
+        a(o).shouldBeEqual(1);
+
+        //BigDecimal
+        o = Convert.toShort(new BigDecimal(1));
+        a(o instanceof Short).shouldBeTrue();
+        a(o).shouldBeEqual(1);
+
     }
 
     @Test
@@ -199,7 +224,16 @@ public class ConvertTest extends JSpecSupport {
 
         a(Convert.toBoolean(1)).shouldBeTrue();
         a(Convert.toBoolean(0)).shouldBeFalse();
+
+        a(Convert.toBoolean(1f)).shouldBeTrue();
+        a(Convert.toBoolean(0f)).shouldBeFalse();
+
+        a(Convert.toBoolean(1d)).shouldBeTrue();
+        a(Convert.toBoolean(0d)).shouldBeFalse();
+
+        short t = (short)1;
+        short f = (short)0;
+        a(Convert.toBoolean(t)).shouldBeTrue();
+        a(Convert.toBoolean(f)).shouldBeFalse();
     }
-
-
 }

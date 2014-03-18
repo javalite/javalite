@@ -852,5 +852,23 @@ end;
 -- BREAK
 CREATE TABLE apples (id NUMBER NOT NULL, apple_type VARCHAR(56) NOT NULL)
 -- BREAK
-ALTER TABLE apples ADD CONSTRAINT apples_pk PRIMARY KEY ( id );
+ALTER TABLE apples ADD CONSTRAINT apples_pk PRIMARY KEY ( id )
 -- BREAK
+
+
+
+CREATE TABLE images (id NUMBER  NOT NULL , name VARCHAR(56) NOT NULL, content BLOB)
+-- BREAK
+ALTER TABLE images ADD CONSTRAINT images_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE images_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER images_trigger
+        BEFORE INSERT ON images REFERENCING
+        NEW AS new
+        OLD AS old
+        FOR EACH ROW
+        begin
+select coalesce(:new.id, images_seq.nextval) into :new.id from dual;
+end;
+--BREAK

@@ -93,10 +93,8 @@ public class Convert {
             return (Boolean) value;
         } else if (value instanceof BigDecimal) {
             return value.equals(BigDecimal.ONE);
-        } else if (value instanceof Long) {
-            return value.equals(1L);
-        } else if (value instanceof Integer) {
-            return value.equals(1);
+        } else if (value instanceof Number) {
+            return ((Number)value).intValue() == 1;
         } else if (value instanceof Character) {
             return value.equals('y') || value.equals('Y')
                     || value.equals('t') || value.equals('T');
@@ -224,7 +222,7 @@ public class Convert {
     }
 
     /**
-     * Converts value to Float if c it can. If value is a Float, it is returned, if it is a Number, it is
+     * Converts value to Float if it can. If value is a Float, it is returned, if it is a Number, it is
      * promoted to Float and then returned, in all other cases, it converts the value to String,
      * then tries to parse Float from it.
      *
@@ -248,7 +246,7 @@ public class Convert {
 
 
     /**
-     * Converts value to Long if c it can. If value is a Long, it is returned, if it is a Number, it is
+     * Converts value to Long if it can. If value is a Long, it is returned, if it is a Number, it is
      * promoted to Long and then returned, in all other cases, it converts the value to String,
      * then tries to parse Long from it.
      *
@@ -272,7 +270,7 @@ public class Convert {
 
 
    /**
-     * Converts value to Integer if c it can. If value is a Integer, it is returned, if it is a Number, it is
+     * Converts value to Integer if it can. If value is a Integer, it is returned, if it is a Number, it is
      * promoted to Integer and then returned, in all other cases, it converts the value to String,
      * then tries to parse Integer from it.
      *
@@ -295,7 +293,7 @@ public class Convert {
     }
 
     /**
-     * Converts value to BigDecimal if c it can. If value is a BigDecimal, it is returned, if it is a BigDecimal, it is
+     * Converts value to BigDecimal if it can. If value is a BigDecimal, it is returned, if it is a BigDecimal, it is
      * promoted to BigDecimal and then returned, in all other cases, it converts the value to String,
      * then tries to parse BigDecimal from it.
      *
@@ -330,6 +328,29 @@ public class Convert {
             }
         } catch (Exception e) {
             throw new ConversionException(e);
+        }
+    }
+
+    /**
+     * Converts value to Short if it can. If value is a Short, it is returned, if it is a Number, it is
+     * promotedn to Short and then returned, in all other cases, it converts the value to String,
+     * then tries to parse Short from it.
+     *
+     * @param value value to be converted to Integer.
+     * @return value converted to Integer.
+     */
+    public static Short toShort(Object  value) {
+        if (value == null) {
+            return null;
+        } else if (value instanceof Number) {
+            return  ((Number)value).shortValue();
+        } else {
+            NumberFormat nf = new DecimalFormat();
+            try {
+                return nf.parse(value.toString()).shortValue();
+            } catch (ParseException e) {
+                throw new ConversionException("failed to convert: '" + value + "' to Short", e);
+            }
         }
     }
 }

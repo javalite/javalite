@@ -1,0 +1,4 @@
+CREATE TABLE authors (
+    id INT NOT NULL PRIMARY KEY,
+    name VARCHAR(64) NOT NULL
+);

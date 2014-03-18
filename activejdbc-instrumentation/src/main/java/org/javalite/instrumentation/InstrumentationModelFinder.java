@@ -36,7 +36,7 @@ import java.util.zip.ZipFile;
 /**
  * @author Igor Polevoy
  */
-public class InstrumentationModelFinder{
+public class InstrumentationModelFinder {
 
     private CtClass modelClass;
     private List<CtClass> models = new ArrayList<CtClass>();
@@ -134,17 +134,25 @@ public class InstrumentationModelFinder{
         try {
             ClassPool cp = ClassPool.getDefault();
             CtClass clazz = cp.get(className);
-
-            if (clazz.subclassOf(modelClass) && clazz != null && !clazz.equals(modelClass)) {
-                models.add(clazz);
-                System.out.println("Found model: " + clazz.getName());
+            if (clazz != null && clazz.subclassOf(modelClass) && !clazz.equals(modelClass)) {
+                boolean real = notAbstract(clazz);
+                if (real) {
+                    models.add(clazz);
+                    System.out.println("Found model: " + clazz.getName());
+                } else {
+                    System.out.println("Found model is abstract, skipping: " + clazz.getName());
+                }
             }
         } catch (Exception e) {
             throw new InstrumentationException(e);
         }
     }
 
-    public List<CtClass> getModels(){
+    private boolean notAbstract(CtClass clazz) {
+        return !(Modifier.isAbstract(clazz.getModifiers()) || Modifier.isInterface(clazz.getModifiers()));
+    }
+
+    public List<CtClass> getModels() {
         return models;
     }
 }
