@@ -88,9 +88,11 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
      * @return all attribute names except for id.
      */
     public List<String> getAttributeNamesSkipId() {
-        if(attributeNamesNoId == null){
-            attributeNamesNoId = getAttributeNames();
-            attributeNamesNoId.remove(getIdName());
+        if (attributeNamesNoId == null) {//no one cares about unfortunate multi-threading timing with 2 instances created
+            //if someone does, use DCL with volatile
+            List<String> attrs = getAttributeNames();
+            attrs.remove(getIdName());
+            attributeNamesNoId = attrs;
         }
         return attributeNamesNoId;
     }
@@ -138,14 +140,9 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
      * @return all attribute names.
      */
     protected List<String> getAttributeNames() {
-        ArrayList<String> keysList = new ArrayList<String>();
-
         if(columnMetadata == null || columnMetadata.size() == 0) throw new InitException("Failed to find table: " + getTableName());
 
-        for (String key : columnMetadata.keySet()) {
-            keysList.add(key);
-        }
-        return keysList;
+        return new ArrayList<String>(columnMetadata.keySet());
     }
 
     public String getIdName() {
@@ -346,16 +343,12 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
      * @return true if any association exists such that the current model is a source and targetModelClass is a target.
      */
     public boolean isAssociatedTo(Class<? extends Model> targetModelClass) {
-        boolean associated = false;
         for (Association association : associations) {
-            Class targetClass = null;
-
-            targetClass = Registry.instance().getModelClass(association.getTarget(), true);
-
+            Class targetClass = Registry.instance().getModelClass(association.getTarget(), true);
             if (targetClass != null && targetClass.equals(targetModelClass)) {
-                associated = true;
+                return true;
             }
         }
-        return associated;
+        return false;
     }
 }
