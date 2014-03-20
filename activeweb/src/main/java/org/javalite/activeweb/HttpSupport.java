@@ -690,33 +690,45 @@ public class HttpSupport {
     }
 
 
+    /**
+     * Convenience method, calls {@link #multipartFormItems(String)}. Does not set encoding before reading request.
+     * @see #multipartFormItems(String)
+     * @return a collection of uploaded files/fields from a multi-part request.
+     */
     protected List<FormItem> multipartFormItems() {
         return multipartFormItems(null);
     }
 
 
     /**
-     * Returns a collection of uploaded files and form fields from a multi-part port request.
+     * Returns a collection of uploaded files and form fields from a multi-part request.
      * This method uses <a href="http://commons.apache.org/proper/commons-fileupload/apidocs/org/apache/commons/fileupload/disk/DiskFileItemFactory.html">DiskFileItemFactory</a>.
      * As a result, it is recommended to add the following to your web.xml file:
      *
-     * <code>
-     *
+     * <pre>
      *   &lt;listener&gt;
-           &lt;listener-class&gt;
-              org.apache.commons.fileupload.servlet.FileCleanerCleanup
-          &lt;/listener-class&gt;
-         &lt;/listener&gt;
-
-     </code>
-
+     *      &lt;listener-class&gt;
+     *         org.apache.commons.fileupload.servlet.FileCleanerCleanup
+     *      &lt;/listener-class&gt;
+     *   &lt;/listener&gt;
+     *</pre>
+     *
      * For more information, see: <a href="http://commons.apache.org/proper/commons-fileupload/using.html">Using FileUpload</a>
+     *
+     * The size of upload defaults to max of 20mb. Files greater than that will be rejected. If you want to accept files
+     * smaller of larger, create a file called <code>activeweb.properties</code>, add it to your classpath and
+     * place this property to the file:
+     *
+     * <pre>
+     * #max upload size
+     * maxUploadSize = 20000000
+     * </pre>
      *
      * @param encoding specifies the character encoding to be used when reading the headers of individual part.
      * When not specified, or null, the request encoding is used. If that is also not specified, or null,
      * the platform default encoding is used.
      *
-     * @return a collection of uploaded files from a multi-part port request.
+     * @return a collection of uploaded files from a multi-part request.
      */
     protected List<FormItem> multipartFormItems(String encoding) {
         HttpServletRequest req = Context.getHttpRequest();
