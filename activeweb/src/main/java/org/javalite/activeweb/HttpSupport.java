@@ -16,7 +16,9 @@ limitations under the License.
 package org.javalite.activeweb;
 
 
-import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.*;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.javalite.common.Convert;
 import org.javalite.common.Util;
@@ -674,7 +676,8 @@ public class HttpSupport {
                 throw new ControllerException("this is not a multipart request, be sure to add this attribute to the form: ... enctype=\"multipart/form-data\" ...");
 
             ServletFileUpload upload = new ServletFileUpload();
-            upload.setHeaderEncoding(encoding);
+            if(encoding != null)
+                upload.setHeaderEncoding(encoding);
             upload.setFileSizeMax(maxFileSize);
             try {
                 FileItemIterator it = upload.getItemIterator(Context.getHttpRequest());
@@ -684,6 +687,69 @@ public class HttpSupport {
             }
         }
         return iterator;
+    }
+
+
+    protected List<FormItem> multipartFormItems() {
+        return multipartFormItems(null);
+    }
+
+
+    /**
+     * Returns a collection of uploaded files and form fields from a multi-part port request.
+     * This method uses <a href="http://commons.apache.org/proper/commons-fileupload/apidocs/org/apache/commons/fileupload/disk/DiskFileItemFactory.html">DiskFileItemFactory</a>.
+     * As a result, it is recommended to add the following to your web.xml file:
+     *
+     * <code>
+     *
+     *   &lt;listener&gt;
+           &lt;listener-class&gt;
+              org.apache.commons.fileupload.servlet.FileCleanerCleanup
+          &lt;/listener-class&gt;
+         &lt;/listener&gt;
+
+     </code>
+
+     * For more information, see: <a href="http://commons.apache.org/proper/commons-fileupload/using.html">Using FileUpload</a>
+     *
+     * @param encoding specifies the character encoding to be used when reading the headers of individual part.
+     * When not specified, or null, the request encoding is used. If that is also not specified, or null,
+     * the platform default encoding is used.
+     *
+     * @return a collection of uploaded files from a multi-part port request.
+     */
+    protected List<FormItem> multipartFormItems(String encoding) {
+        HttpServletRequest req = Context.getHttpRequest();
+
+        List<FormItem> formItems;
+        if (req instanceof AWMockMultipartHttpServletRequest) {//running inside a test, and simulating upload.
+            formItems = ((AWMockMultipartHttpServletRequest) req).getFormItems();
+        } else {
+
+            if (!ServletFileUpload.isMultipartContent(req))
+                throw new ControllerException("this is not a multipart request, be sure to add this attribute to the form: ... enctype=\"multipart/form-data\" ...");
+
+            DiskFileItemFactory factory = new DiskFileItemFactory();
+
+            factory.setSizeThreshold(Configuration.getMaxUploadSize());
+            factory.setRepository(Configuration.getTmpDir());
+
+            ServletFileUpload upload = new ServletFileUpload(factory);
+            if(encoding != null)
+                upload.setHeaderEncoding(encoding);
+            upload.setFileSizeMax(Configuration.getMaxUploadSize());
+            try {
+                List<org.apache.commons.fileupload.FileItem> apacheFileItems = upload.parseRequest(Context.getHttpRequest());
+                formItems = new ArrayList<FormItem>();
+                for (FileItem apacheItem : apacheFileItems) {
+                    formItems.add(new FormItem(new ApacheFileItemFacade(apacheItem)));
+                }
+                return formItems;
+            } catch (Exception e) {
+                throw new ControllerException(e);
+            }
+        }
+        return formItems;
     }
 
 

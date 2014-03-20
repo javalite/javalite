@@ -76,6 +76,24 @@ public class UploadControllerSpec extends IntegrationSpec{
     }
 
     @Test
+    public void shouldUploadMultipartForm(){
+
+        controller("upload")
+                .contentType("multipart/form-data")
+                .formItem(new FileItem("hello1.txt", "hello1", "text/plain", "greetings!".getBytes()))
+                .formItem(new FileItem("hello2.txt", "hello2", "text/plain", ".. and salutations!".getBytes()))
+                .integrateViews()
+                .post("upload-multipart");
+        String html = responseContent();
+
+        a(XPathHelper.count("/html/div", html)).shouldBeEqual(2);
+        a(XPathHelper.selectText("/html/div[1]/div[1]", html)).shouldBeEqual("hello1.txt");
+        a(XPathHelper.selectText("/html/div[1]/div[2]", html)).shouldBeEqual("greetings!");
+        a(XPathHelper.selectText("/html/div[2]/div[1]", html)).shouldBeEqual("hello2.txt");
+        a(XPathHelper.selectText("/html/div[2]/div[2]", html)).shouldBeEqual(".. and salutations!");
+    }
+
+    @Test
     public void shouldUploadFileWithId(){
 
         controller("upload").contentType("multipart/form-data")

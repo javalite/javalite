@@ -36,4 +36,9 @@ public class MockMultipartHttpServletRequestImpl extends MockHttpServletRequest 
     public Iterator<FormItem> getFormItemIterator() {
         return formItems.iterator();
     }
+
+    @Override
+    public List<FormItem> getFormItems() {
+        return formItems;
+    }
 }
