@@ -59,7 +59,7 @@ public class Configuration {
 
             //override defaults
             Properties overrides = new Properties();
-            InputStream in2 = Configuration.class.getClassLoader().getResourceAsStream("activeweb.properties");
+            InputStream in2 = Configuration.class.getClassLoader().getResourceAsStream("/activeweb.properties");
             if(in2 != null){
                 overrides.load(in2);
             }
