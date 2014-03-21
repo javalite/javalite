@@ -19,6 +19,7 @@ import org.javalite.activeweb.freemarker.AbstractFreeMarkerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,9 +35,10 @@ import static org.javalite.common.Util.blank;
 public class Configuration {
     private static Logger LOGGER = LoggerFactory.getLogger(Configuration.class.getName());
 
-
-
-    enum Params{templateManager, bootstrap, defaultLayout, targetDir, rootPackage, dbconfig, controllerConfig, rollback, freeMarkerConfig, route_config}
+    enum Params {
+        templateManager, bootstrap, defaultLayout, targetDir, rootPackage, dbconfig, controllerConfig, rollback,
+        freeMarkerConfig, route_config, maxUploadSize
+    }
 
     private static final Configuration instance = new Configuration();
     private static Properties props = new Properties();
@@ -57,7 +59,7 @@ public class Configuration {
 
             //override defaults
             Properties overrides = new Properties();
-            InputStream in2 = Configuration.class.getClassLoader().getResourceAsStream("activeweb.properties");
+            InputStream in2 = Configuration.class.getClassLoader().getResourceAsStream("/activeweb.properties");
             if(in2 != null){
                 overrides.load(in2);
             }
@@ -257,5 +259,13 @@ public class Configuration {
 
     public static boolean activeReload(){
         return activeReload;
+    }
+
+    public static int getMaxUploadSize() {
+        return Integer.parseInt(get(Params.maxUploadSize.toString()));
+    }
+
+    public static File getTmpDir() {
+        return new File(System.getProperty("java.io.tmpdir"));
     }
 }

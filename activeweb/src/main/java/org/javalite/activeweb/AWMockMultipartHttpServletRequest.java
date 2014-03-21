@@ -30,4 +30,6 @@ interface AWMockMultipartHttpServletRequest extends HttpServletRequest {
     void addFormItem(FormItem item);
 
     Iterator<FormItem> getFormItemIterator();
+
+    List<FormItem> getFormItems();
 }

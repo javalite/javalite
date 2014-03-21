@@ -37,49 +37,6 @@ public class FormItem {
         this.fileItemStream = fileItemStream;
     }
 
-    //this is for testing only.
-    class MockFileItemStream implements FileItemStream {
-        private String name, fieldName, contentType;
-        private boolean isFile;
-        private byte[] content;
-
-        MockFileItemStream(String name, String fieldName, String contentType, boolean isFile, byte[] content) {
-            this.name = name;
-            this.fieldName = fieldName;
-            this.contentType = contentType;
-            this.isFile = isFile;
-            this.content = content;
-        }
-
-        public InputStream openStream() throws IOException {
-            return new ByteArrayInputStream(content);  
-        }
-
-        public String getContentType() {
-            return contentType;  
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getFieldName() {
-            return fieldName;
-        }
-
-        public boolean isFormField() {
-            return !isFile;  
-        }
-
-        public FileItemHeaders getHeaders() {
-            throw new UnsupportedOperationException("not implemented");
-        }
-
-        public void setHeaders(FileItemHeaders fileItemHeaders) {
-            throw new UnsupportedOperationException("not implemented");
-        }
-    }
-
     /**
      * This constructor is used for testing.
      * 
@@ -90,13 +47,21 @@ public class FormItem {
      * @param content content in bytes.
      */
     public FormItem(String name, String fieldName, boolean isFile, String contentType, byte[] content) {
-        this.fileItemStream = new MockFileItemStream(name, fieldName,contentType, isFile, content);
+        this.fileItemStream = new ApacheFileItemFacade(name, fieldName,contentType, isFile, content);
+    }
+
+    /**
+     * Used internally.
+     *
+     * @param apacheFileItemFacade instance of {@link ApacheFileItemFacade}
+     */
+    FormItem(ApacheFileItemFacade apacheFileItemFacade) {
+        this.fileItemStream = apacheFileItemFacade;
     }
 
     /**
      * File name.
      *
-     * @deprecated use {@link #getFileName()}
      * @return file name.
      */
     public String getName() {

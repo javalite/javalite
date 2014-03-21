@@ -49,6 +49,19 @@ public class UploadController extends AppController {
 
 
     @POST
+    public void uploadMultipart(){
+        List<FormItem> formItems = multipartFormItems();
+        List<Map> items = new ArrayList<Map>();
+        for (FormItem item : formItems) {
+            items.add(map("name", item.getFileName(), "content", new String(item.getBytes())));
+        }
+        view("items", items);
+    }
+
+
+
+
+    @POST
     public void withId(){
         view("id", getId());
         Iterator<FormItem> iterator =  uploadedFiles();
