@@ -1058,8 +1058,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         boolean  getInference = getInferenceProperty  == null || getInferenceProperty.equals("true");
 
         if (getInference) {
-            if ((attributes.containsKey(attributeName))) {
-                return attributes.get(attributeName);//this should acount for nulls too!
+            if ((getMetaModelLocal().hasAttribute(attributeName))) {
+                return attributes.get(attributeName);//this should account for nulls too!
             } else if ((returnValue = tryParent(attributeName)) != null) {
                 return returnValue;
             } else if ((returnValue = tryPolymorphicParent(attributeName)) != null) {
