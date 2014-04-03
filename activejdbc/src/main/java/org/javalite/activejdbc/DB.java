@@ -558,6 +558,10 @@ public class DB {
                         ps.setBlob(index + 1, b);
                     } catch (AbstractMethodError e) {// net.sourceforge.jtds.jdbc.ConnectionJDBC2.createBlob is abstract :)
                         ps.setObject(index + 1, param);
+                    } catch (SQLFeatureNotSupportedException e) {
+                        ps.setObject(index + 1, param);
+                    } catch (SQLException e) {
+                        ps.setObject(index + 1, param);
                     }
                 }else{
                     ps.setObject(index + 1, param);
