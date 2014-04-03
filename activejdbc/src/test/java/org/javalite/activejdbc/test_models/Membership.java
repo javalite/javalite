@@ -34,7 +34,7 @@ package org.javalite.activejdbc.test_models;
 @Table("gperms_memberships")
 public class Membership extends Model {
 
-    private static final TreeMap<PermissionOwner, List<Membership>> playerGroupMap = new TreeMap<>();
+    private static final TreeMap<PermissionOwner, List<Membership>> playerGroupMap = new TreeMap<PermissionOwner, List<Membership>>();
 
     /**
      * Clears the cache. Used in reload.
@@ -66,7 +66,7 @@ public class Membership extends Model {
             if (playerGroupMap.containsKey(member)) {
                 playerGroupMap.get(member).add(membership);
             } else {
-                List<Membership> msList = new ArrayList<>();
+                List<Membership> msList = new ArrayList<Membership>();
                 msList.add(membership);
                 playerGroupMap.put(member, msList);
             }
@@ -84,7 +84,7 @@ public class Membership extends Model {
         if (playerGroupMap.containsKey(owner)) {
             return playerGroupMap.get(owner);
         }
-        List<Membership> list = new ArrayList<>();
+        List<Membership> list = new ArrayList<Membership>();
         List<Membership> memberships = Membership.find("type = ? AND member = ?", owner.getType().getType(), owner.getId());
         if (memberships.isEmpty()) {
             List<Group> defaultGroups = Group.getDefaultGroups();
@@ -130,16 +130,16 @@ public class Membership extends Model {
     public static List<Membership> getMembershipsForParent(PermissionType type, PermissionOwner parent) {
         List<Membership> memberships = Membership.find("type = ? AND parent = ?", type.getType(), parent.getId());
         if (memberships == null || memberships.isEmpty()) {
-            return new ArrayList<>();
+            return new ArrayList<Membership>();
         }
-        List<Membership> mList = new ArrayList<>();
+        List<Membership> mList = new ArrayList<Membership>();
         for (Membership membership : memberships) {
             if (playerGroupMap.containsKey(membership.getMemberAsOwner())) {
                 if (!playerGroupMap.get(membership.getMemberAsOwner()).contains(membership)) {
                     playerGroupMap.get(membership.getMemberAsOwner()).add(membership);
                 }
             } else {
-                List<Membership> tempList = new ArrayList<>();
+                List<Membership> tempList = new ArrayList<Membership>();
                 tempList.add(membership);
                 playerGroupMap.put(membership.getMemberAsOwner(), tempList);
             }
