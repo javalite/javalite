@@ -62,8 +62,8 @@
             <dependencies>
                 <dependency>
                     <groupId>oracle</groupId>
-                    <artifactId>jdbc-driver</artifactId>
-                    <version>7</version>
+                    <artifactId>ojdbc14</artifactId>
+                    <version>10.2.0.4</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
