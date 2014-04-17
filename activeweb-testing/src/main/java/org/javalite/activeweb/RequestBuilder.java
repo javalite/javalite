@@ -23,6 +23,7 @@ import java.util.*;
 
 import static org.javalite.activeweb.ControllerFactory.createControllerInstance;
 import static org.javalite.activeweb.ControllerFactory.getControllerClassName;
+import static org.javalite.test.jspec.JSpec.a;
 
 /**
  * Class is used in DSL for building a fake request for a controller to be tested. This class is not used directly.
@@ -52,11 +53,30 @@ public class RequestBuilder {
 
     }
 
+
+    /**
+     * Convenience method to add a non-file form item to request.
+     * Will call {@link #formItem(String, String, boolean, String, byte[])} internally.
+     * Content type will be set to "text/plain", and "isFile" to false.
+     *
+     * @param fieldName name of field - toString() will be used to add to form item
+     * @param value - value of parameter, toString().getBytes() will be used to add to form item
+     * @return @return {@link org.javalite.activeweb.RequestBuilder} for setting additional request parameters.
+     *
+     * @see {@link #formItem(String, String, boolean, String, byte[])}
+     *
+     */
+    public RequestBuilder formItem(Object fieldName, Object value){
+        a(fieldName).shouldNotBeNull();
+        a(value).shouldNotBeNull();
+        return formItem(fieldName.toString(), fieldName.toString(), false, "text/plain", value.toString().getBytes());
+    }
+
     /**
      * Adds an "uploaded" file to the request. Do not forget to set the content type to: "multipart/form-data", or
      * this method will be ignored.
      *
-     * @param name name of file.
+     * @param fileName name of file.
      * @param fieldName name of field name - this is typically a name of a HTML form field.
      * @param isFile set true for file, false for regular field. 
      * @param contentType this is content type for this field, not the request. Set to a value reflecting the file
@@ -64,9 +84,9 @@ public class RequestBuilder {
      * @param content this is the binary content of the file.
      * @return {@link org.javalite.activeweb.RequestBuilder} for setting additional request parameters.
      */
-    public RequestBuilder formItem(String name, String fieldName, boolean isFile, String contentType, byte[] content){
+    public RequestBuilder formItem(String fileName, String fieldName, boolean isFile, String contentType, byte[] content){
         checkContentType();
-        formItems.add(new FormItem(name, fieldName, isFile, contentType, content));
+        formItems.add(new FormItem(fileName, fieldName, isFile, contentType, content));
         return this;
     }
 
