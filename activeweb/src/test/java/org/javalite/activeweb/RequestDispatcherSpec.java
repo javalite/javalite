@@ -227,7 +227,8 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
-        a(getSystemErr().contains("Template /hello/no-view.ftl not found.")).shouldBeTrue();
+        System.out.println(getSystemErr());
+        a(getSystemErr().contains("Template \"/hello/no-view.ftl\" not found.")).shouldBeTrue();
 
         String html = response.getContentAsString();
 
