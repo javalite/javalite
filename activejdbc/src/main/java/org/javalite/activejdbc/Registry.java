@@ -25,6 +25,7 @@ import org.javalite.activejdbc.statistics.StatisticsQueue;
 import org.javalite.activejdbc.validation.Validator;
 
 import java.lang.reflect.Method;
+import java.sql.DatabaseMetaData;
 import java.util.*;
 import java.sql.SQLException;
 import java.sql.Connection;
@@ -132,12 +133,13 @@ public enum Registry {
             if(c == null){
                 throw new DBException("Failed to retrieve metadata from DB, connection: '" + dbName + "' is not available");
             }
-            String dbType = c.getMetaData().getDatabaseProductName();
-            registerModels(dbName, mf.getModelsForDb(dbName), dbType);
+            DatabaseMetaData databaseMetaData = c.getMetaData();
+            String databaseProductName = c.getMetaData().getDatabaseProductName();
+            registerModels(dbName, mf.getModelsForDb(dbName), databaseProductName);
             String[] tables = metaModels.getTableNames(dbName);
 
             for (String table : tables) {
-                Map<String, ColumnMetadata> metaParams = fetchMetaParams(table, dbName);
+                Map<String, ColumnMetadata> metaParams = fetchMetaParams(databaseMetaData, databaseProductName, table, dbName);
                 registerColumnMetadata(table, metaParams);
             }
 
@@ -158,6 +160,65 @@ public enum Registry {
             }
         }
     }
+
+    /**
+     * Returns a hash keyed off a column name.
+     *
+     * @return
+     * @throws java.sql.SQLException
+     */
+    private Map<String, ColumnMetadata> fetchMetaParams(DatabaseMetaData databaseMetaData, String databaseProductName, String table, String dbName) throws SQLException {
+
+
+      /*
+       * Valid table name format: tablename or schemaname.tablename
+       */
+        String[] vals = table.split("\\.");
+        String schema = null;
+        String tableName;
+
+        if(vals.length == 1) {
+            tableName = vals[0];
+        } else if (vals.length == 2) {
+            schema = vals[0];
+            tableName = vals[1];
+            if (schema.length() == 0 || tableName.length() == 0) {
+                throw new DBException("invalid table name : " + table);
+            }
+        } else {
+            throw new DBException("invalid table name: " + table);
+        }
+
+        ResultSet rs = databaseMetaData.getColumns(null, schema, tableName, null);
+        String dbProduct = databaseMetaData.getDatabaseProductName().toLowerCase();
+        Map<String, ColumnMetadata> columns = getColumns(rs, dbProduct);
+        rs.close();
+
+        //try upper case table name - Oracle uses upper case
+        if (columns.size() == 0) {
+            rs = databaseMetaData.getColumns(null, schema, tableName.toUpperCase(), null);
+            dbProduct = databaseProductName.toLowerCase();
+            columns = getColumns(rs, dbProduct);
+            rs.close();
+        }
+
+        //if upper case not found, try lower case.
+        if(columns.size() == 0){
+            rs = databaseMetaData.getColumns(null, schema, tableName.toLowerCase(), null);
+            columns = getColumns(rs, dbProduct);
+            rs.close();
+        }
+
+        if(columns.size() > 0){
+            LogFilter.log(logger, "Fetched metadata for table: " + table);
+        }
+        else{
+            logger.warn("Failed to retrieve metadata for table: '" + table
+                    + "'. Are you sure this table exists? For some databases table names are case sensitive.");
+        }
+        return columns;
+    }
+
 
     /**
      *
@@ -262,64 +323,6 @@ public enum Registry {
         }
 	}
 
-    /**
-     * Returns a hash keyed off a column name.
-     *
-     * @return
-     * @throws java.sql.SQLException
-     */
-    private Map<String, ColumnMetadata> fetchMetaParams(String table, String dbName) throws SQLException {
-        Connection con = ConnectionsAccess.getConnection(dbName);
-
-      /*
-       * Valid table name format: tablename or schemanae.tablename
-       */
-        String[] vals = table.split("\\.");
-        String schema = null;
-        String tableName = null;
-
-        if(vals.length == 1) {
-            tableName = vals[0];
-        } else if (vals.length == 2) {
-            schema = vals[0];
-            tableName = vals[1];
-            if (schema.length() == 0 || tableName.length() == 0) {
-                throw new DBException("invalid table name : " + table);
-            }
-        } else {
-            throw new DBException("invalid table name: " + table);
-        }
-
-        ResultSet rs = con.getMetaData().getColumns(null, schema, tableName, null);
-        String dbProduct = con.getMetaData().getDatabaseProductName().toLowerCase();
-        Map<String, ColumnMetadata> columns = getColumns(rs, dbProduct);
-        rs.close();
-
-        //try upper case table name - Oracle uses upper case
-        if (columns.size() == 0) {
-            rs = con.getMetaData().getColumns(null, schema, tableName.toUpperCase(), null);
-            dbProduct = con.getMetaData().getDatabaseProductName().toLowerCase();
-            columns = getColumns(rs, dbProduct);
-            rs.close();
-        }
-
-        //if upper case not found, try lower case.
-        if(columns.size() == 0){
-            rs = con.getMetaData().getColumns(null, schema, tableName.toLowerCase(), null);
-            columns = getColumns(rs, dbProduct);
-            rs.close();
-        }
-
-        if(columns.size() > 0){
-            LogFilter.log(logger, "Fetched metadata for table: " + table);
-        }
-        else{
-            logger.warn("Failed to retrieve metadata for table: '" + table
-                + "'. Are you sure this table exists? For some databases table names are case sensitive.");
-        }
-
-        return columns;
-    }
 
     private Map<String, ColumnMetadata> getColumns(ResultSet rs, String dbProduct) throws SQLException {
          Map<String, ColumnMetadata> columns = new HashMap<String, ColumnMetadata>();

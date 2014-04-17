@@ -18,6 +18,27 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals><goal>run</goal></goals>
+                        <configuration>
+                            <tasks>
+                                <echo>*****************************************************</echo>
+                                <echo>*****************************************************</echo>
+                                <echo> INSTALL THIS PLUGIN BEFORE RUNNING TESTS:</echo>
+                                <echo> mvn clean install -DskipTests=true</echo>
+                                <echo>*****************************************************</echo>
+                                <echo>*****************************************************</echo>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.5</version>
                 <configuration>

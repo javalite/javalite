@@ -32,7 +32,7 @@ public class Defect122Test extends ActiveJDBCTest {
         Person p = new Person();
         a(p).shouldBe("new");
 
-        p = Person.findById(1);
+        p = Person.findFirst("last_name = ?", "Pesci");
         a(p).shouldNotBe("new");
     }
 }
