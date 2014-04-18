@@ -831,9 +831,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return instance of a parent of this instance in the "belongs to"  relationship.
      */
     public <T extends Model> T parent(Class<T> parentClass) {
+        return parent(parentClass, false);
+    }
 
-        T cachedParent = (T)cachedParents.get(parentClass);
-        if(cachedParent != null){
+    public <T extends Model> T parent(Class<T> parentClass, boolean cache) {
+        T cachedParent = parentClass.cast(cachedParents.get(parentClass));
+        if (cachedParent != null) {
             return cachedParent;
         }
         MetaModel parentMM = Registry.instance().getMetaModel(parentClass);
@@ -841,25 +844,25 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         BelongsToAssociation ass = (BelongsToAssociation)getMetaModelLocal().getAssociationForTarget(parentTable, BelongsToAssociation.class);
         BelongsToPolymorphicAssociation assP = (BelongsToPolymorphicAssociation)getMetaModelLocal()
-                .getAssociationForTarget(parentTable, BelongsToPolymorphicAssociation.class);
+            .getAssociationForTarget(parentTable, BelongsToPolymorphicAssociation.class);
 
         String fkValue;
         String fkName;
-        if(ass != null){
+        if (ass != null) {
             fkValue = getString(ass.getFkName());
             fkName = ass.getFkName();
-        }else if(assP != null){
-            fkValue = getString("parent_id");            
+        } else if (assP != null) {
+            fkValue = getString("parent_id");
             fkName = "parent_id";
 
-            if(!assP.getTypeLabel().equals(getString("parent_type"))){
+            if (!assP.getTypeLabel().equals(getString("parent_type"))) {
                 throw new IllegalArgumentException("Wrong parent: '" + parentClass + "'. Actual parent type label of this record is: '" + getString("parent_type") + "'");
             }
-        }else{
+        } else {
             throw new IllegalArgumentException("there is no association with table: " + parentTable);
         }
 
-        if(fkValue == null){
+        if (fkValue == null) {
             logger.debug("Attribute:  "  + fkName + " is null, cannot determine parent. Child record: " + this);
             return null;
         }
@@ -867,9 +870,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         String query = getMetaModelLocal().getDialect().selectStarParametrized(parentTable, parentIdName);
 
         T parent;
-        if(parentMM.cached()){
-            parent = (T)QueryCache.instance().getItem(parentTable, query, new Object[]{fkValue});
-            if(parent != null){
+        if (parentMM.cached()) {
+            parent = parentClass.cast(QueryCache.instance().getItem(parentTable, query, new Object[]{fkValue}));
+            if (parent != null) {
                 return parent;
             }
         }
@@ -882,8 +885,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             try {
                 parent = parentClass.newInstance();
                 parent.hydrate(results.get(0));
-                if(parentMM.cached()){
+                if (parentMM.cached()) {
                     QueryCache.instance().addItem(parentTable, query, new Object[]{fkValue}, parent);
+                }
+                if (cache) {
+                    setCachedParent(parent);
                 }
                 return parent;
             } catch (Exception e) {
@@ -893,7 +899,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     protected void setCachedParent(Model parent) {
-        if(parent != null){
+        if (parent != null) {
             cachedParents.put(parent.getClass(), parent);
         }
     }
