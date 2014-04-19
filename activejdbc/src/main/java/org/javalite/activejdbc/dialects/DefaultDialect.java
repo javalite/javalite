@@ -17,6 +17,8 @@ limitations under the License.
 
 package org.javalite.activejdbc.dialects;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import org.javalite.activejdbc.MetaModel;
 import org.javalite.common.Util;
 
@@ -113,4 +115,8 @@ public class DefaultDialect {
    public Object overrideDriverTypeConversion(MetaModel mm, String attributeName, Object value) {
 	   return value;
    }
+   
+   public Object getObject(ResultSet rs, int columnIndex) throws SQLException {
+       return rs.getObject(columnIndex);
+   }   
 }

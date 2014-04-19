@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.HashMap;
+import org.javalite.activejdbc.dialects.DefaultDialect;
 
 
 public class RowProcessor {
@@ -45,17 +46,18 @@ public class RowProcessor {
     protected void processRS(RowListener listener) throws SQLException {
 
         ResultSetMetaData metaData = rs.getMetaData();
-
+        DefaultDialect dialect = Registry.instance().getConfiguration().getDialect(s.getConnection().getMetaData().getDatabaseProductName());
+        
         String labels[] = new String[metaData.getColumnCount()];
         for (int i = 1; i <= labels.length; i++) {
-            labels[i - 1] = metaData.getColumnLabel(i);
+            labels[i - 1] = metaData.getColumnLabel(i).toLowerCase();
         }
 
         while (rs.next()) {
             HashMap<String, Object> row = new HashMap<String, Object>();
-            for (String label : labels) {                
-                row.put(label.toLowerCase(), rs.getObject(label));
-            }
+            for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                row.put(labels[i - 1], dialect.getObject(rs, i));
+            }            
             if(!listener.next(row)) break;
         }
         rs.close();

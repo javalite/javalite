@@ -87,7 +87,6 @@ public class Configuration {
             throw new InitException(e);
         }
 
-
         String cacheManagerClass = properties.getProperty("cache.manager");
         if(cacheManagerClass != null){
 
@@ -100,6 +99,24 @@ public class Configuration {
             }
 
         }
+        
+        String dialectClasses = properties.getProperty("dialects");
+        if (dialectClasses != null) {
+            try {
+                ClassLoader classLoader = Configuration.class.getClassLoader();
+                
+                for (String dialect : dialectClasses.split(";")) {
+                    String[] nc = dialect.split(",");
+                    Class dClass = classLoader.loadClass(nc[1]);
+                    dialects.put(nc[0], (DefaultDialect)dClass.newInstance());
+                }                
+            } catch (Exception e) {
+                throw new InitException("failed to initialize custom Dialects. Please, ensure that the property " +
+                        "'dialects' is in the format 'name,class;...' and points to the correct classes which extends 'activejdbc.dialects.DefaultDialect' class and provides a default constructor.", e);
+            }
+
+        }
+        
     }
 
     List<String> getModelNames(String dbName) throws IOException {
@@ -119,28 +136,32 @@ public class Configuration {
     }
 
     DefaultDialect getDialect(MetaModel mm){
-        if(dialects.get(mm.getDbType()) == null){
-            if(mm.getDbType().equalsIgnoreCase("Oracle")){
-                dialects.put(mm.getDbType(), new OracleDialect());
+        return getDialect(mm.getDbType());
+    }
+    
+    DefaultDialect getDialect(String dbType){
+        if(dialects.get(dbType) == null){
+            if(dbType.equalsIgnoreCase("Oracle")){
+                dialects.put(dbType, new OracleDialect());
             }
-            else if(mm.getDbType().equalsIgnoreCase("MySQL")){
-                dialects.put(mm.getDbType(), new MySQLDialect());
+            else if(dbType.equalsIgnoreCase("MySQL")){
+                dialects.put(dbType, new MySQLDialect());
             }
-            else if(mm.getDbType().equalsIgnoreCase("PostgreSQL")){
-                dialects.put(mm.getDbType(), new PostgreSQLDialect());
+            else if(dbType.equalsIgnoreCase("PostgreSQL")){
+                dialects.put(dbType, new PostgreSQLDialect());
             }
-            else if(mm.getDbType().equalsIgnoreCase("h2")){
-                dialects.put(mm.getDbType(), new H2Dialect());
+            else if(dbType.equalsIgnoreCase("h2")){
+                dialects.put(dbType, new H2Dialect());
             }
-            else if(mm.getDbType().equalsIgnoreCase("Microsoft SQL Server")){
-                dialects.put(mm.getDbType(), new MSSQLDialect());
+            else if(dbType.equalsIgnoreCase("Microsoft SQL Server")){
+                dialects.put(dbType, new MSSQLDialect());
             }
             else{
-                dialects.put(mm.getDbType(), new DefaultDialect());
+                dialects.put(dbType, new DefaultDialect());
             }
         }
 
-        return dialects.get(mm.getDbType());
+        return dialects.get(dbType);
     }
 
 
