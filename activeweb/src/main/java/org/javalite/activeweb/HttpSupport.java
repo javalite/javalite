@@ -1204,7 +1204,7 @@ public class HttpSupport {
      * @return True if this request uses HTTP GET method, false otherwise.
      */
     protected boolean isGet() {
-        return Context.getHttpRequest().getMethod().equalsIgnoreCase("get");
+        return isMethod("get");
     }
 
 
@@ -1214,7 +1214,7 @@ public class HttpSupport {
      * @return True if this request uses HTTP POST method, false otherwise.
      */
     protected boolean isPost() {
-        return Context.getHttpRequest().getMethod().equalsIgnoreCase("post");
+        return isMethod("post");
     }
 
 
@@ -1224,7 +1224,7 @@ public class HttpSupport {
      * @return True if this request uses HTTP PUT method, false otherwise.
      */
     protected boolean isPut() {
-        return Context.getHttpRequest().getMethod().equalsIgnoreCase("put");
+        return isMethod("put");
     }
 
 
@@ -1234,7 +1234,12 @@ public class HttpSupport {
      * @return True if this request uses HTTP DELETE method, false otherwise.
      */
     protected boolean isDelete() {
-        return Context.getHttpRequest().getMethod().equalsIgnoreCase("delete");
+        return isMethod("delete");
+    }
+
+
+    private boolean isMethod(String method){
+        return HttpMethod.getMethod(Context.getHttpRequest()).name().equalsIgnoreCase(method);
     }
 
 
@@ -1244,7 +1249,7 @@ public class HttpSupport {
      * @return True if this request uses HTTP HEAD method, false otherwise.
      */
     protected boolean isHead() {
-        return Context.getHttpRequest().getMethod().equalsIgnoreCase("head");
+        return isMethod("head");
     }
 
     /**

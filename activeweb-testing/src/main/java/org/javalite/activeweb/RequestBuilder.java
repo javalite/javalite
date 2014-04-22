@@ -353,7 +353,6 @@ public class RequestBuilder {
             Context.setRoute(new Route(controller, realAction, id));
             Injector injector = Context.getControllerRegistry().getInjector();
 
-            long start = System.currentTimeMillis();
             if(injector != null){
                  injector.injectMembers(controller);
             }
