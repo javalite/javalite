@@ -53,6 +53,7 @@ public class HierarchyTest extends ActiveJDBCTest {
 	 */
 	@Test
 	public void shouldAcceptMultipleLevelsInheritance() {
-		Cake.count();
+        Cake.createIt("name", "Cheese");
+		a(Cake.count()).shouldBeEqual(1);
 	}
 }
