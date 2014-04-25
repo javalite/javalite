@@ -18,10 +18,12 @@ limitations under the License.
 package org.javalite.activejdbc.test_models;
 
 import org.javalite.activejdbc.Model;
+import org.javalite.activejdbc.annotations.VersionColumn;
 
 /**
  * @author Igor Polevoy
  */
+@VersionColumn("lock_version")
 public class Item extends Model {
     static {
         validateNumericalityOf("item_number").convertNullIfEmpty();

@@ -57,7 +57,7 @@ CREATE TABLE registrations (id  int(11) NOT NULL  auto_increment PRIMARY KEY, as
 
 
 DROP TABLE IF EXISTS items;
-CREATE TABLE items (id  int(11) NOT NULL  auto_increment PRIMARY KEY, item_number int(11), item_description VARCHAR(56));
+CREATE TABLE items (id  int(11) NOT NULL  auto_increment PRIMARY KEY, item_number int(11), item_description VARCHAR(56), lock_version int(11));
 
 DROP TABLE IF EXISTS articles;
 CREATE TABLE articles (id  int(11) NOT NULL  auto_increment PRIMARY KEY, title VARCHAR(56), content TEXT);

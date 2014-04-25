@@ -2147,10 +2147,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         for(String name: attributes.keySet()){
             if(includeId){
-                if (!name.equalsIgnoreCase("record_version"))
+                if (!name.equalsIgnoreCase(getMetaModelLocal().getVersionColumn()))
                     attributeNames.add(name);
             }else{
-                if (!name.equalsIgnoreCase("record_version") && !name.equalsIgnoreCase(getMetaModelLocal().getIdName()))
+                if (!name.equalsIgnoreCase(getMetaModelLocal().getVersionColumn()) && !name.equalsIgnoreCase(getMetaModelLocal().getIdName()))
                     attributeNames.add(name);
             }
         }
@@ -2184,7 +2184,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             fireAfterCreate(this);
 
             if(getMetaModelLocal().isVersioned()){
-                set("record_version", 1);
+                set(getMetaModelLocal().getVersionColumn(), 1);
             }
 
             return true;
@@ -2225,7 +2225,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             fireAfterCreate(this);
 
             if(getMetaModelLocal().isVersioned()){
-                set("record_version", 1);
+                set(getMetaModelLocal().getVersionColumn(), 1);
             }
 
             return recordsUpdated == 1;
@@ -2277,22 +2277,22 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
 
         if(metaModel.isVersioned()){
-            query += ", record_version = ? ";
-            values.add(getLong("record_version") + 1);
+            query += ", " + getMetaModelLocal().getVersionColumn() + " = ? ";
+            values.add(getLong(getMetaModelLocal().getVersionColumn()) + 1);
         }
         query += " where " + metaModel.getIdName() + " = ?";
-        query += metaModel.isVersioned()? " and record_version = ?" :"";
+        query += metaModel.isVersioned()? " and " + getMetaModelLocal().getVersionColumn() + " = ?" :"";
         values.add(getId());
         if(metaModel.isVersioned()){
-            values.add((get("record_version")));
+            values.add((get(getMetaModelLocal().getVersionColumn())));
         }
         int updated = new DB(metaModel.getDbName()).exec(query, values.toArray());
         if(metaModel.isVersioned() && updated == 0){
             throw new StaleModelException("Failed to update record for model '" + getClass() +
-                    "', with " + getIdName() + " = " + getId() + " and record_version = " + get("record_version") +
+                    "', with " + getIdName() + " = " + getId() + " and " + getMetaModelLocal().getVersionColumn() + " = " + get(getMetaModelLocal().getVersionColumn()) +
                     ". Either this record does not exist anymore, or has been updated to have another record_version.");
         }else if(metaModel.isVersioned()){
-            set("record_version", getLong("record_version") + 1);
+            set(getMetaModelLocal().getVersionColumn(), getLong(getMetaModelLocal().getVersionColumn()) + 1);
         }
         if(metaModel.cached()){
             QueryCache.instance().purgeTableCache(metaModel.getTableName());

@@ -18,6 +18,7 @@ limitations under the License.
 package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.annotations.DbName;
+import org.javalite.activejdbc.annotations.VersionColumn;
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
 import org.javalite.activejdbc.associations.OneToManyAssociation;
 import org.javalite.activejdbc.associations.OneToManyPolymorphicAssociation;
@@ -42,6 +43,8 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
     private boolean cached;
     private String idGeneratorCode;
     private List<String> attributeNamesNoId;
+    private String versionColumn;
+
 
     protected MetaModel(String dbName, String tableName, String idName, Class<T> modelClass, String dbType, boolean cached, String idGeneratorCode) {
         this.idName = idName.toLowerCase();
@@ -51,6 +54,19 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
         this.cached = cached;
         this.dbName = dbName;
         this.idGeneratorCode = idGeneratorCode;
+        VersionColumn vc = modelClass.getAnnotation(VersionColumn.class);
+        if(vc != null){
+            versionColumn = vc.value();
+        }else{
+            versionColumn = "record_version";
+        }
+    }
+
+    /**
+     * @return name of the column for optimistic locking record version
+     */
+    public String getVersionColumn(){
+        return versionColumn;
     }
 
     public String getIdGeneratorCode(){
@@ -107,7 +123,7 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
         attributes.remove(getIdName().toLowerCase());
         attributes.remove("created_at");
         attributes.remove("updated_at");
-        attributes.remove("record_version");
+        attributes.remove(versionColumn);
         return attributes;
     }
 
@@ -131,7 +147,7 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
      */
     public boolean isVersioned(){
         List<String> attrs = getAttributeNames(); 
-        return attrs.contains("record_version") || attrs.contains("RECORD_VERSION");
+        return attrs.contains(versionColumn) || attrs.contains(versionColumn.toUpperCase());
     }
 
     /**

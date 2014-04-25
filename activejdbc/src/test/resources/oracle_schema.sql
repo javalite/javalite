@@ -333,7 +333,7 @@ end;
 
 
 -- BREAK
-CREATE TABLE items (id  NUMBER NOT NULL , item_number NUMBER(11), item_description VARCHAR(56))
+CREATE TABLE items (id  NUMBER NOT NULL , item_number NUMBER(11), item_description VARCHAR(56), lock_version NUMBER(11))
 -- BREAK
 ALTER TABLE items ADD CONSTRAINT items_pk PRIMARY KEY ( id )
 -- BREAK

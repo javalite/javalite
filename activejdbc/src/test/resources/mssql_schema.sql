@@ -117,7 +117,7 @@ IF object_id('dbo.items') IS NOT NULL
 BEGIN
     DROP TABLE [dbo].[items]
 END
-CREATE TABLE items (id  INT IDENTITY PRIMARY KEY, item_number INT, item_description VARCHAR(56));
+CREATE TABLE items (id  INT IDENTITY PRIMARY KEY, item_number INT, item_description VARCHAR(56), lock_version INT);
 
 IF object_id('dbo.articles') IS NOT NULL
 BEGIN

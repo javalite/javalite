@@ -62,7 +62,7 @@ public class DefaultDialect {
 
         String query = "INSERT INTO " + mm.getTableName() + " (" + Util.join(nonNullAttributes, ", ");
         query += mm.getIdGeneratorCode()!= null ? ", " + mm.getIdName() :"";
-        query += mm.isVersioned()? ", " + "record_version" :"";
+        query += mm.isVersioned()? ", " + mm.getVersionColumn() :"";
         query += ") VALUES ("+ getQuestions(nonNullAttributes.size());
         query += mm.getIdGeneratorCode() != null ? ", " + mm.getIdGeneratorCode() :"";
         query += mm.isVersioned()? ", " + 1 :"";
@@ -73,7 +73,7 @@ public class DefaultDialect {
 
     public String createParametrizedInsertIdUnmanaged(MetaModel mm, List<String> nonNullAttributes){
         String query = "INSERT INTO " + mm.getTableName() + " (" + Util.join(nonNullAttributes, ", ");
-        query += mm.isVersioned()? ", " + "record_version" :"";
+        query += mm.isVersioned()? ", " + mm.getVersionColumn() :"";
         query += ") VALUES ("+ getQuestions(nonNullAttributes.size());
         query += mm.isVersioned()? ", " + 1 :"";
         query +=")";

@@ -57,7 +57,7 @@ CREATE TABLE registrations (id  serial PRIMARY KEY, astudent_id INT, acourse_id 
 
 
 DROP TABLE IF EXISTS items;
-CREATE TABLE items (id  serial PRIMARY KEY, item_number INT, item_description VARCHAR(56));
+CREATE TABLE items (id  serial PRIMARY KEY, item_number INT, item_description VARCHAR(56), lock_version INT);
 
 DROP TABLE IF EXISTS articles;
 CREATE TABLE articles (id  serial PRIMARY KEY, title VARCHAR(56), content TEXT);
