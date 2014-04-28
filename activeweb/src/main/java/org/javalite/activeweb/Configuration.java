@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.locks.Condition;
 
 import static org.javalite.common.Util.blank;
 
@@ -137,6 +136,11 @@ public class Configuration {
             }
         }
         return ENV;
+    }
+
+    //only for testing!
+    protected static void setEnv(String env){
+        ENV = env;
     }
     
     public static boolean isTesting() {
@@ -267,5 +271,15 @@ public class Configuration {
 
     public static File getTmpDir() {
         return new File(System.getProperty("java.io.tmpdir"));
+    }
+
+    private static List<AbstractControllerConfig.IgnoreSpec> ignoreSpecs = new ArrayList<AbstractControllerConfig.IgnoreSpec>();
+
+    protected static void addIgnoreSpec(AbstractControllerConfig.IgnoreSpec spec) {
+        ignoreSpecs.add(spec);
+    }
+
+    protected static List<AbstractControllerConfig.IgnoreSpec> getIgnoreSpecs(){
+        return ignoreSpecs;
     }
 }

@@ -341,4 +341,45 @@ public class RequestDispatcherSpec extends RequestSpec {
         dispatcher.doFilter(request, response, filterChain);
         a(response.getContentAsString()).shouldBeEqual("<message>XML from show action</message>");
     }
+
+
+    @Test
+    public void shouldIgnoreURI() throws IOException, ServletException {
+        request.setServletPath("/ignore123/show");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+
+        System.out.println(response.getContentAsString());
+
+        a(response.getContentAsString()).shouldBeEqual("");
+    }
+
+
+    @Test
+    public void shouldNotIgnoreURIInEnv() throws IOException, ServletException {
+        request.setServletPath("/ignore234/show");
+        request.setMethod("GET");
+
+        Configuration.setEnv("staging");
+
+        dispatcher.doFilter(request, response, filterChain);
+
+        a(response.getContentAsString()).shouldContain("not found");
+
+        Configuration.setEnv("development");//reset for other tests
+    }
+
+    @Test
+    public void shouldIgnoreURIInAnotherEnv() throws IOException, ServletException {
+        request.setServletPath("/ignore234/show");
+        request.setMethod("GET");
+
+        Configuration.setEnv("on moon"); //this will be ignored, since all ignored, except staging
+
+        dispatcher.doFilter(request, response, filterChain);
+
+        a(response.getContentAsString()).shouldBeEqual("");
+
+        Configuration.setEnv("development");//reset for other tests
+    }
 }

@@ -167,6 +167,12 @@ public class RequestDispatcher implements Filter {
                 return;
             }
 
+            if(ignored(path)){
+                chain.doFilter(req, resp);
+                logger.debug("URI ignored: " + path);
+                return;
+            }
+
             String format = null;
             String uri;
             if(path.contains(".")){
@@ -223,6 +229,15 @@ public class RequestDispatcher implements Filter {
         return map("message", e.getMessage() == null ? e.toString() : e.getMessage(),
                    "stack_trace", getStackTraceString(e),
                    "session", SessionHelper.getSessionAttributes());
+    }
+
+
+    private boolean ignored(String path) {
+        for(AbstractControllerConfig.IgnoreSpec ignoreSpec: Configuration.getIgnoreSpecs()){
+            if(ignoreSpec.ignores(path))
+                return true;
+        }
+        return false;
     }
 
     private boolean excluded(String servletPath) {

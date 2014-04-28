@@ -12,5 +12,9 @@ import org.javalite.activeweb.AppContext;
 public class AppControllerConfig extends AbstractControllerConfig {
     public void init(AppContext appContext) {
         add(new Issue88Filter()).to(DbExceptionController.class);
+
+        ignore(".*ignore1.*"); // should ignore things like "ignore123"
+
+        ignore(".*ignore2.*").exceptIn("staging"); // will not ignore in staging env.
     }
 }
