@@ -92,13 +92,15 @@ public class LesscFilter extends HttpSupportFilter {
         }
     }
 
-    public String lessc(File lessFile) throws IOException, InterruptedException {
-        String css;
-        Process process = getRuntime().exec("lessc " + lessFile.getPath());
-        css = read(process.getInputStream());
+    public String lessc(File lessFile) throws IOException, InterruptedException{
+        if(!lessFile.exists()){
+            throw new RuntimeException("File: " + lessFile.getPath() + " does not exist. Current directory: " + new File(".").getCanonicalPath());
+        }
+        logInfo("Executing: " + "lessc " + lessFile.getPath());
+        Process process = getRuntime().exec(new String[]{"lessc", lessFile.getPath()});
+        String css = read(process.getInputStream(), "UTF-8");
+        String error = read(process.getErrorStream(), "UTF-8");
         if (process.waitFor() != 0) {
-            java.util.Scanner s = new java.util.Scanner(process.getErrorStream()).useDelimiter("\\A");
-            String error = s.hasNext() ? "/* " + s.next() + "*/" : "/* Unknown LESS Error */";
             throw new RuntimeException(error);
         }
         return css;

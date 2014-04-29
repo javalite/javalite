@@ -10,7 +10,6 @@ import static java.lang.Runtime.getRuntime;
 
 
 /**
- *
  * @goal compile
  * @phase prepare-package
  */
@@ -42,40 +41,44 @@ public class CompileLesscFilesMojo extends AbstractMojo {
 
     public final void execute() throws MojoExecutionException {
 
-        try{
+        try {
             String css = lessc(new File(lesscMain));
             File dir = new File(targetDirectory);
-            if(!dir.exists()){
-                if(!dir.mkdirs()){
+            if (!dir.exists()) {
+                if (!dir.mkdirs()) {
                     throw new MojoExecutionException("Failed to create directory: " + targetDirectory);
                 }
             }
+            getLog().info("Storing CSS into: " + targetDirectory + System.getProperty("file.separator") + targetFileName);
             FileWriter writer = new FileWriter(targetDirectory + System.getProperty("file.separator") + targetFileName);
             writer.write(css);
             writer.close();
-        }catch(Exception e){
-            if(e instanceof MojoExecutionException){
-                throw (MojoExecutionException)e;
-            }else{
+        } catch (Exception e) {
+            if (e instanceof MojoExecutionException) {
+                throw (MojoExecutionException) e;
+            } else {
                 throw new MojoExecutionException(e.getMessage(), e);
             }
         }
     }
 
-    public String lessc(File lessFile) throws IOException, InterruptedException {
-        String css;
-        Process process = getRuntime().exec("lessc " + lessFile.getPath());
-        css = read(process.getInputStream(), "UTF-8");
+    public String lessc(File lessFile) throws IOException, InterruptedException, MojoExecutionException {
+
+        if(!lessFile.exists()){
+            throw new MojoExecutionException("File: " + lessFile.getPath() + " does not exist. Current directory: " + new File(".").getCanonicalPath());
+        }
+        getLog().info("Executing: " + "lessc " + lessFile.getPath());
+        Process process = getRuntime().exec(new String[]{"lessc", lessFile.getPath()});
+        String css = read(process.getInputStream(), "UTF-8");
+        String error = read(process.getErrorStream(), "UTF-8");
         if (process.waitFor() != 0) {
-            java.util.Scanner s = new java.util.Scanner(process.getErrorStream()).useDelimiter("\\A");
-            String error = s.hasNext() ? "/* " + s.next() + "*/" : "/* Unknown LESS Error */";
-            throw new RuntimeException(error);
+            throw new MojoExecutionException(error);
         }
         return css;
     }
 
     public static String read(InputStream in, String charset) throws IOException {
-        if(in == null)
+        if (in == null)
             throw new IllegalArgumentException("input stream cannot be null");
 
         InputStreamReader reader = new InputStreamReader(in, charset);
