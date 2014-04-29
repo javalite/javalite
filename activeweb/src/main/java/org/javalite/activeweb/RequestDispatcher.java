@@ -233,7 +233,7 @@ public class RequestDispatcher implements Filter {
 
 
     private boolean ignored(String path) {
-        for(AbstractControllerConfig.IgnoreSpec ignoreSpec: Configuration.getIgnoreSpecs()){
+        for(AbstractRouteConfig.IgnoreSpec ignoreSpec: Configuration.getIgnoreSpecs()){
             if(ignoreSpec.ignores(path))
                 return true;
         }
