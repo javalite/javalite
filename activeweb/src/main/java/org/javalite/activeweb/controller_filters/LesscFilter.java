@@ -78,37 +78,28 @@ public class LesscFilter extends HttpSupportFilter {
         }
     }
 
-    private synchronized String css() throws UnsupportedEncodingException, NoSuchAlgorithmException {
-
+    private synchronized String css() throws Exception {
         String hash = (String) appContext().get("hash");
-
         String freshHash = getDirectoryHash(lessFile.getParentFile().getPath());
 
         if (hash != null && hash.equals(freshHash)) {
             return (String) appContext().get("css"); // no changes
         } else {
-            String css = lessc();
+            String css = lessc(lessFile);
             appContext().set("hash", freshHash);
             appContext().set("css", css);
             return css;
         }
     }
 
-    private String lessc() {
-        String css = "blank";
-        try {
-            Process process = getRuntime().exec("lessc " + lessFile.getPath());
-            css = read(process.getInputStream());
-            if (process.waitFor() != 0) {
-                java.util.Scanner s = new java.util.Scanner(process.getErrorStream()).useDelimiter("\\A");
-                css = s.hasNext() ? "/* " + s.next() + "*/" : "/* Unknown LESS Error */";
-                logError(css);
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } catch (IOException e) {
-            logError(e);
-            css = "/*" + e.getMessage() + "*/";
+    public String lessc(File lessFile) throws IOException, InterruptedException {
+        String css;
+        Process process = getRuntime().exec("lessc " + lessFile.getPath());
+        css = read(process.getInputStream());
+        if (process.waitFor() != 0) {
+            java.util.Scanner s = new java.util.Scanner(process.getErrorStream()).useDelimiter("\\A");
+            String error = s.hasNext() ? "/* " + s.next() + "*/" : "/* Unknown LESS Error */";
+            throw new RuntimeException(error);
         }
         return css;
     }

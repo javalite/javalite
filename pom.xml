@@ -30,6 +30,7 @@
         <module>activeweb</module>
         <module>activeweb-testing</module>
         <module>activeweb-gwt</module>
+        <module>activeweb-lessc</module>
     </modules>
 
     <properties>
