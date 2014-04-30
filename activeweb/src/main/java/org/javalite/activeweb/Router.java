@@ -42,6 +42,7 @@ public class Router {
 
     private String rootControllerName;
     private List<RouteBuilder> routes = new ArrayList<RouteBuilder>();
+    private List<IgnoreSpec> ignoreSpecs;
 
     protected Router(String rootControllerName) {
         this.rootControllerName = rootControllerName;
@@ -64,10 +65,8 @@ public class Router {
      * @return instance of a <code>Route</code> if one is found, null if not.
      */
     protected Route recognize(String uri, HttpMethod httpMethod) throws ClassLoadException {
-
         Route route = matchCustom(uri, httpMethod);
         if (route == null) { //proceed to built-in routes
-
             //DTO as map here
             Map<String, String> controllerPath = getControllerPath(uri);
 
@@ -80,19 +79,17 @@ public class Router {
             AppController controller = createControllerInstance(controllerClassName);
 
             if (uri.equals("/") && rootControllerName != null && httpMethod.equals(HttpMethod.GET)) {
-                return new Route(controller, "index");
+                route = new Route(controller, "index");
+            }else{
+                route = controller.restful() ? matchRestful(uri, controllerName, packageSuffix, httpMethod, controller) :
+                        matchStandard(uri, controllerName, packageSuffix, controller);
             }
-
-            route = controller.restful() ? matchRestful(uri, controllerName, packageSuffix, httpMethod, controller) :
-                    matchStandard(uri, controllerName, packageSuffix, controller);
         }
-
-
+        route.setIgnoreSpecs(ignoreSpecs);
         return route;
     }
 
     private Route matchCustom(String uri, HttpMethod httpMethod) throws ClassLoadException {
-
         for (RouteBuilder builder : routes) {
             if (builder.matches(uri, httpMethod)) {
                 return new Route(builder);
@@ -228,7 +225,6 @@ public class Router {
             if (action != null) {
                 uri.append("/").append(action);
             }
-
         } else {
             if (action != null) {
                 uri.append("/").append(action);
@@ -393,5 +389,9 @@ public class Router {
             res[i] = st.nextToken();
         }
         return res;
+    }
+
+    public void setIgnoreSpecs(List<IgnoreSpec> ignoreSpecs) {
+        this.ignoreSpecs = ignoreSpecs;
     }
 }

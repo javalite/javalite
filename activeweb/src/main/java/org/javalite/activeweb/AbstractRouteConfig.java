@@ -30,43 +30,6 @@ public abstract class AbstractRouteConfig extends AppConfig{
     protected void clear(){
         routes = new ArrayList<RouteBuilder>();
     }
-    public class IgnoreSpec {
-        private List<Pattern> ignorePatterns = new ArrayList<Pattern>();
-        private String exceptEnvironment;
-
-        protected IgnoreSpec(String[] ignores){
-            for (String ignore : ignores) {
-                ignorePatterns.add(Pattern.compile(ignore));
-            }
-        }
-
-        protected boolean ignores(String path){
-            boolean matches = false;
-            for (Pattern pattern : ignorePatterns) {
-                Matcher m = pattern.matcher(path);
-                matches = m.matches();
-                if (exceptEnvironment != null) {
-                    if (matches && exceptEnvironment.equals(Configuration.getEnv())) {
-                        matches = false; //-- need to ignore
-                    }
-                }
-            }
-
-            System.out.println("IgnoreSpec with patterns: " + ignorePatterns + " matches: " + matches );
-            return matches;
-        }
-
-        /**
-         * Sets an environment in which NOT TO ignore a URI. Typical use is to process some URIs in
-         * development environment, such as compile CSS, or do special image processing. In other environments,
-         * this URL will be ignored, given that resource is pre-processed and available from container.
-         *
-         * @param environment name of envoronment in which NOT to ignore this URI.
-         */
-        public void exceptIn(String environment){
-            this.exceptEnvironment = environment;
-        }
-    }
 
 
     /**
@@ -82,10 +45,7 @@ public abstract class AbstractRouteConfig extends AppConfig{
         return spec;
     }
 
-    @Override
-    public void completeInit() {
-        for (IgnoreSpec ignoreSpec: ignoreSpecs) {
-            Configuration.addIgnoreSpec(ignoreSpec);
-        }
+    protected final List<IgnoreSpec> getIgnoreSpecs() {
+        return ignoreSpecs;
     }
 }

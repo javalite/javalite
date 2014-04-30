@@ -88,9 +88,7 @@ public class RequestDispatcher implements Filter {
     private Router getRouter(AppContext context){
         String routeConfigClassName = Configuration.getRouteConfigClassName();
         Router router = new Router(filterConfig.getInitParameter("root_controller"));
-
         AbstractRouteConfig routeConfigLocal;
-
         try {
             if(testMode){
                 routeConfigLocal = routeConfigTest;
@@ -101,6 +99,8 @@ public class RequestDispatcher implements Filter {
             routeConfigLocal.clear();
             routeConfigLocal.init(context);
             router.setRoutes(routeConfigLocal.getRoutes());
+            router.setIgnoreSpecs(routeConfigLocal.getIgnoreSpecs());
+
             logger.debug("Loaded routes from: " + routeConfigClassName);
 
         } catch (IllegalArgumentException e) {
@@ -167,11 +167,7 @@ public class RequestDispatcher implements Filter {
                 return;
             }
 
-            if(ignored(path)){
-                chain.doFilter(req, resp);
-                logger.debug("URI ignored: " + path);
-                return;
-            }
+
 
             String format = null;
             String uri;
@@ -189,6 +185,12 @@ public class RequestDispatcher implements Filter {
 
             Router router = getRouter(appContext);
             Route route = router.recognize(uri, HttpMethod.getMethod(request));
+
+            if(route.ignores(path)){
+                chain.doFilter(req, resp);
+                logger.debug("URI ignored: " + path);
+                return;
+            }
 
             if (route != null) {
                 Context.setRoute(route);
@@ -232,14 +234,6 @@ public class RequestDispatcher implements Filter {
     }
 
 
-    private boolean ignored(String path) {
-        for(AbstractRouteConfig.IgnoreSpec ignoreSpec: Configuration.getIgnoreSpecs()){
-            if(ignoreSpec.ignores(path))
-                return true;
-        }
-        return false;
-    }
-
     private boolean excluded(String servletPath) {
         for (String exclusion : exclusions) {
             if (servletPath.contains(exclusion))
@@ -265,7 +259,7 @@ public class RequestDispatcher implements Filter {
     private void renderSystemError(String template, String layout, int status, Throwable e) {
         try{
             if(status == 404){
-                logger.warn("ActiveWeb WARNING: \n" + getRequestProperties() + e);
+                logger.warn("ActiveWeb 404 WARNING: \n" + getRequestProperties() + e);
             }else{
                 logger.error("ActiveWeb ERROR: \n" + getRequestProperties(), e);
             }

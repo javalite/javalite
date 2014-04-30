@@ -273,13 +273,6 @@ public class Configuration {
         return new File(System.getProperty("java.io.tmpdir"));
     }
 
-    private static List<AbstractRouteConfig.IgnoreSpec> ignoreSpecs = new ArrayList<AbstractRouteConfig.IgnoreSpec>();
+    private static List<IgnoreSpec> ignoreSpecs = new ArrayList<IgnoreSpec>();
 
-    protected static void addIgnoreSpec(AbstractRouteConfig.IgnoreSpec spec) {
-        ignoreSpecs.add(spec);
-    }
-
-    protected static List<AbstractRouteConfig.IgnoreSpec> getIgnoreSpecs(){
-        return ignoreSpecs;
-    }
 }

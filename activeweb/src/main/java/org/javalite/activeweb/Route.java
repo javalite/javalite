@@ -1,5 +1,7 @@
 package org.javalite.activeweb;
 
+import java.util.List;
+
 /**
  *  Instance of this class will contain routing information.
  *
@@ -9,6 +11,7 @@ public class Route {
 
     private AppController controller;
     private String actionName, id;
+    private List<IgnoreSpec> ignoreSpecs;
 
     public Route(AppController controller, String actionName) {
         this.controller = controller;
@@ -54,5 +57,17 @@ public class Route {
      */
     protected String getControllerClassName() {
         return controller.getClass().getName();//controller != null ? controller.getClass().getName() : type.getName();
+    }
+
+    protected void setIgnoreSpecs(List<IgnoreSpec> ignoreSpecs) {
+        this.ignoreSpecs = ignoreSpecs;
+    }
+
+    protected boolean ignores(String path) {
+        for(IgnoreSpec ignoreSpec: ignoreSpecs){
+            if(ignoreSpec.ignores(path))
+                return true;
+        }
+        return false;
     }
 }
