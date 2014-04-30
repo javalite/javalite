@@ -46,12 +46,13 @@ public abstract class AbstractRouteConfig extends AppConfig{
                 Matcher m = pattern.matcher(path);
                 matches = m.matches();
                 if (exceptEnvironment != null) {
-                    String env = Configuration.getEnv();
                     if (matches && exceptEnvironment.equals(Configuration.getEnv())) {
                         matches = false; //-- need to ignore
                     }
                 }
             }
+
+            System.out.println("IgnoreSpec with patterns: " + ignorePatterns + " matches: " + matches );
             return matches;
         }
 
