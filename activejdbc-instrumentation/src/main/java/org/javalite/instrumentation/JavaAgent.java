@@ -46,7 +46,7 @@ public class JavaAgent {
                     CtClass clazz = mf.getClazz(className.replace('/', '.'));
                     if(mf.isModel(clazz)){
                         byte[] bytecode = modelInstrumentation.instrument(clazz);
-                        System.out.println("Instrumented model: " + clazz.getName());
+//                        System.out.println("Instrumented model: " + clazz.getName());
                         return bytecode;
                     }else{
                         return null;
