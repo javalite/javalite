@@ -18,9 +18,6 @@ limitations under the License.
 package org.javalite.instrumentation;
 
 import javassist.*;
-import java.net.URISyntaxException;
-import java.net.URI;
-import java.io.File;
 
 
 public class ModelInstrumentation{
@@ -34,7 +31,7 @@ public class ModelInstrumentation{
         modelClass = ClassPool.getDefault().get("org.javalite.activejdbc.Model");
     }
 
-    public void instrument(CtClass modelClass) throws InstrumentationException {
+    public byte[] instrument(CtClass modelClass) throws InstrumentationException {
 
         try {
             addDelegates(modelClass);
@@ -42,24 +39,13 @@ public class ModelInstrumentation{
             CtMethod getClassNameMethod = modelClass.getDeclaredMethod("getClassName");
             modelClass.removeMethod(getClassNameMethod);
             modelClass.addMethod(m);
-            String out = getOutputDirectory(modelClass);
-            //addSerializationSupport(modelClass);
-            System.out.println("Instrumented class: " + modelClass.getName() + " in directory: " + out);
-            modelClass.writeFile(out);
+            return modelClass.toBytecode();
         }
         catch (Exception e) {
             throw new InstrumentationException(e);
         }
     }
 
-    private String getOutputDirectory(CtClass modelClass) throws NotFoundException, URISyntaxException {
-        URI u = modelClass.getURL().toURI();
-        File f = new File(u);
-        String fp = f.getPath().replace("\\", "/");
-        String className = modelClass.getName();
-        className = className.replace(".", "/");
-        return fp.substring(0, fp.indexOf(className));
-    }
 
     private void addDelegates(CtClass target) throws NotFoundException, CannotCompileException {
         CtMethod[] modelMethods = modelClass.getDeclaredMethods();

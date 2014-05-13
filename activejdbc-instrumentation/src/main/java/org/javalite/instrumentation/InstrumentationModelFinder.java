@@ -40,6 +40,7 @@ public class InstrumentationModelFinder {
 
     private CtClass modelClass;
     private List<CtClass> models = new ArrayList<CtClass>();
+    private ClassPool cp = ClassPool.getDefault();
 
 
     InstrumentationModelFinder() throws NotFoundException, ClassNotFoundException {
@@ -69,7 +70,7 @@ public class InstrumentationModelFinder {
 
                     if (entry.getName().endsWith("class")) {
                         InputStream zin = zip.getInputStream(entry);
-                        classFound(entry.getName().replace(File.separatorChar, '.').substring(0, entry.getName().length() - 6));
+                        tryClass(entry.getName().replace(File.separatorChar, '.').substring(0, entry.getName().length() - 6));
                         zin.close();
                     }
                 }
@@ -106,7 +107,7 @@ public class InstrumentationModelFinder {
     }
 
     /**
-     * This will scan directory for class files, non-recurive.
+     * This will scan directory for class files, non-recursive.
      *
      * @param directory directory to scan.
      * @throws IOException, NotFoundException
@@ -124,28 +125,29 @@ public class InstrumentationModelFinder {
                 int current = currentDirectoryPath.length();
                 String fileName = file.getCanonicalPath().substring(++current);
                 String className = fileName.replace(File.separatorChar, '.').substring(0, fileName.length() - 6);
-                classFound(className);
+                tryClass(className);
             }
         }
     }
 
-
-    protected void classFound(String className) throws IOException, ClassNotFoundException {
+    protected void tryClass(String className) throws IOException, ClassNotFoundException {
         try {
-            ClassPool cp = ClassPool.getDefault();
-            CtClass clazz = cp.get(className);
-            if (clazz != null && clazz.subclassOf(modelClass) && !clazz.equals(modelClass)) {
-                boolean real = notAbstract(clazz);
-                if (real) {
+            CtClass clazz = getClazz(className);
+                if (isModel(clazz)) {
                     models.add(clazz);
-                    System.out.println("Found model: " + clazz.getName());
-                } else {
-                    System.out.println("Found model is abstract, skipping: " + clazz.getName());
+                    System.out.println("Found model: " + className);
                 }
-            }
         } catch (Exception e) {
             throw new InstrumentationException(e);
         }
+    }
+
+    protected CtClass getClazz(String className) throws NotFoundException {
+        return cp.get(className);
+    }
+
+    protected boolean isModel(CtClass clazz) throws NotFoundException {
+        return clazz != null && clazz.subclassOf(modelClass) && !clazz.equals(modelClass) && notAbstract(clazz);
     }
 
     private boolean notAbstract(CtClass clazz) {

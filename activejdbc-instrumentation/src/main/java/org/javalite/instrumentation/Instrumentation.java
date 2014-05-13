@@ -18,13 +18,14 @@ limitations under the License.
 package org.javalite.instrumentation;
 
 import javassist.CtClass;
+import javassist.NotFoundException;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URISyntaxException;
 import java.util.List;
 
 /**
@@ -52,14 +53,27 @@ public class Instrumentation {
             ModelInstrumentation mi = new ModelInstrumentation();
 
             for (CtClass clazz : mf.getModels()) {
-                mi.instrument(clazz);
+                byte[] bytecode = mi.instrument(clazz);
+                String fileName = getFullFilePath(clazz);
+                FileOutputStream fout = new FileOutputStream(fileName);
+                fout.write(bytecode);
+                fout.flush();
+                fout.close();
+                System.out.println("Instrumented class: " + fileName );
             }
+
             generateModelsFile(mf.getModels(), target);
             System.out.println("**************************** END INSTRUMENTATION ****************************");
         }
         catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+
+    private String getFullFilePath(CtClass modelClass) throws NotFoundException, URISyntaxException {
+        return modelClass.getURL().toURI().getPath();
+
     }
 
     private static void generateModelsFile(List<CtClass> models, File target) throws IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
