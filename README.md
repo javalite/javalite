@@ -1,9 +1,3 @@
->
-> ATTENTION!!! DYNAMIC INSTRUMWNTATION IS NOT READY FOR PRODUCTION YET
->
-
-
-
 ActiveJDBC &mdash; ActiveRecord for Java
 ==========
 
