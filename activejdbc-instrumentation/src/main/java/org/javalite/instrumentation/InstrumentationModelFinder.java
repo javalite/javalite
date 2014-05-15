@@ -27,6 +27,8 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -43,14 +45,22 @@ public class InstrumentationModelFinder {
     private ClassPool cp = ClassPool.getDefault();
 
 
-    InstrumentationModelFinder() throws NotFoundException, ClassNotFoundException {
+    protected InstrumentationModelFinder() throws NotFoundException, ClassNotFoundException {
         ClassPool pool = ClassPool.getDefault();
         //any simple class will do here, but Model - it causes slf4j to be loaded during instrumentation.
         pool.insertClassPath(new ClassClassPath(Class.forName("org.javalite.activejdbc.Association")));
-
         modelClass = pool.get("org.javalite.activejdbc.Model");
-
     }
+
+    protected void processURL(URL url) throws URISyntaxException, IOException, ClassNotFoundException {
+        File f = new File(url.toURI());
+        if(f.isFile()){
+            processFilePath(f);
+        }else{
+            processDirectoryPath(f);
+        }
+    }
+
 
     /**
      * Finds and processes property files inside zip or jar files.
@@ -83,7 +93,7 @@ public class InstrumentationModelFinder {
 
     private String currentDirectoryPath;
 
-    public void processDirectoryPath(File directory) throws IOException, ClassNotFoundException {
+    protected void processDirectoryPath(File directory) throws IOException, ClassNotFoundException {
         currentDirectoryPath = directory.getCanonicalPath();
         processDirectory(directory);
     }
@@ -134,8 +144,11 @@ public class InstrumentationModelFinder {
         try {
             CtClass clazz = getClazz(className);
                 if (isModel(clazz)) {
-                    models.add(clazz);
-                    System.out.println("Found model: " + className);
+                    if(!models.contains(clazz)){
+                        models.add(clazz);
+                        Instrumentation.log("Found model: " + className);
+
+                    }
                 }
         } catch (Exception e) {
             throw new InstrumentationException(e);
@@ -154,7 +167,7 @@ public class InstrumentationModelFinder {
         return !(Modifier.isAbstract(clazz.getModifiers()) || Modifier.isInterface(clazz.getModifiers()));
     }
 
-    public List<CtClass> getModels() {
+    protected List<CtClass> getModels() {
         return models;
     }
 }

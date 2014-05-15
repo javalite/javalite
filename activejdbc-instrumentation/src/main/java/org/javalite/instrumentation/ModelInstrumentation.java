@@ -69,7 +69,7 @@ public class ModelInstrumentation{
                 target.addMethod(newMethod);
             }
             else{
-                System.out.println("Detected method: " + newMethod.getName() + ", skipping delegate.");
+                Instrumentation.log("Detected method: " + newMethod.getName() + ", skipping delegate.");
             }
         }
 

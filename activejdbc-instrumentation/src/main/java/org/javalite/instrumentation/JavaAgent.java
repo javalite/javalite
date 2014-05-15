@@ -18,9 +18,19 @@ package org.javalite.instrumentation;
 
 import javassist.CtClass;
 
+import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
+import java.lang.reflect.Method;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.security.ProtectionDomain;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static java.util.Arrays.asList;
 
 /**
  * @author igor, on 5/12/14.
@@ -29,26 +39,40 @@ public class JavaAgent {
 
     private static InstrumentationModelFinder mf;
     private static ModelInstrumentation modelInstrumentation;
+    private static final Set<ClassLoader> loaders = new HashSet<ClassLoader>();
+    private static Method modelFound;
 
     public static void premain(String args, java.lang.instrument.Instrumentation inst) {
 
         try {
             mf = new InstrumentationModelFinder();
             modelInstrumentation = new ModelInstrumentation();
+            //calling this via reflection because we do not want AJ dependency on instrumentation project
+            Class finderClass = Class.forName("org.javalite.activejdbc.ModelFinder");
+            modelFound = finderClass.getDeclaredMethod("modelFound", String.class);
         } catch (Exception e) {
             throw new InstrumentationException(e);
         }
 
         inst.addTransformer(new ClassFileTransformer() {
             @Override
-            public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
+            public synchronized byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined,
+                                                 ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
                 try {
                     CtClass clazz = mf.getClazz(className.replace('/', '.'));
-                    if(mf.isModel(clazz)){
+                    if (mf.isModel(clazz)) {
+
+                        if (!loaders.contains(loader) && loader instanceof URLClassLoader) {
+                            scanLoader(loader);
+                            loaders.add(loader);
+                        }
+
+                        modelFound.invoke(null, className.replace('/', '.'));
+
                         byte[] bytecode = modelInstrumentation.instrument(clazz);
-//                        System.out.println("Instrumented model: " + clazz.getName());
+                        Instrumentation.log("Instrumented model: " + clazz.getName());
                         return bytecode;
-                    }else{
+                    } else {
                         return null;
                     }
                 } catch (Exception e) {
@@ -56,5 +80,30 @@ public class JavaAgent {
                 }
             }
         });
+    }
+
+    private static void scanLoader(ClassLoader loader) throws ClassNotFoundException, IOException, URISyntaxException {
+        //lets skip known jars to save some time
+        List<String> toSkipList = asList("rt.jar", "activejdbc-", "javalite-common", "mysql-connector", "slf4j",
+                "rt.jar", "jre", "jdk", "springframework", "servlet-api", "activeweb", "junit", "jackson", "jaxen",
+                "dom4j", "guice", "javax", "aopalliance", "commons-logging", "app-config", "freemarker",
+                "commons-fileupload", "hamcrest", "commons-fileupload", "commons-io");
+
+        if (loader instanceof URLClassLoader) {
+            URL[] urls = ((URLClassLoader) loader).getURLs();
+            for (URL url : urls) {
+                boolean skip = false;
+                for (String name : toSkipList) {
+                    if (url.getPath().contains(name)) {
+                        skip = true;
+                    }
+                }
+
+                if (!skip) {
+                    Instrumentation.log("Processing: " + url);
+                    mf.processURL(url);
+                }
+            }
+        }
     }
 }

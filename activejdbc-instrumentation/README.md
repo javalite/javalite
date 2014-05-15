@@ -1,9 +1,3 @@
->
-> ATTENTION!!! DYNAMIC INSTRUMENTATION IS NOT READY FOR PRODUCTION YET
->
-
-
-
 ## ActiveJDBC Instrumentation Plugin
 
 The Instrumentation plugin injects magic into models' byte code.

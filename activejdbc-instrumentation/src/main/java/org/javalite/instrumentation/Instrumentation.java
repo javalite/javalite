@@ -70,7 +70,6 @@ public class Instrumentation {
         }
     }
 
-
     private String getFullFilePath(CtClass modelClass) throws NotFoundException, URISyntaxException {
         return modelClass.getURL().toURI().getPath();
 
@@ -86,7 +85,7 @@ public class Instrumentation {
         fout.close();
     }
 
-     static String getDatabaseName(CtClass model) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+     protected static String getDatabaseName(CtClass model) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Object[] annotations =  model.getAnnotations();
 
         for (Object annotation : annotations) {
@@ -97,5 +96,11 @@ public class Instrumentation {
             }
         }
         return "default";
+    }
+
+    public static void log(String message) {
+        if(System.getProperty("activejdbc-instrumentation.log") != null){
+            System.out.println(message);
+        }
     }
 }

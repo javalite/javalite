@@ -18,50 +18,59 @@ limitations under the License.
 package org.javalite.activejdbc;
 
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ModelFinder {
 
     //this is a map of lists of model classes. Keys are names of databases as specified in the models' @DbName annotations.
-    private Map<String, List<Class<? extends Model>>> modelClasses = new HashMap<String, List<Class<? extends Model>>>();
+    private static Map<String, List<Class<? extends Model>>> modelClasses = new HashMap<String, List<Class<? extends Model>>>();
 
-    void findModels(String dbName) throws IOException, ClassNotFoundException {
+    private static List<String> modelClassNames = new ArrayList<String>();
 
-        List<String> models = Registry.instance().getConfiguration().getModelNames(dbName);
-        if (models != null && models.size() != 0) {
-            for (String model : models) {
-                classFound(model);
+    protected static void findModels(String dbName) throws IOException, ClassNotFoundException {
+        if(modelClassNames.isEmpty()){
+            List<String> models = Registry.instance().getConfiguration().getModelNames(dbName);
+            if (models != null && models.size() != 0) {
+                for (String model : models) {
+                    modelFound(model);
+                }
+            } else {
+                throw new InitException("you are trying to work with models, but no models are found. Maybe you have " +
+                        "no models in project, or you did not instrument the models. It is expected that you have " +
+                        "a file activejdbc_models.properties on classpath");
             }
-        } else {
-            throw new InitException("you are trying to work with models, but no models are found. Maybe you have " +
-                    "no models in project, or you did not instrument the models. It is expected that you have " +
-                    "a file activejdbc_models.properties on classpath");
         }
     }
 
-
-    protected List<Class<? extends Model>> getModelsForDb(String dbName) {
+    protected static List<Class<? extends Model>> getModelsForDb(String dbName) throws IOException, ClassNotFoundException {
+        for (String className : modelClassNames) {
+            registerModelClass(className);
+        }
         return modelClasses.get(dbName);
     }
 
 
-    protected void classFound(String className) throws IOException, ClassNotFoundException {
+    @SuppressWarnings("unchecked")
+    public static void registerModelClass(String className) throws IOException, ClassNotFoundException {
         Class clazz = Class.forName(className);
+        if (Model.class.isAssignableFrom(clazz) && clazz != null && !clazz.equals(Model.class)) {
 
-        if(Model.class.isAssignableFrom(clazz) && clazz != null && !clazz.equals(Model.class))
-        {
-		String dbName = MetaModel.getDbName(clazz);
-		if(modelClasses.get(dbName) == null) {
-			modelClasses.put(dbName, new ArrayList<Class<? extends Model>>());
-		}
-		modelClasses.get(dbName).add(clazz);
-	}
+            String dbName = MetaModel.getDbName(clazz);
+            if (modelClasses.get(dbName) == null) {
+                modelClasses.put(dbName, new ArrayList<Class<? extends Model>>());
+            }
+            if(!modelClasses.get(dbName).contains(clazz)){
+                modelClasses.get(dbName).add(clazz);
+            }
+        }
+    }
+
+    //called dynamically from JavaAgent
+    public static void modelFound(String modelClassName){
+        modelClassNames.add(modelClassName);
     }
 }

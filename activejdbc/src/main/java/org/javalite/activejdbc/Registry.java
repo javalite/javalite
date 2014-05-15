@@ -49,7 +49,6 @@ public enum Registry {
     private MetaModels metaModels = new MetaModels();
     private Configuration configuration = new Configuration();
     private StatisticsQueue statisticsQueue;
-    private static ModelFinder mf = new ModelFinder();
     private Set<String> initedDbs = new HashSet<String>();
 
     private Registry() {
@@ -128,14 +127,14 @@ public enum Registry {
         }
 
         try {
-            mf.findModels(dbName);
+            ModelFinder.findModels(dbName);
             Connection c = ConnectionsAccess.getConnection(dbName);
             if(c == null){
                 throw new DBException("Failed to retrieve metadata from DB, connection: '" + dbName + "' is not available");
             }
             DatabaseMetaData databaseMetaData = c.getMetaData();
             String databaseProductName = c.getMetaData().getDatabaseProductName();
-            registerModels(dbName, mf.getModelsForDb(dbName), databaseProductName);
+            registerModels(dbName, ModelFinder.getModelsForDb(dbName), databaseProductName);
             String[] tables = metaModels.getTableNames(dbName);
 
             for (String table : tables) {
@@ -143,7 +142,7 @@ public enum Registry {
                 registerColumnMetadata(table, metaParams);
             }
 
-            processOverrides(mf.getModelsForDb(dbName));
+            processOverrides(ModelFinder.getModelsForDb(dbName));
 
             for (String table : tables) {
                 discoverAssociationsFor(table, dbName);
