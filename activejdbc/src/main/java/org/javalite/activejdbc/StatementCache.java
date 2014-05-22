@@ -46,6 +46,11 @@ class StatementCache {
     }
 
     void cleanStatementCache(Connection connection) {
-        statementCache.remove(connection);
+       Map<String, PreparedStatement> stmsMap = statementCache.remove(connection);
+	   if(stmsMap != null) { //Close prepared statements to release cursors on connection pools
+			for(PreparedStatement stmt : stmsMap.values()) {
+				try{stmt.close();}catch(Exception e){}
+			}
+	   }
     }
 }
