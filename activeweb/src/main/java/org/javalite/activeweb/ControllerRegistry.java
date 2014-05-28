@@ -63,7 +63,7 @@ class ControllerRegistry {
     }
 
     protected void addGlobalFilters(ControllerFilter... filters) {
-        globalFilterLists.add(new FilterList(Arrays.asList(filters), new ArrayList()));
+        globalFilterLists.add(new FilterList(Arrays.asList(filters)));
     }
 
     protected void addGlobalFilters(List<ControllerFilter> filters, List<Class<? extends AppController>> excludeControllerClasses) {
@@ -111,13 +111,17 @@ class ControllerRegistry {
 
     // instance contains a list of filters and corresponding  list of controllers for which these filters
     // need to be excluded.
-    class FilterList<T extends AppController>{
-        private List<ControllerFilter> filters = new ArrayList<ControllerFilter>();
-        private List<Class<T>> excludedControllers = new ArrayList<Class<T>>();
+    static class FilterList{
+        private final List<ControllerFilter> filters;
+        private final List<Class<? extends AppController>> excludedControllers;
 
-        FilterList(List<ControllerFilter> filters, List<Class<T>> excludedControllers) {
+        private FilterList(List<ControllerFilter> filters, List<Class<? extends AppController>> excludedControllers) {
             this.filters = filters;
             this.excludedControllers = excludedControllers;
+        }
+
+        private FilterList(List<ControllerFilter> filters) {
+            this(filters, Collections.<Class<? extends AppController>>emptyList());
         }
 
         public List<ControllerFilter> getFilters() {
@@ -126,7 +130,7 @@ class ControllerRegistry {
 
         public boolean excludesController(AppController controller) {
 
-            for (Class<T> clazz : excludedControllers) {
+            for (Class<? extends AppController> clazz : excludedControllers) {
                 //must use string here, because when controller re-compiles, class instance is different
                 if(clazz.getName().equals(controller.getClass().getName()))
                     return true;

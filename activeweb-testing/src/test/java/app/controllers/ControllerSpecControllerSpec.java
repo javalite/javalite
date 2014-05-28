@@ -15,8 +15,6 @@ limitations under the License.
 */
 package app.controllers;
 
-
-import org.javalite.activeweb.ControllerException;
 import org.javalite.activeweb.ControllerSpec;
 import org.junit.Test;
 
@@ -38,12 +36,6 @@ public class ControllerSpecControllerSpec extends ControllerSpec {
         a(statusCode()).shouldBeEqual(200);
         a(contentType()).shouldBeEqual("text/html");
 
-    }
-
-    @Test(expected = ControllerException.class)
-    public void shouldFailOnPOST() {
-        //NOTE: should not process POST, action is configured for GET.
-        request().param("id", "2").post("index");
     }
 
 //

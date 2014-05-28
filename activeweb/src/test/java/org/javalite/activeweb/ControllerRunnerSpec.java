@@ -70,12 +70,30 @@ public class ControllerRunnerSpec extends RequestSpec{
     }
 
 
-        @Test
+    @Test
     public void shouldUseCustomContentType() throws IOException, ServletException {
 
         request.setServletPath("/custom_content_type");
         request.setMethod("GET");
         dispatcher.doFilter(request, response, filterChain);
         a(response.getContentType()).shouldBeEqual("application/json");
+    }
+
+    @Test
+    public void shouldRespond405IfInvalidMethod() throws IOException, ServletException {
+        request.setServletPath("/invalid_method/get");
+        request.setMethod("POST");
+        dispatcher.doFilter(request, response, filterChain);
+        a(response.getContentAsString()).shouldBeEqual("");
+        a(response.getStatus()).shouldBeEqual(405);
+        a(response.getHeader("Allow")).shouldBeEqual("GET");
+
+
+        request.setServletPath("/invalid_method/get_post");
+        request.setMethod("PUT");
+        dispatcher.doFilter(request, response, filterChain);
+        a(response.getContentAsString()).shouldBeEqual("");
+        a(response.getStatus()).shouldBeEqual(405);
+        a(response.getHeader("Allow")).shouldBeEqual("GET, POST");
     }
 }

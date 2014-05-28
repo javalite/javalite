@@ -22,6 +22,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 
@@ -172,28 +175,34 @@ public abstract class AppController extends HttpSupport {
      */
     public boolean actionSupportsHttpMethod(String actionMethodName, HttpMethod httpMethod) {
         if (restful()) {
-            return restfulActionSupportsHttpMethod(actionMethodName, httpMethod) ? true : standardActionSupportsHttpMethod(actionMethodName, httpMethod);
+            return restfulActionSupportsHttpMethod(actionMethodName, httpMethod) || standardActionSupportsHttpMethod(actionMethodName, httpMethod);
         } else {
             return standardActionSupportsHttpMethod(actionMethodName, httpMethod);
         }
     }
 
     protected boolean standardActionSupportsHttpMethod(String actionMethodName, HttpMethod httpMethod){
+        for (HttpMethod m : allowedActions(actionMethodName)) {
+            if (m == httpMethod)
+                return true;
+        }
+        return false;
+    }
+
+    protected List<HttpMethod> allowedActions(String actionMethodName) {
         try {
             Method method = getClass().getMethod(actionMethodName);
             Annotation[] annotations = method.getAnnotations();
 
             //default behavior: GET method!
-            if (annotations.length == 0 && httpMethod.equals(HttpMethod.GET)) {
-                return true;
+            if (annotations.length == 0) {
+                return Collections.singletonList(HttpMethod.GET);
             } else {
+                List<HttpMethod> res = new ArrayList<HttpMethod>();
                 for (Annotation annotation : annotations) {
-
-
-                    if(HttpMethod.valueOf(annotation.annotationType().getSimpleName()).equals(httpMethod))
-                        return true;
+                    res.add(HttpMethod.valueOf(annotation.annotationType().getSimpleName()));
                 }
-                return false;
+                return res;
             }
         } catch (NoSuchMethodException e) {
             throw new ActionNotFoundException(e);

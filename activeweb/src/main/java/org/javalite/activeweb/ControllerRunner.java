@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpSession;
 
+import static org.javalite.common.Util.join;
 
 /**
  * One of the main classes of the framework, responsible for execution of controllers and filters.
@@ -52,14 +53,14 @@ class ControllerRunner {
             if (Context.getControllerResponse() == null) {//execute controller... only if a filter did not respond
 
                 String actionMethod = Inflector.camelize(route.getActionName().replace('-', '_'), false);
-                checkActionMethod(route.getController(), actionMethod);
-
-                //Configuration.getTemplateManager().
-                injectController(route.getController());
-                if(Configuration.logRequestParams()){
-                    logger.info("Executing controller: " + route.getController().getClass().getName() + "." + actionMethod);
+                if (checkActionMethod(route.getController(), actionMethod)) {
+                    //Configuration.getTemplateManager().
+                    injectController(route.getController());
+                    if(Configuration.logRequestParams()){
+                        logger.info("Executing controller: " + route.getController().getClass().getName() + "." + actionMethod);
+                    }
+                    executeAction(route.getController(), actionMethod);
                 }
-                executeAction(route.getController(), actionMethod);
             }
 
             injectFreemarkerTags();
@@ -174,7 +175,8 @@ class ControllerRunner {
         if (session != null) {
             Object flashObj = session.getAttribute("flasher");
             if (flashObj != null && flashObj instanceof Map) {
-                Map flasher = (Map) flashObj;
+                @SuppressWarnings("unchecked")
+                Map<String, Object> flasher = (Map) flashObj;
                 if (flasher.get("count") == null) { //just created
                     flasher.put("count", 0);
                 } else if (flasher.get("count").equals(0)) {
@@ -184,11 +186,18 @@ class ControllerRunner {
         }
     }
 
-    private void checkActionMethod(AppController controller, String actionMethod){
+    private boolean checkActionMethod(AppController controller, String actionMethod) {
         HttpMethod method = HttpMethod.getMethod(Context.getHttpRequest());
-        if(!controller.actionSupportsHttpMethod(actionMethod, method)){
-            throw new ControllerException("Cannot access action " + controller.getClass().getName() + "." + actionMethod + " with HTTP method: '" + method.toString() + "'");
+        if (!controller.actionSupportsHttpMethod(actionMethod, method)) {
+            DirectResponse res = new DirectResponse("");
+            //see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+            res.setStatus(405);
+            Context.setControllerResponse(res);
+            //see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+            Context.getHttpResponse().setHeader("Allow", join(controller.allowedActions(actionMethod), ", "));
+            return false;
         }
+        return true;
     }
 
     private boolean exceptionHandled(Exception e, Route route, List<ControllerRegistry.FilterList> globalFilterLists, List<ControllerFilter> ... filterGroups) throws Exception{
