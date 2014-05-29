@@ -64,9 +64,13 @@ public class Route {
     }
 
     protected boolean ignores(String path) {
-        for(IgnoreSpec ignoreSpec: ignoreSpecs){
-            if(ignoreSpec.ignores(path))
-                return true;
+        if(ignoreSpecs == null){
+            return false;
+        }else{
+            for(IgnoreSpec ignoreSpec: ignoreSpecs){
+                if(ignoreSpec.ignores(path))
+                    return true;
+            }
         }
         return false;
     }
