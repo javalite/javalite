@@ -165,7 +165,7 @@ public class Base {
      * Example:
      * <pre>
      * <code>
-     *  List<Map<String, Object>> people = Base.findAll("select * from people where first_name = ?", "John");
+     *  List&lt;Map&lt;String, Object&gt;&gt; people = Base.findAll(&quot;select * from people where first_name = ?&quot;, &quot;John&quot;);
      *  for(Map person: people)
      *      System.out.println(person.get("first_name"));
      * </code>
