@@ -40,8 +40,8 @@ public class DebugTagSpec  {
 
     @Test
     public void shouldPrintDebugInformationForMap() {
-        manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "simple", "restful", false)),
+        manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "simple")),
                 "/debug/debug", sw);
-        a(sw.toString()).shouldBeEqual("{restful=false, controller=simple}");
+        a(sw.toString()).shouldContain("{controller=simple}");
     }
 }

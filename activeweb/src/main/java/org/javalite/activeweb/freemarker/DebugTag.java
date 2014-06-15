@@ -42,7 +42,6 @@ public class DebugTag extends FreeMarkerTag{
     @Override
     protected void render(Map params, String body, Writer writer) throws Exception {
         validateParamsPresence(params, "print");
-        System.out.println("print value: " + params.get("print"));
         writer.write(DeepUnwrap.unwrap((TemplateModel) params.get("print")).toString());
     }
 }

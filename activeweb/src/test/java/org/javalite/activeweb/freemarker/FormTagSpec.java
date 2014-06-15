@@ -51,7 +51,7 @@ public class FormTagSpec extends JSpecSupport {
     public void shouldTestControllerParamIfNoControllerInContext(){
         StringWriter sw = new StringWriter();
         manager.merge(map("context_path", "/simple_context", "activeweb", map("restful", false)), "/form/simple_form", sw);
-        a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple\"/>");
+        a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple\">&nbsp;</form>");
     }
 
     @Test
