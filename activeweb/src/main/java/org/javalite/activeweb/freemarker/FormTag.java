@@ -116,8 +116,8 @@ public class FormTag  extends FreeMarkerTag{
     protected void render(Map params, String body, Writer writer) throws Exception {
 
         SimpleHash activeweb = (SimpleHash) get("activeweb");
-        if(activeweb == null || !activeweb.toMap().containsKey("controller"))
-            throw  new ViewException("could not render this form, controller is not found in context");
+        if(activeweb == null || !(params.containsKey("controller") || activeweb.toMap().containsKey("controller")))
+            throw  new ViewException("could not render this form, controller is not found");
 
 
         String method;
