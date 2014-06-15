@@ -44,7 +44,7 @@ public class FormTagSpec extends JSpecSupport {
         Map context = map("context_path", "/test_context", "activeweb", map("controller", "blah", "restful", false));
 
         manager.merge(context, "/form/context_controller", sw);
-        a(sw.toString()).shouldBeEqual("<form action=\"/test_context/blah/blah_action\"/>");
+        a(sw.toString()).shouldBeEqual("<form action=\"/test_context/blah/blah_action\">&nbsp;</form>");
     }
 
 
@@ -62,35 +62,35 @@ public class FormTagSpec extends JSpecSupport {
     public void shouldRenderSimpleFormNoAction(){
         StringWriter sw = new StringWriter();
         manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form", sw);
-        a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple\"/>");
+        a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple\">&nbsp;</form>");
     }
 
     @Test
     public void shouldRenderSimpleFormWithAction(){
         StringWriter sw = new StringWriter();
         manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_action", sw);
-        a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\"/>");
+        a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\">&nbsp;</form>");
     }
 
     @Test
     public void shouldRenderSimpleFormWithMethodGET(){
         StringWriter sw = new StringWriter();
         manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_method_get", sw);
-        a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"get\"/>");
+        a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"get\">&nbsp;</form>");
     }
 
     @Test
     public void shouldRenderSimpleFormWithMethodPOST(){
         StringWriter sw = new StringWriter();
         manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_method_post", sw);
-        a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"post\" id=\"formA\"/>");
+        a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"post\" id=\"formA\">&nbsp;</form>");
     }
 
     @Test
     public void shouldRenderSimpleFormWithMethodPOSTAndId(){
         StringWriter sw = new StringWriter();
         manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_method_post_with_id", sw);
-        a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index/123\" method=\"post\"/>");
+        a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index/123\" method=\"post\">&nbsp;</form>");
     }
 
     @Test
@@ -136,7 +136,6 @@ public class FormTagSpec extends JSpecSupport {
                 "</form>");
     }
 
-
     @Test
     public void shouldFixIssue105(){
         StringWriter sw = new StringWriter();
@@ -150,5 +149,17 @@ public class FormTagSpec extends JSpecSupport {
                 "\t<input type='hidden' name='_method' value='put' />\n" +
                 "    <input type=\"hidden\" name=\"blah\">\n" +
                 "</form>");
+    }
+
+    @Test
+    public void should_add_nbsp_to_emty_form(){
+        StringWriter sw = new StringWriter();
+        manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", true)),
+                "/form/empty_form", sw);
+
+
+        System.out.println(sw.toString());
+
+
     }
 }

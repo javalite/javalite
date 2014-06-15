@@ -27,6 +27,8 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.javalite.common.Util.blank;
+
 /**
  * This is a FreeMarker directive which is registered as  <code>&lt;@form... /&gt;</code> tag.
  * This tag generates an HTML form tag and has functionality specific for ActiveWeb.
@@ -127,6 +129,10 @@ public class FormTag  extends FreeMarkerTag{
         if(putOrDelete){
             method = params.get("method").toString().toLowerCase();
             bodyPrefix = "\n\t<input type='hidden' name='_method' value='" + method + "' />";
+        }
+
+        if(blank(body)){
+            body = "&nbsp;";
         }
 
         TagFactory tf = new TagFactory("form", bodyPrefix + body);
