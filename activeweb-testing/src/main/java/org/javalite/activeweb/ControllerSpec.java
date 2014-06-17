@@ -76,7 +76,17 @@ public class ControllerSpec extends RequestSpecHelper {
      * @return instance of <code>RequestBuilder</code> with convenience methods.
      */
     protected RequestBuilder request() {
-        return new RequestBuilder(controllerPath, session());
+        return new RequestBuilder(controllerPath, session(), false);
+    }
+
+    /**
+     * Version of {@link #request()} that also sets integrateViews == true
+     *
+     * @param integrateViews true to also generate response content
+     * @return instance of <code>RequestBuilder</code> with convenience methods.
+     */
+    protected RequestBuilder request(boolean integrateViews) {
+        return new RequestBuilder(controllerPath, session(), integrateViews);
     }
 
     /**

@@ -47,10 +47,11 @@ public class RequestBuilder {
     private String id;
     private String queryString;
 
-    public RequestBuilder(String controllerPath, SessionTestFacade sessionFacade) {
+    public RequestBuilder(String controllerPath, SessionTestFacade sessionFacade, boolean integrateViews) {
         this.controllerPath = controllerPath;
         this.sessionFacade = sessionFacade;
-
+        if(integrateViews)
+            integrateViews();
     }
 
 
