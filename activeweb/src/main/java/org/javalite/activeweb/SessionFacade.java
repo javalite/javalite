@@ -16,16 +16,14 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 
 /**
  * Facade to HTTP session. 
  *
  * @author Igor Polevoy
  */
-public class SessionFacade {
+public class SessionFacade implements Map {
 
     /**
      * Retrieve object from session.
@@ -63,8 +61,10 @@ public class SessionFacade {
      * @param name name of object
      * @param value object reference.
      */
-    public void put(String name, Serializable value){
+    public Object put(String name, Serializable value){
+        Object val = Context.getHttpRequest().getSession(true).getAttribute(name);
         Context.getHttpRequest().getSession(true).setAttribute(name, value);
+        return val;
     }
 
     /**
@@ -122,5 +122,93 @@ public class SessionFacade {
      */
     public void destroy(){
         Context.getHttpRequest().getSession(true).invalidate();
+    }
+
+
+
+    @Override
+    public int size() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return !Context.getHttpRequest().getSession(true).getAttributeNames().hasMoreElements();
+    }
+
+    @Override
+    public boolean containsKey(Object key) {
+        return Context.getHttpRequest().getSession(true).getAttribute(key.toString()) != null;
+    }
+
+    @Override
+    public boolean containsValue(Object value) {
+        Enumeration names = Context.getHttpRequest().getSession(true).getAttributeNames();
+        while (names.hasMoreElements()){
+            String name = names.nextElement().toString();
+            if(name.equals(value)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Object get(Object key) {
+        return get(key.toString());
+    }
+
+    @Override
+    public Object put(Object key, Object value) {
+        Object val = get(key.toString());
+        put(key.toString(), (Serializable)value);
+        return val;
+    }
+
+    @Override
+    public Object remove(Object key) {
+        Object val = get(key.toString());
+        Context.getHttpRequest().getSession(true).removeAttribute(key.toString());
+        return val;
+    }
+
+    @Override
+    public void putAll(Map m) {
+        Set keys = m.keySet();
+        for(Object k:keys){
+            put(k, m.get(k));
+        }
+    }
+
+    @Override
+    public void clear() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Set<Object> keySet() {
+        Set<Object> keys = new HashSet<Object>();
+        Enumeration names = Context.getHttpRequest().getSession(true).getAttributeNames();
+        while (names.hasMoreElements()){
+            Object name = names.nextElement();
+            keys.add(name);
+        }
+        return keys;
+    }
+
+    @Override
+    public Collection values() {
+        Set<Object> values = new HashSet<Object>();
+        Enumeration names = Context.getHttpRequest().getSession(true).getAttributeNames();
+        while (names.hasMoreElements()){
+            Object name = names.nextElement();
+            values.add(get(name));
+        }
+        return values;
+    }
+
+    @Override
+    public Set<Entry> entrySet() {
+        throw new UnsupportedOperationException();
     }
 }

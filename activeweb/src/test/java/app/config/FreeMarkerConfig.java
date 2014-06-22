@@ -17,6 +17,7 @@ limitations under the License.
 package app.config;
 
 import org.javalite.activeweb.freemarker.AbstractFreeMarkerConfig;
+import org.javalite.activeweb.freemarker.tags.HeaderTag;
 
 /**
  * @author Igor Polevoy
@@ -24,5 +25,6 @@ import org.javalite.activeweb.freemarker.AbstractFreeMarkerConfig;
 public class FreeMarkerConfig extends AbstractFreeMarkerConfig {
     public void init() {
         getConfiguration().setNumberFormat("0.##");
+        registerTag("header", new HeaderTag());
     }
 }

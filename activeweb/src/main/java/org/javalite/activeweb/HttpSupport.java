@@ -16,11 +16,10 @@ limitations under the License.
 package org.javalite.activeweb;
 
 
-import org.apache.commons.fileupload.*;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.javalite.common.Convert;
 import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +29,6 @@ import java.io.*;
 import java.net.URL;
 import java.util.*;
 
-import static java.util.Arrays.asList;
-import static org.javalite.common.Collections.list;
 import static org.javalite.common.Collections.map;
 
 /**
@@ -478,15 +475,11 @@ public class HttpSupport {
      *
      * @param name name of parameter.
      * @return value of request parameter.
+     * @see org.javalite.activeweb.RequestUtils#param(String)
      */
     protected String param(String name){
-        if(name.equals("id")){
-            return getId();
-        }else if(Context.getRequestContext().getUserSegments().get(name) != null){
-            return Context.getRequestContext().getUserSegments().get(name);
-        }else{
-            return Context.getHttpRequest().getParameter(name);
-        }
+        return RequestUtils.param(name);
+
     }
 
 
@@ -498,7 +491,7 @@ public class HttpSupport {
      * @return true if parameter exists, false if not.
      */
     protected boolean exists(String name){
-        return param(name) != null;
+        return RequestUtils.exists(name);
     }
 
     /**
@@ -508,7 +501,7 @@ public class HttpSupport {
      * @return true if parameter exists, false if not.
      */
     protected boolean requestHas(String name){
-        return param(name) != null;
+        return RequestUtils.requestHas(name);
     }
 
 
@@ -518,17 +511,17 @@ public class HttpSupport {
      * @return local host name on which request was received.
      */
     protected String host() {
-        return Context.getHttpRequest().getLocalName();
+        return RequestUtils.host();
     }
 
 
-/**
+    /**
      * Returns local IP address on which request was received.
      *
      * @return local IP address on which request was received.
      */
     protected String ipAddress() {
-        return Context.getHttpRequest().getLocalAddr();
+        return RequestUtils.ipAddress();
     }
 
 
@@ -542,8 +535,7 @@ public class HttpSupport {
      * protocol.
      */
     protected String getRequestProtocol(){
-        String protocol = header("X-Forwarded-Proto");
-        return Util.blank(protocol)? protocol(): protocol;
+        return RequestUtils.getRequestProtocol();
     }
 
     /**
@@ -554,8 +546,7 @@ public class HttpSupport {
      * @return port of web server request if <code>X-Forwarded-Port</code> header is found, otherwise port of the Java container.
      */
     protected int getRequestPort(){
-        String port = header("X-Forwarded-Port");
-        return Util.blank(port)? port(): Integer.parseInt(port);
+        return RequestUtils.getRequestPort();
     }
 
 
@@ -566,7 +557,7 @@ public class HttpSupport {
      * @return port on which the of the server received current request.
      */
     protected int port(){
-        return Context.getHttpRequest().getLocalPort();
+        return RequestUtils.port();
     }
 
 
@@ -576,7 +567,7 @@ public class HttpSupport {
      * @return protocol of request
      */
     protected String protocol(){
-        return Context.getHttpRequest().getProtocol();
+        return RequestUtils.protocol();
     }
 
     //TODO: provide methods for: X-Forwarded-Proto and X-Forwarded-Port
@@ -588,12 +579,7 @@ public class HttpSupport {
      * @return host name of web server if <code>X-Forwarded-Host</code> header is found, otherwise local host name.
      */
     protected String getRequestHost() {
-        String forwarded = header("X-Forwarded-Host");
-        if (Util.blank(forwarded)) {
-            return host();
-        }
-        String[] forwards = forwarded.split(",");
-        return forwards[0].trim();
+        return RequestUtils.getRequestHost();
     }
 
     /**
@@ -602,8 +588,7 @@ public class HttpSupport {
      * @return IP address that the web server forwarded request for.
      */
     protected String ipForwardedFor() {
-        String h = header("X-Forwarded-For");
-        return !Util.blank(h) ? h : remoteAddress();
+        return RequestUtils.ipForwardedFor();
     }
 
     /**
@@ -613,19 +598,7 @@ public class HttpSupport {
      * @return ID value from URI is one exists, null if not.
      */
     protected String getId(){
-        String paramId = Context.getHttpRequest().getParameter("id");
-        if(paramId != null && Context.getHttpRequest().getAttribute("id") != null){
-            logger.warn("WARNING: probably you have 'id' supplied both as a HTTP parameter, as well as in the URI. Choosing parameter over URI value.");
-        }
-
-        String theId;
-        if(paramId != null){
-            theId =  paramId;
-        }else{
-            Object id = Context.getHttpRequest().getAttribute("id");
-            theId =  id != null ? id.toString() : null;
-        }
-        return Util.blank(theId) ? null : theId;
+        return RequestUtils.getId();
     }
 
 
@@ -772,18 +745,7 @@ public class HttpSupport {
      * @return multiple request values for a name.
      */
     protected List<String> params(String name){
-        if (name.equals("id")) {
-            String id = getId();
-            return id != null ? asList(id) : Collections.<String>emptyList();
-        } else {
-            String[] values = Context.getHttpRequest().getParameterValues(name);
-            List<String>valuesList = values == null? new ArrayList<String>() : list(values);
-            String userSegment = Context.getRequestContext().getUserSegments().get(name);
-            if(userSegment != null){
-                valuesList.add(userSegment);
-            }
-            return valuesList;
-        }
+        return RequestUtils.params(name);
     }
 
     /**
@@ -794,17 +756,7 @@ public class HttpSupport {
      * The keys in the parameter map are of type String. The values in the parameter map are of type String array.
      */
     protected Map<String, String[]> params(){
-        SimpleHash params = new SimpleHash(Context.getHttpRequest().getParameterMap());
-        if(getId() != null)
-            params.put("id", new String[]{getId()});
-
-        Map<String, String> userSegments = Context.getRequestContext().getUserSegments();
-
-        for(String name:userSegments.keySet()){
-            params.put(name, new String[]{userSegments.get(name)});
-        }
-
-        return params;
+        return RequestUtils.params();
     }
 
 
@@ -892,7 +844,7 @@ public class HttpSupport {
      * @return locale of request.
      */
     protected Locale locale(){
-        return Context.getHttpRequest().getLocale();
+        return RequestUtils.locale();
     }
 
     /**
@@ -901,7 +853,7 @@ public class HttpSupport {
      * @return locale of request.
      */
     protected Locale getLocale(){
-        return Context.getHttpRequest().getLocale();
+        return RequestUtils.getLocale();
     }
 
 
@@ -913,19 +865,7 @@ public class HttpSupport {
      * if such parameter has more than one value submitted.
      */
     protected Map<String, String> params1st(){
-        //TODO: candidate for performance optimization
-        Map<String, String> params = new HashMap<String, String>();
-        Enumeration names = Context.getHttpRequest().getParameterNames();
-        while (names.hasMoreElements()) {
-            String name = names.nextElement().toString();
-            params.put(name, Context.getHttpRequest().getParameter(name));
-        }
-        if(getId() != null)
-            params.put("id", getId());
-
-        Map<String, String> userSegments = Context.getRequestContext().getUserSegments();
-        params.putAll(userSegments);
-        return params;
+        return RequestUtils.params1st();
     }
 
     /**
@@ -933,7 +873,7 @@ public class HttpSupport {
      * @return reference to a current session.
      */
     protected SessionFacade session(){
-        return new SessionFacade();
+        return RequestUtils.session();
     }
 
     /**
@@ -963,7 +903,7 @@ public class HttpSupport {
      * @return session object.
      */
     protected Object sessionObject(String name){
-        return session(name);
+        return RequestUtils.sessionObject(name);
     }
 
     /**
@@ -973,11 +913,8 @@ public class HttpSupport {
      * @return value of session attribute of null if not found
      */
     protected Object session(String name){
-        Object val = session().get(name);
-        return val == null ? null : val;
+        return RequestUtils.session(name);
     }
-
-
 
 
     /**
@@ -992,7 +929,7 @@ public class HttpSupport {
      * @return value
      */
     protected String sessionString(String name){
-        return Convert.toString(session(name));
+        return RequestUtils.sessionString(name);
     }
 
 
@@ -1009,7 +946,7 @@ public class HttpSupport {
      * @return value
      */
     protected Integer sessionInteger(String name){
-        return Convert.toInteger(session(name));
+        return RequestUtils.sessionInteger(name);
     }
 
     /**
@@ -1024,7 +961,7 @@ public class HttpSupport {
      * @return value
      */
     protected Boolean sessionBoolean(String name){
-        return Convert.toBoolean(session(name));
+        return RequestUtils.sessionBoolean(name);
     }
 
     /**
@@ -1039,7 +976,7 @@ public class HttpSupport {
      * @return value
      */
     protected Double sessionDouble(String name){
-        return Convert.toDouble(session(name));
+        return RequestUtils.sessionDouble(name);
     }
 
     /**
@@ -1054,7 +991,7 @@ public class HttpSupport {
      * @return value
      */
     protected Float sessionFloat(String name){
-        return Convert.toFloat(session(name));
+        return RequestUtils.sessionFloat(name);
     }
 
     /**
@@ -1069,7 +1006,7 @@ public class HttpSupport {
      * @return value
      */
     protected Long sessionLong(String name){
-        return Convert.toLong(session(name));
+        return RequestUtils.sessionLong(name);
     }
 
     /**
@@ -1079,7 +1016,7 @@ public class HttpSupport {
      * @return true if session has named object, false if not.
      */
     protected boolean sessionHas(String name){
-        return session().get(name) != null;
+        return RequestUtils.sessionHas(name);
     }
 
     /**
@@ -1088,16 +1025,7 @@ public class HttpSupport {
      * @return collection of all cookies browser sent.
      */
     public List<Cookie> cookies(){
-        javax.servlet.http.Cookie[] servletCookies = Context.getHttpRequest().getCookies();
-        if(servletCookies == null)
-            return new ArrayList<Cookie>();
-
-        List<Cookie> cookies = new ArrayList<Cookie>();
-        for (javax.servlet.http.Cookie servletCookie: servletCookies) {
-            Cookie cookie = Cookie.fromServletCookie(servletCookie);
-            cookies.add(cookie);
-        }
-        return cookies;
+        return RequestUtils.cookies();
     }
 
     /**
@@ -1107,15 +1035,7 @@ public class HttpSupport {
      * @return a cookie by name, null if not found.
      */
     public Cookie cookie(String name){
-        javax.servlet.http.Cookie[] servletCookies = Context.getHttpRequest().getCookies();
-        if (servletCookies != null) {
-            for (javax.servlet.http.Cookie servletCookie : servletCookies) {
-                if (servletCookie.getName().equals(name)) {
-                    return Cookie.fromServletCookie(servletCookie);
-                }
-            }
-        }
-        return null;
+        return RequestUtils.cookie(name);
     }
 
 
@@ -1126,7 +1046,7 @@ public class HttpSupport {
      * @return cookie value.
      */
     protected String cookieValue(String name){
-        return cookie(name).getValue();
+        return RequestUtils.cookieValue(name);
     }
 
     /**
@@ -1168,7 +1088,8 @@ public class HttpSupport {
      * @return a path of the request.
      */
     protected String path(){
-        return Context.getHttpRequest().getServletPath();
+        return RequestUtils.path();
+
     }
 
     /**
@@ -1177,7 +1098,7 @@ public class HttpSupport {
      * @return a full URL of the request, all except a query string.
      */
     protected  String url(){
-        return Context.getHttpRequest().getRequestURL().toString();
+        return RequestUtils.url();
     }
 
     /**
@@ -1186,7 +1107,7 @@ public class HttpSupport {
      * @return query string of the request.
      */
     protected  String queryString(){
-        return Context.getHttpRequest().getQueryString();
+        return RequestUtils.queryString();
     }
 
     /**
@@ -1195,7 +1116,7 @@ public class HttpSupport {
      * @return an HTTP method from the request.
      */
     protected String method(){
-        return Context.getHttpRequest().getMethod();
+        return RequestUtils.method();
     }
 
     /**
@@ -1204,7 +1125,7 @@ public class HttpSupport {
      * @return True if this request uses HTTP GET method, false otherwise.
      */
     protected boolean isGet() {
-        return isMethod("get");
+        return RequestUtils.isGet();
     }
 
 
@@ -1214,7 +1135,7 @@ public class HttpSupport {
      * @return True if this request uses HTTP POST method, false otherwise.
      */
     protected boolean isPost() {
-        return isMethod("post");
+        return RequestUtils.isPost();
     }
 
 
@@ -1224,7 +1145,7 @@ public class HttpSupport {
      * @return True if this request uses HTTP PUT method, false otherwise.
      */
     protected boolean isPut() {
-        return isMethod("put");
+        return RequestUtils.isPut();
     }
 
 
@@ -1234,12 +1155,12 @@ public class HttpSupport {
      * @return True if this request uses HTTP DELETE method, false otherwise.
      */
     protected boolean isDelete() {
-        return isMethod("delete");
+        return RequestUtils.isDelete();
     }
 
 
     private boolean isMethod(String method){
-        return HttpMethod.getMethod(Context.getHttpRequest()).name().equalsIgnoreCase(method);
+        return RequestUtils.isMethod(method);
     }
 
 
@@ -1249,7 +1170,7 @@ public class HttpSupport {
      * @return True if this request uses HTTP HEAD method, false otherwise.
      */
     protected boolean isHead() {
-        return isMethod("head");
+        return RequestUtils.isHead();
     }
 
     /**
@@ -1259,7 +1180,7 @@ public class HttpSupport {
      * @return a context of the request - usually an app name (as seen on URL of request).
      */
     protected String context(){
-        return Context.getHttpRequest().getContextPath();
+        return RequestUtils.context();
     }
 
 
@@ -1269,7 +1190,7 @@ public class HttpSupport {
      * @return  URI, or a full path of request.
      */
     protected String uri(){
-        return Context.getHttpRequest().getRequestURI();
+        return RequestUtils.uri();
     }
 
     /**
@@ -1278,7 +1199,7 @@ public class HttpSupport {
      * @return host name of the requesting client.
      */
     protected String remoteHost(){
-        return Context.getHttpRequest().getRemoteHost();
+        return RequestUtils.remoteHost();
     }
 
     /**
@@ -1287,7 +1208,7 @@ public class HttpSupport {
      * @return IP address of the requesting client.
      */
     protected String remoteAddress(){
-        return Context.getHttpRequest().getRemoteAddr();
+        return RequestUtils.remoteAddress();
     }
 
 
@@ -1299,7 +1220,7 @@ public class HttpSupport {
      * @return header value.
      */
     protected String header(String name){
-        return Context.getHttpRequest().getHeader(name);
+        return RequestUtils.header(name);
     }
 
     /**
@@ -1308,14 +1229,7 @@ public class HttpSupport {
      * @return all headers from a request keyed by header name.
      */
     protected Map<String, String> headers(){
-
-        Map<String, String> headers = new HashMap<String, String>();
-        Enumeration<String> names = Context.getHttpRequest().getHeaderNames();
-        while (names.hasMoreElements()) {
-            String name = names.nextElement();
-            headers.put(name, Context.getHttpRequest().getHeader(name));
-        }
-        return headers;
+        return RequestUtils.headers();
     }
 
     /**
@@ -1480,7 +1394,7 @@ public class HttpSupport {
      * @return true if this request is Ajax.
      */
     protected boolean isXhr(){
-        return header("X-Requested-With") != null || header("x-requested-with") != null;
+        return RequestUtils.isXhr();
     }
 
 
@@ -1490,15 +1404,14 @@ public class HttpSupport {
      * @return user-agent header of the request.
      */
     protected String userAgent(){
-        String camel = header("User-Agent");
-        return camel != null ? camel : header("user-agent");
+        return RequestUtils.userAgent();
     }
 
     /**
      * Synonym for {@link #isXhr()}.
      */
     protected boolean xhr(){
-        return isXhr();
+        return RequestUtils.xhr();
     }
 
     /**
@@ -1507,7 +1420,7 @@ public class HttpSupport {
      * @return instance of {@link AppContext}.
      */
     protected AppContext appContext(){
-        return Context.getAppContext();
+        return RequestUtils.appContext();
     }
 
     /**
@@ -1519,7 +1432,7 @@ public class HttpSupport {
      * @return format part of the URI, or nul if URI does not have it.
      */
     protected String format(){
-        return Context.getFormat();
+        return RequestUtils.format();
     }
 
 
@@ -1529,6 +1442,6 @@ public class HttpSupport {
      * @return instance of {@link Route}
      */
     protected Route getRoute(){
-        return Context.getRoute();
+        return RequestUtils.getRoute();
     }
 }

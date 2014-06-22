@@ -1,180 +1,24 @@
-/*
-Copyright 2009-2010 Igor Polevoy 
+package org.javalite.activeweb;
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
-
-http://www.apache.org/licenses/LICENSE-2.0 
-
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
-*/
-package org.javalite.activeweb.freemarker;
-
-import freemarker.core.Environment;
-import freemarker.template.*;
-import freemarker.template.utility.DeepUnwrap;
-import org.javalite.activeweb.*;
+import org.javalite.common.Convert;
+import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.*;
 
+import static java.util.Arrays.asList;
+import static org.javalite.common.Collections.list;
+
 /**
- * Convenience class for implementing application - specific tags. 
- *
- * @author Igor Polevoy
+ * 
+ * TODO: this needs to become a default interface, once we move the project to java 8
+ * 
+ * @author igor, on 6/16/14.
  */
-public abstract class FreeMarkerTag implements TemplateDirectiveModel {
-    
-    private Logger logger = LoggerFactory.getLogger(getClass().getName());
-    private String context = null;
+public class RequestUtils {
 
-
-    /**
-     * Provides a logger to a subclass.
-     *
-     * @return initialized instance of logger. 
-     */
-    protected Logger logger(){return logger;}
-
-    public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body) throws TemplateException, IOException {
-        FreeMarkerTL.setEnvironment(env);
-        StringWriter sw = new StringWriter();
-        if (body != null) {
-            body.render(sw);
-        }
-        try{
-            render(params, sw.toString(), env.getOut());
-        }catch (ViewException e){
-            throw e;
-        }catch(Exception e){
-            throw new ViewException(e);
-        }
-    }
-
-    /**
-     * Gets an object from context - by name.
-     *
-     * @param name name of object
-     * @return object or null if not found.
-     */
-    protected TemplateModel get(Object name) {
-        try {
-            return FreeMarkerTL.getEnvironment().getVariable(name.toString());
-        } catch (Exception e) {
-            throw new ViewException(e);
-        }
-    }
-
-    /**
-     * Gets an object from context - by name.
-     *
-     * @param name name of object
-     * @return object or null if not found.
-     */
-    protected Object getUnwrapped(Object name) {
-        try {
-            return DeepUnwrap.unwrap(get(name));
-        } catch (TemplateException e){
-            throw new ViewException(e);
-        }
-    }
-    
-    protected <T> T getUnwrapped(Object name, Class<T> clazz) {
-        return clazz.cast(getUnwrapped(name));
-    }
-
-    /**
-     * Implement this method ina  concrete subclass.
-     *
-     * @param params this is a list of parameters as provided to tag in HTML.
-     * @param body body of tag
-     * @param writer writer to write output to.
-     * @throws Exception if any
-     */
-    protected abstract void render(Map params, String body, Writer writer) throws Exception;
-
-
-    /**
-     * Will throw {@link IllegalArgumentException} if a parameter on the list is missing
-     *
-     * @param params as a map passed in by Freemarker
-     * @param names  list if valid parameter names for this tag.
-     */
-    protected void validateParamsPresence(Map params, String... names) {
-        Util.validateParamsPresence(params, names);
-    }
-
-    /**
-     * Returns this applications' context path.
-     * @return context path.
-     */
-    protected String getContextPath(){
-
-        if(context != null) return context;
-
-        if(get("context_path") == null){
-            throw new ViewException("context_path missing - red alarm!");
-        }
-        return  get("context_path").toString();
-    }
-
-
-    /**
-     * Processes text as a FreeMarker template. Usually used to process an inner body of a tag.
-     *
-     * @param text text of a template.
-     * @param params map with parameters for processing. 
-     * @param writer writer to write output to.
-     */
-    protected void process(String text, Map params, Writer writer){
-
-        try{
-            Template t = new Template("temp", new StringReader(text), FreeMarkerTL.getEnvironment().getConfiguration());
-            t.process(params, writer);
-        }catch(Exception e){          
-            throw new ViewException(e);
-        }
-    }
-
-    /**
-     * Returns a map of all variables in scope.
-     * @return map of all variables in scope.
-     */
-    protected Map getAllVariables(){
-        try{
-            Iterator names = FreeMarkerTL.getEnvironment().getKnownVariableNames().iterator();
-            Map vars = new HashMap();
-            while (names.hasNext()) {
-                Object name =names.next();
-                vars.put(name, get(name.toString()));
-            }
-            return vars;
-        }catch(Exception e){
-            throw new ViewException(e);
-        }
-    }
-
-
-    /**
-     * Use to override context of the application. Usually this is done because  you need
-     * to generate special context related paths due to web server configuration
-     *
-     * @param context this context will be used instead of one provided by Servlet API
-     */
-    public void overrideContext(String context){
-        this.context = context;
-    }
-
+    private static Logger logger = LoggerFactory.getLogger(RequestUtils.class);
 
     /**
      * Returns value of one named parameter from request. If this name represents multiple values, this
@@ -183,8 +27,14 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @param name name of parameter.
      * @return value of request parameter.
      */
-    protected static String param(String name){
-        return RequestUtils.param(name);
+    public static String param(String name){
+        if(name.equals("id")){
+            return getId();
+        }else if(Context.getRequestContext().getUserSegments().get(name) != null){
+            return Context.getRequestContext().getUserSegments().get(name);
+        }else{
+            return Context.getHttpRequest().getParameter(name);
+        }
     }
 
 
@@ -194,10 +44,20 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      *
      * @return ID value from URI is one exists, null if not.
      */
-    protected static String getId(){
-        return RequestUtils.getId();
+    public static String getId(){
+        String paramId = Context.getHttpRequest().getParameter("id");
+        if(paramId != null && Context.getHttpRequest().getAttribute("id") != null){
+            logger.warn("WARNING: probably you have 'id' supplied both as a HTTP parameter, as well as in the URI. Choosing parameter over URI value.");
+        }
 
-
+        String theId;
+        if(paramId != null){
+            theId =  paramId;
+        }else{
+            Object id = Context.getHttpRequest().getAttribute("id");
+            theId =  id != null ? id.toString() : null;
+        }
+        return Util.blank(theId) ? null : theId;
     }
 
 
@@ -209,27 +69,28 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      *
      * @return format part of the URI, or nul if URI does not have it.
      */
-    protected static String format(){
-        return RequestUtils.format();
+    public static String format(){
+        return Context.getFormat();
     }
 
 
     /**
-     * Returns instance of {@link org.javalite.activeweb.AppContext}.
+     * Returns instance of {@link AppContext}.
      *
-     * @return instance of {@link org.javalite.activeweb.AppContext}.
+     * @return instance of {@link AppContext}.
      */
-    protected static AppContext appContext(){
-        return RequestUtils.appContext();
+    public static AppContext appContext(){
+        return Context.getAppContext();
     }
+
 
     /**
      * Returns true if this request is Ajax.
      *
      * @return true if this request is Ajax.
      */
-    protected static boolean isXhr(){
-        return RequestUtils.isXhr();
+    public static boolean isXhr(){
+        return header("X-Requested-With") != null || header("x-requested-with") != null;
     }
 
 
@@ -238,25 +99,26 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      *
      * @return user-agent header of the request.
      */
-    protected static String userAgent(){
-        return RequestUtils.userAgent();
+    public static String userAgent(){
+        String camel = header("User-Agent");
+        return camel != null ? camel : header("user-agent");
     }
 
     /**
      * Synonym for {@link #isXhr()}.
      */
-    protected static boolean xhr(){
-        return RequestUtils.xhr();
+    public static boolean xhr(){
+        return isXhr();
     }
 
 
     /**
-     * Returns instance of {@link org.javalite.activeweb.Route} to be used for potential conditional logic inside controller filters.
+     * Returns instance of {@link Route} to be used for potential conditional logic inside controller filters.
      *
-     * @return instance of {@link org.javalite.activeweb.Route}
+     * @return instance of {@link Route}
      */
-    protected static Route getRoute(){
-        return RequestUtils.getRoute();
+    public static Route getRoute(){
+        return Context.getRoute();
     }
 
 
@@ -267,8 +129,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @param name name of request parameter to test.
      * @return true if parameter exists, false if not.
      */
-    protected boolean exists(String name){
-        return RequestUtils.exists(name);
+    public static boolean exists(String name){
+        return param(name) != null;
     }
 
     /**
@@ -277,8 +139,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @param name name of request parameter to test.
      * @return true if parameter exists, false if not.
      */
-    protected boolean requestHas(String name){
-        return RequestUtils.requestHas(name);
+    public static boolean requestHas(String name){
+        return param(name) != null;
     }
 
 
@@ -287,8 +149,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      *
      * @return local host name on which request was received.
      */
-    protected static String host() {
-        return RequestUtils.host();
+    public static String host() {
+        return Context.getHttpRequest().getLocalName();
     }
 
 
@@ -297,8 +159,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      *
      * @return local IP address on which request was received.
      */
-    protected static  String ipAddress() {
-        return RequestUtils.ipAddress();
+    public static  String ipAddress() {
+        return Context.getHttpRequest().getLocalAddr();
     }
 
 
@@ -313,8 +175,9 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @return protocol of web server request if <code>X-Forwarded-Proto</code> header is found, otherwise current
      * protocol.
      */
-    protected static String getRequestProtocol(){
-        return RequestUtils.getRequestProtocol();
+    public static String getRequestProtocol(){
+        String protocol = header("X-Forwarded-Proto");
+        return Util.blank(protocol)? protocol(): protocol;
     }
 
     /**
@@ -324,9 +187,9 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      *
      * @return port of web server request if <code>X-Forwarded-Port</code> header is found, otherwise port of the Java container.
      */
-    protected static int getRequestPort(){
+    public static int getRequestPort(){
         String port = header("X-Forwarded-Port");
-        return org.javalite.common.Util.blank(port)? port(): Integer.parseInt(port);
+        return Util.blank(port)? port(): Integer.parseInt(port);
     }
 
 
@@ -336,8 +199,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      *
      * @return port on which the of the server received current request.
      */
-    protected static int port(){
-        return RequestUtils.port();
+    public static int port(){
+        return Context.getHttpRequest().getLocalPort();
     }
 
 
@@ -346,8 +209,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      *
      * @return protocol of request
      */
-    protected static String protocol(){
-        return RequestUtils.protocol();
+    public static String protocol(){
+        return Context.getHttpRequest().getProtocol();
     }
 
     //TODO: provide methods for: X-Forwarded-Proto and X-Forwarded-Port
@@ -358,8 +221,13 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      *
      * @return host name of web server if <code>X-Forwarded-Host</code> header is found, otherwise local host name.
      */
-    protected static String getRequestHost() {
-        return RequestUtils.getRequestHost();
+    public static String getRequestHost() {
+        String forwarded = header("X-Forwarded-Host");
+        if (Util.blank(forwarded)) {
+            return host();
+        }
+        String[] forwards = forwarded.split(",");
+        return forwards[0].trim();
     }
 
     /**
@@ -367,8 +235,9 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      *
      * @return IP address that the web server forwarded request for.
      */
-    protected static String ipForwardedFor() {
-        return RequestUtils.ipForwardedFor();
+    public static String ipForwardedFor() {
+        String h = header("X-Forwarded-For");
+        return !Util.blank(h) ? h : remoteAddress();
     }
 
 
@@ -378,8 +247,19 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @param name name of multiple values from request.
      * @return multiple request values for a name.
      */
-    protected static List<String> params(String name){
-        return RequestUtils.params(name);
+    public static List<String> params(String name){
+        if (name.equals("id")) {
+            String id = getId();
+            return id != null ? asList(id) : Collections.<String>emptyList();
+        } else {
+            String[] values = Context.getHttpRequest().getParameterValues(name);
+            List<String>valuesList = values == null? new ArrayList<String>() : list(values);
+            String userSegment = Context.getRequestContext().getUserSegments().get(name);
+            if(userSegment != null){
+                valuesList.add(userSegment);
+            }
+            return valuesList;
+        }
     }
 
 
@@ -390,8 +270,20 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @return a map where keys are names of all parameters, while values are first value for each parameter, even
      * if such parameter has more than one value submitted.
      */
-    protected static Map<String, String> params1st(){
-        return RequestUtils.params1st();
+    public static Map<String, String> params1st(){
+        //TODO: candidate for performance optimization
+        Map<String, String> params = new HashMap<String, String>();
+        Enumeration names = Context.getHttpRequest().getParameterNames();
+        while (names.hasMoreElements()) {
+            String name = names.nextElement().toString();
+            params.put(name, Context.getHttpRequest().getParameter(name));
+        }
+        if(getId() != null)
+            params.put("id", getId());
+
+        Map<String, String> userSegments = Context.getRequestContext().getUserSegments();
+        params.putAll(userSegments);
+        return params;
     }
 
 
@@ -402,8 +294,18 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @return an instance <code>java.util.Map</code> containing parameter names as keys and parameter values as map values.
      * The keys in the parameter map are of type String. The values in the parameter map are of type String array.
      */
-    protected static Map<String, String[]> params(){
-        return RequestUtils.params();
+    public static Map<String, String[]> params(){
+        SimpleHash params = new SimpleHash(Context.getHttpRequest().getParameterMap());
+        if(getId() != null)
+            params.put("id", new String[]{getId()});
+
+        Map<String, String> userSegments = Context.getRequestContext().getUserSegments();
+
+        for(String name:userSegments.keySet()){
+            params.put(name, new String[]{userSegments.get(name)});
+        }
+
+        return params;
     }
 
 
@@ -413,8 +315,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      *
      * @return locale of request.
      */
-    protected static Locale locale(){
-        return RequestUtils.locale();
+    public static Locale locale(){
+        return Context.getHttpRequest().getLocale();
     }
 
     /**
@@ -422,16 +324,18 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      *
      * @return locale of request.
      */
-    protected static Locale getLocale(){
-        return RequestUtils.getLocale();
+    public static Locale getLocale(){
+        return Context.getHttpRequest().getLocale();
     }
+
+
 
     /**
      * Returns reference to a current session. Creates a new session of one does not exist.
      * @return reference to a current session.
      */
-    protected static SessionFacade session(){
-        return RequestUtils.session();
+    public static SessionFacade session(){
+        return new SessionFacade();
     }
 
 
@@ -447,8 +351,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @param name name of object,
      * @return session object.
      */
-    protected static Object sessionObject(String name){
-        return RequestUtils.sessionObject(name);
+    public static Object sessionObject(String name){
+        return session(name);
     }
 
 
@@ -458,8 +362,9 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @param name name of session attribute
      * @return value of session attribute of null if not found
      */
-    protected static Object session(String name){
-        return RequestUtils.session(name);
+    public static Object session(String name){
+        Object val = session().get(name);
+        return val == null ? null : val;
     }
 
     /**
@@ -473,8 +378,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @param name name of object
      * @return value
      */
-    protected static String sessionString(String name){
-        return RequestUtils.sessionString(name);
+    public static String sessionString(String name){
+        return Convert.toString(session(name));
     }
 
 
@@ -490,8 +395,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @param name name of object
      * @return value
      */
-    protected static Integer sessionInteger(String name){
-        return RequestUtils.sessionInteger(name);
+    public static Integer sessionInteger(String name){
+        return Convert.toInteger(session(name));
     }
 
     /**
@@ -505,8 +410,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @param name name of object
      * @return value
      */
-    protected static Boolean sessionBoolean(String name){
-        return RequestUtils.sessionBoolean(name);
+    public static Boolean sessionBoolean(String name){
+        return Convert.toBoolean(session(name));
     }
 
     /**
@@ -520,8 +425,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @param name name of object
      * @return value
      */
-    protected static Double sessionDouble(String name){
-        return RequestUtils.sessionDouble(name);
+    public static Double sessionDouble(String name){
+        return Convert.toDouble(session(name));
     }
 
     /**
@@ -535,8 +440,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @param name name of object
      * @return value
      */
-    protected static Float sessionFloat(String name){
-        return RequestUtils.sessionFloat(name);
+    public static Float sessionFloat(String name){
+        return Convert.toFloat(session(name));
     }
 
     /**
@@ -550,8 +455,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @param name name of object
      * @return value
      */
-    protected static Long sessionLong(String name){
-        return RequestUtils.sessionLong(name);
+    public static Long sessionLong(String name){
+        return Convert.toLong(session(name));
     }
 
     /**
@@ -560,8 +465,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @param name name of object.
      * @return true if session has named object, false if not.
      */
-    protected static boolean sessionHas(String name){
-        return RequestUtils.sessionHas(name);
+    public static boolean sessionHas(String name){
+        return session().get(name) != null;
     }
 
     /**
@@ -570,7 +475,16 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @return collection of all cookies browser sent.
      */
     public static List<Cookie> cookies(){
-        return RequestUtils.cookies();
+        javax.servlet.http.Cookie[] servletCookies = Context.getHttpRequest().getCookies();
+        if(servletCookies == null)
+            return new ArrayList<Cookie>();
+
+        List<Cookie> cookies = new ArrayList<Cookie>();
+        for (javax.servlet.http.Cookie servletCookie: servletCookies) {
+            Cookie cookie = Cookie.fromServletCookie(servletCookie);
+            cookies.add(cookie);
+        }
+        return cookies;
     }
 
     /**
@@ -580,7 +494,15 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @return a cookie by name, null if not found.
      */
     public static Cookie cookie(String name){
-        return RequestUtils.cookie(name);
+        javax.servlet.http.Cookie[] servletCookies = Context.getHttpRequest().getCookies();
+        if (servletCookies != null) {
+            for (javax.servlet.http.Cookie servletCookie : servletCookies) {
+                if (servletCookie.getName().equals(name)) {
+                    return Cookie.fromServletCookie(servletCookie);
+                }
+            }
+        }
+        return null;
     }
 
 
@@ -590,8 +512,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @param name name of cookie.
      * @return cookie value.
      */
-    protected static String cookieValue(String name){
-        return RequestUtils.cookieValue(name);
+    public static String cookieValue(String name){
+        return cookie(name).getValue();
     }
 
 
@@ -601,8 +523,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      *
      * @return a path of the request.
      */
-    protected static String path(){
-        return RequestUtils.path();
+    public static String path(){
+        return Context.getHttpRequest().getServletPath();
     }
 
     /**
@@ -610,8 +532,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      *
      * @return a full URL of the request, all except a query string.
      */
-    protected  static String url(){
-        return RequestUtils.url();
+    public  static String url(){
+        return Context.getHttpRequest().getRequestURL().toString();
     }
 
     /**
@@ -619,8 +541,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      *
      * @return query string of the request.
      */
-    protected  static String queryString(){
-        return RequestUtils.queryString();
+    public  static String queryString(){
+        return Context.getHttpRequest().getQueryString();
     }
 
     /**
@@ -628,8 +550,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      *
      * @return an HTTP method from the request.
      */
-    protected static String method(){
-        return RequestUtils.method();
+    public static String method(){
+        return Context.getHttpRequest().getMethod();
     }
 
     /**
@@ -637,8 +559,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      *
      * @return True if this request uses HTTP GET method, false otherwise.
      */
-    protected static boolean isGet() {
-        return RequestUtils.isGet();
+    public static boolean isGet() {
+        return isMethod("get");
     }
 
 
@@ -647,8 +569,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      *
      * @return True if this request uses HTTP POST method, false otherwise.
      */
-    protected static boolean isPost() {
-        return RequestUtils.isPost();
+    public static boolean isPost() {
+        return isMethod("post");
     }
 
 
@@ -657,8 +579,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      *
      * @return True if this request uses HTTP PUT method, false otherwise.
      */
-    protected static boolean isPut() {
-        return RequestUtils.isPut();
+    public static boolean isPut() {
+        return isMethod("put");
     }
 
 
@@ -667,13 +589,13 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      *
      * @return True if this request uses HTTP DELETE method, false otherwise.
      */
-    protected static boolean isDelete() {
-        return RequestUtils.isDelete();
+    public static boolean isDelete() {
+        return isMethod("delete");
     }
 
 
-    protected static boolean isMethod(String method){
-        return RequestUtils.isMethod(method);
+    public static boolean isMethod(String method){
+        return HttpMethod.getMethod(Context.getHttpRequest()).name().equalsIgnoreCase(method);
     }
 
 
@@ -682,7 +604,7 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      *
      * @return True if this request uses HTTP HEAD method, false otherwise.
      */
-    protected static boolean isHead() {
+    public static boolean isHead() {
         return isMethod("head");
     }
 
@@ -692,8 +614,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      *
      * @return a context of the request - usually an app name (as seen on URL of request).
      */
-    protected static String context(){
-        return RequestUtils.context();
+    public static String context(){
+        return Context.getHttpRequest().getContextPath();
     }
 
     /**
@@ -701,8 +623,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * Examlpe: <code>/mywebapp/controller/action/id</code>
      * @return  URI, or a full path of request.
      */
-    protected static String uri(){
-        return RequestUtils.uri();
+    public static String uri(){
+        return Context.getHttpRequest().getRequestURI();
     }
 
     /**
@@ -710,8 +632,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      *
      * @return host name of the requesting client.
      */
-    protected static String remoteHost(){
-        return RequestUtils.remoteHost();
+    public static String remoteHost(){
+        return Context.getHttpRequest().getRemoteHost();
     }
 
     /**
@@ -719,8 +641,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      *
      * @return IP address of the requesting client.
      */
-    protected static String remoteAddress(){
-        return RequestUtils.remoteAddress();
+    public static String remoteAddress(){
+        return Context.getHttpRequest().getRemoteAddr();
     }
 
 
@@ -731,8 +653,8 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @param name name of header
      * @return header value.
      */
-    protected static String header(String name){
-        return RequestUtils.header(name);
+    public static String header(String name){
+        return Context.getHttpRequest().getHeader(name);
     }
 
     /**
@@ -740,8 +662,13 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      *
      * @return all headers from a request keyed by header name.
      */
-    protected static Map<String, String> headers(){
-        return RequestUtils.headers();
+    public static Map<String, String> headers(){
+        Map<String, String> headers = new HashMap<String, String>();
+        Enumeration<String> names = Context.getHttpRequest().getHeaderNames();
+        while (names.hasMoreElements()) {
+            String name = names.nextElement();
+            headers.put(name, Context.getHttpRequest().getHeader(name));
+        }
+        return headers;
     }
 }
-
