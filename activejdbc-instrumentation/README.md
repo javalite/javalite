@@ -33,6 +33,10 @@ where `/home/bobthedeveloper/project1/activejdbc-instrumentation.jar` is a locat
 
 It is easy to configure defaults in every IDE to add this parameter to JVM when executing tests.
 
+### Dynamic instrumentation and compatilility with Java 8
+
+There are some conflicts using model static methods inside lambda expressions. So far this is the only issue. Statis instrumentation is free of conflicts and works perfectly with Java 8. 
+
 ### How to deploy ActiveJDBC applications
 
 ActiveJDBC models require instrumentation. You can use static or dynamic instrumentation, as long
