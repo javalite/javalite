@@ -21,7 +21,7 @@ Currently only available as a snapshot:
 
 ### How to use dynamic instrumentation
 
-* Download a file: [activejdbc-instrumentation.jar](http://bit.ly/SVNdzQ) and place it somewhere on your file system.
+* Download latest build of: [activejdbc-instrumentation.jar](https://oss.sonatype.org/content/repositories/snapshots/org/javalite/activejdbc-instrumentation/1.4.10-SNAPSHOT/) and place it somewhere on your file system.
 (You might already have this file in your local Maven repository, might want to look there)
 * When executing any program that requires ActiveJDBC, pass this parameter to JVM:
 
