@@ -103,7 +103,7 @@ public class SessionFacade implements Map {
             Object o = names.nextElement();
             namesList.add(o.toString());
         }        
-        return namesList.toArray(new String[0]);
+        return namesList.toArray(new String[namesList.size()]);
     }
 
 

@@ -17,6 +17,7 @@ package org.javalite.activeweb.freemarker;
 
 import freemarker.core.Environment;
 import freemarker.template.*;
+import freemarker.template.SimpleHash;
 import freemarker.template.utility.DeepUnwrap;
 import org.javalite.activeweb.*;
 import org.slf4j.Logger;
@@ -430,11 +431,17 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * Returns reference to a current session. Creates a new session of one does not exist.
      * @return reference to a current session.
      */
-    protected  SessionFacade session(){
-        return RequestUtils.session();
+    protected Map session(){
+        Map session;
+        try{
+            SimpleHash sessionHash  = (SimpleHash)get("session");
+            session = sessionHash.toMap();
+        }catch(Exception e){
+            logger().warn("failed to get a session map in context, returning session without data!!!", e);
+            session = new HashMap();
+        }
+        return Collections.unmodifiableMap(session);
     }
-
-
 
     /**
      * Convenience method, returns object from session, equivalent of:
@@ -448,7 +455,7 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @return session object.
      */
     protected  Object sessionObject(String name){
-        return RequestUtils.sessionObject(name);
+        return session(name);
     }
 
 
@@ -459,109 +466,7 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @return value of session attribute of null if not found
      */
     protected  Object session(String name){
-        return RequestUtils.session(name);
-    }
-
-    /**
-     * Convenience method, returns object from session, equivalent of:
-     * <pre>
-     * <code>
-     *     String val = (String)session().get(name)
-     * </code>
-     * </pre>
-     *
-     * @param name name of object
-     * @return value
-     */
-    protected  String sessionString(String name){
-        return RequestUtils.sessionString(name);
-    }
-
-
-
-    /**
-     * Convenience method, returns object from session, equivalent of:
-     * <pre>
-     * <code>
-     *     Integer val = (Integer)session().get(name)
-     * </code>
-     * </pre>
-     *
-     * @param name name of object
-     * @return value
-     */
-    protected  Integer sessionInteger(String name){
-        return RequestUtils.sessionInteger(name);
-    }
-
-    /**
-     * Convenience method, returns object from session, equivalent of:
-     * <pre>
-     * <code>
-     *     Boolean val = (Boolean)session().get(name)
-     * </code>
-     * </pre>
-     *
-     * @param name name of object
-     * @return value
-     */
-    protected  Boolean sessionBoolean(String name){
-        return RequestUtils.sessionBoolean(name);
-    }
-
-    /**
-     * Convenience method, returns object from session, equivalent of:
-     * <pre>
-     * <code>
-     *     Double val = (Double)session().get(name)
-     * </code>
-     * </pre>
-     *
-     * @param name name of object
-     * @return value
-     */
-    protected  Double sessionDouble(String name){
-        return RequestUtils.sessionDouble(name);
-    }
-
-    /**
-     * Convenience method, returns object from session, equivalent of:
-     * <pre>
-     * <code>
-     *     Float val = (Float)session().get(name)
-     * </code>
-     * </pre>
-     *
-     * @param name name of object
-     * @return value
-     */
-    protected  Float sessionFloat(String name){
-        return RequestUtils.sessionFloat(name);
-    }
-
-    /**
-     * Convenience method, returns object from session, equivalent of:
-     * <pre>
-     * <code>
-     *     Long val = (Long)session().get(name)
-     * </code>
-     * </pre>
-     *
-     * @param name name of object
-     * @return value
-     */
-    protected  Long sessionLong(String name){
-        return RequestUtils.sessionLong(name);
-    }
-
-    /**
-     * Returns true if session has named object, false if not.
-     *
-     * @param name name of object.
-     * @return true if session has named object, false if not.
-     */
-    protected  boolean sessionHas(String name){
-        return RequestUtils.sessionHas(name);
+        return session(name);
     }
 
     /**

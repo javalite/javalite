@@ -20,6 +20,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.javalite.common.Convert;
 import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -873,9 +874,8 @@ public class HttpSupport {
      * @return reference to a current session.
      */
     protected SessionFacade session(){
-        return RequestUtils.session();
+        return new SessionFacade();
     }
-
     /**
      * Convenience method, sets an object on a session. Equivalent of:
      * <pre>
@@ -903,7 +903,7 @@ public class HttpSupport {
      * @return session object.
      */
     protected Object sessionObject(String name){
-        return RequestUtils.sessionObject(name);
+        return session(name);
     }
 
     /**
@@ -913,7 +913,8 @@ public class HttpSupport {
      * @return value of session attribute of null if not found
      */
     protected Object session(String name){
-        return RequestUtils.session(name);
+        Object val = session().get(name);
+        return val == null ? null : val;
     }
 
 
@@ -929,7 +930,7 @@ public class HttpSupport {
      * @return value
      */
     protected String sessionString(String name){
-        return RequestUtils.sessionString(name);
+        return Convert.toString(session(name));
     }
 
 
@@ -946,7 +947,7 @@ public class HttpSupport {
      * @return value
      */
     protected Integer sessionInteger(String name){
-        return RequestUtils.sessionInteger(name);
+        return Convert.toInteger(session(name));
     }
 
     /**
@@ -961,7 +962,7 @@ public class HttpSupport {
      * @return value
      */
     protected Boolean sessionBoolean(String name){
-        return RequestUtils.sessionBoolean(name);
+        return Convert.toBoolean(session(name));
     }
 
     /**
@@ -976,7 +977,7 @@ public class HttpSupport {
      * @return value
      */
     protected Double sessionDouble(String name){
-        return RequestUtils.sessionDouble(name);
+        return Convert.toDouble(session(name));
     }
 
     /**
@@ -991,7 +992,7 @@ public class HttpSupport {
      * @return value
      */
     protected Float sessionFloat(String name){
-        return RequestUtils.sessionFloat(name);
+        return Convert.toFloat(session(name));
     }
 
     /**
@@ -1006,7 +1007,7 @@ public class HttpSupport {
      * @return value
      */
     protected Long sessionLong(String name){
-        return RequestUtils.sessionLong(name);
+        return Convert.toLong(session(name));
     }
 
     /**
@@ -1016,7 +1017,7 @@ public class HttpSupport {
      * @return true if session has named object, false if not.
      */
     protected boolean sessionHas(String name){
-        return RequestUtils.sessionHas(name);
+        return session().get(name) != null;
     }
 
     /**
