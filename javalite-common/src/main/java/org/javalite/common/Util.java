@@ -291,6 +291,7 @@ public class Util {
             byte[] bytes = new byte[1024];
             for (int x = in.read(bytes); x != -1; x = in.read(bytes))
                 out.write(bytes, 0, x);
+            out.flush();
         }catch (Exception e){
             throw new RuntimeException(e);
         }

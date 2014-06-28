@@ -28,7 +28,7 @@
                             <tasks>
                                 <echo>*****************************************************</echo>
                                 <echo>*****************************************************</echo>
-                                <echo> INSTALL THIS PLUGIN BEFORE RUNNING TESTS:</echo>
+                                <echo> INSTALL DB-MIGRATOR PLUGIN BEFORE RUNNING TESTS:</echo>
                                 <echo> mvn clean install -DskipTests=true</echo>
                                 <echo>*****************************************************</echo>
                                 <echo>*****************************************************</echo>

@@ -39,22 +39,23 @@ public class MojoIntegrationSpec {
         reCreateProject();
 
         //drop
-        execute("mvn", "db-migrator:drop");
+        execute("mvn", "db-migrator:drop" , "-o");
 
         //create database
         reCreateProject();
-        execute("mvn", "db-migrator:create");
+        execute("mvn", "db-migrator:create", "-o");
 
         Base.open("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/test_project", "root", "p@ssw0rd");
 
         //creation of new migration
         reCreateProject();
-        execute("mvn", "db-migrator:new", "-Dname=add_people");
+        String output = execute("mvn", "db-migrator:new", "-Dname=add_people", "-o");
+
         a(findMigrationFile("add_people")).shouldNotBeNull();
 
         //migrate
         reCreateProject();
-        String output = execute("mvn", "db-migrator:migrate");
+        output = execute("mvn", "db-migrator:migrate" , "-o");
 
         the(output).shouldContain("[INFO] Migrating database, applying 4 migration(s)\n" +
                 "[INFO] Running migration 20080718214030_base_schema.sql\n" +
@@ -67,9 +68,9 @@ public class MojoIntegrationSpec {
 
         //validate
         reCreateProject();
-        execute("mvn", "db-migrator:drop");
-        execute("mvn", "db-migrator:create");
-        output = execute("mvn", "db-migrator:validate");
+        execute("mvn", "db-migrator:drop", "-o");
+        execute("mvn", "db-migrator:create", "-o");
+        output = execute("mvn", "db-migrator:validate", "-o");
 
         the(output).shouldContain("[INFO] Pending Migrations: \n" +
                 "[INFO] 20080718214030_base_schema.sql\n" +
@@ -78,11 +79,9 @@ public class MojoIntegrationSpec {
                 "[INFO] 20080718214033_seed_data.sql");
         //now migrate and validate again
 
-        output = execute("mvn", "db-migrator:migrate");
+        output = execute("mvn", "db-migrator:migrate", "-o");
 
-        output = execute("mvn", "db-migrator:validate");
-
-        System.out.println(output);
+        output = execute("mvn", "db-migrator:validate", "-o");
 
         the(output).shouldContain("[INFO] Database: jdbc:mysql://localhost/test_project\n" +
                 "[INFO] Up-to-date: true\n" +
