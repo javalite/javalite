@@ -30,7 +30,7 @@ public class Migration implements Comparable {
     }
 
     private String getCharset(File file) {
-        String charset = "GBK"; // 默认编码
+        String charset = "GBK"; // default
         byte[] first3Bytes = new byte[3];
         try {
             boolean checked = false;
@@ -60,18 +60,15 @@ public class Migration implements Comparable {
                     loc++;
                     if (read >= 0xF0)
                         break;
-                    //单独出现BF以下的，也算是GBK
                     if (0x80 <= read && read <= 0xBF)
                         break;
                     if (0xC0 <= read && read <= 0xDF) {
                         read = bis.read();
-                        if (0x80 <= read && read <= 0xBF)// 双字节 (0xC0 - 0xDF)
-                            // (0x80 -
-                            // 0xBF),也可能在GB编码内
+                        if (0x80 <= read && read <= 0xBF)//  (0xC0 - 0xDF)
+                            // (0x80 - 0xBF)
                             continue;
                         else
                             break;
-                        // 也有可能出错，但是几率较小
                     } else if (0xE0 <= read && read <= 0xEF) {
                         read = bis.read();
                         if (0x80 <= read && read <= 0xBF) {
@@ -85,7 +82,7 @@ public class Migration implements Comparable {
                             break;
                     }
                 }
-                System.out.println(loc + " " + Integer.toHexString(read));
+                //System.out.println(loc + " " + Integer.toHexString(read));
             }
             bis.close();
         } catch (Exception e) {
