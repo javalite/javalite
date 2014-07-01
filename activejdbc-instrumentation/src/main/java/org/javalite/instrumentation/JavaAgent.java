@@ -37,15 +37,17 @@ import static java.util.Arrays.asList;
  */
 public class JavaAgent {
 
-    private static InstrumentationModelFinder mf;
+    private static InstrumentationModelFinder modelFinder;
     private static ModelInstrumentation modelInstrumentation;
     private static final Set<ClassLoader> loaders = new HashSet<ClassLoader>();
     private static Method modelFound;
 
+    @SuppressWarnings("unchecked")
     public static void premain(String args, java.lang.instrument.Instrumentation inst) {
 
+        Instrumentation.log("You are using dynamic instrumentation...");
         try {
-            mf = new InstrumentationModelFinder();
+            modelFinder = new InstrumentationModelFinder();
             modelInstrumentation = new ModelInstrumentation();
             //calling this via reflection because we do not want AJ dependency on instrumentation project
             Class finderClass = Class.forName("org.javalite.activejdbc.ModelFinder");
@@ -59,16 +61,17 @@ public class JavaAgent {
             public synchronized byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined,
                                                  ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
                 try {
-                    CtClass clazz = mf.getClazz(className.replace('/', '.'));
-                    if (mf.isModel(clazz)) {
 
+                    CtClass clazz = modelFinder.getClazz(className.replace('/', '.'));
+                    if (modelFinder.isModel(clazz)) {
                         if (!loaders.contains(loader) && loader instanceof URLClassLoader) {
                             scanLoader(loader);
                             loaders.add(loader);
+                            List<CtClass> models = modelFinder.getModels();
+                            for (CtClass ctClass : models) {
+                                modelFound.invoke(null, ctClass.getName());
+                            }
                         }
-
-                        modelFound.invoke(null, className.replace('/', '.'));
-
                         byte[] bytecode = modelInstrumentation.instrument(clazz);
                         Instrumentation.log("Instrumented model: " + clazz.getName());
                         return bytecode;
@@ -83,11 +86,12 @@ public class JavaAgent {
     }
 
     private static void scanLoader(ClassLoader loader) throws ClassNotFoundException, IOException, URISyntaxException {
+        Instrumentation.log("Scanning  class loader:  " + loader);
         //lets skip known jars to save some time
         List<String> toSkipList = asList("rt.jar", "activejdbc-", "javalite-common", "mysql-connector", "slf4j",
                 "rt.jar", "jre", "jdk", "springframework", "servlet-api", "activeweb", "junit", "jackson", "jaxen",
                 "dom4j", "guice", "javax", "aopalliance", "commons-logging", "app-config", "freemarker",
-                "commons-fileupload", "hamcrest", "commons-fileupload", "commons-io");
+                "commons-fileupload", "hamcrest", "commons-fileupload", "commons-io", "javassist", "ehcache", "xml-apis");
 
         if (loader instanceof URLClassLoader) {
             URL[] urls = ((URLClassLoader) loader).getURLs();
@@ -100,8 +104,7 @@ public class JavaAgent {
                 }
 
                 if (!skip) {
-                    Instrumentation.log("Processing: " + url);
-                    mf.processURL(url);
+                    modelFinder.processURL(url);
                 }
             }
         }

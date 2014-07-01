@@ -29,6 +29,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 /**
+ * This class is for static instrumentation
  * @author Igor Polevoy
  */
 public class Instrumentation {
@@ -100,7 +101,7 @@ public class Instrumentation {
 
     public static void log(String message) {
         if(System.getProperty("activejdbc-instrumentation.log") != null){
-            System.out.println(message);
+            System.out.println("ActiveJDBC Instrumentation - " + message);
         }
     }
 }

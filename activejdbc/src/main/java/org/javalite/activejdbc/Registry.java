@@ -134,7 +134,8 @@ public enum Registry {
             }
             DatabaseMetaData databaseMetaData = c.getMetaData();
             String databaseProductName = c.getMetaData().getDatabaseProductName();
-            registerModels(dbName, ModelFinder.getModelsForDb(dbName), databaseProductName);
+            List<Class<? extends Model>> modelClasses = ModelFinder.getModelsForDb(dbName);
+            registerModels(dbName, modelClasses, databaseProductName);
             String[] tables = metaModels.getTableNames(dbName);
 
             for (String table : tables) {
@@ -142,7 +143,7 @@ public enum Registry {
                 registerColumnMetadata(table, metaParams);
             }
 
-            processOverrides(ModelFinder.getModelsForDb(dbName));
+            processOverrides(modelClasses);
 
             for (String table : tables) {
                 discoverAssociationsFor(table, dbName);
@@ -167,7 +168,6 @@ public enum Registry {
      * @throws java.sql.SQLException
      */
     private Map<String, ColumnMetadata> fetchMetaParams(DatabaseMetaData databaseMetaData, String databaseProductName, String table, String dbName) throws SQLException {
-
 
       /*
        * Valid table name format: tablename or schemaname.tablename

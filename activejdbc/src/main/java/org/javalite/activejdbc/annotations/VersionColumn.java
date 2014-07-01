@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation is used to override name of a version column for oprimistic locking
+ * This annotation is used to override name of a version column for optimistic locking
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

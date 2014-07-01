@@ -53,6 +53,7 @@ public class InstrumentationModelFinder {
     }
 
     protected void processURL(URL url) throws URISyntaxException, IOException, ClassNotFoundException {
+        Instrumentation.log("Processing: " + url);
         File f = new File(url.toURI());
         if(f.isFile()){
             processFilePath(f);

@@ -29,9 +29,10 @@ public class ModelFinder {
     //this is a map of lists of model classes. Keys are names of databases as specified in the models' @DbName annotations.
     private static Map<String, List<Class<? extends Model>>> modelClasses = new HashMap<String, List<Class<? extends Model>>>();
 
-    private static List<String> modelClassNames = new ArrayList<String>();
+    private static final List<String> modelClassNames = new ArrayList<String>();
 
     protected static void findModels(String dbName) throws IOException, ClassNotFoundException {
+        //this is for static instrumentation. In case of dynamic, the  modelClassNames will already be filled.
         if(modelClassNames.isEmpty()){
             List<String> models = Registry.instance().getConfiguration().getModelNames(dbName);
             if (models != null && models.size() != 0) {
@@ -47,12 +48,23 @@ public class ModelFinder {
     }
 
     protected static List<Class<? extends Model>> getModelsForDb(String dbName) throws IOException, ClassNotFoundException {
-        for (String className : modelClassNames) {
-            registerModelClass(className);
+        synchronized (modelClassNames){
+            if(!modelClasses.containsKey(dbName)){
+                for (String className : modelClassNames) {
+                    registerModelClass(className);
+                }
+            }
+            return modelClasses.get(dbName);
         }
-        return modelClasses.get(dbName);
     }
 
+    //called dynamically from JavaAgent
+    public static void modelFound(String modelClassName){
+        synchronized (modelClassNames){
+            if(!modelClassNames.contains(modelClassName))
+                modelClassNames.add(modelClassName);
+        }
+    }
 
     @SuppressWarnings("unchecked")
     public static void registerModelClass(String className) throws IOException, ClassNotFoundException {
@@ -69,8 +81,4 @@ public class ModelFinder {
         }
     }
 
-    //called dynamically from JavaAgent
-    public static void modelFound(String modelClassName){
-        modelClassNames.add(modelClassName);
-    }
 }

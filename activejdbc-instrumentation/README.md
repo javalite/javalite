@@ -19,6 +19,13 @@ Dynamic instrumentation is implemented as a Java Agent (javaagent). The same Mav
 Currently only available as a snapshot:
 [ActiveJDBC Instrumentation plugin](https://oss.sonatype.org/content/repositories/snapshots/org/javalite/activejdbc-instrumentation/1.4.10-SNAPSHOT/)
 
+
+### Dynamic instrumentation logging
+
+If you want to see some output from instrumentation process, simply add this system property:
+
+    -Dactivejdbc-instrumentation.log
+
 ### How to use dynamic instrumentation
 
 * Download latest build of: [activejdbc-instrumentation.jar](https://oss.sonatype.org/content/repositories/snapshots/org/javalite/activejdbc-instrumentation/1.4.10-SNAPSHOT/) and place it somewhere on your file system.
@@ -44,14 +51,14 @@ ActiveJDBC models require instrumentation. You can use static or dynamic instrum
 
 * Static instrumentation configuration is described here: [ActiveJDBC Instrumentation](http://javalite.io/instrumentation)
 * Dynamic instrumentation is described above. Any JVM instance, including containers like Tomcat, Jetty, Weblogic, Glassfish,
-etc. have startup scripts where you can simply add the javaagent parameter as described above.
+etc. have startup scripts where you can simply add the `javaagent` parameter as described above.
 
 ### Recommendation (static or dynamic??)
 
 We recommend to use both.
 
-> Configure dynamic instrumentation in your local development environment to not have
-> to execute instrumentation script before running tests.
+> Configure dynamic instrumentation in your local development environment to avoid
+> running static instrumentation before running tests.
 
-> Additionally, configure static instrumentation in your buid to
+> Additionally, configure static instrumentation in your build to
 > deploy your code onto containers without additional modifications to container scripts.
