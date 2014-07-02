@@ -31,5 +31,6 @@ public class CookieController extends AppController{
     public void readCookie(){
         Cookie user = cookie("user");
         assign("user", user.getValue());
+        assign("http_only", user.isHttpOnly());
     }
 }

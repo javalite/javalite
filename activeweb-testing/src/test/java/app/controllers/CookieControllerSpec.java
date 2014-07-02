@@ -24,7 +24,6 @@ import org.junit.Test;
  * @author Igor Polevoy
  */
 public class CookieControllerSpec extends ControllerSpec {
-    
 
     @Test
     public void shouldSendCookieInResponse(){
@@ -37,6 +36,14 @@ public class CookieControllerSpec extends ControllerSpec {
     @Test
     public void shouldReadCookieFromRequest(){
         request().cookie(new Cookie("user", "Carl")).get("read_cookie");
-        a(assigns().get("user")).shouldBeEqual("Carl");
+        a(val("user")).shouldBeEqual("Carl");
+    }
+
+    @Test
+    public void shouldReadHttpOnlyCookie(){
+        Cookie c = new Cookie("user", "Carl");
+        c.setHttpOnly();
+        request().cookie(c).get("read_cookie");
+        a(val("http_only")).shouldBeTrue();
     }
 }

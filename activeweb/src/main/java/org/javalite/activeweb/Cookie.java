@@ -15,10 +15,15 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Igor Polevoy
  */
 public class Cookie {
+
+    private static Logger logger = LoggerFactory.getLogger(Cookie.class);
 
     private java.lang.String name;
     private java.lang.String value;
@@ -27,11 +32,18 @@ public class Cookie {
     private java.lang.String domain = null;
     private java.lang.String path = "/";
     private boolean secure;
+    private boolean httpOnly;
     private int version;
 
     public Cookie(java.lang.String name, String value) {
         this.name = name;
         this.value = value;
+    }
+
+    public Cookie(java.lang.String name, String value, boolean httpOnly) {
+        this.name = name;
+        this.value = value;
+        this.httpOnly = httpOnly;
     }
 
     public void setMaxAge(int maxAge) {this.maxAge = maxAge;}
@@ -60,6 +72,27 @@ public class Cookie {
 
     public void setVersion(int version) { this.version = version;}
 
+    /**
+     * Sets this cookie to be HTTP only.
+     *
+     * This will only work with Servlet 3
+     */
+    public void setHttpOnly(){httpOnly = true;}
+
+    /**
+     * Tells if a cookie HTTP only or not.
+     *
+     * This will only work with Servlet 3
+     */
+    public boolean isHttpOnly(){return httpOnly;}
+
+    /**
+     * Sets this cookie to be Http only or not
+     */
+    public void setHttpOnly(boolean httpOnly){
+        this.httpOnly = httpOnly;
+    }
+
     @Override
     public String toString() {
         return "Cookie{" +
@@ -80,6 +113,7 @@ public class Cookie {
         cookie.setPath(servletCookie.getPath());
         cookie.setSecure(servletCookie.getSecure());
         cookie.setVersion(servletCookie.getVersion());
+        cookie.setHttpOnly(isHttpOnlyReflect(servletCookie));
         return cookie;
     }
 
@@ -91,6 +125,26 @@ public class Cookie {
         servletCookie.setPath(cookie.getPath());
         servletCookie.setSecure(cookie.isSecure());
         servletCookie.setVersion(cookie.getVersion());
+        setHttpOnlyReflect(cookie, servletCookie);
         return servletCookie;
+    }
+
+    //Need to call this by reflection for backwards compatibility with Servlet 2.5
+    private static void setHttpOnlyReflect(org.javalite.activeweb.Cookie awCookie, javax.servlet.http.Cookie servletCookie){
+        try {
+            servletCookie.getClass().getMethod("setHttpOnly", boolean.class).invoke(servletCookie, awCookie.isHttpOnly());
+        } catch (Exception e) {
+            logger.warn("You are trying to set HttpOnly on a cookie, but it appears you are running on Servlet version before 3.0.");
+        }
+    }
+
+    //Need to call this by reflection for backwards compatibility with Servlet 2.5
+    private static boolean isHttpOnlyReflect(javax.servlet.http.Cookie servletCookie){
+        try {
+            return (Boolean)servletCookie.getClass().getMethod("isHttpOnly").invoke(servletCookie);
+        } catch (Exception e) {
+            logger.warn("You are trying to get HttpOnly from a cookie, but it appears you are running on Servlet version before 3.0. Returning false.. which can be false!");
+            return false; //return default. Should we be throwing exception here?
+        }
     }
 }
