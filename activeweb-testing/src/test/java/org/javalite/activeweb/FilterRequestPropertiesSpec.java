@@ -55,7 +55,7 @@ public class FilterRequestPropertiesSpec extends IntegrationSpec {
         a(filter.path).shouldBeEqual("/student/index");
         a(filter.method).shouldBeEqual("GET");
         a(filter.uri).shouldBeEqual("/student/index");
-        a(filter.url).shouldBeEqual("http://localhost:80/student/index");
+        a(filter.url).shouldBeEqual("http://localhost/student/index");
     }
 
     @Test
@@ -65,6 +65,6 @@ public class FilterRequestPropertiesSpec extends IntegrationSpec {
         a(filter.path).shouldBeEqual("/level1/level2/registration/index");
         a(filter.method).shouldBeEqual("GET");
         a(filter.uri).shouldBeEqual("/level1/level2/registration/index");
-        a(filter.url).shouldBeEqual("http://localhost:80/level1/level2/registration/index");
+        a(filter.url).shouldBeEqual("http://localhost/level1/level2/registration/index");
     }
 }
