@@ -18,7 +18,7 @@ Integrated dependency injection - ActiveWeb integrates Google Guice as a depende
 
 Watch a quick video on Youtube that demonstrates ActiveWeb's ability to add code to the application dynamically, at run time:
 
-<iframe width="640" height="360" src="http://www.youtube.com/embed/YX1TAtuSqQE?feature=player_embedded" frameborder="0" allowfullscreen></iframe>
+https://www.youtube.com/watch?v=YX1TAtuSqQE
 
 ## Documentation
 
