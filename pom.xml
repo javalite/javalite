@@ -88,7 +88,7 @@
         <module>activejdbc</module>
         <module>db-migrator</module>
         <module>db-migrator-integration-test</module>
-        <module>javalite-git-info</module>
+        <module>git-info-maven-plugin</module>
     </modules>
 
     <pluginRepositories>
