@@ -86,11 +86,11 @@ public class ValidationHelper {
     }
 
     @Deprecated
-    public static ValidationBuilder addRangevalidator(Class<Model> modelClass, String attribute, Number min, Number max) {
-        return addRangevalidator(modelClass.getName(), attribute, min, max);
+    public static ValidationBuilder addRangeValidator(Class<Model> modelClass, String attribute, Number min, Number max) {
+        return addRangeValidator(modelClass.getName(), attribute, min, max);
     }
 
-    public static ValidationBuilder addRangevalidator(String modelClass, String attribute, Number min, Number max) {
+    public static ValidationBuilder addRangeValidator(String modelClass, String attribute, Number min, Number max) {
         List<Validator> validators = new ArrayList<Validator>();
 
         validators.add(new RangeValidator(attribute, min, max));
@@ -99,11 +99,11 @@ public class ValidationHelper {
     }
 
     @Deprecated
-    public static ValidationBuilder addPresensevalidators(Class<Model> modelClass, String... attributes) {
-        return addPresensevalidators(modelClass.getName(), attributes);
+    public static ValidationBuilder addPresenceValidators(Class<Model> modelClass, String... attributes) {
+        return addPresenceValidators(modelClass.getName(), attributes);
     }
 
-    public static ValidationBuilder addPresensevalidators(String modelClass, String... attributes) {
+    public static ValidationBuilder addPresenceValidators(String modelClass, String... attributes) {
         List<Validator> validators = new ArrayList<Validator>();
 
         for (String attribute : attributes) {

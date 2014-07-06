@@ -24,7 +24,7 @@ import org.javalite.activejdbc.Model;
  */
 public abstract class Converter implements Validator{
 
-    abstract void  convert(Model m);
+    public abstract void  convert(Model m);
     
     public void validate(Model m) {
         convert(m);

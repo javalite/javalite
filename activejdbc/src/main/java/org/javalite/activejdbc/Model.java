@@ -1511,7 +1511,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return
      */
     protected static ValidationBuilder validateRange(String attribute, Number min, Number max) {
-        return ValidationHelper.addRangevalidator(getClassName(), attribute.toLowerCase(), min, max);
+        return ValidationHelper.addRangeValidator(getClassName(), attribute.toLowerCase(), min, max);
     }
 
     /**
@@ -1521,7 +1521,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return
      */
     protected static ValidationBuilder validatePresenceOf(String... attributes) {
-        return ValidationHelper.addPresensevalidators(getClassName(), ModelDelegate.toLowerCase(attributes));
+        return ValidationHelper.addPresenceValidators(getClassName(), ModelDelegate.toLowerCase(attributes));
     }
 
     /**
@@ -1531,6 +1531,15 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     protected static ValidationBuilder validateWith(Validator validator) {
         return addValidator(validator);
+    }
+
+    /**
+     * Adds a custom converter to the model.
+     *
+     * @param converter custom converter
+     */
+    protected static ValidationBuilder convertWith(Converter converter) {
+        return addValidator(converter);
     }
 
     /**
