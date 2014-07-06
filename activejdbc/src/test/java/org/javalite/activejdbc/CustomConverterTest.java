@@ -23,7 +23,7 @@ import org.junit.Test;
 /**
  * @author igor on 7/6/14.
  */
-public class CustomConvertedTest  extends ActiveJDBCTest {
+public class CustomConverterTest extends ActiveJDBCTest {
     @Test
     public void shouldConvertStringToNumber(){
         Page p = new Page();
