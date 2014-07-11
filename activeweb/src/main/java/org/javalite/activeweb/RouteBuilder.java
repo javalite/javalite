@@ -232,7 +232,7 @@ public class RouteBuilder {
 
         String[] requestUriSegments = Util.split(requestUri, '/');
         if(isWildcard() && requestUriSegments.length >= segments.size() && segmentsMatch(requestUriSegments)){
-            String[] tailArr = Arrays.copyOfRange(requestUriSegments, segments.size(), requestUriSegments.length);
+            String[] tailArr = Arrays.copyOfRange(requestUriSegments, segments.size() - 1, requestUriSegments.length);
             wildCardValue = Util.join(tailArr, "/");
             return true;
         }

@@ -69,7 +69,7 @@ public class RouterWildcardSpec extends RequestSpec {
 
         request.setServletPath("/greeting/1/2/3/4/tada");
         execDispatcher();
-        a(responseContent()).shouldBeEqual("2/3/4/tada");
+        a(responseContent()).shouldBeEqual("1/2/3/4/tada");
     }
 
     @Test
