@@ -230,34 +230,29 @@ public class RouteBuilder {
      */
     protected boolean matches(String requestUri, HttpMethod httpMethod) throws ClassLoadException {
 
+        boolean match = false;
+
         String[] requestUriSegments = Util.split(requestUri, '/');
-        if(isWildcard() && requestUriSegments.length >= segments.size() && segmentsMatch(requestUriSegments)){
+        if(isWildcard() && requestUriSegments.length >= segments.size() && wildSegmentsMatch(requestUriSegments)){
             String[] tailArr = Arrays.copyOfRange(requestUriSegments, segments.size() - 1, requestUriSegments.length);
             wildCardValue = Util.join(tailArr, "/");
-            return true;
-        }
-
-        //this is matching root path: "/"
-        if(segments.size() == 0 && requestUri.equals("/")){
+            match = true;
+        }else if(segments.size() == 0 && requestUri.equals("/")){
+            //this is matching root path: "/"
             actionName = "index";
-            return true;
+            match = true;
+        }else if(requestUriSegments.length < mandatorySegmentCount || requestUriSegments.length > segments.size()){
+            //route("/greeting/{user_id}").to(HelloController.class).action("hi");
+            match = false;
+        }else{
+            //there should be a more elegant way ...
+            for (int i = 0; i < requestUriSegments.length; i++) {
+                String requestUriSegment = requestUriSegments[i];
+                match = segments.get(i).match(requestUriSegment);
+                if(!match)
+                    break;
+            }
         }
-
-        //route("/greeting/{user_id}").to(HelloController.class).action("hi");
-        if(requestUriSegments.length < mandatorySegmentCount || requestUriSegments.length > segments.size()){
-            return false;
-        }
-
-        List<Boolean> results = new ArrayList<Boolean>();
-
-        for (int i = 0; i < requestUriSegments.length; i++) {
-            String requestUriSegment = requestUriSegments[i];
-            results.add(segments.get(i).match(requestUriSegment));
-        }
-
-        //there should be a more elegant way ...
-
-        boolean match = !results.contains(false);
 
         if(match && Configuration.activeReload()){
             controller = reloadController();
@@ -266,7 +261,7 @@ public class RouteBuilder {
         return match && methodMatches(httpMethod);
     }
 
-    private boolean segmentsMatch(String[] requestUriSegments) throws ClassLoadException {
+    private boolean wildSegmentsMatch(String[] requestUriSegments) throws ClassLoadException {
         for (int i = 0; i < segments.size() - 1; i++) {
             Segment segment = segments.get(i);
             if(!segment.match(requestUriSegments[i])){
