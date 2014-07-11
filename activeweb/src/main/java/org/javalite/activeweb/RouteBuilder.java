@@ -19,6 +19,7 @@ package org.javalite.activeweb;
 import org.javalite.common.Util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,6 +39,8 @@ public class RouteBuilder {
     private List<Segment> segments = new ArrayList<Segment>();
     private List<HttpMethod> methods = new ArrayList<HttpMethod>();
 
+    private String wildcardName = null;
+    private String wildCardValue;
 
     private int mandatorySegmentCount = 0;
 
@@ -64,25 +67,44 @@ public class RouteBuilder {
         this(controller, actionName, null);
     }
 
-    //this is used for testing only
-    protected RouteBuilder(AppController controller) {
-        this.controller = controller;
-    }
     /**
      * Used for custom routes
      * @param routeConfig what was specified in the  RouteConfig class
      */
     protected RouteBuilder(String routeConfig) {
         String[] segmentsArr = Util.split(routeConfig, '/');
-        for (String segment : segmentsArr) {
-            segments.add(new Segment(segment));
+        for (String segmentStr : segmentsArr) {
+            Segment segment = new Segment(segmentStr);
+            segments.add(segment);
+            if (segment.wildCard) {
+                String wildCardSegment = segment.segment;
+                wildcardName = wildCardSegment.substring(1);
+                break; // break from loop, we are done!
+            }
+        }
+
+        if(segmentsArr.length > segments.size()){
+            throw new ConfigurationException("Cannot have URI segments past wild card");
         }
         this.routeConfig = routeConfig;
 
         for (Segment segment : segments) {
-            if (segment.mandatory)
+            if (segment.mandatory) {
                 mandatorySegmentCount++;
+            }
         }
+    }
+
+    public boolean isWildcard(){
+        return wildcardName != null;
+    }
+
+    public String getWildcardName() {
+        return wildcardName;
+    }
+
+    public String getWildCardValue() {
+        return wildCardValue;
     }
 
     /**
@@ -202,13 +224,18 @@ public class RouteBuilder {
      *
      *
      * @param requestUri incoming URI for request.
-     * @param httpMethod
+     * @param httpMethod HTTP method of the request.
      * @return true if this route matches the request URI
      * @throws ClassLoadException in case could not load controller
      */
     protected boolean matches(String requestUri, HttpMethod httpMethod) throws ClassLoadException {
 
         String[] requestUriSegments = Util.split(requestUri, '/');
+        if(isWildcard() && requestUriSegments.length >= segments.size()){
+            String[] tailArr = Arrays.copyOfRange(requestUriSegments, segments.size(), requestUriSegments.length);
+            wildCardValue = Util.join(tailArr, "/");
+            return true;
+        }
 
         //this is matching root path: "/"
         if(segments.size() == 0 && requestUri.equals("/")){
@@ -259,7 +286,7 @@ public class RouteBuilder {
      */
     private class Segment{
         private String segment, userSegmentName;
-        private boolean controller, action, id, user, mandatory = true, staticSegment;
+        private boolean controller, action, id, user, mandatory = true, staticSegment, wildCard;
 
         Segment(String segment) {
             this.segment = segment;
@@ -274,6 +301,10 @@ public class RouteBuilder {
             }
             if(!controller && ! action && !id && !user){
                 staticSegment = true;
+            }
+
+            if(segment.startsWith("*")){
+                wildCard = true;
             }
         }
 
@@ -322,7 +353,4 @@ public class RouteBuilder {
         }
         return null;
     }
-
-
-
 }

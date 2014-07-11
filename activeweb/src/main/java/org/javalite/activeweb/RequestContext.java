@@ -30,4 +30,23 @@ public class RequestContext {
     protected void set(String name, Object value){
         values.put(name, value);
     }
+
+
+    private String wildCardName, wildCardValue;
+
+    public String getWildCardName() {
+        return wildCardName;
+    }
+
+    public String getWildCardValue() {
+        return wildCardValue;
+    }
+
+    public void setWildCardName(String wildCardName) {
+        this.wildCardName = wildCardName;
+    }
+
+    public void setWildCardValue(String wildCardValue) {
+        this.wildCardValue = wildCardValue;
+    }
 }

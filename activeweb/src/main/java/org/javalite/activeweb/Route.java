@@ -10,7 +10,7 @@ import java.util.List;
 public class Route {
 
     private AppController controller;
-    private String actionName, id;
+    private String actionName, id, wildCardName, wildCardValue;
     private List<IgnoreSpec> ignoreSpecs;
 
     public Route(AppController controller, String actionName) {
@@ -28,10 +28,24 @@ public class Route {
         controller = builder.getController();
         actionName = builder.getActionName();
         id = builder.getId();
+        this.wildCardName = builder.getWildcardName();
+        this.wildCardValue = builder.getWildCardValue();
     }
 
     public Route(AppController controller) {
         this.controller = controller;
+    }
+
+    public boolean isWildCard(){
+        return wildCardName != null;
+    }
+
+    public String getWildCardName() {
+        return wildCardName;
+    }
+
+    public String getWildCardValue() {
+        return wildCardValue;
     }
 
     public AppController getController() {

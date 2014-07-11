@@ -30,7 +30,6 @@ import java.io.UnsupportedEncodingException;
  */
 public class RouterCustomSpec extends RequestSpec {
 
-    Router router = new Router("home");
     AbstractRouteConfig routeConfig;
 
     @Before
@@ -116,6 +115,7 @@ public class RouterCustomSpec extends RequestSpec {
 
         request.setServletPath("/greeting/alex");
         execDispatcher();
+        System.out.println(responseContent());
         a(responseContent()).shouldContain("user id is alex");
     }
 

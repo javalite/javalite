@@ -32,6 +32,9 @@ public class RequestUtils {
             return getId();
         }else if(Context.getRequestContext().getUserSegments().get(name) != null){
             return Context.getRequestContext().getUserSegments().get(name);
+        }else if(Context.getRequestContext().getWildCardName() != null
+                && name.equals(Context.getRequestContext().getWildCardName())){
+            return Context.getRequestContext().getWildCardValue();
         }else{
             return Context.getHttpRequest().getParameter(name);
         }

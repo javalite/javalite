@@ -138,6 +138,11 @@ class Context {
         if (route.getId() != null){
             getHttpRequest().setAttribute("id", route.getId());
         }
+
+        if(route.isWildCard()){
+            requestContext.get().setWildCardName(route.getWildCardName());
+            requestContext.get().setWildCardValue(route.getWildCardValue());
+        }
         Context.route.set(route);
         Context.values.set(new HashMap<String, Object>());
 
