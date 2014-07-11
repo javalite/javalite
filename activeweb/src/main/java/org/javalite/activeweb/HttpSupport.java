@@ -238,7 +238,10 @@ public class HttpSupport {
          * @return instance of RenderBuilder
          */
         public RenderBuilder format(String format){
-            Context.setFormat(format);
+            ControllerResponse response = Context.getControllerResponse();
+            if(response instanceof RenderTemplateResponse){
+                ((RenderTemplateResponse)response).setFormat(format);
+            }
             return this;
         }
     }

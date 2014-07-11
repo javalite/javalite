@@ -14,6 +14,10 @@ public class DocumentController extends AppController {
         render().format("xml");
     }
 
+    public void text(){
+        render().format(null);
+    }
+
     @Override
     protected String getLayout() {
         return null;

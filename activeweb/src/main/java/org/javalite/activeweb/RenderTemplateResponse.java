@@ -100,4 +100,8 @@ class RenderTemplateResponse extends ControllerResponse{
                 ", layout='" + layout + '\'' +
                 '}';
     }
+
+    public void setFormat(String format) {
+        this.format = format;
+    }
 }

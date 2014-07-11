@@ -33,6 +33,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.javalite.common.Util.blank;
+
 /**
  * @author Igor Polevoy
  */
@@ -83,7 +85,7 @@ public class FreeMarkerTemplateManager implements TemplateManager {
             Template pageTemplate;
 
             try{
-                String templateName = format == null ? template + ".ftl" : template + "." + format + ".ftl";
+                String templateName = blank(format)? template + ".ftl" : template + "." + format + ".ftl";
                 pageTemplate = config.getTemplate(templateName);
             }catch(FileNotFoundException e){
                 logger.warn("Current location: " + new File(".").getCanonicalPath());

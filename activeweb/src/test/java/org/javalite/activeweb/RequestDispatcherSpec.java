@@ -341,4 +341,12 @@ public class RequestDispatcherSpec extends RequestSpec {
         dispatcher.doFilter(request, response, filterChain);
         a(response.getContentAsString()).shouldBeEqual("<message>XML from show action</message>");
     }
+
+    @Test
+    public void shouldOverrideTemplateFormatInController() throws IOException, ServletException {
+        request.setServletPath("/document/text.xml");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+        a(response.getContentAsString()).shouldBeEqual("this is a  text page");
+    }
 }
