@@ -231,7 +231,7 @@ public class RouteBuilder {
     protected boolean matches(String requestUri, HttpMethod httpMethod) throws ClassLoadException {
 
         String[] requestUriSegments = Util.split(requestUri, '/');
-        if(isWildcard() && requestUriSegments.length >= segments.size()){
+        if(isWildcard() && requestUriSegments.length >= segments.size() && segmentsMatch(requestUriSegments)){
             String[] tailArr = Arrays.copyOfRange(requestUriSegments, segments.size(), requestUriSegments.length);
             wildCardValue = Util.join(tailArr, "/");
             return true;
@@ -264,6 +264,16 @@ public class RouteBuilder {
         }
 
         return match && methodMatches(httpMethod);
+    }
+
+    private boolean segmentsMatch(String[] requestUriSegments) throws ClassLoadException {
+        for (int i = 0; i < segments.size() - 1; i++) {
+            Segment segment = segments.get(i);
+            if(!segment.match(requestUriSegments[i])){
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean methodMatches(HttpMethod httpMethod) {
