@@ -231,7 +231,7 @@ public class RouterCustomSpec extends RequestSpec {
 
 
     @Test
-    public void shouldNotMatchWithWithPost(){
+    public void shouldNotMatchWithPost(){
 
         SystemStreamUtil.replaceError();
         routeConfig = new AbstractRouteConfig() {
@@ -241,7 +241,7 @@ public class RouterCustomSpec extends RequestSpec {
         };
         request.setServletPath("/greeting");
         execDispatcher();
-        a(responseContent()).shouldContain("not found");
+        a(responseContent()).shouldContain("java.lang.ClassNotFoundException: app.controllers.GreetingController");
 
         a(SystemStreamUtil.getSystemErr()).shouldContain(" java.lang.ClassNotFoundException: app.controllers.GreetingController");
         SystemStreamUtil.restoreSystemErr();

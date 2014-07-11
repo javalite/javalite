@@ -28,7 +28,7 @@ abstract public class DynamicClassFactory {
         } catch (ClassLoadException e) {
             throw e;
         } catch (ClassCastException e) {
-            throw new ClassLoadException("Class: " + className + " is the expected type, are you sure it extends " + expectedType.getName() + "?");
+            throw new ClassLoadException("Class: " + className + " is not the expected type, are you sure it extends " + expectedType.getName() + "?");
         } catch (Exception e) {
             throw new ClassLoadException(e);
         }

@@ -165,7 +165,7 @@ public class RequestDispatcherSpec extends RequestSpec {
         String html = response.getContentAsString();
 
         a(XPathHelper.count("//div", html)).shouldBeEqual(3);
-        a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("not found");
+        a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController");
         a(response.getStatus()).shouldBeEqual(404);
     }
 
@@ -174,16 +174,17 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         request.setServletPath("/does_not_exist");
         request.setMethod("GET");
-        request.getSession(true).setAttribute("test_message", "this is only a test");
+        request.getSession(true).setAttribute("message", "this is only a test");
 
         dispatcher.doFilter(request, response, filterChain);
 
         a(getSystemErr().contains("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController")).shouldBeTrue();
 
         String html = response.getContentAsString();
+        System.out.println(html);
 
         a(XPathHelper.count("//div", html)).shouldBeEqual(3);
-        a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("not found, and the message: this is only a test");
+        a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController");
 
     }
 
@@ -199,7 +200,7 @@ public class RequestDispatcherSpec extends RequestSpec {
         String html = response.getContentAsString();
 
         a(XPathHelper.count("//div", html)).shouldBeEqual(3);
-        a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("not found");
+        a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("Class: app.controllers.BlahController is not the expected type, are you sure it extends org.javalite.activeweb.AppController?");
     }
 
 
@@ -216,7 +217,7 @@ public class RequestDispatcherSpec extends RequestSpec {
         String html = response.getContentAsString();
 
         a(XPathHelper.count("//div", html)).shouldBeEqual(3);
-        a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("not found");
+        a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("java.lang.NoSuchMethodException: app.controllers.HelloController.hello(); app.controllers.HelloController.hello()");
     }
 
     @Test
@@ -233,7 +234,7 @@ public class RequestDispatcherSpec extends RequestSpec {
         String html = response.getContentAsString();
 
         a(XPathHelper.count("//div", html)).shouldBeEqual(3);
-        a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("not found");
+        a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("Failed to render template: 'src/test/views/hello/no-view.ftl', with layout: 'src/test/views/layouts/default_layout'; Template \"/hello/no-view.ftl\" not found.");
     }
 
     @Test

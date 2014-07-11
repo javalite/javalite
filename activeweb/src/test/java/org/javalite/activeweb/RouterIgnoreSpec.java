@@ -36,7 +36,7 @@ public class RouterIgnoreSpec extends RequestSpec  {
         request.setMethod("GET");
         Configuration.setEnv("staging");
         dispatcher.doFilter(request, response, filterChain);
-        a(response.getContentAsString()).shouldContain("not found");
+        a(response.getContentAsString()).shouldContain("java.lang.NoSuchMethodException: app.controllers.Ignore234Controller.show(); app.controllers.Ignore234Controller.show()");
         Configuration.setEnv("development");//reset for other tests
     }
 

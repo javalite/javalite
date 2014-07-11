@@ -85,7 +85,13 @@ public class Router {
                         matchStandard(uri, controllerName, packageSuffix, controller);
             }
         }
-        route.setIgnoreSpecs(ignoreSpecs);
+
+        if(route != null){
+            route.setIgnoreSpecs(ignoreSpecs);
+        }else{
+            throw new RouteException("Failed to map resource to URI: " + uri);
+        }
+
         return route;
     }
 

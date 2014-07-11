@@ -16,14 +16,13 @@ limitations under the License.
 
 package org.javalite.activeweb;
 
-import app.controllers.*;
-import org.javalite.test.SystemStreamUtil;
+import app.controllers.WildcardRouteController;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.io.UnsupportedEncodingException;
+
+import static org.javalite.test.XPathHelper.selectText;
 
 /**
  * @author Igor Polevoy
@@ -57,7 +56,6 @@ public class RouterWildcardSpec extends RequestSpec {
         }
     }
 
-
     @Test
     public void shouldPassWildcard() throws ClassLoadException {
 
@@ -84,5 +82,13 @@ public class RouterWildcardSpec extends RequestSpec {
         request.setServletPath("/greeting/1/2/3/4/tada");
         execDispatcher();
         a(responseContent()).shouldBeEqual("Cannot have URI segments past wild card");
+    }
+
+    @Test
+    public void shouldGracefullyFailIfWildCardRouteMissing() throws ClassLoadException {
+        request.setServletPath("/wildcard_route/1/2/3/4/tada");
+        execDispatcher();
+        a(response.getStatus()).shouldBeEqual(404);
+        a(selectText("//div[@id='content']", responseContent())).shouldEqual("Failed to map resource to URI: /wildcard_route/1/2/3/4/tada");
     }
 }
