@@ -24,7 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Class is to be used in web apps that use ActiveJDBC. This class will open a connection configured in DBCOnfig class
+ * Class is to be used in web apps that use ActiveJDBC. This class will open a connection configured in <code>DBConfig</code> class
  * of the application before controller is executed and will close it after.
  *
  * @author Igor Polevoy
