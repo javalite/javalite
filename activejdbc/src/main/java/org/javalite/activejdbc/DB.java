@@ -104,6 +104,35 @@ public class DB {
         }
     }
 
+    /**
+     * Attaches a database connection to current thread under a name provided to constructor.
+     *
+     * @param connection instance of connection to attach to current thread.
+     */
+    public void attach(Connection connection){
+        ConnectionsAccess.attach(dbName, connection);
+    }
+
+    /**
+     * Detaches a connection from current thread and returns an instance of it. This method does not close a connection.
+     * Use it for cases of advanced connection management, such as integration with Spring Framework.
+     *
+     * @return instance of a connection detached from current thread by name passed to constructor.
+     */
+    public Connection detach() {
+
+        Connection connection = ConnectionsAccess.getConnection(dbName);
+        try {
+            if(connection == null){
+                throw new DBException("cannot detach connection '" + dbName + "' because it is not available");
+            }
+            ConnectionsAccess.detach(dbName);// lets free the thread from connection
+            StatementCache.instance().cleanStatementCache(connection);
+        } catch (Exception e) {
+            logger.warn("Could not close connection! MUST INVESTIGATE POTENTIAL CONNECTION LEAK!", e);
+        }
+        return connection;
+    }
 
     /**
      * Opens a connection from a datasource. This methods gives a high level control while sourcing a DB connection.

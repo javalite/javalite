@@ -59,11 +59,11 @@ public class ConnectionsAccess {
         }
         LogFilter.log(logger, "Attaching connection: " + connection);
         ConnectionsAccess.getConnectionMap().put(dbName, connection);
-        LogFilter.log(logger, "Opened connection:" + connection + " named: " +  dbName + " on thread: " + Thread.currentThread());
+        LogFilter.log(logger, "Attached connection:" + connection + " named: " +  dbName + " to thread: " + Thread.currentThread());
     }
 
     static void detach(String dbName){
-        LogFilter.log(logger, "Detached connection: " + dbName);
+        LogFilter.log(logger, "Detached connection: " + dbName  + " from thread: " + Thread.currentThread());
         getConnectionMap().remove(dbName);
     }
 

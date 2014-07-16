@@ -21,6 +21,8 @@ import org.javalite.activejdbc.Base;
 import org.javalite.activejdbc.RowListenerAdapter;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.junit.Test;
+
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
 
@@ -35,12 +37,16 @@ public class BaseTest extends ActiveJDBCTest {
 
     @Test
     public void testBaseFinder() {
+        final List<Map> records = new ArrayList<Map>();
 
-        Base.find("select * from people", new RowListenerAdapter() {
+        Base.find("select * from people order by id", new RowListenerAdapter() {
             public void onNext(Map record) {
-                System.out.println(record);
+                records.add(record);
             }
         });
+
+        the(records.get(0).get("name")).shouldBeEqual("John");
+        the(records.get(3).get("name")).shouldBeEqual("Joe");
     }
 
     @Test

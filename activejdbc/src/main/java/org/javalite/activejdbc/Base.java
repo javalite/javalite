@@ -327,4 +327,23 @@ public class Base {
         new DB(DEFAULT_DB_NAME).executeBatch(ps);
     }
 
+
+    /**
+     * Attaches a database connection to current thread under a default name.
+     *
+     * @param connection instance of connection to attach to current thread.
+     */
+    public static void attach(Connection connection){
+        new DB(DEFAULT_DB_NAME).attach(connection);
+    }
+
+    /**
+     * Detaches a default connection from current thread and returns an instance of it. This method does not close a connection.
+     * Use it for cases of advanced connection management, such as integration with Spring Framework.
+     *
+     * @return instance of a default connection detached from current thread by name passed to constructor.
+     */
+    public static Connection detach() {
+        return new DB(DEFAULT_DB_NAME).detach();
+    }
 }
