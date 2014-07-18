@@ -40,6 +40,15 @@ public class ModelTest extends ActiveJDBCTest {
     public void testModelFinder() {
         deleteAndPopulateTable("people");
 
+        Person p = new Person();
+        p.set("name", "igro");
+        p.set("last_name", "polevoy");
+        p.saveIt();
+        p.refresh();
+
+        System.out.println(p.toJson(true));
+
+
         List<Person> list = Person.where("name = 'John'").orderBy("dob desc");
         a(1).shouldBeEqual(list.size());
     }

@@ -24,6 +24,10 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -155,6 +159,26 @@ public class ToJsonSpec extends ActiveJDBCTest {
         Map map = mapper.readValue(json, Map.class);
         Map injected = (Map) map.get("injected");
         a(injected.get("secret_name")).shouldBeEqual("Secret Name");
+    }
+
+    @Test
+    public void shouldReturnSecondsInDateTime() throws IOException, ParseException {
+
+        SimpleDateFormat isoDateFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+
+        Person p = new Person();
+        p.set("name", "john", "last_name", "doe").saveIt();
+        p.refresh();
+        String json = p.toJson(true);
+
+        System.out.println(json);
+        @SuppressWarnings("unchecked")
+        Map<String, String> map = mapper.readValue(json, Map.class);
+
+        Date d = isoDateFormater.parse(map.get("created_at"));
+        Timestamp t = new Timestamp(d.getTime());
+
+        a(t).shouldBeEqual(p.getTimestamp("created_at"));
     }
 }
 

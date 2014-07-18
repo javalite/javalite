@@ -748,8 +748,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     private static DateFormat isoDateFormater;
     static {
-        isoDateFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
-        isoDateFormater.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        //2013-05-28T14:03:17.956+0300
+        isoDateFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+//        isoDateFormater.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
     protected  String toJsonP(boolean pretty, String indent, String... attrs) {
         Collection<String> attrList = Arrays.asList(attrs);
