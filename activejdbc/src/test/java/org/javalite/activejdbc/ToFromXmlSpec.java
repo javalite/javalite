@@ -21,27 +21,48 @@ import org.javalite.activejdbc.test_models.Address;
 import org.javalite.activejdbc.test_models.Article;
 import org.javalite.activejdbc.test_models.Person;
 import org.javalite.activejdbc.test_models.User;
-import org.javalite.common.XmlEntities;
 import org.javalite.test.XPathHelper;
 import org.junit.Test;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
+
+import static org.javalite.common.Util.readResource;
 
 /**
  * @author Igor Polevoy
  */
-public class ToXmlSpec extends ActiveJDBCTest {
+public class ToFromXmlSpec extends ActiveJDBCTest {
 
     @Test
     public void shouldGenerateSimpleXml(){
         deleteAndPopulateTable("people");
         Person p  = Person.findById(1);
         String xml = p.toXml(2, true);
-        System.out.println(xml);
         a(XPathHelper.selectText("//name", xml)).shouldEqual("John");
         a(XPathHelper.selectText("//last_name", xml)).shouldEqual("Smith");
     }
+
+    @Test
+    public void shouldParseAttributesFromXml() throws ParseException {
+        deleteAndPopulateTables("people");
+
+        Person p = new Person();
+        String xml = readResource("/person.xml");
+        p.fromXml(xml);
+        p.saveIt();
+        p.refresh();
+
+        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd");
+
+        a(p.get("name")).shouldBeEqual("John");
+        a(p.get("last_name")).shouldBeEqual("Doe");
+        a(p.get("graduation_date")).shouldBeEqual(f.parse("1979-06-01"));
+        a(p.get("dob")).shouldBeEqual(f.parse("1962-06-13"));
+    }
+
 
     @Test
     public void shouldIncludeChildren(){
@@ -53,6 +74,7 @@ public class ToXmlSpec extends ActiveJDBCTest {
         User u = personList.get(0);
         String xml = u.toXml(2, true);
 
+        System.out.println(xml);
         a(XPathHelper.count("//address", xml)).shouldEqual(4);
         the(xml).shouldContain(" <address1>123 Pine &amp; Needles</address1>");
     }
@@ -96,29 +118,16 @@ public class ToXmlSpec extends ActiveJDBCTest {
         deleteAndPopulateTable("people");
         Person p  = Person.findById(1);
         String xml = p.toXml(2, true);
-
         a(XPathHelper.selectText("/person/test", xml)).shouldEqual("test content");
-
     }
 
     @Test
     public void shouldEscapeSpecialCharsInXMLContent(){
         deleteAndPopulateTable("people");
         Person p  = Person.findById(1);
-
-
         p.set("last_name", "Smith & Wesson");
-
-
         String xml = p.toXml(2, true);
-
-        System.out.println(xml);
-
         a(XPathHelper.selectText("/person/last_name", xml)).shouldEqual("Smith & Wesson");
-
         the(xml).shouldContain("<last_name>Smith &amp; Wesson</last_name>");
-
-
-
     }
 }

@@ -35,12 +35,10 @@ public class Person extends Model {
 
 
     public void beforeClosingTag(int spaces, StringWriter writer, String ... attrs) {
-
         String indent = "";
         for(int i = 0; i < spaces * 2; i++){
             indent += " ";
         }
-
         writer.append(indent + "<test>test content</test>\n");
     }
 }

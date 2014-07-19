@@ -20,10 +20,18 @@ package org.javalite.activejdbc;
 import org.javalite.activejdbc.associations.*;
 import org.javalite.activejdbc.cache.QueryCache;
 import org.javalite.activejdbc.validation.*;
-import org.javalite.common.*;
+import org.javalite.common.Convert;
+import org.javalite.common.Inflector;
+import org.javalite.common.Util;
+import org.javalite.common.XmlEntities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
 import java.math.BigDecimal;
 import java.sql.Clob;
@@ -31,7 +39,6 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.Collections;
 
 import static org.javalite.common.Inflector.*;
 import static org.javalite.common.Util.blank;
@@ -674,6 +681,42 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             sb.append(", children: ").append(cachedChildren);
         }
         return sb.toString();
+    }
+
+
+    /**
+     * Parses XML into a model. It expects the same structure of XML as the method {@link #toXml(int, boolean, String...)}.
+     * It ignores children and dependencies (for now) if any. This method  will parse the model attributes
+     * from the XML document, and will then call {@link #fromMap(java.util.Map)} method. It does not save data into a database, just sets the
+     * attributes.
+     *
+     * @param xml xml to read model attributes from.
+     */
+    public void fromXml(String xml) {
+
+        try{
+            //such dumb API!
+            Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
+            String topTag = Inflector.underscore(getClass().getSimpleName());
+            Element root = document.getDocumentElement();
+
+            if(!root.getTagName().equals(topTag)){
+                throw new InitException("top node has to match model name: " + topTag);
+            }
+            NodeList childNodes = root.getChildNodes();
+
+            Map<String, String> attributes = new HashMap<String, String>();
+            for(int i = 0; i < childNodes.getLength();i++){
+                Node node  = childNodes.item(i);
+                if(node instanceof Element){
+                    Element child = (Element) node;
+                    attributes.put(child.getTagName(), child.getFirstChild().getNodeValue());//this is even dumber!
+                }
+            }
+            fromMap(attributes);
+        }catch(Exception e){
+            throw  new InitException(e);
+        }
     }
 
     /**
