@@ -32,6 +32,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import java.io.*;
 import java.math.BigDecimal;
 import java.sql.Clob;
@@ -838,7 +839,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
             sw.write("," + (pretty ? "\n  " + indent : "") + "\"children\" : {");
 
-            for (Class childClass : cachedChildren.keySet()) {
+            Iterator it = cachedChildren.keySet().iterator();
+            while (it.hasNext()) {
+                Class childClass = (Class) it.next();
                 String name = Inflector.pluralize(childClass.getSimpleName()).toLowerCase();
                 sw.write((pretty ? "\n" + indent + "    " : "") + "\"" + name + "\" : [");
                 List<String> childrenList = new ArrayList<String>();
@@ -847,6 +850,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 }
                 sw.write(Util.join(childrenList, ","));
                 sw.write((pretty ? "\n" + indent + indent : "") + "]");
+
+                if (it.hasNext()) {
+                    sw.write(",");
+                }
             }
             sw.write((pretty ? "\n" + indent + indent : "") + "}");
         }
