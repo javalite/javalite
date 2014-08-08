@@ -97,9 +97,9 @@ public class Base {
 
 
     /**
-     * Returns connection attached to a current thread and names "default".
+     * Returns connection attached to a current thread and named "default".
      *
-     * @return connection attached to a current thread and names "default".
+     * @return connection attached to a current thread and named "default".
      */
     public static Connection connection() {
         return new DB(DEFAULT_DB_NAME).connection();
