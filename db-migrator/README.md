@@ -1,7 +1,7 @@
 # JavaLite DB-Migrator is a database migration system for Java
 
 Please, see <a href="http://en.wikipedia.org/wiki/Schema_migration">Schema_migration</a> to
-understand what database migration is.
+understand what database migrations are.
 
 ## Maven plugin
 
