@@ -160,3 +160,4 @@ with this plugin to migrate databases in different environments, such as product
 * `migrationsPath` - location of migration files, defaults to  `src/migrations/`
 * `createSql` - create database SQL, defaults to `create database {$your database}`
 * `dropSql` - drop database SQL, defaults to `drop database {$your database}`
+* `encoding` - encoding to use when reading migration files. Defaults to UTF-8 if missing

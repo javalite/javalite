@@ -19,6 +19,12 @@ public abstract class AbstractMigrationMojo extends AbstractMojo {
      */
     protected MavenProject project;
 
+
+    /**
+     * @parameter
+     */
+    private String encoding;
+
     /**
      * @parameter
      */
@@ -114,6 +120,10 @@ public abstract class AbstractMigrationMojo extends AbstractMojo {
 
     public String getUsername() {
         return username;
+    }
+
+    public String getEncoding() {
+        return encoding;
     }
 
     public String getPassword() {

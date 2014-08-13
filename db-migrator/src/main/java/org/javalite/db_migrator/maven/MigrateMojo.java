@@ -16,7 +16,7 @@ public class MigrateMojo extends AbstractMigrationMojo {
         getLog().info("Migrating " + getUrl() + " using migrations at " + getMigrationsPath());
         try{
             Base.open(getDriver(), getUrl(), getUsername(), getPassword());
-            new MigrationManager(getMigrationsPath()).migrate(getLog());
+            new MigrationManager(getMigrationsPath()).migrate(getLog(), getEncoding());
         }catch(Exception e){
             throw new MojoExecutionException("Failed to migrate database " + getUrl(), e);
         }

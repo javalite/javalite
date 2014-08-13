@@ -38,7 +38,7 @@ public class MySQLMigrationSpec {
 
     @Test
     public void shouldApplyPendingMigrations() {
-        migrationManager.migrate(new MockLog());
+        migrationManager.migrate(new MockLog(), null);
         a(count(VersionStrategy.VERSION_TABLE)).shouldBeEqual(4);
         a(count("books")).shouldBeEqual(9);
         a(count("authors")).shouldBeEqual(2);

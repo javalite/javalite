@@ -50,7 +50,7 @@ public class MigrationManager {
     /**
      * Migrates the database to the latest version, enabling migrations if necessary.
      */
-    public void migrate(Log log) {
+    public void migrate(Log log, String encoding) {
         // Are migrations enabled?
         if (!isMigrationsEnabled()) {
             createSchemaVersionTable();
@@ -71,7 +71,7 @@ public class MigrationManager {
                 log.info("Running migration " + currentMigration.getName());
                 long start = System.currentTimeMillis();
 
-                currentMigration.migrate();
+                currentMigration.migrate(encoding);
                 versionStrategy.recordMigration(currentMigration.getVersion(), new Date(start), (start - System.currentTimeMillis()));
                 Base.commitTransaction();
             }

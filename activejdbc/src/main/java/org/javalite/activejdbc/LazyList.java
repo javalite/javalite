@@ -131,7 +131,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
 
 
     /**
-     * Use this method includes associated objects. This method will eagerly load associated models of
+     * This method includes associated objects. It will eagerly load associated models of
      * models selected by the query. For instance, if there are models <code>Author</code>, <code>Post</code>
      * and <code>Comment</code>, where <code>Author</code> has many <code>Post</code>s and <code> Post</code>
      * has many <code>Comment</code>s, then this query:

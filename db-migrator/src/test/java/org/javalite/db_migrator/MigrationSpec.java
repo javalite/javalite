@@ -30,7 +30,7 @@ public class MigrationSpec {
 
         Migration m = new Migration("123", new File("src/test/resources/sql/simple.sql"));
 
-        m.migrate();
+        m.migrate(null);
         List statements = getStatements();
 
         a(statements.size()).shouldBeEqual(2);
@@ -46,7 +46,7 @@ public class MigrationSpec {
     @Test
     public void shouldHandleComplexCommands() throws Exception {
         Migration m = new Migration("123", new File("src/test/resources/sql/complex.sql"));
-        m.migrate();
+        m.migrate(null);
         List statements = getStatements();
         a(statements.size()).shouldBeEqual(1);
         a(statements.get(0)).shouldBeEqual("update dav_file set parent = ( select id from ( select id from dav_file where name = '__SITE_PROTECTED__' ) as x ) where ( name = 'templates' and parent is null ) or ( name = 'velocity' and parent is null ) or ( name = 'tags' and parent is null ) or ( name = 'ctd' and parent is null )");
@@ -55,7 +55,7 @@ public class MigrationSpec {
     @Test
     public void shouldBatchMySQLFunctionsAndProcedures() throws Exception {
         Migration m = new Migration("123", new File("src/test/resources/sql/stored-procedure-mysql.sql"));
-        m.migrate();
+        m.migrate(null);
         List statements = getStatements();
         a(statements.size()).shouldBeEqual(3);
         a(statements.get(0)).shouldBeEqual("CREATE FUNCTION hello (s CHAR(20)) RETURNS CHAR(50) DETERMINISTIC RETURN CONCAT('Hello, ',s,'!')");
@@ -66,7 +66,7 @@ public class MigrationSpec {
     @Test
     public void shouldBatchPostgresFunctionsAndProcedures() throws Exception {
         Migration m = new Migration("123", new File("src/test/resources/sql/stored-procedure-postgresql.sql"));
-        m.migrate();
+        m.migrate(null);
         List statements = getStatements();
         a(statements.size()).shouldBeEqual(4);
         a(statements.get(0)).shouldBeEqual("CREATE FUNCTION getQtyOrders(customerID int) RETURNS int AS $$ DECLARE qty int; BEGIN SELECT COUNT(*) INTO qty FROM Orders WHERE accnum = customerID; RETURN qty; END; $$ LANGUAGE plpgsql");
@@ -78,7 +78,7 @@ public class MigrationSpec {
     @Test
     public void shouldUseTheSameDelimiterUntilExplicitlyChanged() throws Exception {
         Migration m = new Migration("123", new File("src/test/resources/sql/function-mysql.sql"));
-        m.migrate();
+        m.migrate(null);
         List statements = getStatements();
         a(statements.size()).shouldBeEqual(3);
         a(statements.get(0)).shouldBeEqual("DROP FUNCTION IF EXISTS simpleFunction");
@@ -89,7 +89,7 @@ public class MigrationSpec {
     @Test
     public void shouldExecuteLastStatementWhenDelimiterIsMissing() throws Exception {
         Migration m = new Migration("123", new File("src/test/resources/sql/missing-last-deliminator.sql"));
-        m.migrate();
+        m.migrate(null);
         List statements = getStatements();
         a(statements.size()).shouldBeEqual(2);
         a(statements.get(0)).shouldBeEqual("create table users ( username varchar not null, password varchar not null )");

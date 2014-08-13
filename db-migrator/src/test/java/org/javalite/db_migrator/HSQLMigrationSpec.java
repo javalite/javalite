@@ -26,7 +26,7 @@ public class HSQLMigrationSpec {
 
     @Test
     public void shouldApplyPendingMigrations() {
-        migrationManager.migrate(new MockLog());
+        migrationManager.migrate(new MockLog(), null);
         a(firstCell("select count(version) from schema_version")).shouldBeEqual(2);
     }
 }
