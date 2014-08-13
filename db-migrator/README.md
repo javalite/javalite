@@ -145,7 +145,7 @@ where user, password and driver are configured as project properties.
     </executions>
 </plugin>
 ```
-As you can see, the plugin is tied to validate phase, which will ensure that it will migrate
+As you can see, the plugin is tied to `validate` phase, which will ensure that it will migrate
 schema at the very start of the build. Add more executions to run against multiple databases. You can use Maven profiles
 with this plugin to migrate databases in different environments, such as production.
 
