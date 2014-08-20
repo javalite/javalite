@@ -189,6 +189,7 @@
         </profile>
     </profiles>
     <build>
+        <sourceDirectory>src/main/java</sourceDirectory>
         <testResources>
             <testResource>
                 <directory>src/test/resources</directory>

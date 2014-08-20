@@ -1942,6 +1942,18 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
+     * this method returns all records with the exact Model. it can find any
+     * kind of Model which extends Model.
+     * @param clazz
+     * @param query
+     * @param params
+     * @return
+     */
+    public static <T extends Model> LazyList<T> findBySql(Class<T> clazz, String query, Object... params) {
+        return new LazyList<T>(query, params, Registry.instance().getMetaModel(clazz));
+    }
+
+    /**
      * Adds a new child dependency. This method works for all three association types:
      * <ul>
      * <li>One to many - argument model should be a child in the relationship. This method will immediately set it's
