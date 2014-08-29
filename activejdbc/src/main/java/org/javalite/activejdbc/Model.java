@@ -32,6 +32,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import java.io.*;
 import java.math.BigDecimal;
 import java.sql.Clob;
@@ -838,7 +839,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
             sw.write("," + (pretty ? "\n  " + indent : "") + "\"children\" : {");
 
-            for (Class childClass : cachedChildren.keySet()) {
+            Iterator it = cachedChildren.keySet().iterator();
+            while (it.hasNext()) {
+                Class childClass = (Class) it.next();
                 String name = Inflector.pluralize(childClass.getSimpleName()).toLowerCase();
                 sw.write((pretty ? "\n" + indent + "    " : "") + "\"" + name + "\" : [");
                 List<String> childrenList = new ArrayList<String>();
@@ -847,6 +850,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 }
                 sw.write(Util.join(childrenList, ","));
                 sw.write((pretty ? "\n" + indent + indent : "") + "]");
+
+                if (it.hasNext()) {
+                    sw.write(",");
+                }
             }
             sw.write((pretty ? "\n" + indent + indent : "") + "}");
         }
@@ -1932,6 +1939,29 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public static  <T extends Model> LazyList<T>   findAll() {
         return new LazyList(null, new Object[]{}, getMetaModel());
+    }
+
+    /**
+     * this method returns all records with the exact Model. it can find any
+     * kind of Model which extends Model.
+     * @param clazz
+     * @param subQuery
+     * @param params
+     * @return
+     */
+    public static <T extends Model> LazyList<T> findBySQL(Class<T> clazz, String subQuery, Object... params) {
+        return new LazyList<T>(subQuery, params, Registry.instance().getMetaModel(clazz));
+    }
+
+    /**
+     * this method returns all records with the exact Model. it can find any kind of Model which extends Model.
+     * @param clazz
+     * @param subQuery
+     * @param params
+     * @return
+     */
+    public static <T extends Model> LazyList<T> findByFullSQL(Class<T> clazz, String fullQuery, Object... params) {
+        return new LazyList<T>(false, Registry.instance().getMetaModel(clazz), fullQuery, params);
     }
 
     /**
