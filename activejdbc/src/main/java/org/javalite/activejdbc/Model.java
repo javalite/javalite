@@ -1945,12 +1945,23 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * this method returns all records with the exact Model. it can find any
      * kind of Model which extends Model.
      * @param clazz
-     * @param query
+     * @param subQuery
      * @param params
      * @return
      */
-    public static <T extends Model> LazyList<T> findBySql(Class<T> clazz, String query, Object... params) {
-        return new LazyList<T>(query, params, Registry.instance().getMetaModel(clazz));
+    public static <T extends Model> LazyList<T> findBySQL(Class<T> clazz, String subQuery, Object... params) {
+        return new LazyList<T>(subQuery, params, Registry.instance().getMetaModel(clazz));
+    }
+
+    /**
+     * this method returns all records with the exact Model. it can find any kind of Model which extends Model.
+     * @param clazz
+     * @param subQuery
+     * @param params
+     * @return
+     */
+    public static <T extends Model> LazyList<T> findByFullSQL(Class<T> clazz, String fullQuery, Object... params) {
+        return new LazyList<T>(false, Registry.instance().getMetaModel(clazz), fullQuery, params);
     }
 
     /**
