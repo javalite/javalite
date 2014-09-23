@@ -56,6 +56,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     private MetaModel metaModelLocal;
     private Map<Class, Model> cachedParents = new HashMap<Class, Model>();
     private Map<Class, List<Model>> cachedChildren = new HashMap<Class, List<Model>>();
+    private boolean manageTime = true;
 
     protected Errors errors;
 
@@ -213,7 +214,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to self, so you can string these methods one after another.
      */
     public Model set(String attribute, Object value) {
-        if(attribute.equalsIgnoreCase("created_at")) throw new IllegalArgumentException("cannot set 'created_at'");
+        if(attribute.equalsIgnoreCase("created_at") && manageTime) throw new IllegalArgumentException("cannot set 'created_at'");
 
         getMetaModelLocal().checkAttributeOrAssociation(attribute);
 
@@ -2291,7 +2292,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     private void doCreatedAt() {
-        if(getMetaModelLocal().hasAttribute("created_at")){
+        if(getMetaModelLocal().hasAttribute("created_at") && manageTime){
             //clean just in case.
             attributes.remove("created_at");
             attributes.remove("CREATED_AT");
@@ -2300,7 +2301,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     private void doUpdatedAt() {
-        if(getMetaModelLocal().hasAttribute("updated_at")){
+        if(getMetaModelLocal().hasAttribute("updated_at") && manageTime){
             //clean just in case.
             attributes.remove("updated_at");
             attributes.remove("UPDATED_AT");
@@ -2314,7 +2315,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         MetaModel metaModel = getMetaModelLocal();
         String query = "UPDATE " + metaModel.getTableName() + " SET ";
-        List<String> names = metaModel.getAttributeNamesSkipGenerated();
+        List<String> names = metaModel.getAttributeNamesSkipGenerated(manageTime);
         for (int i = 0; i < names.size(); i++) {
             String name = names.get(i);
             query += name + "= ?";
@@ -2323,7 +2324,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             }
         }
 
-        List values = getAttributeValuesSkipGenerated();
+        List values = getAttributeValuesSkipGenerated(names);
 
         if(metaModel.hasAttribute("updated_at")){
             query += ", updated_at = ? ";
@@ -2354,8 +2355,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return updated > 0;
     }
 
-    private List getAttributeValuesSkipGenerated() {
-        List<String> names = getMetaModelLocal().getAttributeNamesSkipGenerated();
+    private List getAttributeValuesSkipGenerated(List<String> names) {
         List values = new ArrayList();
         for (String name : names) {
             values.add(get(name));
@@ -2415,6 +2415,16 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     protected void setChildren(Class childClass, List<Model> children) {
         cachedChildren.put(childClass, children);
+    }
+
+    /**
+     * Turns off automatic management of time-related attributes <code>created_at</code> and <code>updated_at</code>.
+     * If management of time attributes is turned off,
+     *
+     * @param manage if true, the attributes are managed by the model. If false, they are managed by developer.
+     */
+    public void manageTime(boolean manage) {
+        this.manageTime = manage;
     }
 
     static class ClassGetter extends SecurityManager {

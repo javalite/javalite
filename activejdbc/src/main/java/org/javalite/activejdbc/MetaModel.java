@@ -115,14 +115,20 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
 
     /**
      * Finds all attribute names except generated like id, created_at, updated_at and record_version.
+     *
+     * @param managed if true, time managed attributes will not be included (they are managed automatically).
      * @return list of all attributes except id, created_at, updated_at and record_version. 
      */
-    public List<String> getAttributeNamesSkipGenerated() {
+    public List<String> getAttributeNamesSkipGenerated(boolean managed) {
         //TODO: can cache this
         List<String> attributes = getAttributeNames();
         attributes.remove(getIdName().toLowerCase());
-        attributes.remove("created_at");
-        attributes.remove("updated_at");
+
+        if(managed){
+            attributes.remove("created_at");
+            attributes.remove("updated_at");
+        }
+
         attributes.remove(versionColumn);
         return attributes;
     }
