@@ -114,10 +114,22 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
     }
 
     /**
-     * Finds all attribute names except generated like id, created_at, updated_at and record_version.
+     * Convenience method. Calls {@link #getAttributeNamesSkipGenerated(boolean)} and passes <code>true</code> as argument.
      *
-     * @param managed if true, time managed attributes will not be included (they are managed automatically).
-     * @return list of all attributes except id, created_at, updated_at and record_version. 
+     * @return list of all attributes except id, created_at, updated_at and record_version.
+     */
+    public List<String> getAttributeNamesSkipGenerated() {
+        return getAttributeNamesSkipGenerated(true);
+    }
+
+    /**
+     * Finds all attribute names except managed like <code>id</code>,
+     * <code>created_at</code>, <code>updated_at</code> and <code>record_version</code>, depending on argument.
+     *
+     * @param managed if true, time managed attributes <code>created_at</code> and <code>updated_at</code> will not be included (they are managed automatically).
+     *                If false (not managed) <code>created_at</code> and <code>updated_at</code> will be included in output.
+     * @return list of all attributes except <code>id</code>, <code>created_at</code>, <code>updated_at</code> and
+     * <code>record_version</code>, depending on argument.
      */
     public List<String> getAttributeNamesSkipGenerated(boolean managed) {
         //TODO: can cache this
