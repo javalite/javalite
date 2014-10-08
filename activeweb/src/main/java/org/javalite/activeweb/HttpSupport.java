@@ -790,7 +790,7 @@ public class HttpSupport {
             if(key.startsWith(hashName)){
                 String name = parseHashName(key);
                 if(name != null){
-                    hash.put(name, params.get(key)[0]);
+                    hash.put(name, param(key));
                 }
             }
         }
