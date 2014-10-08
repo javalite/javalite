@@ -23,3 +23,8 @@ https://www.youtube.com/watch?v=YX1TAtuSqQE
 ## Documentation
 
 All documentation is placed here: [http://javalite.io](http://javalite.io)
+
+
+## Acknowledgement
+
+Special thanks to folks are [IntelliJ](http://www.jetbrains.com/) for granting a license to this project
