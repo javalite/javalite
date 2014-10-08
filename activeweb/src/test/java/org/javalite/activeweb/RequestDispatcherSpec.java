@@ -118,7 +118,7 @@ public class RequestDispatcherSpec extends RequestSpec {
         config.addInitParameter("exclusions", "css,images,js");
         dispatcher.init(config);
         dispatcher.doFilter(request, response, badFilterChain);
-        a(response.getContentAsString()).shouldBeEqual("I'm a bad... bad exception!");
+        a(response.getContentAsString()).shouldContain("I'm a bad... bad exception!");
     }
 
     @Test
@@ -147,7 +147,7 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         a(response.getContentType()).shouldBeEqual("text/html");
 
-        a(response.getContentAsString()).shouldBeEqual("/ by zero");// this is coming from a system/error.ftl
+        a(response.getContentAsString()).shouldContain("/ by zero");// this is coming from a system/error.ftl
         a(response.getStatus()).shouldBeEqual(500);
     }
 
@@ -349,5 +349,29 @@ public class RequestDispatcherSpec extends RequestSpec {
         request.setMethod("GET");
         dispatcher.doFilter(request, response, filterChain);
         a(response.getContentAsString()).shouldBeEqual("this is a  text page");
+    }
+
+
+    @Test
+    public void shouldUseDefaultLayoutForApplicationError() throws IOException, ServletException {
+        request.setServletPath("/error");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+        a(response.getContentAsString()).shouldContain("this is a header");
+        a(response.getContentAsString()).shouldContain("this is an application error");
+        a(response.getContentAsString()).shouldContain("this is a footer");
+    }
+
+
+    @Test
+    public void shouldTurnOffDefaultLayoutForApplicationError() throws IOException, ServletException {
+        request.setServletPath("/error");
+        request.setMethod("GET");
+        Configuration.setUseDefaultLayoutForErrors(false);
+        dispatcher.doFilter(request, response, filterChain);
+        a(response.getContentAsString()).shouldNotContain("this is a header");
+        a(response.getContentAsString()).shouldContain("this is an application error");
+        a(response.getContentAsString()).shouldNotContain("this is a footer");
+        Configuration.setUseDefaultLayoutForErrors(true);
     }
 }

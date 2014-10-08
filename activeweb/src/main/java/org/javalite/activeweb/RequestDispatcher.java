@@ -219,7 +219,7 @@ public class RequestDispatcher implements Filter {
         }catch(ViewException e){
             renderSystemError("/system/error", useDefaultLayoutForErrors() ? getDefaultLayout():null, 500, e);
         }catch (Throwable e) {
-            renderSystemError(e);
+            renderSystemError("/system/error", useDefaultLayoutForErrors() ? getDefaultLayout():null, 500, e);
         }finally {
            Context.clear();
             List<String> connectionsRemaining = DB.getCurrrentConnectionNames();

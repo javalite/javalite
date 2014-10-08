@@ -81,7 +81,7 @@ public class RouterWildcardSpec extends RequestSpec {
 
         request.setServletPath("/greeting/1/2/3/4/tada");
         execDispatcher();
-        a(responseContent()).shouldBeEqual("Cannot have URI segments past wild card");
+        a(responseContent()).shouldContain("Cannot have URI segments past wild card");
     }
 
     @Test

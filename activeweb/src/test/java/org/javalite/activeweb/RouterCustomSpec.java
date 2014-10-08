@@ -211,7 +211,7 @@ public class RouterCustomSpec extends RequestSpec {
         request.setServletPath("/photos/12");
         execDispatcher();
 
-        a(response.getContentAsString()).shouldBeEqual("Cannot combine {controller} segment and .to(\"...\") method. Failed route: /photos/{controller}");
+        a(response.getContentAsString()).shouldContain("Cannot combine {controller} segment and .to(\"...\") method. Failed route: /photos/{controller}");
 
     }
 
@@ -226,7 +226,7 @@ public class RouterCustomSpec extends RequestSpec {
 
         request.setServletPath("/photos/12");
         execDispatcher();
-        a(response.getContentAsString()).shouldBeEqual("Cannot combine {action} segment and .action(\"...\") method. Failed route: /photos/{action}");
+        a(response.getContentAsString()).shouldContain("Cannot combine {action} segment and .action(\"...\") method. Failed route: /photos/{action}");
     }
 
 
