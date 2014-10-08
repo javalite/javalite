@@ -215,4 +215,16 @@ public class HttpSupportSpec extends RequestSpec{
         String html = response.getContentAsString();
         a(html).shouldEqual("2");
     }
+
+    @Test //https://github.com/javalite/activeweb/issues/174
+    public void shouldParseHasFromRequest() throws IOException, ServletException {
+        request.setServletPath("/hash/index");
+        request.setMethod("POST");
+        request.addParameter("account[name]", "John");
+        request.addParameter("account[number]", "123");
+        dispatcher.doFilter(request, response, filterChain);
+        String html = response.getContentAsString();
+        a(html).shouldContain("name: John");
+        a(html).shouldContain("name: John");
+    }
 }

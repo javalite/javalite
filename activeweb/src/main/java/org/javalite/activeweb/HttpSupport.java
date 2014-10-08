@@ -29,6 +29,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.javalite.common.Collections.map;
 
@@ -763,6 +765,59 @@ public class HttpSupport {
         return RequestUtils.params();
     }
 
+    /**
+     * Returns a map parsed from a request if parameter names have a "hash" syntax:
+     *
+     *  <pre>
+     *  &lt;input type=&quot;text&quot; name=&quot;account[name]&quot; /&gt;
+        &lt;input type=&quot;text&quot; name=&quot;account[number]&quot; /&gt;
+     * </pre>
+     *
+     * will result in a map where keys are names of hash elements, and values are values of these elements from request.
+     * For the example above, the map will have these values:
+     *
+     * <pre>
+     *     { "name":"John", "number": "123" }
+     * </pre>
+     *
+     * @param hashName - name of a hash. In the example above, it will be "account".
+     * @return map with name/value pairs parsed from request.
+     */
+    public Map<String, String> getMap(String hashName) {
+        Map<String, String[]>  params = params();
+        Map<String, String>  hash = new HashMap<String, String>();
+        for(String key:params.keySet()){
+            if(key.startsWith(hashName)){
+                String name = parseHashName(key);
+                if(name != null){
+                    hash.put(name, params.get(key)[0]);
+                }
+            }
+        }
+        return hash;
+    }
+
+    private static Pattern hashPattern = Pattern.compile("\\[.*\\]");
+
+    /**
+     * Parses name from hash syntax.
+     *
+     * @param param something like this: <code>person[account]</code>
+     * @return name of hash key:<code>account</code>
+     */
+    private static String parseHashName(String param) {
+        Matcher matcher = hashPattern.matcher(param);
+        String name = null;
+        while (matcher.find()){
+            name = matcher.group(0);
+        }
+        return name == null? null : name.substring(1, name.length() - 1);
+    }
+
+
+    public static void main(String[] args){
+        System.out.println(HttpSupport.parseHashName("account[name]"));
+    }
 
     /**
      * Sets character encoding for request. Has to be called before reading any parameters of getting input
