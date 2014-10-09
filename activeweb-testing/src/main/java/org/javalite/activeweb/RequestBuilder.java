@@ -46,6 +46,7 @@ public class RequestBuilder {
     private List<FormItem> formItems =  new ArrayList<FormItem>();
     private String id;
     private String queryString;
+    private String format;
 
     public RequestBuilder(String controllerPath, SessionTestFacade sessionFacade, boolean integrateViews) {
         this.controllerPath = controllerPath;
@@ -317,6 +318,7 @@ public class RequestBuilder {
 
         request.setContextPath("/test_context");
         Context.setHttpRequest(request);
+        Context.setFormat(format);
 
 
         if(sessionFacade != null)
@@ -408,11 +410,24 @@ public class RequestBuilder {
      * Sets ID for this request. This method will convert ID value to string before executing a controller.
      *
      * @param id id for this request;  this value is accessible inside controller with <code>getId()</code> method.
-     * @return
      */
     public RequestBuilder id(Object id) {
         if(id == null) throw new IllegalArgumentException("id can't be null");
         this.id = id.toString();
+        return this;
+    }
+
+    /**
+     * Sets format for this request. Format is the part of URI that is trailing after a last dot, as in: /books.xml,
+     * here "xml" is a format.
+     *
+     * @see {@link HttpSupport#format()}
+     *
+     * @param format format for this request.
+     */
+    public RequestBuilder format(String format) {
+        if(format == null) throw new IllegalArgumentException("format can't be null");
+        this.format = format;
         return this;
     }
 

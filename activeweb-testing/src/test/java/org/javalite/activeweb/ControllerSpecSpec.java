@@ -46,13 +46,13 @@ public class ControllerSpecSpec {
     @Test
     public void shouldGenerateControllerPath(){
         CookieControllerSpec spec = new CookieControllerSpec();
-        //a(spec.getControllerPath()).shouldBeEqual("/cookie");
+        a(spec.getControllerPath()).shouldBeEqual("/cookie");
     }
 
     @Test
     public void shouldGenerateControllerPathForControllerInSubPackage(){
         HelloControllerSpec spec = new HelloControllerSpec();
-        //a(spec.getControllerPath()).shouldBeEqual("/test/hello");
+        a(spec.getControllerPath()).shouldBeEqual("/test/hello");
     }
 
 
