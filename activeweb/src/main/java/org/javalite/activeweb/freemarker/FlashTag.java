@@ -34,11 +34,11 @@ import static org.javalite.common.Util.blank;
 public class FlashTag implements TemplateDirectiveModel {
 
     public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body) throws TemplateException, IOException {
-        Util.validateParamsPresence(params, "name");
         try {
             SimpleHash f = (SimpleHash)env.getVariable("flasher");
             if (f != null) {
                 if(blank(body)){
+                    Util.validateParamsPresence(params, "name");
                     Object flashMessage = f.get(params.get("name").toString());
                     if (flashMessage != null) {
                         env.getOut().write(flashMessage.toString());

@@ -1,3 +1,3 @@
-<@flash name="warning">
+<@flash>
 <div class="warning">${message}</div>
 </@flash>

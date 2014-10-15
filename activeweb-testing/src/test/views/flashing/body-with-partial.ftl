@@ -1,3 +1,3 @@
-<@flash name="warning">
+<@flash>
 <@render partial="message"/>
 </@flash>
