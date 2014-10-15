@@ -42,4 +42,14 @@ public class FlashingController extends AppController {
         flash("one", 1, "two", 2);
     }
 
+
+    public void body(){
+        view("message", "hi, there!");
+        flash("warning");
+    }
+
+    public void bodyWithPartial(){
+        view("message", "hi, there!");
+        flash("warning");
+    }
 }

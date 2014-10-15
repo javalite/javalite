@@ -106,16 +106,18 @@ public class HttpSupport {
     }
 
     /**
-     * Convenience method, calls {@link #assign(String, Object)} internally.
+     * Convenience method to pass multiple names and corresponding values to a view.
      *
-     *
+     * @param values - pairs of names and values. such as: name1, value1, name2, value2, etc. Number of arguments must be even.
      */
     protected void view(Object ... values){
         view(map(values));
     }
 
     /**
-     * Convenience method, takes in a map of values to flash.
+     * Flash method to display multiple flash messages.
+     * Takes in a map of names and values for a flash.
+     * Keys act like names, and values act like... ehr.. values.
      *
      * @see #flash(String, Object)
      *
@@ -128,8 +130,9 @@ public class HttpSupport {
     }
 
     /**
-     * Convenience method, takes in a vararg of values to flash.
-     * Number of values must be even.
+     * Flash method to display multiple flash messages.
+     * Takes in a vararg of values for flash. Number of arguments must be even.
+     * Format: name, value, name, value, etc.
      *
      * @see #flash(String, Object)
      * @param values values to flash.
@@ -139,12 +142,33 @@ public class HttpSupport {
     }
 
     /**
+     * Sets a flash name for a flash with  a body.
+     * Here is a how to use a tag with a body:
+     *
+     * <pre>
+     * &lt;@flash name=&quot;warning&quot;&gt;
+         &lt;div class=&quot;warning&quot;&gt;${message}&lt;/div&gt;
+       &lt;/@flash&gt;
+     * </pre>
+     *
+     * If body refers to variables (as in this example), then such variables need to be passed in to the template as usual using
+     * the {@link #view(String, Object)} method.
+     *
+     * @param name name of a flash
+     */
+    @SuppressWarnings("unchecked")
+    protected void flash(String name){
+        flash(name, null);
+    }
+
+    /**
      * Sends value to flash. Flash survives one more request.  Using flash is typical
      * for POST/GET pattern,
      *
      * @param name name of value to flash
-     * @param value value to live for one more request in curent session.
+     * @param value value to live for one more request in current session.
      */
+    @SuppressWarnings("unchecked")
     protected void flash(String name, Object value) {
         if (session().get("flasher") == null) {
             session().put("flasher", new HashMap());

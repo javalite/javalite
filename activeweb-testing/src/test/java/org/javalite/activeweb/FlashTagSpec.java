@@ -22,7 +22,7 @@ import org.junit.Test;
 /**
  * @author Igor Polevoy
  */
-public class FlashSpec extends IntegrationSpec {
+public class FlashTagSpec extends IntegrationSpec {
 
     @Before
     public void before(){        
@@ -31,13 +31,9 @@ public class FlashSpec extends IntegrationSpec {
 
     @Test
     public void shouldPropagateFlashMessageToNextRequestOnly(){
-
         controller("flashing").get("create");
-
         a(session().get("flasher")).shouldNotBeNull();
-
         a(flash("saved")).shouldBeEqual("your data has been saved");
-
 
         controller("flashing").integrateViews().get("list");
         a(responseContent()).shouldBeEqual("hello from flashing list: your data has been saved");
@@ -48,20 +44,18 @@ public class FlashSpec extends IntegrationSpec {
         a(responseContent()).shouldBeEqual("hello from flashing list: ");
     }
 
-
     @Test
     public void shouldPropagateFlashAsMap(){
 
         controller("flashing").get("as-map");
-
         a(session().get("flasher")).shouldNotBeNull();
         a(flash("one")).shouldBeEqual(1);
         a(flash("two")).shouldBeEqual(2);
 
         controller("flashing").get("index");
         a(flash("one")).shouldBeNull();
+        a(flash("two")).shouldBeNull();
     }
-
 
     @Test
     public void shouldPropagateFlashAsVararg(){
@@ -76,4 +70,15 @@ public class FlashSpec extends IntegrationSpec {
         a(flash("one")).shouldBeNull();
     }
 
+    @Test
+    public void shouldRenderFlashWithBody(){
+        controller("flashing").integrateViews().get("body");
+        a(responseContent()).shouldBeEqual("<div class=\"warning\">hi, there!</div>\n");
+    }
+
+    @Test
+    public void shouldRenderFlashWithNestedPartial(){
+        controller("flashing").integrateViews().get("body-with-partial");
+        a(responseContent()).shouldBeEqual("<div class=\"warning\">hi, there!</div>");
+    }
 }

@@ -16,25 +16,35 @@ limitations under the License.
 package org.javalite.activeweb.freemarker;
 
 
+import freemarker.core.Environment;
+import freemarker.template.*;
 import org.javalite.activeweb.ViewException;
-import freemarker.template.SimpleHash;
 
-import java.io.Writer;
+import java.io.IOException;
 import java.util.Map;
 
+import static org.javalite.common.Util.blank;
+
 /**
+ * This tag allows to display a message on a page that lives for one more request.
+ * For more information, please refer to <a href="http://javalite.io/flash_tag">FlashTag</a>.
+ *
  * @author Igor Polevoy
  */
-public class FlashTag extends FreeMarkerTag {
-    @Override
-    protected void render(Map params, String body, Writer writer)throws Exception{
-        validateParamsPresence(params, "name");
-        SimpleHash f = (SimpleHash) get("flasher");
+public class FlashTag implements TemplateDirectiveModel {
+
+    public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body) throws TemplateException, IOException {
+        Util.validateParamsPresence(params, "name");
         try {
+            SimpleHash f = (SimpleHash)env.getVariable("flasher");
             if (f != null) {
-                Object flashMessage = f.get(params.get("name").toString());
-                if (flashMessage != null) {
-                    writer.write(flashMessage.toString());
+                if(blank(body)){
+                    Object flashMessage = f.get(params.get("name").toString());
+                    if (flashMessage != null) {
+                        env.getOut().write(flashMessage.toString());
+                    }
+                }else{
+                    body.render(env.getOut());
                 }
             }
         } catch (Exception e) {
