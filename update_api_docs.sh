@@ -1,8 +1,7 @@
 mvn javadoc:aggregate
 cp -rf target/site/apidocs/* ../javalite.github.io/activeweb/
-
-echo "************************************************************************"
-echo "Do not forget to push changes in: ../javalite.github.io/activeweb/"
-echo "************************************************************************"
-
+cd ../javalite.github.io/activeweb/
+git add .
+git commit -m "update JavaDoc"
+git push origin master
 
