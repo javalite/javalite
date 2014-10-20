@@ -350,15 +350,15 @@ public class LazyList<T extends Model> extends AbstractList<T>{
         List parentIds = collect("parent_id", "parent_type", parentClassName);
         ArrayList noDuplicateList = new ArrayList(new HashSet(parentIds));
 
-        for(Model parent: new LazyList<Model>(parentMM.getIdName() + " IN (" + Util.join(noDuplicateList, ", ") + ")", parentMM)){
-            parentsHasByIds.put(parentClassName+":"+parent.getId(), parent);
+        for(Model parent: new LazyList<Model>(parentMM.getIdName() + " IN (" + questions(noDuplicateList.size()) + ")", parentMM, noDuplicateList.toArray())){
+            parentsHasByIds.put(parentClassName + ":" + parent.getId(), parent);
         }
 
         //now that we have the parents in the has, we need to distribute them into list of children that are
         //stored in the delegate.
         for(Model child: delegate){
             Object fk = child.get("parent_id");
-            Model parent = parentsHasByIds.get(parentClassName+":"+fk);
+            Model parent = parentsHasByIds.get(parentClassName + ":" + fk);
             child.setCachedParent(parent); //this could be null, which is fine
         }
     }
@@ -378,7 +378,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
         List parentIds = collect(fkName);
         ArrayList noDuplicateList = new ArrayList(new HashSet(parentIds));
 
-        for(Model parent: new LazyList<Model>(parentMM.getIdName() + " IN (" + Util.join(noDuplicateList, ", ") + ")", parentMM)){
+        for(Model parent: new LazyList<Model>(parentMM.getIdName() + " IN (" + questions(noDuplicateList.size()) + ")", parentMM, noDuplicateList.toArray())){
                parentsHasByIds.put(parent.getId(), parent);
         }
 
@@ -431,21 +431,26 @@ public class LazyList<T extends Model> extends AbstractList<T>{
     }
 
 
+    private String questions(int number) {
+        String res = "";
+        for (int i = 0; i < number; i++) {
+            res += "?";
+            if (i < (number - 1)) {
+                res += ",";
+            }
+        }
+        return res;
+    }
 
     private void processPolymorphicChildren(OneToManyPolymorphicAssociation association, Class childClass) {
         if (delegate.size() == 0) {//no need to process children if no models selected.
             return;
         }
-
         MetaModel childMM = Registry.instance().getMetaModel(childClass);
-        String fkName = association.getTarget();
-
         Map<Object, List<Model>> childrenByParentId = new HashMap<Object, List<Model>>();
-
         List ids = collect(metaModel.getIdName());
 
-
-        for (Model child : new LazyList<Model>("parent_id IN (" + Util.join(ids, ", ") + ") AND parent_type = '" + association.getTypeLabel() + "'", childMM).orderBy(childMM.getIdName())) {
+        for (Model child : new LazyList<Model>("parent_id IN (" + questions(ids.size()) + ") AND parent_type = '" + association.getTypeLabel() + "'", childMM, ids.toArray()).orderBy(childMM.getIdName())) {
             if (childrenByParentId.get(child.get("parent_id")) == null) {
                 childrenByParentId.put(child.get("parent_id"), new SuperLazyList<Model>());
             }
@@ -462,25 +467,19 @@ public class LazyList<T extends Model> extends AbstractList<T>{
 
 
     private void processChildren(OneToManyAssociation association, Class childClass) {
-
         if(delegate.size() == 0){//no need to process children if no models selected.
             return;
         }
-
         final MetaModel childMM = Registry.instance().getMetaModel(childClass);
         final String fkName = association.getFkName();
-
         final Map<Object, List<Model>> childrenByParentId = new HashMap<Object, List<Model>>();
-
         List ids = collect(metaModel.getIdName());
-
-        for(Model child: new LazyList<Model>(fkName + " IN (" + Util.join(ids, ", ") + ")" , childMM).orderBy(childMM.getIdName())){
+        for(Model child: new LazyList<Model>(fkName + " IN (" + questions(ids.size()) + ")" , childMM, ids.toArray()).orderBy(childMM.getIdName())){
              if(childrenByParentId.get(child.get(fkName)) == null){
                     childrenByParentId.put(child.get(fkName), new SuperLazyList<Model>());
              }
             childrenByParentId.get(child.get(fkName)).add(child);
         }
-
         for(T parent : delegate){
             List<Model> children = childrenByParentId.get(parent.getId());
             if(children != null){
@@ -493,19 +492,13 @@ public class LazyList<T extends Model> extends AbstractList<T>{
         if(delegate.size() == 0){//no need to process other if no models selected.
             return;
         }
-
         final MetaModel childMM = Registry.instance().getMetaModel(childClass);
         final Map<Object, List<Model>> childrenByParentId = new HashMap<Object, List<Model>>();
-
         List ids = collect(metaModel.getIdName());
-        
         String sql =  "SELECT " + association.getTarget() + ".*, t." + association.getSourceFkName() + " AS the_parent_record_id FROM " + association.getTarget() +
         " INNER JOIN " + association.getJoin() + " t ON " + association.getTarget() + "." + association.getTargetPk() + " = t." + association.getTargetFkName() + " WHERE (t." + association.getSourceFkName()
-                + "  IN (" + Util.join(ids, ", ") + "))";
-
-
-        List<Map> childResults = new DB(childMM.getDbName()).findAll(sql);
-
+                + "  IN (" + questions(ids.size()) + "))";
+        List<Map> childResults = new DB(childMM.getDbName()).findAll(sql, ids.toArray());
         for(Map res: childResults){
             Model child = Model.instance(res, childMM);
             Object parentId = res.get("the_parent_record_id");
@@ -514,7 +507,6 @@ public class LazyList<T extends Model> extends AbstractList<T>{
              }
             childrenByParentId.get(parentId).add(child);
         }
-        
         for(T parent : delegate){
             List<Model> children = childrenByParentId.get(parent.getId());
             if(children != null){
