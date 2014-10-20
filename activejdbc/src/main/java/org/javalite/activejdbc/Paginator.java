@@ -183,11 +183,11 @@ public class Paginator implements Serializable {
             throw new IllegalArgumentException("cannot provide parameters with query: '*'");
         }
 
-        return fullQuery ? new LazyList(true, metaModel, this.query, params) : new LazyList(query, params, metaModel);
+        return fullQuery ? new LazyList(true, metaModel, this.query, params) : new LazyList(query, metaModel, params);
     }
 
     private <T extends Model> LazyList<T> findAll() {
-        return new LazyList(null, new Object[]{}, metaModel);
+        return new LazyList(null, metaModel);
     }
 
     private Long count(String query, Object... params) {

@@ -563,7 +563,7 @@ public class DB {
      * @return new value of auto-incremented column that is uniquely identifying a new record inserted. May return -1 if this
      * functionality is not supported by DB or driver.
      */
-    long execInsert(String query, String autoIncrementColumnName, Object... params) {
+    Object execInsert(String query, String autoIncrementColumnName, Object... params) {
 
         if (!query.toLowerCase().contains("insert"))
             throw new IllegalArgumentException("this method is only for inserts");
@@ -602,7 +602,7 @@ public class DB {
             try{
                 rs = ps.getGeneratedKeys();
                 if (rs.next()) {
-                    long id = rs.getLong(1);
+                    Object id = rs.getObject(1);
                     LogFilter.logQuery(logger, query, params, start);
                     return id;
                 } else {

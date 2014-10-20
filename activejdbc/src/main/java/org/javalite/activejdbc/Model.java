@@ -40,6 +40,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static org.javalite.common.Collections.list;
 import static org.javalite.common.Inflector.*;
 import static org.javalite.common.Util.blank;
 
@@ -1475,21 +1476,33 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         String additionalCriteria =  criteria != null? " AND ( " + criteria + " ) " : "";
         String subQuery;
         if (oneToManyAssociation != null) {
-            subQuery = oneToManyAssociation.getFkName() + " = " + getId() + additionalCriteria;
+            subQuery = oneToManyAssociation.getFkName() + " = ? " + additionalCriteria;
         } else if (manyToManyAssociation != null) {
             String targetId = Registry.instance().getMetaModel(targetTable).getIdName();
             String joinTable = manyToManyAssociation.getJoin();
 
             String query = "SELECT " + targetTable + ".* FROM " + targetTable + ", " + joinTable +
                 " WHERE " + targetTable + "." + targetId + " = " + joinTable + "." + manyToManyAssociation.getTargetFkName() +
-                " AND " + joinTable + "." + manyToManyAssociation.getSourceFkName() + " = " + getId() + additionalCriteria;
-            return new LazyList<T>(true, Registry.instance().getMetaModel(targetTable), query, params);
+                " AND " + joinTable + "." + manyToManyAssociation.getSourceFkName() + " = ? " + additionalCriteria;
+
+            Object[] allParams = new Object[params.length + 1];
+            allParams[0] = getId();
+            for (int i = 0; i < params.length; i++) {
+                allParams[i + 1] = params[i];
+            }
+            return new LazyList<T>(true, Registry.instance().getMetaModel(targetTable), query, allParams);
         } else if (oneToManyPolymorphicAssociation != null) {
-            subQuery = "parent_id = " + getId() + " AND " + " parent_type = '" + oneToManyPolymorphicAssociation.getTypeLabel() + "'" + additionalCriteria;
+            subQuery = "parent_id = ? AND " + " parent_type = '" + oneToManyPolymorphicAssociation.getTypeLabel() + "'" + additionalCriteria;
         } else {
             throw new NotAssociatedException(getMetaModelLocal().getTableName(), targetTable);
         }
-        return new LazyList<T>(subQuery, params,Registry.instance().getMetaModel(targetTable));
+
+        Object[] allParams = new Object[params.length + 1];
+        allParams[0] = getId();
+        for (int i = 0; i < params.length; i++) {
+            allParams[i + 1] = params[i];
+        }
+        return new LazyList<T>(subQuery, Registry.instance().getMetaModel(targetTable), allParams);
     }
 
     protected static NumericValidationBuilder validateNumericalityOf(String... attributes) {
@@ -1761,7 +1774,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         if(id == null) return null;
 
         MetaModel mm = getMetaModel();
-        LazyList<T> l = new LazyList<T>(mm.getIdName() + " = ?", new Object[]{id}, mm).limit(1);
+        LazyList<T> l = new LazyList<T>(mm.getIdName() + " = ?", mm, id).limit(1);
         return l.size() > 0 ? l.get(0) : null;
 
     }
@@ -1821,7 +1834,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             throw new IllegalArgumentException("cannot provide parameters with query: '*', use findAll() method instead");
         }
 
-        return  new LazyList(subquery, params, getMetaModel());
+        return  new LazyList(subquery, getMetaModel(), params);
     }
 
 
@@ -1840,7 +1853,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return a first result for this condition. May return null if nothing found.
      */
     public static <T extends Model> T findFirst(String subQuery, Object... params) {
-        LazyList<T> results = new LazyList<T>(subQuery, params,getMetaModel()).limit(1);
+        LazyList<T> results = new LazyList<T>(subQuery, getMetaModel(), params).limit(1);
         return  results.size() > 0 ? results.get(0) : null;
     }
 
@@ -1932,7 +1945,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return result list
      */
     public static  <T extends Model> LazyList<T>   findAll() {
-        return new LazyList(null, new Object[]{}, getMetaModel());
+        return new LazyList(null, getMetaModel());
     }
 
     /**
@@ -2229,7 +2242,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
         String query = getMetaModelLocal().getDialect().createParametrizedInsert(getMetaModelLocal(), valueAttributes);
         try {
-            long id = new DB(getMetaModelLocal().getDbName()).execInsert(query, getMetaModelLocal().getIdName(), values.toArray());
+            Object id = new DB(getMetaModelLocal().getDbName()).execInsert(query, getMetaModelLocal().getIdName(), values.toArray());
             if(getMetaModelLocal().cached()){
                 QueryCache.instance().purgeTableCache(getMetaModelLocal().getTableName());
             }

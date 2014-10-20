@@ -273,7 +273,7 @@ public class Base {
      * @return new value of auto-incremented column that is uniquely identifying a new record inserted. May return -1 if this
      * functionality is not supported by DB or driver.
      */
-    static long execInsert(String query, String autoIncrementColumnName, Object... params) {
+    static Object execInsert(String query, String autoIncrementColumnName, Object... params) {
         return new DB(DEFAULT_DB_NAME).execInsert(query, autoIncrementColumnName, params);
     }
 

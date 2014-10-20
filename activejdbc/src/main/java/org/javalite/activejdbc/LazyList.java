@@ -51,7 +51,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
     private Map<Class<T>, Association> includes = new HashMap<Class<T>, Association>();
     private boolean forPaginator;
     
-    protected LazyList(String subQuery, Object[] params, MetaModel metaModel){
+    protected LazyList(String subQuery, MetaModel metaModel, Object ... params){
         if(subQuery != null)
             subQueries.add(subQuery);
         
@@ -350,7 +350,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
         List parentIds = collect("parent_id", "parent_type", parentClassName);
         ArrayList noDuplicateList = new ArrayList(new HashSet(parentIds));
 
-        for(Model parent: new LazyList<Model>(parentMM.getIdName() + " IN (" + Util.join(noDuplicateList, ", ") + ")", null, parentMM)){
+        for(Model parent: new LazyList<Model>(parentMM.getIdName() + " IN (" + Util.join(noDuplicateList, ", ") + ")", parentMM)){
             parentsHasByIds.put(parentClassName+":"+parent.getId(), parent);
         }
 
@@ -378,7 +378,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
         List parentIds = collect(fkName);
         ArrayList noDuplicateList = new ArrayList(new HashSet(parentIds));
 
-        for(Model parent: new LazyList<Model>(parentMM.getIdName() + " IN (" + Util.join(noDuplicateList, ", ") + ")", null, parentMM)){
+        for(Model parent: new LazyList<Model>(parentMM.getIdName() + " IN (" + Util.join(noDuplicateList, ", ") + ")", parentMM)){
                parentsHasByIds.put(parent.getId(), parent);
         }
 
@@ -445,7 +445,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
         List ids = collect(metaModel.getIdName());
 
 
-        for (Model child : new LazyList<Model>("parent_id IN (" + Util.join(ids, ", ") + ") AND parent_type = '" + association.getTypeLabel() + "'", null, childMM).orderBy(childMM.getIdName())) {
+        for (Model child : new LazyList<Model>("parent_id IN (" + Util.join(ids, ", ") + ") AND parent_type = '" + association.getTypeLabel() + "'", childMM).orderBy(childMM.getIdName())) {
             if (childrenByParentId.get(child.get("parent_id")) == null) {
                 childrenByParentId.put(child.get("parent_id"), new SuperLazyList<Model>());
             }
@@ -474,7 +474,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
 
         List ids = collect(metaModel.getIdName());
 
-        for(Model child: new LazyList<Model>(fkName + " IN (" + Util.join(ids, ", ") + ")" , null, childMM).orderBy(childMM.getIdName())){
+        for(Model child: new LazyList<Model>(fkName + " IN (" + Util.join(ids, ", ") + ")" , childMM).orderBy(childMM.getIdName())){
              if(childrenByParentId.get(child.get(fkName)) == null){
                     childrenByParentId.put(child.get(fkName), new SuperLazyList<Model>());
              }
