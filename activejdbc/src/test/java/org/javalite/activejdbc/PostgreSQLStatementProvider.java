@@ -171,11 +171,8 @@ public class PostgreSQLStatementProvider implements StatementProvider{
             statements = Arrays.asList();
         } else if (table.equals("mammals")) {
             statements = Arrays.asList();
-        } else if (table.equals("classifications")) {
-            statements = Arrays.asList();
-
         } else {
-            throw new IllegalArgumentException("no statements for: " + table);
+            statements = Arrays.asList();
         }
 
         ArrayList<String> all = new ArrayList<String>();

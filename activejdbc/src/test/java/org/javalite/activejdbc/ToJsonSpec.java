@@ -180,5 +180,27 @@ public class ToJsonSpec extends ActiveJDBCTest {
 
         a(t).shouldBeEqual(p.getTimestamp("created_at"));
     }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldGenerateJsonForPolymorphicChildren() throws IOException {
+        deleteAndPopulateTables("articles", "comments", "tags");
+        Article a = Article.findFirst("title = ?", "ActiveJDBC polymorphic associations");
+        a.add(Comment.create("author", "igor", "content", "this is just a test comment text"));
+        a.add(Tag.create("content", "orm"));
+        LazyList<Article> articles = Article.where("title = ?", "ActiveJDBC polymorphic associations").include(Tag.class, Comment.class);
+
+        Map[] maps = JsonHelper.toMaps(articles.toJson(true));
+
+        the(maps.length).shouldBeEqual(1);
+        Map article = maps[0];
+        List<Map> comments = (List<Map>) ((Map)article.get("children")).get("comments");
+        List<Map> tags = (List<Map>) ((Map)article.get("children")).get("tags");
+
+        the(comments.size()).shouldBeEqual(1);
+        the(comments.get(0).get("content")).shouldBeEqual("this is just a test comment text");
+        the(tags.size()).shouldBeEqual(1);
+        the(tags.get(0).get("content")).shouldBeEqual("orm");
+    }
 }
 

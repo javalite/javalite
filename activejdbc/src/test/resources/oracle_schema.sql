@@ -403,6 +403,21 @@ CREATE OR REPLACE TRIGGER comments_trigger
 select coalesce(:new.id, comments_seq.nextval) into :new.id from dual;
 end;
 
+-- BREAK
+CREATE TABLE tags (id  NUMBER NOT NULL, content VARCHAR(128), parent_id NUMBER(11), parent_type VARCHAR(256))
+-- BREAK
+ALTER TABLE tags ADD CONSTRAINT tags_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE tags_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER tags_trigger
+    BEFORE INSERT ON comments REFERENCING
+    NEW AS new
+    OLD AS old
+    FOR EACH ROW
+    begin
+select coalesce(:new.id, tags_seq.nextval) into :new.id from dual;
+end;
 
 
 -- BREAK

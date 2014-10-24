@@ -137,6 +137,14 @@ BEGIN
 END
 CREATE TABLE comments (id  INT IDENTITY PRIMARY KEY, author VARCHAR(56), content TEXT, parent_id INT, parent_type VARCHAR(256));
 
+
+IF object_id('dbo.tags') IS NOT NULL
+BEGIN
+    DROP TABLE [dbo].[tags]
+END
+CREATE TABLE tags (id  INT IDENTITY PRIMARY KEY, content TEXT, parent_id INT, parent_type VARCHAR(256));
+
+
 IF object_id('dbo.fruits') IS NOT NULL
 BEGIN
     DROP TABLE [dbo].[fruits]

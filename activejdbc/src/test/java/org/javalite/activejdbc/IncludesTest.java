@@ -90,7 +90,6 @@ public class IncludesTest extends ActiveJDBCTest{
         LazyList<Patient> patients = Doctor.find("last_name = ?", " does not exist").include(Patient.class);
 
         a(patients.size()).shouldEqual(0);
-        
     }
 
     @Test

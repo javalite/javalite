@@ -840,7 +840,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
             sw.write("," + (pretty ? "\n  " + indent : "") + "\"children\" : {");
 
-            for (Class childClass : cachedChildren.keySet()) {
+            List<Class>  childClasses = new ArrayList<Class>();
+            childClasses.addAll(cachedChildren.keySet());
+
+            for (int i = 0; i < childClasses.size(); i++) {
+                Class childClass = childClasses.get(i);
                 String name = Inflector.pluralize(childClass.getSimpleName()).toLowerCase();
                 sw.write((pretty ? "\n" + indent + "    " : "") + "\"" + name + "\" : [");
                 List<String> childrenList = new ArrayList<String>();
@@ -849,6 +853,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 }
                 sw.write(Util.join(childrenList, ","));
                 sw.write((pretty ? "\n" + indent + indent : "") + "]");
+
+                if(i < (childClasses.size() - 1)){
+                    sw.write(",");
+                }
             }
             sw.write((pretty ? "\n" + indent + indent : "") + "}");
         }

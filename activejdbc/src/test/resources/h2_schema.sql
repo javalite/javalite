@@ -68,6 +68,9 @@ CREATE TABLE posts (id  int(11) NOT NULL  auto_increment PRIMARY KEY, title VARC
 DROP TABLE IF EXISTS comments;
 CREATE TABLE comments (id  int(11) NOT NULL  auto_increment PRIMARY KEY, author VARCHAR(56), content TEXT, parent_id int(11), parent_type VARCHAR(256));
 
+DROP TABLE IF EXISTS tags;
+CREATE TABLE tags (id  int(11) NOT NULL  auto_increment PRIMARY KEY, content TEXT, parent_id int(11), parent_type VARCHAR(256));
+
 DROP TABLE IF EXISTS fruits;
 CREATE TABLE fruits (id  int(11) NOT NULL  auto_increment PRIMARY KEY, fruit_name VARCHAR(56), category VARCHAR(56), created_at DATETIME, updated_at DATETIME);
 

@@ -171,10 +171,8 @@ public class OracleStatementProvider implements StatementProvider{
             statements = Arrays.asList();
         } else if (table.equals("mammals")) {
             statements = Arrays.asList();
-        } else if (table.equals("classifications")) {
+        } else{
             statements = Arrays.asList();
-        }else{
-            throw new IllegalArgumentException("no statements for: " + table);
         }
 
         ArrayList<String> all = new ArrayList<String>();

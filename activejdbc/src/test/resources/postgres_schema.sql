@@ -68,6 +68,11 @@ CREATE TABLE posts (id  serial PRIMARY KEY, title VARCHAR(56), post TEXT);
 DROP TABLE IF EXISTS comments;
 CREATE TABLE comments (id  serial PRIMARY KEY, author VARCHAR(56), content TEXT, parent_id INT, parent_type VARCHAR(256));
 
+
+DROP TABLE IF EXISTS tags;
+CREATE TABLE tags (id  serial PRIMARY KEY, content TEXT, parent_id INT, parent_type VARCHAR(256));
+
+
 DROP TABLE IF EXISTS fruits;
 CREATE TABLE fruits (id  serial PRIMARY KEY, fruit_name VARCHAR(56), category VARCHAR(56), created_at TIMESTAMP, updated_at TIMESTAMP);
 
