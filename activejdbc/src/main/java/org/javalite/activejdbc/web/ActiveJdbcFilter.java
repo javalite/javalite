@@ -33,11 +33,11 @@ import org.slf4j.Logger;
 
      &lt;filter&gt;
         &lt;filter-name&gt;activeJdbcFilter&lt;/filter-name&gt;
-        &lt;filter-class&gt;activejdbc.web.ActiveJdbcFilter&lt;/filter-class&gt;
+        &lt;filter-class&gt;org.javalite.activejdbc.web.ActiveJdbcFilter&lt;/filter-class&gt;
         &lt;init-param&gt;
             &lt;param-name&gt;jndiName&lt;/param-name&gt;
             &lt;param-value&gt;jdbc/test_jndi&lt;/param-value&gt;
-        &lt;/init-param&gt;        
+        &lt;/init-param&gt;
     &lt;/filter&gt;
  * </pre>
  * @author Igor Polevoy
@@ -50,7 +50,7 @@ public class ActiveJdbcFilter implements Filter {
 
     public void init(FilterConfig config) throws ServletException {
 
-    	jndiName = config.getInitParameter("jndiName");
+        jndiName = config.getInitParameter("jndiName");
         if(jndiName == null)
             throw new IllegalArgumentException("must provide jndiName parameter for this filter");
     }
