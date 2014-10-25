@@ -32,7 +32,7 @@ import java.io.Serializable;
  *
  * @author Igor Polevoy
  */
-public class Paginator implements Serializable {
+public class Paginator<T extends Model> implements Serializable {
 
     private int pageSize;
     private String query, orderBys;
@@ -71,11 +71,11 @@ public class Paginator implements Serializable {
      *
      *
      */
-    public Paginator(Class<? extends Model> modelClass, int pageSize, String query, Object... params) {
+    public Paginator(Class<? extends T> modelClass, int pageSize, String query, Object... params) {
 
         try{
             Class.forName(modelClass.getName());
-        }catch(Exception e){
+        }catch(ClassNotFoundException e){
             throw new InitException(e);
         }
 
@@ -109,12 +109,12 @@ public class Paginator implements Serializable {
      * be rejected.
      * @return list of records that match a query make up a "page". 
      */
-    public <T extends Model> LazyList<T> getPage(int pageNumber) {
+    public LazyList<T> getPage(int pageNumber) {
 
         if (pageNumber < 1) throw new IllegalArgumentException("minimum page index == 1");
 
         try {
-            LazyList<T> list = find( query, params);
+            LazyList<T> list = find(query, params);
             int offset = (pageNumber - 1) * pageSize; 
             list.offset(offset);
             list.limit(pageSize);
@@ -173,21 +173,20 @@ public class Paginator implements Serializable {
         }
     }
 
-    private <T extends Model> LazyList<T> find(String query, Object... params) {
-
-        if (query.equals("*") && params.length == 0) {
-            return findAll();
+    private LazyList<T> find(String query, Object... params) {
+        if (query.equals("*")) {
+            if (params.length == 0) {
+                return findAll();
+            } else{
+                throw new IllegalArgumentException("cannot provide parameters with query: '*'");
+            }
         }
-
-        if (query.equals("*") && params.length != 0) {
-            throw new IllegalArgumentException("cannot provide parameters with query: '*'");
-        }
-
-        return fullQuery ? new LazyList(true, metaModel, this.query, params) : new LazyList(query, metaModel, params);
+        return fullQuery ? new LazyList<T>(true, metaModel, this.query, params) 
+                         : new LazyList<T>(query, metaModel, params);
     }
 
-    private <T extends Model> LazyList<T> findAll() {
-        return new LazyList(null, metaModel);
+    private LazyList<T> findAll() {
+        return new LazyList<T>(null, metaModel);
     }
 
     private Long count(String query, Object... params) {
