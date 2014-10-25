@@ -23,9 +23,9 @@ import org.javalite.common.Convert;
 import java.io.Serializable;
 
 /**
- * This class supports pagination of result sets in ActiveJDBC. This is useful for paging through
- * tables. This class does not cache resultsets, rather it will make requests to DB
- * each time {@link #getPage(int)} method is called.
+ * This class supports pagination of result sets in ActiveJDBC. This is useful for paging through tables. If the
+ * Model subclass is annotated with @{@link org.javalite.activejdbc.annotations.Cached}, then this class will
+ * cache the total count of records returned by {@link #getCount()}, as LazyList will cache the result sets.
  * This class is thread safe and the same instance could be used across multiple web requests and even
  * across multiple users/sessions. It is lightweight class, you can generate an instance each time you need one,
  * or you can cache an instance in a session or even servlet context. 
@@ -165,7 +165,7 @@ public class Paginator<T extends Model> implements Serializable {
     
     public long pageCount() {
         try {
-            long results = count(query, params);
+            long results = getCount();
             long fullPages = results / pageSize;
             return results % pageSize == 0 ? fullPages : fullPages + 1;
         } catch (Exception mustNeverHappen) {
@@ -189,27 +189,27 @@ public class Paginator<T extends Model> implements Serializable {
         return new LazyList<T>(null, metaModel);
     }
 
-    private Long count(String query, Object... params) {
-        Long result;
-        if(metaModel.cached()){
-            result = getCount();
-            if(result == null){
-                result = getCount();
+    /**
+     * Returns total count of records based on provided criteria.
+     *
+     * @return total count of records based on provided criteria
+     */
+    public Long getCount() {
+        Long result = null;
+        if (metaModel.cached()) {
+            result = (Long) QueryCache.instance().getItem(metaModel.getTableName(), countQuery, params);
+            if (result == null) {
+                result = count();
                 QueryCache.instance().addItem(metaModel.getTableName(), countQuery, params, result);
             }
-        }else{
-            result = getCount();
+        } else {
+            result = count();
         }
         return result;
     }
 
-    /**
-     * Total count of records based on provided criteria.
-     *
-     * @return total count of records based on provided criteria
-     */
-    public long getCount(){
-            return fullQuery? Convert.toLong(new DB(metaModel.getDbName()).firstCell(countQuery, params))
-                            : new DB(metaModel.getDbName()).count(metaModel.getTableName(), query, params);
+    private Long count(){
+        return fullQuery ? Convert.toLong(new DB(metaModel.getDbName()).firstCell(countQuery, params))
+                         : new DB(metaModel.getDbName()).count(metaModel.getTableName(), query, params);
     }
 }
