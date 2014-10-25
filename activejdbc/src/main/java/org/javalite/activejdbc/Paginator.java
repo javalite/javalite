@@ -130,9 +130,9 @@ public class Paginator<T extends Model> implements Serializable {
     }
 
     /**
-     * Returns index of current page, or -1 if this instance has not produced a page yet.
+     * Returns index of current page, or 0 if this instance has not produced a page yet.
      *
-     * @return index of current page, or -1 if this instance has not produced a page yet.
+     * @return index of current page, or 0 if this instance has not produced a page yet.
      */
     public int getCurrentPage(){
         return currentPage;

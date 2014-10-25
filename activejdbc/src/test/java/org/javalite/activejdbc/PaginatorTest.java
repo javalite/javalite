@@ -40,6 +40,14 @@ public class PaginatorTest extends ActiveJDBCTest {
     }
 
     @Test
+    public void testCurrentPage(){
+        Paginator p = new Paginator(Item.class, 10, "*");
+        a(p.getCurrentPage()).shouldBeEqual(0);
+        p.getPage(1);
+        a(p.getCurrentPage()).shouldBeEqual(1);
+    }
+    
+    @Test
     public void testPageCount(){
         Paginator p = new Paginator(Item.class, 10, "item_description like '%2%'");
         a(p.pageCount()).shouldBeEqual(28);
