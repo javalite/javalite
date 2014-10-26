@@ -116,13 +116,22 @@ public class Base {
         return new DB(DEFAULT_DB_NAME).hasConnection();
     }
 
+
+
     /**
-     * Closes connection.
+     * Closes connection and detaches it from current thread.
+     * @param suppressWarning true to not display a warning in case of a problem (connection not there)
+     */
+    public static void close(boolean suppressWarning) {
+        new DB(DEFAULT_DB_NAME).close(suppressWarning);
+    }
+
+    /**
+     * Closes connection and detaches it from current thread.
      */
     public static void close() {
       new DB(DEFAULT_DB_NAME).close();
     }
-
 
     /**
      * Returns count of rows in table.

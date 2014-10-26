@@ -238,9 +238,17 @@ public class DB {
 
 
     /**
-     * Closes connection.
+     * Closes connection and detaches it from current thread.
      */
     public void close() {
+        close(false);
+    }
+
+    /**
+     * Closes connection and detaches it from current thread.
+     * @param suppressWarning true to not display a warning in case of a problem (connection not there)
+     */
+    public void close(boolean suppressWarning) {
         try {
             Connection connection = ConnectionsAccess.getConnection(dbName);
             if(connection == null){
@@ -250,7 +258,8 @@ public class DB {
             connection.close();
             LogFilter.log(logger, "Closed connection: " + connection);
         } catch (Exception e) {
-            logger.warn("Could not close connection! MUST INVESTIGATE POTENTIAL CONNECTION LEAK!", e);
+            if(!suppressWarning)
+                logger.warn("Could not close connection! MUST INVESTIGATE POTENTIAL CONNECTION LEAK!", e);
         }finally{
             ConnectionsAccess.detach(dbName);// lets free the thread from connection
         }
