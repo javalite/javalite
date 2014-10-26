@@ -21,7 +21,7 @@ public class DropMojo extends AbstractMigrationMojo {
         } catch (Exception e) {
             getLog().warn("Failed to drop database " + getUrl() + ", " + e.getMessage());
         }finally {
-            Base.close();
+            Base.close(true);
         }
     }
 }

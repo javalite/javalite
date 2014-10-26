@@ -34,7 +34,7 @@ public class ValidateMojo extends AbstractMigrationMojo {
         } catch (Exception e) {
             throw new MojoExecutionException("Failed to validate " + getUrl(), e);
         }finally {
-            Base.close();
+            Base.close(true);
         }
     }
 }

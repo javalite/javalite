@@ -32,9 +32,9 @@ public class CreateMojo extends AbstractMigrationMojo {
             Base.exec(format(createSql, databaseName));
             getLog().info("Created database " + getUrl());
         } catch (Exception e) {
-            throw new MojoExecutionException("Failed to create database: " + getUrl() + ", " + e.getMessage());
+            throw new MojoExecutionException("Failed to create database: " + getUrl(), e);
         } finally {
-            Base.close();
+            Base.close(true);
         }
     }
 }

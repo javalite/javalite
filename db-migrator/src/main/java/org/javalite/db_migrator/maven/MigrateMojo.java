@@ -21,7 +21,7 @@ public class MigrateMojo extends AbstractMigrationMojo {
             throw new MojoExecutionException("Failed to migrate database " + getUrl(), e);
         }
         finally {
-            Base.close();
+            Base.close(true);
         }
     }
 }

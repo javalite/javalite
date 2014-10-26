@@ -29,7 +29,7 @@ public class CheckMojo extends AbstractMigrationMojo {
         } catch (Exception e) {
             throw new MojoExecutionException("Failed to check " + getUrl(), e);
         }finally {
-            Base.close();
+            Base.close(true);
         }
 
         if (pendingMigrations.isEmpty()) return;
@@ -39,6 +39,6 @@ public class CheckMojo extends AbstractMigrationMojo {
             getLog().warn("Migration: " + migration.getName());
 
         getLog().warn("Run db-migrator:migrate to apply pending migrations.");
-        throw new MojoExecutionException(format("Pending migration(s) exist, migrate your db and try again."));
+        throw new MojoExecutionException("Pending migration(s) exist, migrate your db and try again.");
     }
 }
