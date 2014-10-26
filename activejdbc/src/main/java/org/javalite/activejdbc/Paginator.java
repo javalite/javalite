@@ -23,16 +23,16 @@ import org.javalite.common.Convert;
 import java.io.Serializable;
 
 /**
- * This class supports pagination of result sets in ActiveJDBC. This is useful for paging through
- * tables. This class does not cache resultsets, rather it will make requests to DB
- * each time {@link #getPage(int)} method is called.
+ * This class supports pagination of result sets in ActiveJDBC. This is useful for paging through tables. If the
+ * Model subclass is annotated with @{@link org.javalite.activejdbc.annotations.Cached}, then this class will
+ * cache the total count of records returned by {@link #getCount()}, as LazyList will cache the result sets.
  * This class is thread safe and the same instance could be used across multiple web requests and even
  * across multiple users/sessions. It is lightweight class, you can generate an instance each time you need one,
  * or you can cache an instance in a session or even servlet context. 
  *
  * @author Igor Polevoy
  */
-public class Paginator implements Serializable {
+public class Paginator<T extends Model> implements Serializable {
 
     private int pageSize;
     private String query, orderBys;
@@ -71,11 +71,11 @@ public class Paginator implements Serializable {
      *
      *
      */
-    public Paginator(Class<? extends Model> modelClass, int pageSize, String query, Object... params) {
+    public Paginator(Class<? extends T> modelClass, int pageSize, String query, Object... params) {
 
         try{
             Class.forName(modelClass.getName());
-        }catch(Exception e){
+        }catch(ClassNotFoundException e){
             throw new InitException(e);
         }
 
@@ -109,12 +109,12 @@ public class Paginator implements Serializable {
      * be rejected.
      * @return list of records that match a query make up a "page". 
      */
-    public <T extends Model> LazyList<T> getPage(int pageNumber) {
+    public LazyList<T> getPage(int pageNumber) {
 
         if (pageNumber < 1) throw new IllegalArgumentException("minimum page index == 1");
 
         try {
-            LazyList<T> list = find( query, params);
+            LazyList<T> list = find(query, params);
             int offset = (pageNumber - 1) * pageSize; 
             list.offset(offset);
             list.limit(pageSize);
@@ -130,9 +130,9 @@ public class Paginator implements Serializable {
     }
 
     /**
-     * Returns index of current page, or -1 if this instance has not produced a page yet.
+     * Returns index of current page, or 0 if this instance has not produced a page yet.
      *
-     * @return index of current page, or -1 if this instance has not produced a page yet.
+     * @return index of current page, or 0 if this instance has not produced a page yet.
      */
     public int getCurrentPage(){
         return currentPage;
@@ -165,7 +165,7 @@ public class Paginator implements Serializable {
     
     public long pageCount() {
         try {
-            long results = count(query, params);
+            long results = getCount();
             long fullPages = results / pageSize;
             return results % pageSize == 0 ? fullPages : fullPages + 1;
         } catch (Exception mustNeverHappen) {
@@ -173,44 +173,43 @@ public class Paginator implements Serializable {
         }
     }
 
-    private <T extends Model> LazyList<T> find(String query, Object... params) {
-
-        if (query.equals("*") && params.length == 0) {
-            return findAll();
+    private LazyList<T> find(String query, Object... params) {
+        if (query.equals("*")) {
+            if (params.length == 0) {
+                return findAll();
+            } else{
+                throw new IllegalArgumentException("cannot provide parameters with query: '*'");
+            }
         }
-
-        if (query.equals("*") && params.length != 0) {
-            throw new IllegalArgumentException("cannot provide parameters with query: '*'");
-        }
-
-        return fullQuery ? new LazyList(true, metaModel, this.query, params) : new LazyList(query, metaModel, params);
+        return fullQuery ? new LazyList<T>(true, metaModel, this.query, params) 
+                         : new LazyList<T>(query, metaModel, params);
     }
 
-    private <T extends Model> LazyList<T> findAll() {
-        return new LazyList(null, metaModel);
+    private LazyList<T> findAll() {
+        return new LazyList<T>(null, metaModel);
     }
 
-    private Long count(String query, Object... params) {
-        Long result;
-        if(metaModel.cached()){
-            result = getCount();
-            if(result == null){
-                result = getCount();
+    /**
+     * Returns total count of records based on provided criteria.
+     *
+     * @return total count of records based on provided criteria
+     */
+    public Long getCount() {
+        Long result = null;
+        if (metaModel.cached()) {
+            result = (Long) QueryCache.instance().getItem(metaModel.getTableName(), countQuery, params);
+            if (result == null) {
+                result = count();
                 QueryCache.instance().addItem(metaModel.getTableName(), countQuery, params, result);
             }
-        }else{
-            result = getCount();
+        } else {
+            result = count();
         }
         return result;
     }
 
-    /**
-     * Total count of records based on provided criteria.
-     *
-     * @return total count of records based on provided criteria
-     */
-    public long getCount(){
-            return fullQuery? Convert.toLong(new DB(metaModel.getDbName()).firstCell(countQuery, params))
-                            : new DB(metaModel.getDbName()).count(metaModel.getTableName(), query, params);
+    private Long count(){
+        return fullQuery ? Convert.toLong(new DB(metaModel.getDbName()).firstCell(countQuery, params))
+                         : new DB(metaModel.getDbName()).count(metaModel.getTableName(), query, params);
     }
 }

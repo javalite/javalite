@@ -40,20 +40,28 @@ public class PaginatorTest extends ActiveJDBCTest {
     }
 
     @Test
+    public void testCurrentPage(){
+        Paginator<Item> p = new Paginator<Item>(Item.class, 10, "*");
+        a(p.getCurrentPage()).shouldBeEqual(0);
+        p.getPage(1);
+        a(p.getCurrentPage()).shouldBeEqual(1);
+    }
+    
+    @Test
     public void testPageCount(){
-        Paginator p = new Paginator(Item.class, 10, "item_description like '%2%'");
+        Paginator<Item> p = new Paginator<Item>(Item.class, 10, "item_description like '%2%'");
         a(p.pageCount()).shouldBeEqual(28);
     }
 
     @Test
     public void testGetPage(){
-        Paginator p = new Paginator(Item.class, 10, "item_description like ?", "%2%").orderBy("item_number");
+        Paginator<Item> p = new Paginator<Item>(Item.class, 10, "item_description like ?", "%2%").orderBy("item_number");
         List<Item> items = p.getPage(28);
         a(items.size()).shouldBeEqual(1);
         a(items.get(0).get("item_number")).shouldBeEqual(992);
 
 
-        final Paginator p1 = new Paginator(Item.class, 10, "*").orderBy("item_number");
+        final Paginator<Item> p1 = new Paginator<Item>(Item.class, 10, "*").orderBy("item_number");
         items = p1.getPage(2);
         a(items.size()).shouldBeEqual(10);
         a(items.get(0).get("item_number")).shouldBeEqual(11);//page start
@@ -62,14 +70,14 @@ public class PaginatorTest extends ActiveJDBCTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testThrowExceptionIfWrongArgument(){
-        final Paginator p1 = new Paginator(Item.class, 10, "*").orderBy("item_number");
+        final Paginator<Item> p1 = new Paginator<Item>(Item.class, 10, "*").orderBy("item_number");
         p1.getPage(-2);
     }
 
     @Test
     public void testThatPaginatorIsSerializable() throws IOException, ClassNotFoundException {
 
-        Paginator p = new Paginator(Item.class, 10, "*").orderBy("item_number");
+        Paginator<Item> p = new Paginator<Item>(Item.class, 10, "*").orderBy("item_number");
         //serialize:
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         ObjectOutputStream oout  = new ObjectOutputStream(bout);
@@ -79,14 +87,14 @@ public class PaginatorTest extends ActiveJDBCTest {
         //De-serialize:
         ByteArrayInputStream bin = new ByteArrayInputStream(bout.toByteArray());
         ObjectInputStream oin = new ObjectInputStream(bin);
-        Paginator p1 = (Paginator)oin.readObject();
+        Paginator<Item> p1 = (Paginator<Item>) oin.readObject();
         a(p1.pageCount()).shouldBeEqual(100);
     }
 
     @Test
     public void testPreviousAndNext(){
         //for this query we have only 28 pages
-        Paginator p = new Paginator(Item.class, 10, "item_description like '%2%'");
+        Paginator<Item> p = new Paginator<Item>(Item.class, 10, "item_description like '%2%'");
 
         p.getPage(27);
         a(p.hasNext()).shouldBeTrue();
@@ -103,11 +111,10 @@ public class PaginatorTest extends ActiveJDBCTest {
         a(p.hasNext()).shouldBeTrue();
 
 
-        p = new Paginator(Item.class, 10, "*").orderBy("item_number");
-        a(p.<Model>getPage(1).size()).shouldBeEqual(10);
+        p = new Paginator<Item>(Item.class, 10, "*").orderBy("item_number");
+        a(p.getPage(1).size()).shouldBeEqual(10);
 
-        LazyList<Model> page2 = p.getPage(2);
-        a(page2.get(0).get("item_number")).shouldBeEqual(11);
+        a(p.getPage(2).get(0).get("item_number")).shouldBeEqual(11);
 
         System.out.println("Page 1");
         p.getPage(1).dump(System.out);
@@ -121,7 +128,7 @@ public class PaginatorTest extends ActiveJDBCTest {
     @Test
     public void shouldPaginateWithRawSql(){
 
-        Paginator p = new Paginator(Item.class, 10, "select * from items where item_description like '%2%'").orderBy("item_number");
+        Paginator<Item> p = new Paginator<Item>(Item.class, 10, "select * from items where item_description like '%2%'").orderBy("item_number");
         List<Item> items = p.getPage(28);
         a(items.size()).shouldBeEqual(1);
         a(items.get(0).get("item_number")).shouldBeEqual(992);
