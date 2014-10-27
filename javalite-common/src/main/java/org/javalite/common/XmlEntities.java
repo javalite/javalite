@@ -19,12 +19,10 @@ limitations under the License.
 package org.javalite.common;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
-
 
 /**
  *
@@ -146,7 +144,7 @@ public class XmlEntities {
          * Construct a new instance with specified maps.
          *
          * @param nameToValue name to value map
-         * @param valueToName value to namee map
+         * @param valueToName value to name map
          */
         MapIntMap(Map nameToValue, Map valueToName){
             mapNameToValue = nameToValue;
@@ -491,53 +489,49 @@ public class XmlEntities {
      * @return A new escaped <code>String</code>.
      */
     public String escape(String str) {
-        StringWriter stringWriter = createStringWriter(str);
-        try {
-            this.escape(stringWriter, str);
-        } catch (IOException e) {
-            // This should never happen because ALL the StringWriter methods called by #escape(Writer, String) do not
-            // throw IOExceptions.
-            throw new UnsupportedOperationException(e);
-        }
-        return stringWriter.toString();
+        StringBuilder sb = createStringBuilder(str);
+        escape(sb, str);
+        return sb.toString();
     }
 
     /**
      * <p>
-     * Escapes the characters in the <code>String</code> passed and writes the result to the <code>Writer</code>
+     * Escapes the characters in the <code>String</code> passed and writes the result to the <code>StringBuilder</code>
      * passed.
      * </p>
      *
-     * @param writer
-     *            The <code>Writer</code> to write the results of the escaping to. Assumed to be a non-null value.
+     * @param sb
+     *            The <code>StringBuilder</code> to write the results of the escaping to. Assumed to be a non-null value.
      * @param str
      *            The <code>String</code> to escape. Assumed to be a non-null value.
-     * @throws IOException
-     *             when <code>Writer</code> passed throws the exception from calls to the {@link java.io.Writer#write(int)}
-     *             methods.
      *
      * @see #escape(String)
-     * @see java.io.Writer
+     * @see java.lang.StringBuilder
      */
-    public void escape(Writer writer, String str) throws IOException {
+    public void escape(StringBuilder sb, String str) {
         int len = str.length();
         for (int i = 0; i < len; i++) {
             char c = str.charAt(i);
             String entityName = this.entityName(c);
             if (entityName == null) {
                 if (c > 0x7F) {
-                    writer.write("&#");
-                    writer.write(Integer.toString(c, 10));
-                    writer.write(';');
+                    sb.append("&#");
+                    sb.append(Integer.toString(c, 10));
+                    sb.append(';');
                 } else {
-                    writer.write(c);
+                    sb.append(c);
                 }
             } else {
-                writer.write('&');
-                writer.write(entityName);
-                writer.write(';');
+                sb.append('&');
+                sb.append(entityName);
+                sb.append(';');
             }
         }
+    }
+
+    @Deprecated
+    public void escape(Writer writer, String str) throws IOException {
+        writer.write(unescape(str));
     }
 
     /**
@@ -559,70 +553,62 @@ public class XmlEntities {
         if (firstAmp < 0) {
             return str;
         } else {
-            StringWriter stringWriter = createStringWriter(str);
-            try {
-                this.doUnescape(stringWriter, str, firstAmp);
-            } catch (IOException e) {
-                // This should never happen because ALL the StringWriter methods called by #escape(Writer, String)
-                // do not throw IOExceptions.
-                throw new UnsupportedOperationException(e);
-            }
-            return stringWriter.toString();
+            StringBuilder sb = createStringBuilder(str);
+            doUnescape(sb, str, firstAmp);
+            return sb.toString();
         }
     }
 
     /**
-     * Make the StringWriter 10% larger than the source String to avoid growing the writer
+     * Make the StringBuilder 10% larger than the source String to avoid growing the builder
      *
      * @param str The source string
-     * @return A newly created StringWriter
+     * @return A newly created StringBuilder
      */
-    private StringWriter createStringWriter(String str) {
-        return new StringWriter((int) (str.length() + (str.length() * 0.1)));
+    private StringBuilder createStringBuilder(String str) {
+        return new StringBuilder(str.length() + (str.length()/10));
     }
 
     /**
      * <p>
      * Unescapes the escaped entities in the <code>String</code> passed and writes the result to the
-     * <code>Writer</code> passed.
+     * <code>StringBuilder</code> passed.
      * </p>
      *
-     * @param writer
-     *            The <code>Writer</code> to write the results to; assumed to be non-null.
+     * @param sb
+     *            The <code>StringBuilder</code> to write the results to; assumed to be non-null.
      * @param str
      *            The source <code>String</code> to unescape; assumed to be non-null.
-     * @throws IOException
-     *             when <code>Writer</code> passed throws the exception from calls to the {@link Writer#write(int)}
-     *             methods.
      *
      * @see #escape(String)
-     * @see Writer
+     * @see java.lang.StringBuilder
      */
-    public void unescape(Writer writer, String str) throws IOException {
+    public void unescape(StringBuilder sb, String str) {
         int firstAmp = str.indexOf('&');
         if (firstAmp < 0) {
-            writer.write(str);
-            return;
+            sb.append(str);
         } else {
-            doUnescape(writer, str, firstAmp);
+            doUnescape(sb, str, firstAmp);
         }
+    }
+
+    @Deprecated
+    public void unescape(Writer writer, String str) throws IOException {
+        writer.write(unescape(str));
     }
 
     /**
      * Underlying unescape method that allows the optimisation of not starting from the 0 index again.
      *
-     * @param writer
-     *            The <code>Writer</code> to write the results to; assumed to be non-null.
+     * @param sb
+     *            The <code>StringBuilder</code> to write the results to; assumed to be non-null.
      * @param str
      *            The source <code>String</code> to unescape; assumed to be non-null.
      * @param firstAmp
      *            The <code>int</code> index of the first ampersand in the source String.
-     * @throws IOException
-     *             when <code>Writer</code> passed throws the exception from calls to the {@link Writer#write(int)}
-     *             methods.
      */
-    private void doUnescape(Writer writer, String str, int firstAmp) throws IOException {
-        writer.write(str, 0, firstAmp);
+    private void doUnescape(StringBuilder sb, String str, int firstAmp) {
+        sb.append(str, 0, firstAmp);
         int len = str.length();
         for (int i = firstAmp; i < len; i++) {
             char c = str.charAt(i);
@@ -630,13 +616,13 @@ public class XmlEntities {
                 int nextIdx = i + 1;
                 int semiColonIdx = str.indexOf(';', nextIdx);
                 if (semiColonIdx == -1) {
-                    writer.write(c);
+                    sb.append(c);
                     continue;
                 }
                 int amphersandIdx = str.indexOf('&', i + 1);
                 if (amphersandIdx != -1 && amphersandIdx < semiColonIdx) {
                     // Then the text looks like &...&...;
-                    writer.write(c);
+                    sb.append(c);
                     continue;
                 }
                 String entityContent = str.substring(nextIdx, semiColonIdx);
@@ -671,15 +657,15 @@ public class XmlEntities {
                 }
 
                 if (entityValue == -1) {
-                    writer.write('&');
-                    writer.write(entityContent);
-                    writer.write(';');
+                    sb.append('&');
+                    sb.append(entityContent);
+                    sb.append(';');
                 } else {
-                    writer.write(entityValue);
+                    sb.append(Character.toChars(entityValue));
                 }
                 i = semiColonIdx; // move index up to the semi-colon
             } else {
-                writer.write(c);
+                sb.append(c);
             }
         }
     }
