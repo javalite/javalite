@@ -22,7 +22,6 @@ import java.util.*;
  */
 public class Collections {
 
-
     /**
      * Create array from values.
      * @param values values to create array from.
@@ -76,8 +75,7 @@ public class Collections {
      * @return list with values.
      */
     public static <T> List<T> li(T... values) {
-        return list(values);
-    }
+        return Arrays.asList(values);    }
 
     /**
      * Create a list from values.
@@ -86,10 +84,6 @@ public class Collections {
      * @return list with values.
      */
     public static <T> List<T> list(T... values) {
-        List result = new ArrayList<T>();
-        for (T value : values) {
-            result.add(value);
-        }
-        return result;
+        return Arrays.asList(values);
     }
 }

@@ -235,7 +235,7 @@ public class Util {
     public static String join(String[] collection, String delimiter){
         return join(Arrays.asList(collection), delimiter);
     }
-
+    
     /**
      * Splits a string into an array using a provided delimiter. The split chunks are also trimmed.
      *
@@ -254,7 +254,6 @@ public class Util {
         return tokens.toArray(new String[tokens.size()]);
     }
 
-
     /**
      * Joins the items in collection with a delimiter.
      *
@@ -263,15 +262,16 @@ public class Util {
      * @return string with collection elements separated by delimiter. There is no trailing delimiter in the string.
      */
     public static String join(Collection collection, String delimiter){
-        if(collection.size() == 0) return "";
-        
-        String tmp = "";
-        for(Object o : collection){
-            tmp += o + delimiter;
+        if (collection.isEmpty()) return "";
+        StringBuilder sb = new StringBuilder();
+        Iterator it = collection.iterator();
+        sb.append(it.next());
+        while (it.hasNext()) {
+            sb.append(delimiter);
+            sb.append(it.next());
         }
-        return tmp.substring(0, tmp.length() - delimiter.length());
+        return sb.toString();
     }
-
 
     /**
      * Saves content read from input stream into a file.
