@@ -186,7 +186,7 @@ public class Inflector {
             }
         }
 
-        StringBuffer b = new StringBuffer(camel);
+        StringBuilder b = new StringBuilder(camel);
         for (int i = upper.size() - 1; i >= 0; i--) {
             Integer index = upper.get(i);
             if (index != 0)
@@ -216,12 +216,12 @@ public class Inflector {
      * @return camel case version of underscore.
      */
     public static String camelize(String underscore, boolean capitalizeFirstChar){
-        String result = "";
+        StringBuilder result = new StringBuilder();
         StringTokenizer st = new StringTokenizer(underscore, "_");
-        while(st.hasMoreTokens()){
-            result += capitalize(st.nextToken());
+        while (st.hasMoreTokens()) {
+            result.append(capitalize(st.nextToken()));
         }        
-        return capitalizeFirstChar? result :result.substring(0, 1).toLowerCase() + result.substring(1);            
+        return capitalizeFirstChar ? result.toString() : result.substring(0, 1).toLowerCase() + result.substring(1);
     }
 
     /**
