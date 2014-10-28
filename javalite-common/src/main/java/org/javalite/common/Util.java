@@ -233,9 +233,11 @@ public class Util {
      * @return string with collection elements separated by delimiter. There is no trailing delimiter in the string.
      */
     public static String join(String[] collection, String delimiter){
-        return join(Arrays.asList(collection), delimiter);
+        StringBuilder sb = new StringBuilder();
+        join(sb, collection, delimiter);
+        return sb.toString();
     }
-    
+
     /**
      * Splits a string into an array using a provided delimiter. The split chunks are also trimmed.
      *
@@ -247,7 +249,7 @@ public class Util {
         if(input == null) throw new NullPointerException("input cannot be null");
 
         List<String> tokens  = new ArrayList<String>();
-        StringTokenizer st = new StringTokenizer(input, new String(new byte[]{(byte)delimiter}));
+        StringTokenizer st = new StringTokenizer(input, String.valueOf(delimiter));
         while(st.hasMoreTokens()){
             tokens.add(st.nextToken().trim());
         }
@@ -264,13 +266,52 @@ public class Util {
     public static String join(Collection collection, String delimiter){
         if (collection.isEmpty()) return "";
         StringBuilder sb = new StringBuilder();
+        join(sb, collection, delimiter);
+        return sb.toString();
+    }
+
+    public static void join(StringBuilder sb, Collection collection, String delimiter) {
+        if (collection.isEmpty()) return;
         Iterator it = collection.iterator();
         sb.append(it.next());
         while (it.hasNext()) {
             sb.append(delimiter);
             sb.append(it.next());
         }
-        return sb.toString();
+    }
+
+    public static void join(StringBuilder sb, Object[] collection, String delimiter) {
+        if (collection == null || collection.length == 0) return;
+        sb.append(collection[0]);
+        for (int i = 1; i < collection.length; i++) {
+            sb.append(delimiter);
+            sb.append(collection[i]);
+        }
+    }
+
+    public static void join(StringBuilder sb, List collection, String delimiter) {
+        if (collection.isEmpty()) return;
+        sb.append(collection.get(0));
+        for (int i = 1; i < collection.size(); i++) {
+            sb.append(delimiter);
+            sb.append(collection.get(i));
+        }
+    }
+
+    public static void repeat(StringBuilder sb, String str, int count) {
+        for (int i = 0; i < count; i++) {
+            sb.append(str);
+        }
+    }
+
+    public static void joinAndRepeat(StringBuilder sb, String str, String delimiter, int count) {
+        if (count > 0) {
+            sb.append(str);
+            for (int i = 1; i < count; i++) {
+                sb.append(delimiter);
+                sb.append(str);
+            }
+        }
     }
 
     /**
