@@ -44,14 +44,14 @@ public class ToJsonSpec extends ActiveJDBCTest {
         //test no indent
         String json = p.toJson(false, "name", "last_name", "dob");
         mapper.readTree(json);//check validity
-        the(json).shouldBeEqual("{\"dob\":\"1934-12-01\",\"last_name\":\"Smith\",\"name\":\"John\"}");
+        the(json).shouldBeEqual("{\"name\":\"John\",\"last_name\":\"Smith\",\"dob\":\"1934-12-01T00:00:00\"}");
         //test indent
         json = p.toJson(true, "name", "last_name", "dob");
         mapper.readTree(json);//check validity
         String expected = "{\n" +
-                "  \"dob\":\"1934-12-01\",\n" +
+                "  \"name\":\"John\",\n" +
                 "  \"last_name\":\"Smith\",\n" +
-                "  \"name\":\"John\"\n" +
+                "  \"dob\":\"1934-12-01T00:00:00\"\n" +
                 "}";
         the(json).shouldBeEqual(expected);
     }
@@ -63,42 +63,47 @@ public class ToJsonSpec extends ActiveJDBCTest {
         User u = personList.get(0);
         String json = u.toJson(true);
         mapper.readTree(json);//check validity
-        a(json).shouldEqual("{\"model_class\":\"org.javalite.activejdbc.test_models.User\",\n" +
-                "  \"id\":\"1\",\n" +
+        a(json).shouldEqual("{\n" +
+                // model_class was removed at commit 5d65fcc05a3d277561209c40ed77dbb44f0804c8
+                // "  \"model_class\":\"org.javalite.activejdbc.test_models.User\",\n" +
+                "  \"id\":1,\n" +
                 "  \"first_name\":\"Marilyn\",\n" +
                 "  \"email\":\"mmonroe@yahoo.com\",\n" +
                 "  \"last_name\":\"Monroe\",\n" +
-                "  \"children\" : {\n" +
-                "    \"addresses\" : [\n" +
-                "    {    \"model_class\":\"org.javalite.activejdbc.test_models.Address\",\n" +
-                "      \"id\":\"1\",\n" +
-                "      \"zip\":\"60606\",\n" +
-                "      \"state\":\"IL\",\n" +
-                "      \"address1\":\"123 Pine St.\",\n" +
-                "      \"address2\":\"apt 31\",\n" +
-                "      \"user_id\":\"1\",\n" +
-                "      \"city\":\"Springfield\"\n" +
-                "    },\n" +
-                "    {    \"model_class\":\"org.javalite.activejdbc.test_models.Address\",\n" +
-                "      \"id\":\"2\",\n" +
-                "      \"zip\":\"60606\",\n" +
-                "      \"state\":\"IL\",\n" +
-                "      \"address1\":\"456 Brook St.\",\n" +
-                "      \"address2\":\"apt 21\",\n" +
-                "      \"user_id\":\"1\",\n" +
-                "      \"city\":\"Springfield\"\n" +
-                "    },\n" +
-                "    {    \"model_class\":\"org.javalite.activejdbc.test_models.Address\",\n" +
-                "      \"id\":\"3\",\n" +
-                "      \"zip\":\"60606\",\n" +
-                "      \"state\":\"IL\",\n" +
-                "      \"address1\":\"23 Grove St.\",\n" +
-                "      \"address2\":\"apt 32\",\n" +
-                "      \"user_id\":\"1\",\n" +
-                "      \"city\":\"Springfield\"\n" +
-                "    }\n" +
-                "]\n" +
-                "}\n" +
+                "  \"children\":{\n" +
+                "    \"addresses\":[\n" +
+                "      {\n" +
+                // "        \"model_class\":\"org.javalite.activejdbc.test_models.Address\",\n" +
+                "        \"id\":1,\n" +
+                "        \"zip\":\"60606\",\n" +
+                "        \"state\":\"IL\",\n" +
+                "        \"address1\":\"123 Pine St.\",\n" +
+                "        \"address2\":\"apt 31\",\n" +
+                "        \"user_id\":1,\n" +
+                "        \"city\":\"Springfield\"\n" +
+                "      },\n" +
+                "      {\n" +
+                // "        \"model_class\":\"org.javalite.activejdbc.test_models.Address\",\n" +
+                "        \"id\":2,\n" +
+                "        \"zip\":\"60606\",\n" +
+                "        \"state\":\"IL\",\n" +
+                "        \"address1\":\"456 Brook St.\",\n" +
+                "        \"address2\":\"apt 21\",\n" +
+                "        \"user_id\":1,\n" +
+                "        \"city\":\"Springfield\"\n" +
+                "      },\n" +
+                "      {\n" +
+                // "        \"model_class\":\"org.javalite.activejdbc.test_models.Address\",\n" +
+                "        \"id\":3,\n" +
+                "        \"zip\":\"60606\",\n" +
+                "        \"state\":\"IL\",\n" +
+                "        \"address1\":\"23 Grove St.\",\n" +
+                "        \"address2\":\"apt 32\",\n" +
+                "        \"user_id\":1,\n" +
+                "        \"city\":\"Springfield\"\n" +
+                "      }\n" +
+                "    ]\n" +
+                "  }\n" +
                 "}");
     }
 
@@ -109,7 +114,16 @@ public class ToJsonSpec extends ActiveJDBCTest {
         User u = personList.get(0);
         String json = u.toJson(false);
         mapper.readTree(json);//check validity
-        a(json).shouldEqual("{\"model_class\":\"org.javalite.activejdbc.test_models.User\",\"id\":\"1\",\"first_name\":\"Marilyn\",\"email\":\"mmonroe@yahoo.com\",\"last_name\":\"Monroe\",\"children\" : {\"addresses\" : [{\"model_class\":\"org.javalite.activejdbc.test_models.Address\",\"id\":\"1\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"123 Pine St.\",\"address2\":\"apt 31\",\"user_id\":\"1\",\"city\":\"Springfield\"},{\"model_class\":\"org.javalite.activejdbc.test_models.Address\",\"id\":\"2\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"456 Brook St.\",\"address2\":\"apt 21\",\"user_id\":\"1\",\"city\":\"Springfield\"},{\"model_class\":\"org.javalite.activejdbc.test_models.Address\",\"id\":\"3\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"23 Grove St.\",\"address2\":\"apt 32\",\"user_id\":\"1\",\"city\":\"Springfield\"}]}}");
+        a(json).shouldEqual("{"
+                // model_class was removed at commit 5d65fcc05a3d277561209c40ed77dbb44f0804c8
+                // + "\"model_class\":\"org.javalite.activejdbc.test_models.User\","
+                + "\"id\":1,\"first_name\":\"Marilyn\",\"email\":\"mmonroe@yahoo.com\",\"last_name\":\"Monroe\",\"children\":{\"addresses\":[{"
+                // + "\"model_class\":\"org.javalite.activejdbc.test_models.Address\","
+                + "\"id\":1,\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"123 Pine St.\",\"address2\":\"apt 31\",\"user_id\":1,\"city\":\"Springfield\"},{"
+                // + "\"model_class\":\"org.javalite.activejdbc.test_models.Address\","
+                + "\"id\":2,\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"456 Brook St.\",\"address2\":\"apt 21\",\"user_id\":1,\"city\":\"Springfield\"},{"
+                // + "\"model_class\":\"org.javalite.activejdbc.test_models.Address\","
+                + "\"id\":3,\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"23 Grove St.\",\"address2\":\"apt 32\",\"user_id\":1,\"city\":\"Springfield\"}]}}");
     }
 
     @Test
@@ -132,15 +146,34 @@ public class ToJsonSpec extends ActiveJDBCTest {
 
         String json = personList.toJson(false);
         mapper.readTree(json);//check validity
-        a(json).shouldBeEqual("[{\"model_class\":\"org.javalite.activejdbc.test_models.User\",\"id\":\"1\",\"first_name\":\"Marilyn\",\"email\":\"mmonroe@yahoo.com\",\"last_name\":\"Monroe\",\"children\" : {\"addresses\" : [{\"model_class\":\"org.javalite.activejdbc.test_models.Address\",\"id\":\"1\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"123 Pine St.\",\"address2\":\"apt 31\",\"user_id\":\"1\",\"city\":\"Springfield\"},{\"model_class\":\"org.javalite.activejdbc.test_models.Address\",\"id\":\"2\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"456 Brook St.\",\"address2\":\"apt 21\",\"user_id\":\"1\",\"city\":\"Springfield\"},{\"model_class\":\"org.javalite.activejdbc.test_models.Address\",\"id\":\"3\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"23 Grove St.\",\"address2\":\"apt 32\",\"user_id\":\"1\",\"city\":\"Springfield\"}]}},{\"model_class\":\"org.javalite.activejdbc.test_models.User\",\"id\":\"2\",\"first_name\":\"John\",\"email\":\"jdoe@gmail.com\",\"last_name\":\"Doe\",\"children\" : {\"addresses\" : [{\"model_class\":\"org.javalite.activejdbc.test_models.Address\",\"id\":\"4\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"143 Madison St.\",\"address2\":\"apt 34\",\"user_id\":\"2\",\"city\":\"Springfield\"},{\"model_class\":\"org.javalite.activejdbc.test_models.Address\",\"id\":\"5\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"153 Creek St.\",\"address2\":\"apt 35\",\"user_id\":\"2\",\"city\":\"Springfield\"},{\"model_class\":\"org.javalite.activejdbc.test_models.Address\",\"id\":\"6\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"163 Gorge St.\",\"address2\":\"apt 36\",\"user_id\":\"2\",\"city\":\"Springfield\"},{\"model_class\":\"org.javalite.activejdbc.test_models.Address\",\"id\":\"7\",\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"173 Far Side.\",\"address2\":\"apt 37\",\"user_id\":\"2\",\"city\":\"Springfield\"}]}}]");
+        a(json).shouldBeEqual("[{"
+                // model_class was removed at commit 5d65fcc05a3d277561209c40ed77dbb44f0804c8
+                // + "\"model_class\":\"org.javalite.activejdbc.test_models.User\","
+                + "\"id\":1,\"first_name\":\"Marilyn\",\"email\":\"mmonroe@yahoo.com\",\"last_name\":\"Monroe\",\"children\":{\"addresses\":[{"
+                // + "\"model_class\":\"org.javalite.activejdbc.test_models.Address\","
+                + "\"id\":1,\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"123 Pine St.\",\"address2\":\"apt 31\",\"user_id\":1,\"city\":\"Springfield\"},{"
+                // + "\"model_class\":\"org.javalite.activejdbc.test_models.Address\","
+                + "\"id\":2,\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"456 Brook St.\",\"address2\":\"apt 21\",\"user_id\":1,\"city\":\"Springfield\"},{"
+                // + "\"model_class\":\"org.javalite.activejdbc.test_models.Address\","
+                + "\"id\":3,\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"23 Grove St.\",\"address2\":\"apt 32\",\"user_id\":1,\"city\":\"Springfield\"}]}},{"
+                // + "\"model_class\":\"org.javalite.activejdbc.test_models.User\","
+                + "\"id\":2,\"first_name\":\"John\",\"email\":\"jdoe@gmail.com\",\"last_name\":\"Doe\",\"children\":{\"addresses\":[{"
+                // + "\"model_class\":\"org.javalite.activejdbc.test_models.Address\","
+                + "\"id\":4,\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"143 Madison St.\",\"address2\":\"apt 34\",\"user_id\":2,\"city\":\"Springfield\"},{"
+                // + "\"model_class\":\"org.javalite.activejdbc.test_models.Address\","
+                + "\"id\":5,\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"153 Creek St.\",\"address2\":\"apt 35\",\"user_id\":2,\"city\":\"Springfield\"},{"
+                // + "\"model_class\":\"org.javalite.activejdbc.test_models.Address\","
+                + "\"id\":6,\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"163 Gorge St.\",\"address2\":\"apt 36\",\"user_id\":2,\"city\":\"Springfield\"},{"
+                // + "\"model_class\":\"org.javalite.activejdbc.test_models.Address\","
+                + "\"id\":7,\"zip\":\"60606\",\"state\":\"IL\",\"address1\":\"173 Far Side.\",\"address2\":\"apt 37\",\"user_id\":2,\"city\":\"Springfield\"}]}}]");
     }
 
     @Test
     public void shouldEscapeDoubleQuote() throws IOException {
         Page p = new Page();
-        p.set("description", "bad \" description");
+        p.set("description", "bad \" description\"");
         JsonNode node = mapper.readTree(p.toJson(true));
-        a(node.get("description").toString()).shouldBeEqual("\"bad \\\" description\"");
+        a(node.get("description").toString()).shouldBeEqual("\"bad \\\" description\\\"\"");
 
         //ensure no NPE:
         p = new Page();

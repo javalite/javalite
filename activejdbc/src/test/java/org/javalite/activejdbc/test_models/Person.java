@@ -20,10 +20,6 @@ package org.javalite.activejdbc.test_models;
 import org.javalite.activejdbc.Model;
 import org.javalite.activejdbc.annotations.Cached;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-
 
 @Cached
 public class Person extends Model {
@@ -33,12 +29,10 @@ public class Person extends Model {
         convertTimestamp("graduation_date", "yyyy-MM-dd");
     }
 
-
-    public void beforeClosingTag(int spaces, StringWriter writer, String ... attrs) {
-        String indent = "";
-        for(int i = 0; i < spaces * 2; i++){
-            indent += " ";
-        }
-        writer.append(indent + "<test>test content</test>\n");
+    @Override
+    public void beforeClosingTag(StringBuilder sb, boolean pretty, String ident) {
+        if (pretty) { sb.append(ident); }
+        sb.append("<test>test content</test>");
+        if (pretty) { sb.append('\n'); }
     }
 }

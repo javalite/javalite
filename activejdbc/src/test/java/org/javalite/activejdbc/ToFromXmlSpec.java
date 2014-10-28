@@ -1,17 +1,17 @@
 /*
 Copyright 2009-2014 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
 
 package org.javalite.activejdbc;
@@ -40,7 +40,7 @@ public class ToFromXmlSpec extends ActiveJDBCTest {
     public void shouldGenerateSimpleXml(){
         deleteAndPopulateTable("people");
         Person p  = Person.findById(1);
-        String xml = p.toXml(2, true);
+        String xml = p.toXml(true, true);
         a(XPathHelper.selectText("//name", xml)).shouldEqual("John");
         a(XPathHelper.selectText("//last_name", xml)).shouldEqual("Smith");
     }
@@ -72,7 +72,7 @@ public class ToFromXmlSpec extends ActiveJDBCTest {
 
         List<User> personList = User.findAll().orderBy("id").include(Address.class);
         User u = personList.get(0);
-        String xml = u.toXml(2, true);
+        String xml = u.toXml(true, true);
 
         System.out.println(xml);
         a(XPathHelper.count("//address", xml)).shouldEqual(4);
@@ -84,7 +84,7 @@ public class ToFromXmlSpec extends ActiveJDBCTest {
         deleteAndPopulateTables("users", "addresses");
 
         User u = User.findById(1);
-        String xml = u.toXml(2, true, "email", "last_name");
+        String xml = u.toXml(true, true, "email", "last_name");
 
         a(XPathHelper.count("/user/*", xml)).shouldEqual(2);
         a(XPathHelper.selectText("/user/email", xml)).shouldEqual("mmonroe@yahoo.com");
@@ -96,7 +96,7 @@ public class ToFromXmlSpec extends ActiveJDBCTest {
         deleteAndPopulateTables("users", "addresses");
         LazyList<User> personList = User.findAll().orderBy("id").include(Address.class);
 
-        String xml = personList.toXml(2, true);
+        String xml = personList.toXml(true, true);
         System.out.println(xml);
 
         a(XPathHelper.count("//user", xml)).shouldEqual(2);
@@ -117,7 +117,7 @@ public class ToFromXmlSpec extends ActiveJDBCTest {
     public void shouldInjectCustomContentIntoXML(){
         deleteAndPopulateTable("people");
         Person p  = Person.findById(1);
-        String xml = p.toXml(2, true);
+        String xml = p.toXml(true, true);
         a(XPathHelper.selectText("/person/test", xml)).shouldEqual("test content");
     }
 
@@ -126,7 +126,7 @@ public class ToFromXmlSpec extends ActiveJDBCTest {
         deleteAndPopulateTable("people");
         Person p  = Person.findById(1);
         p.set("last_name", "Smith & Wesson");
-        String xml = p.toXml(2, true);
+        String xml = p.toXml(true, true);
         a(XPathHelper.selectText("/person/last_name", xml)).shouldEqual("Smith & Wesson");
         the(xml).shouldContain("<last_name>Smith &amp; Wesson</last_name>");
     }

@@ -33,7 +33,7 @@ public class Errors implements Map<String, String> {
 
     private Map<String, Validator> validators = new HashMap<String, Validator>();
 
-    
+
     /**
      * Adds a validator whose validation failed.
      *  
@@ -63,7 +63,7 @@ public class Errors implements Map<String, String> {
      * validator. If an there was no validation error generated for the requested attribute, returns null.
      */
     public String get(Object attributeName) {
-        if(attributeName == null) throw new NullPointerException("attributeName cannot be null");        
+        if(attributeName == null) throw new NullPointerException("attributeName cannot be null");
         Validator v = validators.get(attributeName);
         return v == null? null:v.formatMessage(locale);
     }
@@ -94,31 +94,31 @@ public class Errors implements Map<String, String> {
     }
 
     public int size() {
-        return validators.size();  
+        return validators.size();
     }
 
     public boolean isEmpty() {
-        return validators.isEmpty();  
+        return validators.isEmpty();
     }
 
     public boolean containsKey(Object key) {
-        return validators.containsKey(key);  
+        return validators.containsKey(key);
     }
 
     public boolean containsValue(Object value) {
-        return validators.containsValue(value);  
+        return validators.containsValue(value);
     }
 
     class NopValidator extends ValidatorAdapter {
         @Override
         public void validate(Model m) {}
     }
-    
+
     public String put(String key, String value) {
         NopValidator nv = new NopValidator();
         nv.setMessage(value);
         Validator v = validators.put(key, nv);
-        return v == null? null:v.formatMessage(null);          
+        return v == null? null:v.formatMessage(null);
     }
 
     public String remove(Object key) {
@@ -162,7 +162,7 @@ public class Errors implements Map<String, String> {
         }
 
         public Object setValue(Object value) {
-            throw new UnsupportedOperationException();  
+            throw new UnsupportedOperationException();
         }
     }
 
@@ -178,11 +178,11 @@ public class Errors implements Map<String, String> {
 
     @Override
     public String toString() {
-        String res = "{ ";
-        for(Object key: validators.keySet()){
-            res += key + "=<" +validators.get(key).formatMessage(null) + "> ";
+        StringBuilder res = new StringBuilder().append("{ ");
+        for (String key : validators.keySet()) {
+            res.append(key).append("=<").append(validators.get(key).formatMessage(null)).append("> ");
         }
-        res += "}";
-        return res;
+        res.append("}");
+        return res.toString();
     }
 }

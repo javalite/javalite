@@ -31,7 +31,7 @@ public class ValidationException extends DBException {
     private Model source;
 
     public ValidationException(Model m){
-        message += m.errors().toString();
+        message = m.errors().toString();
         this.source = m;
     }
 

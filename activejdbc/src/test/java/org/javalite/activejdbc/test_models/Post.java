@@ -19,7 +19,6 @@ package org.javalite.activejdbc.test_models;
 
 import org.javalite.activejdbc.Model;
 
-import java.io.StringWriter;
 
 /**
  * @author Igor Polevoy
@@ -27,7 +26,9 @@ import java.io.StringWriter;
 public class Post extends Model {
 
     @Override
-    public void beforeClosingBrace(boolean pretty, String indent, StringWriter writer) {
-        writer.append((pretty?",\n" + indent:",") + "\"injected\": {\"secret_name\":\"Secret Name\"}");
+    public void beforeClosingBrace(StringBuilder sb, boolean pretty, String indent) {
+        sb.append(",");
+        if (pretty) { sb.append("\n").append(indent); }
+        sb.append("\"injected\": {\"secret_name\":\"Secret Name\"}");
     }
 }

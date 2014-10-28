@@ -20,16 +20,15 @@ package org.javalite.activejdbc;
 import org.javalite.activejdbc.associations.*;
 import org.javalite.activejdbc.cache.QueryCache;
 import org.javalite.common.Inflector;
-import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.*;
 
-import static org.javalite.common.Collections.list;
+import static org.javalite.common.Util.*;
+
 
 /**
  * While this class is public, it is never instantiated directly. This class provides
@@ -44,17 +43,15 @@ public class LazyList<T extends Model> extends AbstractList<T>{
     private List<String> orderBys = new ArrayList<String>();
     private boolean hydrated = false;
     private MetaModel metaModel;
-    private List<String> subQueries = new ArrayList<String>();
+    private String subQuery;
     private String fullQuery;
     private Object[] params;
     private long limit = -1, offset = -1;
     private Map<Class<T>, Association> includes = new HashMap<Class<T>, Association>();
     private boolean forPaginator;
-    
+
     protected LazyList(String subQuery, MetaModel metaModel, Object ... params){
-        if(subQuery != null)
-            subQueries.add(subQuery);
-        
+        this.subQuery = subQuery;
         this.params = params == null? new Object[]{}: params;
         this.metaModel = metaModel;
     }
@@ -189,26 +186,34 @@ public class LazyList<T extends Model> extends AbstractList<T>{
     /**
      * Generates a XML document from content of this list.
      *
-     * @param spaces by how many spaces to indent.
+     * @param pretty pretty format (human readable), or one line text.
      * @param declaration true to include XML declaration at the top
      * @param attrs list of attributes to include. No arguments == include all attributes.
      * @return generated XML.
      */
-    public String toXml(int spaces, boolean declaration, String ... attrs){
+    public String toXml(boolean pretty, boolean declaration, String ... attrs) {
         String topNode = Inflector.pluralize(Inflector.underscore(metaModel.getModelClass().getSimpleName()));
 
         hydrate();
 
-        StringWriter sw = new StringWriter();
-        if(declaration)
-            sw.write("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" + (spaces > 0?"\n":""));
-
-        sw.write("<"  + topNode + ">" + (spaces > 0 ? "\n":""));
-        for (T t : delegate) {
-            sw.write(t.toXml(spaces, false, attrs));
+        StringBuilder sb = new StringBuilder();
+        if(declaration) {
+            sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+            if (pretty) sb.append('\n');
         }
-        sw.write("</"  + topNode + ">" + (spaces > 0 ? "\n":""));
-        return sw.toString();
+        sb.append('<').append(topNode).append('>');
+        if (pretty) { sb.append('\n'); }
+        for (T t : delegate) {
+            t.toXmlP(sb, pretty, pretty ? "  " : "", attrs);
+        }
+        sb.append("</").append(topNode).append('>');
+        if (pretty) { sb.append('\n'); }
+        return sb.toString();
+    }
+
+    @Deprecated
+    public String toXml(int spaces, boolean declaration, String ... attrs) {
+        return toXml(spaces > 0, declaration, attrs);
     }
 
     /**
@@ -220,15 +225,20 @@ public class LazyList<T extends Model> extends AbstractList<T>{
      */
     public String toJson(boolean pretty, String ... attrs) {
         hydrate();
-        StringWriter sw = new StringWriter();
-        sw.write("[" + (pretty? "\n":""));
-        List<String> items = new ArrayList<String>();
-        for (T t : delegate) {
-            items.add(t.toJsonP(pretty, (pretty?"  ":""), attrs));
+        StringBuilder sb = new StringBuilder();
+        sb.append('[');
+        if (pretty) sb.append('\n');
+
+        for (int i = 0; i < delegate.size(); i++) {
+            if (i > 0) {
+                sb.append(',');
+                if (pretty) { sb.append('\n'); }
+            }
+            delegate.get(i).toJsonP(sb, pretty, (pretty ? "  " : ""), attrs);
         }
-        sw.write(Util.join(items, "," + (pretty?"\n":"")));
-        sw.write((pretty? "\n":"") + "]" );
-        return sw.toString();
+        if (pretty) { sb.append('\n'); }
+        sb.append(']');
+        return sb.toString();
     }
 
 
@@ -243,7 +253,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
      */
     //TODO: write test, and also test for exception.
     public <E extends Model>  LazyList<E>  load(){
-        
+
         if(hydrated) throw new DBException("load() must be the last on the chain of methods");
 
         hydrate();
@@ -269,21 +279,21 @@ public class LazyList<T extends Model> extends AbstractList<T>{
      * list.
      */
     public String toSql(boolean showParameters) {
-           String subQuery = Util.join(subQueries.toArray(new String[]{}), " ");
-
         String sql;
         if(forPaginator){
-            sql = Registry.instance().getConfiguration().getDialect(metaModel).formSelect(null, fullQuery,
-                        orderBys, limit, offset);
+            sql = Registry.instance().getConfiguration().getDialect(metaModel).formSelect(null,
+                    fullQuery, orderBys, limit, offset);
         }else{
-            sql = fullQuery != null ? fullQuery :
-                Registry.instance().getConfiguration().getDialect(metaModel).formSelect(metaModel.getTableName(), subQuery,
-                        orderBys, limit, offset);
+            sql = fullQuery != null ? fullQuery
+                : Registry.instance().getConfiguration().getDialect(metaModel).formSelect(metaModel.getTableName(),
+                        subQuery, orderBys, limit, offset);
         }
-
-        sql += showParameters ? ", with parameters: " + list(params) : "";
-
-        return sql ;
+        if (showParameters) {
+            StringBuilder sb = new StringBuilder(sql).append(", with parameters: ");
+            join(sb, params, ", ");
+            sql = sb.toString();
+        }
+        return sql;
     }
 
 
@@ -293,7 +303,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
 
         String sql= toSql(false);
 
-        if(metaModel.cached()){        
+        if(metaModel.cached()){
             List<T> cached = (List<T>) QueryCache.instance().getItem(metaModel.getTableName(), sql, params);
             if(cached != null){
                 delegate = cached;
@@ -313,11 +323,11 @@ public class LazyList<T extends Model> extends AbstractList<T>{
             QueryCache.instance().addItem(metaModel.getTableName(), sql, params, delegate);
         }
         hydrated = true;
-        processIncludes();        
+        processIncludes();
     }
 
     private void processIncludes(){
-        for(Class includedClass: includes.keySet()){            
+        for(Class includedClass: includes.keySet()){
             Association association = includes.get(includedClass);
             if(association instanceof BelongsToAssociation){
                 processParent((BelongsToAssociation)association, includedClass);
@@ -330,7 +340,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
             }else if(association instanceof BelongsToPolymorphicAssociation){
                 processPolymorphicParent((BelongsToPolymorphicAssociation)association, includedClass);
             }
-        }        
+        }
     }
 
     /**
@@ -626,13 +636,13 @@ public class LazyList<T extends Model> extends AbstractList<T>{
     @Override
     public int hashCode() {
         hydrate();
-        return delegate.hashCode();    
+        return delegate.hashCode();
     }
 
     @Override
     public String toString() {
         hydrate();
-        return delegate.toString();    
+        return delegate.toString();
     }
 
     /**
