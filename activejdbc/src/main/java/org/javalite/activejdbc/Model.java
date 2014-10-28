@@ -754,7 +754,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             if((attrList.contains(name) || attrs.length == 0) && !(value instanceof List)){
                 if (pretty) { sb.append("  ").append(indent); }
                 sb.append('<').append(name).append('>').append(XmlEntities.XML.escape(value.toString())).append("</").append(name).append('>');
-                if (pretty) ^{ sb.append('\n'); }
+                if (pretty) { sb.append('\n'); }
             }else if (value instanceof List){
                 List<Map> children = (List<Map>)value;
                 if (pretty) { sb.append("  ").append(indent); }
