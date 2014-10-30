@@ -175,9 +175,7 @@ public class ToFromXmlSpecTest extends ActiveJDBCTest {
 
     @Test
     public void shouldEscapeSpecialCharsInXMLContent(){
-        deleteAndPopulateTable("people");
-        Person p = Person.findById(1);
-        p.set("last_name", "Smith & Wesson");
+        Person p = Person.create("name", "John", "last_name", "Smith & Wesson");
         String xml = p.toXml(true, true);
         a(XPathHelper.selectText("/person/last_name", xml)).shouldEqual("Smith & Wesson");
         the(xml).shouldContain("<last_name>Smith &amp; Wesson</last_name>");
