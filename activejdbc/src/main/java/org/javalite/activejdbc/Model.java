@@ -22,7 +22,6 @@ import org.javalite.activejdbc.cache.QueryCache;
 import org.javalite.activejdbc.validation.*;
 import org.javalite.common.Convert;
 import org.javalite.common.Inflector;
-import org.javalite.common.Util;
 import org.javalite.common.XmlEntities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,9 +39,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static org.javalite.common.Collections.list;
 import static org.javalite.common.Inflector.*;
-import static org.javalite.common.Util.blank;
+import static org.javalite.common.Util.*;
 
 
 /**
@@ -87,8 +85,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public void fromMap(Map input){
 
         List<String> attributeNames = getMetaModelLocal().getAttributeNames();
-        
-        for (String attrName : attributeNames) {            
+
+        for (String attrName : attributeNames) {
             Object value = input.get(attrName.toLowerCase());
             if (value == null) {
                 value = input.get(attrName.toUpperCase());
@@ -724,49 +722,93 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     /**
      * Generates a XML document from content of this model.
      *
-     * @param spaces by how many spaces to indent.
-     * @param declaration tru to include XML declaration at the top
+     * @param pretty pretty format (human readable), or one line text.
+     * @param declaration true to include XML declaration at the top
      * @param attrs list of attributes to include. No arguments == include all attributes.
      * @return generated XML.
      */
-    public String toXml(int spaces, boolean declaration, String ... attrs){
+    public String toXml(boolean pretty, boolean declaration, String ... attrs) {
+        StringBuilder sb = new StringBuilder();
+
+        if(declaration) {
+            sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+            if (pretty) { sb.append('\n'); }
+        }
+        toXmlP(sb, pretty, "", attrs);
+        return sb.toString();
+    }
+
+    protected void toXmlP(StringBuilder sb, boolean pretty, String indent, String ... attrs) {
 
         Map<String, Object> modelMap = toMap();
 
-        String indent = "";
-        for(int i = 0; i < spaces; i++)
-            indent += " ";
-
         List<String> attrList = Arrays.asList(attrs);
 
-        StringWriter sw = new StringWriter();
-
-        if(declaration) sw.write("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" + (spaces > 0?"\n":""));
-
         String topTag = Inflector.underscore(getClass().getSimpleName());
-
-        sw.write(indent + "<" + topTag + ">" + (spaces > 0?"\n":""));
+        if (pretty) { sb.append(indent); }
+        sb.append('<').append(topTag).append('>');
+        if (pretty) { sb.append('\n'); }
 
         for(String name: modelMap.keySet()){
             Object value  = modelMap.get(name);
             if((attrList.contains(name) || attrs.length == 0) && !(value instanceof List)){
-                sw.write(indent + indent + "<" + name + ">" + XmlEntities.XML.escape(value.toString()) + "</" + name + ">" + (spaces > 0?"\n":""));
+                if (pretty) { sb.append("  ").append(indent); }
+                sb.append('<').append(name).append('>').append(XmlEntities.XML.escape(value.toString())).append("</").append(name).append('>');
+                if (pretty) { sb.append('\n'); }
             }else if (value instanceof List){
                 List<Map> children = (List<Map>)value;
-                sw.write(indent + indent + "<" + name + ">" + (spaces > 0?"\n":""));
+                if (pretty) { sb.append("  ").append(indent); }
+                sb.append('<').append(name).append('>');
+                if (pretty) { sb.append('\n'); }
                 for(Map child: children){
-                    sw.write(indent + indent + indent + "<" + Inflector.singularize(name) + ">" + (spaces > 0?"\n":""));
+                    if (pretty) { sb.append("    ").append(indent); }
+                    sb.append('<').append(Inflector.singularize(name)).append('>');
+                    if (pretty) { sb.append('\n'); }
                     for(Object childKey: child.keySet()){
-                        sw.write(indent + indent + indent + indent + "<" + childKey + ">" + XmlEntities.XML.escape(child.get(childKey).toString())+ "</" + childKey +">" + (spaces > 0?"\n":""));
+                        if (pretty) { sb.append("      ").append(indent); }
+                        sb.append('<').append(childKey).append('>').append(XmlEntities.XML.escape(child.get(childKey).toString())).append("</").append(childKey).append('>');
+                        if (pretty) { sb.append('\n'); }
                     }
-                    sw.write(indent + indent + indent + "</" + Inflector.singularize(name) + ">" + (spaces > 0?"\n":""));
+                    if (pretty) { sb.append("    ").append(indent); }
+                    sb.append("</").append(Inflector.singularize(name)).append('>');
+                    if (pretty) { sb.append('\n'); }
                 }
-                sw.write(indent + indent + "</" + name + ">" + (spaces > 0?"\n":""));
+                if (pretty) { sb.append("  ").append(indent); }
+                sb.append("</").append(name).append('>');
+                if (pretty) { sb.append('\n'); }
             }
         }
-        beforeClosingTag(spaces, sw, attrs);
-        sw.write(indent + "</" + topTag + ">" + (spaces > 0?"\n":""));
-        return sw.toString();
+        beforeClosingTag(sb, pretty, pretty ? "  " + indent : "", attrs);
+        if (pretty) { sb.append(indent); }
+        sb.append("</").append(topTag).append('>');
+        if (pretty) { sb.append('\n'); }
+    }
+
+    @Deprecated
+    public String toXml(int spaces, boolean declaration, String ... attrs){
+        return toXml(spaces > 0, declaration, attrs);
+    }
+
+    /**
+     * Override in a subclass to inject custom content onto XML just before the closing tag.
+     *
+     * <p>To keep the formatting, it is recommended to implement this method as the example below.
+     *
+     * <blockquote><pre>
+     * if (pretty) { sb.append(ident); }
+     * sb.append("&lt;test&gt;...&lt;/test&gt;");
+     * if (pretty) { sb.append('\n'); }
+     * </pre></blockquote>
+     *
+     * @param sb to write content to.
+     * @param pretty pretty format (human readable), or one line text.
+     * @param indent indent at current level
+     * @param attrs list of attributes to include
+     */
+    public void beforeClosingTag(StringBuilder sb, boolean pretty, String indent, String... attrs) {
+        StringWriter writer = new StringWriter();
+        beforeClosingTag(indent.length(), writer, attrs);
+        sb.append(writer.toString());
     }
 
     /**
@@ -774,11 +816,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @param spaces number of spaces of indent
      * @param writer to write content to.
+     * @param attrs list of attributes to include
+     *
+     * @deprecated Use {@link #beforeClosingTag(StringBuilder, boolean, String, String...)} instead
      */
+    @Deprecated
     public void beforeClosingTag(int spaces, StringWriter writer, String ... attrs) {
-        //do nothing.
+        // do nothing
     }
-
 
     /**
      * Generates a JSON document from content of this model.
@@ -788,99 +833,121 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return generated JSON.
      */
     public String toJson(boolean pretty, String... attrs) {
-        return toJsonP(pretty, "", attrs);
+        StringBuilder sb = new StringBuilder();
+        toJsonP(sb, pretty, "", attrs);
+        return sb.toString();
     }
 
-    private static DateFormat isoDateFormater;
+    private static DateFormat isoDateTimeFormater;
     static {
-
-        //2013-05-28T14:03:17.956+0300
-        isoDateFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-//        isoDateFormater.setTimeZone(TimeZone.getTimeZone("UTC"));
+        //TODO missing time zone
+        //TODO trim time if T00:00:00
+        isoDateTimeFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     }
-    protected  String toJsonP(boolean pretty, String indent, String... attrs) {
-        Collection<String> attrList = Arrays.asList(attrs);
+    protected void toJsonP(StringBuilder sb, boolean pretty, String indent, String... attrs) {
+        if (pretty) { sb.append(indent); }
+        sb.append('{');
 
-        StringWriter sw = new StringWriter();
-        sw.write(indent + "{" + (pretty ? "" + indent : ""));
-
-        List<String> attributeStrings = new ArrayList<String>();
-
-        if (attrList.size() == 0) {
-            attrList = attributes.keySet();
-        }
-
+        StringBuilder sbAttrs = new StringBuilder();
+        Collection<String> attrList = (attrs != null && attrs.length > 0) ? Arrays.asList(attrs) : attributes.keySet();
         for (String name : attrList) {
+            if (sbAttrs.length() > 0) { sbAttrs.append(','); }
+            if (pretty) { sbAttrs.append("\n  ").append(indent); }
+            sbAttrs.append('"').append(name).append("\":");
             Object v = get(name);
-            String val = null;
             if (v == null) {
-                val = "null";
+                sbAttrs.append("null");
             } else if (v instanceof Number || v instanceof Boolean) {
-                val = v.toString();
+                sbAttrs.append(v);
             } else if (v instanceof Date) {
-                val = "\"" + isoDateFormater.format((Date) v) + "\"";
+                sbAttrs.append('"').append(isoDateTimeFormater.format((Date) v)).append('"');
             } else {
-                val = "\"" + v.toString()
-                      .replaceAll("\\\\", "\\\\\\\\") // \
-                      .replaceAll("\"", "\\\\\"")     // "
-                      .replaceAll("/", "\\\\/")       // /
-                      .replaceAll("\b", "\\\\b")      // \b
-                      .replaceAll("\f", "\\\\f")      // \f
-                      .replaceAll("\n", "\\\\n")      // \n
-                      .replaceAll("\r", "\\\\r")      // \r
-                      .replaceAll("\t", "\\\\t")      // \t
-                      + "\"";
+                sbAttrs.append('"').append(v.toString()
+                        .replace("\\", "\\\\")  // \
+                        .replace("\"", "\\\"")  // "
+                        .replace("\b", "\\b")   // \b
+                        .replace("\f", "\\f")   // \f
+                        .replace("\n", "\\n")   // \n
+                        .replace("\r", "\\r")   // \r
+                        .replace("\t", "\\t")   // \t
+                ).append('"');
             }
-            attributeStrings.add((pretty ? "\n  " + indent : "") + "\"" + name + "\":" + val);
         }
-
-        sw.write(Util.join(attributeStrings, ","));
+        sb.append(sbAttrs);
 
         if (cachedChildren != null && cachedChildren.size() > 0) {
 
-            sw.write("," + (pretty ? "\n  " + indent : "") + "\"children\" : {");
+            sb.append(',');
+            if (pretty) { sb.append("\n  ").append(indent); }
+            sb.append("\"children\":{");
 
-            List<Class>  childClasses = new ArrayList<Class>();
+            List<Class> childClasses = new ArrayList<Class>();
             childClasses.addAll(cachedChildren.keySet());
 
             for (int i = 0; i < childClasses.size(); i++) {
+                if (i > 0) { sb.append(','); }
                 Class childClass = childClasses.get(i);
                 String name = Inflector.pluralize(childClass.getSimpleName()).toLowerCase();
-                sw.write((pretty ? "\n" + indent + "    " : "") + "\"" + name + "\" : [");
-                List<String> childrenList = new ArrayList<String>();
-                for (Model child : cachedChildren.get(childClass)) {
-                    childrenList.add((pretty ? "\n" + indent : "") + child.toJsonP(pretty, (pretty ? indent + "    " : "")));
-                }
-                sw.write(Util.join(childrenList, ","));
-                sw.write((pretty ? "\n" + indent + indent : "") + "]");
+                if (pretty) { sb.append("\n    ").append(indent); }
+                sb.append('"').append(name).append("\":[");
 
-                if(i < (childClasses.size() - 1)){
-                    sw.write(",");
+                List<Model> child = cachedChildren.get(childClass);
+                for (int j = 0; j < child.size(); j++) {
+                    if (j > 0) { sb.append(','); }
+                    if (pretty) { sb.append('\n'); }
+                    child.get(j).toJsonP(sb, pretty, (pretty ? "      " + indent : ""));
                 }
+
+                if (pretty) { sb.append("\n    ").append(indent); }
+                sb.append(']');
             }
-            sw.write((pretty ? "\n" + indent + indent : "") + "}");
+            if (pretty) { sb.append("\n  ").append(indent); }
+            sb.append('}');
         }
 
-        beforeClosingBrace(pretty, pretty ? "  " + indent : "", sw);
-        sw.write((pretty ? "\n" + indent : "") + "}");
-        return sw.toString();
+        beforeClosingBrace(sb, pretty, pretty ? "  " + indent : "", attrs);
+        if (pretty) { sb.append('\n').append(indent); }
+        sb.append('}');
     }
 
     /**
      * Override in subclasses in order to inject custom content into Json just before the closing brace.
      *
+     * <p>To keep the formatting, it is recommended to implement this method as the example below.
+     *
+     * <blockquote><pre>
+     * sb.append(',');
+     * if (pretty) { sb.append('\n').append(indent); }
+     * sb.append("\"test\":\"...\"");
+     * </pre></blockquote>
+     *
+     * @param sb to write custom content to
+     * @param pretty pretty format (human readable), or one line text.
+     * @param indent indent at current level
+     * @param attrs list of attributes to include
+     */
+    public void beforeClosingBrace(StringBuilder sb, boolean pretty, String indent, String... attrs) {
+        StringWriter writer = new StringWriter();
+        beforeClosingBrace(pretty, indent, writer);
+        sb.append(writer.toString());
+    }
+
+    /**
+     * Override in subclasses in order to inject custom content into Json just before the closing brace.
+     *
+     * @param pretty pretty format (human readable), or one line text.
      * @param indent indent at current level
      * @param writer writer to write custom content to
      */
-    public void beforeClosingBrace(boolean pretty, String indent, StringWriter writer){
-
+    @Deprecated
+    public void beforeClosingBrace(boolean pretty, String indent, StringWriter writer) {
+        // do nothing
     }
-
 
     /**
      * Returns parent of this model, assuming that this table represents a child.
      * This method may return <code>null</code> in cases when you have orphan record and
-     * referential integrity is not enforced in DBMS with a foreign key constraint. 
+     * referential integrity is not enforced in DBMS with a foreign key constraint.
      *
      * @param parentClass   class of a parent model.
      * @return instance of a parent of this instance in the "belongs to"  relationship.
@@ -996,8 +1063,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 return;
             }
         }
-        throw new IllegalArgumentException("Class: " + parent.getClass() + " is not associated with " + this.getClass()
-                + ", list of existing associations: \n" + Util.join(getMetaModelLocal().getAssociations(), "\n"));
+        StringBuilder sb = new StringBuilder();
+        sb.append("Class: ").append(parent.getClass()).append(" is not associated with ").append(this.getClass())
+                .append(", list of existing associations:\n");
+        join(sb, getMetaModelLocal().getAssociations(), "\n");
+        throw new IllegalArgumentException(sb.toString());
     }
 
     /**
@@ -1105,7 +1175,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         if(attribute == null) throw new IllegalArgumentException("attribute cannot be null");
 
         // NOTE: this is a workaround for JSP pages. JSTL in cases ${item.id} does not call the getId() method, instead
-        //calls item.get("id"), considering that this is a map only!        
+        //calls item.get("id"), considering that this is a map only!
         if(!attributes.containsKey("id") && attribute.equalsIgnoreCase("id")){
             String idName = getMetaModelLocal().getIdName();
             return attributes.get(idName.toLowerCase());
@@ -1256,15 +1326,15 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-         * Converts Model value to <code>Short</code>
-         *
-         * @see {@link Convert#toShort(Object)}
-         * @param attribute name of attribute to convert
-         * @return converted value
-         */
-        public Short getShort(String attribute) {
-            return Convert.toShort(get(attribute));
-        }
+     * Converts Model value to <code>Short</code>
+     *
+     * @see {@link Convert#toShort(Object)}
+     * @param attribute name of attribute to convert
+     * @return converted value
+     */
+    public Short getShort(String attribute) {
+       return Convert.toShort(get(attribute));
+    }
 
     /**
      * Converts Model value to <code>Float</code>
@@ -2156,7 +2226,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         boolean result;
         if (blank(getId())) {
-            result =  doInsert();
+            result = doInsert();
         } else {
             result = update();
         }
@@ -2529,8 +2599,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 }
             }
         }
-        return new StringBuffer("INSERT INTO ").append(getMetaModelLocal().getTableName()).append(" (")
-                .append(Util.join(names, ", ")).append(") VALUES (").append(Util.join(values, ", ")).append(")").toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append("INSERT INTO ").append(getMetaModelLocal().getTableName()).append(" (");
+        join(sb, names, ", ");
+        sb.append(") VALUES (");
+        join(sb, values, ", ");
+        sb.append(')');
+        return sb.toString();
     }
 
     /**

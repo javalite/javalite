@@ -226,16 +226,28 @@ public class Util {
     }
 
     /**
+     * Returns true if array is either null or empty.
+     *
+     * @param array array to check
+     * @return true if array is either null or empty, false otherwise
+     */
+    public static boolean isEmpty(Object[] array) {
+        return array == null || array.length == 0;
+    }
+
+    /**
      * Joins the items in collection with a delimiter.
      *
-     * @param collection - collection of items to join.
+     * @param collection collection of items to join.
      * @param delimiter delimiter to insert between elements of collection.
      * @return string with collection elements separated by delimiter. There is no trailing delimiter in the string.
      */
     public static String join(String[] collection, String delimiter){
-        return join(Arrays.asList(collection), delimiter);
+        StringBuilder sb = new StringBuilder();
+        join(sb, collection, delimiter);
+        return sb.toString();
     }
-    
+
     /**
      * Splits a string into an array using a provided delimiter. The split chunks are also trimmed.
      *
@@ -247,7 +259,7 @@ public class Util {
         if(input == null) throw new NullPointerException("input cannot be null");
 
         List<String> tokens  = new ArrayList<String>();
-        StringTokenizer st = new StringTokenizer(input, new String(new byte[]{(byte)delimiter}));
+        StringTokenizer st = new StringTokenizer(input, String.valueOf(delimiter));
         while(st.hasMoreTokens()){
             tokens.add(st.nextToken().trim());
         }
@@ -257,20 +269,97 @@ public class Util {
     /**
      * Joins the items in collection with a delimiter.
      *
-     * @param collection - collection of items to join.
+     * @param collection collection of items to join.
      * @param delimiter delimiter to insert between elements of collection.
      * @return string with collection elements separated by delimiter. There is no trailing delimiter in the string.
      */
     public static String join(Collection collection, String delimiter){
-        if (collection.isEmpty()) return "";
+        if (collection.isEmpty()) { return ""; }
         StringBuilder sb = new StringBuilder();
+        join(sb, collection, delimiter);
+        return sb.toString();
+    }
+
+    /**
+     * Joins the items in collection with a delimiter, and appends the result to StringBuilder.
+     *
+     * @param sb StringBuilder to append result to
+     * @param collection collection of items to join.
+     * @param delimiter delimiter to insert between elements of collection.
+     */
+    public static void join(StringBuilder sb, Collection<?> collection, String delimiter) {
+        if (collection.isEmpty()) { return; }
         Iterator it = collection.iterator();
         sb.append(it.next());
         while (it.hasNext()) {
             sb.append(delimiter);
             sb.append(it.next());
         }
-        return sb.toString();
+    }
+
+    /**
+     * Joins the items in array with a delimiter, and appends the result to StringBuilder.
+     *
+     * @param sb StringBuilder to append result to
+     * @param array array of items to join.
+     * @param delimiter delimiter to insert between elements of array.
+     */
+    public static void join(StringBuilder sb, Object[] array, String delimiter) {
+        if (isEmpty(array)) { return; }
+        sb.append(array[0]);
+        for (int i = 1; i < array.length; i++) {
+            sb.append(delimiter);
+            sb.append(array[i]);
+        }
+    }
+
+    /**
+     * Joins the items in list with a delimiter, and appends the result to StringBuilder.
+     *
+     * @param sb StringBuilder to append result to
+     * @param list list of items to join.
+     * @param delimiter delimiter to insert between elements of list.
+     */
+    public static void join(StringBuilder sb, List<?> list, String delimiter) {
+        if (list.isEmpty()) return;
+        sb.append(list.get(0));
+        for (int i = 1; i < list.size(); i++) {
+            sb.append(delimiter);
+            sb.append(list.get(i));
+        }
+    }
+
+    /**
+     * Repeats string of characters a defined number of times, and appends result to StringBuilder.
+     *
+     * @param sb StringBuilder to append result to
+     * @param str string of characters to be repeated.
+     * @param count number of times to repeat, zero or a negative number produces no result
+     */
+    public static void repeat(StringBuilder sb, String str, int count) {
+        for (int i = 0; i < count; i++) {
+            sb.append(str);
+        }
+    }
+
+    /**
+     * Repeats string of characters a defined number of times with a delimiter, and appends result to StringBuilder.
+     *
+     * <p>For example, <tt>joinAndRepeat(sb, "?", ",", 3)</tt> will append <tt>"?,?,?"</tt> to <tt>sb</tt>.
+     *
+     * @param sb StringBuilder to append result to
+     * @param str string of characters to be repeated.
+     * @param delimiter delimiter to insert between repeated items.
+     * @param count number of times to repeat, zero or a negative number produces no result
+     */
+    public static void joinAndRepeat(StringBuilder sb, String str, String delimiter, int count) {
+        if (count > 0) {
+            sb.append(str);
+            for (int i = 1; i < count; i++) {
+                sb.append(delimiter);
+                sb.append(str);
+            }
+        }
     }
 
     /**

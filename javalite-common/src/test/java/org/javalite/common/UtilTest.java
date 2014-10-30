@@ -17,15 +17,15 @@ limitations under the License.
 
 package org.javalite.common;
 
-import org.javalite.test.jspec.JSpecSupport;
-import org.junit.Test;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
-
-import static org.javalite.common.Util.read;
-import static org.javalite.common.Util.readResource;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import org.javalite.test.jspec.JSpecSupport;
+import org.junit.Test;
 
 /**
  * @author Igor Polevoy
@@ -71,16 +71,113 @@ public class UtilTest extends JSpecSupport {
 
     @Test
     public void shouldReadUTF8() throws IOException {
-
-        it(read(getClass().getResourceAsStream("/test.txt"), "UTF-8")).shouldBeEqual("чебурашка");
-        it(read(getClass().getResourceAsStream("/test.txt"))).shouldBeEqual("чебурашка");
+        it(Util.read(getClass().getResourceAsStream("/test.txt"), "UTF-8")).shouldBeEqual("чебурашка");
+        it(Util.read(getClass().getResourceAsStream("/test.txt"))).shouldBeEqual("чебурашка");
     }
 
     @Test
     public void shouldReadLargeUTF8() throws IOException {
+        System.out.println(Util.readResource("/large.txt"));
 
+    }
 
-        System.out.println(readResource("/large.txt"));
+    @Test
+    public void testIsEmptyArray() {
+        a(Util.isEmpty(null)).shouldBeTrue();
+        a(Util.isEmpty(new Object[] {})).shouldBeTrue();
+        a(Util.isEmpty(new Object[] { 1 })).shouldBeFalse();
+        a(Util.isEmpty(new String[] { "foo", "bar" })).shouldBeFalse();
+    }
 
+    @Test
+    public void testJoinCollection() {
+        StringBuilder sb = new StringBuilder();
+        Collection<String> set = new LinkedHashSet<String>();
+        Util.join(sb, set, ", ");
+        the(sb.toString()).shouldBeEqual("");
+
+        sb = new StringBuilder();
+        set.add("foo");
+        Util.join(sb, set, ", ");
+        the(sb.toString()).shouldBeEqual("foo");
+
+        sb = new StringBuilder();
+        set.add("bar");
+        Util.join(sb, set, ", ");
+        the(sb.toString()).shouldBeEqual("foo, bar");
+    }
+
+    @Test
+    public void testJoinArray() {
+        StringBuilder sb = new StringBuilder();
+        List<String> list = new ArrayList<String>();
+        Util.join(sb, list.toArray(new String[list.size()]), ", ");
+        the(sb.toString()).shouldBeEqual("");
+
+        sb = new StringBuilder();
+        list.add("foo");
+        Util.join(sb, list.toArray(new String[list.size()]), ", ");
+        the(sb.toString()).shouldBeEqual("foo");
+
+        sb = new StringBuilder();
+        list.add("bar");
+        Util.join(sb, list.toArray(new String[list.size()]), ", ");
+        the(sb.toString()).shouldBeEqual("foo, bar");
+    }
+
+    @Test
+    public void testJoinList() {
+        StringBuilder sb = new StringBuilder();
+        List<String> list = new ArrayList<String>();
+        Util.join(sb, list, ", ");
+        the(sb.toString()).shouldBeEqual("");
+
+        sb = new StringBuilder();
+        list.add("foo");
+        Util.join(sb, list, ", ");
+        the(sb.toString()).shouldBeEqual("foo");
+
+        sb = new StringBuilder();
+        list.add("bar");
+        Util.join(sb, list, ", ");
+        the(sb.toString()).shouldBeEqual("foo, bar");
+    }
+
+    @Test
+    public void testRepeat() {
+        StringBuilder sb = new StringBuilder();
+        Util.repeat(sb, "na", -1);
+        the(sb.toString()).shouldBeEqual("");
+
+        sb = new StringBuilder();
+        Util.repeat(sb, "na", 0);
+        the(sb.toString()).shouldBeEqual("");
+
+        sb = new StringBuilder();
+        Util.repeat(sb, "na", 1);
+        the(sb.toString()).shouldBeEqual("na");
+
+        sb = new StringBuilder();
+        Util.repeat(sb, "na", 16);
+        the(sb.toString()).shouldBeEqual("nananananananananananananananana");
+    }
+
+    @Test
+    public void testJoinAndRepeat() {
+        StringBuilder sb = new StringBuilder();
+        Util.joinAndRepeat(sb, "na", ", ", -1);
+        the(sb.toString()).shouldBeEqual("");
+
+        sb = new StringBuilder();
+        Util.joinAndRepeat(sb, "na", ", ", 0);
+        the(sb.toString()).shouldBeEqual("");
+
+        sb = new StringBuilder();
+        Util.joinAndRepeat(sb, "na", ", ", 1);
+        the(sb.toString()).shouldBeEqual("na");
+
+        sb = new StringBuilder();
+        Util.joinAndRepeat(sb, "na", ", ", 16);
+        the(sb.toString()).shouldBeEqual("na, na, na, na, na, na, na, na, na, na, na, na, na, na, na, na");
     }
 }

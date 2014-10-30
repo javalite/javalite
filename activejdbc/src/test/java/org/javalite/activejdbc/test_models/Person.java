@@ -17,12 +17,9 @@ limitations under the License.
 
 package org.javalite.activejdbc.test_models;
 
+import java.io.StringWriter;
 import org.javalite.activejdbc.Model;
 import org.javalite.activejdbc.annotations.Cached;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
 
 
 @Cached
@@ -33,12 +30,12 @@ public class Person extends Model {
         convertTimestamp("graduation_date", "yyyy-MM-dd");
     }
 
-
+    @Override
     public void beforeClosingTag(int spaces, StringWriter writer, String ... attrs) {
-        String indent = "";
-        for(int i = 0; i < spaces * 2; i++){
-            indent += " ";
+        for(int i = 0; i < spaces; i++){
+            writer.write(' ');
         }
-        writer.append(indent + "<test>test content</test>\n");
+        writer.write("<test>test content</test>");
+        if (spaces > 0) { writer.write('\n'); }
     }
 }

@@ -17,6 +17,8 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
+import static org.javalite.common.Util.*;
+
 /**
  * Generic exception wrapper for all things DB.
  *
@@ -48,19 +50,12 @@ public class DBException extends RuntimeException{
      * @param cause real cause.
      */
     public DBException(String query, Object[] params, Throwable cause) {
-
-        message = cause.toString()+ ", Query: " + query;
-
-        if(params != null && params.length > 0){
-            message += ", params: ";
-            for (int i = 0; i < params.length; i++) {
-                Object param = params[i];
-                message += param;
-                if (i < params.length - 1)
-                    message += ",";
+        StringBuilder sb = new StringBuilder(cause.toString()).append(", query: ").append(query);
+        if (params != null && params.length > 0) {
+            sb.append(", params: ");
+            join(sb, params, ", ");
         }
-        }
-
+        message = sb.toString();
         setStackTrace(cause.getStackTrace());
         initCause(cause);
     }
@@ -71,6 +66,6 @@ public class DBException extends RuntimeException{
     }
 
     public DBException() {
-        super();    
-    }    
+        super();
+    }
 }

@@ -17,9 +17,9 @@ limitations under the License.
 
 package org.javalite.activejdbc.test_models;
 
+import java.io.StringWriter;
 import org.javalite.activejdbc.Model;
 
-import java.io.StringWriter;
 
 /**
  * @author Igor Polevoy
@@ -28,6 +28,8 @@ public class Post extends Model {
 
     @Override
     public void beforeClosingBrace(boolean pretty, String indent, StringWriter writer) {
-        writer.append((pretty?",\n" + indent:",") + "\"injected\": {\"secret_name\":\"Secret Name\"}");
+        writer.write(',');
+        if (pretty) { writer.write('\n'); writer.write(indent); }
+        writer.write("\"injected\":{\"secret_name\":\"Secret Name\"}");
     }
 }

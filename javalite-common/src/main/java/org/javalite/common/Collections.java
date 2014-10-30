@@ -85,10 +85,6 @@ public class Collections {
      * @return list with values.
      */
     public static <T> List<T> list(T... values) {
-        List result = new ArrayList<T>();
-        for (T value : values) {
-            result.add(value);
-        }
-        return result;
+        return new ArrayList<T>(Arrays.asList(values));
     }
 }
