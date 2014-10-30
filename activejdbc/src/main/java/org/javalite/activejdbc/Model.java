@@ -1324,8 +1324,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public Model setString(String attribute, Object value) {
-        return set(attribute, value.toString());
-
+        return set(attribute, Convert.toString(value));
     }
 
     /**
