@@ -191,7 +191,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
      * @param attrs list of attributes to include. No arguments == include all attributes.
      * @return generated XML.
      */
-    public String toXml(boolean pretty, boolean declaration, String ... attrs) {
+    public String toXml(boolean pretty, boolean declaration, String... attrs) {
         String topNode = Inflector.pluralize(Inflector.underscore(metaModel.getModelClass().getSimpleName()));
 
         hydrate();
@@ -211,8 +211,18 @@ public class LazyList<T extends Model> extends AbstractList<T>{
         return sb.toString();
     }
 
+    /**
+     * Generates a XML document from content of this list.
+     *
+     * @param spaces by how many spaces to indent.
+     * @param declaration true to include XML declaration at the top
+     * @param attrs list of attributes to include. No arguments == include all attributes.
+     * @return generated XML.
+     *
+     * @deprecated Use {@link #toXml(boolean, boolean, String...)} instead
+     */
     @Deprecated
-    public String toXml(int spaces, boolean declaration, String ... attrs) {
+    public String toXml(int spaces, boolean declaration, String... attrs) {
         return toXml(spaces > 0, declaration, attrs);
     }
 

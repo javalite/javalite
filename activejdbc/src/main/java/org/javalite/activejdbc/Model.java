@@ -778,7 +778,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 if (pretty) { sb.append('\n'); }
             }
         }
-        beforeClosingTag(sb, pretty, pretty ? "  " + indent : "");
+        beforeClosingTag(sb, pretty, pretty ? "  " + indent : "", attrs);
         if (pretty) { sb.append(indent); }
         sb.append("</").append(topTag).append('>');
         if (pretty) { sb.append('\n'); }
@@ -792,14 +792,38 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     /**
      * Override in a subclass to inject custom content onto XML just before the closing tag.
      *
+     * <p>To keep the formatting, it is recommended to implement this method as the example below.
+     *
+     * <blockquote><pre>
+     * if (pretty) { sb.append(ident); }
+     * sb.append("&lt;test&gt;...&lt;/test&gt;");
+     * if (pretty) { sb.append('\n'); }
+     * </pre></blockquote>
+     *
      * @param sb to write content to.
      * @param pretty pretty format (human readable), or one line text.
      * @param indent indent at current level
+     * @param attrs list of attributes to include
      */
-    public void beforeClosingTag(StringBuilder sb, boolean pretty, String ident) {
-        //do nothing.
+    public void beforeClosingTag(StringBuilder sb, boolean pretty, String indent, String... attrs) {
+        StringWriter writer = new StringWriter();
+        beforeClosingTag(indent.length(), writer, attrs);
+        sb.append(writer.toString());
     }
 
+    /**
+     * Override in a subclass to inject custom content onto XML just before the closing tag.
+     *
+     * @param spaces number of spaces of indent
+     * @param writer to write content to.
+     * @param attrs list of attributes to include
+     *
+     * @deprecated Use {@link #beforeClosingTag(StringBuilder, boolean, String, String...)} instead
+     */
+    @Deprecated
+    public void beforeClosingTag(int spaces, StringWriter writer, String ... attrs) {
+        // do nothing
+    }
 
     /**
      * Generates a JSON document from content of this model.
@@ -881,7 +905,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             sb.append('}');
         }
 
-        beforeClosingBrace(sb, pretty, pretty ? "  " + indent : "");
+        beforeClosingBrace(sb, pretty, pretty ? "  " + indent : "", attrs);
         if (pretty) { sb.append('\n').append(indent); }
         sb.append('}');
     }
@@ -889,14 +913,36 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     /**
      * Override in subclasses in order to inject custom content into Json just before the closing brace.
      *
+     * <p>To keep the formatting, it is recommended to implement this method as the example below.
+     *
+     * <blockquote><pre>
+     * sb.append(',');
+     * if (pretty) { sb.append('\n').append(indent); }
+     * sb.append("\"test\":\"...\"");
+     * </pre></blockquote>
+     *
      * @param sb to write custom content to
      * @param pretty pretty format (human readable), or one line text.
      * @param indent indent at current level
+     * @param attrs list of attributes to include
      */
-    public void beforeClosingBrace(StringBuilder sb, boolean pretty, String indent) {
-
+    public void beforeClosingBrace(StringBuilder sb, boolean pretty, String indent, String... attrs) {
+        StringWriter writer = new StringWriter();
+        beforeClosingBrace(pretty, indent, writer);
+        sb.append(writer.toString());
     }
 
+    /**
+     * Override in subclasses in order to inject custom content into Json just before the closing brace.
+     *
+     * @param pretty pretty format (human readable), or one line text.
+     * @param indent indent at current level
+     * @param writer writer to write custom content to
+     */
+    @Deprecated
+    public void beforeClosingBrace(boolean pretty, String indent, StringWriter writer) {
+        // do nothing
+    }
 
     /**
      * Returns parent of this model, assuming that this table represents a child.

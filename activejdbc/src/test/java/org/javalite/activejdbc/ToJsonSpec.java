@@ -48,12 +48,11 @@ public class ToJsonSpec extends ActiveJDBCTest {
         //test indent
         json = p.toJson(true, "name", "last_name", "dob");
         mapper.readTree(json);//check validity
-        String expected = "{\n" +
+        the(json).shouldBeEqual("{\n" +
                 "  \"name\":\"John\",\n" +
                 "  \"last_name\":\"Smith\",\n" +
                 "  \"dob\":\"1934-12-01T00:00:00\"\n" +
-                "}";
-        the(json).shouldBeEqual(expected);
+                "}");
     }
 
     @Test
@@ -171,9 +170,9 @@ public class ToJsonSpec extends ActiveJDBCTest {
     @Test
     public void shouldEscapeDoubleQuote() throws IOException {
         Page p = new Page();
-        p.set("description", "bad \" description\"");
+        p.set("description", "bad \"/description\"");
         JsonNode node = mapper.readTree(p.toJson(true));
-        a(node.get("description").toString()).shouldBeEqual("\"bad \\\" description\\\"\"");
+        a(node.get("description").toString()).shouldBeEqual("\"bad \\\"/description\\\"\"");
 
         //ensure no NPE:
         p = new Page();

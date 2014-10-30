@@ -17,6 +17,7 @@ limitations under the License.
 
 package org.javalite.activejdbc.test_models;
 
+import java.io.StringWriter;
 import org.javalite.activejdbc.Model;
 import org.javalite.activejdbc.annotations.Cached;
 
@@ -30,9 +31,11 @@ public class Person extends Model {
     }
 
     @Override
-    public void beforeClosingTag(StringBuilder sb, boolean pretty, String ident) {
-        if (pretty) { sb.append(ident); }
-        sb.append("<test>test content</test>");
-        if (pretty) { sb.append('\n'); }
+    public void beforeClosingTag(int spaces, StringWriter writer, String ... attrs) {
+        for(int i = 0; i < spaces; i++){
+            writer.write(' ');
+        }
+        writer.write("<test>test content</test>");
+        if (spaces > 0) { writer.write('\n'); }
     }
 }
