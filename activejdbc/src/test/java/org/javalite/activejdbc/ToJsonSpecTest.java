@@ -34,7 +34,7 @@ import java.util.Map;
 /**
  * @author Igor Polevoy
  */
-public class ToJsonSpec extends ActiveJDBCTest {
+public class ToJsonSpecTest extends ActiveJDBCTest {
     ObjectMapper mapper = new ObjectMapper();
 
     @Test
