@@ -40,7 +40,7 @@ public class ToJsonSpecTest extends ActiveJDBCTest {
     @Test
     public void shouldGenerateSimpleJson() throws IOException {
         deleteAndPopulateTable("people");
-        Person p  = Person.findById(1);
+        Person p = Person.findById(1);
         //test no indent
         String json = p.toJson(false, "name", "last_name", "dob");
         mapper.readTree(json);//check validity
