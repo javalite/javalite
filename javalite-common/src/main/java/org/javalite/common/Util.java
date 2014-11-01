@@ -231,7 +231,7 @@ public class Util {
      * @param array array to check
      * @return true if array is either null or empty, false otherwise
      */
-    public static boolean isEmpty(Object[] array) {
+    public static boolean empty(Object[] array) {
         return array == null || array.length == 0;
     }
 
@@ -305,7 +305,7 @@ public class Util {
      * @param delimiter delimiter to insert between elements of array.
      */
     public static void join(StringBuilder sb, Object[] array, String delimiter) {
-        if (isEmpty(array)) { return; }
+        if (empty(array)) { return; }
         sb.append(array[0]);
         for (int i = 1; i < array.length; i++) {
             sb.append(delimiter);

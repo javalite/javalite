@@ -83,10 +83,10 @@ public class UtilTest extends JSpecSupport {
 
     @Test
     public void testIsEmptyArray() {
-        a(Util.isEmpty(null)).shouldBeTrue();
-        a(Util.isEmpty(new Object[] {})).shouldBeTrue();
-        a(Util.isEmpty(new Object[] { 1 })).shouldBeFalse();
-        a(Util.isEmpty(new String[] { "foo", "bar" })).shouldBeFalse();
+        a(Util.empty(null)).shouldBeTrue();
+        a(Util.empty(new Object[] {})).shouldBeTrue();
+        a(Util.empty(new Object[] { 1 })).shouldBeFalse();
+        a(Util.empty(new String[] { "foo", "bar" })).shouldBeFalse();
     }
 
     @Test
