@@ -20,11 +20,12 @@ package org.javalite.activejdbc.cache;
 
 import org.javalite.activejdbc.LogFilter;
 import org.javalite.activejdbc.Registry;
-import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+
+import static org.javalite.common.Util.*;
 
 /**
  * This is a main cache facade. It could be architected in the future to add more cache implementations besides OSCache.
@@ -96,16 +97,18 @@ public class QueryCache {
     }
 
     static void logAccess(String query, Object[] params, String access) {
-        StringBuffer log = new StringBuffer(access).append(", ").append("\"").append(query).append("\"");
-        if (params != null && params.length != 0)
-            log.append(", with parameters: ").append("<").append(Util.join(Arrays.asList(params), ">, <")).append(">");
-
+        StringBuilder log = new StringBuilder().append(access).append(", ").append('"').append(query).append('"');
+        if (!empty(params)) {
+            log.append(", with parameters: ").append('<');
+            join(log, params, ">, <");
+            log.append('>');
+        }
         LogFilter.log(logger, log.toString());
     }
 
 
     private String getKey(String tableName, String query, Object[] params) {
-        return new StringBuffer(tableName).append(query).append(params == null ? null : Arrays.asList(params).toString()).toString();
+        return new StringBuilder(tableName).append(query).append(params == null ? null : Arrays.asList(params).toString()).toString();
     }
 
     /**

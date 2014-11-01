@@ -19,12 +19,12 @@ package org.javalite.activejdbc.test;
 
 import java.io.*;
 import java.sql.*;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import static org.javalite.common.Collections.list;
-
+import org.javalite.common.Collections;
 import org.javalite.activejdbc.*;
 import org.javalite.activejdbc.test_models.Person;
 import org.javalite.test.jspec.JSpecSupport;
@@ -89,7 +89,7 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
             System.out.println("Getting statements from file: " + file);
             InputStreamReader isr = new InputStreamReader(ActiveJDBCTest.class.getClassLoader().getResourceAsStream(file));
             BufferedReader reader = new BufferedReader(isr);
-            StringBuffer text = new StringBuffer();
+            StringBuilder text = new StringBuilder();
             String t;
             while ((t = reader.readLine()) != null) {
                 text.append(t + '\n');
@@ -152,10 +152,10 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
 
     
     protected void deleteFromTable(String table){
-        executeStatements(list(getStatementProvider().getDeleteStatement(table)));
+        executeStatements(Collections.list(getStatementProvider().getDeleteStatement(table)));
     }
 
-    protected void populateTable(String table) {        
+    protected void populateTable(String table) {
         executeStatements(getStatementProvider().getPopulateStatements(table));
     }
 

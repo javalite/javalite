@@ -42,7 +42,7 @@ public class OneToManyPolymorphicAssociation extends Association {
 
     @Override
     public String toString() {
-        return new StringBuffer().append(getSource()).append("  ----------<  ").append(getTarget())
+        return new StringBuilder().append(getSource()).append("  ----------<  ").append(getTarget())
                 .append(", type: ").append("has-many-polymorphic").toString();
     }
 

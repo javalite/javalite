@@ -66,7 +66,7 @@ public class Many2ManyAssociation extends Association {
 
     @Override
     public String toString() {
-        return new StringBuffer().append(getSource()).append("  >---------<  ").append(getTarget())
+        return new StringBuilder().append(getSource()).append("  >---------<  ").append(getTarget())
                 .append(", type: ").append("many-to-many").append(", join: ").append(join).toString();
     }
 

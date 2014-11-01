@@ -18,11 +18,11 @@ limitations under the License.
 package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.statistics.QueryExecutionEvent;
-import org.javalite.common.Util;
 import org.slf4j.Logger;
 
-import java.util.Arrays;
 import java.util.regex.Pattern;
+
+import static org.javalite.common.Util.*;
 
 /**
  * @author Igor Polevoy
@@ -55,10 +55,12 @@ public class LogFilter {
             Registry.instance().getStatisticsQueue().enqueue(new QueryExecutionEvent(query, time));
         }
         
-        StringBuilder log =  new StringBuilder("Query: \"").append(query).append("\"");
-        if (params != null && params.length != 0)
-           log.append(", with parameters: ").append("<").append(Util.join(Arrays.asList(params), ">, <")).append(">");
-
+        StringBuilder log =  new StringBuilder().append("Query: \"").append(query).append('"');
+        if (!empty(params)) {
+            log.append(", with parameters: ").append('<');
+            join(log, params, ">, <");
+            log.append('>');
+        }
         log(logger, log.append(", took: ").append(time).append(" milliseconds").toString());
     }
 
