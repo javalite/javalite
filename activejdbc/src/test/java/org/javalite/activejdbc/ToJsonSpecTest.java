@@ -208,9 +208,8 @@ public class ToJsonSpecTest extends ActiveJDBCTest {
         Map<String, String> map = mapper.readValue(json, Map.class);
 
         Date d = isoDateFormater.parse(map.get("created_at"));
-        Timestamp t = new Timestamp(d.getTime());
-
-        a(t).shouldBeEqual(p.getTimestamp("created_at"));
+        // difference between date in Json and in original model instance should be less than 1000 milliseconds
+        a(Math.abs(d.getTime() - p.getTimestamp("created_at").getTime()) < 1000L).shouldBeTrue();
     }
 
     @Test
