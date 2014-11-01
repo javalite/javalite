@@ -16,7 +16,7 @@ public class LazyListTest extends ActiveJDBCTest {
 
     @Test
     public void shouldGenerateSqlWithParameters() {
-        a(Person.where("name = ? AND last_name = ?", "John", "Doe").toSql(true)).shouldBeEqual(
-                "SELECT  * FROM people WHERE  name = ? AND last_name = ?, with parameters: John, Doe");
+        a(Person.where("name = ? AND last_name = ?", "John", "Doe").toSql(true)
+                .endsWith(", with parameters: John, Doe")).shouldBeTrue();
     }
 }
