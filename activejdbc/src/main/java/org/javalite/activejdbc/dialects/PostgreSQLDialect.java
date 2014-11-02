@@ -2,7 +2,6 @@ package org.javalite.activejdbc.dialects;
 
 import java.util.List;
 
-import static org.javalite.common.Util.*;
 
 
 public class PostgreSQLDialect extends DefaultDialect {
@@ -20,21 +19,9 @@ public class PostgreSQLDialect extends DefaultDialect {
      */
     @Override
     public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
-      
         StringBuilder fullQuery = new StringBuilder();
-        if (tableName == null){
-            fullQuery.append(subQuery);
-        } else {
-            fullQuery.append("SELECT * FROM ").append(tableName);
-            if (!blank(subQuery)) {
-                if (!groupByPattern.matcher(subQuery.toLowerCase().trim()).find() &&
-                        !orderByPattern.matcher(subQuery.toLowerCase().trim()).find()) {
-                    fullQuery.append(" WHERE");
-                }
-                fullQuery.append(' ').append(subQuery);
-            }
-        }
-        appendOrderBy(fullQuery, orderBys);
+        
+        appendSelect(fullQuery, tableName, null, subQuery, orderBys);
 
         if(limit != -1){
             fullQuery.append(" LIMIT ").append(limit);

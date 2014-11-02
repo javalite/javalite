@@ -107,24 +107,34 @@ public class DefaultDialect {
             join(query, orderBys, ", ");
         }
     }
+
+    protected void appendSelect(StringBuilder query, String tableName, String tableAlias, String subQuery, 
+            List<String> orderBys) {
+        if (tableName == null) {
+            query.append(subQuery);
+        } else {
+            if (tableAlias == null) {
+                query.append("SELECT * FROM ").append(tableName);
+            } else {
+                query.append("SELECT ").append(tableAlias).append(".* FROM ").append(tableName).append(' ')
+                        .append(tableAlias);
+            }
+
+            if(!blank(subQuery)){
+                // this is only to support findFirst("order by..."), might need to revisit later
+                if(!groupByPattern.matcher(subQuery.toLowerCase().trim()).find() &&
+                       !orderByPattern.matcher(subQuery.toLowerCase().trim()).find() ){
+                    query.append(" WHERE");
+                }
+                query.append(' ').append(subQuery);
+            }
+        }
+        appendOrderBy(query, orderBys);
+    }
     
     public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
         StringBuilder fullQuery = new StringBuilder();
-        if (tableName == null) {
-            fullQuery.append(subQuery);
-        } else {
-            fullQuery.append("SELECT * FROM ").append(tableName);
-
-            if(!blank(subQuery)){
-                if(!groupByPattern.matcher(subQuery.toLowerCase().trim()).find() &&
-                       !orderByPattern.matcher(subQuery.toLowerCase().trim()).find() ){
-                    fullQuery.append(" WHERE");
-                }
-                fullQuery.append(' ').append(subQuery);
-            }
-        }
-        appendOrderBy(fullQuery, orderBys);
-
+        appendSelect(fullQuery, tableName, null, subQuery, orderBys);
         return fullQuery.toString();
     }
    

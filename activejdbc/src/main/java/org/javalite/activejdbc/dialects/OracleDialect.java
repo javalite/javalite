@@ -19,7 +19,6 @@ package org.javalite.activejdbc.dialects;
 
 import java.util.List;
 
-import static org.javalite.common.Util.*;
 
 /**
  * @author Igor Polevoy
@@ -62,25 +61,8 @@ public class OracleDialect extends DefaultDialect {
         } else if (needLimit) { // if needLimit and don't needOffset
             fullQuery.append("SELECT * FROM (SELECT t2.* FROM (");
         }
-        
-        if (tableName == null) { //table is in the sub-query already
-            fullQuery.append(subQuery);
-        } else {
-            if (needLimit || needOffset) {
-                fullQuery.append("SELECT t.* FROM ").append(tableName).append(" t");
-            } else {
-                fullQuery.append("SELECT * FROM ").append(tableName);
-            }
-            if (!blank(subQuery)) {
-                //this is only to support findFirst("order by..."), might need to revisit later
-                if (!groupByPattern.matcher(subQuery.toLowerCase().trim()).find() &&
-                        !orderByPattern.matcher(subQuery.toLowerCase().trim()).find()) {
-                    fullQuery.append(" WHERE");
-                }
-                fullQuery.append(' ').append(subQuery);
-            }
-        }
-        appendOrderBy(fullQuery, orderBys);
+        //TODO check if this can be simplified removing the alias t
+        appendSelect(fullQuery, tableName, (needLimit || needOffset) ? "t" : null, subQuery, orderBys);
 
         if (needOffset) {
             // Oracle offset starts with 1, not like MySQL with 0;
