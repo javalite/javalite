@@ -1,8 +1,8 @@
 package org.javalite.activejdbc.dialects;
 
-import org.javalite.common.Util;
-
 import java.util.List;
+
+import static org.javalite.common.Util.*;
 
 
 public class PostgreSQLDialect extends DefaultDialect {
@@ -21,34 +21,33 @@ public class PostgreSQLDialect extends DefaultDialect {
     @Override
     public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
       
-        String fullQuery;
+        StringBuilder fullQuery = new StringBuilder();
         if (tableName == null){
-            fullQuery = subQuery;
+            fullQuery.append(subQuery);
         } else {
-            fullQuery = "SELECT  * FROM " + tableName;
-            if (!Util.blank(subQuery)) {
-                String where = " WHERE ";
-
+            fullQuery.append("SELECT * FROM ").append(tableName);
+            if (!blank(subQuery)) {
                 if (!groupByPattern.matcher(subQuery.toLowerCase().trim()).find() &&
                         !orderByPattern.matcher(subQuery.toLowerCase().trim()).find()) {
-                    fullQuery += where;
+                    fullQuery.append(" WHERE");
                 }
-                fullQuery += " " + subQuery;
+                fullQuery.append(' ').append(subQuery);
             }
         }
 
-        if(orderBys.size() != 0){
-            fullQuery += " ORDER BY " + Util.join(orderBys, ", ");
+        if (!orderBys.isEmpty()) {
+            fullQuery.append(" ORDER BY ");
+            join(fullQuery, orderBys, ", ");
         }
 
         if(limit != -1){
-            fullQuery +=  " LIMIT " + limit;
+            fullQuery.append(" LIMIT ").append(limit);
         }
 
         if(offset != -1){
-            fullQuery += " OFFSET " + offset;
+            fullQuery.append(" OFFSET ").append(offset);
         }
 
-        return fullQuery;
+        return fullQuery.toString();
     }
 }

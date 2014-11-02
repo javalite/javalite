@@ -113,7 +113,7 @@ public class DefaultDialect {
                        !orderByPattern.matcher(subQuery.toLowerCase().trim()).find() ){
                     fullQuery.append(" WHERE");
                 }
-                fullQuery.append(" ").append(subQuery);
+                fullQuery.append(' ').append(subQuery);
             }
         }
         if (!orderBys.isEmpty()) {
