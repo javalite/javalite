@@ -18,10 +18,11 @@ limitations under the License.
 package org.javalite.activejdbc.dialects;
 
 import org.javalite.activejdbc.MetaModel;
-import org.javalite.common.Util;
 
 import java.util.List;
 import java.util.regex.Pattern;
+
+import static org.javalite.common.Util.*;
 
 /**
  * @author Igor Polevoy
@@ -31,12 +32,16 @@ public class DefaultDialect {
     protected final Pattern orderByPattern = Pattern.compile("^order *by", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
     protected final Pattern groupByPattern = Pattern.compile("^group *by", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
-    public String selectStar(String table, String query){        
-        return query != null? "SELECT * FROM " + table + " WHERE " + query : "SELECT * FROM " + table;
+    public String selectStar(String table) {
+        return "SELECT * FROM " + table;
+    }
+    
+    public String selectStar(String table, String query) {
+        return query != null ? "SELECT * FROM " + table + " WHERE " + query : selectStar(table);
     }
 
     /**
-     * Produces a parametrized  AND query.
+     * Produces a parametrized AND query.
      * Example:
      * <pre>
      * String sql = dialect.selectStarParametrized("people", "name", "ssn", "dob");
@@ -50,64 +55,73 @@ public class DefaultDialect {
      * @return something like: "select * from table_name where name = ? and last_name = ? ..."
      */
     public String selectStarParametrized(String table, String ... parameters) {
-        String sql = "SELECT * FROM " + table + " WHERE ";
-
-        for(String parameter:parameters){
-            sql += parameter + " = ? AND ";
-        }
-        return sql.substring(0, sql.length() - 5);//remove last comma
+        StringBuilder sql = new StringBuilder().append("SELECT * FROM ").append(table).append(" WHERE ");
+        join(sql, parameters, " = ? AND ");
+        sql.append(" = ?");
+        return sql.toString();
     }
 
     public String createParametrizedInsert(MetaModel mm, List<String> nonNullAttributes){
-
-        String query = "INSERT INTO " + mm.getTableName() + " (" + Util.join(nonNullAttributes, ", ");
-        query += mm.getIdGeneratorCode()!= null ? ", " + mm.getIdName() :"";
-        query += mm.isVersioned()? ", " + mm.getVersionColumn() :"";
-        query += ") VALUES ("+ getQuestions(nonNullAttributes.size());
-        query += mm.getIdGeneratorCode() != null ? ", " + mm.getIdGeneratorCode() :"";
-        query += mm.isVersioned()? ", " + 1 :"";
-        query +=")";
-
-        return query; 
+        StringBuilder query = new StringBuilder().append("INSERT INTO ").append(mm.getTableName()).append(" (");
+        join(query, nonNullAttributes, ", ");
+        if (mm.getIdGeneratorCode() != null) {
+            query.append(", ").append(mm.getIdName());
+        }
+        if (mm.isVersioned()) {
+            query.append(", ").append(mm.getVersionColumn());
+        }
+        query.append(") VALUES (");
+        appendQuestions(query, nonNullAttributes.size());
+        if (mm.getIdGeneratorCode() != null) {
+            query.append(", ").append(mm.getIdGeneratorCode());
+        }
+        if (mm.isVersioned()) {
+            query.append(", ").append(1);
+        }
+        query.append(')');
+        return query.toString(); 
     }
 
     public String createParametrizedInsertIdUnmanaged(MetaModel mm, List<String> nonNullAttributes){
-        String query = "INSERT INTO " + mm.getTableName() + " (" + Util.join(nonNullAttributes, ", ");
-        query += mm.isVersioned()? ", " + mm.getVersionColumn() :"";
-        query += ") VALUES ("+ getQuestions(nonNullAttributes.size());
-        query += mm.isVersioned()? ", " + 1 :"";
-        query +=")";
-
-        return query;
-    }
-
-
-    private String getQuestions(int count){
-        String [] questions = new String[count];
-        for(int i = 0; i < count; i++){
-            questions[i] = "?";
+        StringBuilder query = new StringBuilder().append("INSERT INTO ").append(mm.getTableName()).append(" (");
+        join(query, nonNullAttributes, ", ");
+        if (mm.isVersioned()) {
+            query.append(", ").append(mm.getVersionColumn());
         }
-        return Util.join(questions, ", ");
+        query.append(") VALUES (");
+        appendQuestions(query, nonNullAttributes.size());
+        if (mm.isVersioned()) {
+            query.append(", ").append(1);
+        }
+        query.append(')');
+        return query.toString();
     }
 
-   public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
+    protected void appendQuestions(StringBuilder sb, int count) {
+        joinAndRepeat(sb, "?", ", ", count);
+    }
 
-        String fullQuery = "SELECT * FROM " + tableName;
+    public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
+        StringBuilder fullQuery = new StringBuilder();
+        if (tableName == null) {
+            fullQuery.append(subQuery);
+        } else {
+            fullQuery.append("SELECT * FROM ").append(tableName);
 
-        if(!Util.blank(subQuery)){
-            String where = " WHERE ";
-            if(!groupByPattern.matcher(subQuery.toLowerCase().trim()).find() &&
-                   !orderByPattern.matcher(subQuery.toLowerCase().trim()).find() ){
-                fullQuery += where;
+            if(!blank(subQuery)){
+                if(!groupByPattern.matcher(subQuery.toLowerCase().trim()).find() &&
+                       !orderByPattern.matcher(subQuery.toLowerCase().trim()).find() ){
+                    fullQuery.append(" WHERE");
+                }
+                fullQuery.append(" ").append(subQuery);
             }
-            fullQuery += " " + subQuery;
+        }
+        if (!orderBys.isEmpty()) {
+            fullQuery.append(" ORDER BY ");
+            join(fullQuery, orderBys, ", ");
         }
 
-        if(orderBys.size() != 0){
-            fullQuery += " ORDER BY " + Util.join(orderBys, ", ");
-        }
-
-        return fullQuery;
+        return fullQuery.toString();
     }
    
    public Object overrideDriverTypeConversion(MetaModel mm, String attributeName, Object value) {
