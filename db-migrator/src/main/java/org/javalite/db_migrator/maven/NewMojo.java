@@ -1,13 +1,13 @@
 package org.javalite.db_migrator.maven;
 
 import org.apache.maven.plugin.MojoExecutionException;
-import org.javalite.db_migrator.MigrationException;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static org.javalite.common.Util.blank;
+import static org.javalite.common.Util.*;
 
 /**
  * @goal new
@@ -22,33 +22,29 @@ public class NewMojo extends AbstractMigrationMojo {
 
         String directory = getMigrationsPath();
         createMigrationsDirectory(directory);
-        String fullName = createFileName(directory);
 
+        File file = new File(directory, createFileName());
         try {
-            new File(fullName).createNewFile();
-            getLog().info("Created new migration: " + fullName);
-        } catch (Exception e) {
-            throw new MojoExecutionException("Failed to create migration file: " + fullName, e);
+            file.createNewFile();
+            getLog().info("Created new migration: " + file);
+        } catch (IOException e) {
+            throw new MojoExecutionException("Failed to create migration file: " + file, e);
         }
     }
 
-    private String createFileName(String directory) {
+    private String createFileName() {
+        StringBuilder fileName = new StringBuilder();
         SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
-        String fileName = df.format(new Date());
+        fileName.append(df.format(new Date()));
+
         String name = System.getProperty("name");
-
-
-
-        if (!blank(name))
-            fileName += "_" + name;
-
-        fileName += ".sql";
-
-        if(!directory.endsWith("/")){ // I think this is universal across Windows and *nux
-            directory += "/";
+        if (!blank(name)) {
+            fileName.append('_').append(name);
         }
 
-        return directory + fileName;
+        fileName.append(".sql");
+        
+        return fileName.toString();
     }
 
     private void createMigrationsDirectory(String directory) throws MojoExecutionException {

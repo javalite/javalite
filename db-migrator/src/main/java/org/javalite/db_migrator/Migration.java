@@ -32,14 +32,14 @@ public class Migration implements Comparable {
     public void migrate(String encoding) throws Exception {
 
 
-        StringBuffer command = null;
+        StringBuilder command = null;
         try {
             String delimiter = DEFAULT_DELIMITER;
             LineNumberReader lineReader = new LineNumberReader(new InputStreamReader(new FileInputStream(migrationFile), encoding == null? "UTF-8" : encoding));
             String line;
             while ((line = lineReader.readLine()) != null) {
                 if (command == null) {
-                    command = new StringBuffer();
+                    command = new StringBuilder();
                 }
 
                 line = line.trim(); // Strip extra whitespace too?

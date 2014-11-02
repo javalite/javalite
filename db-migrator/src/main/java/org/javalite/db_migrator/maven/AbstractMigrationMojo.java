@@ -6,9 +6,7 @@ import org.apache.maven.project.MavenProject;
 import org.javalite.db_migrator.DatabaseType;
 import org.javalite.db_migrator.DatabaseUtils;
 
-import static org.javalite.common.Collections.list;
-import static org.javalite.common.Util.blank;
-import static org.javalite.common.Util.join;
+import static org.javalite.common.Util.*;
 
 
 public abstract class AbstractMigrationMojo extends AbstractMojo {
@@ -98,8 +96,10 @@ public abstract class AbstractMigrationMojo extends AbstractMojo {
             if (!blank(databaseType))
                 DatabaseType.valueOf(databaseType);
         } catch (IllegalArgumentException e) {
-            throw new MojoExecutionException(
-                    "Database type of '" + databaseType + "' is invalid.  Correct values: " + join(list(DatabaseType.values()), ", "));
+            StringBuilder sb = new StringBuilder();
+            sb.append("Database type of '").append(databaseType).append("' is invalid.  Correct values: ");
+            join(sb, DatabaseType.values(), ", ");
+            throw new MojoExecutionException(sb.toString());
         }
 
         try {

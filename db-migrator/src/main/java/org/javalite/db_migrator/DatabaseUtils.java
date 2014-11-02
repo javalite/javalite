@@ -123,19 +123,19 @@ public class DatabaseUtils {
         int rightIndex = url.length();
         if (url.lastIndexOf("/") != -1) { rightIndex = url.lastIndexOf("/"); }
         else if (url.lastIndexOf(":") != -1) { rightIndex = url.lastIndexOf(":"); }
-
-        String baseUrl = url.substring(0, rightIndex);
+        
+        StringBuilder baseUrl = new StringBuilder();
+        baseUrl.append(url.substring(0, rightIndex));
 
         // TODO This next line is pretty ugly, but it works for nearly every postgresql server.
         // If we have to add another exception to this for another database server, then I highly recommend refactoring this to a more elegant solution.
-        if (POSTGRESQL.equals(databaseType(url))) { baseUrl += "/postgres"; }
+        if (POSTGRESQL.equals(databaseType(url))) { baseUrl.append("/postgres"); }
 
-        String options = "";
         int optionsIndex = url.indexOf("?");
         if (optionsIndex == -1) { optionsIndex = url.indexOf(";"); }
-        if (optionsIndex != -1) { options = url.substring(optionsIndex); }
+        if (optionsIndex != -1) { baseUrl.append(url.substring(optionsIndex)); }
 
-        return baseUrl + options;
+        return baseUrl.toString();
     }
 
 }
