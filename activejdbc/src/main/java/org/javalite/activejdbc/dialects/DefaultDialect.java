@@ -108,6 +108,17 @@ public class DefaultDialect {
         }
     }
 
+    protected void appendSubQuery(StringBuilder query, String subQuery) {
+        if(!blank(subQuery)){
+            // this is only to support findFirst("order by..."), might need to revisit later
+            if(!groupByPattern.matcher(subQuery.toLowerCase().trim()).find() &&
+                   !orderByPattern.matcher(subQuery.toLowerCase().trim()).find() ){
+                query.append(" WHERE");
+            }
+            query.append(' ').append(subQuery);
+        }
+    } 
+    
     protected void appendSelect(StringBuilder query, String tableName, String tableAlias, String subQuery, 
             List<String> orderBys) {
         if (tableName == null) {
@@ -119,15 +130,7 @@ public class DefaultDialect {
                 query.append("SELECT ").append(tableAlias).append(".* FROM ").append(tableName).append(' ')
                         .append(tableAlias);
             }
-
-            if(!blank(subQuery)){
-                // this is only to support findFirst("order by..."), might need to revisit later
-                if(!groupByPattern.matcher(subQuery.toLowerCase().trim()).find() &&
-                       !orderByPattern.matcher(subQuery.toLowerCase().trim()).find() ){
-                    query.append(" WHERE");
-                }
-                query.append(' ').append(subQuery);
-            }
+            appendSubQuery(query, subQuery);
         }
         appendOrderBy(query, orderBys);
     }
