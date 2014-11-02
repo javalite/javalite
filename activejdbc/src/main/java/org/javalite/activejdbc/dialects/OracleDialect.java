@@ -17,9 +17,9 @@ limitations under the License.
 
 package org.javalite.activejdbc.dialects;
 
-import org.javalite.common.Util;
-
 import java.util.List;
+
+import static org.javalite.common.Util.*;
 
 /**
  * @author Igor Polevoy
@@ -29,62 +29,69 @@ public class OracleDialect extends DefaultDialect {
     /**
      * Example of a query we are building here:
      *
-     * <code>SELECT * FROM ( SELECT t2.*, ROWNUM as rn FROM ( SELECT t.* FROM PAGES t WHERE <conditions> order by id ) t2) WHERE rn >= 20 AND rownum <= 10;</code>
+     * <blockquote><pre>
+     * SELECT * FROM (
+     *   SELECT t2.*, ROWNUM AS oracle_row_number FROM (
+     *     SELECT t.* FROM pages t WHERE &lt;conditions&gt; ORDER BY id
+     *   ) t2
+     * ) WHERE oracle_row_number &gt;= 20 AND rownum &lt;= 10;
+     * </pre></blockquote>
      *
-     * Look here for reference: <a href="http://explainextended.com/2009/05/06/oracle-row_number-vs-rownum/">Oracle: ROW_NUMBER vs ROWNUM</a>
+     * <p>Look here for reference: <a href="http://explainextended.com/2009/05/06/oracle-row_number-vs-rownum/">Oracle: ROW_NUMBER vs ROWNUM</a>
      *
      * @param tableName name of table. If table name is null, then the subQuery parameter is considered to be a full query, and all that needs to be done is to
      * add limit, offset and order bys
-     * @param subQuery sub query, something like: "name = ? and ssn = ?". It can be blank: "" or null;
+     * @param subQuery sub query, something like: "name = ? AND ssn = ?". It can be blank: "" or null;
      * @param orderBys collection of order by: "dob desc" - one example
      * @param limit limit value, -1 if not needed.
      * @param offset offset value, -1 if not needed.
      * @return Oracle - specific select query. Here is one example:
      *
-     * <code>SELECT * FROM ( SELECT t2.*, ROWNUM as rn FROM ( SELECT t.* FROM PAGES t  WHERE <conditions> order by id ) t2) WHERE rn >= 20 AND rownum <= 10;</code>
+     * <pre>SELECT * FROM (SELECT t2.*, ROWNUM AS oracle_row_number FROM (SELECT t.* FROM pages t WHERE &lt;conditions&gt; ORDER BY id) t2) WHERE oracle_row_number &gt;= 20 AND rownum &lt;= 10;</pre>
      * Can't think of an uglier thing. Shame on you, Oracle.
      */
+    @Override
     public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
 
         boolean needLimit = limit != -1;
         boolean needOffset = offset != -1;
 
-        offset += 1;//Oracle offset starts with 1, not like MySQL with 0;
-
-        String fullQuery;
-        if (tableName == null) {//table is in teh sub-query already
-            fullQuery = subQuery;
+        StringBuilder fullQuery = new StringBuilder();
+        if (needOffset) {
+            fullQuery.append("SELECT * FROM (SELECT t2.*, ROWNUM AS oracle_row_number FROM (");
+        } else if (needLimit) { // if needLimit and don't needOffset
+            fullQuery.append("SELECT * FROM (SELECT t2.* FROM (");
+        }
+        
+        if (tableName == null) { //table is in the sub-query already
+            fullQuery.append(subQuery);
         } else {
-            fullQuery = needLimit || needOffset ? "SELECT t.* FROM " + tableName + " t " : "SELECT * FROM " + tableName;
-            if (!Util.blank(subQuery)) {
-                String where = " WHERE ";
+            if (needLimit || needOffset) {
+                fullQuery.append("SELECT t.* FROM ").append(tableName).append(" t");
+            } else {
+                fullQuery.append("SELECT * FROM ").append(tableName);
+            }
+            if (!blank(subQuery)) {
                 //this is only to support findFirst("order by..."), might need to revisit later
-
                 if (!groupByPattern.matcher(subQuery.toLowerCase().trim()).find() &&
                         !orderByPattern.matcher(subQuery.toLowerCase().trim()).find()) {
-                    fullQuery += where;
+                    fullQuery.append(" WHERE");
                 }
-                fullQuery += subQuery;
+                fullQuery.append(' ').append(subQuery);
             }
         }
+        appendOrderBy(fullQuery, orderBys);
 
-        if(orderBys.size() != 0){
-            fullQuery += " ORDER BY " + Util.join(orderBys, ", ");
+        if (needOffset) {
+            // Oracle offset starts with 1, not like MySQL with 0;
+            fullQuery.append(") t2) WHERE oracle_row_number >= ").append(offset + 1);
+            if (needLimit) {
+                fullQuery.append(" AND ROWNUM <= ").append(limit);
+            }
+        } else if (needLimit) {
+            fullQuery.append(") t2) WHERE ROWNUM <= ").append(limit);            
         }
 
-        String tmp;
-        if(needLimit && needOffset){
-            tmp = "SELECT * FROM ( SELECT t2.*, ROWNUM as ORACLE_ROW_NUMBER FROM ( " + fullQuery + " ) t2) WHERE ";
-            fullQuery = tmp +   "ORACLE_ROW_NUMBER >= " + offset + " AND ROWNUM <= " + limit;
-        }
-        else if(needLimit && !needOffset){
-            tmp = "SELECT * FROM ( SELECT t2.* FROM ( " + fullQuery + " ) t2) WHERE ";
-            fullQuery = tmp + "ROWNUM <= " + limit;            
-        }else if(needOffset){
-            tmp = "SELECT * FROM ( SELECT t2.*, ROWNUM as ORACLE_ROW_NUMBER FROM ( " + fullQuery + " ) t2) WHERE ";
-            fullQuery = tmp +   "ORACLE_ROW_NUMBER >= " + offset;
-        }
-
-        return fullQuery;
+        return fullQuery.toString();
     }
 }
