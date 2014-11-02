@@ -36,35 +36,35 @@ public class GitInfo {
 
 
     protected static String genHtml() {
-        String html = "";
+        StringBuilder html = new StringBuilder();
 
-        html += wrap("h2", "Date/Time");
-        html += wrap("pre", new Date().toString());
-
-        html += wrap("h2", "Host");
+        wrap(html, "h2", "Date/Time");
+        wrap(html, "pre", new Date().toString());
+        
+        wrap(html, "h2", "Host");
         try {
-            html += wrap("pre", InetAddress.getLocalHost().toString());
+            wrap(html, "pre", InetAddress.getLocalHost().toString());
         } catch (UnknownHostException ignore) {}
 
-        html += wrap("h2", "Remote URL");
-        html += wrap("pre", exec("git remote -v"));
+        wrap(html, "h2", "Remote URL");
+        wrap(html, "pre", exec("git remote -v"));
 
-        html += wrap("h2", "Remote Branches");
-        html += wrap("pre", exec("git branch -r"));
+        wrap(html, "h2", "Remote Branches");
+        wrap(html, "pre", exec("git branch -r"));
 
-        html += wrap("h2", "Local Branch");
-        html += wrap("pre", exec("git branch"));
+        wrap(html, "h2", "Local Branch");
+        wrap(html, "pre", exec("git branch"));
 //
-//        html += wrap("h2", "Configuration");
-//        html += wrap("pre", exec("cat .git/config"));
+//        wrap(html, "h2", "Configuration");
+//        wrap(html, "pre", exec("cat .git/config"));
 
-        html += wrap("h2", "Most recent commit");
-        html += wrap("pre", exec("git log --max-count=1"));
-        return html;
+        wrap(html, "h2", "Most recent commit");
+        wrap(html, "pre", exec("git log --max-count=1"));
+        return html.toString();
     }
 
-    private static String wrap(String tag, String content){
-        return "<" + tag + ">" + content + "</" + tag + ">\n" ;
+    private static void wrap(StringBuilder html, String tag, String content){
+        html.append('<').append(tag).append('>').append(content).append("</").append(tag).append(">\n");
     }
 
 
