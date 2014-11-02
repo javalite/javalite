@@ -97,10 +97,17 @@ public class DefaultDialect {
         return query.toString();
     }
 
-    protected void appendQuestions(StringBuilder sb, int count) {
-        joinAndRepeat(sb, "?", ", ", count);
+    protected void appendQuestions(StringBuilder query, int count) {
+        joinAndRepeat(query, "?", ", ", count);
     }
 
+    protected void appendOrderBy(StringBuilder query, List<String> orderBys) {
+        if (!orderBys.isEmpty()) {
+            query.append(" ORDER BY ");
+            join(query, orderBys, ", ");
+        }
+    }
+    
     public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
         StringBuilder fullQuery = new StringBuilder();
         if (tableName == null) {
@@ -116,10 +123,7 @@ public class DefaultDialect {
                 fullQuery.append(' ').append(subQuery);
             }
         }
-        if (!orderBys.isEmpty()) {
-            fullQuery.append(" ORDER BY ");
-            join(fullQuery, orderBys, ", ");
-        }
+        appendOrderBy(fullQuery, orderBys);
 
         return fullQuery.toString();
     }

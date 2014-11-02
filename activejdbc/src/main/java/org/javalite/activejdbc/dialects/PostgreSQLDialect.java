@@ -34,11 +34,7 @@ public class PostgreSQLDialect extends DefaultDialect {
                 fullQuery.append(' ').append(subQuery);
             }
         }
-
-        if (!orderBys.isEmpty()) {
-            fullQuery.append(" ORDER BY ");
-            join(fullQuery, orderBys, ", ");
-        }
+        appendOrderBy(fullQuery, orderBys);
 
         if(limit != -1){
             fullQuery.append(" LIMIT ").append(limit);
