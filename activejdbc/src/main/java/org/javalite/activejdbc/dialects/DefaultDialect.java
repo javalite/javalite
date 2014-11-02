@@ -29,8 +29,10 @@ import static org.javalite.common.Util.*;
  */
 public class DefaultDialect {
     
-    protected final Pattern orderByPattern = Pattern.compile("^order *by", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-    protected final Pattern groupByPattern = Pattern.compile("^group *by", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+    protected final Pattern orderByPattern = Pattern.compile("^\\s*ORDER\\s+BY", 
+            Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+    protected final Pattern groupByPattern = Pattern.compile("^\\s*GROUP\\s+BY", 
+            Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
     public String selectStar(String table) {
         return "SELECT * FROM " + table;
@@ -109,10 +111,9 @@ public class DefaultDialect {
     }
 
     protected void appendSubQuery(StringBuilder query, String subQuery) {
-        if(!blank(subQuery)){
+        if (!blank(subQuery)) {
             // this is only to support findFirst("order by..."), might need to revisit later
-            if(!groupByPattern.matcher(subQuery.toLowerCase().trim()).find() &&
-                   !orderByPattern.matcher(subQuery.toLowerCase().trim()).find() ){
+            if (!groupByPattern.matcher(subQuery).find() && !orderByPattern.matcher(subQuery).find()) {
                 query.append(" WHERE");
             }
             query.append(' ').append(subQuery);

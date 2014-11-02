@@ -109,4 +109,10 @@ public class DefaultDialectTest extends ActiveJDBCTest {
         a(dialect.formSelect("people", null, Arrays.asList("last_name", "name"), 1, 1)).shouldBeEqual(
                 "SELECT * FROM people ORDER BY last_name, name");
     }
+
+    @Test
+    public void testFormSelectWithOrderBy() {
+        a(dialect.formSelect("people", " ORDER  by last_name", new ArrayList<String>(), 1, 1)).shouldBeEqual(
+                "SELECT * FROM people  ORDER  by last_name");
+    }
 }
