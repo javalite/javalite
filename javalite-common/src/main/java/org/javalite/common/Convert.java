@@ -18,6 +18,7 @@ limitations under the License.
 package org.javalite.common;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -28,7 +29,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import static org.javalite.common.Util.bytes;
+import static org.javalite.common.Util.*;
 
 /**
  * Convenience class for type conversions. 
@@ -58,13 +59,18 @@ public class Convert {
      * Converts clob to string
      */
     private static String clobToString(Clob clob) {
+        Reader r = null;
+        StringWriter sw = null;
         try {
-            Reader r = clob.getCharacterStream();
-            StringWriter sw = new StringWriter();
+            r = clob.getCharacterStream();
+            sw = new StringWriter();
             copyStream(r, sw);
             return sw.toString();
         } catch (Exception e) {
             throw new RuntimeException(e);
+        } finally {
+            close(sw);
+            close(r);
         }
     }
 
@@ -80,11 +86,11 @@ public class Convert {
 
     /**
      * Returns true if the value is any numeric type and has a value of 1, or
-     * if string type has a value of 'y', 't', 'true' or 'yes'. Otherwise, return false.
+     * if string type has a value of '1', 't', 'y', 'true' or 'yes'. Otherwise, return false.
      *
      * @param value value to convert
      * @return true if the value is any numeric type and has a value of 1, or
-     * if string type has a value of 'y', 't', 'true' or 'yes'. Otherwise, return false.
+     * if string type has a value of '1', 't', 'y', 'true' or 'yes'. Otherwise, return false.
      */
     public static Boolean toBoolean(Object value){
         if (value == null) {
@@ -96,14 +102,14 @@ public class Convert {
         } else if (value instanceof Number) {
             return ((Number)value).intValue() == 1;
         } else if (value instanceof Character) {
-            return value.equals('y') || value.equals('Y')
-                    || value.equals('t') || value.equals('T');
-
-        }else return value.toString().equalsIgnoreCase("yes")
-                || value.toString().equalsIgnoreCase("true") 
-                || value.toString().equalsIgnoreCase("y")
-                || value.toString().equalsIgnoreCase("t")
-                || Boolean.parseBoolean(value.toString());
+            char c = (Character) value;
+            return c == 't' || c == 'T' || c == 'y' || c == 'Y' || c == '1';
+        } else {
+            String str = value.toString();
+            return str.equalsIgnoreCase("true") || str.equalsIgnoreCase("t")
+                    || str.equalsIgnoreCase("yes") || str.equalsIgnoreCase("y") 
+                    || str.equals("1") || Boolean.parseBoolean(value.toString());
+        }
     }
 
 
@@ -183,6 +189,8 @@ public class Convert {
     public static Double toDouble(Object value){
         if (value == null) {
             return null;
+        } else if (value instanceof Double) {
+            return (Double) value;
         } else if (value instanceof Number) {
             return ((Number) value).doubleValue();
         } else {
@@ -217,7 +225,7 @@ public class Convert {
         } else if (value instanceof java.util.Date) {
            return new Timestamp(((java.util.Date)value).getTime());
         } else {
-           return Timestamp.valueOf(value.toString());            
+           return Timestamp.valueOf(value.toString());
         }
     }
 
@@ -231,9 +239,11 @@ public class Convert {
      */
     public static Float toFloat(Object value){
         if (value == null) {
-            return null;        
+            return null;
+        } else if (value instanceof Float) {
+            return (Float) value;
         }else if (value instanceof Number) {
-            return  ((Number)value).floatValue();
+            return ((Number)value).floatValue();
         } else {
             NumberFormat nf = new DecimalFormat();
             try {
@@ -256,8 +266,10 @@ public class Convert {
     public static Long toLong(Object value){
         if (value == null) {
             return null;
+        } else if (value instanceof Long) {
+            return (Long) value;
         } else if (value instanceof Number) {
-            return  ((Number)value).longValue();
+            return ((Number)value).longValue();
         } else {
             NumberFormat nf = new DecimalFormat();
             try {
@@ -280,8 +292,10 @@ public class Convert {
     public static Integer toInteger(Object value){
         if (value == null) {
             return null;
+        } else if (value instanceof Integer) {
+            return (Integer) value;
         } else if (value instanceof Number) {
-            return  ((Number)value).intValue();
+            return ((Number)value).intValue();
         } else {
             NumberFormat nf = new DecimalFormat();
             try {
@@ -319,15 +333,18 @@ public class Convert {
      * @return value converted to byte array.
      */
     public static byte[] toBytes(Object value) {
-        try {
-            if (value instanceof Blob) {
-                Blob b = (Blob) value;
-                return bytes(b.getBinaryStream());
-            } else {
-                return value instanceof byte[] ? (byte[]) value : toString(value).getBytes();
+        if (value instanceof Blob) {
+            InputStream is = null;
+            try {
+                is = ((Blob) value).getBinaryStream();
+                return bytes(is);
+            } catch (Exception e) {
+                throw new ConversionException(e);
+            } finally {
+                close(is);
             }
-        } catch (Exception e) {
-            throw new ConversionException(e);
+        } else {
+            return value instanceof byte[] ? (byte[]) value : toString(value).getBytes();
         }
     }
 
@@ -342,8 +359,10 @@ public class Convert {
     public static Short toShort(Object  value) {
         if (value == null) {
             return null;
+        } else if (value instanceof Short) {
+            return (Short) value;
         } else if (value instanceof Number) {
-            return  ((Number)value).shortValue();
+            return ((Number)value).shortValue();
         } else {
             NumberFormat nf = new DecimalFormat();
             try {

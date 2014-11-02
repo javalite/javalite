@@ -210,20 +210,61 @@ public class ConvertTest extends JSpecSupport {
     @Test
     public void shouldCovertToBoolean() throws ParseException {
 
+        a(Convert.toBoolean(null)).shouldBeFalse();
+
         a(Convert.toBoolean("true")).shouldBeTrue();
         a(Convert.toBoolean("false")).shouldBeFalse();
 
         a(Convert.toBoolean("TRUE")).shouldBeTrue();
         a(Convert.toBoolean("FALSE")).shouldBeFalse();
 
+        a(Convert.toBoolean("True")).shouldBeTrue();
+        a(Convert.toBoolean("False")).shouldBeFalse();
+
         a(Convert.toBoolean("yes")).shouldBeTrue();
         a(Convert.toBoolean("no")).shouldBeFalse();
+
+        a(Convert.toBoolean("YES")).shouldBeTrue();
+        a(Convert.toBoolean("NO")).shouldBeFalse();
+
+        a(Convert.toBoolean("Yes")).shouldBeTrue();
+        a(Convert.toBoolean("No")).shouldBeFalse();
+
+        a(Convert.toBoolean("t")).shouldBeTrue();
+        a(Convert.toBoolean("f")).shouldBeFalse();
+
+        a(Convert.toBoolean("T")).shouldBeTrue();
+        a(Convert.toBoolean("F")).shouldBeFalse();
 
         a(Convert.toBoolean("y")).shouldBeTrue();
         a(Convert.toBoolean("n")).shouldBeFalse();
 
+        a(Convert.toBoolean("Y")).shouldBeTrue();
+        a(Convert.toBoolean("N")).shouldBeFalse();
+
+        a(Convert.toBoolean("1")).shouldBeTrue();
+        a(Convert.toBoolean("0")).shouldBeFalse();
+
+        a(Convert.toBoolean('t')).shouldBeTrue();
+        a(Convert.toBoolean('f')).shouldBeFalse();
+
+        a(Convert.toBoolean('T')).shouldBeTrue();
+        a(Convert.toBoolean('F')).shouldBeFalse();
+
+        a(Convert.toBoolean('y')).shouldBeTrue();
+        a(Convert.toBoolean('n')).shouldBeFalse();
+
+        a(Convert.toBoolean('Y')).shouldBeTrue();
+        a(Convert.toBoolean('N')).shouldBeFalse();
+
+        a(Convert.toBoolean('1')).shouldBeTrue();
+        a(Convert.toBoolean('0')).shouldBeFalse();
+
         a(Convert.toBoolean(1)).shouldBeTrue();
         a(Convert.toBoolean(0)).shouldBeFalse();
+
+        a(Convert.toBoolean(1L)).shouldBeTrue();
+        a(Convert.toBoolean(0L)).shouldBeFalse();
 
         a(Convert.toBoolean(1f)).shouldBeTrue();
         a(Convert.toBoolean(0f)).shouldBeFalse();
