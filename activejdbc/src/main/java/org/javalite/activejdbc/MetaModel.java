@@ -31,6 +31,7 @@ import java.util.*;
 
 import static org.javalite.common.Inflector.*;
 import static org.javalite.activejdbc.LogFilter.*;
+import static org.javalite.common.Util.*;
 
 public class MetaModel<T extends Model, E extends Association> implements Serializable {
 
@@ -164,7 +165,7 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
      * @return true if this model supports optimistic locking, false if not
      */
     public boolean isVersioned(){
-        List<String> attrs = getAttributeNames(); 
+        List<String> attrs = getAttributeNames();
         return attrs.contains(versionColumn) || attrs.contains(versionColumn.toUpperCase());
     }
 
@@ -324,7 +325,7 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
     }
 
     public DefaultDialect getDialect() {
-        return Registry.instance().getConfiguration().getDialect(this);  
+        return Registry.instance().getConfiguration().getDialect(this);
     }
 
     protected List<Association> getAssociations(){
@@ -338,19 +339,23 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
      * @param attributeOrAssociation name  of attribute or association target.
      */
     protected void checkAttributeOrAssociation(String attributeOrAssociation) {
-
-        List<Association> associations = getAssociations();
-        List<String> associationTargets = new ArrayList<String>();
-
-        String message = "\n";
-        for(Association association: associations){
-            message +=association + "\n";
-            associationTargets.add(association.getTarget());
-        }
-        if (!hasAttribute(attributeOrAssociation) && !associationTargets.contains(attributeOrAssociation)) {
-            throw new IllegalArgumentException("Attribute: '" + attributeOrAssociation + "' is not defined in model: '"
-                    + getModelClass() + "' and also, did not find an association by the same name, available attributes: "
-                    + getAttributeNames() + "\nAvailable associations: " + message);
+        if (!hasAttribute(attributeOrAssociation)) {
+            List<Association> associations = getAssociations();
+            List<String> associationTargets = new ArrayList<String>();
+            for (Association association : associations) {
+                associationTargets.add(association.getTarget());
+            }
+            if (!associationTargets.contains(attributeOrAssociation)) {
+                StringBuilder sb = new StringBuilder().append("Attribute: '").append(attributeOrAssociation)
+                        .append("' is not defined in model: '").append(getModelClass())
+                        .append("' and also, did not find an association by the same name, available attributes: ")
+                        .append(getAttributeNames());
+                if (!associations.isEmpty()) {
+                    sb.append("\nAvailable associations:\n");
+                    join(sb, getAssociations(), "\n");
+                }
+                throw new IllegalArgumentException(sb.toString());
+            }
         }
     }
 

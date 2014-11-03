@@ -2416,34 +2416,29 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         doUpdatedAt();
 
         MetaModel metaModel = getMetaModelLocal();
-        String query = "UPDATE " + metaModel.getTableName() + " SET ";
+        StringBuilder query = new StringBuilder().append("UPDATE ").append(metaModel.getTableName()).append(" SET ");
         List<String> names = metaModel.getAttributeNamesSkipGenerated(manageTime);
-        for (int i = 0; i < names.size(); i++) {
-            String name = names.get(i);
-            query += name + "= ?";
-            if (i < names.size() - 1) {
-                query += ", ";
-            }
-        }
+        join(query, names, " = ?, ");
+        query.append(" = ?");
 
-        List values = getAttributeValuesSkipGenerated(names);
+        List<Object> values = getAttributeValuesSkipGenerated(names);
 
         if(metaModel.hasAttribute("updated_at")){
-            query += ", updated_at = ? ";
+            query.append(", updated_at = ?");
             values.add(get("updated_at"));
         }
 
         if(metaModel.isVersioned()){
-            query += ", " + getMetaModelLocal().getVersionColumn() + " = ? ";
+            query.append(", ").append(getMetaModelLocal().getVersionColumn()).append(" = ?");
             values.add(getLong(getMetaModelLocal().getVersionColumn()) + 1);
         }
-        query += " where " + metaModel.getIdName() + " = ?";
-        query += metaModel.isVersioned()? " and " + getMetaModelLocal().getVersionColumn() + " = ?" :"";
+        query.append(" WHERE ").append(metaModel.getIdName()).append(" = ?");
         values.add(getId());
-        if(metaModel.isVersioned()){
-            values.add((get(getMetaModelLocal().getVersionColumn())));
+        if (metaModel.isVersioned()) {
+            query.append(" AND ").append(getMetaModelLocal().getVersionColumn()).append(" = ?");
+            values.add(get(getMetaModelLocal().getVersionColumn()));
         }
-        int updated = new DB(metaModel.getDbName()).exec(query, values.toArray());
+        int updated = new DB(metaModel.getDbName()).exec(query.toString(), values.toArray());
         if(metaModel.isVersioned() && updated == 0){
             throw new StaleModelException("Failed to update record for model '" + getClass() +
                     "', with " + getIdName() + " = " + getId() + " and " + getMetaModelLocal().getVersionColumn() + " = " + get(getMetaModelLocal().getVersionColumn()) +
@@ -2457,8 +2452,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return updated > 0;
     }
 
-    private List getAttributeValuesSkipGenerated(List<String> names) {
-        List values = new ArrayList();
+    private List<Object> getAttributeValuesSkipGenerated(List<String> names) {
+        List<Object> values = new ArrayList<Object>();
         for (String name : names) {
             values.add(get(name));
         }

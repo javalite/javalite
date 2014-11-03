@@ -452,14 +452,9 @@ public class LazyList<T extends Model> extends AbstractList<T>{
 
 
     private String questions(int number) {
-        String res = "";
-        for (int i = 0; i < number; i++) {
-            res += "?";
-            if (i < (number - 1)) {
-                res += ",";
-            }
-        }
-        return res;
+        StringBuilder sb = new StringBuilder();
+        joinAndRepeat(sb, "?", ",", number);
+        return sb.toString();
     }
 
     private void processPolymorphicChildren(OneToManyPolymorphicAssociation association, Class childClass) {
