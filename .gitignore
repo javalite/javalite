@@ -15,7 +15,8 @@ activejdbc-instrumentation/dependency-reduced-pom.xml
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -91,7 +92,7 @@ local.properties
 ### Intellij ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm
 
-/*.iml
+*.iml
 
 ## Directory-based project format:
 .idea/
@@ -117,8 +118,8 @@ local.properties
 # .idea/mongoSettings.xml
 
 ## File-based project format:
-*.ipr
-*.iws
+.ipr
+.iws
 
 ## Plugin-specific files:
 

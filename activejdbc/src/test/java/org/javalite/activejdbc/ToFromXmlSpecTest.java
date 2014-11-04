@@ -67,64 +67,23 @@ public class ToFromXmlSpecTest extends ActiveJDBCTest {
     @Test
     public void shouldIncludeChildren(){
         deleteAndPopulateTables("users", "addresses");
-
         User.findById(1).add(Address.create("zip", 60606, "state", "IL", "address1", "123 Pine & Needles", "city", "Chicago"));
-
         List<User> personList = User.findAll().orderBy("id").include(Address.class);
+
         User u = personList.get(0);
-        String xml = u.toXml(true, true);
+        checkXmlStructure(u.toXml(true, true));
+        checkXmlStructure(u.toXml(false, true));
+    }
 
-        the(xml).shouldBeEqual("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                "<user>\n" +
-                "  <id>1</id>\n" +
-                "  <first_name>Marilyn</first_name>\n" +
-                "  <email>mmonroe@yahoo.com</email>\n" +
-                "  <last_name>Monroe</last_name>\n" +
-                "  <addresses>\n" +
-                "    <address>\n" +
-                "      <id>1</id>\n" +
-                "      <zip>60606</zip>\n" +
-                "      <state>IL</state>\n" +
-                "      <address1>123 Pine St.</address1>\n" +
-                "      <user_id>1</user_id>\n" +
-                "      <address2>apt 31</address2>\n" +
-                "      <city>Springfield</city>\n" +
-                "    </address>\n" +
-                "    <address>\n" +
-                "      <id>2</id>\n" +
-                "      <zip>60606</zip>\n" +
-                "      <state>IL</state>\n" +
-                "      <address1>456 Brook St.</address1>\n" +
-                "      <user_id>1</user_id>\n" +
-                "      <address2>apt 21</address2>\n" +
-                "      <city>Springfield</city>\n" +
-                "    </address>\n" +
-                "    <address>\n" +
-                "      <id>3</id>\n" +
-                "      <zip>60606</zip>\n" +
-                "      <state>IL</state>\n" +
-                "      <address1>23 Grove St.</address1>\n" +
-                "      <user_id>1</user_id>\n" +
-                "      <address2>apt 32</address2>\n" +
-                "      <city>Springfield</city>\n" +
-                "    </address>\n" +
-                "    <address>\n" +
-                "      <id>8</id>\n" +
-                "      <zip>60606</zip>\n" +
-                "      <state>IL</state>\n" +
-                "      <address1>123 Pine &amp; Needles</address1>\n" +
-                "      <user_id>1</user_id>\n" +
-                "      <city>Chicago</city>\n" +
-                "    </address>\n" +
-                "  </addresses>\n" +
-                "</user>\n");
-
-        a(XPathHelper.count("//address", xml)).shouldEqual(4);
-        the(xml).shouldContain(" <address1>123 Pine &amp; Needles</address1>");
-
-        the(u.toXml(false, true)).shouldBeEqual(
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-                + "<user><id>1</id><first_name>Marilyn</first_name><email>mmonroe@yahoo.com</email><last_name>Monroe</last_name><addresses><address><id>1</id><zip>60606</zip><state>IL</state><address1>123 Pine St.</address1><user_id>1</user_id><address2>apt 31</address2><city>Springfield</city></address><address><id>2</id><zip>60606</zip><state>IL</state><address1>456 Brook St.</address1><user_id>1</user_id><address2>apt 21</address2><city>Springfield</city></address><address><id>3</id><zip>60606</zip><state>IL</state><address1>23 Grove St.</address1><user_id>1</user_id><address2>apt 32</address2><city>Springfield</city></address><address><id>8</id><zip>60606</zip><state>IL</state><address1>123 Pine &amp; Needles</address1><user_id>1</user_id><city>Chicago</city></address></addresses></user>");
+    private void checkXmlStructure(String xml){
+        XPathHelper h = new XPathHelper(xml);
+        the(h.selectText("//first_name")).shouldBeEqual("Marilyn");
+        the(h.selectText("//last_name")).shouldBeEqual("Monroe");
+        the(h.count("//address")).shouldBeEqual(4);
+        the(h.selectText("//address[1]/address1")).shouldBeEqual("123 Pine St.");
+        the(h.selectText("//address[2]/address1")).shouldBeEqual("456 Brook St.");
+        the(h.selectText("//address[3]/address1")).shouldBeEqual("23 Grove St.");
+        the(h.selectText("//address[4]/address1")).shouldBeEqual("123 Pine & Needles");
     }
 
     @Test
@@ -137,6 +96,7 @@ public class ToFromXmlSpecTest extends ActiveJDBCTest {
         a(XPathHelper.count("/user/*", xml)).shouldEqual(2);
         a(XPathHelper.selectText("/user/email", xml)).shouldEqual("mmonroe@yahoo.com");
         a(XPathHelper.selectText("/user/last_name", xml)).shouldEqual("Monroe");
+        a(XPathHelper.count("//first_name", xml)).shouldEqual(0);
     }
 
     @Test
@@ -145,11 +105,6 @@ public class ToFromXmlSpecTest extends ActiveJDBCTest {
         LazyList<User> personList = User.findAll().orderBy("id").include(Address.class);
 
         String xml = personList.toXml(false, true);
-        the(xml).shouldBeEqual(
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?><users>"
-                + "<user><id>1</id><first_name>Marilyn</first_name><email>mmonroe@yahoo.com</email><last_name>Monroe</last_name><addresses><address><id>1</id><zip>60606</zip><state>IL</state><address1>123 Pine St.</address1><user_id>1</user_id><address2>apt 31</address2><city>Springfield</city></address><address><id>2</id><zip>60606</zip><state>IL</state><address1>456 Brook St.</address1><user_id>1</user_id><address2>apt 21</address2><city>Springfield</city></address><address><id>3</id><zip>60606</zip><state>IL</state><address1>23 Grove St.</address1><user_id>1</user_id><address2>apt 32</address2><city>Springfield</city></address></addresses></user>"
-                + "<user><id>2</id><first_name>John</first_name><email>jdoe@gmail.com</email><last_name>Doe</last_name><addresses><address><id>4</id><zip>60606</zip><state>IL</state><address1>143 Madison St.</address1><user_id>2</user_id><address2>apt 34</address2><city>Springfield</city></address><address><id>5</id><zip>60606</zip><state>IL</state><address1>153 Creek St.</address1><user_id>2</user_id><address2>apt 35</address2><city>Springfield</city></address><address><id>6</id><zip>60606</zip><state>IL</state><address1>163 Gorge St.</address1><user_id>2</user_id><address2>apt 36</address2><city>Springfield</city></address><address><id>7</id><zip>60606</zip><state>IL</state><address1>173 Far Side.</address1><user_id>2</user_id><address2>apt 37</address2><city>Springfield</city></address></addresses></user>"
-                + "</users>");
 
         a(XPathHelper.count("//user", xml)).shouldEqual(2);
         a(XPathHelper.count("//address", xml)).shouldEqual(7);
