@@ -1,17 +1,17 @@
 /*
 Copyright 2009-2014 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
 
 
@@ -32,7 +32,7 @@ import static org.javalite.common.Util.*;
 
 /**
  * While this class is public, it is never instantiated directly. This class provides
- * a number of APIs for augmenting the query. 
+ * a number of APIs for augmenting the query.
  *
  * @author Igor Polevoy
  */
@@ -74,7 +74,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
     /**
      *  This method limits the number of results in the resultset.
      *  It can be used in combination with the offset like this:
-     * 
+     *
      *  <code>List&lt;Event&gt; events =  Event.find("mnemonic = ?", "GLUC").offset(101).limit(20).orderBy("history_event_id");</code>
      *  This will produce 20 records, starting from record 101. This is an efficient method, it will only retrieve records
      *  that are necessary.
@@ -143,7 +143,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
      * <p/>
      *
      * This method will not follow relationships of related models, but rather only relationships of the current
-     * one.  
+     * one.
      *
      * @param classes list of dependent classes. These classes represent models with which a current model has a
      * relationship.
@@ -257,7 +257,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
      * <code> Person.find("name = ?", "Smith").load();</code>.
      * It is not possible to call other methods after load(). The load() method should be the last to be called in the chain:
      * <code> Person.find("name = ?", "Smith").limit(10).load();</code>.
-     * This: will generate exception: <code> Person.find("name = ?", "Smith").load().limit();</code>. 
+     * This: will generate exception: <code> Person.find("name = ?", "Smith").load().limit();</code>.
      *
      * @return fully loaded list.
      */
@@ -394,7 +394,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
 
         String fkName = association.getFkName();
 
-        //need to remove duplicates because more than one child can belong to the same parent. 
+        //need to remove duplicates because more than one child can belong to the same parent.
         List parentIds = collect(fkName);
         ArrayList noDuplicateList = new ArrayList(new HashSet(parentIds));
 
@@ -658,14 +658,15 @@ public class LazyList<T extends Model> extends AbstractList<T>{
     }
 
     /**
-     * Dumps content of list to a stream. Use for debugging. 
+     * Dumps content of list to a stream. Use for debugging.
      * @param out
      */
     public void dump(OutputStream out){
         hydrate();
         PrintWriter p = new PrintWriter(out);
         for(Model m : delegate){
-            p.write(m.toString() + "\n");
+            p.write(m.toString());
+            p.write('\n');
         }
         p.flush();
     }
