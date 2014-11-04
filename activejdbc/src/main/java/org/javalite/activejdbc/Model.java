@@ -181,6 +181,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param date date value.
      * @deprecated  use {@link #setTimestamp(String, Object)} instead.
      */
+    @Deprecated
     public void setTS(String name, java.util.Date date) {
         if(date == null) {
             set(name, null);
@@ -727,7 +728,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attrs list of attributes to include. No arguments == include all attributes.
      * @return generated XML.
      */
-    public String toXml(boolean pretty, boolean declaration, String ... attrs) {
+    public String toXml(boolean pretty, boolean declaration, String... attrs) {
         StringBuilder sb = new StringBuilder();
 
         if(declaration) {
@@ -784,8 +785,18 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         if (pretty) { sb.append('\n'); }
     }
 
+    /**
+     * Generates a XML document from content of this model.
+     *
+     * @param spaces by how many spaces to indent.
+     * @param declaration true to include XML declaration at the top
+     * @param attrs list of attributes to include. No arguments == include all attributes.
+     * @return generated XML.
+     *
+     * @deprecated use {@link #toXml(boolean, boolean, String...)} instead
+     */
     @Deprecated
-    public String toXml(int spaces, boolean declaration, String ... attrs){
+    public String toXml(int spaces, boolean declaration, String... attrs){
         return toXml(spaces > 0, declaration, attrs);
     }
 
@@ -1972,6 +1983,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param listener this is a call back implementation which will receive instances of models found.
      * @deprecated use {@link #findWith(ModelListener, String, Object...)}.
      */
+    @Deprecated
     public static void find(String query, final ModelListener listener) {
         findWith(listener, query);
     }
