@@ -5,11 +5,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.sql.SQLException;
 
 
 public class Migration implements Comparable {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final Logger logger = LoggerFactory.getLogger(Migration.class);
     private static final String DEFAULT_DELIMITER = ";";
     private static final String DEFAULT_DELIMITER_KEYWORD = "DELIMITER";
 
@@ -79,7 +78,7 @@ public class Migration implements Comparable {
             }
 
         } catch (Exception e) {
-            logger.error("Error executing: " + command, e);
+            logger.error("Error executing: {}", command, e);
             throw e;
         }
     }

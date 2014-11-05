@@ -75,8 +75,8 @@ public class StatisticsQueue {
      */
     public void stop() {
         int notProcessed = worker.shutdownNow().size();
-        if (notProcessed != 0) {
-            logger.info("Worker exiting, " + notProcessed + " execution events remaining, time:" + System.currentTimeMillis());
+        if (logger.isInfoEnabled() && notProcessed != 0) {
+            logger.info("Worker exiting, {} execution events remaining, time: {}", notProcessed, System.currentTimeMillis());
         }
     }
 

@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * @author Igor Polevoy
  */
 public class EHCacheManager extends CacheManager {
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private static final Logger logger = LoggerFactory.getLogger(EHCacheManager.class);
     private net.sf.ehcache.CacheManager cacheManager = net.sf.ehcache.CacheManager.create();
 
     @Override
@@ -35,7 +35,7 @@ public class EHCacheManager extends CacheManager {
             Cache c = cacheManager.getCache(group);
             return c.get(key) == null ? null : c.get(key).getObjectValue();
         } catch (Throwable e) {
-            logger.warn(e.toString(), e);
+            logger.warn("{}", e, e);
             return null;
         }
     }

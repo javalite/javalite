@@ -39,7 +39,7 @@ public class Configuration {
     private Map<String, List<String>> modelsMap = new HashMap<String, List<String>>();
     private Properties properties = new Properties();
     private static CacheManager cacheManager;
-    final static Logger logger = LoggerFactory.getLogger(Configuration.class);
+    private final static Logger logger = LoggerFactory.getLogger(Configuration.class);
 
     private  Map<String, DefaultDialect> dialects = new HashMap<String, DefaultDialect>();
 
@@ -48,7 +48,7 @@ public class Configuration {
             Enumeration<URL> resources = getClass().getClassLoader().getResources("activejdbc_models.properties");
             while (resources.hasMoreElements()) {
                 URL url = resources.nextElement();
-                LogFilter.log(logger, "Load models from: " + url.toExternalForm());
+                LogFilter.log(logger, "Load models from: {}", url.toExternalForm());
                 InputStream inputStream = null;
                 try {
                     inputStream = url.openStream();

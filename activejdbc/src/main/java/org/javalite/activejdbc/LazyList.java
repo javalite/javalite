@@ -38,7 +38,7 @@ import static org.javalite.common.Util.*;
  */
 public class LazyList<T extends Model> extends AbstractList<T>{
 
-    final static Logger logger = LoggerFactory.getLogger(LazyList.class);
+    private static final Logger logger = LoggerFactory.getLogger(LazyList.class);
     protected List<T> delegate = new ArrayList<T>();
     private List<String> orderBys = new ArrayList<String>();
     private boolean hydrated = false;

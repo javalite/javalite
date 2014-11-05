@@ -60,23 +60,26 @@ public abstract class CacheManager {
      *
      * @param event type of caches to flush.
      */
-    public final void flush(CacheEvent event){        
+    public final void flush(CacheEvent event){
         doFlush(event);
         for(CacheEventListener listener: listeners){
             try{
                 listener.onFlush(event);
             }catch(Throwable e){
-                logger.warn("failed to propagate cache event: " + event + "  to listener: " + listener, e);
+                logger.warn("failed to propagate cache event: {} to listener: {}", event, listener, e);
             }
         }
-        String message = event.getType() == CacheEvent.CacheEventType.ALL? "all caches": "table: " + event.getGroup(); 
-        LogFilter.log(logger, "Cache purged: " + message);
+        if (logger.isInfoEnabled()) {
+            String message = "Cache purged: " + (event.getType() == CacheEvent.CacheEventType.ALL
+                    ? "all caches" : "table: " + event.getGroup());
+            LogFilter.log(logger, message);
+        }
     }
 
     public final void addCacheEventListener(CacheEventListener listener){
         listeners.add(listener);
     }
-    
+
     public final void removeCacheEventListener(CacheEventListener listener){
         listeners.remove(listener);
     }

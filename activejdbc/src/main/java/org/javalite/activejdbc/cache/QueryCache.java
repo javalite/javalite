@@ -97,13 +97,15 @@ public class QueryCache {
     }
 
     static void logAccess(String query, Object[] params, String access) {
-        StringBuilder log = new StringBuilder().append(access).append(", ").append('"').append(query).append('"');
-        if (!empty(params)) {
-            log.append(", with parameters: ").append('<');
-            join(log, params, ">, <");
-            log.append('>');
+        if (logger.isInfoEnabled()) {
+            StringBuilder log = new StringBuilder().append(access).append(", ").append('"').append(query).append('"');
+            if (!empty(params)) {
+                log.append(", with parameters: ").append('<');
+                join(log, params, ">, <");
+                log.append('>');
+            }
+            LogFilter.log(logger, log.toString());
         }
-        LogFilter.log(logger, log.toString());
     }
 
 

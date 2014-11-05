@@ -36,9 +36,9 @@ import java.util.*;
  * @author Igor Polevoy
  */
 public class DB {
-    
+
     private String dbName;
-    final static Logger logger = LoggerFactory.getLogger(DB.class);
+    private final static Logger logger = LoggerFactory.getLogger(DB.class);
 
     /**
      * Creates a new DB object representing a connection to a DB.
@@ -227,7 +227,7 @@ public class DB {
      * @param jndiName JNDI name. 
      */
     private void openContext(InitialContext context, String jndiName) {
-        try {         
+        try {
             DataSource ds = (DataSource) context.lookup(jndiName);
             Connection connection = ds.getConnection();
             ConnectionsAccess.attach(dbName, connection);
@@ -256,10 +256,11 @@ public class DB {
             }
             StatementCache.instance().cleanStatementCache(connection);
             connection.close();
-            LogFilter.log(logger, "Closed connection: " + connection);
+            LogFilter.log(logger, "Closed connection: {}", connection);
         } catch (Exception e) {
-            if(!suppressWarning)
+            if (!suppressWarning) {
                 logger.warn("Could not close connection! MUST INVESTIGATE POTENTIAL CONNECTION LEAK!", e);
+            }
         }finally{
             ConnectionsAccess.detach(dbName);// lets free the thread from connection
         }
@@ -582,7 +583,7 @@ public class DB {
         try {
             Connection connection = connection();
             ps = StatementCache.instance().getPreparedStatement(connection, query);
-            if(ps == null){                
+            if(ps == null){
                 ps = connection.prepareStatement(query, new String[]{autoIncrementColumnName});
                 StatementCache.instance().cache(connection, query, ps);
             }
@@ -618,7 +619,7 @@ public class DB {
                     return -1;
                 }
             } catch (Exception e) {
-                logger.error("Failed to find out the auto-incremented value, returning -1, query: " + query, e);
+                logger.error("Failed to find out the auto-incremented value, returning -1, query: {}", query, e);
                 return -1;
             } finally {
                 try { if (rs != null) rs.close(); } catch (Exception e) {/*ignore*/}
@@ -629,7 +630,7 @@ public class DB {
     }
 
     private void logException(String message, Exception e) {
-        if (Convert.toBoolean(System.getProperty("activejdbc.log_exception")))
+        if (logger.isErrorEnabled() && Convert.toBoolean(System.getProperty("activejdbc.log_exception")))
             logger.error(message, e);
     }
 
@@ -709,7 +710,7 @@ public class DB {
      *
      * @return connection from current thread.
      */
-    public Connection getConnection(){        
+    public Connection getConnection(){
         return connection();
     }
 

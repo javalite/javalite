@@ -433,8 +433,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             String targetTableName = association.getTarget();
             Class c = Registry.instance().getModelClass(targetTableName, false);
             if(c == null){// this model is probably not defined as a class, but the table exists!
-                logger.error("ActiveJDBC WARNING: failed to find a model class for: " + targetTableName + ", maybe model is not defined for this table?" +
-                        " There might be a risk of running into integrity constrain violation if this model is not defined.");
+                logger.error("ActiveJDBC WARNING: failed to find a model class for: {}, maybe model is not defined for this table?"
+                        + " There might be a risk of running into integrity constrain violation if this model is not defined.",
+                        targetTableName);
             }
             else{
                 allMany2ManyChildren.addAll(getAll(c));
@@ -502,8 +503,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             String targetTableName = association.getTarget();
             Class c = Registry.instance().getModelClass(targetTableName, false);
             if(c == null){// this model is probably not defined as a class, but the table exists!
-                logger.error("ActiveJDBC WARNING: failed to find a model class for: " + targetTableName + ", maybe model is not defined for this table?" +
-                        " There might be a risk of running into integrity constrain violation if this model is not defined.");
+                logger.error("ActiveJDBC WARNING: failed to find a model class for: {}, maybe model is not defined for this table?"
+                        + " There might be a risk of running into integrity constrain violation if this model is not defined.",
+                        targetTableName);
             }
             else{
                 List<Model> dependencies = getAll(c);
@@ -996,7 +998,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
 
         if (fkValue == null) {
-            logger.debug("Attribute:  "  + fkName + " is null, cannot determine parent. Child record: " + this);
+            logger.debug("Attribute: {} is null, cannot determine parent. Child record: {}", fkName, this);
             return null;
         }
         String parentIdName = parentMM.getIdName();

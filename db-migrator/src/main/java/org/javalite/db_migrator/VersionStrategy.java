@@ -21,7 +21,7 @@ public class VersionStrategy {
     public static final String APPLIED_DATE_COLUMN = "applied_on";
     public static final String DURATION_COLUMN = "duration";
 
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final Logger logger = LoggerFactory.getLogger(VersionStrategy.class);
 
 
     private static final Map CREATE_VERSION_TABLE_MAP;

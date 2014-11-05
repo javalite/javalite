@@ -209,11 +209,12 @@ public enum Registry {
         }
 
         if(columns.size() > 0){
-            LogFilter.log(logger, "Fetched metadata for table: " + table);
+            LogFilter.log(logger, "Fetched metadata for table: {}", table);
         }
         else{
-            logger.warn("Failed to retrieve metadata for table: '" + table
-                    + "'. Are you sure this table exists? For some databases table names are case sensitive.");
+            logger.warn("Failed to retrieve metadata for table: '{}'."
+                    + " Are you sure this table exists? For some databases table names are case sensitive.",
+                    table);
         }
         return columns;
     }
@@ -231,7 +232,7 @@ public enum Registry {
             String idGeneratorCode= findIdGeneratorCode(modelClass);
             MetaModel mm = new MetaModel(dbName, tableName, idName, modelClass, dbType, isCached(modelClass), idGeneratorCode);
             metaModels.addMetaModel(mm, tableName, modelClass);
-            LogFilter.log(logger, "Registered model: " + modelClass);
+            LogFilter.log(logger, "Registered model: {}", modelClass);
         }
     }
 
@@ -326,7 +327,7 @@ public enum Registry {
     private Map<String, ColumnMetadata> getColumns(ResultSet rs, String dbProduct) throws SQLException {
          Map<String, ColumnMetadata> columns = new HashMap<String, ColumnMetadata>();
         while (rs.next()) {
-        	
+
         	if (dbProduct.equals("h2") && "INFORMATION_SCHEMA".equals(rs.getString("TABLE_SCHEMA"))) continue; //skip h2 INFORMATION_SCHEMA table columns.
             ColumnMetadata cm = new ColumnMetadata(rs.getString("COLUMN_NAME").toLowerCase(), rs.getString("TYPE_NAME"), rs.getInt("COLUMN_SIZE"));
             columns.put(cm.getColumnName(), cm);

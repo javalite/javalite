@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 public class MigrationResolver {
 
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final Logger logger = LoggerFactory.getLogger(MigrationResolver.class);
     private String migrationsLocation;
 
     private static Pattern MIGRATION_FILE_PATTERN = Pattern.compile("^(\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d)_.*\\.sql");
@@ -21,7 +21,7 @@ public class MigrationResolver {
 
     public List<Migration> resolve() {
         File location = new File(migrationsLocation);
-        logger.info("Trying migrations at: " + location.getAbsolutePath());
+        logger.info("Trying migrations at: {} ", location.getAbsolutePath());
 
         //assume flat directory of migrations
         File[] files = location.listFiles();

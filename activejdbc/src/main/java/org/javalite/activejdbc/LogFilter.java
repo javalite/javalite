@@ -48,25 +48,45 @@ public class LogFilter {
     }
 
     static void logQuery(Logger logger, String query, Object[] params, long queryStartTime){
-
         long time = System.currentTimeMillis() - queryStartTime;
 
         if (Registry.instance().getConfiguration().collectStatistics()) {
             Registry.instance().getStatisticsQueue().enqueue(new QueryExecutionEvent(query, time));
         }
-        
-        StringBuilder log =  new StringBuilder().append("Query: \"").append(query).append('"');
-        if (!empty(params)) {
-            log.append(", with parameters: ").append('<');
-            join(log, params, ">, <");
-            log.append('>');
+
+        if (logger.isInfoEnabled()) {
+            StringBuilder log =  new StringBuilder().append("Query: \"").append(query).append('"');
+            if (!empty(params)) {
+                log.append(", with parameters: ").append('<');
+                join(log, params, ">, <");
+                log.append('>');
+            }
+            log(logger, log.append(", took: ").append(time).append(" milliseconds").toString());
         }
-        log(logger, log.append(", took: ").append(time).append(" milliseconds").toString());
     }
 
     public static void log(Logger logger, String log){
-        if (pattern.matcher(log).matches()) {
+        if (logger.isInfoEnabled() && pattern.matcher(log).matches()) {
            logger.info(log);
         }
     }
+
+    public static void log(Logger logger, String log, Object param) {
+        if (logger.isInfoEnabled() && pattern.matcher(log).matches()) {
+           logger.info(log, param);
+        }
+    }
+
+    public static void log(Logger logger, String log, Object param1, Object param2) {
+        if (logger.isInfoEnabled() && pattern.matcher(log).matches()) {
+           logger.info(log, param1, param2);
+        }
+    }
+
+    public static void log(Logger logger, String log, Object... params) {
+        if (logger.isInfoEnabled() && pattern.matcher(log).matches()) {
+           logger.info(log, params);
+        }
+    }
+
 }

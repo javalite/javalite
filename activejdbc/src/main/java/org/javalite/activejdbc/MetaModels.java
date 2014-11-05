@@ -39,12 +39,12 @@ public class MetaModels {
     void addMetaModel(MetaModel<?, ?> mm, String tableName, Class<? extends Model> modelClass) {
         Object o = metaModelsByClass.put(modelClass, mm);
         if (o != null) {
-            logger.warn("Double-register: " + modelClass + ": " + o);
+            logger.warn("Double-register: {}: {}", modelClass, o);
         }
         o = metaModelsByTableName.put(tableName, mm);
         many2ManyAssociations.addAll(mm.getManyToManyAssociations(Collections.<Association>emptyList()));
         if (o != null) {
-            logger.warn("Double-register: " + tableName + ": " + o);
+            logger.warn("Double-register: {}: {}", tableName, o);
         }
 
         metaModelsByClassName.put(modelClass.getName(), mm);

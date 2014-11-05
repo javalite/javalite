@@ -244,7 +244,7 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
 
     protected void addAssociation(Association association) {
         if (!associations.contains(association)) {
-            log(logger, "Association found: " + association);
+            log(logger, "Association found: {}", association);
             associations.add(association);
         }
     }
