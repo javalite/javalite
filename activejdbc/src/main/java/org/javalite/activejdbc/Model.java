@@ -981,13 +981,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         BelongsToPolymorphicAssociation assP = (BelongsToPolymorphicAssociation)getMetaModelLocal()
             .getAssociationForTarget(parentTable, BelongsToPolymorphicAssociation.class);
 
-        String fkValue;
+        Object fkValue;
         String fkName;
         if (ass != null) {
-            fkValue = getString(ass.getFkName());
+            fkValue = get(ass.getFkName());
             fkName = ass.getFkName();
         } else if (assP != null) {
-            fkValue = getString("parent_id");
+            fkValue = get("parent_id");
             fkName = "parent_id";
 
             if (!assP.getTypeLabel().equals(getString("parent_type"))) {
