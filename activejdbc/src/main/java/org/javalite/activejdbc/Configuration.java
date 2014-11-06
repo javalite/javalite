@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.*;
+import org.javalite.common.Convert;
 
 /**
  * @author Igor Polevoy
@@ -53,8 +54,8 @@ public class Configuration {
                 try {
                     inputStream = url.openStream();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-                    String line ;
-                    while(  (line = reader.readLine()) != null ){
+                    String line;
+                    while ((line = reader.readLine()) != null) {
 
                         String[] parts = Util.split(line, ':');
                         String modelName = parts[0];
@@ -107,11 +108,11 @@ public class Configuration {
     }
 
     public boolean collectStatistics() {
-        return properties.getProperty("collectStatistics", "false").equals("true");
+        return Convert.toBoolean(properties.getProperty("collectStatistics", "false"));
     }
 
     public boolean collectStatisticsOnHold() {
-        return properties.getProperty("collectStatisticsOnHold", "false").equals("true");
+        return Convert.toBoolean(properties.getProperty("collectStatisticsOnHold", "false"));
     }
 
     public boolean cacheEnabled(){
@@ -119,28 +120,29 @@ public class Configuration {
     }
 
     DefaultDialect getDialect(MetaModel mm){
-        if(dialects.get(mm.getDbType()) == null){
+        DefaultDialect dialect = dialects.get(mm.getDbType());
+        if (dialect == null) {
             if(mm.getDbType().equalsIgnoreCase("Oracle")){
-                dialects.put(mm.getDbType(), new OracleDialect());
+                dialect = new OracleDialect();
             }
             else if(mm.getDbType().equalsIgnoreCase("MySQL")){
-                dialects.put(mm.getDbType(), new MySQLDialect());
+                dialect = new MySQLDialect();
             }
             else if(mm.getDbType().equalsIgnoreCase("PostgreSQL")){
-                dialects.put(mm.getDbType(), new PostgreSQLDialect());
+                dialect = new PostgreSQLDialect();
             }
             else if(mm.getDbType().equalsIgnoreCase("h2")){
-                dialects.put(mm.getDbType(), new H2Dialect());
+                dialect = new H2Dialect();
             }
             else if(mm.getDbType().equalsIgnoreCase("Microsoft SQL Server")){
-                dialects.put(mm.getDbType(), new MSSQLDialect());
+                dialect = new MSSQLDialect();
             }
             else{
-                dialects.put(mm.getDbType(), new DefaultDialect());
+                dialect = new DefaultDialect();
             }
+            dialects.put(mm.getDbType(), dialect);
         }
-
-        return dialects.get(mm.getDbType());
+        return dialect;
     }
 
 
