@@ -2239,7 +2239,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
 
         boolean result;
-        if (blank(getId())) {
+        if (getId() == null) {
             result = doInsert();
         } else {
             result = update();

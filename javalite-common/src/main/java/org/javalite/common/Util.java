@@ -115,9 +115,9 @@ public class Util {
 
     public static void close(Closeable c) {
         try {
-            if (c != null)
-                c.close();
+            if (c != null) { c.close(); }
         } catch (IOException e) {
+            //TODO shouldn't we close silently (not throwing any exception back)?
             throw new RuntimeException(e);
         }
     }
@@ -216,13 +216,30 @@ public class Util {
     }
 
     /**
-     * Returns true if value is either null or it's String representation is empty.
+     * Returns true if value is either null or it's String representation is blank.
      *
      * @param value object to check.
-     * @return true if value is either null or it's String representation is empty, otherwise returns false.
+     * @return true if value is either null or it's String representation is blank, otherwise returns false.
      */
     public static boolean blank(Object value) {
-        return value == null || value.toString().trim().equals("");
+        return value == null || blank(value.toString());
+    }
+
+    /**
+     * Returns true if str is either null or blank.
+     *
+     * @param str String to check.
+     * @return true if str is either null or blank, otherwise returns false.
+     */
+    public static boolean blank(String str) {
+        if (str != null && str.length() > 0) {
+            for (int i = 0; i < str.length(); i++) {
+                if (!Character.isWhitespace(str.charAt(i))) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -330,19 +347,6 @@ public class Util {
     }
 
     /**
-     * Repeats string of characters a defined number of times, and appends result to StringBuilder.
-     *
-     * @param sb StringBuilder to append result to
-     * @param str string of characters to be repeated.
-     * @param count number of times to repeat, zero or a negative number produces no result
-     */
-    public static void repeat(StringBuilder sb, String str, int count) {
-        for (int i = 0; i < count; i++) {
-            sb.append(str);
-        }
-    }
-
-    /**
      * Repeats string of characters a defined number of times with a delimiter, and appends result to StringBuilder.
      *
      * <p>For example, <tt>joinAndRepeat(sb, "?", ",", 3)</tt> will append <tt>"?,?,?"</tt> to <tt>sb</tt>.
@@ -378,13 +382,13 @@ public class Util {
         try {
             out = new FileOutputStream(path);
             byte[] bytes = new byte[1024];
-            for (int x = in.read(bytes); x != -1; x = in.read(bytes))
+            for (int x = in.read(bytes); x != -1; x = in.read(bytes)) {
                 out.write(bytes, 0, x);
+            }
             out.flush();
-        }catch (Exception e){
+        } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-        finally {
+        } finally {
             close(out);
         }
     }
@@ -397,12 +401,19 @@ public class Util {
      * @return message and stack trace converted to string.
      */
     public static String getStackTraceString(Throwable throwable) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        pw.println(throwable.toString());
-        throwable.printStackTrace(pw);
-        pw.flush();
-        return sw.toString();
+        StringWriter sw = null;
+        PrintWriter pw = null;
+        try {
+            sw = new StringWriter();
+            pw = new PrintWriter(sw);
+            pw.println(throwable.toString());
+            throwable.printStackTrace(pw);
+            pw.flush();
+            return sw.toString();
+        } finally {
+            close(pw);
+            close(sw);
+        }
     }
 
     /**
@@ -411,7 +422,13 @@ public class Util {
      * @param path path to file - can be absolute or relative to current.
      * @param content bytes to save.
      */
-    public static void saveTo(String path, byte[] content){
-        saveTo(path, new ByteArrayInputStream(content));
+    public static void saveTo(String path, byte[] content) {
+        InputStream is = null;
+        try {
+            is = new ByteArrayInputStream(content);
+            saveTo(path, is);
+        } finally {
+            close(is);
+        }
     }
 }

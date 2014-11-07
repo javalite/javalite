@@ -17,12 +17,14 @@ limitations under the License.
 
 package org.javalite.activejdbc.validation;
 
+import java.text.ParseException;
 import org.javalite.activejdbc.Messages;
 import org.javalite.activejdbc.Model;
-import org.javalite.common.Util;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+
+import static org.javalite.common.Util.*;
 
 /**
  * @author Igor Polevoy
@@ -38,17 +40,15 @@ public class DateConverter extends Converter{
         df = new SimpleDateFormat(format);
         this.format = format;
     }
-    
-    public void convert(Model m) {
 
+    public void convert(Model m) {
         Object val = m.get(attributeName);
-        if(!Util.blank(val) &&  !(val instanceof java.util.Date)){
-            try{
+        if (!(val instanceof java.util.Date) && !blank(val)) {
+            try {
                 long time = df.parse(val.toString()).getTime();
                 java.sql.Date d = new java.sql.Date(time);
                 m.set(attributeName, d);
-            }
-            catch(Exception e){
+            } catch (ParseException e) {
                 m.addValidator(this, attributeName);
             }
         }

@@ -19,11 +19,13 @@ package org.javalite.activejdbc.validation;
 
 import org.javalite.activejdbc.Messages;
 import org.javalite.activejdbc.Model;
-import org.javalite.common.Util;
 
 import java.text.SimpleDateFormat;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.util.Locale;
+
+import static org.javalite.common.Util.*;
 
 /**
  * @author Igor Polevoy
@@ -41,15 +43,13 @@ public class TimestampConverter extends Converter{
     }
 
     public void convert(Model m) {
-
         Object val = m.get(attributeName);
-        if(!Util.blank(val) &&  !(val instanceof Timestamp)){
-            try{
+        if (!(val instanceof Timestamp) && !blank(val)) {
+            try {
                 long time = df.parse(val.toString()).getTime();
                 Timestamp t = new Timestamp(time);
                 m.set(attributeName, t);
-            }
-            catch(Exception e){
+            } catch(ParseException e) {
                 m.addValidator(this, attributeName);
             }
         }
