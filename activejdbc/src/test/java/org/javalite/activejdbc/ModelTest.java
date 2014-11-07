@@ -28,6 +28,7 @@ import org.junit.Test;
 import java.io.*;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -113,7 +114,7 @@ public class ModelTest extends ActiveJDBCTest {
         p.set("last_name", "Monroe");
         p.set("dob", getDate(1935, 12, 6));
         p.saveIt();
-        
+
         a(p.getId()).shouldNotBeNull();
         //verify save:
 
@@ -277,7 +278,7 @@ public class ModelTest extends ActiveJDBCTest {
                 user.getAll(Book.class);//non-existent table
             }
         });
-        
+
     }
 
     @Test
@@ -484,7 +485,7 @@ public class ModelTest extends ActiveJDBCTest {
         expect(new DifferenceExpectation(Person.count()) {
             public Object exec() {
                 new Person().set("name", "Marilyn", "last_name", "Monroe", "dob", "1935-12-06").saveIt();
-                return (Person.count()); 
+                return (Person.count());
             }
         });
     }
@@ -508,7 +509,7 @@ public class ModelTest extends ActiveJDBCTest {
     public void shouldAcceptUpperCaseAttributeName(){
 
         Person.deleteAll();
-        
+
         Person p = new Person();
         p.set("NAME", "John");//before the upper case caused exception
         p.set("last_name", "Deer");
@@ -530,7 +531,7 @@ public class ModelTest extends ActiveJDBCTest {
         System.out.println(p);
 
         p.fromMap(map("name", "Jack"));
-        
+
         a(p.get("name")).shouldBeEqual("Jack");
         a(p.get("last_name")).shouldBeEqual("Deer");
         a(p.getId()).shouldBeEqual(id);
@@ -551,7 +552,7 @@ public class ModelTest extends ActiveJDBCTest {
         //read model
         ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bout.toByteArray()));
         Person p1 = (Person) in.readObject();
-        
+
         //validate models
         a(p1.get("name")).shouldBeEqual(p.get("name"));
         a(p1.get("last_name")).shouldBeEqual(p.get("last_name"));
@@ -568,13 +569,25 @@ public class ModelTest extends ActiveJDBCTest {
         java.sql.Date date = p.getDate("dob");
         Calendar c = new GregorianCalendar();
         c.setTime(date);
-        
+
         a(date.toString()).shouldBeEqual(new java.sql.Date(System.currentTimeMillis()).toString());
         a(c.get(Calendar.HOUR_OF_DAY)).shouldBeEqual(0);
         a(c.get(Calendar.MINUTE)).shouldBeEqual(0);
         a(c.get(Calendar.SECOND)).shouldBeEqual(0);
         a(c.get(Calendar.MILLISECOND)).shouldBeEqual(0);
-        
+    }
+
+    @Test
+    public void testNewFromMap() {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("id", null);
+        map.put("name", "Joe");
+        map.put("last_name", "Schmoe");
+        Person p = new Person().fromMap(map);
+
+        a(p.getId()).shouldBeNull();
+        a(p.isNew()).shouldBeTrue();
+        a(p.isValid()).shouldBeTrue();
     }
 }
 
