@@ -17,7 +17,6 @@ limitations under the License.
 
 package org.javalite.activejdbc.validation;
 
-import org.javalite.activejdbc.Messages;
 import org.javalite.activejdbc.Model;
 
 import java.text.SimpleDateFormat;
@@ -30,18 +29,19 @@ import static org.javalite.common.Util.*;
 /**
  * @author Igor Polevoy
  */
-public class TimestampConverter extends Converter{
+public class TimestampConverter extends Converter {
 
-    private String attributeName, message, format;
+    private String attributeName, format;
     private SimpleDateFormat df;
 
     public TimestampConverter(String attributeName, String format){
         this.attributeName = attributeName;
         this.message = "attribute {0} does not conform to format: {1}";
-        df = new SimpleDateFormat(format);
+        this.df = new SimpleDateFormat(format);
         this.format = format;
     }
 
+    @Override
     public void convert(Model m) {
         Object val = m.get(attributeName);
         if (!(val instanceof Timestamp) && !blank(val)) {
@@ -55,12 +55,8 @@ public class TimestampConverter extends Converter{
         }
     }
 
+    @Override
     public String formatMessage(Locale locale, Object ... params) {//params not used
-        return locale != null ? Messages.message(message, locale, attributeName, format)
-                : Messages.message(message, attributeName, format);
-    }
-
-    public void setMessage(String message) {
-         this.message = message;
+        return super.formatMessage(locale, attributeName, format);
     }
 }

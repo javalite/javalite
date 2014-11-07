@@ -18,7 +18,6 @@ limitations under the License.
 package org.javalite.activejdbc.validation;
 
 import java.text.ParseException;
-import org.javalite.activejdbc.Messages;
 import org.javalite.activejdbc.Model;
 
 import java.text.SimpleDateFormat;
@@ -29,18 +28,19 @@ import static org.javalite.common.Util.*;
 /**
  * @author Igor Polevoy
  */
-public class DateConverter extends Converter{
+public class DateConverter extends Converter {
 
-    private String attributeName, message, format;
+    private String attributeName, format;
     private SimpleDateFormat df;
 
     public DateConverter(String attributeName, String format){
         this.attributeName = attributeName;
         this.message = "attribute {0} does not conform to format: {1}";
-        df = new SimpleDateFormat(format);
+        this.df = new SimpleDateFormat(format);
         this.format = format;
     }
 
+    @Override
     public void convert(Model m) {
         Object val = m.get(attributeName);
         if (!(val instanceof java.util.Date) && !blank(val)) {
@@ -54,12 +54,7 @@ public class DateConverter extends Converter{
         }
     }
 
-    public void setMessage(String message) {
-         this.message = message;
-    }
-
     public String formatMessage(Locale locale, Object ... params) {//params not used
-        return  locale != null ? Messages.message(message, locale, attributeName, format)
-                : Messages.message(message, attributeName, format);
+        return super.formatMessage(locale, attributeName, format);
     }
 }

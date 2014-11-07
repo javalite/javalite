@@ -22,10 +22,11 @@ import org.javalite.activejdbc.Model;
 /**
  * @author Igor Polevoy
  */
-public abstract class Converter implements Validator{
+public abstract class Converter extends ValidatorAdapter {
 
-    public abstract void  convert(Model m);
-    
+    public abstract void convert(Model m);
+
+    @Override
     public void validate(Model m) {
         convert(m);
     }

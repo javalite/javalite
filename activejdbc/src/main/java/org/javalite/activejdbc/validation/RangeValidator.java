@@ -17,31 +17,28 @@ limitations under the License.
 
 package org.javalite.activejdbc.validation;
 
-import org.javalite.activejdbc.Messages;
 import org.javalite.activejdbc.Model;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.Locale;
 
-public class RangeValidator implements Validator{
+public class RangeValidator extends ValidatorAdapter {
     private String attribute;
     private Number min, max;
-    private String message;
 
     public RangeValidator(String attribute, Number min, Number max){
         this.attribute = attribute;
         this.min =  min;
         this.max = max;
 
-        if(!min.getClass().equals(max.getClass())){throw new IllegalArgumentException("min and max must be the same type");}
-        message = "value should be within limits: > {0} and < {1}";
+        if (!min.getClass().equals(max.getClass())) {
+            throw new IllegalArgumentException("min and max must be the same type");
+        }
+        this.message = "value should be within limits: > {0} and < {1}";
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
+    @Override
     public void validate(Model m) {
         if(m.get(attribute) == null){
             m.addValidator(this, attribute);
@@ -103,7 +100,8 @@ public class RangeValidator implements Validator{
         }
     }
 
+    @Override
     public String formatMessage(Locale locale, Object ... params) {//params not used
-        return locale != null ? Messages.message(message, locale, min, max) : Messages.message(message, min.toString(), max.toString());
+        return super.formatMessage(locale, min, max);
     }
 }

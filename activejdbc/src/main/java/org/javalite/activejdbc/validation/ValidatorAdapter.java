@@ -1,7 +1,6 @@
 package org.javalite.activejdbc.validation;
 
 import org.javalite.activejdbc.Messages;
-import org.javalite.activejdbc.Model;
 
 import java.util.Locale;
 
@@ -10,11 +9,10 @@ import java.util.Locale;
  *
  * @author Igor Polevoy
  */
-public abstract class ValidatorAdapter<T extends Model> implements Validator<T>{
-    private String message;
+public abstract class ValidatorAdapter implements Validator {
+    String message;
 
-    public abstract void validate(T m);
-
+    @Override
     public final void setMessage(String message) {
         this.message = message;
     }
@@ -31,7 +29,7 @@ public abstract class ValidatorAdapter<T extends Model> implements Validator<T>{
         return locale != null ? Messages.message(message, locale, params) : Messages.message(message, params);
     }
 
-    public String getMessage() {
+    public final String getMessage() {
         return message;
     }
 }

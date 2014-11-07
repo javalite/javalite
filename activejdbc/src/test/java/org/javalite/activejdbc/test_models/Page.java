@@ -25,9 +25,6 @@ class IntegerConverter extends Converter {
     }
 
     @Override
-    public void setMessage(String message) {}
-
-    @Override
     public String formatMessage(Locale locale, Object... params) {
         return "Failed to format " + name + " to Integer";
     }

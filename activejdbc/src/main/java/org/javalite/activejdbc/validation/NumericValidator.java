@@ -38,7 +38,7 @@ public class NumericValidator extends ValidatorAdapter {
         setMessage("value is not a number");
     }
 
-
+    @Override
     public void validate(Model m) {
         Object value = m.get(attribute);
 
@@ -105,7 +105,7 @@ public class NumericValidator extends ValidatorAdapter {
         }
     }
 
-    private void validateIntegerOnly(Object value, Model m){        
+    private void validateIntegerOnly(Object value, Model m){
         try{
             Integer.valueOf(value.toString());
         }
@@ -149,7 +149,7 @@ public class NumericValidator extends ValidatorAdapter {
         String input = "11 ss";
         ParsePosition pp = new ParsePosition(0);
         NumberFormat.getInstance().parse(input, pp);
-        
+
         if(pp.getIndex() != (input.length() - 1))
             throw new RuntimeException("failed to parse");
 

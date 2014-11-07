@@ -29,7 +29,8 @@ public class UniquenessValidator extends ValidatorAdapter {
     }
     @Override
     public void validate(Model m) {
-        if(Base.count(Registry.instance().getMetaModel(m.getClass()).getTableName(), attribute + " = ? AND id != ?", m.get(attribute), m.getId()) > 0) {
+        if (Base.count(Registry.instance().getMetaModel(m.getClass()).getTableName(),
+                attribute + " = ? AND id != ?", m.get(attribute), m.getId()) > 0) {
             m.addValidator(this, attribute);
         }
     }
