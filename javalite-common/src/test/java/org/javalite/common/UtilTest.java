@@ -144,6 +144,25 @@ public class UtilTest extends JSpecSupport {
     }
 
     @Test
+    public void testRepeat() {
+        StringBuilder sb = new StringBuilder();
+        Util.repeat(sb, "na", -1);
+        the(sb.toString()).shouldBeEqual("");
+
+        sb = new StringBuilder();
+        Util.repeat(sb, "na", 0);
+        the(sb.toString()).shouldBeEqual("");
+
+        sb = new StringBuilder();
+        Util.repeat(sb, "na", 1);
+        the(sb.toString()).shouldBeEqual("na");
+
+        sb = new StringBuilder();
+        Util.repeat(sb, "na", 16);
+        the(sb.toString()).shouldBeEqual("nananananananananananananananana");
+    }
+
+    @Test
     public void testJoinAndRepeat() {
         StringBuilder sb = new StringBuilder();
         Util.joinAndRepeat(sb, "na", ", ", -1);

@@ -347,6 +347,19 @@ public class Util {
     }
 
     /**
+     * Repeats string of characters a defined number of times, and appends result to StringBuilder.
+     *
+     * @param sb StringBuilder to append result to
+     * @param str string of characters to be repeated.
+     * @param count number of times to repeat, zero or a negative number produces no result
+     */
+    public static void repeat(StringBuilder sb, String str, int count) {
+        for (int i = 0; i < count; i++) {
+            sb.append(str);
+        }
+    }
+
+    /**
      * Repeats string of characters a defined number of times with a delimiter, and appends result to StringBuilder.
      *
      * <p>For example, <tt>joinAndRepeat(sb, "?", ",", 3)</tt> will append <tt>"?,?,?"</tt> to <tt>sb</tt>.
