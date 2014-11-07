@@ -103,11 +103,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 value = attributesMap.get(attrName.toUpperCase());
             }
             if (value != null) {
-                //it is necessary to cache contents of a clob, because if a clob instance itself is cached, and accessed later,
-                //it will not be able to connect back to that same connection from which it came.
-                //This is only important for cached models. This will allocate a ton of memory if Clobs are large.
-                //Should the Blob behavior be the same?
-                //TODO: write about this in future tutorial
                 if (value instanceof Clob && getMetaModelLocal().cached()) {
                     this.attributes.put(attrName.toLowerCase(), Convert.toString(value));
                 }else {
