@@ -579,11 +579,7 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void testNewFromMap() {
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("id", null);
-        map.put("name", "Joe");
-        map.put("last_name", "Schmoe");
-        Person p = new Person().fromMap(map);
+        Person p = new Person().fromMap(map("id", null, "name", "Joe", "last_name", "Schmoe"));
 
         a(p.getId()).shouldBeNull();
         a(p.isNew()).shouldBeTrue();
