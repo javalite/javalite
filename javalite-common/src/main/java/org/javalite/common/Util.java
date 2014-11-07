@@ -117,7 +117,7 @@ public class Util {
         try {
             if (c != null) { c.close(); }
         } catch (IOException e) {
-            //TODO shouldn't we close silently (not throwing any exception back)?
+            // If there is an exception, the developer needs to pay attention, right? :)
             throw new RuntimeException(e);
         }
     }
