@@ -22,13 +22,13 @@ import org.javalite.activejdbc.Model;
 import java.util.Locale;
 
 
-public interface Validator<T extends Model> {
+public interface Validator {
     /**
      * Called by framework when a {@link Model#validate()} method called.
      * 
      * @param m model being validated. 
      */
-    void validate(T m);
+    void validate(Model m);
 
     /**
      * Sets an message on this validator.
