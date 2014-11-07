@@ -35,28 +35,21 @@ public class Util {
         InputStream is = Util.class.getResourceAsStream(resourceName);
         try {
             return bytes(is);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         } finally {
             close(is);
         }
     }
 
     /**
-     * Reads contents of resource fully into a string.
+     * Reads contents of resource fully into a string. Sets UTF-8 encoding internally.
      *
      * @param resourceName resource name.
      * @return entire contents of resource as string.
      */
     public static String readResource(String resourceName) {
-        InputStream is = Util.class.getResourceAsStream(resourceName);
-        try {
-            return read(is);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
-        } finally {
-            close(is);
-        }
+        return readResource(resourceName, "UTF-8");
     }
 
     /**
@@ -70,8 +63,8 @@ public class Util {
         InputStream is = Util.class.getResourceAsStream(resourceName);
         try {
             return read(is, charset);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         } finally {
             close(is);
         }
@@ -88,7 +81,7 @@ public class Util {
         try {
             in = new FileInputStream(fileName);
             return read(in);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
             close(in);
@@ -99,6 +92,7 @@ public class Util {
      * Reads contents of file fully and returns as string.
      *
      * @param fileName file name.
+     * @param charset name of supported charset.
      * @return contents of entire file.
      */
     public static String readFile(String fileName, String charset) {
@@ -106,7 +100,7 @@ public class Util {
         try {
             in = new FileInputStream(fileName);
             return read(in, charset);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
             close(in);
@@ -144,17 +138,22 @@ public class Util {
      * @throws IOException in case of IO error
      */
     public static String read(InputStream in, String charset) throws IOException {
-        if(in == null)
+        if (in == null) {
             throw new IllegalArgumentException("input stream cannot be null");
-
-        InputStreamReader reader = new InputStreamReader(in, charset);
-        char[] buffer = new char[1024];
-        StringBuilder sb = new StringBuilder();
-
-        for (int x = reader.read(buffer); x != -1; x = reader.read(buffer)) {
-            sb.append(buffer, 0, x);
         }
-        return sb.toString();
+        InputStreamReader reader = null;
+        try {
+            reader = new InputStreamReader(in, charset);
+            char[] buffer = new char[1024];
+            StringBuilder sb = new StringBuilder();
+            int len;
+            while ((len = reader.read(buffer)) != -1) {
+                sb.append(buffer, 0, len);
+            }
+            return sb.toString();
+        } finally {
+            close(reader);
+        }
     }
 
 
@@ -166,16 +165,21 @@ public class Util {
      * @throws IOException in case of IO error
      */
     public static byte[] bytes(InputStream in) throws IOException {
-        if(in == null)
+        if (in == null) {
             throw new IllegalArgumentException("input stream cannot be null");
-
-        ByteArrayOutputStream bout = new ByteArrayOutputStream(1024);
-        byte[] bytes = new byte[1024];
-
-        for (int x = in.read(bytes); x != -1; x = in.read(bytes))
-            bout.write(bytes, 0, x);
-
-        return bout.toByteArray();
+        }
+        ByteArrayOutputStream os = null;
+        try {
+            os = new ByteArrayOutputStream(1024);
+            byte[] bytes = new byte[1024];
+            int len;
+            while ((len = in.read(bytes)) != -1) {
+                os.write(bytes, 0, len);
+            }
+            return os.toByteArray();
+        } finally {
+            close(os);
+        }
     }
 
     /**
@@ -202,17 +206,21 @@ public class Util {
      * @throws java.io.IOException in case of IO error
      */
     public static List<String> getResourceLines(String resourceName) throws IOException {
-        List<String> lines = new ArrayList<String>();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(Util.class.getResourceAsStream(resourceName)));
+        InputStreamReader isreader = null;
+        BufferedReader reader = null;
         try {
+            isreader = new InputStreamReader(Util.class.getResourceAsStream(resourceName));
+            reader = new BufferedReader(isreader);
+            List<String> lines = new ArrayList<String>();
             String tmp;
             while ((tmp = reader.readLine()) != null) {
                 lines.add(tmp);
             }
+            return lines;
         } finally {
             close(reader);
+            close(isreader);
         }
-        return lines;
     }
 
     /**
@@ -395,8 +403,9 @@ public class Util {
         try {
             out = new FileOutputStream(path);
             byte[] bytes = new byte[1024];
-            for (int x = in.read(bytes); x != -1; x = in.read(bytes)) {
-                out.write(bytes, 0, x);
+            int len;
+            while ((len = in.read(bytes)) != -1) {
+                out.write(bytes, 0, len);
             }
             out.flush();
         } catch (IOException e) {
