@@ -2196,7 +2196,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * Synonym for {@link #defrost()}.
      */
     public void thaw(){
-        attributes.put(getMetaModelLocal().getIdName(), "");//makes it blank
+        attributes.put(getMetaModelLocal().getIdName(), null);
         frozen = false;
     }
 
