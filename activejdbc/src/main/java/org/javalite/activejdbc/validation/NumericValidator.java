@@ -57,13 +57,10 @@ public class NumericValidator extends ValidatorAdapter {
 
         //this is to check just numericality
         if (value != null) {
-            try {
-                ParsePosition pp = new ParsePosition(0);
-                String input = value.toString();
-                NumberFormat.getInstance().parse(input, pp);
-                if(pp.getIndex() != (input.length()))
-                    throw new RuntimeException("");
-            } catch (Exception e) {
+            ParsePosition pp = new ParsePosition(0);
+            String input = value.toString();
+            NumberFormat.getInstance().parse(input, pp);
+            if (pp.getIndex() != (input.length())) {
                 m.addValidator(this, attribute);
             }
         } else {
@@ -108,8 +105,7 @@ public class NumericValidator extends ValidatorAdapter {
     private void validateIntegerOnly(Object value, Model m){
         try{
             Integer.valueOf(value.toString());
-        }
-        catch(Exception e){
+        } catch(NumberFormatException e) {
             m.addValidator(this, attribute);
         }
     }

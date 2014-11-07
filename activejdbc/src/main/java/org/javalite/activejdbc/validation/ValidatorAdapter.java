@@ -25,6 +25,7 @@ public abstract class ValidatorAdapter implements Validator {
      * @param params parameters in case a message is parametrized.
      * @return formatted message. 
      */
+    @Override
     public String formatMessage(Locale locale, Object ... params) {
         return locale != null ? Messages.message(message, locale, params) : Messages.message(message, params);
     }
