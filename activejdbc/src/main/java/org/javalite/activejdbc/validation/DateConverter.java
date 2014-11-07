@@ -54,6 +54,7 @@ public class DateConverter extends Converter {
         }
     }
 
+    @Override
     public String formatMessage(Locale locale, Object ... params) {//params not used
         return super.formatMessage(locale, attributeName, format);
     }
