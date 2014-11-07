@@ -82,18 +82,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param input map with attributes to overwrite this models'. Keys are names of attributes of this model, values
      * are new values for it.
      */
-    public void fromMap(Map input){
-
-        List<String> attributeNames = getMetaModelLocal().getAttributeNames();
-
-        for (String attrName : attributeNames) {
-            Object value = input.get(attrName.toLowerCase());
-            if (value == null) {
-                value = input.get(attrName.toUpperCase());
-            }
-            if(input.containsKey(attrName.toLowerCase()) || input.containsKey(attrName.toUpperCase()))
-                attributes.put(attrName.toLowerCase(), value);
-        }
+    public <T extends Model> T fromMap(Map input) {
+        hydrate(input);
+        return (T) this;
     }
 
 
@@ -104,35 +95,26 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @param attributesMap map containing values for this instance.
      */
-    protected  void hydrate(Map attributesMap) {
-        List<String> attributeNames = getMetaModelLocal().getAttributeNamesSkipId();
-
-        String idName = getMetaModelLocal().getIdName();
-        Object id = attributesMap.get(idName);
-
-        if(id != null)
-            attributes.put(idName, id);
-
-        for (String attrName : attributeNames) {
-
-            if(attrName.equalsIgnoreCase(getMetaModelLocal().getIdName())){
-                continue;//skip ID, already set.
-            }
+    protected void hydrate(Map attributesMap) {
+        for (String attrName : getMetaModelLocal().getAttributeNames()) {
 
             Object value = attributesMap.get(attrName.toLowerCase());
             if (value == null) {
                 value = attributesMap.get(attrName.toUpperCase());
             }
-
-            //it is necessary to cache contents of a clob, because if a clob instance itself is cached, and accessed later,
-            //it will not be able to connect back to that same connection from which it came.
-            //This is only important for cached models. This will allocate a ton of memory if Clobs are large.
-            //Should the Blob behavior be the same?
-            //TODO: write about this in future tutorial
-            if( value instanceof Clob && getMetaModelLocal().cached() ){
-                this.attributes.put(attrName.toLowerCase(), Convert.toString(value));
-            }else {
-        		this.attributes.put(attrName, getMetaModelLocal().getDialect().overrideDriverTypeConversion(getMetaModelLocal(), attrName, value));
+            if (value != null) {
+                //it is necessary to cache contents of a clob, because if a clob instance itself is cached, and accessed later,
+                //it will not be able to connect back to that same connection from which it came.
+                //This is only important for cached models. This will allocate a ton of memory if Clobs are large.
+                //Should the Blob behavior be the same?
+                //TODO: write about this in future tutorial
+                if (value instanceof Clob && getMetaModelLocal().cached()) {
+                    this.attributes.put(attrName.toLowerCase(), Convert.toString(value));
+                }else {
+                    this.attributes.put(attrName.toLowerCase(),
+                            getMetaModelLocal().getDialect().overrideDriverTypeConversion(
+                                    getMetaModelLocal(), attrName, value));
+                }
             }
         }
     }
@@ -279,7 +261,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         fireBeforeDelete(this);
         boolean result;
         if( 1 == new DB(getMetaModelLocal().getDbName()).exec("DELETE FROM " + getMetaModelLocal().getTableName()
-                + " WHERE " + getMetaModelLocal().getIdName() + "= ?", getId())) {
+                + " WHERE " + getIdName() + "= ?", getId())) {
 
             frozen = true;
             if(getMetaModelLocal().cached()){
@@ -1093,7 +1075,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             throw new IllegalArgumentException("can only copy between the same types");
         }
 
-        List<String> attrs = getMetaModelLocal().getAttributeNamesSkip(getMetaModelLocal().getIdName());
+        List<String> attrs = getMetaModelLocal().getAttributeNamesSkip(getIdName());
         for (String name : attrs) {
             other.getAttributes().put(name, get(name));
         }
@@ -1190,7 +1172,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         // NOTE: this is a workaround for JSP pages. JSTL in cases ${item.id} does not call the getId() method, instead
         //calls item.get("id"), considering that this is a map only!
         if(!attributes.containsKey("id") && attribute.equalsIgnoreCase("id")){
-            String idName = getMetaModelLocal().getIdName();
+            String idName = getIdName();
             return attributes.get(idName.toLowerCase());
         }
 
@@ -1916,15 +1898,15 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public static <T extends Model> LazyList<T> find(String subquery, Object... params) {
 
-        if(subquery.trim().equals("*") && params.length == 0){
-            return findAll();
+        if (subquery.trim().equals("*")) {
+            if (empty(params)) {
+                return findAll();
+            } else {
+                throw new IllegalArgumentException(
+                        "cannot provide parameters with query: '*', use findAll() method instead");
+            }
         }
-
-        if(subquery.equals("*") && params.length != 0){
-            throw new IllegalArgumentException("cannot provide parameters with query: '*', use findAll() method instead");
-        }
-
-        return  new LazyList(subquery, getMetaModel(), params);
+        return new LazyList(subquery, getMetaModel(), params);
     }
 
 
@@ -2196,7 +2178,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * Synonym for {@link #defrost()}.
      */
     public void thaw(){
-        attributes.put(getMetaModelLocal().getIdName(), null);
+        attributes.put(getIdName(), null);
         frozen = false;
     }
 
@@ -2309,7 +2291,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 if (!name.equalsIgnoreCase(getMetaModelLocal().getVersionColumn()))
                     attributeNames.add(name);
             }else{
-                if (!name.equalsIgnoreCase(getMetaModelLocal().getVersionColumn()) && !name.equalsIgnoreCase(getMetaModelLocal().getIdName()))
+                if (!name.equalsIgnoreCase(getMetaModelLocal().getVersionColumn()) && !name.equalsIgnoreCase(getIdName()))
                     attributeNames.add(name);
             }
         }
@@ -2333,12 +2315,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
         String query = getMetaModelLocal().getDialect().createParametrizedInsert(getMetaModelLocal(), valueAttributes);
         try {
-            Object id = new DB(getMetaModelLocal().getDbName()).execInsert(query, getMetaModelLocal().getIdName(), values.toArray());
+            Object id = new DB(getMetaModelLocal().getDbName()).execInsert(query, getIdName(), values.toArray());
             if(getMetaModelLocal().cached()){
                 QueryCache.instance().purgeTableCache(getMetaModelLocal().getTableName());
             }
 
-            attributes.put(getMetaModelLocal().getIdName(), id);
+            attributes.put(getIdName(), id);
 
             fireAfterCreate(this);
 
@@ -2505,7 +2487,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     public Object getId() {
-        return get(getMetaModelLocal().getIdName());
+        return get(getIdName());
     }
 
     public String getIdName() {
