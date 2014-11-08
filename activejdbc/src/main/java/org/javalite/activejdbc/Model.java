@@ -97,12 +97,16 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     protected void hydrate(Map attributesMap) {
         for (String attrName : getMetaModelLocal().getAttributeNames()) {
-
-            Object value = attributesMap.get(attrName.toLowerCase());
-            if (value == null) {
+            Object value = null;
+            boolean contains = false;
+            if (attributesMap.containsKey(attrName.toLowerCase())) {
+                value = attributesMap.get(attrName.toLowerCase());
+                contains = true;
+            } else if (attributesMap.containsKey(attrName.toUpperCase())) {
                 value = attributesMap.get(attrName.toUpperCase());
+                contains = true;
             }
-            if (value != null) {
+            if (contains) {
                 if (value instanceof Clob && getMetaModelLocal().cached()) {
                     this.attributes.put(attrName.toLowerCase(), Convert.toString(value));
                 }else {

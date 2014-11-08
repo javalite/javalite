@@ -28,7 +28,6 @@ import org.junit.Test;
 import java.io.*;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -526,14 +525,18 @@ public class ModelTest extends ActiveJDBCTest {
         Person p = new Person();
         p.set("name", "John");//before the upper case caused exception
         p.set("last_name", "Deer");
+        p.set("dob", "2014-11-07");
         p.saveIt();
+        a(p.get("name")).shouldBeEqual("John");
+        a(p.get("last_name")).shouldBeEqual("Deer");
+        a(p.get("dob")).shouldNotBeNull();
         Object id  = p.getId();
-        System.out.println(p);
 
-        p.fromMap(map("name", "Jack"));
+        p.fromMap(map("name", "Jack", "dob", null));
 
         a(p.get("name")).shouldBeEqual("Jack");
         a(p.get("last_name")).shouldBeEqual("Deer");
+        a(p.get("dob")).shouldBeNull();
         a(p.getId()).shouldBeEqual(id);
     }
 
