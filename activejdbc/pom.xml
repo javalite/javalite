@@ -171,6 +171,10 @@
                     <reportFormat>brief</reportFormat>
                     <trimStackTrace>true</trimStackTrace>
                     <useFile>false</useFile>
+                    <includes>
+                        <include>**/*Spec*.java</include>
+                        <include>**/*Test*.java</include>
+                    </includes>
                     <systemPropertyVariables>
                         <oracle.jdbc.J2EE13Compliant>true</oracle.jdbc.J2EE13Compliant>
                     </systemPropertyVariables>

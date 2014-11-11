@@ -37,7 +37,7 @@ import static org.javalite.common.Util.readResource;
 /**
  * @author Igor Polevoy
  */
-public class ToFromXmlSpecTest extends ActiveJDBCTest {
+public class ToFromXmlSpec extends ActiveJDBCTest {
 
     @Test
     public void shouldGenerateSimpleXml(){
