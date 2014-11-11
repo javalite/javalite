@@ -453,4 +453,24 @@ public class Util {
             close(is);
         }
     }
+
+    /**
+     * Will encode byte array using Base64 encoding.
+     *
+     * @param input bytes to encode
+     * @return encoded string
+     */
+    public static String toBase64(byte[] input){
+        return Base64.getEncoder().encodeToString(input);
+    }
+
+    /**
+     * Will decode Base64-encoded string back into byte array.
+     *
+     * @param input Base64-encoded string.
+     * @return byte array decoded from string.
+     */
+    public static byte[] fromBase64(String input){
+        return Base64.getDecoder().decode(input);
+    }
 }

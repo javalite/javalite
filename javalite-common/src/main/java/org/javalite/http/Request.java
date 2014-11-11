@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.javalite.common.Util.read;
+import static org.javalite.common.Util.toBase64;
 
 /**
  * This class provides static convenience methods for simple HTTP requests.
@@ -38,8 +39,6 @@ public abstract class Request<T extends Request> {
     protected HttpURLConnection connection;
     private boolean connected;
     protected String url;
-
-
 
     public Request(String url, int connectTimeout, int readTimeout) {
         try {
@@ -236,18 +235,7 @@ public abstract class Request<T extends Request> {
      * @return self.
      */
     public T basic(String user, String password){
-        Authenticator.setDefault(new BasicAuthenticator(user, password));
+        connection.setRequestProperty("Authorization", "Basic " + toBase64((user + ":" + password).getBytes()));
         return (T) this;
     }
-
-    class BasicAuthenticator extends Authenticator {
-        private String user, password;
-        BasicAuthenticator(String user, String password) {
-            this.user = user;
-            this.password = password;
-        }        
-        public PasswordAuthentication getPasswordAuthentication() {
-                return (new PasswordAuthentication(user, password.toCharArray()));
-            }
-        }
 }
