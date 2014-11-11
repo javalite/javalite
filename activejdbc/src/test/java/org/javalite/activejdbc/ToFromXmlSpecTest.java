@@ -16,6 +16,7 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
+import java.io.IOException;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Address;
 import org.javalite.activejdbc.test_models.Article;
@@ -28,6 +29,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
+import org.javalite.activejdbc.test_models.Comment;
+import org.javalite.activejdbc.test_models.Tag;
 
 import static org.javalite.common.Util.readResource;
 
@@ -135,4 +138,24 @@ public class ToFromXmlSpecTest extends ActiveJDBCTest {
         a(XPathHelper.selectText("/person/last_name", xml)).shouldEqual("Smith & Wesson");
         the(xml).shouldContain("<last_name>Smith &amp; Wesson</last_name>");
     }
+
+    @Test
+    public void shouldGenerateXmlForPolymorphicChildren() throws IOException {
+        deleteAndPopulateTables("articles", "comments", "tags");
+        Article a = Article.findFirst("title = ?", "ActiveJDBC polymorphic associations");
+        a.add(Comment.create("author", "igor", "content", "this is just a test comment text"));
+        a.add(Tag.create("content", "orm"));
+        LazyList<Article> articles = Article.where("title = ?", "ActiveJDBC polymorphic associations")
+                .include(Tag.class, Comment.class);
+
+        String xml = articles.toXml(true, true);
+        XPathHelper h = new XPathHelper(xml);
+        a(h.count("/articles/article")).shouldEqual(1);
+        a(h.count("/articles/article/comments/comment")).shouldEqual(1);
+        a(h.count("/articles/article/tags/tag")).shouldEqual(1);
+        the(h.selectText("/articles/article[1]/comments/comment[1]/content")).shouldBeEqual(
+                "this is just a test comment text");
+        the(h.selectText("/articles/article[1]/tags/tag[1]/content")).shouldBeEqual("orm");
+    }
+
 }

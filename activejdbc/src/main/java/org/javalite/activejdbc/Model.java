@@ -856,7 +856,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             } else if (v instanceof Date) {
                 sbAttrs.append('"').append(isoDateTimeFormater.format((Date) v)).append('"');
             } else {
-                sbAttrs.append('"').append(v.toString()
+                sbAttrs.append('"').append(Convert.toString(v)
                         .replace("\\", "\\\\")  // \
                         .replace("\"", "\\\"")  // "
                         .replace("\b", "\\b")   // \b
