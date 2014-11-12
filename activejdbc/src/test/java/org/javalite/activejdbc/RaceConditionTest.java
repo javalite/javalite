@@ -1,16 +1,18 @@
 package org.javalite.activejdbc;
 
+import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Person;
 import org.junit.Test;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import static org.javalite.activejdbc.test.JdbcProperties.*;
 import static org.javalite.test.jspec.JSpec.a;
 
 /**
  * @author Igor Polevoy: 4/4/12 2:40 PM
  */
-public class RaceConditionTest {
+public class RaceConditionTest extends ActiveJDBCTest{
 
     @Test
     public void shouldNotGetRaceCondition() throws InterruptedException {
@@ -20,7 +22,7 @@ public class RaceConditionTest {
         Runnable r = new Runnable() {
             public void run() {
 
-                Base.open("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/activejdbc", "root", "p@ssw0rd");
+                Base.open(driver(), url(), user(), password());
                 Person p = new Person();
                 p.set("name", "Igor");
                 Base.close();
