@@ -18,7 +18,11 @@ limitations under the License.
 package org.javalite.activejdbc.statistics;
 
 import org.junit.Test;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import static org.javalite.test.jspec.JSpec.a;
 
@@ -30,15 +34,23 @@ public class StatisticsQueueTest {
     private static StatisticsQueue queue = new StatisticsQueue(false);
 
     @Test
-    public void shouldCollectAndSortStatistics() {
+    public void shouldCollectAndSortStatistics() throws ExecutionException, InterruptedException {
+
+        List<Future> futures = new ArrayList<Future>();
+
         for (int i = 0; i < 10; i++) {
-            queue.enqueue(new QueryExecutionEvent("test", 10 + i));
-            queue.enqueue(new QueryExecutionEvent("test1", 20 + i));
-            queue.enqueue(new QueryExecutionEvent("test2", 30 + i));
+            futures.add(queue.enqueue(new QueryExecutionEvent("test", 10 + i)));
+            futures.add(queue.enqueue(new QueryExecutionEvent("test1", 20 + i)));
+            futures.add(queue.enqueue(new QueryExecutionEvent("test2", 30 + i)));
         }
 
-        //could be a race condition, lets wait till all messages are processed
-        try { Thread.sleep(5000); } catch (Exception ignored) {}
+        //lets wait till all jobs are complete
+        for (int i = 1; i < futures.size(); i++) {
+            futures.get(i).get();// this will wait till completion
+            if(!futures.get(i).isDone()){
+                throw new RuntimeException("Job not done!");
+            }
+        }
 
         List<QueryStats> report = queue.getReportSortedBy("avg");
 

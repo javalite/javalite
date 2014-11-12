@@ -23,11 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.*;
 
 /**
  * This class will collect statistics on executed queries and then can produce reports sorted by
@@ -89,9 +85,17 @@ public class StatisticsQueue {
         paused = val;
     }
 
-    public void enqueue(final QueryExecutionEvent event) {
+    /**
+     * Enqueues a query execution event for processing.
+     *
+     * @param event instance of event.
+     * @return instance of Future associated with processing of event. You can examine that object
+     * to see if this event was processed.  In case the queue is paused, an event is not processed,
+     * and return value is <code>null</code>.
+     */
+    public Future enqueue(final QueryExecutionEvent event) {
         if (!paused) {
-            worker.submit(new Runnable() {
+            return worker.submit(new Runnable() {
                 public void run() {
                     QueryStats queryStats = statsByQuery.get(event.getQuery());
                     if (queryStats == null) {
@@ -100,6 +104,8 @@ public class StatisticsQueue {
                     queryStats.addQueryTime(event.getTime());
                 }
             });
+        }else{
+            return null;
         }
     }
 
