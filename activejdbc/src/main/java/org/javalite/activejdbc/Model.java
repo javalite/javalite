@@ -195,8 +195,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to self, so you can string these methods one after another.
      */
     public Model set(String attribute, Object value) {
-        if(attribute.equalsIgnoreCase("created_at") && manageTime) throw new IllegalArgumentException("cannot set 'created_at'");
-
+        if (manageTime && attribute.equalsIgnoreCase("created_at")) {
+            throw new IllegalArgumentException("cannot set 'created_at'");
+        }
         getMetaModelLocal().checkAttributeOrAssociation(attribute);
 
         attributes.put(attribute.toLowerCase(), value);
@@ -856,7 +857,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             } else if (v instanceof Date) {
                 sbAttrs.append('"').append(isoDateTimeFormater.format((Date) v)).append('"');
             } else {
-                sbAttrs.append('"').append(v.toString()
+                sbAttrs.append('"').append(Convert.toString(v)
                         .replace("\\", "\\\\")  // \
                         .replace("\"", "\\\"")  // "
                         .replace("\b", "\\b")   // \b
@@ -2377,7 +2378,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     private void doCreatedAt() {
-        if(getMetaModelLocal().hasAttribute("created_at") && manageTime){
+        if (manageTime && getMetaModelLocal().hasAttribute("created_at")) {
             //clean just in case.
             attributes.remove("created_at");
             attributes.remove("CREATED_AT");
@@ -2386,7 +2387,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     private void doUpdatedAt() {
-        if(getMetaModelLocal().hasAttribute("updated_at") && manageTime){
+        if (manageTime && getMetaModelLocal().hasAttribute("updated_at")) {
             //clean just in case.
             attributes.remove("updated_at");
             attributes.remove("UPDATED_AT");
@@ -2406,7 +2407,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         List<Object> values = getAttributeValuesSkipGenerated(names);
 
-        if(metaModel.hasAttribute("updated_at")){
+        if (manageTime && metaModel.hasAttribute("updated_at")) {
             query.append(", updated_at = ?");
             values.add(get("updated_at"));
         }
