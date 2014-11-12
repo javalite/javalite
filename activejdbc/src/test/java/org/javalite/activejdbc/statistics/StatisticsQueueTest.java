@@ -32,8 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author Igor Polevoy
  */
 public class StatisticsQueueTest {
-
-    private static final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final Logger logger = LoggerFactory.getLogger(StatisticsQueueTest.class);
 
     private StatisticsQueue queue;
 
