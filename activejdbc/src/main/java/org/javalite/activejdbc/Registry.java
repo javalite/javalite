@@ -403,7 +403,7 @@ public enum Registry {
 
     private String findTableName(Class<? extends Model> modelClass) {
         Table tableAnnotation = modelClass.getAnnotation(Table.class);
-        return tableAnnotation == null ? Inflector.tableize(Inflector.shortName(modelClass.getName())) : tableAnnotation.value();
+        return tableAnnotation == null ? Inflector.tableize(modelClass.getSimpleName()) : tableAnnotation.value();
     }
 
 

@@ -21,7 +21,6 @@ import org.javalite.activejdbc.associations.*;
 import org.javalite.activejdbc.cache.QueryCache;
 import org.javalite.activejdbc.validation.*;
 import org.javalite.common.Convert;
-import org.javalite.common.Inflector;
 import org.javalite.common.XmlEntities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,8 +70,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     protected Map<String, Object> getAttributes(){
         return attributes;
     }
-
-
 
     /**
      * Overrides attribute values from input map. The input map may have attributes whose name do not match the
@@ -219,7 +216,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * Returns names of all attributes from this model.
      * @return names of all attributes from this model.
      */
-    public static List<String>  attributes(){
+    public static List<String> attributes(){
         return getMetaModel().getAttributeNames();
     }
 
@@ -625,17 +622,18 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public Map<String, Object> toMap(){
         Map<String, Object> retVal = new HashMap<String, Object>();
         for (String key : attributes.keySet()) {
-            if(attributes.get(key) == null)
+            Object v = attributes.get(key);
+            if (v == null) {
                 continue;
-
-            if(attributes.get(key) instanceof Clob){
-                retVal.put(key.toLowerCase(), getString(key));
-            }else{
-                retVal.put(key.toLowerCase(), attributes.get(key));
+            }
+            if (v instanceof Clob) {
+                retVal.put(key.toLowerCase(), Convert.toString(v));
+            } else {
+                retVal.put(key.toLowerCase(), v);
             }
         }
         for(Class parentClass: cachedParents.keySet()){
-            retVal.put(underscore(shortName(parentClass.getName())), cachedParents.get(parentClass).toMap());
+            retVal.put(underscore(parentClass.getSimpleName()), cachedParents.get(parentClass).toMap());
         }
 
         for(Class childClass: cachedChildren.keySet()){
@@ -645,7 +643,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             for(Model child:children){
                 childMaps.add(child.toMap());
             }
-            retVal.put(pluralize(underscore(shortName(childClass.getName()))), childMaps);
+            retVal.put(tableize(childClass.getSimpleName()), childMaps);
         }
         return retVal;
     }
@@ -682,7 +680,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         try{
             //such dumb API!
             Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
-            String topTag = Inflector.underscore(getClass().getSimpleName());
+            String topTag = underscore(getClass().getSimpleName());
             Element root = document.getDocumentElement();
 
             if(!root.getTagName().equals(topTag)){
@@ -725,43 +723,33 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     protected void toXmlP(StringBuilder sb, boolean pretty, String indent, String ... attrs) {
 
-        Map<String, Object> modelMap = toMap();
-
-        List<String> attrList = Arrays.asList(attrs);
-
-        String topTag = Inflector.underscore(getClass().getSimpleName());
+        String topTag = underscore(getClass().getSimpleName());
         if (pretty) { sb.append(indent); }
         sb.append('<').append(topTag).append('>');
         if (pretty) { sb.append('\n'); }
 
-        for(String name: modelMap.keySet()){
-            Object value  = modelMap.get(name);
-            if((attrList.contains(name) || attrs.length == 0) && !(value instanceof List)){
-                if (pretty) { sb.append("  ").append(indent); }
-                sb.append('<').append(name).append('>').append(XmlEntities.XML.escape(value.toString())).append("</").append(name).append('>');
-                if (pretty) { sb.append('\n'); }
-            }else if (value instanceof List){
-                List<Map> children = (List<Map>)value;
-                if (pretty) { sb.append("  ").append(indent); }
-                sb.append('<').append(name).append('>');
-                if (pretty) { sb.append('\n'); }
-                for(Map child: children){
-                    if (pretty) { sb.append("    ").append(indent); }
-                    sb.append('<').append(Inflector.singularize(name)).append('>');
-                    if (pretty) { sb.append('\n'); }
-                    for(Object childKey: child.keySet()){
-                        if (pretty) { sb.append("      ").append(indent); }
-                        sb.append('<').append(childKey).append('>').append(XmlEntities.XML.escape(child.get(childKey).toString())).append("</").append(childKey).append('>');
-                        if (pretty) { sb.append('\n'); }
-                    }
-                    if (pretty) { sb.append("    ").append(indent); }
-                    sb.append("</").append(Inflector.singularize(name)).append('>');
-                    if (pretty) { sb.append('\n'); }
-                }
-                if (pretty) { sb.append("  ").append(indent); }
-                sb.append("</").append(name).append('>');
-                if (pretty) { sb.append('\n'); }
+        Collection<String> attrList = (attrs != null && attrs.length > 0) ? Arrays.asList(attrs) : attributes.keySet();
+        for (String name : attrList) {
+            if (pretty) { sb.append("  ").append(indent); }
+            sb.append('<').append(name).append('>');
+            Object v = attributes.get(name);
+            if (v != null) {
+                sb.append(XmlEntities.XML.escape(Convert.toString(v)));
             }
+            sb.append("</").append(name).append('>');
+            if (pretty) { sb.append('\n'); }
+        }
+        for (Class childClass : cachedChildren.keySet()) {
+            if (pretty) { sb.append("  ").append(indent); }
+            String tag = pluralize(underscore(childClass.getSimpleName()));
+            sb.append('<').append(tag).append('>');
+            if (pretty) { sb.append('\n'); }
+            for (Model child : cachedChildren.get(childClass)) {
+                child.toXmlP(sb, pretty, "    " + indent);
+            }
+            if (pretty) { sb.append("  ").append(indent); }
+            sb.append("</").append(tag).append('>');
+            if (pretty) { sb.append('\n'); }
         }
         beforeClosingTag(sb, pretty, pretty ? "  " + indent : "", attrs);
         if (pretty) { sb.append(indent); }
@@ -849,7 +837,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             if (sbAttrs.length() > 0) { sbAttrs.append(','); }
             if (pretty) { sbAttrs.append("\n  ").append(indent); }
             sbAttrs.append('"').append(name).append("\":");
-            Object v = get(name);
+            Object v = attributes.get(name);
             if (v == null) {
                 sbAttrs.append("null");
             } else if (v instanceof Number || v instanceof Boolean) {
@@ -878,11 +866,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
             List<Class> childClasses = new ArrayList<Class>();
             childClasses.addAll(cachedChildren.keySet());
-
             for (int i = 0; i < childClasses.size(); i++) {
                 if (i > 0) { sb.append(','); }
                 Class childClass = childClasses.get(i);
-                String name = Inflector.pluralize(childClass.getSimpleName()).toLowerCase();
+                String name = pluralize(childClass.getSimpleName()).toLowerCase();
                 if (pretty) { sb.append("\n    ").append(indent); }
                 sb.append('"').append(name).append("\":[");
 

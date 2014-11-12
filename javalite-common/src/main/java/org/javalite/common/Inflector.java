@@ -47,7 +47,7 @@ public class Inflector {
         addPlural("(?:([^f])fe|([lr])f)$", "$1$2ves");
         addPlural("(hive)$", "$1s");
         addPlural("([^aeiouy]|qu)y$", "$1ies");
-        addPlural("(x|ch|ss|sh)$", "$1es"); 
+        addPlural("(x|ch|ss|sh)$", "$1es");
         addPlural("(matr|vert|ind)(?:ix|ex)$", "$1ices");
         addPlural("([m|l])ouse$", "$1ice");
         addPlural("^(ox)$", "$1en");
@@ -116,7 +116,7 @@ public class Inflector {
         Matcher matcher = pattern.matcher(word);
         return matcher.find() ? matcher.replaceFirst(replacement) : null;
     }
-    
+
     public static String pluralize(String word) {
 
         if(uncountables.contains(word)) return word;
@@ -126,13 +126,13 @@ public class Inflector {
                 return irregular[1];
             }
         }
-        
+
         for (String[] pair: plurals) {
             String plural = gsub(word, pair[0], pair[1]);
             if (plural != null)
                 return plural;
         }
-        
+
         return word;
     }
 
@@ -220,13 +220,13 @@ public class Inflector {
         StringTokenizer st = new StringTokenizer(underscore, "_");
         while (st.hasMoreTokens()) {
             result.append(capitalize(st.nextToken()));
-        }        
+        }
         return capitalizeFirstChar ? result.toString() : result.substring(0, 1).toLowerCase() + result.substring(1);
     }
 
     /**
      * Capitalizes a word  - only a first character is converted to upper case.
-     * 
+     *
      * @param word word/phrase to capitalize.
      * @return same as input argument, but the first character is capitalized.
      */
@@ -235,14 +235,16 @@ public class Inflector {
     }
 
 
-
+    /**
+     * @deprecated Use <tt>clazz.getSimpleName()</tt> instead of <tt>Inflector.shortName(clazz.getName())</tt>.
+     */
+    @Deprecated
     public static String shortName(String className) {
         return className.substring(className.lastIndexOf('.') + 1);
     }
 
     public static String getIdName(String tableName) {
-        String idName = Inflector.singularize(tableName) + "_id";
-        return idName.toLowerCase();
+        return Inflector.singularize(tableName).toLowerCase() + "_id";
     }
 
     /**
