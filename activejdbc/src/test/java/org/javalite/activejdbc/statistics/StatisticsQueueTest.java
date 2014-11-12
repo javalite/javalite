@@ -18,6 +18,8 @@ limitations under the License.
 package org.javalite.activejdbc.statistics;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +33,8 @@ import static org.javalite.test.jspec.JSpec.a;
  */
 public class StatisticsQueueTest {
 
+    Logger logger = LoggerFactory.getLogger(getClass());
+
     private static StatisticsQueue queue = new StatisticsQueue(false);
 
     @Test
@@ -43,8 +47,7 @@ public class StatisticsQueueTest {
             futures.add(queue.enqueue(new QueryExecutionEvent("test1", 20 + i)));
             futures.add(queue.enqueue(new QueryExecutionEvent("test2", 30 + i)));
         }
-
-        System.out.println("StatisticsQueue paused: " + queue.isPaused());
+        logger.warn("StatisticsQueue paused: " + queue.isPaused());
         //lets wait till all jobs are complete
         for (int i = 0; i < futures.size(); i++) {
             futures.get(i).get();// this will wait till completion
