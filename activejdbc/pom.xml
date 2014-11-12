@@ -61,9 +61,9 @@
             -->
             <dependencies>
                 <dependency>
-                    <groupId>postgresql</groupId>
+                    <groupId>org.postgresql</groupId>
                     <artifactId>postgresql</artifactId>
-                    <version>8.4-701.jdbc3</version>
+                    <version>9.3-1102-jdbc4</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
