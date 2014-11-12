@@ -17,45 +17,58 @@ limitations under the License.
 
 package org.javalite.activejdbc.statistics;
 
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
 import static org.javalite.test.jspec.JSpec.a;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Igor Polevoy
  */
 public class StatisticsQueueTest {
 
-    Logger logger = LoggerFactory.getLogger(getClass());
+    private static final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private static StatisticsQueue queue = new StatisticsQueue(false);
+    private StatisticsQueue queue;
 
-    @Test
-    public void shouldCollectAndSortStatistics() throws ExecutionException, InterruptedException {
+    private void wait(Future future) throws ExecutionException, InterruptedException {
+        if (future != null) {
+            future.get();// this will wait till completion
+            if (!future.isDone()) {
+                throw new RuntimeException("Job not done!");
+            }
+        }
+    }
 
+    @Before
+    public void setUp() throws ExecutionException, InterruptedException {
+        queue = new StatisticsQueue(false);
         List<Future> futures = new ArrayList<Future>();
-
         for (int i = 0; i < 10; i++) {
             futures.add(queue.enqueue(new QueryExecutionEvent("test", 10 + i)));
             futures.add(queue.enqueue(new QueryExecutionEvent("test1", 20 + i)));
             futures.add(queue.enqueue(new QueryExecutionEvent("test2", 30 + i)));
         }
-        logger.warn("StatisticsQueue paused: " + queue.isPaused());
+        //TODO: Shouldn't the StatisticsQueue have a isDone() or done() method?
         //lets wait till all jobs are complete
-        for (int i = 0; i < futures.size(); i++) {
-            futures.get(i).get();// this will wait till completion
-            if(!futures.get(i).isDone()){
-                throw new RuntimeException("Job not done!");
-            }
+        for (Future future : futures) {
+            wait(future);
         }
+    }
+    @After
+    public void tearDown() {
+        queue = null;
+    }
 
+
+    @Test
+    public void shouldCollectAndSortStatistics() throws ExecutionException, InterruptedException {
         List<QueryStats> report = queue.getReportSortedBy("avg");
 
         a(report.get(0).getQuery()).shouldBeEqual("test2");
@@ -82,12 +95,12 @@ public class StatisticsQueueTest {
     }
 
     @Test
-    public void shouldPause() {
+    public void shouldPause() throws ExecutionException, InterruptedException {
         int reportSize = queue.getReportSortedBy("avg").size();
         queue.pause(true);
-        queue.enqueue(new QueryExecutionEvent("QUERY", 1));
+        Future future = queue.enqueue(new QueryExecutionEvent("QUERY", 1));
         //could be a race condition, lets wait till all messages are processed
-        try { Thread.sleep(100); } catch (Exception ignored) {}
+        wait(future);
         a(queue.getReportSortedBy("avg").size()).shouldBeEqual(reportSize);
     }
 }
