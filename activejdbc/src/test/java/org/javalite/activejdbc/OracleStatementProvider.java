@@ -8,15 +8,15 @@ import java.util.List;
  * @author Igor Polevoy
  */
 public class OracleStatementProvider implements StatementProvider{
+    @Override
     public List<String> getPopulateStatements(String table) {
-
         List<String> statements = new ArrayList<String>();
         if (table.equals("people")) {
             statements =  Arrays.asList(
-                    "INSERT INTO people (id, name, last_name, dob, graduation_date, created_at, updated_at) VALUES(1, 'John', 'Smith', '01-Dec-34', '01-Dec-54', SYSDATE, SYSDATE)",
-                    "INSERT INTO people (id, name, last_name, dob, graduation_date, created_at, updated_at) VALUES(2, 'Leylah', 'Jonston', '03-Apr-54', '03-Apr-74', SYSDATE, SYSDATE)",
-                    "INSERT INTO people (id, name, last_name, dob, graduation_date, created_at, updated_at) VALUES(3, 'Muhammad', 'Ali', '04-Jan-43', '04-Jan-63', SYSDATE, SYSDATE)",
-                    "INSERT INTO people (id, name, last_name, dob, graduation_date, created_at, updated_at) VALUES(4, 'Joe', 'Pesci', '23-Feb-44', '23-Feb-64', SYSDATE, SYSDATE)"
+                    "INSERT INTO people (id, name, last_name, dob, graduation_date, created_at, updated_at) VALUES(1, 'John', 'Smith', '01-Dec-1934', '01-Dec-1954', SYSDATE, SYSDATE)",
+                    "INSERT INTO people (id, name, last_name, dob, graduation_date, created_at, updated_at) VALUES(2, 'Leylah', 'Jonston', '03-Apr-1954', '03-Apr-1974', SYSDATE, SYSDATE)",
+                    "INSERT INTO people (id, name, last_name, dob, graduation_date, created_at, updated_at) VALUES(3, 'Muhammad', 'Ali', '04-Jan-1943', '04-Jan-1963', SYSDATE, SYSDATE)",
+                    "INSERT INTO people (id, name, last_name, dob, graduation_date, created_at, updated_at) VALUES(4, 'Joe', 'Pesci', '23-Feb-1944', '23-Feb-1964', SYSDATE, SYSDATE)"
 
             );
         } else if (table.equals("accounts")) {
@@ -56,7 +56,6 @@ public class OracleStatementProvider implements StatementProvider{
 
         } else if (table.equals("legacy_universities")) {
             statements =  Arrays.asList(
-
                     "INSERT INTO legacy_universities  VALUES(1, 'DePaul', '123 Pine St.', 'apt 3B', 'Springfield', 'IL', '60606')"
             );
         } else if (table.equals("libraries")) {
@@ -109,7 +108,7 @@ public class OracleStatementProvider implements StatementProvider{
             );
         } else if (table.equals("students")) {
             statements =  Arrays.asList(
-                    "INSERT INTO students VALUES(1, 'Jim', 'Cary', '01-Dec-65')",
+                    "INSERT INTO students VALUES(1, 'Jim', 'Cary', '01-Dec-1965')",
                     "INSERT INTO students VALUES(2, 'John', 'Carpenter', '01-Dec-1979')"
             );
         } else if (table.equals("courses")) {
@@ -202,6 +201,7 @@ public class OracleStatementProvider implements StatementProvider{
         return all;
     }
 
+    @Override
     public String getDeleteStatement(String table){
         return "DELETE FROM " + table;
     }
