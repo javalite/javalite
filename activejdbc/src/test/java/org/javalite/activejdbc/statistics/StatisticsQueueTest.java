@@ -44,8 +44,9 @@ public class StatisticsQueueTest {
             futures.add(queue.enqueue(new QueryExecutionEvent("test2", 30 + i)));
         }
 
+        System.out.println("StatisticsQueue paused: " + queue.isPaused());
         //lets wait till all jobs are complete
-        for (int i = 1; i < futures.size(); i++) {
+        for (int i = 0; i < futures.size(); i++) {
             futures.get(i).get();// this will wait till completion
             if(!futures.get(i).isDone()){
                 throw new RuntimeException("Job not done!");
