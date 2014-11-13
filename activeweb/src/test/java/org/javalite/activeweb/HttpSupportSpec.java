@@ -227,4 +227,14 @@ public class HttpSupportSpec extends RequestSpec{
         a(html).shouldContain("name: John");
         a(html).shouldContain("name: John");
     }
+
+    @Test //https://github.com/javalite/activeweb/issues/180
+    public void shouldMergeTemplate() throws IOException, ServletException {
+        request.setServletPath("/merge");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+        String merged = response.getContentAsString();
+        a(merged).shouldBeEqual("What is your name?\n" +
+                "- My name is John Doe");
+    }
 }

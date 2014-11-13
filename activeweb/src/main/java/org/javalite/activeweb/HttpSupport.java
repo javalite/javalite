@@ -1527,4 +1527,18 @@ public class HttpSupport {
     protected Route getRoute(){
         return RequestUtils.getRoute();
     }
+
+    /**
+     * Will merge a template and return resulting string. This method is used for just merging some text with dynamic values.
+     * Once you have the result, you can send it by email, external web service, save it to a database, etc.
+     *
+     * @param template name of template - same as in regular templates. Example: <code>"/email-templates/welcome"</code>.
+     * @param values values to be merged into template.
+     * @return merged string
+     */
+    protected String merge(String template, Map values){
+        StringWriter stringWriter = new StringWriter();
+        Configuration.getTemplateManager().merge(values, template, stringWriter);
+        return stringWriter.toString();
+    }
 }
