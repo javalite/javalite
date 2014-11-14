@@ -27,10 +27,10 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.basedir}/target/test-project</outputDirectory>
+                            <outputDirectory>${project.basedir}/target</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${project.basedir}/src/test/test-project</directory>
+                                    <directory>${project.basedir}/src/test/project</directory>
                                 </resource>
                             </resources>
                         </configuration>
