@@ -20,110 +20,75 @@ limitations under the License.
 
 package org.javalite.db_migrator;
 
-import org.codehaus.plexus.util.FileUtils;
 import org.javalite.activejdbc.Base;
 import org.javalite.common.Util;
 import org.junit.Test;
 
 import java.io.*;
 
-import static org.javalite.test.jspec.JSpec.a;
-import static org.javalite.test.jspec.JSpec.the;
+import static org.javalite.test.jspec.JSpec.*;
 
 public class MojoIntegrationSpec {
 
-    public static final String TEST_PROJECT_DIR = "target/test-project";
+    public static final File TEST_PROJECT_DIR = new File("target/test-project");
+    public static final File MIGRATIONS_DIR = new File(TEST_PROJECT_DIR, "src/migrations");
 
     @Test
     public void shouldRunEntireIntegrationSpec() throws IOException, InterruptedException {
+        String mvn = System.getProperty("os.name").startsWith("Windows") ? "mvn.bat" : "mvn";
 
-        reCreateProject();
+        // drop
+        execute(mvn, "db-migrator:drop" , "-o");
 
-        //drop
-        execute("mvn", "db-migrator:drop" , "-o");
+        // create database
+        execute(mvn, "db-migrator:create", "-o");
 
-        //create database
-        reCreateProject();
-        execute("mvn", "db-migrator:create", "-o");
+        // migrate
+        String output = execute(mvn, "db-migrator:migrate" , "-o");
+        the(output).shouldContain(String.format("[INFO] Migrating database, applying 4 migration(s)%n" +
+                "[INFO] Running migration 20080718214030_base_schema.sql%n" +
+                "[INFO] Running migration 20080718214031_new_functions.sql%n" +
+                "[INFO] Running migration 20080718214032_new_proceedure.sql%n" +
+                "[INFO] Running migration 20080718214033_seed_data.sql"));
 
         Base.open("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/test_project", "root", "p@ssw0rd");
-
-        //creation of new migration
-        reCreateProject();
-        String output = execute("mvn", "db-migrator:new", "-Dname=add_people", "-o");
-
-        a(findMigrationFile("add_people")).shouldNotBeNull();
-
-        //migrate
-        reCreateProject();
-        output = execute("mvn", "db-migrator:migrate" , "-o");
-
-        the(output).shouldContain("[INFO] Migrating database, applying 4 migration(s)\n" +
-                "[INFO] Running migration 20080718214030_base_schema.sql\n" +
-                "[INFO] Running migration 20080718214031_new_functions.sql\n" +
-                "[INFO] Running migration 20080718214032_new_proceedure.sql\n" +
-                "[INFO] Running migration 20080718214033_seed_data.sql");
-
         a(Base.count("books")).shouldBeEqual(9);
         a(Base.count("authors")).shouldBeEqual(2);
-
-        //validate
-        reCreateProject();
-        execute("mvn", "db-migrator:drop", "-o");
-        execute("mvn", "db-migrator:create", "-o");
-        output = execute("mvn", "db-migrator:validate", "-o");
-
-        the(output).shouldContain("[INFO] Pending Migrations: \n" +
-                "[INFO] 20080718214030_base_schema.sql\n" +
-                "[INFO] 20080718214031_new_functions.sql\n" +
-                "[INFO] 20080718214032_new_proceedure.sql\n" +
-                "[INFO] 20080718214033_seed_data.sql");
-        //now migrate and validate again
-
-        execute("mvn", "db-migrator:migrate", "-o");
-
-        output = execute("mvn", "db-migrator:validate", "-o");
-
-        the(output).shouldContain("[INFO] Database: jdbc:mysql://localhost/test_project\n" +
-                "[INFO] Up-to-date: true\n" +
-                "[INFO] No pending migrations found");
-
         Base.close();
+
+        // validate
+        execute(mvn, "db-migrator:drop", "-o");
+
+        execute(mvn, "db-migrator:create", "-o");
+
+        output = execute(mvn, "db-migrator:validate", "-o");
+        the(output).shouldContain(String.format("[INFO] Pending Migrations: %n" +
+                "[INFO] 20080718214030_base_schema.sql%n" +
+                "[INFO] 20080718214031_new_functions.sql%n" +
+                "[INFO] 20080718214032_new_proceedure.sql%n" +
+                "[INFO] 20080718214033_seed_data.sql"));
+
+        // now migrate and validate again
+        execute(mvn, "db-migrator:migrate", "-o");
+
+        output = execute(mvn, "db-migrator:validate", "-o");
+        the(output).shouldContain(String.format("[INFO] Database: jdbc:mysql://localhost/test_project%n" +
+                "[INFO] Up-to-date: true%n" +
+                "[INFO] No pending migrations found"));
+
+        // creation of new migration
+        execute(mvn, "db-migrator:new", "-Dname=add_people", "-o");
+        String migrationFile = findMigrationFile("add_people");
+        a(migrationFile).shouldNotBeNull();
+        new File(MIGRATIONS_DIR, migrationFile).delete();
     }
 
-
-    //// UTILITY METHODS BELOW
-
-    public static void reCreateProject() throws IOException {
-        FileUtils.deleteDirectory(TEST_PROJECT_DIR);
-        copyFolder(new File("src/test/test-project"), new File("target/test-project"));
-    }
-
-    public static void copyFolder(File src, File dest) throws IOException {
-        if (src.isDirectory()) {
-            if (!dest.exists())
-                dest.mkdir();
-
-            for (String file : src.list())
-                copyFolder(new File(src, file), new File(dest, file));
-        } else {
-            InputStream in = new FileInputStream(src);
-            OutputStream out = new FileOutputStream(dest);
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = in.read(buffer)) > 0)
-                out.write(buffer, 0, length);
-
-            in.close();
-            out.close();
-        }
-    }
 
     public static String execute(String... args) throws IOException, InterruptedException {
-        Process p = Runtime.getRuntime().exec(args, null, new File(TEST_PROJECT_DIR));
+        Process p = Runtime.getRuntime().exec(args, null, TEST_PROJECT_DIR);
         p.waitFor();
         String out = Util.read(p.getInputStream());
-        String err = Util.read(p.getInputStream());
+        String err = Util.read(p.getErrorStream());
         String output = "TEST MAVEN EXECUTION START >>>>>>>>>>>>>>>>>>>>>>>>\nOut: \n" + out + "\nErr:" + err + "\nTEST MAVEN EXECUTION END <<<<<<<<<<<<<<<<<<<<<<";
         if(p.exitValue() != 0){
             System.out.println(output);
@@ -133,7 +98,7 @@ public class MojoIntegrationSpec {
 
     //will return null of not found
     public static String findMigrationFile(String substring) {
-        String[] files = new File(TEST_PROJECT_DIR + "/src/migrations").list();
+        String[] files = MIGRATIONS_DIR.list();
         for (String file : files) {
             if (file.contains(substring))
                 return file;
