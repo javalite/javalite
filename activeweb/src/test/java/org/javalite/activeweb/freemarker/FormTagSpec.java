@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
 
+import static java.lang.String.format;
 import static org.javalite.common.Collections.map;
 
 /**
@@ -32,7 +33,6 @@ import static org.javalite.common.Collections.map;
 public class FormTagSpec extends JSpecSupport {
 
     private FreeMarkerTemplateManager manager = new FreeMarkerTemplateManager();
-    private String nl = System.getProperty("line.separator");
 
     @Before
     public void before() throws IOException {
@@ -61,8 +61,8 @@ public class FormTagSpec extends JSpecSupport {
         Map context = map("context_path", "/test_context", "activeweb", map("controller", "/rest/book", "restful", true));
 
         manager.merge(context, "/form/simple_form_for_restful_controller_in_sub_package", sw);
-        a(sw.toString()).shouldBeEqual("<form action=\"/test_context/rest/book/x123\">    <input type=\"hidden\" name=\"blah\">" + nl +
-                "</form>");
+        a(sw.toString()).shouldBeEqual(format("<form action=\"/test_context/rest/book/x123\">    <input type=\"hidden\" name=\"blah\">" + "%n" +
+                "</form>"));
     }
 
     @Test
@@ -104,20 +104,20 @@ public class FormTagSpec extends JSpecSupport {
     public void shouldRenderSimpleFormWithMethodPUT(){
         StringWriter sw = new StringWriter();
         manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_method_put", sw);
-        a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"post\" id=\"formB\">" + nl +
-                "\t<input type='hidden' name='_method' value='put' />" + nl +
-                "    <input type=\"hidden\" name=\"blah\">" + nl +
-                "</form>");
+        a(sw.toString()).shouldBeEqual(format("<form action=\"/simple_context/simple/index\" method=\"post\" id=\"formB\">" + "%n" +
+                "\t<input type='hidden' name='_method' value='put' />" + "%n" +
+                "    <input type=\"hidden\" name=\"blah\">" + "%n" +
+                "</form>"));
     }
 
     @Test
     public void shouldRenderSimpleFormWithMethodDELETE(){
         StringWriter sw = new StringWriter();
         manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_method_delete", sw);
-        a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"post\">" + nl +
-                "\t<input type='hidden' name='_method' value='delete' />" + nl +
-                "    <input type=\"hidden\" name=\"blah\">" + nl +
-                "</form>");
+        a(sw.toString()).shouldBeEqual(format("<form action=\"/simple_context/simple/index\" method=\"post\">" + "%n" +
+                "\t<input type='hidden' name='_method' value='delete' />" + "%n" +
+                "    <input type=\"hidden\" name=\"blah\">" + "%n" +
+                "</form>"));
     }
 
     @Test
@@ -125,10 +125,10 @@ public class FormTagSpec extends JSpecSupport {
         StringWriter sw = new StringWriter();
         manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)),
                 "/form/simple_form_with_put_for_restful_controller", sw);
-        a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/photos/x123\" method=\"post\">" + nl +
-                "\t<input type='hidden' name='_method' value='put' />" + nl +
-                "    <input type=\"hidden\" name=\"blah\">" + nl +
-                "</form>");
+        a(sw.toString()).shouldBeEqual(format("<form action=\"/simple_context/photos/x123\" method=\"post\">" + "%n" +
+                "\t<input type='hidden' name='_method' value='put' />" + "%n" +
+                "    <input type=\"hidden\" name=\"blah\">" + "%n" +
+                "</form>"));
     }
 
     @Test
@@ -137,10 +137,10 @@ public class FormTagSpec extends JSpecSupport {
         manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", true)),
                 "/form/simple_form_with_put_for_restful_controller_in_sub_package", sw);
 
-        a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/rest/book/x123\" method=\"post\">" + nl +
-                "\t<input type='hidden' name='_method' value='put' />" + nl +
-                "    <input type=\"hidden\" name=\"blah\">" + nl +
-                "</form>");
+        a(sw.toString()).shouldBeEqual(format("<form action=\"/simple_context/rest/book/x123\" method=\"post\">" + "%n" +
+                "\t<input type='hidden' name='_method' value='put' />" + "%n" +
+                "    <input type=\"hidden\" name=\"blah\">" + "%n" +
+                "</form>"));
     }
 
     @Test
@@ -152,10 +152,10 @@ public class FormTagSpec extends JSpecSupport {
         manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", true)),
                 "/form/simple_form_with_put_for_restful_controller_in_sub_package", sw);
 
-        a(sw.toString()).shouldBeEqual("<form action=\"/rest/book/x123\" method=\"post\">" + nl +
-                "\t<input type='hidden' name='_method' value='put' />" + nl +
-                "    <input type=\"hidden\" name=\"blah\">" + nl +
-                "</form>");
+        a(sw.toString()).shouldBeEqual(format("<form action=\"/rest/book/x123\" method=\"post\">" + "%n" +
+                "\t<input type='hidden' name='_method' value='put' />" + "%n" +
+                "    <input type=\"hidden\" name=\"blah\">" + "%n" +
+                "</form>"));
     }
 
     @Test
