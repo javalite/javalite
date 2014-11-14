@@ -6,7 +6,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 /**
  * @goal reset
  */
-public class ResetMojo extends AbstractMigrationMojo {
+public class ResetMojo extends AbstractDbMigrationMojo {
     public void executeMojo() throws MojoExecutionException {
         getLog().info("Resetting database " + getUrl());
 
@@ -21,12 +21,12 @@ public class ResetMojo extends AbstractMigrationMojo {
             dropMojo.executeMojo();
             createMojo.executeMojo();
             migrateMojo.executeMojo();
-        } catch (Exception e) {
+        } catch (MojoExecutionException e) {
             throw new MojoExecutionException("Failed to reset database " + getUrl(), e);
         }
     }
 
-    private void set(AbstractMigrationMojo mojo) {
+    private void set(AbstractDbMigrationMojo mojo) {
         mojo.setLog(getLog());
         mojo.setUrl(getUrl());
         mojo.setUsername(getUsername());

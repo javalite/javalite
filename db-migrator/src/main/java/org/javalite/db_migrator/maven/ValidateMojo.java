@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @goal validate
  */
-public class ValidateMojo extends AbstractMigrationMojo {
+public class ValidateMojo extends AbstractDbMigrationMojo {
     public void executeMojo() throws MojoExecutionException {
         getLog().info("Validating " + getUrl() + " using migrations at " + getMigrationsPath());
         try {

@@ -13,9 +13,9 @@ import static org.javalite.common.Util.*;
  * @goal new
  */
 public class NewMojo extends AbstractMigrationMojo {
-    public void executeMojo() throws MojoExecutionException {
 
-        if(blank(System.getProperty("name"))){
+    public void execute() throws MojoExecutionException {
+        if (blank(System.getProperty("name"))) {
             getLog().error("Must provide name for migration: -Dname=migration_name");
             return;
         }
@@ -43,23 +43,20 @@ public class NewMojo extends AbstractMigrationMojo {
         }
 
         fileName.append(".sql");
-        
+
         return fileName.toString();
     }
 
     private void createMigrationsDirectory(String directory) throws MojoExecutionException {
-        try {
-            File f = new File(directory);
-            if (f.exists() && f.isFile()) {
-                throw new MojoExecutionException("Provided path is not a directory: " + directory);
-            } else {
-                if (!f.exists()) {
-                    if(f.mkdirs())
-                        getLog().info("Creating new migration directory: " + directory);
+        File f = new File(directory);
+        if (f.exists() && f.isFile()) {
+            throw new MojoExecutionException("Provided path is not a directory: " + directory);
+        } else {
+            if (!f.exists()) {
+                if (f.mkdirs()) {
+                    getLog().info("Creating new migration directory: " + directory);
                 }
             }
-        } catch (Exception e) {
-            throw new MojoExecutionException("Failed to create migrations directory: " + directory, e);
         }
     }
 }

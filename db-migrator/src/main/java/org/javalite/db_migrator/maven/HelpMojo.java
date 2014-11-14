@@ -1,14 +1,14 @@
 package org.javalite.db_migrator.maven;
 
+import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 
-import static java.lang.String.format;
 
 /**
  * @goal help
  */
-public class HelpMojo extends AbstractMigrationMojo {
-    public void executeMojo() throws MojoExecutionException {
+public class HelpMojo extends AbstractMojo {
+    public void execute() throws MojoExecutionException {
 
         getLog().info("");
         getLog().info("JavaLite DB-Migrator Plugin");

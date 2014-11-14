@@ -7,7 +7,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 
 import java.util.List;
 
-import static java.lang.String.format;
 
 /**
  * Check current schema against available migrations to see if database is up to date,
@@ -17,7 +16,7 @@ import static java.lang.String.format;
  * @goal check
  * @phase process-test-resources
  */
-public class CheckMojo extends AbstractMigrationMojo {
+public class CheckMojo extends AbstractDbMigrationMojo {
     public void executeMojo() throws MojoExecutionException {
         getLog().info("Checking " + getUrl() + " using migrations at " + getMigrationsPath());
 

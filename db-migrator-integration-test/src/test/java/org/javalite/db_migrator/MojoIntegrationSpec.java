@@ -24,24 +24,32 @@ import java.io.*;
 import org.javalite.activejdbc.Base;
 import org.javalite.common.Util;
 import org.javalite.test.jspec.JSpecSupport;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class MojoIntegrationSpec extends JSpecSupport {
-    public static final File TEST_PROJECT_DIR = new File("target/test-project");
-    public static final File MIGRATIONS_DIR = new File(TEST_PROJECT_DIR, "src/migrations");
 
     @Test
-    public void shouldRunEntireIntegrationSpec() throws IOException, InterruptedException {
-        String mvn = System.getProperty("os.name").startsWith("Windows") ? "mvn.bat" : "mvn";
+    public void shouldRunTestProject() throws IOException, InterruptedException {
+        run(new File("target/test-project"));
+    }
 
+    @Test
+    @Ignore
+    public void shouldRunTestProjectWithProperties() throws IOException, InterruptedException {
+        run(new File("target/test-project-properties"));
+    }
+
+    private void run(File dir) throws IOException, InterruptedException {
+        String mvn = System.getProperty("os.name").startsWith("Windows") ? "mvn.bat" : "mvn";
         // drop
-        execute(mvn, "db-migrator:drop" , "-o");
+        execute(dir, mvn, "db-migrator:drop" , "-o");
 
         // create database
-        execute(mvn, "db-migrator:create", "-o");
+        execute(dir, mvn, "db-migrator:create", "-o");
 
         // migrate
-        String output = execute(mvn, "db-migrator:migrate" , "-o");
+        String output = execute(dir, mvn, "db-migrator:migrate" , "-o");
         the(output).shouldContain(String.format("[INFO] Migrating database, applying 4 migration(s)%n" +
                 "[INFO] Running migration 20080718214030_base_schema.sql%n" +
                 "[INFO] Running migration 20080718214031_new_functions.sql%n" +
@@ -54,11 +62,11 @@ public class MojoIntegrationSpec extends JSpecSupport {
         Base.close();
 
         // validate
-        execute(mvn, "db-migrator:drop", "-o");
+        execute(dir, mvn, "db-migrator:drop", "-o");
 
-        execute(mvn, "db-migrator:create", "-o");
+        execute(dir, mvn, "db-migrator:create", "-o");
 
-        output = execute(mvn, "db-migrator:validate", "-o");
+        output = execute(dir, mvn, "db-migrator:validate", "-o");
         the(output).shouldContain(String.format("[INFO] Pending Migrations: %n" +
                 "[INFO] 20080718214030_base_schema.sql%n" +
                 "[INFO] 20080718214031_new_functions.sql%n" +
@@ -66,39 +74,42 @@ public class MojoIntegrationSpec extends JSpecSupport {
                 "[INFO] 20080718214033_seed_data.sql"));
 
         // now migrate and validate again
-        execute(mvn, "db-migrator:migrate", "-o");
+        execute(dir, mvn, "db-migrator:migrate", "-o");
 
-        output = execute(mvn, "db-migrator:validate", "-o");
+        output = execute(dir, mvn, "db-migrator:validate", "-o");
         the(output).shouldContain(String.format("[INFO] Database: jdbc:mysql://localhost/test_project%n" +
                 "[INFO] Up-to-date: true%n" +
                 "[INFO] No pending migrations found"));
 
         // creation of new migration
-        execute(mvn, "db-migrator:new", "-Dname=add_people", "-o");
-        String migrationFile = findMigrationFile("add_people");
+        execute(dir, mvn, "db-migrator:new", "-Dname=add_people", "-o");
+        File migrationsDir = new File(dir, "src/migrations");
+        String migrationFile = findMigrationFile(migrationsDir, "add_people");
         the(migrationFile).shouldNotBeNull();
-        the(new File(MIGRATIONS_DIR, migrationFile).delete()).shouldBeTrue();
+        the(new File(migrationsDir, migrationFile).delete()).shouldBeTrue();
     }
 
 
-    public static String execute(String... args) throws IOException, InterruptedException {
-        Process p = Runtime.getRuntime().exec(args, null, TEST_PROJECT_DIR);
+    private static String execute(File dir, String... args) throws IOException, InterruptedException {
+        Process p = Runtime.getRuntime().exec(args, null, dir);
         p.waitFor();
         String out = Util.read(p.getInputStream());
         String err = Util.read(p.getErrorStream());
-        String output = "TEST MAVEN EXECUTION START >>>>>>>>>>>>>>>>>>>>>>>>\nOut: \n" + out + "\nErr:" + err + "\nTEST MAVEN EXECUTION END <<<<<<<<<<<<<<<<<<<<<<";
-        if(p.exitValue() != 0){
+        String output = "TEST MAVEN EXECUTION START >>>>>>>>>>>>>>>>>>>>>>>>\nOut: \n" + out
+                + "\nErr:" + err + "\nTEST MAVEN EXECUTION END <<<<<<<<<<<<<<<<<<<<<<";
+        if (p.exitValue() != 0) {
             System.out.println(output);
         }
         return output;
     }
 
     //will return null of not found
-    public static String findMigrationFile(String substring) {
-        String[] files = MIGRATIONS_DIR.list();
+    private static String findMigrationFile(File dir, String substring) {
+        String[] files = dir.list();
         for (String file : files) {
-            if (file.contains(substring))
+            if (file.contains(substring)) {
                 return file;
+            }
         }
         return null;
     }

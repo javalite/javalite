@@ -10,7 +10,7 @@ import static org.javalite.common.Util.blank;
 /**
  * @goal create
  */
-public class CreateMojo extends AbstractMigrationMojo {
+public class CreateMojo extends AbstractDbMigrationMojo {
 
     public void executeMojo() throws MojoExecutionException {
 
