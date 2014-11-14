@@ -104,11 +104,6 @@ public class UploadControllerSpec extends IntegrationSpec{
 
         a(assigns().get("id")).shouldNotBeNull();
 
-        a(responseContent()).shouldBeEqual("<html>\n" +
-                "    <div>\n" +
-                "        <div>hello2.txt</div>\n" +
-                "        <div>.. and salutations!</div>\n" +
-                "    </div>\n" +
-                "</html>");
+        a(responseContent()).shouldBeEqual("<html> <div> <div>hello2.txt</div> <div>.. and salutations!</div> </div> </html>");
     }
 }

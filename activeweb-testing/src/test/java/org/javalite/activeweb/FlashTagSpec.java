@@ -73,7 +73,7 @@ public class FlashTagSpec extends IntegrationSpec {
     @Test
     public void shouldRenderFlashWithBody(){
         controller("flashing").integrateViews().get("body");
-        a(responseContent()).shouldBeEqual("<div class=\"warning\">hi, there!</div>\n");
+        a(responseContent()).shouldBeEqual("<div class=\"warning\">hi, there!</div>");
     }
 
     @Test

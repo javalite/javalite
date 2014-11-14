@@ -1,3 +1,4 @@
+<@compress single_line=true>
 <html>
 <#list items as item>
     <div>
@@ -6,3 +7,4 @@
     </div>
 </#list>
 </html>
+</@compress>
