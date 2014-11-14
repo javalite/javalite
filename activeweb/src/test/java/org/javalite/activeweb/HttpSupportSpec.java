@@ -22,6 +22,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import java.io.IOException;
 
+import static java.lang.String.format;
+
 /**
  * @author Igor Polevoy
  */
@@ -234,7 +236,6 @@ public class HttpSupportSpec extends RequestSpec{
         request.setMethod("GET");
         dispatcher.doFilter(request, response, filterChain);
         String merged = response.getContentAsString();
-        a(merged).shouldBeEqual("What is your name?\n" +
-                "- My name is John Doe");
+        a(merged).shouldBeEqual(format("What is your name?%n- My name is John Doe"));
     }
 }

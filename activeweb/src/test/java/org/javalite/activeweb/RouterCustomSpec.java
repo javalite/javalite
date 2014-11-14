@@ -30,7 +30,9 @@ import java.io.UnsupportedEncodingException;
  */
 public class RouterCustomSpec extends RequestSpec {
 
-    AbstractRouteConfig routeConfig;
+    private AbstractRouteConfig routeConfig;
+    private String nl = System.getProperty("line.separator");
+
 
     @Before
     public void before1(){
@@ -177,8 +179,8 @@ public class RouterCustomSpec extends RequestSpec {
 
         request.setServletPath("/edit/route_4/1/alex/blue");
         execDispatcher();
-        a(responseContent()).shouldContain("id:1\n" +
-                "user_name:alex\n" +
+        a(responseContent()).shouldContain("id:1" + nl +
+                "user_name:alex" + nl +
                 "user_color:blue");
 
 
