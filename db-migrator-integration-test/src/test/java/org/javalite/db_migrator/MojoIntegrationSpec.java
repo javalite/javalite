@@ -20,16 +20,13 @@ limitations under the License.
 
 package org.javalite.db_migrator;
 
+import java.io.*;
 import org.javalite.activejdbc.Base;
 import org.javalite.common.Util;
+import org.javalite.test.jspec.JSpecSupport;
 import org.junit.Test;
 
-import java.io.*;
-
-import static org.javalite.test.jspec.JSpec.*;
-
-public class MojoIntegrationSpec {
-
+public class MojoIntegrationSpec extends JSpecSupport {
     public static final File TEST_PROJECT_DIR = new File("target/test-project");
     public static final File MIGRATIONS_DIR = new File(TEST_PROJECT_DIR, "src/migrations");
 
@@ -79,8 +76,8 @@ public class MojoIntegrationSpec {
         // creation of new migration
         execute(mvn, "db-migrator:new", "-Dname=add_people", "-o");
         String migrationFile = findMigrationFile("add_people");
-        a(migrationFile).shouldNotBeNull();
-        new File(MIGRATIONS_DIR, migrationFile).delete();
+        the(migrationFile).shouldNotBeNull();
+        the(new File(MIGRATIONS_DIR, migrationFile).delete()).shouldBeTrue();
     }
 
 
