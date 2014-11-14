@@ -24,9 +24,11 @@ import org.javalite.activeweb.annotations.POST;
 public class AbcPersonController extends AppController {
 
     public void index(){        
-        assign("name", "John");
-        assign("last_name", "Silverman");
-        assign("age", 32);
+        view("name", "John");
+        view("last_name", "Silverman");
+        view("age", 32);
+
+        header("Content-type", "text/html");
     }
 
     public void passValues(){}

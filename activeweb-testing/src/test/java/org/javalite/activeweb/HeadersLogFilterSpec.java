@@ -17,8 +17,10 @@ limitations under the License.
 
 package org.javalite.activeweb;
 
+import org.javalite.activeweb.controller_filters.AbstractLoggingFilter;
 import org.javalite.activeweb.controller_filters.HeadersLogFilter;
 import app.controllers.AbcPersonController;
+import org.javalite.test.SystemStreamUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,19 +35,19 @@ public class HeadersLogFilterSpec extends IntegrationSpec{
 
     @Before
     public void before(){
-        addFilter(AbcPersonController.class, new HeadersLogFilter());
+        addFilter(AbcPersonController.class, new HeadersLogFilter(AbstractLoggingFilter.Level.INFO, true));
     }
 
     @Test
     public void shouldPrintHeadersToLog(){
-
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        PrintStream pout = new PrintStream(bout);
-        System.setErr(pout) ;
-
+        SystemStreamUtil.replaceError();
         controller("abc-person").header("bogus", "value").get("pass_values");
-        pout.flush();
-        pout.close();
-        a(bout.toString().contains("Header: bogus=value")).shouldBeTrue();
+        //request header:
+        a(SystemStreamUtil.getSystemErr().contains("Header: bogus=value")).shouldBeTrue();
+
+        //response header:
+        a(SystemStreamUtil.getSystemErr().contains("Header: Content-Type=text/html")).shouldBeTrue();
+
+        SystemStreamUtil.restoreSystemErr();
     }
 }

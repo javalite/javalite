@@ -1541,4 +1541,18 @@ public class HttpSupport {
         Configuration.getTemplateManager().merge(values, template, stringWriter);
         return stringWriter.toString();
     }
+
+    /**
+     * Returns response headers
+     *
+     * @return map with response headers.
+     */
+    public Map<String, String> getResponseHeaders(){
+        Collection<String> names  = Context.getHttpResponse().getHeaderNames();
+        Map<String, String> headers = new HashMap<String, String>();
+        for (String name : names) {
+            headers.put(name, Context.getHttpResponse().getHeader(name));
+        }
+        return headers;
+    }
 }

@@ -53,20 +53,24 @@ public abstract class AbstractLoggingFilter extends HttpSupportFilter{
     }
 
     public final void before() {
+        log("** Request headers **" + System.getProperty("line.separator") + getMessage());
+    }
+
+    protected void log(String message){
         if (level.equals(Level.DISABLED)) {
             return;
         }
         if (level.equals(Level.INFO)) {
-            logInfo(getMessage());
+            logInfo(message);
         }
         if (level.equals(Level.WARNING)) {
-            logWarning(getMessage());
+            logWarning(message);
         }
         if (level.equals(Level.DEBUG)) {
-            logDebug(getMessage());
+            logDebug(message);
         }
         if (level.equals(Level.ERROR)) {
-            logError(getMessage());
+            logError(message);
         }
     }
 

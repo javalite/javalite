@@ -16,39 +16,63 @@ limitations under the License.
 
 package org.javalite.activeweb.controller_filters;
 
+import org.javalite.activeweb.RequestUtils;
+
 import java.util.Map;
 
 /**
- * Use this filter to log HTTP request headers to a log system.
+ * Use this filter to log HTTP request (and response) headers to a log system.
  *
  * @author Igor Polevoy
  */
 public class HeadersLogFilter extends AbstractLoggingFilter {
 
+    private boolean printResponseHeaders;
+
     /**
-     * Creates a filter with preset log level.
+     * Creates a filter with preset log level. By default, response headers are not printed.
      *
      * @param level log level
      */
-    
     public HeadersLogFilter(Level level) {
         super(level);
     }
 
     /**
-     * Creates a filter with default "INFO" level.
+     * Creates a filter with preset log level.
+     *
+     * @param level log level
+     * @param printResponseHeaders true to print response headers too.
+     */
+    public HeadersLogFilter(Level level, boolean printResponseHeaders) {
+        super(level);
+        this.printResponseHeaders = printResponseHeaders;
+    }
+
+    /**
+     * Creates a filter with default "INFO" level. By default, response headers are not printed.
      */
     public HeadersLogFilter() {
         super();    
     }
 
     protected String getMessage() {
-        Map<String, String> headers = headers();
-        StringBuffer sb = new StringBuffer("\n");
+        return format(headers());
+    }
 
+    private String format(Map<String, String> headers){
+        StringBuilder sb = new StringBuilder("\n");
         for (String header : headers.keySet()) {
             sb.append("Header: ").append(header).append("=").append(headers.get(header)).append("\n");
         }
         return sb.toString();
+    }
+
+    @Override
+    public void after() {
+        if(printResponseHeaders){
+            String message = format(getResponseHeaders());
+            log("** Response headers **" + System.getProperty("line.separator") + message);
+        }
     }
 }
