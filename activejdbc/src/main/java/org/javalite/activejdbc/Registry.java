@@ -227,17 +227,10 @@ public enum Registry {
      */
     private void registerModels(String dbName, List<Class<? extends Model>> modelClasses, String dbType) {
         for (Class<? extends Model> modelClass : modelClasses) {
-            String idName = findIdName(modelClass);
-            String tableName = findTableName(modelClass);
-            String idGeneratorCode= findIdGeneratorCode(modelClass);
-            MetaModel mm = new MetaModel(dbName, tableName, idName, modelClass, dbType, isCached(modelClass), idGeneratorCode);
-            metaModels.addMetaModel(mm, tableName, modelClass);
+            MetaModel mm = new MetaModel(dbName, modelClass, dbType);
+            metaModels.addMetaModel(mm, modelClass);
             LogFilter.log(logger, "Registered model: {}", modelClass);
         }
-    }
-
-    private boolean isCached(Class<? extends Model> modelClass) {
-        return null != modelClass.getAnnotation(Cached.class);
     }
 
     private void processOverrides(List<Class<? extends Model>> models) {
@@ -390,21 +383,6 @@ public enum Registry {
         }
     }
 
-
-    private String findIdGeneratorCode(Class<? extends Model> modelClass) {
-        IdGenerator idGenerator = modelClass.getAnnotation(IdGenerator.class);
-        return idGenerator == null ? null : idGenerator.value();
-    }
-
-    private String findIdName(Class<? extends Model> modelClass) {
-        IdName idNameAnnotation = modelClass.getAnnotation(IdName.class);
-        return idNameAnnotation == null ? "id" : idNameAnnotation.value();
-    }
-
-    private String findTableName(Class<? extends Model> modelClass) {
-        Table tableAnnotation = modelClass.getAnnotation(Table.class);
-        return tableAnnotation == null ? Inflector.tableize(modelClass.getSimpleName()) : tableAnnotation.value();
-    }
 
 
     /**

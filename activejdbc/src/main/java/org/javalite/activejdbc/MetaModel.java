@@ -17,11 +17,8 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
-import org.javalite.activejdbc.annotations.DbName;
-import org.javalite.activejdbc.annotations.VersionColumn;
-import org.javalite.activejdbc.associations.Many2ManyAssociation;
-import org.javalite.activejdbc.associations.OneToManyAssociation;
-import org.javalite.activejdbc.associations.OneToManyPolymorphicAssociation;
+import org.javalite.activejdbc.annotations.*;
+import org.javalite.activejdbc.associations.*;
 import org.javalite.activejdbc.dialects.DefaultDialect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,13 +26,14 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.util.*;
 
-import static org.javalite.common.Inflector.*;
 import static org.javalite.activejdbc.LogFilter.*;
+import static org.javalite.common.Inflector.*;
 import static org.javalite.common.Util.*;
 
-public class MetaModel<T extends Model, E extends Association> implements Serializable {
 
+public class MetaModel<T extends Model, E extends Association> implements Serializable {
     private final static Logger logger = LoggerFactory.getLogger(MetaModel.class);
+
     private Map<String, ColumnMetadata> columnMetadata;
     private List<Association> associations = new ArrayList<Association>();
     private String idName;
@@ -46,21 +44,39 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
     private List<String> attributeNamesNoId;
     private String versionColumn;
 
-
-    protected MetaModel(String dbName, String tableName, String idName, Class<T> modelClass, String dbType, boolean cached, String idGeneratorCode) {
-        this.idName = idName.toLowerCase();
-        this.tableName = tableName;
+    protected MetaModel(String dbName, Class<T> modelClass, String dbType) {
+        this.idName = findIdName(modelClass).toLowerCase();
+        this.tableName = findTableName(modelClass);
         this.modelClass = modelClass;
         this.dbType = dbType;
-        this.cached = cached;
+        this.cached = isCached(modelClass);
         this.dbName = dbName;
-        this.idGeneratorCode = idGeneratorCode;
+        this.idGeneratorCode = findIdGeneratorCode(modelClass);
+        this.versionColumn = findVersionColumn(modelClass);
+    }
+
+    private boolean isCached(Class<T> modelClass) {
+        return null != modelClass.getAnnotation(Cached.class);
+    }
+
+    private String findIdName(Class<T> modelClass) {
+        IdName idNameAnnotation = modelClass.getAnnotation(IdName.class);
+        return idNameAnnotation == null ? "id" : idNameAnnotation.value();
+    }
+
+    private String findTableName(Class<T> modelClass) {
+        Table tableAnnotation = modelClass.getAnnotation(Table.class);
+        return tableAnnotation == null ? tableize(modelClass.getSimpleName()) : tableAnnotation.value();
+    }
+
+    private String findIdGeneratorCode(Class<T> modelClass) {
+        IdGenerator idGenerator = modelClass.getAnnotation(IdGenerator.class);
+        return idGenerator == null ? null : idGenerator.value();
+    }
+
+    private String findVersionColumn(Class<T> modelClass) {
         VersionColumn vc = modelClass.getAnnotation(VersionColumn.class);
-        if(vc != null){
-            versionColumn = vc.value();
-        }else{
-            versionColumn = "record_version";
-        }
+        return vc == null ? "record_version" : vc.value();
     }
 
     /**
