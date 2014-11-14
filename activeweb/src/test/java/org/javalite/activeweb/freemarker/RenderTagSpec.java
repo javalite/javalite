@@ -101,11 +101,11 @@ public class RenderTagSpec extends JSpecSupport {
     public void shouldRenderSpacerWithCollectionPartial() throws IOException, TemplateException {
         StringWriter sw = new StringWriter();
         manager.merge(map("fruits", li("apple", "prune", "pear")), "/partial/main_with_collection_partial_and_spacer", sw);
-        a(sw.toString()).shouldBeEqual("and the fruit is: apple \n" +
-                "===========================\n" +
-                "and the fruit is: prune \n" +
-                "===========================\n" +
-                "and the fruit is: pear ");
+        a(sw.toString()).shouldBeEqual("and the fruit is: apple " +
+                "=========================== " +
+                "and the fruit is: prune " +
+                "=========================== " +
+                "and the fruit is: pear");
     }
 
     @Test
@@ -119,9 +119,9 @@ public class RenderTagSpec extends JSpecSupport {
     public void shouldPassSimpleParameterToPartialWithCollection() throws IOException, TemplateException {
         StringWriter sw = new StringWriter();
         manager.merge(map("fruits", li("apple", "prune", "pear")), "/partial/main_with_collection_and_simple_parameters_for_partial", sw);
-        a(sw.toString()).shouldEqual("and the fruit is: apple, berry: blueberry\n" +
-                "and the fruit is: prune, berry: blueberry\n" +
-                "and the fruit is: pear, berry: blueberry\n");
+        a(sw.toString()).shouldEqual("and the fruit is: apple, berry: blueberry " +
+                "and the fruit is: prune, berry: blueberry " +
+                "and the fruit is: pear, berry: blueberry");
     }
 
 
@@ -129,9 +129,9 @@ public class RenderTagSpec extends JSpecSupport {
     public void shouldCheckFirstAndLastWithCollection() throws IOException, TemplateException {        
         StringWriter sw = new StringWriter();
         manager.merge(map("fruits", li("apple", "prune", "pear")), "/partial/main_with_collection_partial_with_first_and_last", sw);
-        a(sw.toString()).shouldBeEqual( "and the fruit is: apple, first: true, last: false\n" +
-                                        "and the fruit is: prune, first: false, last: false\n" +
-                                        "and the fruit is: pear, first: false, last: true\n");
+        a(sw.toString()).shouldBeEqual( "and the fruit is: apple, first: true, last: false " +
+                                        "and the fruit is: prune, first: false, last: false " +
+                                        "and the fruit is: pear, first: false, last: true");
     }
 
 

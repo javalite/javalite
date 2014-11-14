@@ -35,7 +35,6 @@ import static org.javalite.common.Collections.map;
 public class FreeMarkerTagSpec extends JSpecSupport {
 
     private FreeMarkerTemplateManager manager = new FreeMarkerTemplateManager();
-    private String nl = System.getProperty("line.separator");
 
     @Before
     public void before() throws IOException {
@@ -50,20 +49,13 @@ public class FreeMarkerTagSpec extends JSpecSupport {
     public void shouldProcessInnerTag() {
         StringWriter sw = new StringWriter();
         manager.merge(map("name", "earthlings!!"), "/greeting/index", sw);
-        a(sw.toString()).shouldBeEqual("<greeting>" + nl +
-                "this is just a greeting:" + nl +
-                "Hello, earthlings!!" +  nl +
-                "</greeting>\n");
+        a(sw.toString()).shouldBeEqual("<greeting> this is just a greeting: Hello, earthlings!! </greeting>");
     }
-
 
     @Test
     public void shouldProcessInnerTagWithSuppliedText() {
         StringWriter sw = new StringWriter();
         manager.merge(map("name", "Earthlings!!"), "/greeting/index1", sw);
-        a(sw.toString()).shouldBeEqual("<greeting>" + nl +
-                "this is just a greeting:" + nl +
-                "Hello, Earthlings!!" + nl +
-                "</greeting>\n");
+        a(sw.toString()).shouldBeEqual("<greeting> this is just a greeting: Hello, Earthlings!! </greeting>");
     }
 }

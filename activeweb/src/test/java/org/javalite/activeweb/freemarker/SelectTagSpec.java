@@ -87,7 +87,7 @@ public class SelectTagSpec extends RequestSpec {
                 "books", list(new SelectOption(1, "The Hitchhiker's Guide to the Galaxy"), new SelectOption(2, "All Quiet on Western Front", true))),  //<<--- -this is data passed to tag
                 "/select/has_body", sw);
 
-        a(sw.toString()).shouldBeEqual("<select><option value=\"3\">A Tale of Two Cities</option>\n" +
+        a(sw.toString()).shouldBeEqual("<select><option value=\"3\">A Tale of Two Cities</option> " +
                 "<option value=\"1\">The Hitchhiker's Guide to the Galaxy</option><option value=\"2\" selected=\"true\">All Quiet on Western Front</option></select>");
     }
 }
