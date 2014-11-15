@@ -1,14 +1,26 @@
 package org.javalite.db_migrator.maven;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.javalite.db_migrator.DatabaseType;
-import org.javalite.db_migrator.DatabaseUtils;
+import org.javalite.common.Util;
 
 import static org.javalite.common.Util.*;
-
+import org.javalite.db_migrator.DatabaseUtils;
 
 public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
 
+    /**
+     * @parameter property="session"
+     * @required
+     * @readonly
+     */
+    private MavenSession session;    
+    
     /**
      * @parameter
      */
@@ -27,31 +39,57 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
     /**
      * @parameter
      */
-    private String password = "";
-
-    private String databaseType;
+    private String password;
+    
+    /**
+     * @parameter
+     */
+    private String environments;
 
     public final void execute() throws MojoExecutionException {
-        if (blank(url) && blank(username)) {
-            getLog().info("url and username not provided");
-            return;
+        if (blank(environments)) {
+            executeCurrentConfiguration();
+        } else {
+            Properties properties = new Properties();
+            // looks for database.properties file in basedir
+            //TODO: parameter with properties file location
+            File file = new File(session.getExecutionRootDirectory(), "database.properties");
+            if (file.exists()) {
+                InputStream is = null;
+                try {
+                    is = new FileInputStream(file);
+                    properties.load(is);
+                } catch (IOException e){
+                    throw new MojoExecutionException("Error reading database.properties file", e);
+                } finally {
+                    Util.close(is);
+                }
+            }
+            for (String environment : environments.split("\\s*,\\s*")) {
+                getLog().info("Environment: " + environment);
+                url = properties.getProperty(environment + ".jdbc.url");
+                driver = properties.getProperty(environment + ".jdbc.driver");
+                username = properties.getProperty(environment + ".jdbc.username");
+                password = properties.getProperty(environment + ".jdbc.password");
+                executeCurrentConfiguration();
+            }
+        }
+    }
+    
+    private void executeCurrentConfiguration() throws MojoExecutionException {
+        if (blank(password)) {
+            password = "";
+        }
+        if (blank(driver) && !blank(url)) {
+            driver = DatabaseUtils.driverClass(url);
         }
 
-        if (!getClass().equals(NewMojo.class)) {
-            validateConfiguration();
+        validateConfiguration();
 
-            password = blank(password) ? "" : password;
-            if (blank(driver))
-                driver = DatabaseUtils.driverClass(url);
-
-            databaseType = DatabaseUtils.databaseType(url).toString();
-        }
         executeMojo();
     }
-
-    public abstract void executeMojo() throws MojoExecutionException;
-
-    protected void validateConfiguration() throws MojoExecutionException {
+    
+    private void validateConfiguration() throws MojoExecutionException {
         if (blank(driver)) {
             throw new MojoExecutionException("No database driver. Specify one in the plugin configuration.");
         }
@@ -65,23 +103,14 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
         }
 
         try {
-            if (!blank(databaseType)) {
-                DatabaseType.valueOf(databaseType);
-            }
-        } catch (IllegalArgumentException e) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("Database type of '").append(databaseType).append("' is invalid.  Correct values: ");
-            join(sb, DatabaseType.values(), ", ");
-            throw new MojoExecutionException(sb.toString());
-        }
-
-        try {
             Class.forName(driver);
         } catch (ClassNotFoundException e) {
             throw new MojoExecutionException("Can't load driver class " + driver + ". Be sure to include it as a plugin dependency.");
         }
     }
 
+    public abstract void executeMojo() throws MojoExecutionException;
+   
     public String getUrl() {
         return url;
     }
@@ -98,10 +127,10 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
         return password;
     }
 
-    public String getDatabaseType() {
-        return databaseType;
+    public String getEnvironments() {
+        return environments;
     }
-
+    
     public void setUrl(String url) {
         this.url = url;
     }
@@ -118,7 +147,7 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
         this.password = password;
     }
 
-    public void setDatabaseType(String databaseType) {
-        this.databaseType = databaseType;
+    public void setEnvironments(String environments) {
+        this.environments = environments;
     }
 }

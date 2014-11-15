@@ -17,7 +17,7 @@
                 <artifactId>db-migrator-maven-plugin</artifactId>
                 <version>1.4.10-SNAPSHOT</version>
                 <configuration>
-                    <environments>development,test</environments>
+                    <environments>development</environments>
                 </configuration>
                 <dependencies>
                     <dependency>

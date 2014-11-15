@@ -24,7 +24,6 @@ import java.io.*;
 import org.javalite.activejdbc.Base;
 import org.javalite.common.Util;
 import org.javalite.test.jspec.JSpecSupport;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class MojoIntegrationSpec extends JSpecSupport {
@@ -35,7 +34,6 @@ public class MojoIntegrationSpec extends JSpecSupport {
     }
 
     @Test
-    @Ignore
     public void shouldRunTestProjectWithProperties() throws IOException, InterruptedException {
         run(new File("target/test-project-properties"));
     }
@@ -46,10 +44,11 @@ public class MojoIntegrationSpec extends JSpecSupport {
         execute(dir, mvn, "db-migrator:drop" , "-o");
 
         // create database
-        execute(dir, mvn, "db-migrator:create", "-o");
+        String output = execute(dir, mvn, "db-migrator:create", "-o");
+        the(output).shouldContain("[INFO] Created database jdbc:mysql://localhost/test_project");
 
         // migrate
-        String output = execute(dir, mvn, "db-migrator:migrate" , "-o");
+        output = execute(dir, mvn, "db-migrator:migrate" , "-o");
         the(output).shouldContain(String.format("[INFO] Migrating database, applying 4 migration(s)%n" +
                 "[INFO] Running migration 20080718214030_base_schema.sql%n" +
                 "[INFO] Running migration 20080718214031_new_functions.sql%n" +
@@ -61,10 +60,12 @@ public class MojoIntegrationSpec extends JSpecSupport {
         a(Base.count("authors")).shouldBeEqual(2);
         Base.close();
 
-        // validate
-        execute(dir, mvn, "db-migrator:drop", "-o");
+        // drop, create and validate
+        output = execute(dir, mvn, "db-migrator:drop", "-o");
+        the(output).shouldContain("[INFO] Dropped database jdbc:mysql://localhost/test_project");
 
-        execute(dir, mvn, "db-migrator:create", "-o");
+        output = execute(dir, mvn, "db-migrator:create", "-o");
+        the(output).shouldContain("[INFO] Created database jdbc:mysql://localhost/test_project");
 
         output = execute(dir, mvn, "db-migrator:validate", "-o");
         the(output).shouldContain(String.format("[INFO] Pending Migrations: %n" +
@@ -88,7 +89,6 @@ public class MojoIntegrationSpec extends JSpecSupport {
         the(migrationFile).shouldNotBeNull();
         the(new File(migrationsDir, migrationFile).delete()).shouldBeTrue();
     }
-
 
     private static String execute(File dir, String... args) throws IOException, InterruptedException {
         Process p = Runtime.getRuntime().exec(args, null, dir);

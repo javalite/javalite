@@ -67,10 +67,8 @@ public class Configuration {
 
                         modelsMap.get(dbName).add(modelName);
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
                 } finally {
-                    if( inputStream != null )inputStream.close();
+                    Util.close(inputStream);
                 }
             }
         } catch (IOException e) {
@@ -80,14 +78,12 @@ public class Configuration {
             LogFilter.log(logger, "ActiveJDBC Warning: Cannot locate any models, assuming project without models.");
             return;
         }
-        try{
+        try {
             InputStream in = getClass().getResourceAsStream("/activejdbc.properties");
-            if( in != null ) properties.load(in);
-        }
-        catch(Exception e){
+            if (in != null) { properties.load(in); }
+        } catch (IOException e){
             throw new InitException(e);
         }
-
 
         String cacheManagerClass = properties.getProperty("cache.manager");
         if(cacheManagerClass != null){
