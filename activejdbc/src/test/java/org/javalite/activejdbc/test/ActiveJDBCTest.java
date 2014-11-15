@@ -19,14 +19,12 @@ package org.javalite.activejdbc.test;
 
 import java.io.*;
 import java.sql.*;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.javalite.common.Collections;
 import org.javalite.activejdbc.*;
-import org.javalite.activejdbc.test_models.Person;
 import org.javalite.test.jspec.JSpecSupport;
 
 import org.junit.After;
@@ -37,20 +35,19 @@ import static org.javalite.activejdbc.test.JdbcProperties.*;
 
 public abstract class ActiveJDBCTest extends JSpecSupport {
 
-    static boolean schemaGenerated = false;
+    private static boolean schemaGenerated = false;
 
     @Before
     public void before() throws Exception {
         Base.open(driver(), url(), user(), password());
-
-        if(!schemaGenerated){
-            generateSchema();
-            schemaGenerated = true;
-            System.out.println("DB: " + db() + ", Driver:" + driver());
+        synchronized(this) {
+            if (!schemaGenerated) {
+                generateSchema();
+                schemaGenerated = true;
+                System.out.println("DB: " + db() + ", Driver: " + driver());
+            }
         }
-
         Base.connection().setAutoCommit(false);
-
     }
 
     @After
@@ -92,11 +89,11 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
             StringBuilder text = new StringBuilder();
             String t;
             while ((t = reader.readLine()) != null) {
-                text.append(t + '\n');
+                text.append(t);
+                text.append('\n');
             }
             return text.toString().split(delimiter);
-        }
-        catch (Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -177,30 +174,29 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
         return statementProvider;
     }
 
-
-
-    private void executeStatements(List<String> statements) {
-    	String curStmt = "";
-        try {
-            for (String statement : statements) {
-            	curStmt = statement;
-                Statement st;
-                st = Base.connection().createStatement();
-                try{
-                    st.executeUpdate(statement);
-                }
-                catch(Exception e){
-                    throw e;
-                }
-
-                st.close();
-            }            
+    private void close(Statement st) {
+        if (st != null) { 
+            try { 
+                st.close(); 
+            } catch (SQLException e) { 
+                throw new RuntimeException(e); 
+            }
         }
-        catch (Exception e) {
-            throw new RuntimeException(curStmt, e);
+    }    
+    
+    private void executeStatements(List<String> statements) {
+        for (String statement : statements) {
+            Statement st = null;
+            try {
+                st = Base.connection().createStatement();
+                st.executeUpdate(statement);
+            } catch (SQLException e) {
+                throw new RuntimeException(statement, e);
+            } finally {
+                close(st);
+            }
         }
     }
-
 
     PrintStream errOrig;
     PrintStream err;
