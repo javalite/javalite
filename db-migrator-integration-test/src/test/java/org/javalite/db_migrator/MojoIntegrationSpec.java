@@ -22,11 +22,9 @@ package org.javalite.db_migrator;
 
 import java.io.*;
 import org.javalite.activejdbc.Base;
-import org.javalite.common.Util;
-import org.javalite.test.jspec.JSpecSupport;
 import org.junit.Test;
 
-public class MojoIntegrationSpec extends JSpecSupport {
+public class MojoIntegrationSpec extends AbstractIntegrationSpec {
 
     @Test
     public void shouldRunTestProject() throws IOException, InterruptedException {
@@ -90,21 +88,8 @@ public class MojoIntegrationSpec extends JSpecSupport {
         the(new File(migrationsDir, migrationFile).delete()).shouldBeTrue();
     }
 
-    private static String execute(File dir, String... args) throws IOException, InterruptedException {
-        Process p = Runtime.getRuntime().exec(args, null, dir);
-        p.waitFor();
-        String out = Util.read(p.getInputStream());
-        String err = Util.read(p.getErrorStream());
-        String output = "TEST MAVEN EXECUTION START >>>>>>>>>>>>>>>>>>>>>>>>\nOut: \n" + out
-                + "\nErr:" + err + "\nTEST MAVEN EXECUTION END <<<<<<<<<<<<<<<<<<<<<<";
-        if (p.exitValue() != 0) {
-            System.out.println(output);
-        }
-        return output;
-    }
-
-    //will return null of not found
-    private static String findMigrationFile(File dir, String substring) {
+    // will return null of not found
+    private String findMigrationFile(File dir, String substring) {
         String[] files = dir.list();
         for (String file : files) {
             if (file.contains(substring)) {
