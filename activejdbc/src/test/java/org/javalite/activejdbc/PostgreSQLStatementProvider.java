@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class PostgreSQLStatementProvider implements StatementProvider{
     public List<String> getPopulateStatements(String table) {
-        
+
         List<String> statements = new ArrayList<String>();
         if (table.equals("people")) {
             statements =  Arrays.asList(
@@ -108,9 +108,8 @@ public class PostgreSQLStatementProvider implements StatementProvider{
             );
         } else if (table.equals("students")) {
             statements =  Arrays.asList(
-
-                    "INSERT INTO students (first_name, last_name, dob) VALUES('Jim', 'Cary', '1965-12-01');",
-                    "INSERT INTO students (first_name, last_name, dob) VALUES('John', 'Carpenter', '1979-12-01');"
+                    "INSERT INTO students (id, first_name, last_name, dob, enrollment_date) VALUES (1, 'Jim', 'Cary', '1965-12-01', TIMESTAMP '1973-01-20 11:00:00');",
+                    "INSERT INTO students (id, first_name, last_name, dob, enrollment_date) VALUES (2, 'John', 'Carpenter', '1979-12-01', TIMESTAMP '1987-01-29 13:00:00');"
             );
         } else if (table.equals("courses")) {
             statements =  Arrays.asList(

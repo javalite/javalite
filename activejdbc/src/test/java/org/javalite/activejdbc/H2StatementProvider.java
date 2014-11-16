@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class H2StatementProvider implements StatementProvider{
     public List<String> getPopulateStatements(String table) {
-        
+
         List<String> statements = new ArrayList<String>();
         if (table.equals("people")) {
             statements =  Arrays.asList(
@@ -106,9 +106,8 @@ public class H2StatementProvider implements StatementProvider{
                     "INSERT INTO doctors_patients VALUES(4, 3, 3);"            );
         } else if (table.equals("students")) {
             statements =  Arrays.asList(
-
-                    "INSERT INTO students VALUES(1, 'Jim', 'Cary', '1965-12-01');",
-                    "INSERT INTO students VALUES(2, 'John', 'Carpenter', '1979-12-01');"
+                    "INSERT INTO students (id, first_name, last_name, dob, enrollment_date) VALUES (1, 'Jim', 'Cary', '1965-12-01', '1973-01-20 11:00:00');",
+                    "INSERT INTO students (id, first_name, last_name, dob, enrollment_date) VALUES (2, 'John', 'Carpenter', '1979-12-01', '1987-01-29 13:00:00');"
             );
         } else if (table.equals("courses")) {
             statements =  Arrays.asList(
@@ -153,15 +152,15 @@ public class H2StatementProvider implements StatementProvider{
             statements =  Arrays.asList();
         } else if (table.equals("programmers_projects")) {
             statements =  Arrays.asList();
-        } else if (table.equals("motherboards")){ 
+        } else if (table.equals("motherboards")){
         	statements =  Arrays.asList(
                     "INSERT INTO motherboards VALUES(1,'motherboardOne');"
             );
-        } else if (table.equals("keyboards")){ 
+        } else if (table.equals("keyboards")){
         	statements =  Arrays.asList(
                     "INSERT INTO keyboards VALUES(1,'keyboard-us');"
             );
-        } else if (table.equals("computers")){ 
+        } else if (table.equals("computers")){
         	statements =  Arrays.asList(
                     "INSERT INTO computers VALUES(1,'ComputerX',1,1);"
             );
@@ -180,12 +179,12 @@ public class H2StatementProvider implements StatementProvider{
         }
 
         ArrayList<String> all = new ArrayList<String>();
-        
+
         //https://groups.google.com/forum/#!searchin/h2-database/reset$20auto_increment/h2-database/PqkE1-tK_M4/I7MBEpHOZFQJ
         if(table.equals("animals")){
             all.add("ALTER TABLE " + table + " ALTER COLUMN animal_id RESTART WITH 1;");
         } else {
-            all.add("ALTER TABLE " + table + " ALTER COLUMN id RESTART WITH 1;");                	
+            all.add("ALTER TABLE " + table + " ALTER COLUMN id RESTART WITH 1;");
         }
         all.addAll(statements);
         return all;

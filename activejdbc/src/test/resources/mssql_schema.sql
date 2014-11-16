@@ -98,7 +98,7 @@ IF object_id('dbo.students') IS NOT NULL
 BEGIN
     DROP TABLE [dbo].[students]
 END
-CREATE TABLE students (id  INT IDENTITY PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), dob DATE);
+CREATE TABLE students (id INT IDENTITY PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), dob DATE, enrollment_date DATETIME2);
 
 IF object_id('dbo.courses') IS NOT NULL
 BEGIN

@@ -110,32 +110,53 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
         return new Timestamp(getTime(year, month, day));
     }
 
+    /**
+     * Convenience method for testing.
+     *
+     * @param year
+     * @param month 1 through 12
+     * @param day day of month
+     * @param hour 0 through 23
+     * @param minute
+     * @param second
+     * @param millisecond
+     * @return Timestamp instance
+     */
+    public Timestamp getTimestamp(int year, int month, int day,
+            int hour, int minute, int second, int millisecond) {
+        return new Timestamp(getTime(year, month, day, hour, minute, second, millisecond));
+    }
 
     public java.sql.Date getDate(int year, int month, int day) {
         return new java.sql.Date(getTime(year, month, day));
     }
 
     /**
-     * there is nothing more annoying than Java date/time APIs!
+     * Convenience method for testing.
      *
      * @param year
-     * @param month
-     * @param day
-     * @return
+     * @param month 1 through 12
+     * @param day day of month
+     * @return time value
      */
     public long getTime(int year, int month, int day) {
+        return getTime(year, month, day, 0, 0, 0, 0);
+    }
+
+    /**
+     * there is nothing more annoying than Java date/time APIs!
+     */
+    public long getTime(int year, int month, int day, int hour, int minute, int second, int millisecond) {
         GregorianCalendar calendar = new GregorianCalendar();
         calendar.set(Calendar.YEAR, year);
         calendar.set(Calendar.MONTH, month - 1);
         calendar.set(Calendar.DATE, day);
-        calendar.set(Calendar.HOUR, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, second);
+        calendar.set(Calendar.MILLISECOND, millisecond);
         return calendar.getTime().getTime();
     }
-
 
     protected void deleteAndPopulateTables(String... tables)  {
         for (String table : tables)
@@ -147,7 +168,6 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
         populateTable(table);
     }
 
-    
     protected void deleteFromTable(String table){
         executeStatements(Collections.list(getStatementProvider().getDeleteStatement(table)));
     }
@@ -175,15 +195,15 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
     }
 
     private void close(Statement st) {
-        if (st != null) { 
-            try { 
-                st.close(); 
-            } catch (SQLException e) { 
-                throw new RuntimeException(e); 
+        if (st != null) {
+            try {
+                st.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
         }
-    }    
-    
+    }
+
     private void executeStatements(List<String> statements) {
         for (String statement : statements) {
             Statement st = null;

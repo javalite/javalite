@@ -191,7 +191,7 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
      * @return all attribute names.
      */
     protected List<String> getAttributeNames() {
-        if(columnMetadata == null || columnMetadata.size() == 0) throw new InitException("Failed to find table: " + getTableName());
+        if(columnMetadata == null || columnMetadata.isEmpty()) throw new InitException("Failed to find table: " + getTableName());
 
         return new ArrayList<String>(columnMetadata.keySet());
     }
@@ -283,12 +283,13 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
         return false;
     }
 
+    @Override
     public String toString() {
         final StringBuilder t = new StringBuilder();
         t.append("MetaModel: ").append(tableName).append(", ").append(modelClass).append("\n");
         if(columnMetadata != null){
             for (String key : columnMetadata.keySet()) {
-            t.append(columnMetadata.get(key)).append(", ");
+                t.append(columnMetadata.get(key)).append(", ");
             }
         }
 
@@ -306,7 +307,7 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
         return singularize(getTableName()).toLowerCase() + "_id";
     }
 
-    protected List<OneToManyAssociation>  getOneToManyAssociations(List<Association> exclusions) {
+    protected List<OneToManyAssociation> getOneToManyAssociations(List<Association> exclusions) {
         List<OneToManyAssociation> one2Manies = new ArrayList<OneToManyAssociation>();
         for (Association association : associations) {
             if(association.getClass().equals(OneToManyAssociation.class) && !exclusions.contains(association)){

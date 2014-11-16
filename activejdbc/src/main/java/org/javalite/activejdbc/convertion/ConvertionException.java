@@ -14,19 +14,24 @@ See the License for the specific language governing permissions and
 limitations under the License. 
 */
 
+package org.javalite.activejdbc.convertion;
 
-package org.javalite.activejdbc.test_models;
+public class ConvertionException extends RuntimeException {
 
-import org.javalite.activejdbc.Model;
-import org.javalite.activejdbc.annotations.Many2Many;
+    public ConvertionException() {
+    }
 
-/**
- * @author Igor Polevoy
- */
-@Many2Many(other = Course.class, join = "registrations", sourceFKName = "astudent_id", targetFKName = "acourse_id")
-public class Student extends Model {
-    static {
-        dateFormat("MM/dd/yyyy", "dob");
-        timestampFormat("MM/dd/yyyy h a", "enrollment_date");
+    public ConvertionException(String message) {
+        super(message);
+    }
+
+    public ConvertionException(String message, Throwable cause) {
+        super(message, cause);
+        this.setStackTrace(cause.getStackTrace());
+    }
+
+    public ConvertionException(Throwable cause) {
+        super(cause);
+        this.setStackTrace(cause.getStackTrace());
     }
 }

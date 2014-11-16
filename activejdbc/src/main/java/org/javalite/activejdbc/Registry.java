@@ -44,16 +44,17 @@ public enum Registry {
     INSTANCE;
 
     private final static Logger logger = LoggerFactory.getLogger(Registry.class);
-    
+
     private final Map<String, List<Validator>> validators = new HashMap<String, List<Validator>>();
     private final Map<Class, List<CallbackListener>> listeners = new HashMap<Class, List<CallbackListener>>();
     private final MetaModels metaModels = new MetaModels();
+    private final Map<Class, ModelMetaData> metaDatas = new HashMap<Class, ModelMetaData>();
     private final Configuration configuration = new Configuration();
     private final StatisticsQueue statisticsQueue;
     private final Set<String> initedDbs = new HashSet<String>();
 
     private Registry() {
-        statisticsQueue = configuration.collectStatistics() 
+        statisticsQueue = configuration.collectStatistics()
                 ? new StatisticsQueue(configuration.collectStatisticsOnHold())
                 : null;
     }
@@ -117,6 +118,15 @@ public enum Registry {
         init(dbName);
 
         return metaModels.getMetaModel(modelClass);
+    }
+
+    ModelMetaData getMetaData(Class<? extends Model> modelClass) {
+        ModelMetaData metaData = metaDatas.get(modelClass);
+        if (metaData == null) {
+            metaData = new ModelMetaData();
+            metaDatas.put(modelClass, metaData);
+        }
+        return metaData;
     }
 
      synchronized void init(String dbName) {

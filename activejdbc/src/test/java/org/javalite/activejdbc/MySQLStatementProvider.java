@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class MySQLStatementProvider implements StatementProvider{
     public List<String> getPopulateStatements(String table) {
-        
+
         List<String> statements = new ArrayList<String>();
         if (table.equals("people")) {
             statements =  Arrays.asList(
@@ -107,9 +107,8 @@ public class MySQLStatementProvider implements StatementProvider{
             );
         } else if (table.equals("students")) {
             statements =  Arrays.asList(
-
-                    "INSERT INTO students VALUES(1, 'Jim', 'Cary', '1965-12-01');",
-                    "INSERT INTO students VALUES(2, 'John', 'Carpenter', '1979-12-01');"
+                    "INSERT INTO students (id, first_name, last_name, dob, enrollment_date) VALUES (1, 'Jim', 'Cary', '01-Dec-1965', TIMESTAMP '1973-01-20 11:00:00');",
+                    "INSERT INTO students (id, first_name, last_name, dob, enrollment_date) VALUES (2, 'John', 'Carpenter', '01-Dec-1979', TIMESTAMP '1987-01-29 13:00:00');"
             );
         } else if (table.equals("courses")) {
             statements =  Arrays.asList(
@@ -154,15 +153,15 @@ public class MySQLStatementProvider implements StatementProvider{
             statements =  Arrays.asList();
         } else if (table.equals("programmers_projects")) {
             statements =  Arrays.asList();
-        } else if (table.equals("motherboards")){ 
+        } else if (table.equals("motherboards")){
         	statements =  Arrays.asList(
                     "INSERT INTO motherboards VALUES(1,'motherboardOne');"
             );
-        } else if (table.equals("keyboards")){ 
+        } else if (table.equals("keyboards")){
         	statements =  Arrays.asList(
                     "INSERT INTO keyboards VALUES(1,'keyboard-us');"
             );
-        } else if (table.equals("computers")){ 
+        } else if (table.equals("computers")){
         	statements =  Arrays.asList(
                     "INSERT INTO computers VALUES(1,'ComputerX',1,1);"
             );
@@ -181,8 +180,8 @@ public class MySQLStatementProvider implements StatementProvider{
         }
 
         ArrayList<String> all = new ArrayList<String>();
-        
-        all.add("ALTER TABLE " + table + " AUTO_INCREMENT=1;");        
+
+        all.add("ALTER TABLE " + table + " AUTO_INCREMENT=1;");
         all.addAll(statements);
         return all;
     }

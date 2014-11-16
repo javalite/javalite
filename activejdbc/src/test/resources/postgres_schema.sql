@@ -47,7 +47,7 @@ DROP TABLE IF EXISTS doctors_patients;
 CREATE TABLE doctors_patients (id  serial PRIMARY KEY, doctor_id INT, patient_id INT);
 
 DROP TABLE IF EXISTS students;
-CREATE TABLE students (id  serial PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), dob DATE);
+CREATE TABLE students (id serial PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), dob DATE, enrollment_date TIMESTAMP);
 
 DROP TABLE IF EXISTS courses;
 CREATE TABLE courses (id  serial PRIMARY KEY, course_name VARCHAR(56));

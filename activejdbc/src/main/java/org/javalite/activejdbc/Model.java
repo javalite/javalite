@@ -19,7 +19,12 @@ package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.associations.*;
 import org.javalite.activejdbc.cache.QueryCache;
-import org.javalite.activejdbc.validation.*;
+import org.javalite.activejdbc.convertion.Converter;
+import org.javalite.activejdbc.validation.NumericValidationBuilder;
+import org.javalite.activejdbc.validation.ValidationBuilder;
+import org.javalite.activejdbc.validation.ValidationException;
+import org.javalite.activejdbc.validation.ValidationHelper;
+import org.javalite.activejdbc.validation.Validator;
 import org.javalite.common.Convert;
 import org.javalite.common.XmlEntities;
 import org.slf4j.Logger;
@@ -41,7 +46,6 @@ import java.util.*;
 import static org.javalite.common.Inflector.*;
 import static org.javalite.common.Util.*;
 
-
 /**
  * This class is a super class of all "models" and provides most functionality
  * necessary for implementation of Active Record pattern.
@@ -49,22 +53,26 @@ import static org.javalite.common.Util.*;
 public abstract class Model extends CallbackSupport implements Externalizable {
 
     private final static Logger logger = LoggerFactory.getLogger(Model.class);
-    
+
     private Map<String, Object> attributes = new HashMap<String, Object>();
     private boolean frozen = false;
     private MetaModel metaModelLocal;
+    private ModelMetaData metaDataLocal;
     private final Map<Class, Model> cachedParents = new HashMap<Class, Model>();
     private final Map<Class, List<Model>> cachedChildren = new HashMap<Class, List<Model>>();
     private boolean manageTime = true;
 
-    protected Errors errors;
+    private Errors errors = new Errors();
 
     protected Model() {
-        errors = new Errors();
     }
 
     public static MetaModel getMetaModel() {
         return Registry.instance().getMetaModel(getDaClass());
+    }
+
+    private static ModelMetaData getMetaData() {
+        return Registry.instance().getMetaData(getDaClass());
     }
 
     protected Map<String, Object> getAttributes(){
@@ -92,7 +100,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @param attributesMap map containing values for this instance.
      */
-    protected void hydrate(Map attributesMap) {
+    protected void hydrate(Map<String, Object> attributesMap) {
         for (String attrName : getMetaModelLocal().getAttributeNames()) {
             Object value = null;
             boolean contains = false;
@@ -137,7 +145,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return  this model.
      */
     public <T extends Model> T setDate(String attribute, Object value) {
-        return set(attribute, Convert.toSqlDate(value));
+        Converter<Object, java.sql.Date> converter = getMetaDataLocal().getConverter(
+                attribute, (Class<Object>) value.getClass(), java.sql.Date.class);
+        return set(attribute, converter != null ? converter.convert(value) : Convert.toSqlDate(value));
     }
 
     /**
@@ -147,7 +157,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return instance of <code>java.sql.Date</code>
      */
     public java.sql.Date getDate(String attribute) {
-        return Convert.toSqlDate(get(attribute));
+        Object value = get(attribute);
+        Converter<Object, java.sql.Date> converter = getMetaDataLocal().getConverter(
+                attribute, (Class<Object>) value.getClass(), java.sql.Date.class);
+        return converter != null ? converter.convert(value) : Convert.toSqlDate(value);
     }
 
     /**
@@ -1094,6 +1107,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         this.metaModelLocal = metamodelLocal;
     }
 
+    protected ModelMetaData getMetaDataLocal(){
+        if (metaDataLocal == null) {
+            metaDataLocal = getMetaData();
+        }
+        return metaDataLocal;
+    }
+
     /**
      * Re-reads all attribute values from DB.
      *
@@ -1257,7 +1277,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public String getString(String attribute) {
         Object value = get(attribute);
-        return Convert.toString(value);
+        Converter<Object, String> converter = getMetaDataLocal().getConverter(
+                attribute, (Class<Object>) value.getClass(), String.class);
+        return converter != null ? converter.convert(value) : Convert.toString(value);
     }
 
     /**
@@ -1339,7 +1361,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return instance of Timestamp.
      */
     public Timestamp getTimestamp(String attribute) {
-        return Convert.toTimestamp(get(attribute));
+        Object value = get(attribute);
+        Converter<Object, Timestamp> converter = getMetaDataLocal().getConverter(
+                attribute, (Class<Object>) value.getClass(), Timestamp.class);
+        return converter != null ? converter.convert(value) : Convert.toTimestamp(get(attribute));
     }
 
     /**
@@ -1376,7 +1401,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setString(String attribute, Object value) {
-        return set(attribute, Convert.toString(value));
+        Converter<Object, String> converter = getMetaDataLocal().getConverter(
+                attribute, (Class<Object>) value.getClass(), String.class);
+        return set(attribute, converter != null ? converter.convert(value) : Convert.toString(value));
     }
 
     /**
@@ -1434,7 +1461,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setTimestamp(String attribute, Object value) {
-        return set(attribute, Convert.toTimestamp(value));
+        Converter<Object, Timestamp> converter = getMetaDataLocal().getConverter(
+                attribute, (Class<Object>) value.getClass(), Timestamp.class);
+        return set(attribute, converter != null ? converter.convert(value) : Convert.toTimestamp(value));
     }
 
     /**
@@ -1656,7 +1685,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @param converter custom converter
      */
-    protected static ValidationBuilder convertWith(Converter converter) {
+    protected static ValidationBuilder convertWith(org.javalite.activejdbc.validation.Converter converter) {
         return addValidator(converter);
     }
 
@@ -1682,6 +1711,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     protected static ValidationBuilder convertTimestamp(String attributeName, String format){
         return ValidationHelper.addTimestampConverter(getClassName(), attributeName, format);
+    }
+
+    protected static void dateFormat(String pattern, String... attributeNames) {
+        getMetaData().addDateConverters(pattern, attributeNames);
+    }
+
+    protected static void timestampFormat(String pattern, String... attributeNames) {
+        getMetaData().addTimestampConverters(pattern, attributeNames);
     }
 
     public static boolean belongsTo(Class<? extends Model> targetClass) {
@@ -2431,7 +2468,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return values;
     }
 
-    static <T extends Model> T instance(Map m, MetaModel metaModel) {
+    static <T extends Model> T instance(Map<String, Object> m, MetaModel metaModel) {
         try {
             T instance = (T) metaModel.getModelClass().newInstance();
             instance.setMetamodelLocal(metaModel);

@@ -1,0 +1,99 @@
+/*
+Copyright 2009-2014 Igor Polevoy
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+
+package org.javalite.activejdbc;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import org.javalite.activejdbc.test.ActiveJDBCTest;
+import org.javalite.activejdbc.test_models.Student;
+import org.junit.Test;
+
+public class ConverterTest extends ActiveJDBCTest {
+
+    @Test
+    public void shouldSetAndGetDateAsString() {
+        Student student = new Student();
+        student.setDate("dob", "11/15/2014");
+
+        the(student.get("dob")).shouldBeA(java.sql.Date.class);
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.setTime((java.util.Date) student.get("dob"));
+        the(cal.get(Calendar.DAY_OF_MONTH)).shouldBeEqual(15);
+        the(cal.get(Calendar.MONTH)).shouldBeEqual(11 - 1);
+        the(cal.get(Calendar.YEAR)).shouldBeEqual(2014);
+
+        the(student.getString("dob")).shouldBeEqual("11/15/2014");
+    }
+
+    @Test
+    public void shouldSetAndGetStringAsDate() {
+        Student student = new Student();
+        java.sql.Date date = getDate(2014, 11, 15);
+        student.setString("dob", date);
+
+        the(student.get("dob")).shouldBeA(String.class);
+        the(student.get("dob")).shouldBeEqual("11/15/2014");
+
+        the(student.getDate("dob").getTime()).shouldBeEqual(date.getTime());
+    }
+
+    @Test
+    public void shouldGetConvertDateToString() {
+        deleteAndPopulateTable("students");
+        the(Student.findById(1).getString("dob")).shouldBeEqual("12/01/1965");
+        the(Student.findById(2).getString("dob")).shouldBeEqual("12/01/1979");
+    }
+
+    @Test
+    public void shouldSetAndGetTimestampAsString() {
+        Student student = new Student();
+        student.setTimestamp("enrollment_date", "11/16/2014 10 PM");
+
+        the(student.get("enrollment_date")).shouldBeA(java.sql.Timestamp.class);
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.setTime((java.util.Date) student.get("enrollment_date"));
+        the(cal.get(Calendar.DAY_OF_MONTH)).shouldBeEqual(16);
+        the(cal.get(Calendar.MONTH)).shouldBeEqual(11 - 1);
+        the(cal.get(Calendar.YEAR)).shouldBeEqual(2014);
+        the(cal.get(Calendar.HOUR_OF_DAY)).shouldBeEqual(22);
+        the(cal.get(Calendar.MINUTE)).shouldBeEqual(0);
+        the(cal.get(Calendar.SECOND)).shouldBeEqual(0);
+        the(cal.get(Calendar.MILLISECOND)).shouldBeEqual(0);
+
+        the(student.getString("enrollment_date")).shouldBeEqual("11/16/2014 10 PM");
+    }
+
+    @Test
+    public void shouldSetAndGetStringAsTimestamp() {
+        Student student = new Student();
+        java.sql.Timestamp timestamp = getTimestamp(2014, 11, 16, 22, 0, 0, 0);
+        student.setString("enrollment_date", timestamp);
+
+        the(student.get("enrollment_date")).shouldBeA(String.class);
+        the(student.get("enrollment_date")).shouldBeEqual("11/16/2014 10 PM");
+
+        the(student.getTimestamp("enrollment_date").getTime()).shouldBeEqual(timestamp.getTime());
+    }
+
+    @Test
+    public void shouldGetConvertTimestampToString() {
+        deleteAndPopulateTable("students");
+        the(Student.findById(1).getString("enrollment_date")).shouldBeEqual("01/20/1973 11 AM");
+        the(Student.findById(2).getString("enrollment_date")).shouldBeEqual("01/29/1987 1 PM");
+    }
+}

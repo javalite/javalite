@@ -48,7 +48,7 @@ DROP TABLE IF EXISTS doctors_patients;
 CREATE TABLE doctors_patients (id  int(11) NOT NULL  auto_increment PRIMARY KEY, doctor_id int(11), patient_id int(11)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS students;
-CREATE TABLE students (id  int(11) NOT NULL  auto_increment PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), dob DATE) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE students (id int(11) NOT NULL  auto_increment PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), dob DATE, enrollment_date DATETIME) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS courses;
 CREATE TABLE courses (id  int(11) NOT NULL  auto_increment PRIMARY KEY, course_name VARCHAR(56)) ENGINE=InnoDB DEFAULT CHARSET=utf8;

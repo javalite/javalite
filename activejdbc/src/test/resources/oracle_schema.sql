@@ -281,7 +281,7 @@ end;
 
 
 -- BREAK
-CREATE TABLE students (id  NUMBER NOT NULL, first_name VARCHAR(56), last_name VARCHAR(56), dob DATE)
+CREATE TABLE students (id NUMBER NOT NULL, first_name VARCHAR(56), last_name VARCHAR(56), dob DATE, enrollment_date TIMESTAMP)
 -- BREAK
 ALTER TABLE students ADD CONSTRAINT students_pk PRIMARY KEY ( id )
 -- BREAK
