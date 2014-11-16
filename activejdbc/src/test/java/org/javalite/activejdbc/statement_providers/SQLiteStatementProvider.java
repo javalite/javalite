@@ -1,22 +1,39 @@
-package org.javalite.activejdbc;
+/*
+Copyright 2009-2014 Igor Polevoy
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+
+package org.javalite.activejdbc.statement_providers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * @author Igor Polevoy
+ * @author Igor Polevoy on 11/15/14.
  */
-public class MySQLStatementProvider implements StatementProvider{
+public class SQLiteStatementProvider implements org.javalite.activejdbc.StatementProvider {
     public List<String> getPopulateStatements(String table) {
 
         List<String> statements = new ArrayList<String>();
         if (table.equals("people")) {
             statements =  Arrays.asList(
-                    "INSERT INTO people (id, name, last_name, dob, graduation_date, created_at, updated_at) VALUES(1, 'John', 'Smith', '1934-12-01', '1954-12-01', now(), now());",
-                    "INSERT INTO people (id, name, last_name, dob, graduation_date, created_at, updated_at) values(2, 'Leylah', 'Jonston', '1954-04-03', '1974-04-03', now(), now());",
-                    "INSERT INTO people (id, name, last_name, dob, graduation_date, created_at, updated_at) values(3, 'Muhammad', 'Ali', '1943-01-04', '1963-01-04', now(), now());",
-                    "INSERT INTO people (id, name, last_name, dob, graduation_date, created_at, updated_at) values(4, 'Joe', 'Pesci', '1944-02-23','1964-02-23', now(), now());"
+                    "INSERT INTO people (id, name, last_name, dob, graduation_date, created_at, updated_at) VALUES(1, 'John', 'Smith', '1934-12-01', '1954-12-01', datetime('now'), datetime('now'));",
+                    "INSERT INTO people (id, name, last_name, dob, graduation_date, created_at, updated_at) values(2, 'Leylah', 'Jonston', '1954-04-03', '1974-04-03', datetime('now'), datetime('now'));",
+                    "INSERT INTO people (id, name, last_name, dob, graduation_date, created_at, updated_at) values(3, 'Muhammad', 'Ali', '1943-01-04', '1963-01-04', datetime('now'), datetime('now'));",
+                    "INSERT INTO people (id, name, last_name, dob, graduation_date, created_at, updated_at) values(4, 'Joe', 'Pesci', '1944-02-23','1964-02-23', datetime('now'), datetime('now'));"
             );
         } else if (table.equals("accounts")) {
             statements =  Arrays.asList(
@@ -107,8 +124,9 @@ public class MySQLStatementProvider implements StatementProvider{
             );
         } else if (table.equals("students")) {
             statements =  Arrays.asList(
-                    "INSERT INTO students (id, first_name, last_name, dob, enrollment_date) VALUES (1, 'Jim', 'Cary', '01-Dec-1965', TIMESTAMP '1973-01-20 11:00:00');",
-                    "INSERT INTO students (id, first_name, last_name, dob, enrollment_date) VALUES (2, 'John', 'Carpenter', '01-Dec-1979', TIMESTAMP '1987-01-29 13:00:00');"
+
+                    "INSERT INTO students VALUES(1, 'Jim', 'Cary', '1965-12-01');",
+                    "INSERT INTO students VALUES(2, 'John', 'Carpenter', '1979-12-01');"
             );
         } else if (table.equals("courses")) {
             statements =  Arrays.asList(
@@ -154,15 +172,15 @@ public class MySQLStatementProvider implements StatementProvider{
         } else if (table.equals("programmers_projects")) {
             statements =  Arrays.asList();
         } else if (table.equals("motherboards")){
-        	statements =  Arrays.asList(
+            statements =  Arrays.asList(
                     "INSERT INTO motherboards VALUES(1,'motherboardOne');"
             );
         } else if (table.equals("keyboards")){
-        	statements =  Arrays.asList(
+            statements =  Arrays.asList(
                     "INSERT INTO keyboards VALUES(1,'keyboard-us');"
             );
         } else if (table.equals("computers")){
-        	statements =  Arrays.asList(
+            statements =  Arrays.asList(
                     "INSERT INTO computers VALUES(1,'ComputerX',1,1);"
             );
         }else if (table.equals("ingredients_recipes")) {
@@ -181,7 +199,7 @@ public class MySQLStatementProvider implements StatementProvider{
 
         ArrayList<String> all = new ArrayList<String>();
 
-        all.add("ALTER TABLE " + table + " AUTO_INCREMENT=1;");
+//        all.add("ALTER TABLE " + table + " AUTO_INCREMENT=1;");
         all.addAll(statements);
         return all;
     }

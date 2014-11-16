@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.javalite.activejdbc.statement_providers.*;
 import org.javalite.common.Collections;
 import org.javalite.activejdbc.*;
 import org.javalite.test.jspec.JSpecSupport;
@@ -71,7 +72,9 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
         } else if (db().equals("oracle")) {
             OracleDBReset.resetOracle(getStatements("-- BREAK", "oracle_schema.sql"));
         } else if (db().equals("mssql")) {
-        	DefaultDBReset.resetSchema(getStatements("; ", "mssql_schema.sql"));
+            DefaultDBReset.resetSchema(getStatements("; ", "mssql_schema.sql"));
+        } else if (db().equals("sqlite")) {
+            DefaultDBReset.resetSchema(getStatements("; ", "sqlite_schema.sql"));
         }
     }
 
@@ -188,6 +191,8 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
             statementProvider = new H2StatementProvider();
         } else if (db().equals("mssql")) {
             statementProvider = new MSSQLStatementProvider();
+        } else if (db().equals("sqlite")) {
+            statementProvider = new SQLiteStatementProvider();
         } else {
         	throw new RuntimeException("Unknown db:" + db());
         }

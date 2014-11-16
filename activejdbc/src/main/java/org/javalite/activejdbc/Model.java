@@ -834,11 +834,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return sb.toString();
     }
 
-    private static final DateFormat isoDateTimeFormater;
+    private static final DateFormat isoDateTimeFormatter;
+    private static final SimpleDateFormat isoDateFormatter;
     static {
         //TODO missing time zone
         //TODO trim time if T00:00:00
-        isoDateTimeFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        isoDateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        isoDateFormatter = new SimpleDateFormat("yyyy-MM-dd");
     }
     protected void toJsonP(StringBuilder sb, boolean pretty, String indent, String... attrs) {
         if (pretty) { sb.append(indent); }
@@ -852,12 +854,16 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             sbAttrs.append('"').append(name).append("\":");
             Object v = attributes.get(name);
             if (v == null) {
-                sbAttrs.append("null");
+                sbAttrs.append("null");     //the trick below is for SQLite, which stores DATETIME as Long
+            }else if (v instanceof Long && getMetaModelLocal().getColumnMetadata().get(name).getTypeName().equalsIgnoreCase("DATETIME")) {
+
+                sbAttrs.append('"').append(isoDateTimeFormatter.format(Convert.toTimestamp(v))).append('"');
             } else if (v instanceof Number || v instanceof Boolean) {
                 sbAttrs.append(v);
-            } else if (v instanceof Date) {
-                sbAttrs.append('"').append(isoDateTimeFormater.format((Date) v)).append('"');
-            } else {
+            } else if (v instanceof Date ||                  //the trick below if for SQLite. It stores dates as strings
+                    v instanceof String && getMetaModelLocal().getColumnMetadata().get(name).getTypeName().equalsIgnoreCase("DATE")) {
+                sbAttrs.append('"').append(isoDateTimeFormatter.format(Convert.toSqlDate(v))).append('"');
+            }  else {
                 sbAttrs.append('"').append(Convert.toString(v)
                         .replace("\\", "\\\\")  // \
                         .replace("\"", "\\\"")  // "

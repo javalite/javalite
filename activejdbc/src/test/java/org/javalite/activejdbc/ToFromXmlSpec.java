@@ -62,8 +62,8 @@ public class ToFromXmlSpec extends ActiveJDBCTest {
 
         a(p.get("name")).shouldBeEqual("John");
         a(p.get("last_name")).shouldBeEqual("Doe");
-        a(p.get("graduation_date")).shouldBeEqual(f.parse("1979-06-01"));
-        a(p.get("dob")).shouldBeEqual(f.parse("1962-06-13"));
+        a(p.getDate("graduation_date")).shouldBeEqual(f.parse("1979-06-01"));
+        a(p.getDate("dob")).shouldBeEqual(f.parse("1962-06-13"));
     }
 
 

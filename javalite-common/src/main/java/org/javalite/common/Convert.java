@@ -131,6 +131,8 @@ public class Convert {
             return new java.sql.Date(((Date) value).getTime());
         } else if (value instanceof Time) {
             return new java.sql.Date(((Time) value).getTime());
+        }else if (value instanceof Long) {
+            return new java.sql.Date(((Long) value));
         } else {
             try {
                 return java.sql.Date.valueOf(value.toString());
@@ -224,7 +226,9 @@ public class Convert {
             return new Timestamp(((java.sql.Date)value).getTime());
         } else if (value instanceof java.util.Date) {
            return new Timestamp(((java.util.Date)value).getTime());
-        } else {
+        } else if (value instanceof Long) {
+           return new Timestamp((Long)value);
+       } else {
            return Timestamp.valueOf(value.toString());
         }
     }
@@ -350,7 +354,7 @@ public class Convert {
 
     /**
      * Converts value to Short if it can. If value is a Short, it is returned, if it is a Number, it is
-     * promotedn to Short and then returned, in all other cases, it converts the value to String,
+     * promoted to Short and then returned, in all other cases, it converts the value to String,
      * then tries to parse Short from it.
      *
      * @param value value to be converted to Integer.
@@ -371,6 +375,10 @@ public class Convert {
                 throw new ConversionException("failed to convert: '" + value + "' to Short", e);
             }
         }
+    }
+
+    public static void main(String[] args){
+        System.out.println(new Timestamp(new Long(1416126591724L)));
     }
 }
 

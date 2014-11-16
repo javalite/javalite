@@ -1,10 +1,12 @@
-package org.javalite.activejdbc;
+package org.javalite.activejdbc.statement_providers;
+
+import org.javalite.activejdbc.StatementProvider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MSSQLStatementProvider implements StatementProvider{
+public class MSSQLStatementProvider implements StatementProvider {
     public List<String> getPopulateStatements(String table) {
 
         List<String> statements = new ArrayList<String>();

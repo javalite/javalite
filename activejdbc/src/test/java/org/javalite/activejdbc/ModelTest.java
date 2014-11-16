@@ -31,6 +31,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
+import static org.javalite.activejdbc.test.JdbcProperties.*;
 import static org.javalite.common.Collections.map;
 
 

@@ -39,6 +39,20 @@
             </dependencies>
         </profile>
         <profile>
+            <id>sqlite</id>
+            <!--
+                Configure jdbc.driver, jdbc.url, jdbc.user, jdbc.password
+                and db properties in your ~/.m2/settings.xml
+            -->
+            <dependencies>
+                <dependency>
+                    <groupId>org.xerial</groupId>
+                    <artifactId>sqlite-jdbc</artifactId>
+                    <version>3.8.7</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <id>oracle</id>
             <!--
                 Configure jdbc.driver, jdbc.url, jdbc.user, jdbc.password
@@ -177,6 +191,7 @@
                     </includes>
                     <systemPropertyVariables>
                         <oracle.jdbc.J2EE13Compliant>true</oracle.jdbc.J2EE13Compliant>
+                        <activejdbc.log></activejdbc.log>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>

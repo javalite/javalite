@@ -36,8 +36,8 @@ public class TimeManagementSpec extends ActiveJDBCTest {
 
         p = (Person) Person.findAll().get(0);
 
-        a(p.get("created_at")).shouldBeEqual(new Timestamp(createdAt));
-        a(p.get("updated_at")).shouldBeEqual(new Timestamp(updatedAt));
+        a(p.getTimestamp("created_at")).shouldBeEqual(new Timestamp(createdAt));
+        a(p.getTimestamp("updated_at")).shouldBeEqual(new Timestamp(updatedAt));
     }
 
 
@@ -62,7 +62,7 @@ public class TimeManagementSpec extends ActiveJDBCTest {
 
         p = (Person) Person.findAll().get(0);
 
-        a(p.get("created_at")).shouldBeEqual(new Timestamp(createdAt));
-        a(p.get("updated_at")).shouldBeEqual(new Timestamp(updatedAt));
+        a(p.getTimestamp("created_at")).shouldBeEqual(new Timestamp(createdAt));
+        a(p.getTimestamp("updated_at")).shouldBeEqual(new Timestamp(updatedAt));
     }
 }
