@@ -64,8 +64,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     public static MetaModel getMetaModel() {
-        Registry.instance().init(MetaModel.getDbName(getDaClass()));
-        return Registry.instance().getMetaModel(getTableName());
+        return Registry.instance().getMetaModel(getDaClass());
     }
 
     protected Map<String, Object> getAttributes(){
