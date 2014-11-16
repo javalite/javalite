@@ -37,8 +37,9 @@ import java.util.*;
  */
 public class DB {
 
-    private String dbName;
     private final static Logger logger = LoggerFactory.getLogger(DB.class);
+
+    private final String dbName;
 
     /**
      * Creates a new DB object representing a connection to a DB.
@@ -128,7 +129,7 @@ public class DB {
             }
             ConnectionsAccess.detach(dbName);// lets free the thread from connection
             StatementCache.instance().cleanStatementCache(connection);
-        } catch (Exception e) {
+        } catch (DBException e) {
             logger.warn("Could not close connection! MUST INVESTIGATE POTENTIAL CONNECTION LEAK!", e);
         }
         return connection;
@@ -144,7 +145,7 @@ public class DB {
         try {
             Connection connection = datasource.getConnection();
             ConnectionsAccess.attach(dbName, connection);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new InitException(e);
         }
     }
@@ -311,16 +312,20 @@ public class DB {
      * @param params parameters
      * @return fetched value, or null if query did not fetch anything.
      */
-    public Object firstCell(String query, Object... params) {
-
-        List<Map> list = findAll(query, params);
-        if(list.size() == 0) return null;
-
-        Map map = list.get(0);
-        if(map.size() > 1)
-            throw new IllegalArgumentException("query: " + query + " selects more than one column");
-
-        return map.get(map.keySet().toArray()[0]);
+    public Object firstCell(final String query, Object... params) {
+        final Object[] result = { null };
+        long start = System.currentTimeMillis();
+        find(query, params).with(new RowListener() {
+            @Override public boolean next(Map<String, Object> row) {
+                if (row.size() > 1) {
+                    throw new IllegalArgumentException("query: " + query + " selects more than one column");
+                }
+                result[0] = row.entrySet().iterator().next().getValue();
+                return false;
+            }
+        });
+        LogFilter.logQuery(logger, query, params, start);
+        return result[0];
     }
 
 
@@ -348,10 +353,10 @@ public class DB {
      */
     public List<Map> findAll(String query, Object ... params) {
 
-        long start = System.currentTimeMillis();
         final List<Map> results = new ArrayList<Map>();
+        long start = System.currentTimeMillis();
         find(query, params).with(new RowListenerAdapter() {
-            public void onNext(Map<String, Object> row) {
+            @Override public void onNext(Map<String, Object> row) {
                 results.add(row);
             }
         });
@@ -381,10 +386,10 @@ public class DB {
         final List results = new ArrayList();
         long start = System.currentTimeMillis();
         find(query, params).with(new RowListenerAdapter() {
-            public void onNext(Map<String, Object> row) {
+            @Override public void onNext(Map<String, Object> row) {
                 if(row.size() > 1) throw new IllegalArgumentException("Query selects more than one column");
 
-                results.add(row.get(row.keySet().toArray()[0]));
+                results.add(row.entrySet().iterator().next().getValue());
             }
         });
 
@@ -410,7 +415,7 @@ public class DB {
         final ArrayList<Map> results = new ArrayList<Map>();
         long start = System.currentTimeMillis();
         find(query).with(new RowListenerAdapter() {
-            public void onNext(Map<String, Object> row) {
+            @Override public void onNext(Map<String, Object> row) {
                 results.add(row);
             }
         });
@@ -456,7 +461,7 @@ public class DB {
             rs = ps.executeQuery();
             return new RowProcessor(rs, ps);
 
-        } catch (Exception e) { throw new DBException(query, params, e); }
+        } catch (SQLException e) { throw new DBException(query, params, e); }
     }
 
     private PreparedStatement createStreamingPreparedStatement(String query) throws SQLException {
@@ -487,11 +492,11 @@ public class DB {
             rs = s.executeQuery(sql);
             RowProcessor p = new RowProcessor(rs, s);
             p.with(listener);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new DBException(sql, null, e);
         } finally {
-            try { if(rs != null) rs.close(); } catch (Exception e) {/*ignore*/}
-            try { if (s != null) s.close(); } catch (Exception e) {/*ignore*/}
+            try { if(rs != null) rs.close(); } catch (SQLException e) {/*ignore*/}
+            try { if (s != null) s.close(); } catch (SQLException e) {/*ignore*/}
         }
     }
 
@@ -525,7 +530,7 @@ public class DB {
             logException("Query failed: " + query, e);
             throw new DBException(query, null, e);
         } finally {
-            try { if (s != null) s.close(); } catch (Exception e) {/*ignore*/}
+            try { if (s != null) s.close(); } catch (SQLException e) {/*ignore*/}
         }
     }
 
@@ -537,7 +542,7 @@ public class DB {
      * @param params  query parameters.
      * @return number of records affected.
      */
-    public  int exec(String query, Object ... params){
+    public int exec(String query, Object... params){
 
         if(query.trim().toLowerCase().startsWith("select")) throw new IllegalArgumentException("expected DML, but got select...");
 
@@ -554,11 +559,11 @@ public class DB {
             int count =  ps.executeUpdate();
             LogFilter.logQuery(logger, query, params, start);
             return count;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             logException("Failed query: " + query, e);
             throw new DBException(query, params, e);
         } finally {
-            try { if (ps != null) ps.close(); } catch (Exception e) {/*ignore*/}
+            try { if (ps != null) ps.close(); } catch (SQLException e) {/*ignore*/}
         }
 
     }
@@ -618,13 +623,13 @@ public class DB {
                 } else {
                     return -1;
                 }
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 logger.error("Failed to find out the auto-incremented value, returning -1, query: {}", query, e);
                 return -1;
             } finally {
-                try { if (rs != null) rs.close(); } catch (Exception e) {/*ignore*/}
+                try { if (rs != null) rs.close(); } catch (SQLException e) {/*ignore*/}
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new DBException(query, params, e);
         }
     }

@@ -90,7 +90,7 @@ public class BaseTest extends ActiveJDBCTest {
     public void testFindParametrized(){
 
         Base.find("select * from people where id > ? and dob > ?", 1, getTimestamp(1935, 1, 1)).with(new RowListenerAdapter() {
-            public void onNext(Map<String, Object> row) {
+            @Override public void onNext(Map<String, Object> row) {
                 System.out.println(row);
             }
         });
