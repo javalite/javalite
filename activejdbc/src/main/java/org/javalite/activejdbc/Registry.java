@@ -44,17 +44,18 @@ public enum Registry {
     INSTANCE;
 
     private final static Logger logger = LoggerFactory.getLogger(Registry.class);
-    private final static HashMap<String, List<Validator>> validators = new HashMap<String, List<Validator>>();
-    private final static HashMap<Class, List<CallbackListener>> listeners = new HashMap<Class, List<CallbackListener>>();
-    private MetaModels metaModels = new MetaModels();
-    private Configuration configuration = new Configuration();
-    private StatisticsQueue statisticsQueue;
-    private Set<String> initedDbs = new HashSet<String>();
+    
+    private final Map<String, List<Validator>> validators = new HashMap<String, List<Validator>>();
+    private final Map<Class, List<CallbackListener>> listeners = new HashMap<Class, List<CallbackListener>>();
+    private final MetaModels metaModels = new MetaModels();
+    private final Configuration configuration = new Configuration();
+    private final StatisticsQueue statisticsQueue;
+    private final Set<String> initedDbs = new HashSet<String>();
 
     private Registry() {
-        if (configuration.collectStatistics()) {
-            statisticsQueue = new StatisticsQueue(configuration.collectStatisticsOnHold());
-        }
+        statisticsQueue = configuration.collectStatistics() 
+                ? new StatisticsQueue(configuration.collectStatisticsOnHold())
+                : null;
     }
 
     public boolean initialized() {
@@ -101,7 +102,7 @@ public enum Registry {
         String dbName;
         try {
             dbName = MetaModel.getDbName((Class<? extends Model>) Class.forName(className));
-        } catch (Exception e) {
+        } catch (ClassNotFoundException e) {
             throw new InitException(e);
         }
         init(dbName);
@@ -194,7 +195,7 @@ public enum Registry {
         rs.close();
 
         //try upper case table name - Oracle uses upper case
-        if (columns.size() == 0) {
+        if (columns.isEmpty()) {
             rs = databaseMetaData.getColumns(null, schema, tableName.toUpperCase(), null);
             dbProduct = databaseProductName.toLowerCase();
             columns = getColumns(rs, dbProduct);
@@ -202,7 +203,7 @@ public enum Registry {
         }
 
         //if upper case not found, try lower case.
-        if(columns.size() == 0){
+        if (columns.isEmpty()) {
             rs = databaseMetaData.getColumns(null, schema, tableName.toLowerCase(), null);
             columns = getColumns(rs, dbProduct);
             rs.close();
@@ -318,7 +319,7 @@ public enum Registry {
 
 
     private Map<String, ColumnMetadata> getColumns(ResultSet rs, String dbProduct) throws SQLException {
-         Map<String, ColumnMetadata> columns = new HashMap<String, ColumnMetadata>();
+        Map<String, ColumnMetadata> columns = new HashMap<String, ColumnMetadata>();
         while (rs.next()) {
 
         	if (dbProduct.equals("h2") && "INFORMATION_SCHEMA".equals(rs.getString("TABLE_SCHEMA"))) continue; //skip h2 INFORMATION_SCHEMA table columns.

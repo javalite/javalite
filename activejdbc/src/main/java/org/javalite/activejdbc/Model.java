@@ -49,11 +49,12 @@ import static org.javalite.common.Util.*;
 public abstract class Model extends CallbackSupport implements Externalizable {
 
     private final static Logger logger = LoggerFactory.getLogger(Model.class);
+    
     private Map<String, Object> attributes = new HashMap<String, Object>();
     private boolean frozen = false;
     private MetaModel metaModelLocal;
-    private Map<Class, Model> cachedParents = new HashMap<Class, Model>();
-    private Map<Class, List<Model>> cachedChildren = new HashMap<Class, List<Model>>();
+    private final Map<Class, Model> cachedParents = new HashMap<Class, Model>();
+    private final Map<Class, List<Model>> cachedChildren = new HashMap<Class, List<Model>>();
     private boolean manageTime = true;
 
     protected Errors errors;
@@ -136,7 +137,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param value value to convert.
      * @return  this model.
      */
-    public Model setDate(String attribute, Object value) {
+    public <T extends Model> T setDate(String attribute, Object value) {
         return set(attribute, Convert.toSqlDate(value));
     }
 
@@ -191,14 +192,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param value value of attribute. Feel free to set any type, as long as it can be accepted by your driver.
      * @return reference to self, so you can string these methods one after another.
      */
-    public Model set(String attribute, Object value) {
+    public <T extends Model> T set(String attribute, Object value) {
         if (manageTime && attribute.equalsIgnoreCase("created_at")) {
             throw new IllegalArgumentException("cannot set 'created_at'");
         }
         getMetaModelLocal().checkAttributeOrAssociation(attribute);
 
         attributes.put(attribute.toLowerCase(), value);
-        return this;
+        return (T) this;
     }
 
     /**
@@ -507,7 +508,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @param query narrows which records to delete. Example: <pre>"last_name like '%sen%'"</pre>.
      * @param params   (optional) - list of parameters if a query is parametrized.
-     * @return number od deleted records.
+     * @return number of deleted records.
      */
     public static int delete(String query, Object... params) {
         MetaModel metaModel = getMetaModel();
@@ -821,7 +822,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return sb.toString();
     }
 
-    private static DateFormat isoDateTimeFormater;
+    private static final DateFormat isoDateTimeFormater;
     static {
         //TODO missing time zone
         //TODO trim time if T00:00:00
@@ -983,7 +984,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         List<Map> results = new DB(getMetaModelLocal().getDbName()).findAll(query, fkValue);
         //expect only one result here
-        if (results.size() == 0) { //this should be covered by referential integrity constraint
+        if (results.isEmpty()) { //this should be covered by referential integrity constraint
             return null;
         } else {
             try {
@@ -1375,7 +1376,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param value value
      * @return reference to this model.
      */
-    public Model setString(String attribute, Object value) {
+    public <T extends Model> T setString(String attribute, Object value) {
         return set(attribute, Convert.toString(value));
     }
 
@@ -1386,7 +1387,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param value value
      * @return reference to this model.
      */
-    public Model setBigDecimal(String attribute, Object value) {
+    public <T extends Model> T setBigDecimal(String attribute, Object value) {
         return set(attribute, Convert.toBigDecimal(value));
     }
 
@@ -1397,7 +1398,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param value value
      * @return reference to this model.
      */
-    public Model setInteger(String attribute, Object value) {
+    public <T extends Model> T setInteger(String attribute, Object value) {
         return set(attribute, Convert.toInteger(value));
     }
 
@@ -1408,7 +1409,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param value value
      * @return reference to this model.
      */
-    public Model setLong(String attribute, Object value) {
+    public <T extends Model> T setLong(String attribute, Object value) {
         return set(attribute, Convert.toLong(value));
     }
 
@@ -1419,7 +1420,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param value value
      * @return reference to this model.
      */
-    public Model setFloat(String attribute, Object value) {
+    public <T extends Model> T setFloat(String attribute, Object value) {
         return set(attribute, Convert.toFloat(value));
     }
 
@@ -1433,7 +1434,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param value value
      * @return reference to this model.
      */
-    public Model setTimestamp(String attribute, Object value) {
+    public <T extends Model> T setTimestamp(String attribute, Object value) {
         return set(attribute, Convert.toTimestamp(value));
     }
 
@@ -1444,7 +1445,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param value value
      * @return reference to this model.
      */
-    public Model setDouble(String attribute, Object value) {
+    public <T extends Model> T setDouble(String attribute, Object value) {
         return set(attribute, Convert.toDouble(value));
     }
 
@@ -1458,7 +1459,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param value value to convert.
      * @return  this model.
      */
-    public Model setBoolean(String attribute, Object value) {
+    public <T extends Model> T setBoolean(String attribute, Object value) {
         return set(attribute, Convert.toBoolean(value));
     }
 
@@ -1810,9 +1811,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * indexes 1, 3, 5... are values. Element at index 1 is a value for attribute at index 0 and so on.
      * @return newly instantiated model.
      */
-    public Model set(Object ... namesAndValues){
+    public <T extends Model> T set(Object ... namesAndValues){
         ModelDelegate.setNamesAndValues(this, namesAndValues);
-        return this;
+        return (T) this;
     }
 
     /**
@@ -2004,7 +2005,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @return result list
      */
-    public static  <T extends Model> LazyList<T>   findAll() {
+    public static <T extends Model> LazyList<T> findAll() {
         return new LazyList(null, getMetaModel());
     }
 
@@ -2437,17 +2438,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             instance.setMetamodelLocal(metaModel);
             instance.hydrate(m);
             return instance;
-        }
-        catch(InstantiationException e){
+        } catch(InstantiationException e) {
             throw new InitException("Failed to create a new instance of: " + metaModel.getModelClass() + ", are you sure this class has a default constructor?");
-        }
-        catch(DBException e){
+        } catch(DBException e) {
             throw e;
-        }
-        catch(InitException e){
+        } catch(InitException e) {
             throw e;
-        }
-        catch (Exception e) {
+        } catch (IllegalAccessException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
@@ -2460,7 +2457,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             } else {
                 return (Class<T>) Class.forName(getClassName());
             }
-        } catch (Exception e) {
+        } catch (ClassNotFoundException e) {
             throw new DBException(e.getMessage(), e);
         }
     }
@@ -2615,10 +2612,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeObject(attributes);
     }
 
+    @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         attributes = (Map<String, Object>) in.readObject();
     }

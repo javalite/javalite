@@ -26,15 +26,15 @@ import java.util.*;
 /**
  * @author Igor Polevoy
  */
-public class MetaModels {
+class MetaModels {
 
     private final static Logger logger = LoggerFactory.getLogger(MetaModels.class);
 
-    Map<String, MetaModel> metaModelsByTableName = new HashMap<String, MetaModel>();
-    Map<Class<? extends Model>, MetaModel> metaModelsByClass = new HashMap<Class<? extends Model>, MetaModel>();
-    Map<String, MetaModel> metaModelsByClassName = new HashMap<String, MetaModel>();
+    private final Map<String, MetaModel> metaModelsByTableName = new HashMap<String, MetaModel>();
+    private final Map<Class<? extends Model>, MetaModel> metaModelsByClass = new HashMap<Class<? extends Model>, MetaModel>();
+    private final Map<String, MetaModel> metaModelsByClassName = new HashMap<String, MetaModel>();
     //these are all many to many associations across all models.
-    private List<Many2ManyAssociation> many2ManyAssociations = new ArrayList<Many2ManyAssociation>();
+    private final List<Many2ManyAssociation> many2ManyAssociations = new ArrayList<Many2ManyAssociation>();
 
     void addMetaModel(MetaModel<?, ?> mm, Class<? extends Model> modelClass) {
         Object o = metaModelsByClass.put(modelClass, mm);
