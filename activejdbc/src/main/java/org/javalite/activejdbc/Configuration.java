@@ -133,7 +133,9 @@ public class Configuration {
             else if(mm.getDbType().equalsIgnoreCase("Microsoft SQL Server")){
                 dialect = new MSSQLDialect();
             }
-            else{
+            else if(mm.getDbType().equalsIgnoreCase("SQLite")){
+                dialect = new SQLiteDialect();
+            }else{
                 dialect = new DefaultDialect();
             }
             dialects.put(mm.getDbType(), dialect);

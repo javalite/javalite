@@ -39,10 +39,8 @@ public class ConvertTest extends JSpecSupport {
         a(d).shouldBeEqual(d1);
     }
 
-
     @Test
     public void shouldTruncateToSqlDate() throws ParseException {
-
 
         //util date
         java.util.Date now = new java.util.Date();
@@ -56,11 +54,14 @@ public class ConvertTest extends JSpecSupport {
         string = new java.util.Date(today.getTime()).toString();   //format: Fri Jun 17 12:55:47 CDT 2011
         a(string.contains("00:00:00")).shouldBeTrue();
 
-        //util TIme
+        //util Time
         Time tm = new Time(System.currentTimeMillis());
         today = Convert.truncateToSqlDate(tm);
         string = new java.util.Date(today.getTime()).toString();   //format: Fri Jun 17 12:55:47 CDT 2011
         a(string.contains("00:00:00")).shouldBeTrue();
+
+        Date date = Convert.toSqlDate(1416127392928L);
+        a(date.toString()).shouldBeEqual("2014-11-16");
     }
 
 
@@ -83,6 +84,10 @@ public class ConvertTest extends JSpecSupport {
         ts1 = new Timestamp(date1.getTime());
         ts = Convert.toTimestamp(date1);
         a(ts).shouldBeEqual(ts1);
+
+        //Long
+        ts = Convert.toTimestamp(1416127392928L);
+        a(ts.toString()).shouldBeEqual("2014-11-16 02:43:12.928");
     }
 
     @Test

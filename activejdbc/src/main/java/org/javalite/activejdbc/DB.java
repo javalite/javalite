@@ -598,8 +598,12 @@ public class DB {
                     byte[] bytes = (byte[]) param;
                     try {
                         Blob b = connection.createBlob();
-                        b.setBytes(1, bytes);
-                        ps.setBlob(index + 1, b);
+                        if(b == null){ //SQLite
+                            ps.setBytes(1, bytes);
+                        }else{
+                            b.setBytes(1, bytes);
+                            ps.setBlob(index + 1, b);
+                        }
                     } catch (AbstractMethodError e) {// net.sourceforge.jtds.jdbc.ConnectionJDBC2.createBlob is abstract :)
                         ps.setObject(index + 1, param);
                     } catch (SQLFeatureNotSupportedException e) {

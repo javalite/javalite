@@ -58,7 +58,7 @@ public class CreatedAtUpdatedAtTest extends ActiveJDBCTest {
         Timestamp updatedAt = p.getTimestamp("updated_at");
 
         a(updatedAt).shouldNotBeNull();
-        a(createdAt).shouldBeEqual(p.get("created_at"));
+        a(createdAt).shouldBeEqual(p.getTimestamp("created_at"));
         a(createdAt.before(updatedAt)).shouldBeTrue();
     }
 

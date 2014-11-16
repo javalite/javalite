@@ -1,4 +1,22 @@
-package org.javalite.activejdbc;
+/*
+Copyright 2009-2014 Igor Polevoy
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+package org.javalite.activejdbc.statement_providers;
+
+import org.javalite.activejdbc.StatementProvider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,7 +25,7 @@ import java.util.List;
 /**
  * @author Igor Polevoy
  */
-public class H2StatementProvider implements StatementProvider{
+public class MySQLStatementProvider implements StatementProvider {
     public List<String> getPopulateStatements(String table) {
         
         List<String> statements = new ArrayList<String>();
@@ -103,7 +121,8 @@ public class H2StatementProvider implements StatementProvider{
                     "INSERT INTO doctors_patients VALUES(1, 1, 2);",
                     "INSERT INTO doctors_patients VALUES(2, 1, 1);",
                     "INSERT INTO doctors_patients VALUES(3, 2, 1);",
-                    "INSERT INTO doctors_patients VALUES(4, 3, 3);"            );
+                    "INSERT INTO doctors_patients VALUES(4, 3, 3);"
+            );
         } else if (table.equals("students")) {
             statements =  Arrays.asList(
 
@@ -175,21 +194,17 @@ public class H2StatementProvider implements StatementProvider{
             statements = Arrays.asList();
         } else if (table.equals("mammals")) {
             statements = Arrays.asList();
-        } else {
+        }else{
             statements = Arrays.asList();
         }
 
         ArrayList<String> all = new ArrayList<String>();
         
-        //https://groups.google.com/forum/#!searchin/h2-database/reset$20auto_increment/h2-database/PqkE1-tK_M4/I7MBEpHOZFQJ
-        if(table.equals("animals")){
-            all.add("ALTER TABLE " + table + " ALTER COLUMN animal_id RESTART WITH 1;");
-        } else {
-            all.add("ALTER TABLE " + table + " ALTER COLUMN id RESTART WITH 1;");                	
-        }
+        all.add("ALTER TABLE " + table + " AUTO_INCREMENT=1;");        
         all.addAll(statements);
         return all;
     }
+
 
     public String getDeleteStatement(String table){
         return "DELETE FROM " + table + ";";
