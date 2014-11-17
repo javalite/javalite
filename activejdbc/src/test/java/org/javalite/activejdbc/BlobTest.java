@@ -9,7 +9,6 @@ import org.junit.Test;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import static org.javalite.activejdbc.test.JdbcProperties.driver;
 
 /**
  * @author Igor Polevoy: 7/11/12 11:31 AM
@@ -18,11 +17,6 @@ public class BlobTest extends ActiveJDBCTest {
 
     @Test
     public void shouldWriteAndReadBytesToDb() throws SQLException, IOException {
-
-        //TODO:  this test fails on SQLite, need to fix
-        if(driver().contains("sqlite")){
-            return;
-        }
         Image image = new Image();
         byte[] igorBytes = Util.readResourceBytes("/igor.jpg");
         image.set("name", "igor's head");
