@@ -16,6 +16,9 @@ limitations under the License.
 
 package org.javalite.activejdbc.conversion;
 
+/**
+ * Class for conversion exceptions. To be thrown by implementations of {@link Converter}.
+ */
 public class ConversionException extends RuntimeException {
 
     public ConversionException() {

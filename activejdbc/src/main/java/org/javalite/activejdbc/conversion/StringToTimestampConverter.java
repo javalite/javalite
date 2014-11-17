@@ -20,22 +20,41 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+/**
+ * Converts instances of {@link String} to {@link java.sql.Timestamp}.
+ */
 public class StringToTimestampConverter implements Converter<String, java.sql.Timestamp> {
 
     private final DateFormat format;
 
+    /**
+     * @param pattern pattern to use for conversion
+     */
     public StringToTimestampConverter(String pattern) {
         this(new SimpleDateFormat(pattern));
     }
+    /**
+     * @param format DateFormat to use for conversion
+     */
     public StringToTimestampConverter(DateFormat format) {
         this.format = format;
     }
 
+    /**
+     * @param sourceClass source Class
+     * @param destinationClass destination Class
+     * @return true if sourceClass is String and destinationClass is java.sql.Timestamp
+     */
     @Override
     public boolean canConvert(Class sourceClass, Class destinationClass) {
         return String.class.equals(sourceClass) && java.sql.Timestamp.class.equals(destinationClass);
     }
 
+    /**
+     * @param source instance of String
+     * @return source converted to java.sql.Timestamp
+     * @throws ConversionException if conversion failed
+     */
     @Override
     public java.sql.Timestamp convert(String source) {
         try {

@@ -814,7 +814,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param writer to write content to.
      * @param attrs list of attributes to include
      *
-     * @deprecated Use {@link #beforeClosingTag(StringBuilder, boolean, String, String...)} instead
+     * @deprecated use {@link #beforeClosingTag(StringBuilder, boolean, String, String...)} instead
      */
     @Deprecated
     public void beforeClosingTag(int spaces, StringWriter writer, String ... attrs) {
@@ -933,6 +933,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param pretty pretty format (human readable), or one line text.
      * @param indent indent at current level
      * @param writer writer to write custom content to
+     * @deprecated use {@link #beforeClosingBrace(StringBuilder, boolean, String, String...)} instead
      */
     @Deprecated
     public void beforeClosingBrace(boolean pretty, String indent, StringWriter writer) {
@@ -1696,7 +1697,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attributeName name of attribute to convert to <code>java.sql.Date</code>.
      * @param format format for conversion. Refer to {@link java.text.SimpleDateFormat}
      * @return message passing for custom validation message.
+     * @deprecated use {@link #dateFormat(String, String...) instead
      */
+    @Deprecated
     protected static ValidationBuilder convertDate(String attributeName, String format){
         return ValidationHelper.addDateConverter(getClassName(), attributeName, format);
     }
@@ -1708,17 +1711,99 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attributeName name of attribute to convert to <code>java.sql.Timestamp</code>.
      * @param format format for conversion. Refer to {@link java.text.SimpleDateFormat}
      * @return message passing for custom validation message.
+     * @deprecated use {@link #timestampFormat(String, String...) instead
      */
+    @Deprecated
     protected static ValidationBuilder convertTimestamp(String attributeName, String format){
         return ValidationHelper.addTimestampConverter(getClassName(), attributeName, format);
     }
 
-    protected static void dateFormat(String pattern, String... attributeNames) {
-        getMetaData().addDateConverters(pattern, attributeNames);
+    /**
+     * Registers date format for specified attributes. This format will be used to convert between
+     * Date -> String -> java.sql.Date when using the appropriate getters and setters.
+     *
+     * <p>For example:
+     * <blockquote><pre>
+     * public class Person extends Model {
+     *     static {
+     *         dateFormat("MM/dd/yyyy", "dob");
+     *     }
+     * }
+     *
+     * Person p = new Person();
+     * // will convert String -> java.sql.Date
+     * p.setDate("dob", "02/29/2000");
+     * // will convert Date -> String, if dob value in model is of type Date
+     * String str = p.getString("dob");
+     *
+     * // will convert Date -> String
+     * p.setString("dob", new Date());
+     * // will convert String -> java.sql.Date, if dob value in model is of type String
+     * Date date = p.getDate("dob");
+     * </pre></blockquote>
+     *
+     * @param pattern pattern to use for conversion
+     * @param attributes attribute names
+     */
+    protected static void dateFormat(String pattern, String... attributes) {
+        getMetaData().addDateConverters(pattern, attributes);
     }
 
-    protected static void timestampFormat(String pattern, String... attributeNames) {
-        getMetaData().addTimestampConverters(pattern, attributeNames);
+    /**
+     * Registers date format for specified attributes. This format will be used to convert between
+     * Date -> String -> java.sql.Date when using the appropriate getters and setters.
+     *
+     * <p>See example in {@link #dateFormat(String, String...)}.
+     *
+     * @param format format to use for conversion
+     * @param attributes attribute names
+     */
+    protected static void dateFormat(DateFormat format, String... attributes) {
+        getMetaData().addDateConverters(format, attributes);
+    }
+
+    /**
+     * Registers date format for specified attributes. This format will be used to convert between
+     * Date -> String -> java.sql.Timestamp when using the appropriate getters and setters.
+     *
+     * <p>For example:
+     * <blockquote><pre>
+     * public class Person extends Model {
+     *     static {
+     *         timestampFormat("MM/dd/yyyy hh:mm a", "birth_datetime");
+     *     }
+     * }
+     *
+     * Person p = new Person();
+     * // will convert String -> java.sql.Timestamp
+     * p.setTimestamp("birth_datetime", "02/29/2000 12:07 PM");
+     * // will convert Date -> String, if dob value in model is of type Date or java.sql.Timestamp
+     * String str = p.getString("birth_datetime");
+     *
+     * // will convert Date -> String
+     * p.setString("birth_datetime", new Date());
+     * // will convert String -> java.sql.Timestamp, if dob value in model is of type String
+     * Timestamp ts = p.getTimestamp("birth_datetime");
+     * </pre></blockquote>
+     *
+     * @param pattern pattern to use for conversion
+     * @param attributes attribute names
+     */
+    protected static void timestampFormat(String pattern, String... attributes) {
+        getMetaData().addTimestampConverters(pattern, attributes);
+    }
+
+    /**
+     * Registers date format for specified attributes. This format will be used to convert between
+     * Date -> String -> java.sql.Timestamp when using the appropriate getters and setters.
+     *
+     * <p>See example in {@link #timestampFormat(String, String...)}.
+     *
+     * @param format format to use for conversion
+     * @param attributes attribute names
+     */
+    protected static void timestampFormat(DateFormat format, String... attributes) {
+        getMetaData().addTimestampConverters(format, attributes);
     }
 
     public static boolean belongsTo(Class<? extends Model> targetClass) {

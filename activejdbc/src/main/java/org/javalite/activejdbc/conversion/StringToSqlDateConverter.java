@@ -20,22 +20,41 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+/**
+ * Converts instances of {@link String} to {@link java.sql.Date}.
+ */
 public class StringToSqlDateConverter implements Converter<String, java.sql.Date> {
 
     private final DateFormat format;
 
+    /**
+     * @param pattern pattern to use for conversion
+     */
     public StringToSqlDateConverter(String pattern) {
         this(new SimpleDateFormat(pattern));
     }
+    /**
+     * @param format DateFormat to use for conversion
+     */
     public StringToSqlDateConverter(DateFormat format) {
         this.format = format;
     }
 
+    /**
+     * @param sourceClass source Class
+     * @param destinationClass destination Class
+     * @return true if sourceClass is String and destinationClass is java.sql.Date
+     */
     @Override
     public boolean canConvert(Class sourceClass, Class destinationClass) {
         return String.class.equals(sourceClass) && java.sql.Date.class.equals(destinationClass);
     }
 
+    /**
+     * @param source instance of String
+     * @return source converted to java.sql.Date
+     * @throws ConversionException if conversion failed
+     */
     @Override
     public java.sql.Date convert(String source) {
         try {

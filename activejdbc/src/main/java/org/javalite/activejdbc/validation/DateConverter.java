@@ -27,7 +27,10 @@ import static org.javalite.common.Util.*;
 
 /**
  * @author Igor Polevoy
+ * @deprecated use {@link org.javalite.activejdbc.conversion.DateToStringConverter} and
+ * {@link org.javalite.activejdbc.conversion.StringToSqlDateConverter} instead
  */
+@Deprecated
 public class DateConverter extends Converter {
 
     private String attributeName, format;

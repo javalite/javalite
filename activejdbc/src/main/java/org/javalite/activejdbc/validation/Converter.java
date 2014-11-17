@@ -21,7 +21,9 @@ import org.javalite.activejdbc.Model;
 
 /**
  * @author Igor Polevoy
+ * @deprecated use {@link org.javalite.activejdbc.conversion.Converter} instead
  */
+@Deprecated
 public abstract class Converter extends ValidatorAdapter {
 
     public abstract void convert(Model m);

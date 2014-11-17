@@ -23,18 +23,23 @@ import org.javalite.activejdbc.conversion.Converter;
 import org.javalite.activejdbc.conversion.DateToStringConverter;
 import org.javalite.activejdbc.conversion.StringToSqlDateConverter;
 import org.javalite.activejdbc.conversion.StringToTimestampConverter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+/**
+ * Stores metadata for a Model: converters, etc.
+ */
 class ModelMetaData {
-    private final static Logger logger = LoggerFactory.getLogger(ModelMetaData.class);
-
     private final Map<String, List<Converter>> attributeConverters = new HashMap<String, List<Converter>>();
 
+    /**
+     * Registers date converters (Date -> String -> java.sql.Date) for specified model attributes.
+     */
     void addDateConverters(String pattern, String... attributes) {
         addDateConverters(new SimpleDateFormat(pattern), attributes);
     }
 
+    /**
+     * Registers date converters (Date -> String -> java.sql.Date) for specified model attributes.
+     */
     void addDateConverters(DateFormat format, String... attributes) {
         Converter from = new DateToStringConverter(format);
         Converter to = new StringToSqlDateConverter(format);
@@ -44,10 +49,16 @@ class ModelMetaData {
         }
     }
 
+    /**
+     * Registers timestamp converters (Date -> String -> java.sql.Timestamp) for specified model attributes.
+     */
     void addTimestampConverters(String pattern, String... attributes) {
         addTimestampConverters(new SimpleDateFormat(pattern), attributes);
     }
 
+    /**
+     * Registers timestamp converters (Date -> String -> java.sql.Timestamp) for specified model attributes.
+     */
     void addTimestampConverters(DateFormat format, String... attributes) {
         Converter from = new DateToStringConverter(format);
         Converter to = new StringToTimestampConverter(format);
@@ -57,6 +68,9 @@ class ModelMetaData {
         }
     }
 
+    /**
+     * Registers converter for specified model attribute.
+     */
     private void addConverter(Converter converter, String attribute) {
         List<Converter> list = attributeConverters.get(attribute);
         if (list == null) {
@@ -66,6 +80,10 @@ class ModelMetaData {
         list.add(converter);
     }
 
+    /**
+     * @return converter for specified model attribute, able to convert from sourceClass to destinationClass;
+     * returns null if no suitable converter was found.
+     */
     <S, T> Converter<S, T> getConverter(String attribute, Class<S> sourceClass, Class<T> destinationClass) {
         List<Converter> list = attributeConverters.get(attribute);
         if (list != null) {

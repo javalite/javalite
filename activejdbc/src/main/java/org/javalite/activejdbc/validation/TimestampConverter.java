@@ -28,7 +28,10 @@ import static org.javalite.common.Util.*;
 
 /**
  * @author Igor Polevoy
+ * @deprecated use {@link org.javalite.activejdbc.conversion.DateToStringConverter} and
+ * {@link org.javalite.activejdbc.conversion.StringToTimestampConverter} instead
  */
+@Deprecated
 public class TimestampConverter extends Converter {
 
     private String attributeName, format;

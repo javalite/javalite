@@ -16,9 +16,26 @@ limitations under the License.
 
 package org.javalite.activejdbc.conversion;
 
+/**
+ * Converts instances of <tt>S</tt> to <tt>T</tt>.
+ * @param <S> Source type
+ * @param <T> Destination type
+ */
 public interface Converter<S, T> {
 
+    /**
+     * Returns <tt>true</tt> if this converter can convert instances of <tt>sourceClass</tt> to
+     * <tt>destinationClass</tt>.
+     * @param sourceClass source Class
+     * @param destinationClass destination Class
+     * @return true if this converter can convert instances of sourceClass to destinationClass, false otherwise
+     */
     boolean canConvert(Class sourceClass, Class destinationClass);
 
+    /**
+     * Converts instance of <tt>S</tt> to <tt>T</tt>.
+     * @param source instance of S
+     * @return instance of S converted to type T
+     */
     T convert(S source);
 }

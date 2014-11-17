@@ -22,7 +22,6 @@ import org.javalite.activejdbc.Model;
 
 
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.text.ParsePosition;
 
 public class NumericValidator extends ValidatorAdapter {
@@ -137,18 +136,4 @@ public class NumericValidator extends ValidatorAdapter {
     public void convertNullIfEmpty(boolean convertNullIfEmpty) {
         this.convertNullIfEmpty = convertNullIfEmpty;
     }
-
-
-
-    public static void main(String[] av) throws ParseException {
-
-        String input = "11 ss";
-        ParsePosition pp = new ParsePosition(0);
-        NumberFormat.getInstance().parse(input, pp);
-
-        if(pp.getIndex() != (input.length() - 1))
-            throw new RuntimeException("failed to parse");
-
-    }
-
 }
