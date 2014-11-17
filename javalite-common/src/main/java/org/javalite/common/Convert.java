@@ -23,10 +23,10 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.math.BigDecimal;
-import java.sql.*;
+import java.sql.Blob;
+import java.sql.Clob;
 import java.text.*;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 import static org.javalite.common.Util.*;
@@ -125,12 +125,8 @@ public class Convert {
             return null;
         } else if (value instanceof java.sql.Date) {
             return (java.sql.Date) value;
-        } else if (value instanceof Timestamp) {
-            return new java.sql.Date(((Timestamp) value).getTime());
         } else if (value instanceof java.util.Date) {
-            return new java.sql.Date(((Date) value).getTime());
-        } else if (value instanceof Time) {
-            return new java.sql.Date(((Time) value).getTime());
+            return new java.sql.Date(((java.util.Date) value).getTime());
         }else if (value instanceof Long) {
             return new java.sql.Date(((Long) value));
         } else {
@@ -157,12 +153,10 @@ public class Convert {
             return null;
         } else if (value instanceof java.sql.Date) {
             return (java.sql.Date) value;
-        } else if (value instanceof Timestamp) {
-            return utilDate2sqlDate(((Timestamp) value).getTime());
         } else if (value instanceof java.util.Date) {
-            return utilDate2sqlDate(((Date) value).getTime());
-        } else if (value instanceof Time) {
-            return utilDate2sqlDate(((Time) value).getTime());
+            return truncate(((java.util.Date) value).getTime());
+        } else if (value instanceof Long) {
+            return truncate(((Long) value));
         } else {
             try {
                 return java.sql.Date.valueOf(value.toString());
@@ -172,7 +166,7 @@ public class Convert {
         }
     }
 
-    private static java.sql.Date utilDate2sqlDate(long time){
+    private static java.sql.Date truncate(long time) {
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(time);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -216,20 +210,18 @@ public class Convert {
      * @param value value to convert.
      * @return instance of Timestamp.
      */
-    public static Timestamp toTimestamp(Object value){
+    public static java.sql.Timestamp toTimestamp(Object value){
 
        if (value == null) {
             return null;
-        } else if (value instanceof Timestamp) {
-            return (Timestamp) value;
-        } else if (value instanceof java.sql.Date) {
-            return new Timestamp(((java.sql.Date)value).getTime());
+        } else if (value instanceof java.sql.Timestamp) {
+            return (java.sql.Timestamp) value;
         } else if (value instanceof java.util.Date) {
-           return new Timestamp(((java.util.Date)value).getTime());
+           return new java.sql.Timestamp(((java.util.Date) value).getTime());
         } else if (value instanceof Long) {
-           return new Timestamp((Long)value);
+           return new java.sql.Timestamp((Long) value);
        } else {
-           return Timestamp.valueOf(value.toString());
+           return java.sql.Timestamp.valueOf(value.toString());
         }
     }
 
@@ -273,7 +265,9 @@ public class Convert {
         } else if (value instanceof Long) {
             return (Long) value;
         } else if (value instanceof Number) {
-            return ((Number)value).longValue();
+            return ((Number) value).longValue();
+        } else if (value instanceof java.util.Date) {
+            return ((java.util.Date) value).getTime();
         } else {
             NumberFormat nf = new DecimalFormat();
             try {
@@ -375,10 +369,6 @@ public class Convert {
                 throw new ConversionException("failed to convert: '" + value + "' to Short", e);
             }
         }
-    }
-
-    public static void main(String[] args){
-        System.out.println(new Timestamp(new Long(1416126591724L)));
     }
 }
 

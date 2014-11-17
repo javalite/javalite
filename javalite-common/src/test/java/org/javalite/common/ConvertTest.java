@@ -37,6 +37,9 @@ public class ConvertTest extends JSpecSupport {
         Date d = new Date(new SimpleDateFormat("yyyy-MM-dd").parse("2001-01-01").getTime());
         Date d1 = Convert.toSqlDate("2001-01-01");
         a(d).shouldBeEqual(d1);
+
+        Date date = Convert.toSqlDate(1416127392928L);
+        a(date.toString()).shouldBeEqual("2014-11-16");
     }
 
     @Test
@@ -60,8 +63,11 @@ public class ConvertTest extends JSpecSupport {
         string = new java.util.Date(today.getTime()).toString();   //format: Fri Jun 17 12:55:47 CDT 2011
         a(string.contains("00:00:00")).shouldBeTrue();
 
-        Date date = Convert.toSqlDate(1416127392928L);
-        a(date.toString()).shouldBeEqual("2014-11-16");
+        //Long
+        java.sql.Date date = Convert.truncateToSqlDate(1416127392928L);
+        string = new java.util.Date(date.getTime()).toString();
+        a(string.contains("00:00:00")).shouldBeTrue();
+
     }
 
 
@@ -87,7 +93,7 @@ public class ConvertTest extends JSpecSupport {
 
         //Long
         ts = Convert.toTimestamp(1416127392928L);
-        a(ts.toString()).shouldBeEqual("2014-11-16 02:43:12.928");
+        a(ts).shouldBeEqual(new Timestamp(1416127392928L));
     }
 
     @Test
@@ -136,6 +142,13 @@ public class ConvertTest extends JSpecSupport {
         o = Convert.toLong(new BigDecimal(1));
         a(o instanceof Long).shouldBeTrue();
         a(o).shouldBeEqual(1);
+
+        //java.util.Date
+        Date date = new Date(1416127392928L);
+        o = Convert.toLong(date);
+        a(o instanceof Long).shouldBeTrue();
+        a(o).shouldBeEqual(1416127392928L);
+
     }
 
 
