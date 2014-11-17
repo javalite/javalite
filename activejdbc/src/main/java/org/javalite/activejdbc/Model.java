@@ -19,7 +19,7 @@ package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.associations.*;
 import org.javalite.activejdbc.cache.QueryCache;
-import org.javalite.activejdbc.convertion.Converter;
+import org.javalite.activejdbc.conversion.Converter;
 import org.javalite.activejdbc.validation.NumericValidationBuilder;
 import org.javalite.activejdbc.validation.ValidationBuilder;
 import org.javalite.activejdbc.validation.ValidationException;

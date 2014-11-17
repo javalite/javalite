@@ -19,10 +19,10 @@ package org.javalite.activejdbc;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import org.javalite.activejdbc.convertion.Converter;
-import org.javalite.activejdbc.convertion.DateToStringConverter;
-import org.javalite.activejdbc.convertion.StringToSqlDateConverter;
-import org.javalite.activejdbc.convertion.StringToTimestampConverter;
+import org.javalite.activejdbc.conversion.Converter;
+import org.javalite.activejdbc.conversion.DateToStringConverter;
+import org.javalite.activejdbc.conversion.StringToSqlDateConverter;
+import org.javalite.activejdbc.conversion.StringToTimestampConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

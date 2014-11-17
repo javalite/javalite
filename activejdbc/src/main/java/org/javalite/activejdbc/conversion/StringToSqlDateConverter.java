@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package org.javalite.activejdbc.convertion;
+package org.javalite.activejdbc.conversion;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -41,7 +41,7 @@ public class StringToSqlDateConverter implements Converter<String, java.sql.Date
         try {
             return new java.sql.Date(format.parse(source).getTime());
         } catch (ParseException e) {
-            throw new ConvertionException(e);
+            throw new ConversionException(e);
         }
     }
 }

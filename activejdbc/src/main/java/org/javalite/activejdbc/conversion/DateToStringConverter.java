@@ -14,34 +14,29 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package org.javalite.activejdbc.convertion;
+package org.javalite.activejdbc.conversion;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-public class StringToTimestampConverter implements Converter<String, java.sql.Timestamp> {
+public class DateToStringConverter implements Converter<java.util.Date, String> {
 
     private final DateFormat format;
 
-    public StringToTimestampConverter(String pattern) {
+    public DateToStringConverter(String pattern) {
         this(new SimpleDateFormat(pattern));
     }
-    public StringToTimestampConverter(DateFormat format) {
+    public DateToStringConverter(DateFormat format) {
         this.format = format;
     }
 
     @Override
     public boolean canConvert(Class sourceClass, Class destinationClass) {
-        return String.class.equals(sourceClass) && java.sql.Timestamp.class.equals(destinationClass);
+        return java.util.Date.class.isAssignableFrom(sourceClass) && String.class.equals(destinationClass);
     }
 
     @Override
-    public java.sql.Timestamp convert(String source) {
-        try {
-            return new java.sql.Timestamp(format.parse(source).getTime());
-        } catch (ParseException e) {
-            throw new ConvertionException(e);
-        }
+    public String convert(java.util.Date source) {
+        return format.format(source);
     }
 }

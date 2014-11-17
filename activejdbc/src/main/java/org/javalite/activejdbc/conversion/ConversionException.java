@@ -14,23 +14,23 @@ See the License for the specific language governing permissions and
 limitations under the License. 
 */
 
-package org.javalite.activejdbc.convertion;
+package org.javalite.activejdbc.conversion;
 
-public class ConvertionException extends RuntimeException {
+public class ConversionException extends RuntimeException {
 
-    public ConvertionException() {
+    public ConversionException() {
     }
 
-    public ConvertionException(String message) {
+    public ConversionException(String message) {
         super(message);
     }
 
-    public ConvertionException(String message, Throwable cause) {
+    public ConversionException(String message, Throwable cause) {
         super(message, cause);
         this.setStackTrace(cause.getStackTrace());
     }
 
-    public ConvertionException(Throwable cause) {
+    public ConversionException(Throwable cause) {
         super(cause);
         this.setStackTrace(cause.getStackTrace());
     }
