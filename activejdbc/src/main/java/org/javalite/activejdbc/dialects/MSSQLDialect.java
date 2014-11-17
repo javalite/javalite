@@ -82,13 +82,15 @@ public class MSSQLDialect extends DefaultDialect {
      */
     @Override
     public Object overrideDriverTypeConversion(MetaModel mm, String attributeName, Object value) {
-        Map<String, ColumnMetadata> types = mm.getColumnMetadata();
-    	if(value != null && value instanceof java.lang.String && types.get(attributeName.toLowerCase()).getTypeName().equalsIgnoreCase("date") && mm.getDialect() instanceof MSSQLDialect) {
-    		return java.sql.Date.valueOf((String)value);
-    	} else if(value != null && value instanceof java.lang.String && types.get(attributeName.toLowerCase()).getTypeName().equalsIgnoreCase("datetime2") && mm.getDialect() instanceof MSSQLDialect) {
-    		return java.sql.Timestamp.valueOf((String)value);
-    	} else {
-    		return value;
-    	}
+        if (value instanceof String) {
+            Map<String, ColumnMetadata> types = mm.getColumnMetadata();
+            String typeName = types.get(attributeName.toLowerCase()).getTypeName();
+            if ("date".equalsIgnoreCase(typeName)) {
+                return java.sql.Date.valueOf((String) value);
+            } else if ("datetime2".equalsIgnoreCase(typeName)) {
+                return java.sql.Timestamp.valueOf((String) value);
+            }
+        }
+        return value;
     }
 }
