@@ -28,26 +28,26 @@ public class ConverterTest extends ActiveJDBCTest {
     @Test
     public void shouldSetAndGetDateAsString() {
         Student student = new Student();
-        student.setDate("dob", "11/15/2014");
+        student.setDate("dob", "11/15/2007");
 
         the(student.get("dob")).shouldBeA(java.sql.Date.class);
         Calendar cal = GregorianCalendar.getInstance();
         cal.setTime((java.util.Date) student.get("dob"));
         the(cal.get(Calendar.DAY_OF_MONTH)).shouldBeEqual(15);
         the(cal.get(Calendar.MONTH)).shouldBeEqual(11 - 1);
-        the(cal.get(Calendar.YEAR)).shouldBeEqual(2014);
+        the(cal.get(Calendar.YEAR)).shouldBeEqual(2007);
 
-        the(student.getString("dob")).shouldBeEqual("11/15/2014");
+        the(student.getString("dob")).shouldBeEqual("11/15/2007");
     }
 
     @Test
     public void shouldSetAndGetStringAsDate() {
         Student student = new Student();
-        java.sql.Date date = getDate(2014, 11, 15);
+        java.sql.Date date = getDate(2007, 11, 15);
         student.setString("dob", date);
 
         the(student.get("dob")).shouldBeA(String.class);
-        the(student.get("dob")).shouldBeEqual("11/15/2014");
+        the(student.get("dob")).shouldBeEqual("11/15/2007");
 
         the(student.getDate("dob").getTime()).shouldBeEqual(date.getTime());
     }
@@ -95,5 +95,20 @@ public class ConverterTest extends ActiveJDBCTest {
         deleteAndPopulateTable("students");
         the(Student.findById(1).getString("enrollment_date")).shouldBeEqual("01/20/1973 11 AM");
         the(Student.findById(2).getString("enrollment_date")).shouldBeEqual("01/29/1987 1 PM");
+    }
+
+    @Test
+    public void shouldSaveAndFetchDateAndTimestamp() {
+        Student student = Student.create("first_name", "Joe", "last_name", "Shmoe")
+                .setDate("dob", "02/29/2000")
+                .setTimestamp("enrollment_date", "02/29/2008 12 PM");
+        student.saveIt();
+        Long id = student.getLongId();
+
+        student = Student.findById(id);
+        the(student.get("dob")).shouldBeA(java.sql.Date.class);
+        the(student.getString("dob")).shouldBeEqual("02/29/2000");
+        the(student.get("enrollment_date")).shouldBeA(java.sql.Timestamp.class);
+        the(student.getString("enrollment_date")).shouldBeEqual("02/29/2008 12 PM");
     }
 }
