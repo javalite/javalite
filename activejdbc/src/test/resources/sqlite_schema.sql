@@ -48,7 +48,7 @@ DROP TABLE IF EXISTS doctors_patients;
 CREATE TABLE doctors_patients (id  INTEGER PRIMARY KEY AUTOINCREMENT , doctor_id int(11), patient_id int(11));
 
 DROP TABLE IF EXISTS students;
-CREATE TABLE students (id  INTEGER PRIMARY KEY AUTOINCREMENT , first_name VARCHAR(56), last_name VARCHAR(56), dob DATE);
+CREATE TABLE students (id  INTEGER PRIMARY KEY AUTOINCREMENT , first_name VARCHAR(56), last_name VARCHAR(56), dob DATE, enrollment_date DATETIME);
 
 DROP TABLE IF EXISTS courses;
 CREATE TABLE courses (id  INTEGER PRIMARY KEY AUTOINCREMENT , course_name VARCHAR(56));
