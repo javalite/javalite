@@ -24,6 +24,37 @@
 
     <profiles>
         <profile>
+            <id>h2</id>
+            <!--
+                Configure jdbc.driver, jdbc.url, jdbc.user, jdbc.password
+                and db properties in your ~/.m2/settings.xml
+            -->
+            <dependencies>
+                <dependency>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                    <version>1.3.171</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>mssql</id>
+            <!--
+                Configure jdbc.driver, jdbc.url, jdbc.user, jdbc.password
+                and db properties in your ~/.m2/settings.xml
+            -->
+            <dependencies>
+                <!-- If Microsoft were at all helpful. -->
+                <dependency>
+                    <groupId>com.microsoft.sqljdbc</groupId>
+                    <artifactId>sqljdbc4</artifactId>
+                    <version>4.0.3</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <id>mysql</id>
             <!--
                 Configure jdbc.driver, jdbc.url, jdbc.user, jdbc.password
@@ -35,20 +66,6 @@
                     <artifactId>mysql-connector-java</artifactId>
                     <version>5.1.25</version>
                     <scope>test</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>sqlite</id>
-            <!--
-                Configure jdbc.driver, jdbc.url, jdbc.user, jdbc.password
-                and db properties in your ~/.m2/settings.xml
-            -->
-            <dependencies>
-                <dependency>
-                    <groupId>org.xerial</groupId>
-                    <artifactId>sqlite-jdbc</artifactId>
-                    <version>3.8.7</version>
                 </dependency>
             </dependencies>
         </profile>
@@ -83,17 +100,16 @@
             </dependencies>
         </profile>
         <profile>
-            <id>h2</id>
+            <id>sqlite</id>
             <!--
                 Configure jdbc.driver, jdbc.url, jdbc.user, jdbc.password
                 and db properties in your ~/.m2/settings.xml
             -->
             <dependencies>
                 <dependency>
-                    <groupId>com.h2database</groupId>
-                    <artifactId>h2</artifactId>
-                    <version>1.3.171</version>
-                    <scope>test</scope>
+                    <groupId>org.xerial</groupId>
+                    <artifactId>sqlite-jdbc</artifactId>
+                    <version>3.8.7</version>
                 </dependency>
             </dependencies>
         </profile>
@@ -108,22 +124,6 @@
                     <groupId>net.sourceforge.jtds</groupId>
                     <artifactId>jtds</artifactId>
                     <version>1.2.4</version>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>mssql</id>
-            <!--
-                Configure jdbc.driver, jdbc.url, jdbc.user, jdbc.password
-                and db properties in your ~/.m2/settings.xml
-            -->
-            <dependencies>
-                <!-- If Microsoft were at all helpful. -->
-                <dependency>
-                    <groupId>com.microsoft.sqljdbc</groupId>
-                    <artifactId>sqljdbc4</artifactId>
-                    <version>4.0.3</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
@@ -180,10 +180,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.17</version>
+                <version>2.18</version>
                 <configuration>
-                    <reportFormat>brief</reportFormat>
-                    <trimStackTrace>true</trimStackTrace>
+                    <trimStackTrace>false</trimStackTrace>
                     <useFile>false</useFile>
                     <includes>
                         <include>**/*Spec*.java</include>
