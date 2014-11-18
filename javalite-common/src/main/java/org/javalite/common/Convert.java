@@ -114,10 +114,10 @@ public class Convert {
 
 
     /**
-     * Expects a <code>java.sql.Date</code>, <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code> or
-     * any object whose toString method has this format: <code>yyyy-mm-dd</code>.
+     * Expects a <code>java.sql.Date</code>, <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code>,
+     * <code>Long</code> or any object whose toString method has this format: <code>yyyy-mm-dd</code>.
      *
-     * @param value argument that is possible to convert to <code>java.sql.Date</code>.  
+     * @param value argument that is possible to convert to <code>java.sql.Date</code>.
      * @return <code>java.sql.Date</code> instance representing input value.
      */
     public static java.sql.Date toSqlDate(Object value){
@@ -139,13 +139,13 @@ public class Convert {
     }
 
     /**
-     * Expects a <code>java.sql.Date</code>, <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code> or
-     * string with format: <code>yyyy-mm-dd</code>. This method will also truncate hours, minutes, seconds and
+     * Expects a <code>java.sql.Date</code>, <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code>,
+     * <code>Long</code> or string with format: <code>yyyy-mm-dd</code>. This method will also truncate hours, minutes, seconds and
      * milliseconds to zeros, to conform with JDBC spec:
      * <q href="http://download.oracle.com/javase/6/docs/api/java/sql/Date.html">http://download.oracle.com/javase/6/docs/api/java/sql/Date.html</a>.
      *
      * @param value argument that is possible to convert to <code>java.sql.Date</code>: <code>java.sql.Date</code>,
-     * <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code> or any object with toString() == <code>yyyy-mm-dd</code>.
+     * <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code>, <code>Long</code> or any object with toString() == <code>yyyy-mm-dd</code>.
      * @return <code>java.sql.Date</code> instance representing input value.
      */
     public static java.sql.Date truncateToSqlDate(Object value){
@@ -252,8 +252,8 @@ public class Convert {
 
 
     /**
-     * Converts value to Long if it can. If value is a Long, it is returned, if it is a Number, it is
-     * promoted to Long and then returned, in all other cases, it converts the value to String,
+     * Converts value to <code>Long</code> if it can. If value is a </code>Long</code>, it is returned, if it is a <code>Number</code>, it is
+     * promoted to <code>Long</code> and then returned, if it is a <code>Date</code>, returns its getTime() value, in all other cases, it converts the value to String,
      * then tries to parse Long from it.
      *
      * @param value value to be converted to Long.
