@@ -35,8 +35,11 @@ import static org.javalite.common.Util.*;
  * Convenience class for type conversions. 
  *
  * @author Igor Polevoy
+ * @author ericbn
  */
-public class Convert {
+public final class Convert {
+
+    private Convert() { }
 
     /**
      * Returns string representation of an object, including {@link java.sql.Clob}.
@@ -69,8 +72,8 @@ public class Convert {
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
-            close(sw);
-            close(r);
+            closeQuietly(sw);
+            closeQuietly(r);
         }
     }
 
@@ -154,9 +157,9 @@ public class Convert {
         } else if (value instanceof java.sql.Date) {
             return (java.sql.Date) value;
         } else if (value instanceof java.util.Date) {
-            return truncate(((java.util.Date) value).getTime());
+            return truncateToSqlDate(((java.util.Date) value).getTime());
         } else if (value instanceof Long) {
-            return truncate(((Long) value));
+            return truncateToSqlDate((Long) value);
         } else {
             try {
                 return java.sql.Date.valueOf(value.toString());
@@ -166,7 +169,14 @@ public class Convert {
         }
     }
 
-    private static java.sql.Date truncate(long time) {
+    /**
+     * This method will truncate hours, minutes, seconds and milliseconds to zeros, to conform with JDBC spec:
+     * <q href="http://download.oracle.com/javase/6/docs/api/java/sql/Date.html">http://download.oracle.com/javase/6/docs/api/java/sql/Date.html</a>.
+     *
+     * @param time time in UTC milliseconds from the epoch
+     * @return <code>java.sql.Date</code> instance representing time value
+     */
+    public static java.sql.Date truncateToSqlDate(long time) {
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(time);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -332,17 +342,27 @@ public class Convert {
      */
     public static byte[] toBytes(Object value) {
         if (value instanceof Blob) {
-            InputStream is = null;
-            try {
-                is = ((Blob) value).getBinaryStream();
-                return bytes(is);
-            } catch (Exception e) {
-                throw new ConversionException(e);
-            } finally {
-                close(is);
-            }
+            return toBytes((Blob) value);
         } else {
             return value instanceof byte[] ? (byte[]) value : toString(value).getBytes();
+        }
+    }
+
+    /**
+     * Converts <code>java.sql.Blob</code> to bytes array.
+     *
+     * @param blob Blob to be converted
+     * @return blob converted to byte array
+     */
+    public static byte[] toBytes(Blob blob) {
+        InputStream is = null;
+        try {
+            is = blob.getBinaryStream();
+            return bytes(is);
+        } catch (Exception e) {
+            throw new ConversionException(e);
+        } finally {
+            closeQuietly(is);
         }
     }
 
@@ -371,5 +391,3 @@ public class Convert {
         }
     }
 }
-
-

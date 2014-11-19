@@ -22,11 +22,14 @@ import java.sql.SQLException;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.Map;
+
+import static org.javalite.common.Util.*;
 
 
 public class RowProcessor {
-    private ResultSet rs;
-    private Statement s;
+    private final ResultSet rs;
+    private final Statement s;
 
     protected RowProcessor(ResultSet rs, Statement s){
         this.rs = rs;
@@ -34,12 +37,15 @@ public class RowProcessor {
     }
 
     public void with(RowListener listener){
-
-        try{
+        try {
             processRS(listener);
-        }catch(Exception e){throw new DBException(e);}
-        finally{try{rs.close();}catch(Exception e){/*ignore*/}  try{s.close();}catch(Exception e){/*ignore*/}}
-
+        } catch(SQLException e) {
+            throw new DBException(e);
+        } finally {
+            //TODO: shouldn't these be closed in the same scope they were created?
+            closeQuietly(rs);
+            closeQuietly(s);
+        }
     }
 
     protected void processRS(RowListener listener) throws SQLException {
@@ -47,18 +53,18 @@ public class RowProcessor {
         ResultSetMetaData metaData = rs.getMetaData();
 
         String labels[] = new String[metaData.getColumnCount()];
-        for (int i = 1; i <= labels.length; i++) {
-            labels[i - 1] = metaData.getColumnLabel(i);
+        int i = 0;
+        while (i < labels.length) {
+            labels[i++] = metaData.getColumnLabel(i);
         }
 
         while (rs.next()) {
-            HashMap<String, Object> row = new HashMap<String, Object>();
-            for (String label : labels) {                
-                row.put(label.toLowerCase(), rs.getObject(label));
+            Map<String, Object> row = new HashMap<String, Object>();
+            i = 0;
+            while (i < labels.length) {
+                row.put(labels[i++].toLowerCase(), rs.getObject(i));
             }
-            if(!listener.next(row)) break;
+            if (!listener.next(row)) { break; }
         }
-        rs.close();
-        s.close();
     }
 }
