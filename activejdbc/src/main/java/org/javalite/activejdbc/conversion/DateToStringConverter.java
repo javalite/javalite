@@ -21,6 +21,8 @@ import java.text.SimpleDateFormat;
 
 /**
  * Converts instances of {@link java.util.Date} to {@link String}.
+ *
+ * @author ericbn
  */
 public class DateToStringConverter implements Converter<java.util.Date, String> {
 

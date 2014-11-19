@@ -42,6 +42,7 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import org.javalite.activejdbc.conversion.BlankStringToNullConverter;
 
 import static org.javalite.common.Inflector.*;
 import static org.javalite.common.Util.*;
@@ -130,9 +131,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param id value of ID
      * @return reference to self for chaining.
      */
-    public <T extends Model> T setId(Object id){
-        set(getIdName(), id);
-        return (T) this;
+    public <T extends Model> T setId(Object id) {
+        return set(getIdName(), id);
     }
 
     /**
@@ -145,9 +145,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return  this model.
      */
     public <T extends Model> T setDate(String attribute, Object value) {
-        Converter<Object, java.sql.Date> converter = getMetaDataLocal().getConverter(
-                attribute, (Class<Object>) value.getClass(), java.sql.Date.class);
-        return set(attribute, converter != null ? converter.convert(value) : Convert.toSqlDate(value));
+        Converter<Object, java.sql.Date> converter = getMetaDataLocal().getConverterForValue(
+                attribute, value, java.sql.Date.class);
+        return setConverted(attribute, converter != null ? converter.convert(value) : Convert.toSqlDate(value));
     }
 
     /**
@@ -157,9 +157,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return instance of <code>java.sql.Date</code>
      */
     public java.sql.Date getDate(String attribute) {
-        Object value = get(attribute);
-        Converter<Object, java.sql.Date> converter = getMetaDataLocal().getConverter(
-                attribute, (Class<Object>) value.getClass(), java.sql.Date.class);
+        Object value = getUnconverted(attribute);
+        Converter<Object, java.sql.Date> converter = getMetaDataLocal().getConverterForValue(
+                attribute, value, java.sql.Date.class);
         return converter != null ? converter.convert(value) : Convert.toSqlDate(value);
     }
 
@@ -205,6 +205,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to self, so you can string these methods one after another.
      */
     public <T extends Model> T set(String attribute, Object value) {
+        Converter<Object, Object> converter = getMetaDataLocal().getConverterForValue(attribute, value, Object.class);
+        return setConverted(attribute, converter != null ? converter.convert(value) : value);
+    }
+
+    private <T extends Model> T setConverted(String attribute, Object value) {
         if (manageTime && attribute.equalsIgnoreCase("created_at")) {
             throw new IllegalArgumentException("cannot set 'created_at'");
         }
@@ -948,12 +953,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param parentClass   class of a parent model.
      * @return instance of a parent of this instance in the "belongs to"  relationship.
      */
-    public <T extends Model> T parent(Class<T> parentClass) {
+    public <P extends Model> P parent(Class<P> parentClass) {
         return parent(parentClass, false);
     }
 
-    public <T extends Model> T parent(Class<T> parentClass, boolean cache) {
-        T cachedParent = parentClass.cast(cachedParents.get(parentClass));
+    public <P extends Model> P parent(Class<P> parentClass, boolean cache) {
+        P cachedParent = parentClass.cast(cachedParents.get(parentClass));
         if (cachedParent != null) {
             return cachedParent;
         }
@@ -987,9 +992,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         String parentIdName = parentMM.getIdName();
         String query = getMetaModelLocal().getDialect().selectStarParametrized(parentTable, parentIdName);
 
-        T parent;
         if (parentMM.cached()) {
-            parent = parentClass.cast(QueryCache.instance().getItem(parentTable, query, new Object[]{fkValue}));
+            P parent = parentClass.cast(QueryCache.instance().getItem(parentTable, query, new Object[]{fkValue}));
             if (parent != null) {
                 return parent;
             }
@@ -1001,7 +1005,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             return null;
         } else {
             try {
-                parent = parentClass.newInstance();
+                P parent = parentClass.newInstance();
                 parent.hydrate(results.get(0));
                 if (parentMM.cached()) {
                     QueryCache.instance().addItem(parentTable, query, new Object[]{fkValue}, parent);
@@ -1071,7 +1075,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @param other target model.
      */
-    public <T extends Model> void copyTo(T other) {
+    public void copyTo(Model other) {
         if (!getMetaModelLocal().getTableName().equals(other.getMetaModelLocal().getTableName())) {
             throw new IllegalArgumentException("can only copy between the same types");
         }
@@ -1097,9 +1101,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return
      */
     protected MetaModel<?, ?> getMetaModelLocal(){
-        if(metaModelLocal == null)
+        if(metaModelLocal == null) {
             metaModelLocal = getMetaModel();
-
+        }
         return metaModelLocal;
     }
 
@@ -1173,6 +1177,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return value for attribute.
      */
     public Object get(String attribute) {
+        Object value = getUnconverted(attribute);
+        Converter<Object, Object> converter = getMetaDataLocal().getConverterForValue(attribute, value, Object.class);
+        return converter != null ? converter.convert(value) : value;
+
+    }
+
+    public Object getUnconverted(String attribute) {
         if(frozen) throw new FrozenException(this);
 
         if(attribute == null) throw new IllegalArgumentException("attribute cannot be null");
@@ -1277,9 +1288,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return attribute value as string.
      */
     public String getString(String attribute) {
-        Object value = get(attribute);
-        Converter<Object, String> converter = getMetaDataLocal().getConverter(
-                attribute, (Class<Object>) value.getClass(), String.class);
+        Object value = getUnconverted(attribute);
+        Converter<Object, String> converter = getMetaDataLocal().getConverterForValue(attribute, value, String.class);
         return converter != null ? converter.convert(value) : Convert.toString(value);
     }
 
@@ -1362,9 +1372,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return instance of Timestamp.
      */
     public Timestamp getTimestamp(String attribute) {
-        Object value = get(attribute);
-        Converter<Object, Timestamp> converter = getMetaDataLocal().getConverter(
-                attribute, (Class<Object>) value.getClass(), Timestamp.class);
+        Object value = getUnconverted(attribute);
+        Converter<Object, Timestamp> converter = getMetaDataLocal().getConverterForValue(
+                attribute, value, Timestamp.class);
         return converter != null ? converter.convert(value) : Convert.toTimestamp(get(attribute));
     }
 
@@ -1402,9 +1412,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setString(String attribute, Object value) {
-        Converter<Object, String> converter = getMetaDataLocal().getConverter(
-                attribute, (Class<Object>) value.getClass(), String.class);
-        return set(attribute, converter != null ? converter.convert(value) : Convert.toString(value));
+        Converter<Object, String> converter = getMetaDataLocal().getConverterForValue(attribute, value, String.class);
+        return setConverted(attribute, converter != null ? converter.convert(value) : Convert.toString(value));
     }
 
     /**
@@ -1462,9 +1471,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setTimestamp(String attribute, Object value) {
-        Converter<Object, Timestamp> converter = getMetaDataLocal().getConverter(
-                attribute, (Class<Object>) value.getClass(), Timestamp.class);
-        return set(attribute, converter != null ? converter.convert(value) : Convert.toTimestamp(value));
+        Converter<Object, Timestamp> converter = getMetaDataLocal().getConverterForValue(
+                attribute, value, Timestamp.class);
+        return setConverted(attribute, converter != null ? converter.convert(value) : Convert.toTimestamp(value));
     }
 
     /**
@@ -1511,10 +1520,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return list of children in case of one to many, or list of other models, in case many to many.
      */
 
-    public <T extends Model> LazyList<T> getAll(Class<T> clazz) {
+    public <C extends Model> LazyList<C> getAll(Class<C> clazz) {
         List<Model> children = cachedChildren.get(clazz);
         if(children != null){
-            return (LazyList<T>) children;
+            return (LazyList<C>) children;
         }
 
         String tableName = Registry.instance().getTableName(clazz);
@@ -1550,11 +1559,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param params parameters for a sub-query
      * @return list of relations in many to many
      */
-    public <T extends Model> LazyList<T> get(Class<T> clazz, String query, Object ... params){
+    public <C extends Model> LazyList<C> get(Class<C> clazz, String query, Object ... params){
         return get(Registry.instance().getTableName(clazz), query, params);
     }
 
-    private <T extends Model> LazyList<T> get(String targetTable, String criteria, Object ...params) {
+    private <C extends Model> LazyList<C> get(String targetTable, String criteria, Object ...params) {
         //TODO: interesting thought: is it possible to have two associations of the same name, one to many and many to many? For now, say no.
 
         OneToManyAssociation oneToManyAssociation = (OneToManyAssociation)getMetaModelLocal().getAssociationForTarget(targetTable, OneToManyAssociation.class);
@@ -1579,7 +1588,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             for (int i = 0; i < params.length; i++) {
                 allParams[i + 1] = params[i];
             }
-            return new LazyList<T>(true, Registry.instance().getMetaModel(targetTable), query, allParams);
+            return new LazyList<C>(true, Registry.instance().getMetaModel(targetTable), query, allParams);
         } else if (oneToManyPolymorphicAssociation != null) {
             subQuery = "parent_id = ? AND " + " parent_type = '" + oneToManyPolymorphicAssociation.getTypeLabel() + "'" + additionalCriteria;
         } else {
@@ -1591,7 +1600,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         for (int i = 0; i < params.length; i++) {
             allParams[i + 1] = params[i];
         }
-        return new LazyList<T>(subQuery, Registry.instance().getMetaModel(targetTable), allParams);
+        return new LazyList<C>(subQuery, Registry.instance().getMetaModel(targetTable), allParams);
     }
 
     protected static NumericValidationBuilder validateNumericalityOf(String... attributes) {
@@ -1746,7 +1755,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attributes attribute names
      */
     protected static void dateFormat(String pattern, String... attributes) {
-        getMetaData().addDateConverters(pattern, attributes);
+        getMetaData().dateFormat(pattern, attributes);
     }
 
     /**
@@ -1759,7 +1768,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attributes attribute names
      */
     protected static void dateFormat(DateFormat format, String... attributes) {
-        getMetaData().addDateConverters(format, attributes);
+        getMetaData().dateFormat(format, attributes);
     }
 
     /**
@@ -1790,7 +1799,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attributes attribute names
      */
     protected static void timestampFormat(String pattern, String... attributes) {
-        getMetaData().addTimestampConverters(pattern, attributes);
+        getMetaData().timestampFormat(pattern, attributes);
     }
 
     /**
@@ -1803,7 +1812,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attributes attribute names
      */
     protected static void timestampFormat(DateFormat format, String... attributes) {
-        getMetaData().addTimestampConverters(format, attributes);
+        getMetaData().timestampFormat(format, attributes);
+    }
+
+    protected static void blankStringToNull(String... attributes) {
+        getMetaData().addConverter(new BlankStringToNullConverter(), attributes);
     }
 
     public static boolean belongsTo(Class<? extends Model> targetClass) {
@@ -2743,4 +2756,3 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         attributes = (Map<String, Object>) in.readObject();
     }
 }
-

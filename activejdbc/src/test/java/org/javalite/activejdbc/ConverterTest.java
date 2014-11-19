@@ -27,8 +27,7 @@ public class ConverterTest extends ActiveJDBCTest {
 
     @Test
     public void shouldSetAndGetDateAsString() {
-        Student student = new Student();
-        student.setDate("dob", "11/15/2007");
+        Student student = new Student().setDate("dob", "11/15/2007");
 
         the(student.get("dob")).shouldBeA(java.sql.Date.class);
         Calendar cal = GregorianCalendar.getInstance();
@@ -41,15 +40,26 @@ public class ConverterTest extends ActiveJDBCTest {
     }
 
     @Test
+    public void shouldSetNullDate() {
+        Student student = new Student().setDate("dob", null);
+        the(student.get("dob")).shouldBeNull();
+    }
+
+    @Test
     public void shouldSetAndGetStringAsDate() {
-        Student student = new Student();
         java.sql.Date date = getDate(2007, 11, 15);
-        student.setString("dob", date);
+        Student student = new Student().setString("dob", date);
 
         the(student.get("dob")).shouldBeA(String.class);
         the(student.get("dob")).shouldBeEqual("11/15/2007");
 
         the(student.getDate("dob").getTime()).shouldBeEqual(date.getTime());
+    }
+
+    @Test
+    public void shouldSetNullString() {
+        Student student = new Student().setString("dob", null);
+        the(student.get("dob")).shouldBeNull();
     }
 
     @Test
@@ -61,8 +71,7 @@ public class ConverterTest extends ActiveJDBCTest {
 
     @Test
     public void shouldSetAndGetTimestampAsString() {
-        Student student = new Student();
-        student.setTimestamp("enrollment_date", "11/16/2014 10 PM");
+        Student student = new Student().setTimestamp("enrollment_date", "11/16/2014 10 PM");
 
         the(student.get("enrollment_date")).shouldBeA(java.sql.Timestamp.class);
         Calendar cal = GregorianCalendar.getInstance();
@@ -79,10 +88,15 @@ public class ConverterTest extends ActiveJDBCTest {
     }
 
     @Test
+    public void shouldSetNullTimestamp() {
+        Student student = new Student().setTimestamp("enrollment_date", null);
+        the(student.get("enrollment_date")).shouldBeNull();
+    }
+
+    @Test
     public void shouldSetAndGetStringAsTimestamp() {
-        Student student = new Student();
         java.sql.Timestamp timestamp = getTimestamp(2014, 11, 16, 22, 0, 0, 0);
-        student.setString("enrollment_date", timestamp);
+        Student student = new Student().setString("enrollment_date", timestamp);
 
         the(student.get("enrollment_date")).shouldBeA(String.class);
         the(student.get("enrollment_date")).shouldBeEqual("11/16/2014 10 PM");
@@ -110,5 +124,30 @@ public class ConverterTest extends ActiveJDBCTest {
         the(student.getString("dob")).shouldBeEqual("02/29/2000");
         the(student.get("enrollment_date")).shouldBeA(java.sql.Timestamp.class);
         the(student.getString("enrollment_date")).shouldBeEqual("02/29/2008 12 PM");
+    }
+
+    @Test
+    public void shouldCreateBlankStringAsNull() {
+        Student student = Student.create("first_name", "", "last_name", " ");
+        the(student.get("first_name")).shouldBeNull();
+        the(student.get("last_name")).shouldBeNull();
+    }
+
+    @Test
+    public void shouldSetBlankStringAsNull() {
+        Student student = new Student().set("first_name", "").set("last_name", "\t ");
+        the(student.get("first_name")).shouldBeNull();
+        the(student.get("last_name")).shouldBeNull();
+
+        student = new Student().setString("first_name", "    \t").setString("last_name", "");
+        the(student.get("first_name")).shouldBeNull();
+        the(student.get("last_name")).shouldBeNull();
+    }
+
+    @Test
+    public void shouldSetNull() {
+        Student student = new Student().set("first_name", null).setString("last_name", null);
+        the(student.get("first_name")).shouldBeNull();
+        the(student.get("last_name")).shouldBeNull();
     }
 }

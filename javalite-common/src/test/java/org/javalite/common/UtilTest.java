@@ -82,7 +82,22 @@ public class UtilTest extends JSpecSupport {
     }
 
     @Test
-    public void testIsEmptyArray() {
+    public void testBlankString(){
+        a(Util.blank(null)).shouldBeTrue();
+        a(Util.blank("")).shouldBeTrue();
+        a(Util.blank(" ")).shouldBeTrue();
+        a(Util.blank("\t    ")).shouldBeTrue();
+        a(Util.blank(' ')).shouldBeTrue();
+        a(Util.blank('\t')).shouldBeTrue();
+        a(Util.blank(new StringBuilder())).shouldBeTrue();
+        a(Util.blank("Foo")).shouldBeFalse();
+        a(Util.blank("A")).shouldBeFalse();
+        a(Util.blank('A')).shouldBeFalse();
+        a(Util.blank(new StringBuilder().append("Bar"))).shouldBeFalse();
+    }
+
+    @Test
+    public void testEmptyArray() {
         a(Util.empty(null)).shouldBeTrue();
         a(Util.empty(new Object[] {})).shouldBeTrue();
         a(Util.empty(new Object[] { 1 })).shouldBeFalse();

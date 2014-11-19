@@ -22,6 +22,8 @@ import java.text.SimpleDateFormat;
 
 /**
  * Converts instances of {@link String} to {@link java.sql.Date}.
+ *
+ * @author ericbn
  */
 public class StringToSqlDateConverter implements Converter<String, java.sql.Date> {
 

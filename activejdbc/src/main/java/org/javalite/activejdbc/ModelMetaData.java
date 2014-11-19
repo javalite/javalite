@@ -26,6 +26,8 @@ import org.javalite.activejdbc.conversion.StringToTimestampConverter;
 
 /**
  * Stores metadata for a Model: converters, etc.
+ *
+ * @author ericbn
  */
 class ModelMetaData {
     private final Map<String, List<Converter>> attributeConverters = new HashMap<String, List<Converter>>();
@@ -33,45 +35,46 @@ class ModelMetaData {
     /**
      * Registers date converters (Date -> String -> java.sql.Date) for specified model attributes.
      */
-    void addDateConverters(String pattern, String... attributes) {
-        addDateConverters(new SimpleDateFormat(pattern), attributes);
+    void dateFormat(String pattern, String... attributes) {
+        dateFormat(new SimpleDateFormat(pattern), attributes);
     }
 
     /**
      * Registers date converters (Date -> String -> java.sql.Date) for specified model attributes.
      */
-    void addDateConverters(DateFormat format, String... attributes) {
-        Converter from = new DateToStringConverter(format);
-        Converter to = new StringToSqlDateConverter(format);
-        for (String attribute : attributes) {
-            addConverter(from, attribute);
-            addConverter(to, attribute);
-        }
+    void dateFormat(DateFormat format, String... attributes) {
+        addConverter(new DateToStringConverter(format), attributes);
+        addConverter(new StringToSqlDateConverter(format), attributes);
     }
 
     /**
      * Registers timestamp converters (Date -> String -> java.sql.Timestamp) for specified model attributes.
      */
-    void addTimestampConverters(String pattern, String... attributes) {
-        addTimestampConverters(new SimpleDateFormat(pattern), attributes);
+    void timestampFormat(String pattern, String... attributes) {
+        timestampFormat(new SimpleDateFormat(pattern), attributes);
     }
 
     /**
      * Registers timestamp converters (Date -> String -> java.sql.Timestamp) for specified model attributes.
      */
-    void addTimestampConverters(DateFormat format, String... attributes) {
-        Converter from = new DateToStringConverter(format);
-        Converter to = new StringToTimestampConverter(format);
+    void timestampFormat(DateFormat format, String... attributes) {
+        addConverter(new DateToStringConverter(format), attributes);
+        addConverter(new StringToTimestampConverter(format), attributes);
+    }
+
+    /**
+     * Registers converter for specified model attributes.
+     */
+    void addConverter(Converter converter, String... attributes) {
         for (String attribute : attributes) {
-            addConverter(from, attribute);
-            addConverter(to, attribute);
+            addConverter(converter, attribute);
         }
     }
 
     /**
      * Registers converter for specified model attribute.
      */
-    private void addConverter(Converter converter, String attribute) {
+    void addConverter(Converter converter, String attribute) {
         List<Converter> list = attributeConverters.get(attribute);
         if (list == null) {
             list = new ArrayList<Converter>();
@@ -84,7 +87,7 @@ class ModelMetaData {
      * @return converter for specified model attribute, able to convert from sourceClass to destinationClass;
      * returns null if no suitable converter was found.
      */
-    <S, T> Converter<S, T> getConverter(String attribute, Class<S> sourceClass, Class<T> destinationClass) {
+    <S, T> Converter<S, T> getConverterForClass(String attribute, Class<S> sourceClass, Class<T> destinationClass) {
         List<Converter> list = attributeConverters.get(attribute);
         if (list != null) {
             for (Converter converter : list) {
@@ -94,5 +97,10 @@ class ModelMetaData {
             }
         }
         return null;
+    }
+
+    <T> Converter<Object, T> getConverterForValue(String attribute, Object value, Class<T> destinationClass) {
+        return getConverterForClass(attribute,
+                value != null ? (Class<Object>) value.getClass() : Object.class, destinationClass);
     }
 }
