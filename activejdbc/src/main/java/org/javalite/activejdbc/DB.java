@@ -27,6 +27,8 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.util.*;
 
+import static org.javalite.common.Util.closeQuietly;
+
 /**
  * This class provides a number of convenience methods for opening/closing database connections, running various 
  * types of queries, and executing SQL statements. This class differs from {@link Base} such that in this class you
@@ -495,8 +497,8 @@ public class DB {
         } catch (SQLException e) {
             throw new DBException(sql, null, e);
         } finally {
-            try { if(rs != null) rs.close(); } catch (SQLException e) {/*ignore*/}
-            try { if (s != null) s.close(); } catch (SQLException e) {/*ignore*/}
+            closeQuietly(rs);
+            closeQuietly(s);
         }
     }
 
@@ -530,7 +532,7 @@ public class DB {
             logException("Query failed: " + query, e);
             throw new DBException(query, null, e);
         } finally {
-            try { if (s != null) s.close(); } catch (SQLException e) {/*ignore*/}
+            closeQuietly(s);
         }
     }
 
@@ -563,7 +565,7 @@ public class DB {
             logException("Failed query: " + query, e);
             throw new DBException(query, params, e);
         } finally {
-            try { if (ps != null) ps.close(); } catch (SQLException e) {/*ignore*/}
+            closeQuietly(ps);
         }
 
     }
@@ -584,7 +586,7 @@ public class DB {
             throw new IllegalArgumentException("this method is only for inserts");
 
         long start = System.currentTimeMillis();
-        PreparedStatement ps;
+        PreparedStatement ps = null;
         try {
             Connection connection = connection();
             ps = StatementCache.instance().getPreparedStatement(connection, query);
@@ -631,10 +633,13 @@ public class DB {
                 logger.error("Failed to find out the auto-incremented value, returning -1, query: {}", query, e);
                 return -1;
             } finally {
-                try { if (rs != null) rs.close(); } catch (SQLException e) {/*ignore*/}
+                closeQuietly(rs);
             }
         } catch (SQLException e) {
             throw new DBException(query, params, e);
+        } finally {
+            // don't close ps as it could have come from the cache!
+            //TODO: close ps if not cached?
         }
     }
 

@@ -18,6 +18,8 @@ package org.javalite.activejdbc.conversion;
 
 /**
  * Class for conversion exceptions. To be thrown by implementations of {@link Converter}.
+ *
+ * @author ericbn
  */
 public class ConversionException extends RuntimeException {
 

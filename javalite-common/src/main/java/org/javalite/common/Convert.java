@@ -35,8 +35,11 @@ import static org.javalite.common.Util.*;
  * Convenience class for type conversions. 
  *
  * @author Igor Polevoy
+ * @author ericbn
  */
-public class Convert {
+public final class Convert {
+
+    private Convert() { }
 
     /**
      * Returns string representation of an object, including {@link java.sql.Clob}.
@@ -69,8 +72,8 @@ public class Convert {
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
-            close(sw);
-            close(r);
+            closeQuietly(sw);
+            closeQuietly(r);
         }
     }
 
@@ -114,10 +117,10 @@ public class Convert {
 
 
     /**
-     * Expects a <code>java.sql.Date</code>, <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code> or
-     * any object whose toString method has this format: <code>yyyy-mm-dd</code>.
+     * Expects a <code>java.sql.Date</code>, <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code>,
+     * <code>Long</code> or any object whose toString method has this format: <code>yyyy-mm-dd</code>.
      *
-     * @param value argument that is possible to convert to <code>java.sql.Date</code>.  
+     * @param value argument that is possible to convert to <code>java.sql.Date</code>.
      * @return <code>java.sql.Date</code> instance representing input value.
      */
     public static java.sql.Date toSqlDate(Object value){
@@ -139,13 +142,13 @@ public class Convert {
     }
 
     /**
-     * Expects a <code>java.sql.Date</code>, <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code> or
-     * string with format: <code>yyyy-mm-dd</code>. This method will also truncate hours, minutes, seconds and
+     * Expects a <code>java.sql.Date</code>, <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code>,
+     * <code>Long</code> or string with format: <code>yyyy-mm-dd</code>. This method will also truncate hours, minutes, seconds and
      * milliseconds to zeros, to conform with JDBC spec:
      * <q href="http://download.oracle.com/javase/6/docs/api/java/sql/Date.html">http://download.oracle.com/javase/6/docs/api/java/sql/Date.html</a>.
      *
      * @param value argument that is possible to convert to <code>java.sql.Date</code>: <code>java.sql.Date</code>,
-     * <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code> or any object with toString() == <code>yyyy-mm-dd</code>.
+     * <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code>, <code>Long</code> or any object with toString() == <code>yyyy-mm-dd</code>.
      * @return <code>java.sql.Date</code> instance representing input value.
      */
     public static java.sql.Date truncateToSqlDate(Object value){
@@ -154,9 +157,9 @@ public class Convert {
         } else if (value instanceof java.sql.Date) {
             return (java.sql.Date) value;
         } else if (value instanceof java.util.Date) {
-            return truncate(((java.util.Date) value).getTime());
+            return truncateToSqlDate(((java.util.Date) value).getTime());
         } else if (value instanceof Long) {
-            return truncate(((Long) value));
+            return truncateToSqlDate((Long) value);
         } else {
             try {
                 return java.sql.Date.valueOf(value.toString());
@@ -166,7 +169,14 @@ public class Convert {
         }
     }
 
-    private static java.sql.Date truncate(long time) {
+    /**
+     * This method will truncate hours, minutes, seconds and milliseconds to zeros, to conform with JDBC spec:
+     * <q href="http://download.oracle.com/javase/6/docs/api/java/sql/Date.html">http://download.oracle.com/javase/6/docs/api/java/sql/Date.html</a>.
+     *
+     * @param time time in UTC milliseconds from the epoch
+     * @return <code>java.sql.Date</code> instance representing time value
+     */
+    public static java.sql.Date truncateToSqlDate(long time) {
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(time);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -252,8 +262,8 @@ public class Convert {
 
 
     /**
-     * Converts value to Long if it can. If value is a Long, it is returned, if it is a Number, it is
-     * promoted to Long and then returned, in all other cases, it converts the value to String,
+     * Converts value to <code>Long</code> if it can. If value is a </code>Long</code>, it is returned, if it is a <code>Number</code>, it is
+     * promoted to <code>Long</code> and then returned, if it is a <code>Date</code>, returns its getTime() value, in all other cases, it converts the value to String,
      * then tries to parse Long from it.
      *
      * @param value value to be converted to Long.
@@ -332,17 +342,27 @@ public class Convert {
      */
     public static byte[] toBytes(Object value) {
         if (value instanceof Blob) {
-            InputStream is = null;
-            try {
-                is = ((Blob) value).getBinaryStream();
-                return bytes(is);
-            } catch (Exception e) {
-                throw new ConversionException(e);
-            } finally {
-                close(is);
-            }
+            return toBytes((Blob) value);
         } else {
             return value instanceof byte[] ? (byte[]) value : toString(value).getBytes();
+        }
+    }
+
+    /**
+     * Converts <code>java.sql.Blob</code> to bytes array.
+     *
+     * @param blob Blob to be converted
+     * @return blob converted to byte array
+     */
+    public static byte[] toBytes(Blob blob) {
+        InputStream is = null;
+        try {
+            is = blob.getBinaryStream();
+            return bytes(is);
+        } catch (Exception e) {
+            throw new ConversionException(e);
+        } finally {
+            closeQuietly(is);
         }
     }
 
@@ -371,5 +391,3 @@ public class Convert {
         }
     }
 }
-
-

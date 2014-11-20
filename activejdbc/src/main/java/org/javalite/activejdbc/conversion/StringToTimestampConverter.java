@@ -22,6 +22,8 @@ import java.text.SimpleDateFormat;
 
 /**
  * Converts instances of {@link String} to {@link java.sql.Timestamp}.
+ *
+ * @author ericbn
  */
 public class StringToTimestampConverter implements Converter<String, java.sql.Timestamp> {
 

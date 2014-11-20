@@ -28,5 +28,6 @@ public class Student extends Model {
     static {
         dateFormat("MM/dd/yyyy", "dob");
         timestampFormat("MM/dd/yyyy h a", "enrollment_date");
+        blankStringToNull("first_name", "last_name");
     }
 }

@@ -8,6 +8,8 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
+import static org.javalite.common.Util.*;
+
 /**
  * @author Igor Polevoy
  */
@@ -21,14 +23,15 @@ public class OracleDBReset {
             for (String statement : statements) {
                 if(Util.blank(statement)) continue;
                 Statement st = null;
-                st = Base.connection().createStatement();
-                try{
+                try {
+                    st = Base.connection().createStatement();
                     st.executeUpdate(statement);
-                }catch(SQLException e){
+                } catch(SQLException e) {
                     System.out.println("Problem statement: " + statement);
                     throw e;
+                } finally {
+                    closeQuietly(st);
                 }
-                st.close();
             }
     }
 

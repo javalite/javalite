@@ -18,12 +18,18 @@ limitations under the License.
 package org.javalite.common;
 
 import java.io.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 
 /**
  * @author Igor Polevoy
+ * @author ericbn
  */
-public class Util {
+public final class Util {
+
+    private Util() { }
 
     /**
      * Reads contents of resource fully into a byte array.
@@ -38,7 +44,7 @@ public class Util {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            close(is);
+            closeQuietly(is);
         }
     }
 
@@ -66,7 +72,7 @@ public class Util {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            close(is);
+            closeQuietly(is);
         }
     }
 
@@ -84,7 +90,7 @@ public class Util {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            close(in);
+            closeQuietly(in);
         }
     }
 
@@ -103,10 +109,18 @@ public class Util {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            close(in);
+            closeQuietly(in);
         }
     }
 
+    /**
+     * @deprecated use {@link #closeQuietly(java.io.Closeable)} instead. Two problems can arise if resources are not
+     * closed quietly in the finally block: (1) If there are multiple close() calls, and one of the first ones throws
+     * an Exception, then the following ones will never be called. (2) If an Exception is thrown inside the
+     * try { ... } catch block and another Exception is thrown by a close() call in the finally { ... } block, then the
+     * second Exception will hide the first one.
+     */
+    @Deprecated
     public static void close(Closeable c) {
         try {
             if (c != null) { c.close(); }
@@ -116,6 +130,26 @@ public class Util {
         }
     }
 
+    public static void closeQuietly(Closeable c) {
+        try {
+            if (c != null) { c.close(); }
+        } catch (IOException e) {
+        }
+    }
+
+    public static void closeQuietly(ResultSet rs) {
+        try {
+            if (rs != null) { rs.close(); }
+        } catch (SQLException e) {
+        }
+    }
+
+    public static void closeQuietly(Statement st) {
+        try {
+            if (st != null) { st.close(); }
+        } catch (SQLException e) {
+        }
+    }
 
     /**
      * Reads contents of the input stream fully and returns it as String. Sets UTF-8 encoding internally.
@@ -152,7 +186,7 @@ public class Util {
             }
             return sb.toString();
         } finally {
-            close(reader);
+            closeQuietly(reader);
         }
     }
 
@@ -178,7 +212,7 @@ public class Util {
             }
             return os.toByteArray();
         } finally {
-            close(os);
+            closeQuietly(os);
         }
     }
 
@@ -194,7 +228,7 @@ public class Util {
         try {
             return bytes(is);
         } finally {
-            close(is);
+            closeQuietly(is);
         }
     }
 
@@ -218,8 +252,8 @@ public class Util {
             }
             return lines;
         } finally {
-            close(reader);
-            close(isreader);
+            closeQuietly(reader);
+            closeQuietly(isreader);
         }
     }
 
@@ -411,7 +445,7 @@ public class Util {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            close(out);
+            closeQuietly(out);
         }
     }
 
@@ -433,8 +467,8 @@ public class Util {
             pw.flush();
             return sw.toString();
         } finally {
-            close(pw);
-            close(sw);
+            closeQuietly(pw);
+            closeQuietly(sw);
         }
     }
 
@@ -450,7 +484,7 @@ public class Util {
             is = new ByteArrayInputStream(content);
             saveTo(path, is);
         } finally {
-            close(is);
+            closeQuietly(is);
         }
     }
 

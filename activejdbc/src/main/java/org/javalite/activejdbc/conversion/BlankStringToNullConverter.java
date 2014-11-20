@@ -16,28 +16,31 @@ limitations under the License.
 
 package org.javalite.activejdbc.conversion;
 
+import static org.javalite.common.Util.*;
+
 /**
- * Converts instances of <tt>S</tt> to <tt>T</tt>.
- * @param <S> Source type
- * @param <T> Destination type
+ * Converts instances of <tt>String</tt> that are empty or contain only whitespaces to <tt>null</tt>.
  *
  * @author ericbn
  */
-public interface Converter<S, T> {
+public class BlankStringToNullConverter implements Converter<String, Object> {
 
     /**
-     * Returns <tt>true</tt> if this converter can convert instances of <tt>sourceClass</tt> to
-     * <tt>destinationClass</tt>.
      * @param sourceClass source Class
      * @param destinationClass destination Class
-     * @return true if this converter can convert instances of sourceClass to destinationClass, false otherwise
+     * @return true if sourceClass is String
      */
-    boolean canConvert(Class sourceClass, Class destinationClass);
+    @Override
+    public boolean canConvert(Class sourceClass, Class destinationClass) {
+        return String.class.equals(sourceClass);
+    }
 
     /**
-     * Converts instance of <tt>S</tt> to <tt>T</tt>.
-     * @param source instance of S
-     * @return instance of S converted to type T
+     * @param source instance of String
+     * @return null if source is empty or contains only whitespaces, source otherwise
      */
-    T convert(S source);
+    @Override
+    public Object convert(String source) {
+        return blank(source) ? null : source;
+    }
 }

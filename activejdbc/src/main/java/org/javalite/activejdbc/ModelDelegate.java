@@ -41,16 +41,10 @@ class ModelDelegate {
     }
 
     static void setNamesAndValues(Model m, Object... namesAndValues) {
-
-        String[] names = new String[namesAndValues.length / 2];
-        Object[] values = new Object[namesAndValues.length / 2];
-        int j = 0;
-        for (int i = 0; i < namesAndValues.length - 1; i += 2, j++) {
+        for (int i = 0; i < namesAndValues.length - 1; i += 2) {
             if (namesAndValues[i] == null) throw new IllegalArgumentException("attribute names cannot be nulls");
-            names[j] = namesAndValues[i].toString();
-            values[j] = namesAndValues[i + 1];
+            m.set(namesAndValues[i].toString(), namesAndValues[i + 1]);
         }
-        m.set(names, values);
     }
 
     static void purgeEdges(MetaModel metaModel ){

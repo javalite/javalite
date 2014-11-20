@@ -32,7 +32,7 @@ import org.junit.After;
 import org.junit.Before;
 
 import static org.javalite.activejdbc.test.JdbcProperties.*;
-
+import static org.javalite.common.Util.*;
 
 public abstract class ActiveJDBCTest extends JSpecSupport {
 
@@ -199,16 +199,6 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
         return statementProvider;
     }
 
-    private void close(Statement st) {
-        if (st != null) {
-            try {
-                st.close();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
     private void executeStatements(List<String> statements) {
         for (String statement : statements) {
             Statement st = null;
@@ -218,7 +208,7 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
             } catch (SQLException e) {
                 throw new RuntimeException(statement, e);
             } finally {
-                close(st);
+                closeQuietly(st);
             }
         }
     }
