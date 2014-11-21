@@ -17,6 +17,7 @@ limitations under the License.
 package app.controllers;
 
 import org.javalite.activeweb.AppController;
+import org.javalite.activeweb.FileItem;
 import org.javalite.activeweb.FormItem;
 import org.javalite.activeweb.annotations.POST;
 import org.javalite.common.Util;
@@ -99,7 +100,7 @@ public class UploadController extends AppController {
     @POST
     public void getFile() throws IOException {
 
-        InputStream in = getFileInputStream("file", multipartFormItems());
-        respond(Util.read(in));
+        FileItem file = getFile("file", multipartFormItems());
+        respond(file.getStreamAsString());
     }
 }

@@ -508,10 +508,10 @@ public class HttpSupport {
      * @return <code>InputStream</code> from which to read content of uploaded file.
      * @throws WebException in case field name is not found in the request.
      */
-    protected InputStream getFileInputStream(String fieldName, List<FormItem> formItems){
+    protected org.javalite.activeweb.FileItem getFile(String fieldName, List<FormItem> formItems){
         for (FormItem formItem : formItems) {
             if(formItem.isFile() && formItem.getFieldName().equals(fieldName)){
-                return formItem.getInputStream();
+                return (org.javalite.activeweb.FileItem)formItem;
             }
         }
         throw new WebException("File with field named: '" + fieldName + "' not found");
