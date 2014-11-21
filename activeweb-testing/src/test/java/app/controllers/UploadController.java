@@ -99,8 +99,12 @@ public class UploadController extends AppController {
 
     @POST
     public void getFile() throws IOException {
-
         FileItem file = getFile("file", multipartFormItems());
         respond(file.getStreamAsString());
+    }
+
+    @POST
+    public void multipleArguments() throws IOException {
+        respond(param("first_name", multipartFormItems()) + " " + param("last_name", multipartFormItems()));
     }
 }

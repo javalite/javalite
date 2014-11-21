@@ -38,9 +38,8 @@ import static org.javalite.common.Collections.map;
  * @author Igor Polevoy
  */
 public class HttpSupport {
-
-
     private Logger logger = LoggerFactory.getLogger(getClass().getName());
+    private List<FormItem> formItems;
 
     protected void logInfo(String info){
         logger.info(info);
@@ -767,9 +766,13 @@ public class HttpSupport {
      * @return a collection of uploaded files from a multi-part request.
      */
     protected List<FormItem> multipartFormItems(String encoding) {
+        //we are thread safe, because controllers are pinned to a thread and discarded after each request.
+        if(formItems != null ){
+            return formItems;
+        }
+
         HttpServletRequest req = Context.getHttpRequest();
 
-        List<FormItem> formItems;
         if (req instanceof AWMockMultipartHttpServletRequest) {//running inside a test, and simulating upload.
             formItems = ((AWMockMultipartHttpServletRequest) req).getFormItems();
         } else {

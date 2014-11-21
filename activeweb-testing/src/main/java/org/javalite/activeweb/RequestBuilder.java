@@ -75,6 +75,25 @@ public class RequestBuilder {
     }
 
     /**
+     * Convenience method for sending pairs of name and values with multi-part request.
+     *
+     * @param namesAndValues names and following corresponding values. The following pattern is expected:
+     *                       name,value,name1,value1...
+     * @return @return {@link org.javalite.activeweb.RequestBuilder} for setting additional request parameters.
+     */
+    public RequestBuilder formItems(Object ... namesAndValues){
+        if(namesAndValues.length % 2 != 0)
+            throw new IllegalArgumentException("number of arguments must be even");
+
+        for (int i = 0; i < namesAndValues.length - 1; i += 2) {
+            a(namesAndValues[i]).shouldNotBeNull();
+            a(namesAndValues[i + 1]).shouldNotBeNull();
+            formItem(namesAndValues[i].toString(), namesAndValues[i].toString(), false, "text/plain", namesAndValues[i + 1].toString().getBytes());
+        }
+        return this;
+    }
+
+    /**
      * Adds an "uploaded" file to the request. Do not forget to set the content type to: "multipart/form-data", or
      * this method will be ignored.
      *

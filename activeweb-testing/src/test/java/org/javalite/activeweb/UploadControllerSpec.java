@@ -150,11 +150,19 @@ public class UploadControllerSpec extends IntegrationSpec{
 
     @Test
     public void shouldGetFileInputStream(){
-
         controller("upload")
                 .contentType("multipart/form-data")
                 .formItem(new FileItem("hello.txt", "file", "text/plain", "hello".getBytes()))
                 .post("get-file");
         a(responseContent()).shouldBeEqual("hello");
+    }
+
+    @Test
+    public void shouldSendMultipleArguments(){
+        controller("upload")
+                .contentType("multipart/form-data")
+                .formItems("first_name", "John", "last_name", "Doe")
+                .post("multiple-arguments");
+        a(responseContent()).shouldBeEqual("John Doe");
     }
 }
