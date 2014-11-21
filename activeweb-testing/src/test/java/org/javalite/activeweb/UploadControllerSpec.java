@@ -106,4 +106,55 @@ public class UploadControllerSpec extends IntegrationSpec{
 
         a(responseContent()).shouldBeEqual("<html> <div> <div>hello2.txt</div> <div>.. and salutations!</div> </div> </html>");
     }
+
+    @Test
+    public void shouldParseMap(){
+        controller("upload")
+                .contentType("multipart/form-data")
+                .formItem("person[first_name]", "John")
+                .formItem("person[last_name]", "Doe")
+                .post("parse-map");
+        a(responseContent()).shouldBeEqual("John Doe");
+    }
+
+    @Test
+    public void shouldParseSingleParam(){
+        controller("upload")
+                .contentType("multipart/form-data")
+                .formItem("name", "John")
+                .post("single-param");
+        a(responseContent()).shouldBeEqual("John");
+    }
+
+    @Test
+    public void shouldParseParam1st(){
+        controller("upload")
+                .contentType("multipart/form-data")
+                .formItem("first_name", "John")
+                .formItem("last_name", "Doe")
+                .formItem("first_name", "Matt")
+                .formItem("last_name", "Karr")
+                .post("single-params1st");
+        a(responseContent()).shouldBeEqual("John Doe");
+    }
+
+    @Test
+    public void shouldParseParamValues(){
+        controller("upload")
+                .contentType("multipart/form-data")
+                .formItem("name", "John Doe")
+                .formItem("name", "Matt Karr")
+                .post("param-values");
+        a(responseContent()).shouldBeEqual("John Doe,Matt Karr");
+    }
+
+    @Test
+    public void shouldGetFileInputStream(){
+
+        controller("upload")
+                .contentType("multipart/form-data")
+                .formItem(new FileItem("hello.txt", "file", "text/plain", "hello".getBytes()))
+                .post("get-file");
+        a(responseContent()).shouldBeEqual("hello");
+    }
 }

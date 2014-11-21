@@ -21,11 +21,11 @@ public class RequestUtils {
     private static Logger logger = LoggerFactory.getLogger(RequestUtils.class);
 
     /**
-     * Returns value of one named parameter from request. If this name represents multiple values, this
-     * call will result in {@link IllegalArgumentException}.
+     * Returns value of routing user segment, or route wild card value, or request parameter.
+     * If this name represents multiple values, this  call will result in {@link IllegalArgumentException}.
      *
      * @param name name of parameter.
-     * @return value of request parameter.
+     * @return value of routing user segment, or route wild card value, or request parameter.
      */
     public static String param(String name){
         if(name.equals("id")){
@@ -40,6 +40,24 @@ public class RequestUtils {
         }
     }
 
+
+    /**
+     * Convenience method to get a parameter value in case <code>multipart/form-data</code> request was used.
+     *
+     * Returns a value of one named parameter from request. Will only return form fields, and not files.
+     *
+     * @param name name of parameter.
+     * @param formItems form items retrieved from <code>multipart/form-data</code> request.
+     * @return value of request parameter  from <code>multipart/form-data</code> request or null if not found.
+     */
+    public static String param(String name, List<FormItem> formItems) {
+        for (FormItem formItem : formItems) {
+            if(formItem.isFormField() && formItem.getFieldName().equals(name)){
+                return formItem.getStreamAsString();
+            }
+        }
+        return null;
+    }
 
     /**
      * Returns value of ID if one is present on a URL. Id is usually a part of a URI, such as: <code>/controller/action/id</code>.
@@ -267,7 +285,25 @@ public class RequestUtils {
 
 
     /**
-     * Returns a map where keys are names of all parameters, while values are first value for each parameter, even
+     * Convenience method to get parameter values in case <code>multipart/form-data</code> request was used.
+     * Returns multiple request values for a name.
+     *
+     * @param name name of multiple values from request.
+     * @param formItems form items retrieved from <code>multipart/form-data</code> request.
+     * @return multiple request values for a name. Will ignore files, and only return form fields.
+     */
+    public static List<String> params(String name, List<FormItem> formItems) {
+        List<String> vals = new ArrayList<String>();
+        for (FormItem formItem : formItems) {
+            if(formItem.isFormField() && formItem.getFieldName().equals(name)){
+                vals.add(formItem.getStreamAsString());
+            }
+        }
+        return vals;
+    }
+
+    /**
+     * Returns a map where keys are names of all parameters, while values are the first value for each parameter, even
      * if such parameter has more than one value submitted.
      *
      * @return a map where keys are names of all parameters, while values are first value for each parameter, even
@@ -287,6 +323,26 @@ public class RequestUtils {
         Map<String, String> userSegments = Context.getRequestContext().getUserSegments();
         params.putAll(userSegments);
         return params;
+    }
+
+    /**
+     * Convenience method to get parameters in case <code>multipart/form-data</code> request was used.
+     *
+     * Returns a map where keys are names of all parameters, while values are the first value for each parameter, even
+     * if such parameter has more than one value submitted.
+     *
+     * @param formItems form items retrieved from <code>multipart/form-data</code> request.
+     * @return a map where keys are names of all parameters, while values are first value for each parameter, even
+     * if such parameter has more than one value submitted.
+     */
+    public static Map<String, String> params1st(List<FormItem> formItems) {
+        Map<String, String> vals = new HashMap<String, String>();
+        for (FormItem formItem : formItems) {
+            if(formItem.isFormField() && !vals.containsKey(formItem.getFieldName())){
+                vals.put(formItem.getFieldName(), formItem.getStreamAsString());
+            }
+        }
+        return vals;
     }
 
 

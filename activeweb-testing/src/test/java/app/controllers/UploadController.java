@@ -19,7 +19,10 @@ package app.controllers;
 import org.javalite.activeweb.AppController;
 import org.javalite.activeweb.FormItem;
 import org.javalite.activeweb.annotations.POST;
+import org.javalite.common.Util;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -58,9 +61,6 @@ public class UploadController extends AppController {
         view("items", items);
     }
 
-
-
-
     @POST
     public void withId(){
         view("id", getId());
@@ -71,5 +71,35 @@ public class UploadController extends AppController {
             items.add(map("name", item.getFileName(), "content", new String(item.getBytes())));
         }
         view("items", items);
+    }
+
+    @POST
+    public void parseMap(){
+        Map m = getMap("person", multipartFormItems());
+        respond(m.get("first_name") + " " + m.get("last_name"));
+    }
+
+    @POST
+    public void singleParam(){
+        respond(param("name", multipartFormItems()));
+    }
+
+    @POST
+    public void singleParams1st(){
+        Map<String, String> vals = params1st(multipartFormItems());
+        respond(vals.get("first_name") + " " + vals.get("last_name"));
+    }
+
+    @POST
+    public void paramValues(){
+        List<String> vals = params("name", multipartFormItems());
+        respond(Util.join(vals, ","));
+    }
+
+    @POST
+    public void getFile() throws IOException {
+
+        InputStream in = getFileInputStream("file", multipartFormItems());
+        respond(Util.read(in));
     }
 }

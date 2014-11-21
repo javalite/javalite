@@ -499,6 +499,24 @@ public class HttpSupport {
         }
     }
 
+
+    /**
+     * Convenience method to get file content from <code>multipart/form-data</code> request.
+     *
+     * @param fieldName name of form field from the  <code>multipart/form-data</code> request corresponding to the uploaded file.
+     * @param formItems form items retrieved from <code>multipart/form-data</code> request.
+     * @return <code>InputStream</code> from which to read content of uploaded file.
+     * @throws WebException in case field name is not found in the request.
+     */
+    protected InputStream getFileInputStream(String fieldName, List<FormItem> formItems){
+        for (FormItem formItem : formItems) {
+            if(formItem.isFile() && formItem.getFieldName().equals(fieldName)){
+                return formItem.getInputStream();
+            }
+        }
+        throw new WebException("File with field named: '" + fieldName + "' not found");
+    }
+
     /**
      * Returns value of one named parameter from request. If this name represents multiple values, this
      * call will result in {@link IllegalArgumentException}.
@@ -509,7 +527,22 @@ public class HttpSupport {
      */
     protected String param(String name){
         return RequestUtils.param(name);
+    }
 
+
+    /**
+     * Convenience method to get a parameter in case <code>multipart/form-data</code> request was used.
+     *
+     * Returns value of one named parameter from request. If this name represents multiple values, this
+     * call will result in {@link IllegalArgumentException}.
+     *
+     * @param name name of parameter.
+     * @param formItems form items retrieved from <code>multipart/form-data</code> request.
+     * @return value of request parameter.
+     * @see org.javalite.activeweb.RequestUtils#param(String)
+     */
+    protected String param(String name, List<FormItem> formItems){
+        return RequestUtils.param(name, formItems);
     }
 
 
@@ -790,6 +823,18 @@ public class HttpSupport {
     }
 
     /**
+     * Convenience method to get parameters in case <code>multipart/form-data</code> request was used.
+     * Returns multiple request values for a name.
+     *
+     * @param name name of multiple values from request.
+     * @param formItems form items retrieved from <code>multipart/form-data</code> request.
+     * @return multiple request values for a name.
+     */
+    protected List<String> params(String name, List<FormItem> formItems){
+        return RequestUtils.params(name, formItems);
+    }
+
+    /**
      * Returns a map parsed from a request if parameter names have a "hash" syntax:
      *
      *  <pre>
@@ -815,6 +860,41 @@ public class HttpSupport {
                 String name = parseHashName(key);
                 if(name != null){
                     hash.put(name, param(key));
+                }
+            }
+        }
+        return hash;
+    }
+
+    /**
+     * Convenience method to get parameter map in case <code>multipart/form-data</code> request was used.
+     *
+     * Returns a map parsed from a request if parameter names have a "hash" syntax:
+     *
+     *  <pre>
+     *  &lt;input type=&quot;text&quot; name=&quot;account[name]&quot; /&gt;
+     *  &lt;input type=&quot;text&quot; name=&quot;account[number]&quot; /&gt;
+     * </pre>
+     *
+     * will result in a map where keys are names of hash elements, and values are values of these elements from request.
+     * For the example above, the map will have these values:
+     *
+     * <pre>
+     *     { "name":"John", "number": "123" }
+     * </pre>
+     *
+     * @param hashName - name of a hash. In the example above, it will be "account".
+     * @param formItems form items retrieved from <code>multipart/form-data</code> request.
+     * @return map with name/value pairs parsed from request.
+     */
+    public Map<String, String> getMap(String hashName, List<FormItem> formItems) {
+
+        Map<String, String>  hash = new HashMap<String, String>();
+        for(FormItem item:formItems){
+            if(item.getFieldName().startsWith(hashName)){
+                String name = parseHashName(item.getFieldName());
+                if(name != null){
+                    hash.put(name, item.getStreamAsString());
                 }
             }
         }
@@ -949,6 +1029,19 @@ public class HttpSupport {
      */
     protected Map<String, String> params1st(){
         return RequestUtils.params1st();
+    }
+
+
+    /**
+     * Convenience method to get first parameter values in case <code>multipart/form-data</code> request was used.
+     * Returns a map where keys are names of all parameters, while values are first value for each parameter, even
+     * if such parameter has more than one value submitted.
+     * @param formItems form items retrieved from <code>multipart/form-data</code> request.
+     * @return a map where keys are names of all parameters, while values are first value for each parameter, even
+     * if such parameter has more than one value submitted.
+     */
+    protected Map<String, String> params1st(List<FormItem> formItems){
+        return RequestUtils.params1st(formItems);
     }
 
     /**
