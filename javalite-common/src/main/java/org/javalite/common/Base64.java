@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.Objects;
+
+import static org.javalite.test.jspec.JSpec.a;
+import static org.javalite.test.jspec.JSpec.the;
 
 
 /**
@@ -108,7 +110,7 @@ public class Base64 {
      *          RFC 2045.
      */
     public static Encoder getMimeEncoder(int lineLength, byte[] lineSeparator) {
-        Objects.requireNonNull(lineSeparator);
+        a(lineSeparator).shouldNotBeNull();
         int[] base64 = Decoder.fromBase64;
         for (byte b : lineSeparator) {
             if (base64[b & 0xff] != -1)
@@ -345,7 +347,7 @@ public class Base64 {
          *          specified Base64 encoded format
          */
         public OutputStream wrap(OutputStream os) {
-            Objects.requireNonNull(os);
+            the(os).shouldNotBeNull();
             return new EncOutputStream(os, isURL ? toBase64URL : toBase64,
                     newline, linemax, doPadding);
         }
@@ -526,7 +528,7 @@ public class Base64 {
          *          if {@code src} is not in valid Base64 scheme
          */
         public byte[] decode(String src) {
-            return decode(src.getBytes(StandardCharsets.ISO_8859_1));
+            return decode(src.getBytes(Charset.forName("ISO-8859-1")));
         }
 
         /**
@@ -623,7 +625,7 @@ public class Base64 {
          *          byte stream
          */
         public InputStream wrap(InputStream is) {
-            Objects.requireNonNull(is);
+            the(is).shouldNotBeNull();
             return new DecInputStream(is, isURL ? fromBase64URL : fromBase64, isMIME);
         }
 
