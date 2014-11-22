@@ -136,9 +136,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Converts to <code>java.sql.Date</code>. Expects a <code>java.sql.Date</code>,
-     * <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code> or
-     * any object with string with format: <code>yyyy-mm-dd</code>.
+     * Sets attribute value as <code>java.sql.Date</code>. If a suitable {@link Converter} from the <code>Class</code>
+     * of value to <code>java.sql.Date</code> exists for the specified attribute, it will be used, otherwise performs
+     * a conversion using {@link Convert#toSqlDate(Object)}.
      *
      * @param attribute name of attribute.
      * @param value value to convert.
@@ -151,8 +151,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Performs a conversion to <code>java.sql.Date</code> if necessary,
-     * uses {@link Convert#toSqlDate(Object)}
+     * Gets attribute value as <code>java.sql.Date</code>. If a suitable {@link Converter} from the <code>Class</code>
+     * of the attribute value to <code>java.sql.Date</code> exists for the specified attribute, it will be used,
+     * otherwise performs a conversion using {@link Convert#toSqlDate(Object)}.
      * @param attribute attribute name
      * @return instance of <code>java.sql.Date</code>
      */
@@ -166,7 +167,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     /**
      * Performs a primitive conversion of <code>java.util.Date</code> to <code>java.sql.Timestamp</code>
      * based on the time value.
-     *
      *
      * @param name name of field.
      * @param date date value.
@@ -198,7 +198,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Sets a value of an attribute.
+     * Sets a value of an attribute. If a suitable {@link Converter} from the <code>Class</code> of value to
+     * <code>java.lang.Object</code> exists for the specified attribute, it will be used and the converted value
+     * will be set.
      *
      * @param attribute name of attribute to set. Names not related to this model will be rejected (those not matching table columns).
      * @param value value of attribute. Feel free to set any type, as long as it can be accepted by your driver.
@@ -209,6 +211,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return setConverted(attribute, converter != null ? converter.convert(value) : value);
     }
 
+    /**
+     * Sets already converted value of an attribute.
+     */
     private <T extends Model> T setConverted(String attribute, Object value) {
         if (manageTime && attribute.equalsIgnoreCase("created_at")) {
             throw new IllegalArgumentException("cannot set 'created_at'");
@@ -402,7 +407,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * This method does everything {@link #deleteCascade()} does, but in addition allows to exclude some assosiations
+     * This method does everything {@link #deleteCascade()} does, but in addition allows to exclude some associations
      * from this action. This is necessary because {@link #deleteCascade()} method can be far too eager to delete
      * records in a database, and this is a good way to tell the model to exclude some associations from deletes.
      *
@@ -1134,7 +1139,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Returns a value for attribute.
+     * Returns a value for attribute. If a suitable {@link Converter} from the <code>Class</code> of the
+     * attribute value to <code>java.lang.Object</code> exists for the specified attribute, it will be used.
      *
      * <h3>Infer relationship from name of argument</h3>
      * Besides returning direct attributes of this model, this method is also
@@ -1170,7 +1176,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *         -Dactivejdbc.get.inference = false
      *     </pre>
      *     If inference is turned off, only a value of the attribute is returned.
-     *
      * </p>
      *
      * @param attribute name of attribute of name or related object.
@@ -1183,6 +1188,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     }
 
+    /**
+     * Gets unconverted value of the attribute.
+     */
     public Object getUnconverted(String attribute) {
         if(frozen) throw new FrozenException(this);
 
@@ -1203,6 +1211,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         boolean  getInference = getInferenceProperty  == null || getInferenceProperty.equals("true");
 
         if (getInference) {
+            //TODO: Should only do this if get(String) was used, not if getString(String), getDate(String), etc.
             if ((getMetaModelLocal().hasAttribute(attributeName))) {
                 return attributes.get(attributeName);//this should account for nulls too!
             } else if ((returnValue = tryParent(attributeName)) != null) {
@@ -1282,7 +1291,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     /*************************** typed getters *****************************************/
     /**
-     * Get any value as string.
+     * Gets attribute value as <code>String</code>. If a suitable {@link Converter} from the <code>Class</code>
+     * of the attribute value to <code>java.lang.String</code> exists for the specified attribute, it will be used,
+     * otherwise performs a conversion using {@link Convert#toString(Object)}.
      *
      * @param attribute name of attribute.
      * @return attribute value as string.
@@ -1363,11 +1374,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * If the value is instance of java.sql.Timestamp, returns it, else tries to convert the
-     * value to Timestamp using {@link Timestamp#valueOf(String)}.
-     * This method might trow <code>IllegalArgumentException</code> if fails at conversion.
+     * Gets attribute value as <code>java.sql.Timestamp</code>. If a suitable {@link Converter} from the
+     * <code>Class</code> of the attribute value to <code>java.sql.Timestamp</code> exists for the specified attribute,
+     * it will be used, otherwise performs a conversion using {@link Convert#toTimestamp(Object)}.
      *
-     * @see {@link Timestamp#valueOf(String)}
      * @param attribute attribute name
      * @return instance of Timestamp.
      */
@@ -1405,7 +1415,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     /*************************** typed setters *****************************************/
 
     /**
-     * Converts object to string when setting.
+     * Sets attribute value as <code>java.lang.String</code>. If a suitable {@link Converter} from the
+     * <code>Class</code> of value to <code>java.lang.String</code> exists for the specified attribute, it will be
+     * used, otherwise performs a conversion using {@link Convert#toString(Object)}.
      *
      * @param attribute name of attribute.
      * @param value value
@@ -1461,10 +1473,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     *
-     * Converts object to <code>java.sql.Timestamp</code> when setting.
-     * If the value is instance of java.sql.Timestamp, just sets it, else tries to convert the value to Timestamp using
-     * Timestamp.valueOf(String). This method might trow IllegalArgumentException if fails at conversion.
+     * Sets attribute value as <code>java.sql.Timestamp</code>. If a suitable {@link Converter} from the
+     * <code>Class</code> of value to <code>java.sql.Timestamp</code> exists for the specified attribute, it will be
+     * used, otherwise performs a conversion using {@link Convert#toTimestamp(Object)}.
      *
      * @param attribute name of attribute.
      * @param value value

@@ -84,8 +84,8 @@ class ModelMetaData {
     }
 
     /**
-     * @return converter for specified model attribute, able to convert from sourceClass to destinationClass;
-     * returns null if no suitable converter was found.
+     * Returns converter for specified model attribute, able to convert from sourceClass to destinationClass.
+     * Returns null if no suitable converter was found.
      */
     <S, T> Converter<S, T> getConverterForClass(String attribute, Class<S> sourceClass, Class<T> destinationClass) {
         List<Converter> list = attributeConverters.get(attribute);
@@ -99,6 +99,10 @@ class ModelMetaData {
         return null;
     }
 
+    /**
+     * Returns converter for specified model attribute, able to convert value to an instance of destinationClass.
+     * Returns null if no suitable converter was found.
+     */
     <T> Converter<Object, T> getConverterForValue(String attribute, Object value, Class<T> destinationClass) {
         return getConverterForClass(attribute,
                 value != null ? (Class<Object>) value.getClass() : Object.class, destinationClass);
