@@ -1,16 +1,14 @@
 package org.javalite.activejdbc.dialects;
 
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.javalite.activejdbc.ColumnMetadata;
 import org.javalite.activejdbc.DBException;
 import org.javalite.activejdbc.MetaModel;
 import org.javalite.common.Util;
 
 public class MSSQLDialect extends DefaultDialect {
-    protected final Pattern selectPattern = Pattern.compile("^\\s*SELECT\\s*", 
+    protected final Pattern selectPattern = Pattern.compile("^\\s*SELECT\\s*",
             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
     /**
@@ -28,7 +26,7 @@ public class MSSQLDialect extends DefaultDialect {
     public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
         boolean needLimit = limit != -1;
         boolean needOffset = offset != -1;
-        
+
         if(needOffset && (orderBys == null || orderBys.isEmpty())) {
         	throw new DBException("MSSQL offset queries require an order by column.");
         }
@@ -44,7 +42,7 @@ public class MSSQLDialect extends DefaultDialect {
         } else {
             keepSelect = true;
         }
-        
+
 		if (tableName == null) { //table is in the sub-query already
             if (keepSelect) {
                 fullQuery.append(subQuery);
@@ -61,7 +59,7 @@ public class MSSQLDialect extends DefaultDialect {
             fullQuery.append(" * FROM ").append(tableName);
             appendSubQuery(fullQuery, subQuery);
         }
-        
+
         if (needOffset) {
             // T-SQL offset starts with 1, not like MySQL with 0;
             if (needLimit) {
@@ -73,18 +71,17 @@ public class MSSQLDialect extends DefaultDialect {
         } else {
             appendOrderBy(fullQuery, orderBys);
         }
-        
+
         return fullQuery.toString();
     }
-    
+
     /**
      * TDS converts a number of important data types to String. This isn't what we want, nor helpful. Here, we change them back.
      */
     @Override
     public Object overrideDriverTypeConversion(MetaModel mm, String attributeName, Object value) {
         if (value instanceof String) {
-            Map<String, ColumnMetadata> types = mm.getColumnMetadata();
-            String typeName = types.get(attributeName.toLowerCase()).getTypeName();
+            String typeName = mm.getColumnMetadata().get(attributeName.toLowerCase()).getTypeName();
             if ("date".equalsIgnoreCase(typeName)) {
                 return java.sql.Date.valueOf((String) value);
             } else if ("datetime2".equalsIgnoreCase(typeName)) {

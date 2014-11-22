@@ -17,21 +17,19 @@ limitations under the License.
 
 package org.javalite.activejdbc.dialects;
 
-import java.util.Map;
-import org.javalite.activejdbc.ColumnMetadata;
 import org.javalite.activejdbc.MetaModel;
 import org.javalite.common.Convert;
 
 /**
  * @author Igor Polevoy
+ * @author ericbn
  */
 public class SQLiteDialect extends MySQLDialect {
     @Override
     public Object overrideDriverTypeConversion(MetaModel mm, String attributeName, Object value) {
         // SQLite returns DATE and DATETIME as String or Long values
         if (value instanceof String || value instanceof Long) {
-            Map<String, ColumnMetadata> types = mm.getColumnMetadata();
-            String typeName = types.get(attributeName.toLowerCase()).getTypeName();
+            String typeName = mm.getColumnMetadata().get(attributeName.toLowerCase()).getTypeName();
             if ("DATE".equalsIgnoreCase(typeName)) {
                 return Convert.toSqlDate(value);
             } else if ("DATETIME".equalsIgnoreCase(typeName)) {
