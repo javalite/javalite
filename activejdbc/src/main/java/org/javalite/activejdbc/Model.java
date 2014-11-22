@@ -1642,7 +1642,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     public static void removeValidator(Validator validator){
-        Registry.instance().removeValidator(Model.<Model>getDaClass(), validator);
+        Registry.instance().removeValidator(Model.getDaClass(), validator);
     }
 
     public static List<Validator> getValidators(Class<Model> daClass){
