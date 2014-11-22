@@ -965,9 +965,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         MetaModel parentMM = Registry.instance().getMetaModel(parentClass);
         String parentTable = parentMM.getTableName();
 
-        BelongsToAssociation ass = (BelongsToAssociation)getMetaModelLocal().getAssociationForTarget(parentTable, BelongsToAssociation.class);
-        BelongsToPolymorphicAssociation assP = (BelongsToPolymorphicAssociation)getMetaModelLocal()
-            .getAssociationForTarget(parentTable, BelongsToPolymorphicAssociation.class);
+        BelongsToAssociation ass = getMetaModelLocal().getAssociationForTarget(parentTable, BelongsToAssociation.class);
+        BelongsToPolymorphicAssociation assP = getMetaModelLocal().getAssociationForTarget(
+                parentTable, BelongsToPolymorphicAssociation.class);
 
         Object fkValue;
         String fkName;
@@ -1100,7 +1100,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @return
      */
-    protected MetaModel<?, ?> getMetaModelLocal(){
+    protected MetaModel getMetaModelLocal() {
         if(metaModelLocal == null) {
             metaModelLocal = getMetaModel();
         }
@@ -1566,10 +1566,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     private <C extends Model> LazyList<C> get(String targetTable, String criteria, Object ...params) {
         //TODO: interesting thought: is it possible to have two associations of the same name, one to many and many to many? For now, say no.
 
-        OneToManyAssociation oneToManyAssociation = (OneToManyAssociation)getMetaModelLocal().getAssociationForTarget(targetTable, OneToManyAssociation.class);
-        Many2ManyAssociation manyToManyAssociation = (Many2ManyAssociation)getMetaModelLocal().getAssociationForTarget(targetTable, Many2ManyAssociation.class);
-
-        OneToManyPolymorphicAssociation oneToManyPolymorphicAssociation = (OneToManyPolymorphicAssociation)getMetaModelLocal().getAssociationForTarget(targetTable, OneToManyPolymorphicAssociation.class);
+        OneToManyAssociation oneToManyAssociation = getMetaModelLocal().getAssociationForTarget(
+                targetTable, OneToManyAssociation.class);
+        Many2ManyAssociation manyToManyAssociation = getMetaModelLocal().getAssociationForTarget(
+                targetTable, Many2ManyAssociation.class);
+        OneToManyPolymorphicAssociation oneToManyPolymorphicAssociation = getMetaModelLocal().getAssociationForTarget(
+                targetTable, OneToManyPolymorphicAssociation.class);
 
         String additionalCriteria =  criteria != null? " AND ( " + criteria + " ) " : "";
         String subQuery;
@@ -2169,12 +2171,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         if (getId() != null) {
 
             if (metaModel.hasAssociation(childTable, OneToManyAssociation.class)) {
-                OneToManyAssociation ass = (OneToManyAssociation)metaModel.getAssociationForTarget(childTable, OneToManyAssociation.class);
+                OneToManyAssociation ass = metaModel.getAssociationForTarget(childTable, OneToManyAssociation.class);
                 String fkName = ass.getFkName();
                 child.set(fkName, getId());
                 child.saveIt();//this will cause an exception in case validations fail.
             }else if(metaModel.hasAssociation(childTable, Many2ManyAssociation.class)){
-                Many2ManyAssociation ass = (Many2ManyAssociation) metaModel.getAssociationForTarget(childTable, Many2ManyAssociation.class);
+                Many2ManyAssociation ass = metaModel.getAssociationForTarget(childTable, Many2ManyAssociation.class);
                 String join = ass.getJoin();
                 String sourceFkName = ass.getSourceFkName();
                 String targetFkName = ass.getTargetFkName();
@@ -2207,8 +2209,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 }
              }else if(metaModel.hasAssociation(childTable, OneToManyPolymorphicAssociation.class)){
 
-                OneToManyPolymorphicAssociation ass = (OneToManyPolymorphicAssociation)metaModel
-                        .getAssociationForTarget(childTable, OneToManyPolymorphicAssociation.class);
+                OneToManyPolymorphicAssociation ass = metaModel.getAssociationForTarget(
+                        childTable, OneToManyPolymorphicAssociation.class);
                 child.set("parent_id", getId());
                 child.set("parent_type", ass.getTypeLabel());
                 child.saveIt();
@@ -2243,14 +2245,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         if(child.frozen() || child.getId() == null) throw new IllegalArgumentException("Cannot remove a child that does " +
                 "not exist in DB (either frozen, or ID not set)");
 
-        String childTable = Registry.instance().getTableName(child.getClass());
-        MetaModel metaModel = getMetaModelLocal();
         if (getId() != null) {
+            String childTable = Registry.instance().getTableName(child.getClass());
+            MetaModel metaModel = getMetaModelLocal();
             if (metaModel.hasAssociation(childTable, OneToManyAssociation.class)
                     || metaModel.hasAssociation(childTable, OneToManyPolymorphicAssociation.class)) {
                 child.delete();
             }else if(metaModel.hasAssociation(childTable, Many2ManyAssociation.class)){
-                Many2ManyAssociation ass = (Many2ManyAssociation)metaModel.getAssociationForTarget(childTable, Many2ManyAssociation.class);
+                Many2ManyAssociation ass = metaModel.getAssociationForTarget(childTable, Many2ManyAssociation.class);
                 String join = ass.getJoin();
                 String sourceFkName = ass.getSourceFkName();
                 String targetFkName = ass.getTargetFkName();
@@ -2583,13 +2585,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
     }
 
-    private static <T extends Model> Class<T> getDaClass() {
+    private static Class<? extends Model> getDaClass() {
         try {
             if (Registry.instance().initialized()) {
                 MetaModel mm = Registry.instance().getMetaModelByClassName(getClassName());
-                return mm == null ? (Class<T>) Class.forName(getClassName()) : mm.getModelClass();
+                return mm == null ? (Class<? extends Model>) Class.forName(getClassName()) : mm.getModelClass();
             } else {
-                return (Class<T>) Class.forName(getClassName());
+                return (Class<? extends Model>) Class.forName(getClassName());
             }
         } catch (ClassNotFoundException e) {
             throw new DBException(e.getMessage(), e);

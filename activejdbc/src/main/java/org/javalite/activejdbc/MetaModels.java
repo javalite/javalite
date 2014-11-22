@@ -36,7 +36,7 @@ class MetaModels {
     //these are all many to many associations across all models.
     private final List<Many2ManyAssociation> many2ManyAssociations = new ArrayList<Many2ManyAssociation>();
 
-    void addMetaModel(MetaModel<?, ?> mm, Class<? extends Model> modelClass) {
+    void addMetaModel(MetaModel mm, Class<? extends Model> modelClass) {
         Object o = metaModelsByClass.put(modelClass, mm);
         if (o != null) {
             logger.warn("Double-register: {}: {}", modelClass, o);
@@ -80,8 +80,8 @@ class MetaModels {
         return tableNames.toArray(new String[tableNames.size()]);
     }
 
-    Class getModelClass(String tableName) {
-        return  metaModelsByTableName.containsKey(tableName) ? metaModelsByTableName.get(tableName).getModelClass() : null;
+    Class<? extends Model> getModelClass(String tableName) {
+        return metaModelsByTableName.containsKey(tableName) ? metaModelsByTableName.get(tableName).getModelClass() : null;
     }
 
     String getTableName(Class<? extends Model> modelClass) {

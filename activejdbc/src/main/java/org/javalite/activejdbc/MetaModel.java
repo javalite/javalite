@@ -31,23 +31,23 @@ import static org.javalite.common.Inflector.*;
 import static org.javalite.common.Util.*;
 
 
-public class MetaModel<T extends Model, E extends Association> implements Serializable {
+public class MetaModel implements Serializable {
     private final static Logger logger = LoggerFactory.getLogger(MetaModel.class);
 
     private Map<String, ColumnMetadata> columnMetadata;
     private List<Association> associations = new ArrayList<Association>();
     private String idName;
     private String tableName, dbType, dbName;
-    private Class<T> modelClass;
+    private Class<? extends Model> modelClass;
     private boolean cached;
     private String idGeneratorCode;
     private List<String> attributeNamesNoId;
     private String versionColumn;
 
-    protected MetaModel(String dbName, Class<T> modelClass, String dbType) {
+    protected MetaModel(String dbName, Class<? extends Model> modelClass, String dbType) {
+        this.modelClass = modelClass;
         this.idName = findIdName(modelClass).toLowerCase();
         this.tableName = findTableName(modelClass);
-        this.modelClass = modelClass;
         this.dbType = dbType;
         this.cached = isCached(modelClass);
         this.dbName = dbName;
@@ -55,26 +55,26 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
         this.versionColumn = findVersionColumn(modelClass);
     }
 
-    private boolean isCached(Class<T> modelClass) {
+    private boolean isCached(Class<? extends Model> modelClass) {
         return null != modelClass.getAnnotation(Cached.class);
     }
 
-    private String findIdName(Class<T> modelClass) {
+    private String findIdName(Class<? extends Model> modelClass) {
         IdName idNameAnnotation = modelClass.getAnnotation(IdName.class);
         return idNameAnnotation == null ? "id" : idNameAnnotation.value();
     }
 
-    private String findTableName(Class<T> modelClass) {
+    private String findTableName(Class<? extends Model> modelClass) {
         Table tableAnnotation = modelClass.getAnnotation(Table.class);
         return tableAnnotation == null ? tableize(modelClass.getSimpleName()) : tableAnnotation.value();
     }
 
-    private String findIdGeneratorCode(Class<T> modelClass) {
+    private String findIdGeneratorCode(Class<? extends Model> modelClass) {
         IdGenerator idGenerator = modelClass.getAnnotation(IdGenerator.class);
         return idGenerator == null ? null : idGenerator.value();
     }
 
-    private String findVersionColumn(Class<T> modelClass) {
+    private String findVersionColumn(Class<? extends Model> modelClass) {
         VersionColumn vc = modelClass.getAnnotation(VersionColumn.class);
         return vc == null ? "record_version" : vc.value();
     }
@@ -98,7 +98,7 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
         return cached;
     }
 
-    public Class<T> getModelClass(){
+    public Class<? extends Model> getModelClass(){
         return modelClass;
     }
 
@@ -208,15 +208,14 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
      * @return association of this table with the target table. Will return null if there is no association with target
      * table and specified type.
      */
-    public E getAssociationForTarget(String target, Class<? extends Association> associationClass){
-
+    public <A extends Association> A getAssociationForTarget(String target, Class<A> associationClass){
         Association result = null;
         for (Association association : associations) {
-            if (association.getTarget().equalsIgnoreCase(target) && association.getClass().equals(associationClass)) {
+            if (association.getClass().equals(associationClass) && association.getTarget().equalsIgnoreCase(target)) {
                 result = association; break;
             }
         }
-        return (E) result;
+        return (A) result;
     }
 
 
@@ -227,14 +226,14 @@ public class MetaModel<T extends Model, E extends Association> implements Serial
      * @return association of this table with the target table. Will return null if there is no association with target
      * table and specified type.
      */
-    public E getAssociationForTarget(String target){
+    public <A extends Association> A getAssociationForTarget(String target){
         Association result = null;
         for (Association association : associations) {
             if (association.getTarget().equalsIgnoreCase(target)) {
                 result = association; break;
             }
         }
-        return (E) result;
+        return (A) result;
     }
 
 

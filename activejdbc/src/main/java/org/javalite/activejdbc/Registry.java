@@ -442,7 +442,7 @@ public enum Registry {
         getValidators(daClass).addAll(modelValidators);
     }
 
-    public void removeValidator(Class<Model> daClass, Validator validator) {
+    public void removeValidator(Class<? extends Model> daClass, Validator validator) {
         getValidators(daClass.getName()).remove(validator);
     }
 
