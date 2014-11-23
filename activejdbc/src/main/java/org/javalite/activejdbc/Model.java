@@ -240,11 +240,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     //TODO: return SortedSet<String>, which keeps case insensivity, since this List<String> will not be case insensitive
     public static List<String> attributes(){
-        return asList(getMetaModel().getAttributeNames());
-    }
-
-    private static List<String> asList(Set<String> set) {
-        return Arrays.asList(set.toArray(new String[set.size()]));
+        List<String> list = new ArrayList<String>();
+        for (String attribute : getMetaModel().getAttributeNames()) {
+            list.add(attribute.toLowerCase());
+        }
+        return Collections.unmodifiableList(list);
     }
 
     /**

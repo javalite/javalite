@@ -30,7 +30,7 @@ import org.javalite.activejdbc.conversion.StringToTimestampConverter;
  * @author ericbn
  */
 class ModelMetaData {
-    private final Map<String, List<Converter>> attributeConverters = new HashMap<String, List<Converter>>();
+    private final Map<String, List<Converter>> attributeConverters = new CaseInsensitiveMap<List<Converter>>();
 
     /**
      * Registers date converters (Date -> String -> java.sql.Date) for specified model attributes.

@@ -35,14 +35,14 @@ public class MetaModel implements Serializable {
     private final static Logger logger = LoggerFactory.getLogger(MetaModel.class);
 
     private SortedMap<String, ColumnMetadata> columnMetadata;
-    private List<Association> associations = new ArrayList<Association>();
-    private String idName;
-    private String tableName, dbType, dbName;
-    private Class<? extends Model> modelClass;
-    private boolean cached;
-    private String idGeneratorCode;
+    private final List<Association> associations = new ArrayList<Association>();
+    private final String idName;
+    private final String tableName, dbType, dbName;
+    private final Class<? extends Model> modelClass;
+    private final boolean cached;
+    private final String idGeneratorCode;
     private SortedSet<String> attributeNamesNoId;
-    private String versionColumn;
+    private final String versionColumn;
 
     protected MetaModel(String dbName, Class<? extends Model> modelClass, String dbType) {
         this.modelClass = modelClass;

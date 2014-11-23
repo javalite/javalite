@@ -31,7 +31,7 @@ public class Errors implements Map<String, String> {
 
     private Locale locale;
 
-    private Map<String, Validator> validators = new HashMap<String, Validator>();
+    private Map<String, Validator> validators = new CaseInsensitiveMap<Validator>();
 
 
     /**
@@ -87,7 +87,7 @@ public class Errors implements Map<String, String> {
      * @return a message from the resource bundle <code>activejdbc_messages</code> with default locale, which is merged
      *         with parameters.
      */
-    public String get(Object attributeName, Object... params) {
+    public String get(String attributeName, Object... params) {
         if (attributeName == null) throw new NullPointerException("attributeName cannot be null");
 
         return validators.get(attributeName).formatMessage(locale, params);
@@ -179,10 +179,10 @@ public class Errors implements Map<String, String> {
     @Override
     public String toString() {
         StringBuilder res = new StringBuilder().append("{ ");
-        for (String key : validators.keySet()) {
-            res.append(key).append("=<").append(validators.get(key).formatMessage(null)).append("> ");
+        for (Map.Entry<String, Validator> entry : validators.entrySet()) {
+            res.append(entry.getKey()).append("=<").append(entry.getValue().formatMessage(null)).append("> ");
         }
-        res.append("}");
+        res.append('}');
         return res.toString();
     }
 }
