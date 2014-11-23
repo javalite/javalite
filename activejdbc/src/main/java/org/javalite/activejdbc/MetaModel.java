@@ -34,19 +34,19 @@ import static org.javalite.common.Util.*;
 public class MetaModel implements Serializable {
     private final static Logger logger = LoggerFactory.getLogger(MetaModel.class);
 
-    private Map<String, ColumnMetadata> columnMetadata;
+    private SortedMap<String, ColumnMetadata> columnMetadata;
     private List<Association> associations = new ArrayList<Association>();
     private String idName;
     private String tableName, dbType, dbName;
     private Class<? extends Model> modelClass;
     private boolean cached;
     private String idGeneratorCode;
-    private List<String> attributeNamesNoId;
+    private SortedSet<String> attributeNamesNoId;
     private String versionColumn;
 
     protected MetaModel(String dbName, Class<? extends Model> modelClass, String dbType) {
         this.modelClass = modelClass;
-        this.idName = findIdName(modelClass).toLowerCase();
+        this.idName = findIdName(modelClass);
         this.tableName = findTableName(modelClass);
         this.dbType = dbType;
         this.cached = isCached(modelClass);
@@ -106,12 +106,12 @@ public class MetaModel implements Serializable {
         return tableName;
     }
 
-    void setColumnMetadata(Map<String, ColumnMetadata> columnMetadata){
+    void setColumnMetadata(SortedMap<String, ColumnMetadata> columnMetadata){
         this.columnMetadata = columnMetadata;
     }
 
     protected boolean tableExists(){
-        return columnMetadata != null &&  columnMetadata.size() > 0;
+        return columnMetadata != null &&  columnMetadata.isEmpty();
     }
 
 
@@ -120,10 +120,10 @@ public class MetaModel implements Serializable {
      *
      * @return all attribute names except for id.
      */
-    public List<String> getAttributeNamesSkipId() {
+    public SortedSet<String> getAttributeNamesSkipId() {
         if (attributeNamesNoId == null) {//no one cares about unfortunate multi-threading timing with 2 instances created
             //if someone does, use DCL with volatile
-            List<String> attrs = getAttributeNames();
+            SortedSet<String> attrs = new TreeSet<String>(getAttributeNames());
             attrs.remove(getIdName());
             attributeNamesNoId = attrs;
         }
@@ -135,7 +135,7 @@ public class MetaModel implements Serializable {
      *
      * @return list of all attributes except id, created_at, updated_at and record_version.
      */
-    public List<String> getAttributeNamesSkipGenerated() {
+    public SortedSet<String> getAttributeNamesSkipGenerated() {
         return getAttributeNamesSkipGenerated(true);
     }
 
@@ -148,10 +148,9 @@ public class MetaModel implements Serializable {
      * @return list of all attributes except <code>id</code>, <code>created_at</code>, <code>updated_at</code> and
      * <code>record_version</code>, depending on argument.
      */
-    public List<String> getAttributeNamesSkipGenerated(boolean managed) {
-        //TODO: can cache this
-        List<String> attributes = getAttributeNames();
-        attributes.remove(getIdName().toLowerCase());
+    public SortedSet<String> getAttributeNamesSkipGenerated(boolean managed) {
+        //TODO: can cache this, but will need a cache for managed=true an another for managed=false
+        SortedSet<String> attributes = new TreeSet(getAttributeNamesSkipId());
 
         if(managed){
             attributes.remove("created_at");
@@ -165,12 +164,12 @@ public class MetaModel implements Serializable {
 
     /**
      * Finds all attribute names except those provided as arguments.
-     * @return list of all attributes except those provided as arguments. 
+     * @return list of all attributes except those provided as arguments.
      */
-    public List<String> getAttributeNamesSkip(String ... names) {
-        List<String> attributes = getAttributeNames();
+    public SortedSet<String> getAttributeNamesSkip(String ... names) {
+        SortedSet<String> attributes = new TreeSet<String>(getAttributeNames());
         for(String name:names){
-            attributes.remove(name.toLowerCase());
+            attributes.remove(name);
         }
         return attributes;
     }
@@ -181,8 +180,7 @@ public class MetaModel implements Serializable {
      * @return true if this model supports optimistic locking, false if not
      */
     public boolean isVersioned(){
-        List<String> attrs = getAttributeNames();
-        return attrs.contains(versionColumn) || attrs.contains(versionColumn.toUpperCase());
+        return columnMetadata != null && columnMetadata.containsKey(versionColumn);
     }
 
     /**
@@ -190,10 +188,9 @@ public class MetaModel implements Serializable {
      *
      * @return all attribute names.
      */
-    protected List<String> getAttributeNames() {
+    protected SortedSet<String> getAttributeNames() {
         if(columnMetadata == null || columnMetadata.isEmpty()) throw new InitException("Failed to find table: " + getTableName());
-
-        return new ArrayList<String>(columnMetadata.keySet());
+        return Collections.unmodifiableSortedSet((SortedSet<String>) columnMetadata.keySet());
     }
 
     public String getIdName() {
@@ -271,7 +268,7 @@ public class MetaModel implements Serializable {
      * @return true if this attribute is present in this meta model, false of not.
      */
     boolean hasAttribute(String attribute) {
-        return columnMetadata != null && columnMetadata.containsKey(attribute.toLowerCase());
+        return columnMetadata != null && columnMetadata.containsKey(attribute);
     }
 
     protected boolean hasAssociation(String table, Class<? extends Association> associationClass){
@@ -356,19 +353,21 @@ public class MetaModel implements Serializable {
      */
     protected void checkAttributeOrAssociation(String attributeOrAssociation) {
         if (!hasAttribute(attributeOrAssociation)) {
-            List<Association> associations = getAssociations();
-            List<String> associationTargets = new ArrayList<String>();
+            boolean contains = false;
             for (Association association : associations) {
-                associationTargets.add(association.getTarget());
+                if (association.getTarget().equalsIgnoreCase(attributeOrAssociation)) {
+                    contains = true;
+                    break;
+                }
             }
-            if (!associationTargets.contains(attributeOrAssociation)) {
+            if (!contains) {
                 StringBuilder sb = new StringBuilder().append("Attribute: '").append(attributeOrAssociation)
                         .append("' is not defined in model: '").append(getModelClass())
                         .append("' and also, did not find an association by the same name, available attributes: ")
                         .append(getAttributeNames());
                 if (!associations.isEmpty()) {
                     sb.append("\nAvailable associations:\n");
-                    join(sb, getAssociations(), "\n");
+                    join(sb, associations, "\n");
                 }
                 throw new IllegalArgumentException(sb.toString());
             }
@@ -386,8 +385,9 @@ public class MetaModel implements Serializable {
      *
      * @return Provides column metadata map, keyed by attribute names.
      */
-    public Map<String, ColumnMetadata> getColumnMetadata() {
-        return Collections.unmodifiableMap(columnMetadata);
+    public SortedMap<String, ColumnMetadata> getColumnMetadata() {
+        if(columnMetadata == null || columnMetadata.isEmpty()) throw new InitException("Failed to find table: " + getTableName());
+        return Collections.unmodifiableSortedMap(columnMetadata);
     }
 
 

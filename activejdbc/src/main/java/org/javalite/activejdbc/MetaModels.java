@@ -30,7 +30,7 @@ class MetaModels {
 
     private final static Logger logger = LoggerFactory.getLogger(MetaModels.class);
 
-    private final Map<String, MetaModel> metaModelsByTableName = new HashMap<String, MetaModel>();
+    private final Map<String, MetaModel> metaModelsByTableName = new CaseInsensitiveMap<MetaModel>();
     private final Map<Class<? extends Model>, MetaModel> metaModelsByClass = new HashMap<Class<? extends Model>, MetaModel>();
     private final Map<String, MetaModel> metaModelsByClassName = new HashMap<String, MetaModel>();
     //these are all many to many associations across all models.
@@ -59,15 +59,7 @@ class MetaModels {
     }
 
     MetaModel getMetaModel(String tableName) {
-        MetaModel mm = metaModelsByTableName.get(tableName);
-        if (mm != null) {
-            return mm;
-        }
-        mm = metaModelsByTableName.get(tableName.toLowerCase());
-        if (mm != null) {
-            return mm;
-        }
-        return metaModelsByTableName.get(tableName.toUpperCase());
+        return metaModelsByTableName.get(tableName);
     }
 
     String[] getTableNames(String dbName) {
@@ -81,7 +73,8 @@ class MetaModels {
     }
 
     Class<? extends Model> getModelClass(String tableName) {
-        return metaModelsByTableName.containsKey(tableName) ? metaModelsByTableName.get(tableName).getModelClass() : null;
+        MetaModel mm = metaModelsByTableName.get(tableName);
+        return mm == null ? null : mm.getModelClass();
     }
 
     String getTableName(Class<? extends Model> modelClass) {
@@ -89,7 +82,7 @@ class MetaModels {
         return mm == null ? null : mm.getTableName();
     }
 
-    public void setColumnMetadata(String table, Map<String, ColumnMetadata> metaParams) {
+    public void setColumnMetadata(String table, SortedMap<String, ColumnMetadata> metaParams) {
         metaModelsByTableName.get(table).setColumnMetadata(metaParams);
     }
 

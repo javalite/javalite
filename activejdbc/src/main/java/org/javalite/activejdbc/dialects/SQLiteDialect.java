@@ -29,7 +29,7 @@ public class SQLiteDialect extends MySQLDialect {
     public Object overrideDriverTypeConversion(MetaModel mm, String attributeName, Object value) {
         // SQLite returns DATE and DATETIME as String or Long values
         if (value instanceof String || value instanceof Long) {
-            String typeName = mm.getColumnMetadata().get(attributeName.toLowerCase()).getTypeName();
+            String typeName = mm.getColumnMetadata().get(attributeName).getTypeName();
             if ("DATE".equalsIgnoreCase(typeName)) {
                 return Convert.toSqlDate(value);
             } else if ("DATETIME".equalsIgnoreCase(typeName)) {

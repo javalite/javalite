@@ -21,8 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.SortedMap;
 
 import static org.javalite.common.Util.*;
 
@@ -59,10 +58,10 @@ public class RowProcessor {
         }
 
         while (rs.next()) {
-            Map<String, Object> row = new HashMap<String, Object>();
+            SortedMap<String, Object> row = new CaseInsensitiveMap<Object>();
             i = 0;
             while (i < labels.length) {
-                row.put(labels[i++].toLowerCase(), rs.getObject(i));
+                row.put(labels[i++], rs.getObject(i));
             }
             if (!listener.next(row)) { break; }
         }

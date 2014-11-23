@@ -1,20 +1,20 @@
 package org.javalite.activejdbc;
 
+import java.util.List;
 import org.javalite.activejdbc.Association;
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
 import org.javalite.activejdbc.associations.OneToManyAssociation;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Doctor;
 import org.javalite.activejdbc.test_models.Person;
+import org.junit.Ignore;
 import org.junit.Test;
-
-import java.util.List;
 
 /**
  * @author Igor Polevoy
  */
 public class AttributesAndAssociationsTest extends ActiveJDBCTest{
-    
+
     @Test
     public void shouldReturnCorrectAttributes(){
 
@@ -25,6 +25,20 @@ public class AttributesAndAssociationsTest extends ActiveJDBCTest{
         a(attributes.contains("dob")).shouldBeTrue();
         a(attributes.contains("id")).shouldBeTrue();
         a(attributes.contains("created_at")).shouldBeTrue();
+        a(attributes.contains("updated_at")).shouldBeTrue();
+    }
+
+    @Test
+    @Ignore
+    public void shouldReturnCaseInsensitiveAttributes(){
+
+        List<String> attributes = Person.attributes();
+        a(attributes.contains("Name")).shouldBeTrue();
+        a(attributes.contains("LAST_NAME")).shouldBeTrue();
+        a(attributes.contains("graduation_date")).shouldBeTrue();
+        a(attributes.contains("Dob")).shouldBeTrue();
+        a(attributes.contains("ID")).shouldBeTrue();
+        a(attributes.contains("Created_At")).shouldBeTrue();
         a(attributes.contains("updated_at")).shouldBeTrue();
     }
 

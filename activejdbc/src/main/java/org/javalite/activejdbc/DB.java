@@ -33,7 +33,6 @@ import static org.javalite.common.Util.closeQuietly;
  * This class provides a number of convenience methods for opening/closing database connections, running various 
  * types of queries, and executing SQL statements. This class differs from {@link Base} such that in this class you
  * can provide a logical name for a current connection. Use this class when you have more than one database in the system.
- *  
  *
  * @author Igor Polevoy
  */
@@ -448,6 +447,7 @@ public class DB {
 
 
         if(query.indexOf('?') == -1 && params.length != 0) throw new IllegalArgumentException("you passed arguments, but the query does not have placeholders: (?)");
+        //TODO: use case insensitive Pattern
         if(!query.toLowerCase().contains("select"))throw new IllegalArgumentException("query must be 'select' query");
 
         //TODO: cache prepared statements here too
@@ -545,7 +545,7 @@ public class DB {
      * @return number of records affected.
      */
     public int exec(String query, Object... params){
-
+        //TODO: use case insensitive Pattern
         if(query.trim().toLowerCase().startsWith("select")) throw new IllegalArgumentException("expected DML, but got select...");
 
         if(query.indexOf('?') == -1) throw new IllegalArgumentException("query must be parametrized");
@@ -581,7 +581,7 @@ public class DB {
      * functionality is not supported by DB or driver.
      */
     Object execInsert(String query, String autoIncrementColumnName, Object... params) {
-
+        //TODO: use case insensitive Pattern
         if (!query.toLowerCase().contains("insert"))
             throw new IllegalArgumentException("this method is only for inserts");
 

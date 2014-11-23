@@ -81,7 +81,7 @@ public class MSSQLDialect extends DefaultDialect {
     @Override
     public Object overrideDriverTypeConversion(MetaModel mm, String attributeName, Object value) {
         if (value instanceof String) {
-            String typeName = mm.getColumnMetadata().get(attributeName.toLowerCase()).getTypeName();
+            String typeName = mm.getColumnMetadata().get(attributeName).getTypeName();
             if ("date".equalsIgnoreCase(typeName)) {
                 return java.sql.Date.valueOf((String) value);
             } else if ("datetime2".equalsIgnoreCase(typeName)) {

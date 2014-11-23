@@ -385,7 +385,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
 
     private void processParent(BelongsToAssociation association, Class parentClass) {
 
-        if(delegate.size() == 0){//no need to process parents if no models selected.
+        if(delegate.isEmpty()){//no need to process parents if no models selected.
             return;
         }
 

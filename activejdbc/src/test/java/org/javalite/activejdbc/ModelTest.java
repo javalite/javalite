@@ -289,7 +289,7 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void testCustomIdName(){
-        deleteAndPopulateTable("animals");
+       deleteAndPopulateTable("animals");
        Animal a = Animal.findById(1);
        a(a).shouldNotBeNull();
     }
@@ -346,20 +346,22 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void testCopyTo(){
-        deleteAndPopulateTables("users", "addresses");
+        deleteAndPopulateTables("users");
         User u = User.findById(1);
         User u1 = new User();
         u.copyTo(u1);
         a(u1.get("first_name")).shouldBeEqual("Marilyn");
+        a(u1.getId()).shouldBeNull();
     }
 
     @Test
     public void testCopyFrom(){
-        deleteAndPopulateTables("users", "addresses");
+        deleteAndPopulateTables("users");
         User u = User.findById(1);
         User u1 = new User();
         u1.copyFrom(u);
         a(u1.get("first_name")).shouldBeEqual("Marilyn");
+        a(u1.getId()).shouldBeNull();
     }
 
     @Test
@@ -441,7 +443,6 @@ public class ModelTest extends ActiveJDBCTest {
         a(Address.findAll().size()).shouldBeEqual(7);
 
     }
-
 
     @Test
     public void shouldGenerateCorrectInsertSQL(){

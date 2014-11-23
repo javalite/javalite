@@ -55,7 +55,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     private final static Logger logger = LoggerFactory.getLogger(Model.class);
 
-    private Map<String, Object> attributes = new HashMap<String, Object>();
+    private SortedMap<String, Object> attributes = new CaseInsensitiveMap<Object>();
     private boolean frozen = false;
     private MetaModel metaModelLocal;
     private ModelMetaData metaDataLocal;
@@ -76,7 +76,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return Registry.instance().getMetaData(getDaClass());
     }
 
-    protected Map<String, Object> getAttributes(){
+    protected SortedMap<String, Object> getAttributes(){
         return attributes;
     }
 
@@ -114,11 +114,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             }
             if (contains) {
                 if (value instanceof Clob && getMetaModelLocal().cached()) {
-                    this.attributes.put(attrName.toLowerCase(), Convert.toString(value));
+                    this.attributes.put(attrName, Convert.toString(value));
                 }else {
-                    this.attributes.put(attrName.toLowerCase(),
-                            getMetaModelLocal().getDialect().overrideDriverTypeConversion(
-                                    getMetaModelLocal(), attrName, value));
+                    this.attributes.put(attrName, getMetaModelLocal().getDialect().overrideDriverTypeConversion(
+                            getMetaModelLocal(), attrName, value));
                 }
             }
         }
@@ -220,7 +219,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
         getMetaModelLocal().checkAttributeOrAssociation(attribute);
 
-        attributes.put(attribute.toLowerCase(), value);
+        attributes.put(attribute, value);
         return (T) this;
     }
 
@@ -239,8 +238,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * Returns names of all attributes from this model.
      * @return names of all attributes from this model.
      */
+    //TODO: return SortedSet<String>, which keeps case insensivity, since this List<String> will not be case insensitive
     public static List<String> attributes(){
-        return getMetaModel().getAttributeNames();
+        return asList(getMetaModel().getAttributeNames());
+    }
+
+    private static List<String> asList(Set<String> set) {
+        return Arrays.asList(set.toArray(new String[set.size()]));
     }
 
     /**
@@ -642,17 +646,17 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @return all values of the model with all attribute names converted to lower case.
      */
-    public Map<String, Object> toMap(){
-        Map<String, Object> retVal = new HashMap<String, Object>();
-        for (String key : attributes.keySet()) {
-            Object v = attributes.get(key);
+    public SortedMap<String, Object> toMap(){
+        SortedMap<String, Object> retVal = new TreeMap<String, Object>();
+        for (Map.Entry<String, Object> entry : attributes.entrySet()) {
+            Object v = entry.getValue();
             if (v == null) {
                 continue;
             }
             if (v instanceof Clob) {
-                retVal.put(key.toLowerCase(), Convert.toString(v));
+                retVal.put(entry.getKey().toLowerCase(), Convert.toString(v));
             } else {
-                retVal.put(key.toLowerCase(), v);
+                retVal.put(entry.getKey().toLowerCase(), v);
             }
         }
         for(Class parentClass: cachedParents.keySet()){
@@ -1085,8 +1089,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             throw new IllegalArgumentException("can only copy between the same types");
         }
 
-        List<String> attrs = getMetaModelLocal().getAttributeNamesSkip(getIdName());
-        for (String name : attrs) {
+        for (String name : getMetaModelLocal().getAttributeNamesSkipId()) {
             other.getAttributes().put(name, get(name));
         }
     }
@@ -1198,13 +1201,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         // NOTE: this is a workaround for JSP pages. JSTL in cases ${item.id} does not call the getId() method, instead
         //calls item.get("id"), considering that this is a map only!
-        if(!attributes.containsKey("id") && attribute.equalsIgnoreCase("id")){
-            String idName = getIdName();
-            return attributes.get(idName.toLowerCase());
+        if (attribute.equalsIgnoreCase("id") && !attributes.containsKey("id")) {
+            return attributes.get(getIdName());
         }
 
         Object returnValue;
-        String attributeName = attribute.toLowerCase();
 
         String getInferenceProperty = System.getProperty("activejdbc.get.inference");
 
@@ -1212,24 +1213,24 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         if (getInference) {
             //TODO: Should only do this if get(String) was used, not if getString(String), getDate(String), etc.
-            if ((getMetaModelLocal().hasAttribute(attributeName))) {
-                return attributes.get(attributeName);//this should account for nulls too!
-            } else if ((returnValue = tryParent(attributeName)) != null) {
+            if ((getMetaModelLocal().hasAttribute(attribute))) {
+                return attributes.get(attribute);//this should account for nulls too!
+            } else if ((returnValue = tryParent(attribute)) != null) {
                 return returnValue;
-            } else if ((returnValue = tryPolymorphicParent(attributeName)) != null) {
+            } else if ((returnValue = tryPolymorphicParent(attribute)) != null) {
                 return returnValue;
-            } else if ((returnValue = tryChildren(attributeName)) != null) {
+            } else if ((returnValue = tryChildren(attribute)) != null) {
                 return returnValue;
-            } else if ((returnValue = tryPolymorphicChildren(attributeName)) != null) {
+            } else if ((returnValue = tryPolymorphicChildren(attribute)) != null) {
                 return returnValue;
-            } else if ((returnValue = tryOther(attributeName)) != null) {
+            } else if ((returnValue = tryOther(attribute)) != null) {
                 return returnValue;
             } else {
-                getMetaModelLocal().checkAttributeOrAssociation(attributeName);
+                getMetaModelLocal().checkAttributeOrAssociation(attribute);
                 return null;
             }
         } else {
-            return attributes.get(attributeName);
+            return attributes.get(attribute);
         }
     }
 
@@ -2299,7 +2300,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * After this method, this instance is equivalent to an empty, just created instance.
      */
     public void reset() {
-        attributes = new HashMap<String, Object>();
+        attributes = new CaseInsensitiveMap<Object>();
     }
 
     /**
@@ -2514,18 +2515,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     private void doCreatedAt() {
         if (manageTime && getMetaModelLocal().hasAttribute("created_at")) {
-            //clean just in case.
-            attributes.remove("created_at");
-            attributes.remove("CREATED_AT");
             attributes.put("created_at", new Timestamp(System.currentTimeMillis()));
         }
     }
 
     private void doUpdatedAt() {
         if (manageTime && getMetaModelLocal().hasAttribute("updated_at")) {
-            //clean just in case.
-            attributes.remove("updated_at");
-            attributes.remove("UPDATED_AT");
             set("updated_at", new Timestamp(System.currentTimeMillis()));
         }
     }
@@ -2536,11 +2531,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         MetaModel metaModel = getMetaModelLocal();
         StringBuilder query = new StringBuilder().append("UPDATE ").append(metaModel.getTableName()).append(" SET ");
-        List<String> names = metaModel.getAttributeNamesSkipGenerated(manageTime);
-        join(query, names, " = ?, ");
+        SortedSet<String> attributeNames = metaModel.getAttributeNamesSkipGenerated(manageTime);
+        join(query, attributeNames, " = ?, ");
         query.append(" = ?");
 
-        List<Object> values = getAttributeValuesSkipGenerated(names);
+        List<Object> values = getAttributeValues(attributeNames);
 
         if (manageTime && metaModel.hasAttribute("updated_at")) {
             query.append(", updated_at = ?");
@@ -2571,10 +2566,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return updated > 0;
     }
 
-    private List<Object> getAttributeValuesSkipGenerated(List<String> names) {
+    private List<Object> getAttributeValues(SortedSet<String> attributeNames) {
         List<Object> values = new ArrayList<Object>();
-        for (String name : names) {
-            values.add(get(name));
+        for (String attribute : attributeNames) {
+            values.add(get(attribute));
         }
         return values;
     }
@@ -2702,30 +2697,29 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             formatterMap.put(f.getValueClass(), f);
         }
 
-        List<String> names = new ArrayList<String>(attributes.keySet());
-        Collections.sort(names);
-        List<Object> values = new ArrayList();
-
-        for(String name: names){
-            Object value = get(name);
-            if(value == null){
-                values.add("NULL");
-            }
-            else if (value instanceof String && !formatterMap.containsKey(String.class)){
-                values.add("'" + value + "'");
-            }else{
-                if(formatterMap.containsKey(value.getClass())){
-                    values.add(formatterMap.get(value.getClass()).format(value));
-                }else{
-                    values.add(value);
-                }
-            }
-        }
         StringBuilder sb = new StringBuilder();
         sb.append("INSERT INTO ").append(getMetaModelLocal().getTableName()).append(" (");
-        join(sb, names, ", ");
+        join(sb, attributes.keySet(), ", ");
         sb.append(") VALUES (");
-        join(sb, values, ", ");
+        Iterator<Object> it = attributes.values().iterator();
+        while (it.hasNext()) {
+            Object value = it.next();
+            if (value == null) {
+                sb.append("NULL");
+            }
+            else if (value instanceof String && !formatterMap.containsKey(String.class)){
+                sb.append('\'').append(value).append('\'');
+            }else{
+                if(formatterMap.containsKey(value.getClass())){
+                    sb.append(formatterMap.get(value.getClass()).format(value));
+                }else{
+                    sb.append(value);
+                }
+            }
+            if (it.hasNext()) {
+                sb.append(", ");
+            }
+        }
         sb.append(')');
         return sb.toString();
     }
@@ -2766,6 +2760,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        attributes = (Map<String, Object>) in.readObject();
+        attributes = new CaseInsensitiveMap<Object>();
+        attributes.putAll((Map<String, Object>) in.readObject());
     }
 }
