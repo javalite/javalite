@@ -758,6 +758,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         Collection<String> attrList = (attrs != null && attrs.length > 0) ? Arrays.asList(attrs) : attributes.keySet();
         for (String name : attrList) {
             if (pretty) { sb.append("  ").append(indent); }
+            name = name.toLowerCase(); // force output attribute names in lowercase
             sb.append('<').append(name).append('>');
             Object v = attributes.get(name);
             if (v != null) {
@@ -863,6 +864,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         for (String name : attrList) {
             if (sbAttrs.length() > 0) { sbAttrs.append(','); }
             if (pretty) { sbAttrs.append("\n  ").append(indent); }
+            name = name.toLowerCase(); // force output attribute names in lowercase
             sbAttrs.append('"').append(name).append("\":");
             Object v = attributes.get(name);
             if (v == null) {
