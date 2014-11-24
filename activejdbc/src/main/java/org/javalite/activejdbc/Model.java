@@ -1187,7 +1187,37 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return value for attribute.
      */
     public Object get(String attribute) {
-        Object value = getUnconverted(attribute);
+        if (frozen) { throw new FrozenException(this); }
+
+        if (attribute == null) { throw new IllegalArgumentException("attribute cannot be null"); }
+
+        // NOTE: this is a workaround for JSP pages. JSTL in cases ${item.id} does not call the getId() method, instead
+        // calls item.get("id"), considering that this is a map only!
+        if (attribute.equalsIgnoreCase("id") && !attributes.containsKey("id")) {
+            return attributes.get(getIdName());
+        }
+
+        if (!getMetaModelLocal().hasAttribute(attribute)) {
+            String getInferenceProperty = System.getProperty("activejdbc.get.inference");
+            if (getInferenceProperty == null || getInferenceProperty.equals("true")) {
+                Object returnValue;
+                if ((returnValue = tryParent(attribute)) != null) {
+                    return returnValue;
+                } else if ((returnValue = tryPolymorphicParent(attribute)) != null) {
+                    return returnValue;
+                } else if ((returnValue = tryChildren(attribute)) != null) {
+                    return returnValue;
+                } else if ((returnValue = tryPolymorphicChildren(attribute)) != null) {
+                    return returnValue;
+                } else if ((returnValue = tryOther(attribute)) != null) {
+                    return returnValue;
+                } else {
+                    getMetaModelLocal().checkAttributeOrAssociation(attribute);
+                    return null;
+                }
+            }
+        }
+        Object value = attributes.get(attribute);
         Converter<Object, Object> converter = getMetaDataLocal().getConverterForValue(attribute, value, Object.class);
         return converter != null ? converter.convert(value) : value;
 
@@ -1201,39 +1231,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         if(attribute == null) throw new IllegalArgumentException("attribute cannot be null");
 
-        // NOTE: this is a workaround for JSP pages. JSTL in cases ${item.id} does not call the getId() method, instead
-        //calls item.get("id"), considering that this is a map only!
-        if (attribute.equalsIgnoreCase("id") && !attributes.containsKey("id")) {
-            return attributes.get(getIdName());
-        }
-
-        Object returnValue;
-
-        String getInferenceProperty = System.getProperty("activejdbc.get.inference");
-
-        boolean  getInference = getInferenceProperty  == null || getInferenceProperty.equals("true");
-
-        if (getInference) {
-            //TODO: Should only do this if get(String) was used, not if getString(String), getDate(String), etc.
-            if ((getMetaModelLocal().hasAttribute(attribute))) {
-                return attributes.get(attribute);//this should account for nulls too!
-            } else if ((returnValue = tryParent(attribute)) != null) {
-                return returnValue;
-            } else if ((returnValue = tryPolymorphicParent(attribute)) != null) {
-                return returnValue;
-            } else if ((returnValue = tryChildren(attribute)) != null) {
-                return returnValue;
-            } else if ((returnValue = tryPolymorphicChildren(attribute)) != null) {
-                return returnValue;
-            } else if ((returnValue = tryOther(attribute)) != null) {
-                return returnValue;
-            } else {
-                getMetaModelLocal().checkAttributeOrAssociation(attribute);
-                return null;
-            }
-        } else {
-            return attributes.get(attribute);
-        }
+        return attributes.get(attribute);//this should account for nulls too!
     }
 
 
@@ -2425,12 +2423,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         List<String> attributeNames = new ArrayList<String>();
 
         for(String name: attributes.keySet()){
-            if(includeId){
-                if (!name.equalsIgnoreCase(getMetaModelLocal().getVersionColumn()))
+            if (!name.equalsIgnoreCase(getMetaModelLocal().getVersionColumn())) {
+                if (includeId || !name.equalsIgnoreCase(getIdName())) {
                     attributeNames.add(name);
-            }else{
-                if (!name.equalsIgnoreCase(getMetaModelLocal().getVersionColumn()) && !name.equalsIgnoreCase(getIdName()))
-                    attributeNames.add(name);
+                }
             }
         }
         return attributeNames;
@@ -2743,7 +2739,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return value of attribute corresponding to <code>getIdName()</code>, converted to Long.
      */
     public Long getLongId() {
-        Object id = get(getIdName());
+        Object id = getId();
         if (id == null) {
             throw new NullPointerException(getIdName() + " is null, cannot convert to Long");
         }
