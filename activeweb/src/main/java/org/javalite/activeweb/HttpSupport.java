@@ -504,8 +504,7 @@ public class HttpSupport {
      *
      * @param fieldName name of form field from the  <code>multipart/form-data</code> request corresponding to the uploaded file.
      * @param formItems form items retrieved from <code>multipart/form-data</code> request.
-     * @return <code>InputStream</code> from which to read content of uploaded file.
-     * @throws WebException in case field name is not found in the request.
+     * @return <code>InputStream</code> from which to read content of uploaded file or null if FileItem with this name is not found.
      */
     protected org.javalite.activeweb.FileItem getFile(String fieldName, List<FormItem> formItems){
         for (FormItem formItem : formItems) {
@@ -513,7 +512,8 @@ public class HttpSupport {
                 return (org.javalite.activeweb.FileItem)formItem;
             }
         }
-        throw new WebException("File with field named: '" + fieldName + "' not found");
+        return null;
+
     }
 
     /**
