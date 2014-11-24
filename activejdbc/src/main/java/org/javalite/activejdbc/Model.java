@@ -1197,7 +1197,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             return attributes.get(getIdName());
         }
 
-        if (!getMetaModelLocal().hasAttribute(attribute)) {
+        if (getMetaModelLocal().hasAttribute(attribute)) {
+            Object value = attributes.get(attribute);
+            Converter<Object, Object> converter = getMetaDataLocal().getConverterForValue(attribute, value, Object.class);
+            return converter != null ? converter.convert(value) : value;
+        } else {
             String getInferenceProperty = System.getProperty("activejdbc.get.inference");
             if (getInferenceProperty == null || getInferenceProperty.equals("true")) {
                 Object returnValue;
@@ -1217,10 +1221,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 }
             }
         }
-        Object value = attributes.get(attribute);
-        Converter<Object, Object> converter = getMetaDataLocal().getConverterForValue(attribute, value, Object.class);
-        return converter != null ? converter.convert(value) : value;
-
+        return null;
     }
 
     /**
