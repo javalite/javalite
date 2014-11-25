@@ -66,5 +66,7 @@ public class FileItem extends FormItem{
         super(file.getName(), file.getName(), true, "text/plain", Util.bytes(new FileInputStream(file)));
     }
 
-
+    FileItem(ApacheFileItemFacade apacheFileItemFacade) {
+        super(apacheFileItemFacade);
+    }
 }

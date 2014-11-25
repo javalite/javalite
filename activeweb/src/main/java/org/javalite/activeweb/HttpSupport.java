@@ -508,12 +508,11 @@ public class HttpSupport {
      */
     protected org.javalite.activeweb.FileItem getFile(String fieldName, List<FormItem> formItems){
         for (FormItem formItem : formItems) {
-            if(formItem.isFile() && formItem.getFieldName().equals(fieldName)){
+            if(formItem instanceof org.javalite.activeweb.FileItem && formItem.getFieldName().equals(fieldName)){
                 return (org.javalite.activeweb.FileItem)formItem;
             }
         }
         return null;
-
     }
 
     /**
@@ -793,7 +792,12 @@ public class HttpSupport {
                 List<org.apache.commons.fileupload.FileItem> apacheFileItems = upload.parseRequest(Context.getHttpRequest());
                 formItems = new ArrayList<FormItem>();
                 for (FileItem apacheItem : apacheFileItems) {
-                    formItems.add(new FormItem(new ApacheFileItemFacade(apacheItem)));
+                    ApacheFileItemFacade f = new ApacheFileItemFacade(apacheItem);
+                    if(f.isFormField()){
+                        formItems.add(new FormItem(f));
+                    }else{
+                        formItems.add(new org.javalite.activeweb.FileItem(f));
+                    }
                 }
                 return formItems;
             } catch (Exception e) {
