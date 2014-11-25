@@ -25,11 +25,10 @@ import org.junit.Test;
  */
 public class CustomConverterTest extends ActiveJDBCTest {
     @Test
-    public void shouldConvertStringToNumber(){
+    public void shouldConvertStringToInteger(){
         Page p = new Page();
-        p.set("word_count", "123");
-        a(p.get("word_count") instanceof Integer).shouldBeFalse();
-        p.validate();
+        p.setInteger("word_count", "zero");
         a(p.get("word_count") instanceof Integer).shouldBeTrue();
+        a(p.get("word_count")).shouldBeEqual(0);
     }
 }

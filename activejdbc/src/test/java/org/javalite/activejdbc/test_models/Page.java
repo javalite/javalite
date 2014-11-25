@@ -1,10 +1,8 @@
 package org.javalite.activejdbc.test_models;
 
 import org.javalite.activejdbc.Model;
-import org.javalite.activejdbc.validation.Converter;
+import org.javalite.activejdbc.conversion.ConverterAdapter;
 import org.javalite.common.Convert;
-
-import java.util.Locale;
 
 /**
  * @author Igor Polevoy
@@ -12,30 +10,18 @@ import java.util.Locale;
 public class Page extends Model {
     static {
         validateNumericalityOf("word_count").greaterThan(10).onlyInteger().message("'word_count' must be a number greater than 10");
-        convertWith(new IntegerConverter("word_count"));
+        convertWith(new StringToIntegerConverter(), "word_count");
     }
 }
 
-class IntegerConverter extends Converter {
+class StringToIntegerConverter extends ConverterAdapter<String, Integer> {
 
-    String name;
+    @Override protected Class<String> sourceClass() { return String.class; }
 
-    IntegerConverter(String name) {
-        this.name = name;
-    }
+    @Override protected Class<Integer> destinationClass() { return Integer.class; }
 
     @Override
-    public String formatMessage(Locale locale, Object... params) {
-        return "Failed to format " + name + " to Integer";
-    }
-
-    @Override
-    public void convert(Model m) {
-        try {
-            Integer val = Convert.toInteger(m.get(name));
-            m.set(name, val);
-        } catch (Exception e) {
-            m.addValidator(this, name);
-        }
+    protected Integer doConvert(String source) throws Exception {
+        return "zero".equals(source) ? 0 : Convert.toInteger(source);
     }
 }

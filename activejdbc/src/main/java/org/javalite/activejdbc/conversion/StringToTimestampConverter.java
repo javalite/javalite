@@ -25,7 +25,7 @@ import java.text.SimpleDateFormat;
  *
  * @author ericbn
  */
-public class StringToTimestampConverter implements Converter<String, java.sql.Timestamp> {
+public class StringToTimestampConverter extends ConverterAdapter<String, java.sql.Timestamp> {
 
     private final DateFormat format;
 
@@ -42,27 +42,17 @@ public class StringToTimestampConverter implements Converter<String, java.sql.Ti
         this.format = format;
     }
 
-    /**
-     * @param sourceClass source Class
-     * @param destinationClass destination Class
-     * @return true if sourceClass is String and destinationClass is java.sql.Timestamp
-     */
-    @Override
-    public boolean canConvert(Class sourceClass, Class destinationClass) {
-        return String.class.equals(sourceClass) && java.sql.Timestamp.class.equals(destinationClass);
-    }
+    @Override protected Class<String> sourceClass() { return String.class; }
+
+    @Override protected Class<java.sql.Timestamp> destinationClass() { return java.sql.Timestamp.class; }
 
     /**
-     * @param source instance of String
+     * @param source instance of String or null
      * @return source converted to java.sql.Timestamp
-     * @throws ConversionException if conversion failed
+     * @throws ParseException if conversion failed
      */
     @Override
-    public java.sql.Timestamp convert(String source) {
-        try {
-            return new java.sql.Timestamp(format.parse(source).getTime());
-        } catch (ParseException e) {
-            throw new ConversionException(e);
-        }
+    public java.sql.Timestamp doConvert(String source) throws ParseException {
+        return source != null ? new java.sql.Timestamp(format.parse(source).getTime()) : null;
     }
 }

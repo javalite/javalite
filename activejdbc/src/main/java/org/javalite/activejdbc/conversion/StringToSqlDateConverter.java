@@ -25,7 +25,7 @@ import java.text.SimpleDateFormat;
  *
  * @author ericbn
  */
-public class StringToSqlDateConverter implements Converter<String, java.sql.Date> {
+public class StringToSqlDateConverter extends ConverterAdapter<String, java.sql.Date> {
 
     private final DateFormat format;
 
@@ -42,27 +42,17 @@ public class StringToSqlDateConverter implements Converter<String, java.sql.Date
         this.format = format;
     }
 
-    /**
-     * @param sourceClass source Class
-     * @param destinationClass destination Class
-     * @return true if sourceClass is String and destinationClass is java.sql.Date
-     */
-    @Override
-    public boolean canConvert(Class sourceClass, Class destinationClass) {
-        return String.class.equals(sourceClass) && java.sql.Date.class.equals(destinationClass);
-    }
+    @Override protected Class<String> sourceClass() { return String.class; }
+
+    @Override protected Class<java.sql.Date> destinationClass() { return java.sql.Date.class; }
 
     /**
-     * @param source instance of String
+     * @param source instance of String or null
      * @return source converted to java.sql.Date
-     * @throws ConversionException if conversion failed
+     * @throws ParseException if conversion failed
      */
     @Override
-    public java.sql.Date convert(String source) {
-        try {
-            return new java.sql.Date(format.parse(source).getTime());
-        } catch (ParseException e) {
-            throw new ConversionException(e);
-        }
+    public java.sql.Date doConvert(String source) throws ParseException {
+        return source != null ? new java.sql.Date(format.parse(source).getTime()) : null;
     }
 }

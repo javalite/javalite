@@ -43,8 +43,8 @@ class ModelMetaData {
      * Registers date converters (Date -> String -> java.sql.Date) for specified model attributes.
      */
     void dateFormat(DateFormat format, String... attributes) {
-        addConverter(new DateToStringConverter(format), attributes);
-        addConverter(new StringToSqlDateConverter(format), attributes);
+        ModelMetaData.this.convertWith(new DateToStringConverter(format), attributes);
+        ModelMetaData.this.convertWith(new StringToSqlDateConverter(format), attributes);
     }
 
     /**
@@ -58,23 +58,23 @@ class ModelMetaData {
      * Registers timestamp converters (Date -> String -> java.sql.Timestamp) for specified model attributes.
      */
     void timestampFormat(DateFormat format, String... attributes) {
-        addConverter(new DateToStringConverter(format), attributes);
-        addConverter(new StringToTimestampConverter(format), attributes);
+        ModelMetaData.this.convertWith(new DateToStringConverter(format), attributes);
+        ModelMetaData.this.convertWith(new StringToTimestampConverter(format), attributes);
     }
 
     /**
      * Registers converter for specified model attributes.
      */
-    void addConverter(Converter converter, String... attributes) {
+    void convertWith(Converter converter, String... attributes) {
         for (String attribute : attributes) {
-            addConverter(converter, attribute);
+            convertWith(converter, attribute);
         }
     }
 
     /**
      * Registers converter for specified model attribute.
      */
-    void addConverter(Converter converter, String attribute) {
+    void convertWith(Converter converter, String attribute) {
         List<Converter> list = attributeConverters.get(attribute);
         if (list == null) {
             list = new ArrayList<Converter>();
