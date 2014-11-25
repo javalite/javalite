@@ -23,7 +23,7 @@ import static org.javalite.common.Util.*;
  *
  * @author ericbn
  */
-public class BlankStringToNullConverter implements Converter<String, Object> {
+public class BlankToNullConverter implements Converter<String, Object> {
 
     /**
      * @param sourceClass source Class

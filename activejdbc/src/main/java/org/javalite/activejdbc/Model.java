@@ -42,7 +42,7 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import org.javalite.activejdbc.conversion.BlankStringToNullConverter;
+import org.javalite.activejdbc.conversion.BlankToNullConverter;
 
 import static org.javalite.common.Inflector.*;
 import static org.javalite.common.Util.*;
@@ -1865,8 +1865,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         getMetaData().timestampFormat(format, attributes);
     }
 
-    protected static void blankStringToNull(String... attributes) {
-        getMetaData().convertWith(new BlankStringToNullConverter(), attributes);
+    protected static void blankToNull(String... attributes) {
+        getMetaData().convertWith(new BlankToNullConverter(), attributes);
     }
 
     public static boolean belongsTo(Class<? extends Model> targetClass) {
