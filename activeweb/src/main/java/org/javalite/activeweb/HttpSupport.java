@@ -875,6 +875,7 @@ public class HttpSupport {
 
     /**
      * Convenience method to get parameter map in case <code>multipart/form-data</code> request was used.
+     * This method will skip files, and will only return form fields that are not files.
      *
      * Returns a map parsed from a request if parameter names have a "hash" syntax:
      *
@@ -898,7 +899,7 @@ public class HttpSupport {
 
         Map<String, String>  hash = new HashMap<String, String>();
         for(FormItem item:formItems){
-            if(item.getFieldName().startsWith(hashName)){
+            if(item.getFieldName().startsWith(hashName) && item instanceof FormItem){
                 String name = parseHashName(item.getFieldName());
                 if(name != null){
                     hash.put(name, item.getStreamAsString());
