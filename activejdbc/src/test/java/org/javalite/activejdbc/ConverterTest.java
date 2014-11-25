@@ -17,9 +17,11 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
+import org.javalite.activejdbc.test_models.Salary;
 import org.javalite.activejdbc.test_models.Student;
 import org.junit.Test;
 
@@ -146,8 +148,61 @@ public class ConverterTest extends ActiveJDBCTest {
 
     @Test
     public void shouldSetNull() {
-        Student student = new Student().set("first_name", null).setString("last_name", null);
+        Student student = new Student().set("first_name", null);
         the(student.get("first_name")).shouldBeNull();
-        the(student.get("last_name")).shouldBeNull();
+    }
+
+    @Test
+    public void shouldCreateZeroAsNull() {
+        Salary s = Salary.create("salary", 0);
+        the(s.get("salary")).shouldBeNull();
+    }
+
+    @Test
+    public void shouldSetZeroAsNull() {
+        Salary s = new Salary();
+        s.set("salary", 0);
+        the(s.get("salary")).shouldBeNull();
+        s.setShort("salary", (short) 0);
+        the(s.get("salary")).shouldBeNull();
+        s.setInteger("salary", 0);
+        the(s.get("salary")).shouldBeNull();
+        s.setLong("salary", 0L);
+        the(s.get("salary")).shouldBeNull();
+        s.setFloat("salary", 0.0f);
+        the(s.get("salary")).shouldBeNull();
+        s.setDouble("salary", 0.0);
+        the(s.get("salary")).shouldBeNull();
+        s.setBigDecimal("salary", BigDecimal.ZERO);
+        the(s.get("salary")).shouldBeNull();
+    }
+
+    @Test
+    public void shouldSetNullNumber() {
+        Salary s = new Salary();
+        s.setShort("salary", null);
+        the(s.get("salary")).shouldBeNull();
+        s.setInteger("salary", null);
+        the(s.get("salary")).shouldBeNull();
+        s.setLong("salary", null);
+        the(s.get("salary")).shouldBeNull();
+        s.setFloat("salary", null);
+        the(s.get("salary")).shouldBeNull();
+        s.setDouble("salary", null);
+        the(s.get("salary")).shouldBeNull();
+        s.setBigDecimal("salary", null);
+        the(s.get("salary")).shouldBeNull();
+    }
+
+    @Test
+    public void shouldGetZeroAsNull() {
+        deleteAndPopulateTable("salaries");
+        the(Salary.findById(2).get("salary")).shouldBeNull();
+        the(Salary.findById(2).getShort("salary")).shouldBeNull();
+        the(Salary.findById(2).getInteger("salary")).shouldBeNull();
+        the(Salary.findById(2).getLong("salary")).shouldBeNull();
+        the(Salary.findById(2).getFloat("salary")).shouldBeNull();
+        the(Salary.findById(2).getDouble("salary")).shouldBeNull();
+        the(Salary.findById(2).getBigDecimal("salary")).shouldBeNull();
     }
 }

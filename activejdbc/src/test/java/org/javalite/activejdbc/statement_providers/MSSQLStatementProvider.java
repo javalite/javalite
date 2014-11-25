@@ -27,7 +27,8 @@ public class MSSQLStatementProvider implements StatementProvider {
             );
         } else if (table.equals("salaries")) {
             statements =  Arrays.asList(
-                    "INSERT INTO salaries (id, salary) VALUES(1, 50000.00);"
+                    "INSERT INTO salaries (id, salary) VALUES(1, 50000.00);",
+                    "INSERT INTO salaries (id, salary) VALUES(2, 0);"
             );
         } else if (table.equals("users")) {
             statements =  Arrays.asList(

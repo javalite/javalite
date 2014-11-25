@@ -22,5 +22,6 @@ import org.javalite.activejdbc.Model;
 public class Salary extends Model {
     static{
         validatePresenceOf("salary").message("salary is missing!!!");
+        zeroToNull("salary");
     }
 }

@@ -43,6 +43,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import org.javalite.activejdbc.conversion.BlankToNullConverter;
+import org.javalite.activejdbc.conversion.ZeroToNullConverter;
 
 import static org.javalite.common.Inflector.*;
 import static org.javalite.common.Util.*;
@@ -1887,6 +1888,16 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     protected static void blankToNull(String... attributes) {
         getMetaData().convertWith(new BlankToNullConverter(), attributes);
+    }
+
+    /**
+     * Registers {@link ZeroToNullConverter} for specified attributes. This will convert instances of <tt>Number</tt>
+     * that are zero to <tt>null</tt>.
+     *
+     * @param attributes attribute names
+     */
+    protected static void zeroToNull(String... attributes) {
+        getMetaData().convertWith(new ZeroToNullConverter(), attributes);
     }
 
     public static boolean belongsTo(Class<? extends Model> targetClass) {

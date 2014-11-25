@@ -45,7 +45,8 @@ public class SQLiteStatementProvider implements org.javalite.activejdbc.Statemen
             );
         } else if (table.equals("salaries")) {
             statements =  Arrays.asList(
-                    "INSERT INTO salaries VALUES(1, 50000.00);"
+                    "INSERT INTO salaries VALUES(1, 50000.00);",
+                    "INSERT INTO salaries VALUES(2, 0);"
             );
         } else if (table.equals("users")) {
             statements =  Arrays.asList(
