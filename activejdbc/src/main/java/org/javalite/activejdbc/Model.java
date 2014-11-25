@@ -1865,6 +1865,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         getMetaData().timestampFormat(format, attributes);
     }
 
+    /**
+     * Registers {@link BlankToNullConverter} for specified attributes. This will convert instances of <tt>String</tt>
+     * that are empty or contain only whitespaces to <tt>null</tt>.
+     *
+     * @param attributes attribute names
+     */
     protected static void blankToNull(String... attributes) {
         getMetaData().convertWith(new BlankToNullConverter(), attributes);
     }
