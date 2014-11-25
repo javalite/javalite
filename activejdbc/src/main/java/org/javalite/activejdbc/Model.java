@@ -1459,6 +1459,20 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return setConverted(attribute, converter != null ? converter.convert(value) : Convert.toBigDecimal(value));
     }
 
+     /**
+     * Sets attribute value as <code>Short</code>. If a suitable {@link Converter} from the
+     * <code>Class</code> of value to <code>java.lang.Short</code> exists for the specified attribute, it will be
+     * used, otherwise performs a conversion using {@link Convert#toShort(Object)}.
+     *
+     * @param attribute name of attribute.
+     * @param value value
+     * @return reference to this model.
+     */
+    public <T extends Model> T setShort(String attribute, Object value) {
+        Converter<Object, Short> converter = getMetaDataLocal().getConverterForValue(attribute, value, Short.class);
+        return setConverted(attribute, converter != null ? converter.convert(value) : Convert.toShort(value));
+    }
+
     /**
      * Converts object to <code>Integer</code> when setting.
      *
