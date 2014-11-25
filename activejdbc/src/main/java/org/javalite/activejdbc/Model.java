@@ -142,7 +142,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @param attribute name of attribute.
      * @param value value to convert.
-     * @return  this model.
+     * @return reference to this model.
      */
     public <T extends Model> T setDate(String attribute, Object value) {
         Converter<Object, java.sql.Date> converter = getMetaDataLocal().getConverterForValue(
@@ -154,8 +154,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * Gets attribute value as <code>java.sql.Date</code>. If a suitable {@link Converter} from the <code>Class</code>
      * of the attribute value to <code>java.sql.Date</code> exists for the specified attribute, it will be used,
      * otherwise performs a conversion using {@link Convert#toSqlDate(Object)}.
-     * @param attribute attribute name
-     * @return instance of <code>java.sql.Date</code>
+     * @param attribute name of attribute to convert
+     * @return value converted to <code>java.sql.Date</code>
      */
     public java.sql.Date getDate(String attribute) {
         Object value = getUnconverted(attribute);
@@ -1298,8 +1298,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * of the attribute value to <code>java.lang.String</code> exists for the specified attribute, it will be used,
      * otherwise performs a conversion using {@link Convert#toString(Object)}.
      *
-     * @param attribute name of attribute.
-     * @return attribute value as string.
+     * @param attribute name of attribute to convert
+     * @return value converted to <code>String</code>
      */
     public String getString(String attribute) {
         Object value = getUnconverted(attribute);
@@ -1323,11 +1323,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Converts Model value to <code>BigDecimal</code>
-     *
-     * @see {@link Convert#toBigDecimal}
+     * Gets attribute value as <code>java.math.BigDecimal</code>. If a suitable {@link Converter} from the
+     * <code>Class</code> of the attribute value to <code>java.math.BigDecimal</code> exists for the specified
+     * attribute, it will be used, otherwise performs a conversion using {@link Convert#toBigDecimal(Object)}.
      * @param attribute name of attribute to convert
-     * @return converted value
+     * @return value converted to <code>java.math.BigDecimal</code>
      */
     public BigDecimal getBigDecimal(String attribute) {
         Object value = getUnconverted(attribute);
@@ -1337,11 +1337,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Converts Model value to <code>Integer</code>
-     *
-     * @see {@link Convert#toInteger}
+     * Gets attribute value as <code>Integer</code>. If a suitable {@link Converter} from the
+     * <code>Class</code> of the attribute value to <code>java.lang.Integer</code> exists for the specified
+     * attribute, it will be used, otherwise performs a conversion using {@link Convert#toInteger(Object)}.
      * @param attribute name of attribute to convert
-     * @return converted value
+     * @return value converted to <code>Integer</code>
      */
     public Integer getInteger(String attribute) {
         Object value = getUnconverted(attribute);
@@ -1350,11 +1350,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Converts Model value to <code>Long</code>
-     *
-     * @see {@link Convert#toLong(Object)}
+     * Gets attribute value as <code>Long</code>. If a suitable {@link Converter} from the
+     * <code>Class</code> of the attribute value to <code>java.lang.Long</code> exists for the specified
+     * attribute, it will be used, otherwise performs a conversion using {@link Convert#toLong(Object)}.
      * @param attribute name of attribute to convert
-     * @return converted value
+     * @return value converted to <code>Long</code>
      */
     public Long getLong(String attribute) {
         Object value = getUnconverted(attribute);
@@ -1363,11 +1363,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Converts Model value to <code>Short</code>
-     *
-     * @see {@link Convert#toShort(Object)}
+     * Gets attribute value as <code>Short</code>. If a suitable {@link Converter} from the
+     * <code>Class</code> of the attribute value to <code>java.lang.Short</code> exists for the specified
+     * attribute, it will be used, otherwise performs a conversion using {@link Convert#toShort(Object)}.
      * @param attribute name of attribute to convert
-     * @return converted value
+     * @return value converted to <code>Short</code>
      */
     public Short getShort(String attribute) {
         Object value = getUnconverted(attribute);
@@ -1376,11 +1376,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Converts Model value to <code>Float</code>
-     *
-     * @see {@link Convert#toFloat(Object)}
+     * Gets attribute value as <code>Float</code>. If a suitable {@link Converter} from the
+     * <code>Class</code> of the attribute value to <code>java.lang.Float</code> exists for the specified
+     * attribute, it will be used, otherwise performs a conversion using {@link Convert#toFloat(Object)}.
      * @param attribute name of attribute to convert
-     * @return converted value
+     * @return value converted to <code>Float</code>
      */
     public Float getFloat(String attribute) {
         Object value = getUnconverted(attribute);
@@ -1393,8 +1393,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <code>Class</code> of the attribute value to <code>java.sql.Timestamp</code> exists for the specified attribute,
      * it will be used, otherwise performs a conversion using {@link Convert#toTimestamp(Object)}.
      *
-     * @param attribute attribute name
-     * @return instance of Timestamp.
+     * @param attribute name of attribute to convert
+     * @return instance of <code>Timestamp</code>
      */
     public Timestamp getTimestamp(String attribute) {
         Object value = getUnconverted(attribute);
@@ -1404,11 +1404,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Converts Model value to <code>Double</code>
-     *
-     * @see {@link Convert#toDouble(Object)}
+     * Gets attribute value as <code>Double</code>. If a suitable {@link Converter} from the
+     * <code>Class</code> of the attribute value to <code>java.lang.Double</code> exists for the specified
+     * attribute, it will be used, otherwise performs a conversion using {@link Convert#toDouble(Object)}.
      * @param attribute name of attribute to convert
-     * @return converted value
+     * @return value converted to <code>Double</code>
      */
     public Double getDouble(String attribute) {
         Object value = getUnconverted(attribute);
@@ -1416,14 +1416,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return converter != null ? converter.convert(value) : Convert.toDouble(value);
     }
 
-
     /**
-     * Returns true if the value is any numeric type and has a value of 1, or
-     * if string type has a value of 'y', 't', 'true' or 'yes'. Otherwise, return false.
-     *
-     * @param attribute attribute name
-     * @return true if the value is any numeric type and has a value of 1, or
-     * if string type has a value of 'y', 't', 'true' or 'yes'. Otherwise, return false.
+     * Gets attribute value as <code>Boolean</code>. If a suitable {@link Converter} from the
+     * <code>Class</code> of the attribute value to <code>java.lang.Boolean</code> exists for the specified
+     * attribute, it will be used, otherwise performs a conversion using {@link Convert#toBoolean(Object)}.
+     * @param attribute name of attribute to convert
+     * @return value converted to <code>Boolean</code>
      */
     public Boolean getBoolean(String attribute) {
         Object value = getUnconverted(attribute);
@@ -1434,7 +1432,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     /*************************** typed setters *****************************************/
 
     /**
-     * Sets attribute value as <code>java.lang.String</code>. If a suitable {@link Converter} from the
+     * Sets attribute value as <code>String</code>. If a suitable {@link Converter} from the
      * <code>Class</code> of value to <code>java.lang.String</code> exists for the specified attribute, it will be
      * used, otherwise performs a conversion using {@link Convert#toString(Object)}.
      *
@@ -1448,7 +1446,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Converts object to BigDecimal when setting.
+     * Sets attribute value as <code>java.math.BigDecimal</code>. If a suitable {@link Converter} from the
+     * <code>Class</code> of value to <code>java.math.BigDecimal</code> exists for the specified attribute, it will be
+     * used, otherwise performs a conversion using {@link Convert#toBigDecimal(Object)}.
      *
      * @param attribute name of attribute.
      * @param value value
@@ -1460,7 +1460,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return setConverted(attribute, converter != null ? converter.convert(value) : Convert.toBigDecimal(value));
     }
 
-     /**
+    /**
      * Sets attribute value as <code>Short</code>. If a suitable {@link Converter} from the
      * <code>Class</code> of value to <code>java.lang.Short</code> exists for the specified attribute, it will be
      * used, otherwise performs a conversion using {@link Convert#toShort(Object)}.
@@ -1499,10 +1499,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Converts object to <code>Float</code> when setting.
+     * Sets attribute value as <code>Float</code>. If a suitable {@link Converter} from the <code>Class</code>
+     * of value to <code>java.lang.Float</code> exists for the specified attribute, it will be used, otherwise performs
+     * a conversion using {@link Convert#toFloat(Object)}.
      *
      * @param attribute name of attribute.
-     * @param value value
+     * @param value value to convert.
      * @return reference to this model.
      */
     public <T extends Model> T setFloat(String attribute, Object value) {
@@ -1526,10 +1528,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Converts object to <code>Double</code> when setting.
+     * Sets attribute value as <code>Double</code>. If a suitable {@link Converter} from the <code>Class</code>
+     * of value to <code>java.lang.Double</code> exists for the specified attribute, it will be used, otherwise performs
+     * a conversion using {@link Convert#toDouble(Object)}.
      *
      * @param attribute name of attribute.
-     * @param value value
+     * @param value value to convert.
      * @return reference to this model.
      */
     public <T extends Model> T setDouble(String attribute, Object value) {
@@ -1537,15 +1541,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return setConverted(attribute, converter != null ? converter.convert(value) : Convert.toDouble(value));
     }
 
-
-
     /**
-     * Sets to <code>true</code> if the value is any numeric type and has a value of 1, or if string type has a
-     * value of 'y', 't', 'true' or 'yes'. Otherwise, sets to false.
+     * Sets attribute value as <code>Boolean</code>. If a suitable {@link Converter} from the
+     * <code>Class</code> of value to <code>java.lang.Boolean</code> exists for the specified attribute, it will be
+     * used, otherwise performs a conversion using {@link Convert#toBoolean(Object)}.
      *
      * @param attribute name of attribute.
-     * @param value value to convert.
-     * @return  this model.
+     * @param value value
+     * @return reference to this model.
      */
     public <T extends Model> T setBoolean(String attribute, Object value) {
         Converter<Object, Boolean> converter = getMetaDataLocal().getConverterForValue(attribute, value, Boolean.class);
