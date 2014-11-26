@@ -896,10 +896,9 @@ public class HttpSupport {
      * @return map with name/value pairs parsed from request.
      */
     public Map<String, String> getMap(String hashName, List<FormItem> formItems) {
-
         Map<String, String>  hash = new HashMap<String, String>();
         for(FormItem item:formItems){
-            if(item.getFieldName().startsWith(hashName) && item instanceof FormItem){
+            if(item.getFieldName().startsWith(hashName) && !item.isFile()){
                 String name = parseHashName(item.getFieldName());
                 if(name != null){
                     hash.put(name, item.getStreamAsString());
