@@ -1890,7 +1890,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attributes attribute names
      */
     protected static void blankToNull(String... attributes) {
-        getMetaData().convertWith(new BlankToNullConverter(), attributes);
+        getMetaData().convertWith(BlankToNullConverter.instance(), attributes);
     }
 
     /**
@@ -1900,7 +1900,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attributes attribute names
      */
     protected static void zeroToNull(String... attributes) {
-        getMetaData().convertWith(new ZeroToNullConverter(), attributes);
+        getMetaData().convertWith(ZeroToNullConverter.instance(), attributes);
     }
 
     public static boolean belongsTo(Class<? extends Model> targetClass) {

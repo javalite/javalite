@@ -21,7 +21,12 @@ package org.javalite.activejdbc.conversion;
  *
  * @author ericbn
  */
-public class ZeroToNullConverter implements Converter<Number, Object> {
+public enum ZeroToNullConverter implements Converter<Number, Object> {
+    INSTANCE;
+
+    public static ZeroToNullConverter instance() { return INSTANCE; }
+
+    private ZeroToNullConverter() { }
 
     /**
      * @param sourceClass source Class
