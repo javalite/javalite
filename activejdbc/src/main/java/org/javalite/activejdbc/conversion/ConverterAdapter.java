@@ -27,7 +27,7 @@ public abstract class ConverterAdapter<S, T> implements Converter<S, T> {
 
     @Override
     public boolean canConvert(Class aSourceClass, Class aDestinationClass) {
-        return aSourceClass.isAssignableFrom(sourceClass()) && destinationClass().isAssignableFrom(aDestinationClass);
+        return sourceClass().isAssignableFrom(aSourceClass) && destinationClass().isAssignableFrom(aDestinationClass);
     }
 
     protected abstract Class<S> sourceClass();
