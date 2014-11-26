@@ -32,15 +32,14 @@ import static org.javalite.common.Util.*;
  *
  * @author Igor Polevoy
  */
-public class QueryCache {
+public enum QueryCache {
+    INSTANCE;
 
     private final static Logger logger = LoggerFactory.getLogger(QueryCache.class);
 
-    private static QueryCache instance = new QueryCache();
+    private final boolean enabled = Registry.instance().getConfiguration().cacheEnabled();
 
-    private boolean enabled = Registry.instance().getConfiguration().cacheEnabled();
-
-    private CacheManager cacheManager;
+    private final CacheManager cacheManager;
 
     //singleton
 
@@ -55,7 +54,7 @@ public class QueryCache {
      * @return one and only one instance of this class.
      */
     public static QueryCache instance() {
-        return instance;
+        return INSTANCE;
     }
 
     /**

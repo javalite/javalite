@@ -29,16 +29,18 @@ import static org.javalite.common.Util.*;
 /**
  * @author Igor Polevoy
  */
-class StatementCache {
+enum StatementCache {
+    INSTANCE;
 
-    private static final StatementCache instance = new StatementCache();
-    static StatementCache instance() { return instance; }
+    static StatementCache instance() { return INSTANCE; }
 
-    private ConcurrentMap<Connection, Map<String, PreparedStatement>> statementCache = new ConcurrentHashMap<Connection, Map<String, PreparedStatement>>();
+    private final ConcurrentMap<Connection, Map<String, PreparedStatement>> statementCache = new ConcurrentHashMap<Connection, Map<String, PreparedStatement>>();
+
+    private StatementCache() { }
 
     PreparedStatement getPreparedStatement(Connection connection, String query) {
         if (!statementCache.containsKey(connection)) {
-            statementCache.putIfAbsent(connection, new HashMap<String, PreparedStatement>());
+            statementCache.put(connection, new HashMap<String, PreparedStatement>());
         }
         return statementCache.get(connection).get(query);
     }
