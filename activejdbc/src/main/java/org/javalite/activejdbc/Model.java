@@ -2247,6 +2247,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public void add(Model child) {
 
+        if(child == null) throw new IllegalArgumentException("cannot add what is null");
+
         //TODO: refactor this method
         String childTable = Registry.instance().getTableName(child.getClass());
         MetaModel metaModel = getMetaModelLocal();

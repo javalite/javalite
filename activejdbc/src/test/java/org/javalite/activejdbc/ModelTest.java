@@ -341,7 +341,20 @@ public class ModelTest extends ActiveJDBCTest {
                 .set("state", "IL").set("zip", "60090");
         u.add(a);
         a(9).shouldBeEqual(Address.count());
+    }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAddNull(){
+        deleteAndPopulateTables("users", "addresses");
+        User u = User.findById(1);
+        u.add(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotRemoveNull(){
+        deleteAndPopulateTables("users", "addresses");
+        User u = User.findById(1);
+        u.remove(null);
     }
 
     @Test
