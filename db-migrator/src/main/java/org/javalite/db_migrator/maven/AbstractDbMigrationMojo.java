@@ -5,22 +5,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.javalite.common.Util;
 
 import static org.javalite.common.Util.*;
 import org.javalite.db_migrator.DatabaseUtils;
 
 public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
 
-    /**
-     * @parameter property="session"
-     * @required
-     * @readonly
-     */
-    private MavenSession session;    
-    
     /**
      * @parameter
      */
@@ -40,30 +31,35 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
      * @parameter
      */
     private String password;
-    
+
     /**
      * @parameter
      */
     private String environments;
+
+    /**
+     * @parameter
+     */
+    private String configFile;
 
     public final void execute() throws MojoExecutionException {
         if (blank(environments)) {
             executeCurrentConfiguration();
         } else {
             Properties properties = new Properties();
-            // looks for database.properties file in basedir
-            //TODO: parameter with properties file location
-            File file = new File(session.getExecutionRootDirectory(), "database.properties");
+            File file = new File(blank(configFile) ? "database.properties" : configFile);
             if (file.exists()) {
                 InputStream is = null;
                 try {
                     is = new FileInputStream(file);
                     properties.load(is);
                 } catch (IOException e){
-                    throw new MojoExecutionException("Error reading database.properties file", e);
+                    throw new MojoExecutionException("Error reading " + file + " file", e);
                 } finally {
-                    Util.close(is);
+                    closeQuietly(is);
                 }
+            } else {
+                throw new MojoExecutionException("File " + file + " not found");
             }
             for (String environment : environments.split("\\s*,\\s*")) {
                 getLog().info("Environment: " + environment);
@@ -75,7 +71,7 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
             }
         }
     }
-    
+
     private void executeCurrentConfiguration() throws MojoExecutionException {
         if (blank(password)) {
             password = "";
@@ -88,7 +84,7 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
 
         executeMojo();
     }
-    
+
     private void validateConfiguration() throws MojoExecutionException {
         if (blank(driver)) {
             throw new MojoExecutionException("No database driver. Specify one in the plugin configuration.");
@@ -110,7 +106,7 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
     }
 
     public abstract void executeMojo() throws MojoExecutionException;
-   
+
     public String getUrl() {
         return url;
     }
@@ -130,7 +126,11 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
     public String getEnvironments() {
         return environments;
     }
-    
+
+    public String getConfigFile() {
+        return configFile;
+    }
+
     public void setUrl(String url) {
         this.url = url;
     }
@@ -149,5 +149,9 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
 
     public void setEnvironments(String environments) {
         this.environments = environments;
+    }
+
+    public void setConfigFile(String configFile) {
+        this.configFile = configFile;
     }
 }
