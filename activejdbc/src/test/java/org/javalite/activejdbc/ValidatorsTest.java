@@ -41,7 +41,7 @@ public class ValidatorsTest extends ActiveJDBCTest {
 
         p.set("last_name", "polevoy");
         p.validate();
-        a(p.errors().size()).shouldBeEqual(0);        
+        a(p.errors().size()).shouldBeEqual(0);
     }
 
     @Test
@@ -113,6 +113,15 @@ public class ValidatorsTest extends ActiveJDBCTest {
     }
 
     @Test
+    public void shouldGetErrorsCaseInsensitive() {
+        deleteAndPopulateTable("salaries");
+        Salary s = new Salary();
+        s.validate();
+        a(s.errors().get("Salary")).shouldBeEqual(s.errors().get("salary"));
+        a(s.errors().get("SALARY")).shouldBeEqual(s.errors().get("salary"));
+    }
+
+    @Test
     public void testRegexpValidator(){
         deleteAndPopulateTables("users", "addresses");
         User u = new User();
@@ -137,7 +146,7 @@ public class ValidatorsTest extends ActiveJDBCTest {
         u.set("email", "this is not email value");
         expect(new ExceptionExpectation(ValidationException.class) {
             public void exec() {
-                u.saveIt();          
+                u.saveIt();
             }
         });
     }

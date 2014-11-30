@@ -31,7 +31,7 @@ public class Errors implements Map<String, String> {
 
     private Locale locale;
 
-    private Map<String, Validator> validators = new CaseInsensitiveMap<Validator>();
+    private final Map<String, Validator> validators = new CaseInsensitiveMap<Validator>();
 
 
     /**

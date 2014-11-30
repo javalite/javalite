@@ -66,4 +66,16 @@ public class ValidationWithResourceBundlesTest extends ActiveJDBCTest{
         a(s.errors(new Locale("de", "DE")).get("email", s.get("school_name"), s.get("email"), "computer@science.edu"))
                 .shouldBeEqual("EMail Format f\u00fcr die Schule School of Computer Science ist falsch: computer#science.edu, ein geeignetes Format w\u00e4re so etwas wie dieses: computer@science.edu");
     }
+
+    @Test
+    public void shouldGetAttributesAndErrorsCaseInsensitive() {
+        School s = new School();
+        s.set("school_name", "School of Computer Science");
+        s.set("email", "computer#science.edu");
+        s.validate();
+        a(s.errors().get("Email", s.get("School_Name"), s.get("Email"), "computer@science.edu")).shouldBeEqual(
+                s.errors().get("email", s.get("school_name"), s.get("email"), "computer@science.edu"));
+        a(s.errors().get("EMAIL", s.get("SCHOOL_NAME"), s.get("EMAIL"), "computer@science.edu")).shouldBeEqual(
+                s.errors().get("email", s.get("school_name"), s.get("email"), "computer@science.edu"));
+    }
 }
