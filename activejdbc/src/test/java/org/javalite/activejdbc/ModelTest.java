@@ -190,6 +190,14 @@ public class ModelTest extends ActiveJDBCTest {
     }
 
     @Test
+    public void shouldGetAttributeCaseInsensitive() {
+        deleteAndPopulateTable("people");
+        Person p = Person.findById(1);
+        the(p.get("Last_Name")).shouldBeEqual(p.get("last_name"));
+        the(p.get("LAST_NAME")).shouldBeEqual(p.get("last_name"));
+    }
+
+    @Test
     public void testCount() {
         deleteAndPopulateTable("people");
         a(Person.count()).shouldBeEqual(4L);
@@ -603,5 +611,3 @@ public class ModelTest extends ActiveJDBCTest {
         a(p.isValid()).shouldBeTrue();
     }
 }
-
-

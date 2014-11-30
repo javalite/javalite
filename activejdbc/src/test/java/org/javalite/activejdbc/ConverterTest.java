@@ -42,6 +42,25 @@ public class ConverterTest extends ActiveJDBCTest {
     }
 
     @Test
+    public void shouldConvertToDateCaseInsensitive() {
+        Student student = new Student().setDate("DOB", "11/15/2007");
+        the(student.get("dob")).shouldBeA(java.sql.Date.class);
+        the(student.get("Dob")).shouldBeA(java.sql.Date.class);
+        the(student.get("DOB")).shouldBeA(java.sql.Date.class);
+        the(student.getString("dob")).shouldBeA(String.class);
+        the(student.getString("Dob")).shouldBeA(String.class);
+        the(student.getString("DOB")).shouldBeA(String.class);
+
+        student = new Student().setDate("Dob", "11/15/2007");
+        the(student.get("dob")).shouldBeA(java.sql.Date.class);
+        the(student.get("Dob")).shouldBeA(java.sql.Date.class);
+        the(student.get("DOB")).shouldBeA(java.sql.Date.class);
+        the(student.getString("dob")).shouldBeA(String.class);
+        the(student.getString("Dob")).shouldBeA(String.class);
+        the(student.getString("DOB")).shouldBeA(String.class);
+    }
+
+    @Test
     public void shouldSetNullDate() {
         Student student = new Student().setDate("dob", null);
         the(student.get("dob")).shouldBeNull();
@@ -56,6 +75,19 @@ public class ConverterTest extends ActiveJDBCTest {
         the(student.get("dob")).shouldBeEqual("11/15/2007");
 
         the(student.getDate("dob").getTime()).shouldBeEqual(date.getTime());
+    }
+
+    @Test
+    public void shouldConvertToStringCaseInsensitive() {
+        Student student = new Student().setString("DOB", new java.util.Date());
+        the(student.get("dob")).shouldBeA(String.class);
+        the(student.get("Dob")).shouldBeA(String.class);
+        the(student.get("DOB")).shouldBeA(String.class);
+
+        student = new Student().setString("Dob", new java.util.Date());
+        the(student.get("dob")).shouldBeA(String.class);
+        the(student.get("Dob")).shouldBeA(String.class);
+        the(student.get("DOB")).shouldBeA(String.class);
     }
 
     @Test
