@@ -43,6 +43,8 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
     private String configFile;
 
     public final void execute() throws MojoExecutionException {
+        getLog().warn("=================> ENVIRONMENTS: " + environments + ", BLANK: " + blank(environments));
+
         if (blank(environments)) {
             executeCurrentConfiguration();
         } else {
@@ -63,10 +65,10 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
             }
             for (String environment : environments.split("\\s*,\\s*")) {
                 getLog().info("Environment: " + environment);
-                url = properties.getProperty(environment + ".jdbc.url");
-                driver = properties.getProperty(environment + ".jdbc.driver");
-                username = properties.getProperty(environment + ".jdbc.username");
-                password = properties.getProperty(environment + ".jdbc.password");
+                url = properties.getProperty(environment + ".url");
+                driver = properties.getProperty(environment + ".driver");
+                username = properties.getProperty(environment + ".username");
+                password = properties.getProperty(environment + ".password");
                 executeCurrentConfiguration();
             }
         }
