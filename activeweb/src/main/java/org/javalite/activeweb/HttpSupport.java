@@ -500,7 +500,8 @@ public class HttpSupport {
 
 
     /**
-     * Convenience method to get file content from <code>multipart/form-data</code> request.
+     * Convenience method to get file content from <code>multipart/form-data</code> request. If more than one files with the same
+     * name are submitted, only one is returned.
      *
      * @param fieldName name of form field from the  <code>multipart/form-data</code> request corresponding to the uploaded file.
      * @param formItems form items retrieved from <code>multipart/form-data</code> request.
