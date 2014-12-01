@@ -68,7 +68,6 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
                 driver = properties.getProperty(environment + ".driver");
                 username = properties.getProperty(environment + ".username");
                 password = properties.getProperty(environment + ".password");
-                getLog().info("Executing for environment: " + environment);
                 executeCurrentConfiguration();
             }
         }
