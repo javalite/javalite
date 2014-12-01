@@ -43,11 +43,10 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
     private String configFile;
 
     public final void execute() throws MojoExecutionException {
-        getLog().warn("=================> ENVIRONMENTS: " + environments + ", BLANK: " + blank(environments));
-
         if (blank(environments)) {
             executeCurrentConfiguration();
         } else {
+            getLog().info("Sourcing database configuration from file: " + configFile);
             Properties properties = new Properties();
             File file = new File(blank(configFile) ? "database.properties" : configFile);
             if (file.exists()) {
@@ -69,6 +68,7 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
                 driver = properties.getProperty(environment + ".driver");
                 username = properties.getProperty(environment + ".username");
                 password = properties.getProperty(environment + ".password");
+                getLog().info("Executing for environment: " + environment);
                 executeCurrentConfiguration();
             }
         }
