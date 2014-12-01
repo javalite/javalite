@@ -19,10 +19,7 @@ package org.javalite.http;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.Authenticator;
-import java.net.HttpURLConnection;
-import java.net.PasswordAuthentication;
-import java.net.URL;
+import java.net.*;
 import java.util.List;
 import java.util.Map;
 
@@ -73,7 +70,10 @@ public abstract class Request<T extends Request> {
     public InputStream getInputStream() {
         try {
             return connection.getInputStream();
-        } catch (Exception e) {
+        }catch(SocketTimeoutException e){
+            throw new HttpException("Failed URL: " + url +
+                    ", waited for: " + connection.getConnectTimeout() + " milliseconds", e);
+        }catch (Exception e) {
             throw new HttpException("Failed URL: " + url, e);
         }
     }
