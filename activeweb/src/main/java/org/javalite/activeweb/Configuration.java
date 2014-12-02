@@ -256,6 +256,11 @@ public class Configuration {
         clearConnectionWrappers(getEnv());
     }
 
+    //for tests only
+    protected static void resetConnectionWrappers() {
+        connectionWrappers = new HashMap<String, List<ConnectionSpecWrapper>>();
+    }
+
     protected static void clearConnectionWrappers(String env) {
         if(connectionWrappers.get(env) != null)
             connectionWrappers.get(env).clear();

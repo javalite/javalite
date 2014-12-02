@@ -24,7 +24,7 @@ import javax.servlet.ServletException;
 
 /**
  *
- * Bootstraps entire application, including AppConfig class, which sets up all filters exactly as at run time.
+ * Bootstraps entire application, including AppControllerConfig class, which sets up all filters exactly as at run time.
  * If a {@link org.javalite.activeweb.controller_filters.DBConnectionFilter} is used in the application, it is bypassed.
  * Instead,  the DB connection to a test DB is made from a super class. A connection is opened to
  * a test DB, transaction is started before each test. After each test, a connection is closed and a transaction

@@ -15,6 +15,18 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
+
+import org.javalite.activejdbc.ConnectionJdbcSpec;
+import org.javalite.activejdbc.ConnectionJndiSpec;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
+
 /**
  * This class is designed to be sub-classed by an application level class called <code>app.config.DbConfig</code>.
  * It is used to configure database connections for various <strong>environments and modes</strong>.
@@ -70,5 +82,110 @@ public abstract class AbstractDBConfig extends AppConfig {
 
     public ConnectionBuilder environment(String environment) {
         return new ConnectionBuilder(environment);
+    }
+
+    /**
+     * Configures multiple database connections from a single property file. Example content for such file:
+     *
+     * <pre>
+     development.driver=com.mysql.jdbc.Driver
+     development.username=john
+     development.password=pwd
+     development.url=jdbc:mysql://localhost/proj_dev
+
+     test.driver=com.mysql.jdbc.Driver
+     test.username=mary
+     test.password=pwd1
+     test.url=jdbc:mysql://localhost/test
+
+     production.jndi=java:comp/env/jdbc/prod
+     * </pre>
+     *
+     * Rules and limitations of using a file-based configuration:
+     *
+     * <ul>
+     *     <li>Only one database connection can be configured per environment (with the exception of development and test connections
+     *     only in development environment)</li>
+     *     <li>Currently additional database parameters need to be specified as a part of a database URL</li>
+     *     <li>Database connection named "test" in the database configuration file is for "development" environment and is
+     *     automatically marked for testing (will be used during tests)</li>
+     *     <li>If this method of configuration is too limiting, it is possible to mix and match both configuration
+     *     methods - file-based, as well as DSL: {@link #environment(String)}</li>
+     *     <li>All connections specified in a property file automatically assigned DB name "default". For more on
+     *     database names see <a href="http://javalite.io/database_connection_management">Database management</a></li>
+     * </ul>
+     *
+     * @param file path to a file. Can be located on classpath, or on a file system. First searched on classpath,
+     *             then on file system.
+     */
+    public void configFile(String file) {
+
+        try {
+            Properties props = readPropertyFile(file);
+            Set<String> environments = getEnvironments(props);
+            for (String env : environments) {
+                String jndiName = env + "." + "jndi";
+                if (props.containsKey(jndiName)) {
+                    createJndiWrapper(env, props.getProperty(jndiName));
+                } else {
+                    String driver = props.getProperty(env + ".driver");
+                    String userName = props.getProperty(env + ".username");
+                    String password = props.getProperty(env + ".password");
+                    String url = props.getProperty(env + ".url");
+                    if (driver == null || userName == null || password == null || url == null) {
+                        throw new InitException("Four JDBC properties are expected: driver, username, password, url for environment: " + env);
+                    }
+                    createJdbcWrapper(env, driver, url, userName, password);
+                }
+            }
+        } catch (InitException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new InitException(e);
+        }
+    }
+
+    private void createJdbcWrapper(String env, String driver, String url, String userName, String password) {
+        ConnectionSpecWrapper wrapper = new ConnectionSpecWrapper();
+        if(env.equals("test")){
+            wrapper.setEnvironment("development");
+            wrapper.setTesting(true);
+        }else{
+            wrapper.setEnvironment(env);
+        }
+        ConnectionJdbcSpec connectionSpec = new ConnectionJdbcSpec(driver, url, userName, password);
+        wrapper.setConnectionSpec(connectionSpec);
+        Configuration.addConnectionWrapper(wrapper);
+    }
+
+    private void createJndiWrapper(String env, String jndiName) {
+        ConnectionSpecWrapper wrapper = new ConnectionSpecWrapper();
+        wrapper.setEnvironment(env);
+        ConnectionJndiSpec connectionSpec = new ConnectionJndiSpec(jndiName);
+        wrapper.setConnectionSpec(connectionSpec);
+        Configuration.addConnectionWrapper(wrapper);
+    }
+
+
+    private Set<String> getEnvironments(Properties props) {
+        Set<String> environments = new HashSet<String>();
+        for (Object k : props.keySet()) {
+            String environment = k.toString().split("\\.")[0];
+            environments.add(environment);
+        }
+        return new TreeSet<String>(environments);
+    }
+
+    private Properties readPropertyFile(String file) throws IOException {
+        InputStream in = getClass().getResourceAsStream(file);
+        Properties props = new Properties();
+        if (in != null) {
+            props.load(in);
+        } else {
+            FileInputStream fin = new FileInputStream(file);
+            props.load(fin);
+            fin.close();
+        }
+        return props;
     }
 }
