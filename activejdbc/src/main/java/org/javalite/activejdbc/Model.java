@@ -147,7 +147,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public <T extends Model> T setDate(String attribute, Object value) {
         Converter<Object, java.sql.Date> converter = getMetaDataLocal().getConverterForValue(
                 attribute, value, java.sql.Date.class);
-        return setConverted(attribute, converter != null ? converter.convert(value) : Convert.toSqlDate(value));
+        return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toSqlDate(value));
     }
 
     /**
@@ -158,7 +158,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return value converted to <code>java.sql.Date</code>
      */
     public java.sql.Date getDate(String attribute) {
-        Object value = getUnconverted(attribute);
+        Object value = getRaw(attribute);
         Converter<Object, java.sql.Date> converter = getMetaDataLocal().getConverterForValue(
                 attribute, value, java.sql.Date.class);
         return converter != null ? converter.convert(value) : Convert.toSqlDate(value);
@@ -208,13 +208,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public <T extends Model> T set(String attribute, Object value) {
         Converter<Object, Object> converter = getMetaDataLocal().getConverterForValue(attribute, value, Object.class);
-        return setConverted(attribute, converter != null ? converter.convert(value) : value);
+        return setRaw(attribute, converter != null ? converter.convert(value) : value);
     }
 
     /**
-     * Sets already converted value of an attribute.
+     * Sets raw value of an attribute, without applying conversions.
      */
-    private <T extends Model> T setConverted(String attribute, Object value) {
+    private <T extends Model> T setRaw(String attribute, Object value) {
         if (manageTime && attribute.equalsIgnoreCase("created_at")) {
             throw new IllegalArgumentException("cannot set 'created_at'");
         }
@@ -1221,9 +1221,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Gets unconverted value of the attribute.
+     * Gets raw value of the attribute, without conversions applied.
      */
-    public Object getUnconverted(String attribute) {
+    private Object getRaw(String attribute) {
         if(frozen) throw new FrozenException(this);
 
         if(attribute == null) throw new IllegalArgumentException("attribute cannot be null");
@@ -1297,7 +1297,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return value converted to <code>String</code>
      */
     public String getString(String attribute) {
-        Object value = getUnconverted(attribute);
+        Object value = getRaw(attribute);
         Converter<Object, String> converter = getMetaDataLocal().getConverterForValue(attribute, value, String.class);
         return converter != null ? converter.convert(value) : Convert.toString(value);
     }
@@ -1325,7 +1325,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return value converted to <code>java.math.BigDecimal</code>
      */
     public BigDecimal getBigDecimal(String attribute) {
-        Object value = getUnconverted(attribute);
+        Object value = getRaw(attribute);
         Converter<Object, BigDecimal> converter = getMetaDataLocal().getConverterForValue(
                 attribute, value, BigDecimal.class);
         return converter != null ? converter.convert(value) : Convert.toBigDecimal(value);
@@ -1339,7 +1339,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return value converted to <code>Integer</code>
      */
     public Integer getInteger(String attribute) {
-        Object value = getUnconverted(attribute);
+        Object value = getRaw(attribute);
         Converter<Object, Integer> converter = getMetaDataLocal().getConverterForValue(attribute, value, Integer.class);
         return converter != null ? converter.convert(value) : Convert.toInteger(value);
     }
@@ -1352,7 +1352,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return value converted to <code>Long</code>
      */
     public Long getLong(String attribute) {
-        Object value = getUnconverted(attribute);
+        Object value = getRaw(attribute);
         Converter<Object, Long> converter = getMetaDataLocal().getConverterForValue(attribute, value, Long.class);
         return converter != null ? converter.convert(value) : Convert.toLong(value);
     }
@@ -1365,7 +1365,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return value converted to <code>Short</code>
      */
     public Short getShort(String attribute) {
-        Object value = getUnconverted(attribute);
+        Object value = getRaw(attribute);
         Converter<Object, Short> converter = getMetaDataLocal().getConverterForValue(attribute, value, Short.class);
         return converter != null ? converter.convert(value) : Convert.toShort(value);
     }
@@ -1378,7 +1378,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return value converted to <code>Float</code>
      */
     public Float getFloat(String attribute) {
-        Object value = getUnconverted(attribute);
+        Object value = getRaw(attribute);
         Converter<Object, Float> converter = getMetaDataLocal().getConverterForValue(attribute, value, Float.class);
         return converter != null ? converter.convert(value) : Convert.toFloat(value);
     }
@@ -1392,7 +1392,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return instance of <code>Timestamp</code>
      */
     public Timestamp getTimestamp(String attribute) {
-        Object value = getUnconverted(attribute);
+        Object value = getRaw(attribute);
         Converter<Object, Timestamp> converter = getMetaDataLocal().getConverterForValue(
                 attribute, value, Timestamp.class);
         return converter != null ? converter.convert(value) : Convert.toTimestamp(get(attribute));
@@ -1406,7 +1406,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return value converted to <code>Double</code>
      */
     public Double getDouble(String attribute) {
-        Object value = getUnconverted(attribute);
+        Object value = getRaw(attribute);
         Converter<Object, Double> converter = getMetaDataLocal().getConverterForValue(attribute, value, Double.class);
         return converter != null ? converter.convert(value) : Convert.toDouble(value);
     }
@@ -1419,7 +1419,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return value converted to <code>Boolean</code>
      */
     public Boolean getBoolean(String attribute) {
-        Object value = getUnconverted(attribute);
+        Object value = getRaw(attribute);
         Converter<Object, Boolean> converter = getMetaDataLocal().getConverterForValue(attribute, value, Boolean.class);
         return converter != null ? converter.convert(value) : Convert.toBoolean(value);
     }
@@ -1437,7 +1437,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public <T extends Model> T setString(String attribute, Object value) {
         Converter<Object, String> converter = getMetaDataLocal().getConverterForValue(attribute, value, String.class);
-        return setConverted(attribute, converter != null ? converter.convert(value) : Convert.toString(value));
+        return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toString(value));
     }
 
     /**
@@ -1452,7 +1452,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public <T extends Model> T setBigDecimal(String attribute, Object value) {
         Converter<Object, BigDecimal> converter = getMetaDataLocal().getConverterForValue(
                 attribute, value, BigDecimal.class);
-        return setConverted(attribute, converter != null ? converter.convert(value) : Convert.toBigDecimal(value));
+        return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toBigDecimal(value));
     }
 
     /**
@@ -1466,7 +1466,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public <T extends Model> T setShort(String attribute, Object value) {
         Converter<Object, Short> converter = getMetaDataLocal().getConverterForValue(attribute, value, Short.class);
-        return setConverted(attribute, converter != null ? converter.convert(value) : Convert.toShort(value));
+        return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toShort(value));
     }
 
     /**
@@ -1478,7 +1478,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public <T extends Model> T setInteger(String attribute, Object value) {
         Converter<Object, Integer> converter = getMetaDataLocal().getConverterForValue(attribute, value, Integer.class);
-        return setConverted(attribute, converter != null ? converter.convert(value) : Convert.toInteger(value));
+        return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toInteger(value));
     }
 
     /**
@@ -1490,7 +1490,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public <T extends Model> T setLong(String attribute, Object value) {
         Converter<Object, Long> converter = getMetaDataLocal().getConverterForValue(attribute, value, Long.class);
-        return setConverted(attribute, converter != null ? converter.convert(value) : Convert.toLong(value));
+        return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toLong(value));
     }
 
     /**
@@ -1504,7 +1504,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public <T extends Model> T setFloat(String attribute, Object value) {
         Converter<Object, Float> converter = getMetaDataLocal().getConverterForValue(attribute, value, Float.class);
-        return setConverted(attribute, converter != null ? converter.convert(value) : Convert.toFloat(value));
+        return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toFloat(value));
     }
 
     /**
@@ -1519,7 +1519,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public <T extends Model> T setTimestamp(String attribute, Object value) {
         Converter<Object, Timestamp> converter = getMetaDataLocal().getConverterForValue(
                 attribute, value, Timestamp.class);
-        return setConverted(attribute, converter != null ? converter.convert(value) : Convert.toTimestamp(value));
+        return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toTimestamp(value));
     }
 
     /**
@@ -1533,7 +1533,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public <T extends Model> T setDouble(String attribute, Object value) {
         Converter<Object, Double> converter = getMetaDataLocal().getConverterForValue(attribute, value, Double.class);
-        return setConverted(attribute, converter != null ? converter.convert(value) : Convert.toDouble(value));
+        return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toDouble(value));
     }
 
     /**
@@ -1547,7 +1547,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public <T extends Model> T setBoolean(String attribute, Object value) {
         Converter<Object, Boolean> converter = getMetaDataLocal().getConverterForValue(attribute, value, Boolean.class);
-        return setConverted(attribute, converter != null ? converter.convert(value) : Convert.toBoolean(value));
+        return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toBoolean(value));
     }
 
     /**
