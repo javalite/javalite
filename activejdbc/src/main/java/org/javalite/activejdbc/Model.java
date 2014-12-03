@@ -136,9 +136,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Sets attribute value as <code>java.sql.Date</code>. If a suitable {@link Converter} from the <code>Class</code>
-     * of value to <code>java.sql.Date</code> exists for the specified attribute, it will be used, otherwise performs
-     * a conversion using {@link Convert#toSqlDate(Object)}.
+     * Sets attribute value as <code>java.sql.Date</code>.
+     * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
+     * <code>java.sql.Date</code>, given the value is an instance of <code>S</code>, then it will be used,
+     * otherwise performs a conversion using {@link Convert#toSqlDate(Object)}.
      *
      * @param attribute name of attribute.
      * @param value value to convert.
@@ -151,9 +152,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Gets attribute value as <code>java.sql.Date</code>. If a suitable {@link Converter} from the <code>Class</code>
-     * of the attribute value to <code>java.sql.Date</code> exists for the specified attribute, it will be used,
+     * Gets attribute value as <code>java.sql.Date</code>.
+     * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
+     * <code>java.sql.Date</code>, given the attribute value is an instance of <code>S</code>, then it will be used,
      * otherwise performs a conversion using {@link Convert#toSqlDate(Object)}.
+     *
      * @param attribute name of attribute to convert
      * @return value converted to <code>java.sql.Date</code>
      */
@@ -198,9 +201,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Sets a value of an attribute. If a suitable {@link Converter} from the <code>Class</code> of value to
-     * <code>java.lang.Object</code> exists for the specified attribute, it will be used and the converted value
-     * will be set.
+     * Sets a value of an attribute.
+     * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
+     * <code>java.lang.Object</code>, given the value is an instance of <code>S</code>, then it will be used and the
+     * converted value will be set.
      *
      * @param attribute name of attribute to set. Names not related to this model will be rejected (those not matching table columns).
      * @param value value of attribute. Feel free to set any type, as long as it can be accepted by your driver.
@@ -1140,8 +1144,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Returns a value for attribute. If a suitable {@link Converter} from the <code>Class</code> of the
-     * attribute value to <code>java.lang.Object</code> exists for the specified attribute, it will be used.
+     * Returns a value for attribute.
+     * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
+     * <code>java.lang.Object</code>, given the attribute value is an instance of <code>S</code>, then it will be used.
      *
      * <h3>Infer relationship from name of argument</h3>
      * Besides returning direct attributes of this model, this method is also
@@ -1289,8 +1294,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     /*************************** typed getters *****************************************/
     /**
-     * Gets attribute value as <code>String</code>. If a suitable {@link Converter} from the <code>Class</code>
-     * of the attribute value to <code>java.lang.String</code> exists for the specified attribute, it will be used,
+     * Gets attribute value as <code>String</code>.
+     * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
+     * <code>java.lang.String</code>, given the attribute value is an instance of <code>S</code>, then it will be used,
      * otherwise performs a conversion using {@link Convert#toString(Object)}.
      *
      * @param attribute name of attribute to convert
@@ -1318,9 +1324,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Gets attribute value as <code>java.math.BigDecimal</code>. If a suitable {@link Converter} from the
-     * <code>Class</code> of the attribute value to <code>java.math.BigDecimal</code> exists for the specified
-     * attribute, it will be used, otherwise performs a conversion using {@link Convert#toBigDecimal(Object)}.
+     * Gets attribute value as <code>java.math.BigDecimal</code>.
+     * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
+     * <code>java.math.BigDecimal</code>, given the attribute value is an instance of <code>S</code>, then it will be
+     * used, otherwise performs a conversion using {@link Convert#toBigDecimal(Object)}.
+     *
      * @param attribute name of attribute to convert
      * @return value converted to <code>java.math.BigDecimal</code>
      */
@@ -1332,9 +1340,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Gets attribute value as <code>Integer</code>. If a suitable {@link Converter} from the
-     * <code>Class</code> of the attribute value to <code>java.lang.Integer</code> exists for the specified
-     * attribute, it will be used, otherwise performs a conversion using {@link Convert#toInteger(Object)}.
+     * Gets attribute value as <code>Integer</code>.
+     * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
+     * <code>java.lang.Integer</code>, given the attribute value is an instance of <code>S</code>, then it will be used,
+     * otherwise performs a conversion using {@link Convert#toInteger(Object)}.
+     *
      * @param attribute name of attribute to convert
      * @return value converted to <code>Integer</code>
      */
@@ -1345,9 +1355,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Gets attribute value as <code>Long</code>. If a suitable {@link Converter} from the
-     * <code>Class</code> of the attribute value to <code>java.lang.Long</code> exists for the specified
-     * attribute, it will be used, otherwise performs a conversion using {@link Convert#toLong(Object)}.
+     * Gets attribute value as <code>Long</code>.
+     * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
+     * <code>java.lang.Long</code>, given the attribute value is an instance of <code>S</code>, then it will be used,
+     * otherwise performs a conversion using {@link Convert#toLong(Object)}.
+     *
      * @param attribute name of attribute to convert
      * @return value converted to <code>Long</code>
      */
@@ -1358,9 +1370,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Gets attribute value as <code>Short</code>. If a suitable {@link Converter} from the
-     * <code>Class</code> of the attribute value to <code>java.lang.Short</code> exists for the specified
-     * attribute, it will be used, otherwise performs a conversion using {@link Convert#toShort(Object)}.
+     * Gets attribute value as <code>Short</code>.
+     * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
+     * <code>java.lang.Short</code>, given the attribute value is an instance of <code>S</code>, then it will be used,
+     * otherwise performs a conversion using {@link Convert#toShort(Object)}.
+     *
      * @param attribute name of attribute to convert
      * @return value converted to <code>Short</code>
      */
@@ -1371,9 +1385,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Gets attribute value as <code>Float</code>. If a suitable {@link Converter} from the
-     * <code>Class</code> of the attribute value to <code>java.lang.Float</code> exists for the specified
-     * attribute, it will be used, otherwise performs a conversion using {@link Convert#toFloat(Object)}.
+     * Gets attribute value as <code>Float</code>.
+     * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
+     * <code>java.lang.Float</code>, given the attribute value is an instance of <code>S</code>, then it will be used,
+     * otherwise performs a conversion using {@link Convert#toFloat(Object)}.
+     *
      * @param attribute name of attribute to convert
      * @return value converted to <code>Float</code>
      */
@@ -1384,9 +1400,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Gets attribute value as <code>java.sql.Timestamp</code>. If a suitable {@link Converter} from the
-     * <code>Class</code> of the attribute value to <code>java.sql.Timestamp</code> exists for the specified attribute,
-     * it will be used, otherwise performs a conversion using {@link Convert#toTimestamp(Object)}.
+     * Gets attribute value as <code>java.sql.Timestamp</code>.
+     * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
+     * <code>java.sql.Timestamp</code>, given the attribute value is an instance of <code>S</code>, then it will be
+     * used, otherwise performs a conversion using {@link Convert#toTimestamp(Object)}.
      *
      * @param attribute name of attribute to convert
      * @return instance of <code>Timestamp</code>
@@ -1399,9 +1416,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Gets attribute value as <code>Double</code>. If a suitable {@link Converter} from the
-     * <code>Class</code> of the attribute value to <code>java.lang.Double</code> exists for the specified
-     * attribute, it will be used, otherwise performs a conversion using {@link Convert#toDouble(Object)}.
+     * Gets attribute value as <code>Double</code>.
+     * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
+     * <code>java.lang.Double</code>, given the attribute value is an instance of <code>S</code>, then it will be used,
+     * otherwise performs a conversion using {@link Convert#toDouble(Object)}.
+     *
      * @param attribute name of attribute to convert
      * @return value converted to <code>Double</code>
      */
@@ -1412,9 +1431,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Gets attribute value as <code>Boolean</code>. If a suitable {@link Converter} from the
-     * <code>Class</code> of the attribute value to <code>java.lang.Boolean</code> exists for the specified
-     * attribute, it will be used, otherwise performs a conversion using {@link Convert#toBoolean(Object)}.
+     * Gets attribute value as <code>Boolean</code>.
+     * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
+     * <code>java.lang.Boolean</code>, given the attribute value is an instance of <code>S</code>, then it will be used,
+     * otherwise performs a conversion using {@link Convert#toBoolean(Object)}.
+     *
      * @param attribute name of attribute to convert
      * @return value converted to <code>Boolean</code>
      */
@@ -1427,9 +1448,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     /*************************** typed setters *****************************************/
 
     /**
-     * Sets attribute value as <code>String</code>. If a suitable {@link Converter} from the
-     * <code>Class</code> of value to <code>java.lang.String</code> exists for the specified attribute, it will be
-     * used, otherwise performs a conversion using {@link Convert#toString(Object)}.
+     * Sets attribute value as <code>String</code>.
+     * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
+     * <code>java.lang.String</code>, given the value is an instance of <code>S</code>, then it will be used,
+     * otherwise performs a conversion using {@link Convert#toString(Object)}.
      *
      * @param attribute name of attribute.
      * @param value value
@@ -1441,9 +1463,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Sets attribute value as <code>java.math.BigDecimal</code>. If a suitable {@link Converter} from the
-     * <code>Class</code> of value to <code>java.math.BigDecimal</code> exists for the specified attribute, it will be
-     * used, otherwise performs a conversion using {@link Convert#toBigDecimal(Object)}.
+     * Sets attribute value as <code>java.math.BigDecimal</code>.
+     * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
+     * <code>java.math.BigDecimal</code>, given the value is an instance of <code>S</code>, then it will be used,
+     * otherwise performs a conversion using {@link Convert#toBigDecimal(Object)}.
      *
      * @param attribute name of attribute.
      * @param value value
@@ -1456,9 +1479,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Sets attribute value as <code>Short</code>. If a suitable {@link Converter} from the
-     * <code>Class</code> of value to <code>java.lang.Short</code> exists for the specified attribute, it will be
-     * used, otherwise performs a conversion using {@link Convert#toShort(Object)}.
+     * Sets attribute value as <code>Short</code>.
+     * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
+     * <code>java.lang.Short</code>, given the value is an instance of <code>S</code>, then it will be used,
+     * otherwise performs a conversion using {@link Convert#toShort(Object)}.
      *
      * @param attribute name of attribute.
      * @param value value
@@ -1470,7 +1494,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Converts object to <code>Integer</code> when setting.
+     * Sets attribute value as <code>Integer</code>.
+     * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
+     * <code>java.lang.Integer</code>, given the value is an instance of <code>S</code>, then it will be used,
+     * otherwise performs a conversion using {@link Convert#toInteger(Object)}.
      *
      * @param attribute name of attribute.
      * @param value value
@@ -1482,7 +1509,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Converts object to <code>Long</code> when setting.
+     * Sets attribute value as <code>Long</code>.
+     * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
+     * <code>java.lang.Long</code>, given the value is an instance of <code>S</code>, then it will be used,
+     * otherwise performs a conversion using {@link Convert#toLong(Object)}.
      *
      * @param attribute name of attribute.
      * @param value value
@@ -1494,9 +1524,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Sets attribute value as <code>Float</code>. If a suitable {@link Converter} from the <code>Class</code>
-     * of value to <code>java.lang.Float</code> exists for the specified attribute, it will be used, otherwise performs
-     * a conversion using {@link Convert#toFloat(Object)}.
+     * Sets attribute value as <code>Float</code>.
+     * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
+     * <code>java.lang.Float</code>, given the value is an instance of <code>S</code>, then it will be used,
+     * otherwise performs a conversion using {@link Convert#toFloat(Object)}.
      *
      * @param attribute name of attribute.
      * @param value value to convert.
@@ -1508,9 +1539,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Sets attribute value as <code>java.sql.Timestamp</code>. If a suitable {@link Converter} from the
-     * <code>Class</code> of value to <code>java.sql.Timestamp</code> exists for the specified attribute, it will be
-     * used, otherwise performs a conversion using {@link Convert#toTimestamp(Object)}.
+     * Sets attribute value as <code>java.sql.Timestamp</code>.
+     * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
+     * <code>java.sql.Timestamp</code>, given the value is an instance of <code>S</code>, then it will be used,
+     * otherwise performs a conversion using {@link Convert#toTimestamp(Object)}.
      *
      * @param attribute name of attribute.
      * @param value value
@@ -1523,9 +1555,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Sets attribute value as <code>Double</code>. If a suitable {@link Converter} from the <code>Class</code>
-     * of value to <code>java.lang.Double</code> exists for the specified attribute, it will be used, otherwise performs
-     * a conversion using {@link Convert#toDouble(Object)}.
+     * Sets attribute value as <code>Double</code>.
+     * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
+     * <code>java.lang.Double</code>, given the value is an instance of <code>S</code>, then it will be used,
+     * otherwise performs a conversion using {@link Convert#toDouble(Object)}.
      *
      * @param attribute name of attribute.
      * @param value value to convert.
@@ -1537,9 +1570,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Sets attribute value as <code>Boolean</code>. If a suitable {@link Converter} from the
-     * <code>Class</code> of value to <code>java.lang.Boolean</code> exists for the specified attribute, it will be
-     * used, otherwise performs a conversion using {@link Convert#toBoolean(Object)}.
+     * Sets attribute value as <code>Boolean</code>.
+     * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
+     * <code>java.lang.Boolean</code>, given the value is an instance of <code>S</code>, then it will be used,
+     * otherwise performs a conversion using {@link Convert#toBoolean(Object)}.
      *
      * @param attribute name of attribute.
      * @param value value
