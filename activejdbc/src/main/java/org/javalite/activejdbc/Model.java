@@ -239,13 +239,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * Returns names of all attributes from this model.
      * @return names of all attributes from this model.
      */
-    //TODO: return SortedSet<String>, which keeps case insensivity, since this List<String> will not be case insensitive
-    public static List<String> attributes(){
-        List<String> list = new ArrayList<String>();
-        for (String attribute : getMetaModel().getAttributeNames()) {
-            list.add(attribute.toLowerCase());
-        }
-        return Collections.unmodifiableList(list);
+    public static SortedSet<String> attributes(){
+        return getMetaModel().getAttributeNames();
     }
 
     /**

@@ -2,13 +2,11 @@ package org.javalite.activejdbc;
 
 import java.util.Collection;
 import java.util.List;
-import org.javalite.activejdbc.Association;
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
 import org.javalite.activejdbc.associations.OneToManyAssociation;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Doctor;
 import org.javalite.activejdbc.test_models.Person;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -19,7 +17,7 @@ public class AttributesAndAssociationsTest extends ActiveJDBCTest{
     @Test
     public void shouldReturnCorrectAttributes(){
 
-        List<String> attributes = Person.attributes();
+        Collection<String> attributes = Person.attributes();
         a(attributes.contains("name")).shouldBeTrue();
         a(attributes.contains("last_name")).shouldBeTrue();
         a(attributes.contains("graduation_date")).shouldBeTrue();
@@ -30,7 +28,6 @@ public class AttributesAndAssociationsTest extends ActiveJDBCTest{
     }
 
     @Test
-    @Ignore
     public void shouldReturnCaseInsensitiveAttributes(){
 
         Collection<String> attributes = Person.attributes();
