@@ -26,7 +26,7 @@ Run migration:
 ```
 mvn db-migrator:migrate
 ...
-[INFO] Migrating jdbc:mysql://localhost/test_project using migrations at src/migrations/
+[INFO] Migrating jdbc:mysql://localhost/test_project using migrations from src/migrations/
 [INFO] Migrating database, applying 1 migration(s)
 [INFO] Running migration 20140211113507_create_people_table.sql
 ...

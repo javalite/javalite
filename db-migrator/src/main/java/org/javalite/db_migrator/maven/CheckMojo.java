@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class CheckMojo extends AbstractDbMigrationMojo {
     public void executeMojo() throws MojoExecutionException {
-        getLog().info("Checking " + getUrl() + " using migrations at " + getMigrationsPath());
+        getLog().info("Checking " + getUrl() + " using migrations from " + getMigrationsPath());
 
         List<Migration> pendingMigrations;
         try {

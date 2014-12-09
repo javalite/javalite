@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class ValidateMojo extends AbstractDbMigrationMojo {
     public void executeMojo() throws MojoExecutionException {
-        getLog().info("Validating " + getUrl() + " using migrations at " + getMigrationsPath());
+        getLog().info("Validating " + getUrl() + " using migrations from " + getMigrationsPath());
         try {
             Base.open(getDriver(), getUrl(), getUsername(), getPassword());
             MigrationManager manager = new MigrationManager(getMigrationsPath());
