@@ -21,13 +21,13 @@ public abstract class ValidatorAdapter implements Validator {
      * Provides default implementation, will look for a property in resource bundle, using set message as key.
      * If property in resource bundle not found, treats message verbatim.
      *
-     * @param locale locale to use.
+     * @param locale locale to use, or null for default locale.
      * @param params parameters in case a message is parametrized.
-     * @return formatted message. 
+     * @return formatted message.
      */
     @Override
     public String formatMessage(Locale locale, Object ... params) {
-        return locale != null ? Messages.message(message, locale, params) : Messages.message(message, params);
+        return Messages.message(message, locale, params);
     }
 
     public final String getMessage() {
