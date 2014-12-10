@@ -160,7 +160,7 @@ public class DefaultDialect implements Dialect {
     }
 
     @Override
-    public String selectMany2ManyAssociation(Many2ManyAssociation association, String sourceFkColumnName, int questionsCount) {
+    public String selectManyToManyAssociation(Many2ManyAssociation association, String sourceFkColumnName, int questionsCount) {
         StringBuilder query = new StringBuilder().append("SELECT ").append(association.getTarget()).append(".*, t.")
                 .append(association.getSourceFkName()).append(" AS ").append(sourceFkColumnName).append(" FROM ")
                 .append(association.getTarget()).append(" INNER JOIN ").append(association.getJoin()).append(" t ON ")

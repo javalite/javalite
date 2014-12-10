@@ -41,5 +41,5 @@ public interface Dialect {
 
     String selectExists(MetaModel mm);
 
-    String selectMany2ManyAssociation(Many2ManyAssociation association, String sourceFkColumnName, int questionsCount);
+    String selectManyToManyAssociation(Many2ManyAssociation association, String sourceFkColumnName, int questionsCount);
 }

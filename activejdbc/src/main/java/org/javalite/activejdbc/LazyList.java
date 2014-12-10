@@ -291,12 +291,10 @@ public class LazyList<T extends Model> extends AbstractList<T>{
     public String toSql(boolean showParameters) {
         String sql;
         if(forPaginator){
-            sql = Registry.instance().getConfiguration().getDialect(metaModel).formSelect(null,
-                    fullQuery, orderBys, limit, offset);
+            sql = metaModel.getDialect().formSelect(null, fullQuery, orderBys, limit, offset);
         }else{
             sql = fullQuery != null ? fullQuery
-                : Registry.instance().getConfiguration().getDialect(metaModel).formSelect(metaModel.getTableName(),
-                        subQuery, orderBys, limit, offset);
+                : metaModel.getDialect().formSelect(metaModel.getTableName(), subQuery, orderBys, limit, offset);
         }
         if (showParameters) {
             StringBuilder sb = new StringBuilder(sql).append(", with parameters: ");
@@ -510,9 +508,8 @@ public class LazyList<T extends Model> extends AbstractList<T>{
         final MetaModel childMM = Registry.instance().getMetaModel(childClass);
         final Map<Object, List<Model>> childrenByParentId = new HashMap<Object, List<Model>>();
         List ids = collect(metaModel.getIdName());
-        List<Map> childResults = new DB(childMM.getDbName()).findAll(
-                Registry.instance().getConfiguration().getDialect(childMM).selectMany2ManyAssociation(
-                        association, "the_parent_record_id", ids.size()), ids.toArray());
+        List<Map> childResults = new DB(childMM.getDbName()).findAll(childMM.getDialect().selectManyToManyAssociation(
+                association, "the_parent_record_id", ids.size()), ids.toArray());
         for(Map res: childResults){
             Model child = Model.instance(res, childMM);
             Object parentId = res.get("the_parent_record_id");
