@@ -17,7 +17,7 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
-import org.javalite.activejdbc.dialects.DefaultDialect;
+import org.javalite.activejdbc.dialects.Dialect;
 import org.javalite.activejdbc.dialects.OracleDialect;
 import static org.javalite.test.jspec.JSpec.a;
 import org.junit.Test;

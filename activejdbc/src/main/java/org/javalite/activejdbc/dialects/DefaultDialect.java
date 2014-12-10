@@ -21,6 +21,7 @@ import org.javalite.activejdbc.MetaModel;
 
 import java.util.List;
 import java.util.regex.Pattern;
+import org.javalite.activejdbc.associations.Many2ManyAssociation;
 
 import static org.javalite.common.Util.*;
 
@@ -123,9 +124,9 @@ public class DefaultDialect implements Dialect {
             }
             query.append(' ').append(subQuery);
         }
-    } 
-    
-    protected void appendSelect(StringBuilder query, String tableName, String tableAlias, String subQuery, 
+    }
+
+    protected void appendSelect(StringBuilder query, String tableName, String tableAlias, String subQuery,
             List<String> orderBys) {
         if (tableName == null) {
             query.append(subQuery);
@@ -140,16 +141,36 @@ public class DefaultDialect implements Dialect {
         }
         appendOrderBy(query, orderBys);
     }
-    
+
     @Override
     public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
         StringBuilder fullQuery = new StringBuilder();
         appendSelect(fullQuery, tableName, null, subQuery, orderBys);
         return fullQuery.toString();
     }
-   
+
     @Override
-   public Object overrideDriverTypeConversion(MetaModel mm, String attributeName, Object value) {
-	   return value;
-   }
+    public Object overrideDriverTypeConversion(MetaModel mm, String attributeName, Object value) {
+	    return value;
+    }
+
+    @Override
+    public String selectExists(MetaModel mm) {
+	    return "SELECT " + mm.getIdName() + " FROM " + mm.getTableName() + " WHERE " + mm.getIdName() + " = ?";
+    }
+
+    @Override
+    public String selectMany2ManyAssociation(Many2ManyAssociation association, String sourceFkColumnName, int questionsCount) {
+        StringBuilder query = new StringBuilder().append("SELECT ").append(association.getTarget()).append(".*, t.")
+                .append(association.getSourceFkName()).append(" AS ").append(sourceFkColumnName).append(" FROM ")
+                .append(association.getTarget()).append(" INNER JOIN ").append(association.getJoin()).append(" t ON ")
+                .append(association.getTarget()).append('.').append(association.getTargetPk()).append(" = t.")
+                .append(association.getTargetFkName()).append(" WHERE t.").append(association.getSourceFkName())
+                .append(" IN (");
+        appendQuestions(query, questionsCount);
+        query.append(')');
+        return query.toString();
+    }
+
+
 }

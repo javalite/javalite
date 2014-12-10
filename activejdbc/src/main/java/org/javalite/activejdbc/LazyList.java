@@ -357,7 +357,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
      * @author Evan Leonard
      */
     private void processPolymorphicParent(BelongsToPolymorphicAssociation association, Class parentClass) {
-        if(delegate.size() == 0){//no need to process children if no models selected.
+        if(delegate.isEmpty()){//no need to process children if no models selected.
             return;
         }
 
@@ -458,7 +458,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
     }
 
     private void processPolymorphicChildren(OneToManyPolymorphicAssociation association, Class childClass) {
-        if (delegate.size() == 0) {//no need to process children if no models selected.
+        if (delegate.isEmpty()) {//no need to process children if no models selected.
             return;
         }
         MetaModel childMM = Registry.instance().getMetaModel(childClass);
@@ -482,7 +482,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
 
 
     private void processChildren(OneToManyAssociation association, Class childClass) {
-        if(delegate.size() == 0){//no need to process children if no models selected.
+        if(delegate.isEmpty()){//no need to process children if no models selected.
             return;
         }
         final MetaModel childMM = Registry.instance().getMetaModel(childClass);
@@ -504,16 +504,15 @@ public class LazyList<T extends Model> extends AbstractList<T>{
     }
 
     private void processOther(Many2ManyAssociation association, Class childClass) {
-        if(delegate.size() == 0){//no need to process other if no models selected.
+        if(delegate.isEmpty()){//no need to process other if no models selected.
             return;
         }
         final MetaModel childMM = Registry.instance().getMetaModel(childClass);
         final Map<Object, List<Model>> childrenByParentId = new HashMap<Object, List<Model>>();
         List ids = collect(metaModel.getIdName());
-        String sql =  "SELECT " + association.getTarget() + ".*, t." + association.getSourceFkName() + " AS the_parent_record_id FROM " + association.getTarget() +
-        " INNER JOIN " + association.getJoin() + " t ON " + association.getTarget() + "." + association.getTargetPk() + " = t." + association.getTargetFkName() + " WHERE (t." + association.getSourceFkName()
-                + "  IN (" + questions(ids.size()) + "))";
-        List<Map> childResults = new DB(childMM.getDbName()).findAll(sql, ids.toArray());
+        List<Map> childResults = new DB(childMM.getDbName()).findAll(
+                Registry.instance().getConfiguration().getDialect(childMM).selectMany2ManyAssociation(
+                        association, "the_parent_record_id", ids.size()), ids.toArray());
         for(Map res: childResults){
             Model child = Model.instance(res, childMM);
             Object parentId = res.get("the_parent_record_id");

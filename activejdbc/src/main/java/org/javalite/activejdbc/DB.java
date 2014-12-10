@@ -27,10 +27,10 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.util.*;
 
-import static org.javalite.common.Util.closeQuietly;
+import static org.javalite.common.Util.*;
 
 /**
- * This class provides a number of convenience methods for opening/closing database connections, running various 
+ * This class provides a number of convenience methods for opening/closing database connections, running various
  * types of queries, and executing SQL statements. This class differs from {@link Base} such that in this class you
  * can provide a logical name for a current connection. Use this class when you have more than one database in the system.
  *
@@ -291,11 +291,12 @@ public class DB {
      */
     public Long count(String table, String query, Object... params) {
 
-        if(query.trim().equals("*") && params.length == 0){
-            return count(table);
-        }
-        if(query.trim().equals("*") && params.length != 0){
-            throw new IllegalArgumentException("cannot use '*' and parameters");
+        if (query.trim().equals("*")) {
+            if (empty(params)) {
+                return count(table);
+            } else {
+                throw new IllegalArgumentException("cannot use '*' and parameters");
+            }
         }
 
         String sql = "SELECT COUNT(*) FROM " + table + " WHERE " + query;

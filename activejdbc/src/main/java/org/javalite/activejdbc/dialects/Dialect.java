@@ -18,6 +18,7 @@ package org.javalite.activejdbc.dialects;
 
 import java.util.List;
 import org.javalite.activejdbc.MetaModel;
+import org.javalite.activejdbc.associations.Many2ManyAssociation;
 
 /**
  * @author ericbn
@@ -37,4 +38,8 @@ public interface Dialect {
     String selectStar(String table, String query);
 
     String selectStarParametrized(String table, String... parameters);
+
+    String selectExists(MetaModel mm);
+
+    String selectMany2ManyAssociation(Many2ManyAssociation association, String sourceFkColumnName, int questionsCount);
 }

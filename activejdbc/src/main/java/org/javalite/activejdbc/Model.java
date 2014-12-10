@@ -555,8 +555,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public static boolean exists(Object id){
         MetaModel metaModel = getMetaModel();
-        return null != new DB(metaModel.getDbName()).firstCell("SELECT " + metaModel.getIdName() + " FROM " + metaModel.getTableName()
-                + " WHERE " + metaModel.getIdName() + " = ?", id);
+        return null != new DB(metaModel.getDbName()).firstCell(
+                Registry.instance().getConfiguration().getDialect(metaModel).selectExists(metaModel), id);
     }
 
     /**
@@ -566,8 +566,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public boolean exists(){
         MetaModel metaModel = getMetaModelLocal();
-        return null != new DB(metaModel.getDbName()).firstCell("SELECT " + metaModel.getIdName() + " FROM " + metaModel.getTableName()
-                + " WHERE " + metaModel.getIdName() + " = ?", getId());
+        return null != new DB(metaModel.getDbName()).firstCell(
+                Registry.instance().getConfiguration().getDialect(metaModel).selectExists(metaModel), getId());
     }
 
     /**
