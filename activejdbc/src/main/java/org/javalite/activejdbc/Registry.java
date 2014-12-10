@@ -50,7 +50,7 @@ public enum Registry {
     private final Map<String, List<Validator>> validators = new HashMap<String, List<Validator>>();
     private final Map<Class, List<CallbackListener>> listeners = new HashMap<Class, List<CallbackListener>>();
     private final MetaModels metaModels = new MetaModels();
-    private final Map<Class, ModelMetaData> metaDatas = new HashMap<Class, ModelMetaData>();
+    private final Map<Class, ModelRegistry> modelRegistries = new HashMap<Class, ModelRegistry>();
     private final Configuration configuration = new Configuration();
     private final StatisticsQueue statisticsQueue;
     private final Set<String> initedDbs = new HashSet<String>();
@@ -122,13 +122,13 @@ public enum Registry {
         return metaModels.getMetaModel(modelClass);
     }
 
-    ModelMetaData getMetaData(Class<? extends Model> modelClass) {
-        ModelMetaData metaData = metaDatas.get(modelClass);
-        if (metaData == null) {
-            metaData = new ModelMetaData();
-            metaDatas.put(modelClass, metaData);
+    ModelRegistry modelRegistryOf(Class<? extends Model> modelClass) {
+        ModelRegistry registry = modelRegistries.get(modelClass);
+        if (registry == null) {
+            registry = new ModelRegistry();
+            modelRegistries.put(modelClass, registry);
         }
-        return metaData;
+        return registry;
     }
 
      synchronized void init(String dbName) {

@@ -29,7 +29,7 @@ import org.javalite.activejdbc.conversion.StringToTimestampConverter;
  *
  * @author ericbn
  */
-class ModelMetaData {
+class ModelRegistry {
     private final Map<String, List<Converter>> attributeConverters = new CaseInsensitiveMap<List<Converter>>();
 
     /**
@@ -43,8 +43,8 @@ class ModelMetaData {
      * Registers date converters (Date -> String -> java.sql.Date) for specified model attributes.
      */
     void dateFormat(DateFormat format, String... attributes) {
-        ModelMetaData.this.convertWith(new DateToStringConverter(format), attributes);
-        ModelMetaData.this.convertWith(new StringToSqlDateConverter(format), attributes);
+        convertWith(new DateToStringConverter(format), attributes);
+        convertWith(new StringToSqlDateConverter(format), attributes);
     }
 
     /**
@@ -58,8 +58,8 @@ class ModelMetaData {
      * Registers timestamp converters (Date -> String -> java.sql.Timestamp) for specified model attributes.
      */
     void timestampFormat(DateFormat format, String... attributes) {
-        ModelMetaData.this.convertWith(new DateToStringConverter(format), attributes);
-        ModelMetaData.this.convertWith(new StringToTimestampConverter(format), attributes);
+        convertWith(new DateToStringConverter(format), attributes);
+        convertWith(new StringToTimestampConverter(format), attributes);
     }
 
     /**
@@ -87,7 +87,7 @@ class ModelMetaData {
      * Returns converter for specified model attribute, able to convert from sourceClass to destinationClass.
      * Returns null if no suitable converter was found.
      */
-    <S, T> Converter<S, T> getConverterForClass(String attribute, Class<S> sourceClass, Class<T> destinationClass) {
+    <S, T> Converter<S, T> converterForClass(String attribute, Class<S> sourceClass, Class<T> destinationClass) {
         List<Converter> list = attributeConverters.get(attribute);
         if (list != null) {
             for (Converter converter : list) {
@@ -103,8 +103,8 @@ class ModelMetaData {
      * Returns converter for specified model attribute, able to convert value to an instance of destinationClass.
      * Returns null if no suitable converter was found.
      */
-    <T> Converter<Object, T> getConverterForValue(String attribute, Object value, Class<T> destinationClass) {
-        return getConverterForClass(attribute,
+    <T> Converter<Object, T> converterForValue(String attribute, Object value, Class<T> destinationClass) {
+        return converterForClass(attribute,
                 value != null ? (Class<Object>) value.getClass() : Object.class, destinationClass);
     }
 }

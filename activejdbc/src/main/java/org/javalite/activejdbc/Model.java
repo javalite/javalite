@@ -59,7 +59,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     private SortedMap<String, Object> attributes = new CaseInsensitiveMap<Object>();
     private boolean frozen = false;
     private MetaModel metaModelLocal;
-    private ModelMetaData metaDataLocal;
+    private ModelRegistry modelRegistryLocal;
     private final Map<Class, Model> cachedParents = new HashMap<Class, Model>();
     private final Map<Class, List<Model>> cachedChildren = new HashMap<Class, List<Model>>();
     private boolean manageTime = true;
@@ -73,8 +73,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return Registry.instance().getMetaModel(getDaClass());
     }
 
-    private static ModelMetaData getMetaData() {
-        return Registry.instance().getMetaData(getDaClass());
+    private static ModelRegistry modelRegistry() {
+        return Registry.instance().modelRegistryOf(getDaClass());
     }
 
     protected SortedMap<String, Object> getAttributes(){
@@ -146,7 +146,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setDate(String attribute, Object value) {
-        Converter<Object, java.sql.Date> converter = getMetaDataLocal().getConverterForValue(
+        Converter<Object, java.sql.Date> converter = modelRegistryLocal().converterForValue(
                 attribute, value, java.sql.Date.class);
         return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toSqlDate(value));
     }
@@ -162,7 +162,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public java.sql.Date getDate(String attribute) {
         Object value = getRaw(attribute);
-        Converter<Object, java.sql.Date> converter = getMetaDataLocal().getConverterForValue(
+        Converter<Object, java.sql.Date> converter = modelRegistryLocal().converterForValue(
                 attribute, value, java.sql.Date.class);
         return converter != null ? converter.convert(value) : Convert.toSqlDate(value);
     }
@@ -211,7 +211,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to self, so you can string these methods one after another.
      */
     public <T extends Model> T set(String attribute, Object value) {
-        Converter<Object, Object> converter = getMetaDataLocal().getConverterForValue(attribute, value, Object.class);
+        Converter<Object, Object> converter = modelRegistryLocal().converterForValue(attribute, value, Object.class);
         return setRaw(attribute, converter != null ? converter.convert(value) : value);
     }
 
@@ -1120,11 +1120,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         this.metaModelLocal = metamodelLocal;
     }
 
-    protected ModelMetaData getMetaDataLocal(){
-        if (metaDataLocal == null) {
-            metaDataLocal = getMetaData();
+    protected ModelRegistry modelRegistryLocal() {
+        if (modelRegistryLocal == null) {
+            modelRegistryLocal = modelRegistry();
         }
-        return metaDataLocal;
+        return modelRegistryLocal;
     }
 
     /**
@@ -1198,7 +1198,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         if (getMetaModelLocal().hasAttribute(attribute)) {
             Object value = attributes.get(attribute);
-            Converter<Object, Object> converter = getMetaDataLocal().getConverterForValue(attribute, value, Object.class);
+            Converter<Object, Object> converter = modelRegistryLocal().converterForValue(attribute, value, Object.class);
             return converter != null ? converter.convert(value) : value;
         } else {
             String getInferenceProperty = System.getProperty("activejdbc.get.inference");
@@ -1302,7 +1302,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public String getString(String attribute) {
         Object value = getRaw(attribute);
-        Converter<Object, String> converter = getMetaDataLocal().getConverterForValue(attribute, value, String.class);
+        Converter<Object, String> converter = modelRegistryLocal().converterForValue(attribute, value, String.class);
         return converter != null ? converter.convert(value) : Convert.toString(value);
     }
 
@@ -1332,7 +1332,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public BigDecimal getBigDecimal(String attribute) {
         Object value = getRaw(attribute);
-        Converter<Object, BigDecimal> converter = getMetaDataLocal().getConverterForValue(
+        Converter<Object, BigDecimal> converter = modelRegistryLocal().converterForValue(
                 attribute, value, BigDecimal.class);
         return converter != null ? converter.convert(value) : Convert.toBigDecimal(value);
     }
@@ -1348,7 +1348,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public Integer getInteger(String attribute) {
         Object value = getRaw(attribute);
-        Converter<Object, Integer> converter = getMetaDataLocal().getConverterForValue(attribute, value, Integer.class);
+        Converter<Object, Integer> converter = modelRegistryLocal().converterForValue(attribute, value, Integer.class);
         return converter != null ? converter.convert(value) : Convert.toInteger(value);
     }
 
@@ -1363,7 +1363,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public Long getLong(String attribute) {
         Object value = getRaw(attribute);
-        Converter<Object, Long> converter = getMetaDataLocal().getConverterForValue(attribute, value, Long.class);
+        Converter<Object, Long> converter = modelRegistryLocal().converterForValue(attribute, value, Long.class);
         return converter != null ? converter.convert(value) : Convert.toLong(value);
     }
 
@@ -1378,7 +1378,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public Short getShort(String attribute) {
         Object value = getRaw(attribute);
-        Converter<Object, Short> converter = getMetaDataLocal().getConverterForValue(attribute, value, Short.class);
+        Converter<Object, Short> converter = modelRegistryLocal().converterForValue(attribute, value, Short.class);
         return converter != null ? converter.convert(value) : Convert.toShort(value);
     }
 
@@ -1393,7 +1393,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public Float getFloat(String attribute) {
         Object value = getRaw(attribute);
-        Converter<Object, Float> converter = getMetaDataLocal().getConverterForValue(attribute, value, Float.class);
+        Converter<Object, Float> converter = modelRegistryLocal().converterForValue(attribute, value, Float.class);
         return converter != null ? converter.convert(value) : Convert.toFloat(value);
     }
 
@@ -1408,7 +1408,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public Timestamp getTimestamp(String attribute) {
         Object value = getRaw(attribute);
-        Converter<Object, Timestamp> converter = getMetaDataLocal().getConverterForValue(
+        Converter<Object, Timestamp> converter = modelRegistryLocal().converterForValue(
                 attribute, value, Timestamp.class);
         return converter != null ? converter.convert(value) : Convert.toTimestamp(get(attribute));
     }
@@ -1424,7 +1424,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public Double getDouble(String attribute) {
         Object value = getRaw(attribute);
-        Converter<Object, Double> converter = getMetaDataLocal().getConverterForValue(attribute, value, Double.class);
+        Converter<Object, Double> converter = modelRegistryLocal().converterForValue(attribute, value, Double.class);
         return converter != null ? converter.convert(value) : Convert.toDouble(value);
     }
 
@@ -1439,7 +1439,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public Boolean getBoolean(String attribute) {
         Object value = getRaw(attribute);
-        Converter<Object, Boolean> converter = getMetaDataLocal().getConverterForValue(attribute, value, Boolean.class);
+        Converter<Object, Boolean> converter = modelRegistryLocal().converterForValue(attribute, value, Boolean.class);
         return converter != null ? converter.convert(value) : Convert.toBoolean(value);
     }
 
@@ -1456,7 +1456,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setString(String attribute, Object value) {
-        Converter<Object, String> converter = getMetaDataLocal().getConverterForValue(attribute, value, String.class);
+        Converter<Object, String> converter = modelRegistryLocal().converterForValue(attribute, value, String.class);
         return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toString(value));
     }
 
@@ -1471,7 +1471,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setBigDecimal(String attribute, Object value) {
-        Converter<Object, BigDecimal> converter = getMetaDataLocal().getConverterForValue(
+        Converter<Object, BigDecimal> converter = modelRegistryLocal().converterForValue(
                 attribute, value, BigDecimal.class);
         return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toBigDecimal(value));
     }
@@ -1487,7 +1487,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setShort(String attribute, Object value) {
-        Converter<Object, Short> converter = getMetaDataLocal().getConverterForValue(attribute, value, Short.class);
+        Converter<Object, Short> converter = modelRegistryLocal().converterForValue(attribute, value, Short.class);
         return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toShort(value));
     }
 
@@ -1502,7 +1502,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setInteger(String attribute, Object value) {
-        Converter<Object, Integer> converter = getMetaDataLocal().getConverterForValue(attribute, value, Integer.class);
+        Converter<Object, Integer> converter = modelRegistryLocal().converterForValue(attribute, value, Integer.class);
         return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toInteger(value));
     }
 
@@ -1517,7 +1517,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setLong(String attribute, Object value) {
-        Converter<Object, Long> converter = getMetaDataLocal().getConverterForValue(attribute, value, Long.class);
+        Converter<Object, Long> converter = modelRegistryLocal().converterForValue(attribute, value, Long.class);
         return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toLong(value));
     }
 
@@ -1532,7 +1532,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setFloat(String attribute, Object value) {
-        Converter<Object, Float> converter = getMetaDataLocal().getConverterForValue(attribute, value, Float.class);
+        Converter<Object, Float> converter = modelRegistryLocal().converterForValue(attribute, value, Float.class);
         return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toFloat(value));
     }
 
@@ -1547,7 +1547,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setTimestamp(String attribute, Object value) {
-        Converter<Object, Timestamp> converter = getMetaDataLocal().getConverterForValue(
+        Converter<Object, Timestamp> converter = modelRegistryLocal().converterForValue(
                 attribute, value, Timestamp.class);
         return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toTimestamp(value));
     }
@@ -1563,7 +1563,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setDouble(String attribute, Object value) {
-        Converter<Object, Double> converter = getMetaDataLocal().getConverterForValue(attribute, value, Double.class);
+        Converter<Object, Double> converter = modelRegistryLocal().converterForValue(attribute, value, Double.class);
         return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toDouble(value));
     }
 
@@ -1578,7 +1578,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setBoolean(String attribute, Object value) {
-        Converter<Object, Boolean> converter = getMetaDataLocal().getConverterForValue(attribute, value, Boolean.class);
+        Converter<Object, Boolean> converter = modelRegistryLocal().converterForValue(attribute, value, Boolean.class);
         return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toBoolean(value));
     }
 
@@ -1791,7 +1791,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attributes attribute names
      */
     protected static void convertWith(Converter converter, String... attributes) {
-        getMetaData().convertWith(converter, attributes);
+        modelRegistry().convertWith(converter, attributes);
     }
 
     /**
@@ -1850,7 +1850,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attributes attribute names
      */
     protected static void dateFormat(String pattern, String... attributes) {
-        getMetaData().dateFormat(pattern, attributes);
+        modelRegistry().dateFormat(pattern, attributes);
     }
 
     /**
@@ -1863,7 +1863,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attributes attribute names
      */
     protected static void dateFormat(DateFormat format, String... attributes) {
-        getMetaData().dateFormat(format, attributes);
+        modelRegistry().dateFormat(format, attributes);
     }
 
     /**
@@ -1894,7 +1894,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attributes attribute names
      */
     protected static void timestampFormat(String pattern, String... attributes) {
-        getMetaData().timestampFormat(pattern, attributes);
+        modelRegistry().timestampFormat(pattern, attributes);
     }
 
     /**
@@ -1907,7 +1907,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attributes attribute names
      */
     protected static void timestampFormat(DateFormat format, String... attributes) {
-        getMetaData().timestampFormat(format, attributes);
+        modelRegistry().timestampFormat(format, attributes);
     }
 
     /**
@@ -1917,7 +1917,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attributes attribute names
      */
     protected static void blankToNull(String... attributes) {
-        getMetaData().convertWith(BlankToNullConverter.instance(), attributes);
+        modelRegistry().convertWith(BlankToNullConverter.instance(), attributes);
     }
 
     /**
@@ -1927,7 +1927,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attributes attribute names
      */
     protected static void zeroToNull(String... attributes) {
-        getMetaData().convertWith(ZeroToNullConverter.instance(), attributes);
+        modelRegistry().convertWith(ZeroToNullConverter.instance(), attributes);
     }
 
     public static boolean belongsTo(Class<? extends Model> targetClass) {
