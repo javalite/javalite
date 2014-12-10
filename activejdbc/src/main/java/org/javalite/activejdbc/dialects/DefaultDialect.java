@@ -27,17 +27,19 @@ import static org.javalite.common.Util.*;
 /**
  * @author Igor Polevoy
  */
-public class DefaultDialect {
+public class DefaultDialect implements Dialect {
     
     protected final Pattern orderByPattern = Pattern.compile("^\\s*ORDER\\s+BY", 
             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
     protected final Pattern groupByPattern = Pattern.compile("^\\s*GROUP\\s+BY", 
             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
+    @Override
     public String selectStar(String table) {
         return "SELECT * FROM " + table;
     }
     
+    @Override
     public String selectStar(String table, String query) {
         return query != null ? "SELECT * FROM " + table + " WHERE " + query : selectStar(table);
     }
@@ -56,6 +58,7 @@ public class DefaultDialect {
      * @param parameters list of parameter names
      * @return something like: "select * from table_name where name = ? and last_name = ? ..."
      */
+    @Override
     public String selectStarParametrized(String table, String ... parameters) {
         StringBuilder sql = new StringBuilder().append("SELECT * FROM ").append(table).append(" WHERE ");
         join(sql, parameters, " = ? AND ");
@@ -63,6 +66,7 @@ public class DefaultDialect {
         return sql.toString();
     }
 
+    @Override
     public String createParametrizedInsert(MetaModel mm, List<String> nonNullAttributes){
         StringBuilder query = new StringBuilder().append("INSERT INTO ").append(mm.getTableName()).append(" (");
         join(query, nonNullAttributes, ", ");
@@ -84,6 +88,7 @@ public class DefaultDialect {
         return query.toString(); 
     }
 
+    @Override
     public String createParametrizedInsertIdUnmanaged(MetaModel mm, List<String> nonNullAttributes){
         StringBuilder query = new StringBuilder().append("INSERT INTO ").append(mm.getTableName()).append(" (");
         join(query, nonNullAttributes, ", ");
@@ -136,12 +141,14 @@ public class DefaultDialect {
         appendOrderBy(query, orderBys);
     }
     
+    @Override
     public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
         StringBuilder fullQuery = new StringBuilder();
         appendSelect(fullQuery, tableName, null, subQuery, orderBys);
         return fullQuery.toString();
     }
    
+    @Override
    public Object overrideDriverTypeConversion(MetaModel mm, String attributeName, Object value) {
 	   return value;
    }

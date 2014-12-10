@@ -26,7 +26,7 @@ import org.junit.Test;
 
 public class DefaultDialectTest extends ActiveJDBCTest {
 
-    private static DefaultDialect dialect;
+    private static Dialect dialect;
 
     @BeforeClass
     public static void setUpBeforeClass() {

@@ -42,7 +42,7 @@ public class Configuration {
     private static CacheManager cacheManager;
     private final static Logger logger = LoggerFactory.getLogger(Configuration.class);
 
-    private  Map<String, DefaultDialect> dialects = new HashMap<String, DefaultDialect>();
+    private  Map<String, Dialect> dialects = new HashMap<String, Dialect>();
 
     protected Configuration(){
         try {
@@ -115,8 +115,8 @@ public class Configuration {
         return cacheManager != null;
     }
 
-    DefaultDialect getDialect(MetaModel mm){
-        DefaultDialect dialect = dialects.get(mm.getDbType());
+    Dialect getDialect(MetaModel mm){
+        Dialect dialect = dialects.get(mm.getDbType());
         if (dialect == null) {
             if(mm.getDbType().equalsIgnoreCase("Oracle")){
                 dialect = new OracleDialect();

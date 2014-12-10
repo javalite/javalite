@@ -31,7 +31,7 @@ public class SQLDialectTest {
 
     @Test
     public void testSelectStarParametrized(){
-        DefaultDialect dialect = new OracleDialect();
+        Dialect dialect = new OracleDialect();
         a("SELECT * FROM people WHERE name = ? AND ssn = ? AND dob = ?").shouldBeEqual(
                 dialect.selectStarParametrized("people", "name", "ssn", "dob"));
     }
