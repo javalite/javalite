@@ -26,6 +26,7 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.*;
+import java.util.regex.Pattern;
 
 import static org.javalite.common.Util.*;
 
@@ -39,6 +40,9 @@ import static org.javalite.common.Util.*;
 public class DB {
 
     private final static Logger logger = LoggerFactory.getLogger(DB.class);
+    static final Pattern SELECT_PATTERN = Pattern.compile("^\\s*SELECT",
+            Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+
 
     private final String dbName;
 
@@ -446,10 +450,9 @@ public class DB {
 
         //TODO: count ? signs and number of params, throw exception if do not match
 
-
         if(query.indexOf('?') == -1 && params.length != 0) throw new IllegalArgumentException("you passed arguments, but the query does not have placeholders: (?)");
-        //TODO: use case insensitive Pattern
-        if(!query.toLowerCase().contains("select"))throw new IllegalArgumentException("query must be 'select' query");
+
+        if(!SELECT_PATTERN.matcher(query).find()) { throw new IllegalArgumentException("query must be 'select' query"); }
 
         //TODO: cache prepared statements here too
         PreparedStatement ps;
@@ -546,8 +549,7 @@ public class DB {
      * @return number of records affected.
      */
     public int exec(String query, Object... params){
-        //TODO: use case insensitive Pattern
-        if(query.trim().toLowerCase().startsWith("select")) throw new IllegalArgumentException("expected DML, but got select...");
+        if(SELECT_PATTERN.matcher(query).find()) { throw new IllegalArgumentException("expected DML, but got select..."); }
 
         if(query.indexOf('?') == -1) throw new IllegalArgumentException("query must be parametrized");
 

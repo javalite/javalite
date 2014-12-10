@@ -311,18 +311,27 @@ public final class Util {
      * Splits a string into an array using a provided delimiter. The split chunks are also trimmed.
      *
      * @param input string to split.
-     * @param delimiter  delimiter
+     * @param delimiters delimiters
      * @return a string into an array using a provided delimiter
      */
-    public static String[] split(String input, char delimiter){
+    //TODO: why don't we use String.split()? This has a better performance?
+    public static String[] split(String input, String delimiters) {
         if(input == null) throw new NullPointerException("input cannot be null");
 
         List<String> tokens  = new ArrayList<String>();
-        StringTokenizer st = new StringTokenizer(input, String.valueOf(delimiter));
+        StringTokenizer st = new StringTokenizer(input, delimiters);
         while(st.hasMoreTokens()){
             tokens.add(st.nextToken().trim());
         }
         return tokens.toArray(new String[tokens.size()]);
+    }
+
+    /**
+     * @deprecated use {@link #split(String, String)} instead
+     */
+    @Deprecated
+    public static String[] split(String input, char delimiter) {
+        return split(input, String.valueOf(delimiter));
     }
 
     /**

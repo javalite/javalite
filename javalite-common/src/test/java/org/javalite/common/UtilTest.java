@@ -42,7 +42,7 @@ public class UtilTest extends JSpecSupport {
     @Test
     public void testSplit(){
 
-        String[] split = Util.split("Hello, Dolly, my darling ", ',');
+        String[] split = Util.split("Hello, Dolly, my darling ", ",");
         a(split.length).shouldBeEqual(3);
     }
 

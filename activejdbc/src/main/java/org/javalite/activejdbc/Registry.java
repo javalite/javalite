@@ -35,6 +35,8 @@ import org.javalite.common.Inflector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.javalite.common.Util.*;
+
 /**
  * @author Igor Polevoy
  */
@@ -184,7 +186,7 @@ public enum Registry {
       /*
        * Valid table name format: tablename or schemaname.tablename
        */
-        String[] vals = table.split("\\.");
+        String[] vals = split(table, ".");
         String schema = null;
         String tableName;
 

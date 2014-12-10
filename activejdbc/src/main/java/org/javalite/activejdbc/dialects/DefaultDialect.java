@@ -29,17 +29,17 @@ import static org.javalite.common.Util.*;
  * @author Igor Polevoy
  */
 public class DefaultDialect implements Dialect {
-    
-    protected final Pattern orderByPattern = Pattern.compile("^\\s*ORDER\\s+BY", 
+
+    protected static final Pattern ORDER_BY_PATTERN = Pattern.compile("^\\s*ORDER\\s+BY",
             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-    protected final Pattern groupByPattern = Pattern.compile("^\\s*GROUP\\s+BY", 
+    protected static final Pattern GROUP_BY_PATTERN = Pattern.compile("^\\s*GROUP\\s+BY",
             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
     @Override
     public String selectStar(String table) {
         return "SELECT * FROM " + table;
     }
-    
+
     @Override
     public String selectStar(String table, String query) {
         return query != null ? "SELECT * FROM " + table + " WHERE " + query : selectStar(table);
@@ -119,7 +119,7 @@ public class DefaultDialect implements Dialect {
     protected void appendSubQuery(StringBuilder query, String subQuery) {
         if (!blank(subQuery)) {
             // this is only to support findFirst("order by..."), might need to revisit later
-            if (!groupByPattern.matcher(subQuery).find() && !orderByPattern.matcher(subQuery).find()) {
+            if (!GROUP_BY_PATTERN.matcher(subQuery).find() && !ORDER_BY_PATTERN.matcher(subQuery).find()) {
                 query.append(" WHERE");
             }
             query.append(' ').append(subQuery);

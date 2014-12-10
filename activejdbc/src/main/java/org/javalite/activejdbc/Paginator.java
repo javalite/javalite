@@ -21,6 +21,8 @@ import org.javalite.activejdbc.cache.QueryCache;
 import org.javalite.common.Convert;
 
 import java.io.Serializable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This class supports pagination of result sets in ActiveJDBC. This is useful for paging through tables. If the
@@ -28,19 +30,21 @@ import java.io.Serializable;
  * cache the total count of records returned by {@link #getCount()}, as LazyList will cache the result sets.
  * This class is thread safe and the same instance could be used across multiple web requests and even
  * across multiple users/sessions. It is lightweight class, you can generate an instance each time you need one,
- * or you can cache an instance in a session or even servlet context. 
+ * or you can cache an instance in a session or even servlet context.
  *
  * @author Igor Polevoy
  */
 public class Paginator<T extends Model> implements Serializable {
+    static final Pattern FROM_PATTERN = Pattern.compile("FROM", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
-    private int pageSize;
-    private String query, orderBys;
-    private Object[] params;
-    private MetaModel metaModel;
+    private final int pageSize;
+    private final String query;
+    private String orderBys;
+    private final Object[] params;
+    private final MetaModel metaModel;
     private int currentPage;
-    private boolean fullQuery;
-    private String countQuery;
+    private final boolean fullQuery;
+    private final String countQuery;
 
 
     /**
@@ -85,16 +89,22 @@ public class Paginator<T extends Model> implements Serializable {
         String tableName = Registry.instance().getTableName(modelClass);
         this.metaModel = Registry.instance().getMetaModel(tableName);
 
-        this.fullQuery = query.trim().toLowerCase().startsWith("select");
-
-        countQuery = fullQuery ? "SELECT COUNT(*) " + query.substring(query.toLowerCase().indexOf("from"))
-                               : "SELECT COUNT(*) FROM " + metaModel.getTableName() + " WHERE " + query;
+        this.fullQuery = DB.SELECT_PATTERN.matcher(query).find();
+        if (fullQuery) {
+            Matcher m = FROM_PATTERN.matcher(query);
+            if (!m.find()) {
+                throw new IllegalArgumentException("SELECT query without FROM");
+            }
+            this.countQuery = "SELECT COUNT(*) " + query.substring(m.start());
+        } else {
+            this.countQuery = "SELECT COUNT(*) FROM " + metaModel.getTableName() + " WHERE " + query;
+        }
     }
 
     /**
      * Use to set order by(s). Example: <code>"category, created_at desc"</code>
-     * 
-     * @param orderBys a comma-separated list of field names followed by either "desc" or "asc"  
+     *
+     * @param orderBys a comma-separated list of field names followed by either "desc" or "asc"
      * @return instance to self.
      */
     public Paginator orderBy(String orderBys) {
@@ -107,24 +117,20 @@ public class Paginator<T extends Model> implements Serializable {
      *
      * @param pageNumber page number to return. This is indexed at 1, not 0. Any value below 1 is illegal and will
      * be rejected.
-     * @return list of records that match a query make up a "page". 
+     * @return list of records that match a query make up a "page".
      */
     public LazyList<T> getPage(int pageNumber) {
 
         if (pageNumber < 1) throw new IllegalArgumentException("minimum page index == 1");
 
         try {
-            LazyList<T> list = find(query, params);
-            int offset = (pageNumber - 1) * pageSize; 
-            list.offset(offset);
-            list.limit(pageSize);
+            LazyList<T> list = find(query, params).offset((pageNumber - 1) * pageSize).limit(pageSize);
             if (orderBys != null) {
                 list.orderBy(orderBys);
             }
             currentPage = pageNumber;
             return list;
-        }
-        catch (Exception mustNeverHappen) {
+        } catch (Exception mustNeverHappen) {
             throw new InternalException(mustNeverHappen);
         }
     }

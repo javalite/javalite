@@ -19,7 +19,6 @@ package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.cache.CacheManager;
 import org.javalite.activejdbc.dialects.*;
-import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +29,8 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.*;
 import org.javalite.common.Convert;
+
+import static org.javalite.common.Util.*;
 
 /**
  * @author Igor Polevoy
@@ -42,7 +43,7 @@ public class Configuration {
     private static CacheManager cacheManager;
     private final static Logger logger = LoggerFactory.getLogger(Configuration.class);
 
-    private  Map<String, Dialect> dialects = new HashMap<String, Dialect>();
+    private SortedMap<String, Dialect> dialects = new CaseInsensitiveMap<Dialect>();
 
     protected Configuration(){
         try {
@@ -51,24 +52,30 @@ public class Configuration {
                 URL url = resources.nextElement();
                 LogFilter.log(logger, "Load models from: {}", url.toExternalForm());
                 InputStream inputStream = null;
+                InputStreamReader isreader = null;
+                BufferedReader reader = null;
                 try {
                     inputStream = url.openStream();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                    isreader = new InputStreamReader(inputStream);
+                    reader = new BufferedReader(isreader);
                     String line;
                     while ((line = reader.readLine()) != null) {
 
-                        String[] parts = Util.split(line, ':');
+                        String[] parts = split(line, ":");
                         String modelName = parts[0];
                         String dbName = parts[1];
 
-                        if(modelsMap.get(dbName) == null){
-                            modelsMap.put(dbName, new ArrayList<String>());
+                        List<String> modelNames = modelsMap.get(dbName);
+                        if (modelNames == null) {
+                            modelNames = new ArrayList<String>();
+                            modelsMap.put(dbName, modelNames);
                         }
-
-                        modelsMap.get(dbName).add(modelName);
+                        modelNames.add(modelName);
                     }
                 } finally {
-                    Util.close(inputStream);
+                    closeQuietly(reader);
+                    closeQuietly(isreader);
+                    closeQuietly(inputStream);
                 }
             }
         } catch (IOException e) {
