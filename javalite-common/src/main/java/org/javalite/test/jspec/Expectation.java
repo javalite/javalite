@@ -258,7 +258,7 @@ public class Expectation<T> {
      */
     public void shouldNotContain(Object expected) {
         if(contains(expected))
-            throw new TestException("tested value contain expected value: " + expected + ", but it should not");
+            throw new TestException("tested object contains the value: " + expected + ", but it should not");
     }
 
     private boolean contains(Object expected){
