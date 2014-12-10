@@ -17,8 +17,6 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
-import java.util.List;
-
 /**
  * @author Igor Polevoy
  */
@@ -26,59 +24,59 @@ class CallbackSupport {
 
     void fireBeforeSave(Model m){
         beforeSave();
-        List<CallbackListener> listeners = Registry.instance().getListeners(m.getClass());
-        for(CallbackListener listener: listeners)
-            listener.beforeSave(m);
+        for (CallbackListener callback : m.modelRegistryLocal().callbacks()) {
+            callback.beforeSave(m);
+        }
     }
 
     void fireAfterSave(Model m){
         afterSave();
-        List<CallbackListener> listeners = Registry.instance().getListeners(m.getClass());
-        for(CallbackListener listener: listeners)
-            listener.afterSave(m);
+        for (CallbackListener callback : m.modelRegistryLocal().callbacks()) {
+            callback.afterSave(m);
+        }
     }
 
     void fireBeforeCreate(Model m){
         beforeCreate();
-        List<CallbackListener> listeners = Registry.instance().getListeners(m.getClass());
-        for(CallbackListener listener: listeners)
-            listener.beforeCreate(m);
+        for (CallbackListener callback : m.modelRegistryLocal().callbacks()) {
+            callback.beforeCreate(m);
+        }
     }
 
     void fireAfterCreate(Model m){
         afterCreate();
-        List<CallbackListener> listeners = Registry.instance().getListeners(m.getClass());
-        for(CallbackListener listener: listeners)
-            listener.afterCreate(m);
+        for (CallbackListener callback : m.modelRegistryLocal().callbacks()) {
+            callback.afterCreate(m);
+        }
     }
 
     void fireBeforeDelete(Model m){
         beforeDelete();
-        List<CallbackListener> listeners = Registry.instance().getListeners(m.getClass());
-        for(CallbackListener listener: listeners)
-            listener.beforeDelete(m);
+        for (CallbackListener callback : m.modelRegistryLocal().callbacks()) {
+            callback.beforeDelete(m);
+        }
     }
 
     void fireAfterDelete(Model m){
         afterDelete();
-        List<CallbackListener> listeners = Registry.instance().getListeners(m.getClass());
-        for(CallbackListener listener: listeners)
-            listener.afterDelete(m);
+        for (CallbackListener callback : m.modelRegistryLocal().callbacks()) {
+            callback.afterDelete(m);
+        }
     }
 
     void fireBeforeValidation(Model m){
         beforeValidation();
-        List<CallbackListener> listeners = Registry.instance().getListeners(m.getClass());
-        for(CallbackListener listener: listeners)
-            listener.beforeValidation(m);
+        for(CallbackListener callback: m.modelRegistryLocal().callbacks())
+            callback.beforeValidation(m);
     }
+
     void fireAfterValidation(Model m){
         afterValidation();
-        List<CallbackListener> listeners = Registry.instance().getListeners(m.getClass());
-        for(CallbackListener listener: listeners)
-            listener.afterValidation(m);        
+        for (CallbackListener callback : m.modelRegistryLocal().callbacks()) {
+            callback.afterValidation(m);
+        }
     }
-    
+
     //overridable instance methods
     protected void beforeSave(){}
     protected void afterSave(){}

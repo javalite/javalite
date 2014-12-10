@@ -23,6 +23,11 @@ import org.javalite.activejdbc.conversion.Converter;
 import org.javalite.activejdbc.conversion.DateToStringConverter;
 import org.javalite.activejdbc.conversion.StringToSqlDateConverter;
 import org.javalite.activejdbc.conversion.StringToTimestampConverter;
+import org.javalite.activejdbc.validation.AttributePresenceValidator;
+import org.javalite.activejdbc.validation.NumericValidationBuilder;
+import org.javalite.activejdbc.validation.NumericValidator;
+import org.javalite.activejdbc.validation.ValidationBuilder;
+import org.javalite.activejdbc.validation.Validator;
 
 /**
  * Stores metadata for a Model: converters, etc.
@@ -30,7 +35,21 @@ import org.javalite.activejdbc.conversion.StringToTimestampConverter;
  * @author ericbn
  */
 class ModelRegistry {
+    private final List<CallbackListener> callbacks = new ArrayList<CallbackListener>();
     private final Map<String, List<Converter>> attributeConverters = new CaseInsensitiveMap<List<Converter>>();
+    private final List<Validator> validators = new ArrayList<Validator>();
+
+    void callbackWith(CallbackListener... listeners) {
+        callbackWith(Arrays.asList(listeners));
+    }
+
+    void callbackWith(Collection<CallbackListener> callbacks) {
+        this.callbacks.addAll(callbacks);
+    }
+
+    List<CallbackListener> callbacks() {
+        return callbacks;
+    }
 
     /**
      * Registers date converters (Date -> String -> java.sql.Date) for specified model attributes.
@@ -106,5 +125,41 @@ class ModelRegistry {
     <T> Converter<Object, T> converterForValue(String attribute, Object value, Class<T> destinationClass) {
         return converterForClass(attribute,
                 value != null ? (Class<Object>) value.getClass() : Object.class, destinationClass);
+    }
+
+    ValidationBuilder validateWith(Validator validator) {
+        validators.add(validator);
+        return new ValidationBuilder(validator);
+    }
+
+    ValidationBuilder validateWith(List<Validator> list) {
+        this.validators.addAll(list);
+        return new ValidationBuilder(list);
+    }
+
+    NumericValidationBuilder validateNumericalityOf(String... attributes) {
+        List<NumericValidator> list = new ArrayList<NumericValidator>();
+        for (String attribute : attributes) {
+            NumericValidator validator = new NumericValidator(attribute);
+            list.add(validator);
+            validators.add(validator);
+        }
+        return new NumericValidationBuilder(list);
+    }
+
+    ValidationBuilder validatePresenceOf(String... attributes) {
+        List<Validator> list = new ArrayList<Validator>();
+        for (String attribute : attributes) {
+            list.add(new AttributePresenceValidator(attribute));
+        }
+        return validateWith(list);
+    }
+
+    void removeValidator(Validator validator) {
+        validators.remove(validator);
+    }
+
+    List<Validator> validators() {
+        return validators;
     }
 }

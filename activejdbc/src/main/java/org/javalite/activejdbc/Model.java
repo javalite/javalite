@@ -23,7 +23,6 @@ import org.javalite.activejdbc.conversion.Converter;
 import org.javalite.activejdbc.validation.NumericValidationBuilder;
 import org.javalite.activejdbc.validation.ValidationBuilder;
 import org.javalite.activejdbc.validation.ValidationException;
-import org.javalite.activejdbc.validation.ValidationHelper;
 import org.javalite.activejdbc.validation.Validator;
 import org.javalite.common.Convert;
 import org.javalite.common.XmlEntities;
@@ -44,6 +43,11 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import org.javalite.activejdbc.conversion.BlankToNullConverter;
 import org.javalite.activejdbc.conversion.ZeroToNullConverter;
+import org.javalite.activejdbc.validation.DateConverter;
+import org.javalite.activejdbc.validation.EmailValidator;
+import org.javalite.activejdbc.validation.RangeValidator;
+import org.javalite.activejdbc.validation.RegexpValidator;
+import org.javalite.activejdbc.validation.TimestampConverter;
 
 import static org.javalite.common.Inflector.*;
 import static org.javalite.common.Util.*;
@@ -1687,7 +1691,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     protected static NumericValidationBuilder validateNumericalityOf(String... attributes) {
-        return ValidationHelper.addNumericalityValidators(getClassName(), ModelDelegate.toLowerCase(attributes));
+        return modelRegistry().validateNumericalityOf(attributes);
     }
 
     /**
@@ -1697,7 +1701,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return
      */
     public static ValidationBuilder addValidator(Validator validator){
-        return ValidationHelper.addValidator(getClassName(), validator);
+        return validateWith(validator);
     }
 
     /**
@@ -1712,11 +1716,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     public static void removeValidator(Validator validator){
-        Registry.instance().removeValidator(Model.getDaClass(), validator);
+        modelRegistry().removeValidator(validator);
     }
 
     public static List<Validator> getValidators(Class<Model> daClass){
-        return Registry.instance().getValidators(daClass.getName());
+        return modelRegistry().validators();
     }
 
 
@@ -1728,7 +1732,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return
      */
     protected static ValidationBuilder validateRegexpOf(String attribute, String pattern) {
-        return ValidationHelper.addRegexpValidator(getClassName(), attribute.toLowerCase(), pattern);
+        return modelRegistry().validateWith(new RegexpValidator(attribute, pattern));
     }
 
     /**
@@ -1738,7 +1742,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return
      */
     protected static ValidationBuilder validateEmailOf(String attribute) {
-        return ValidationHelper.addEmailValidator(getClassName(), attribute.toLowerCase());
+        return modelRegistry().validateWith(new EmailValidator(attribute));
     }
 
     /**
@@ -1751,7 +1755,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return
      */
     protected static ValidationBuilder validateRange(String attribute, Number min, Number max) {
-        return ValidationHelper.addRangeValidator(getClassName(), attribute.toLowerCase(), min, max);
+        return modelRegistry().validateWith(new RangeValidator(attribute, min, max));
     }
 
     /**
@@ -1761,7 +1765,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return
      */
     protected static ValidationBuilder validatePresenceOf(String... attributes) {
-        return ValidationHelper.addPresenceValidators(getClassName(), ModelDelegate.toLowerCase(attributes));
+        return modelRegistry().validatePresenceOf(attributes);
     }
 
     /**
@@ -1770,7 +1774,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param validator  custom validator.
      */
     protected static ValidationBuilder validateWith(Validator validator) {
-        return addValidator(validator);
+        return modelRegistry().validateWith(validator);
     }
 
     /**
@@ -1781,7 +1785,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     @Deprecated
     protected static ValidationBuilder convertWith(org.javalite.activejdbc.validation.Converter converter) {
-        return addValidator(converter);
+        return validateWith(converter);
     }
 
     /**
@@ -1805,7 +1809,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     @Deprecated
     protected static ValidationBuilder convertDate(String attributeName, String format){
-        return ValidationHelper.addDateConverter(getClassName(), attributeName, format);
+        return modelRegistry().validateWith(new DateConverter(attributeName, format));
     }
 
     /**
@@ -1819,7 +1823,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     @Deprecated
     protected static ValidationBuilder convertTimestamp(String attributeName, String format){
-        return ValidationHelper.addTimestampConverter(getClassName(), attributeName, format);
+        return modelRegistry().validateWith(new TimestampConverter(attributeName, format));
     }
 
     /**
@@ -1939,9 +1943,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
 
      public static void addCallbacks(CallbackListener ... listeners){
-         for(CallbackListener listener: listeners ){
-             Registry.instance().addListener(getDaClass(), listener);
-         }
+         modelRegistry().callbackWith(listeners);
     }
 
     /**
@@ -1960,9 +1962,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public void validate() {
         fireBeforeValidation(this);
         errors = new Errors();
-        List<Validator> theValidators = Registry.instance().getValidators(getClass().getName());
-        if(theValidators != null){
-            for (Validator validator : theValidators) {
+        List<Validator> validators = modelRegistryLocal().validators();
+        if (validators != null) {
+            for (Validator validator : validators) {
                 validator.validate(this);
             }
         }

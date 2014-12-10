@@ -17,6 +17,7 @@ limitations under the License.
 
 package org.javalite.activejdbc.validation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ValidationBuilder<T extends Validator> {
@@ -25,6 +26,11 @@ public class ValidationBuilder<T extends Validator> {
 
     public ValidationBuilder(List<T> validators){
         this.validators = validators;
+    }
+
+    public ValidationBuilder(T validator) {
+        validators = new ArrayList<T>(1);
+        validators.add(validator);
     }
 
     //TODO implement resource bundles here so that the argument cam be either literal string or key to the message

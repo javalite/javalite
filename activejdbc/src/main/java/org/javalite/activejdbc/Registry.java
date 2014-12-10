@@ -22,7 +22,6 @@ import org.javalite.activejdbc.associations.*;
 import org.javalite.activejdbc.cache.CacheManager;
 import org.javalite.activejdbc.cache.QueryCache;
 import org.javalite.activejdbc.statistics.StatisticsQueue;
-import org.javalite.activejdbc.validation.Validator;
 
 import java.lang.reflect.Method;
 import java.sql.DatabaseMetaData;
@@ -47,8 +46,6 @@ public enum Registry {
 
     private final static Logger logger = LoggerFactory.getLogger(Registry.class);
 
-    private final Map<String, List<Validator>> validators = new HashMap<String, List<Validator>>();
-    private final Map<Class, List<CallbackListener>> listeners = new HashMap<Class, List<CallbackListener>>();
     private final MetaModels metaModels = new MetaModels();
     private final Map<Class, ModelRegistry> modelRegistries = new HashMap<Class, ModelRegistry>();
     private final Configuration configuration = new Configuration();
@@ -427,30 +424,6 @@ public enum Registry {
         return tableName;
     }
 
-    protected List<Validator> getValidators(String daClass) {
-
-        //TODO: this can be optimized - cached
-        List<Validator> validatorList = validators.get(daClass);
-        if (validatorList == null) {
-            validatorList = new ArrayList<Validator>();
-            validators.put(daClass, validatorList);
-        }
-        return validatorList;
-    }
-
-    @Deprecated
-    public void addValidators(Class<? extends Model> daClass, List<? extends Validator> modelValidators) {
-        getValidators(daClass.getName()).addAll(modelValidators);
-    }
-
-    public void addValidators(String daClass, List<? extends Validator> modelValidators) {
-        getValidators(daClass).addAll(modelValidators);
-    }
-
-    public void removeValidator(Class<? extends Model> daClass, Validator validator) {
-        getValidators(daClass.getName()).remove(validator);
-    }
-
     /**
      * Returns edges for a join. An edge is a table in a many to many relationship that is not a join.
      *
@@ -466,16 +439,5 @@ public enum Registry {
 
     private void registerColumnMetadata(String table, SortedMap<String, ColumnMetadata> metaParams) {
         metaModels.setColumnMetadata(table, metaParams);
-    }
-
-    protected List<CallbackListener> getListeners(Class modelClass){
-        if (listeners.get(modelClass) == null) {
-            listeners.put(modelClass, new ArrayList<CallbackListener>());
-        }
-        return listeners.get(modelClass);
-    }
-
-    public void addListener(Class modelClass, CallbackListener listener) {
-        getListeners(modelClass).add(listener);
     }
 }
