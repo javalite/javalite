@@ -25,12 +25,13 @@ import com.opensymphony.oscache.general.GeneralCacheAdministrator;
  */
 public class OSCacheManager extends CacheManager{
 
-    private GeneralCacheAdministrator administrator;
+    private final GeneralCacheAdministrator administrator;
 
     public OSCacheManager(){
         administrator = new GeneralCacheAdministrator();
     }
 
+    @Override
     public Object getCache(String group, String key) {
         try {
             return administrator.getFromCache(key);
@@ -42,9 +43,10 @@ public class OSCacheManager extends CacheManager{
             }
 
         }
-        return null; 
+        return null;
     }
 
+    @Override
     public void addCache(String group, String key, Object cache) {
         try{
             administrator.putInCache(key, cache, new String[]{group});

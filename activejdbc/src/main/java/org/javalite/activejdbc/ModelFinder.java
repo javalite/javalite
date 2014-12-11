@@ -27,7 +27,7 @@ import java.util.Map;
 public class ModelFinder {
 
     //this is a map of lists of model classes. Keys are names of databases as specified in the models' @DbName annotations.
-    private static Map<String, List<Class<? extends Model>>> modelClasses = new HashMap<String, List<Class<? extends Model>>>();
+    private static final Map<String, List<Class<? extends Model>>> modelClasses = new HashMap<String, List<Class<? extends Model>>>();
 
     private static final List<String> modelClassNames = new ArrayList<String>();
 
@@ -35,7 +35,7 @@ public class ModelFinder {
         //this is for static instrumentation. In case of dynamic, the  modelClassNames will already be filled.
         if(modelClassNames.isEmpty()){
             List<String> models = Registry.instance().getConfiguration().getModelNames(dbName);
-            if (models != null && models.size() != 0) {
+            if (models != null && !models.isEmpty()) {
                 for (String model : models) {
                     modelFound(model);
                 }

@@ -7,27 +7,27 @@ import java.util.Comparator;
  */
 enum SortBy {
     total(new Comparator<QueryStats>() {
-        public int compare(QueryStats o1, QueryStats o2) {
+        @Override public int compare(QueryStats o1, QueryStats o2) {
             return compareLongs(o2.getTotal(), o1.getTotal());
         }
     }),
     avg(new Comparator<QueryStats>() {
-        public int compare(QueryStats o1, QueryStats o2) {
+        @Override public int compare(QueryStats o1, QueryStats o2) {
             return compareLongs(o2.getAvg(), o1.getAvg());
         }
     }),
     min(new Comparator<QueryStats>() {
-        public int compare(QueryStats o1, QueryStats o2) {
+        @Override public int compare(QueryStats o1, QueryStats o2) {
             return compareLongs(o2.getMin(), o1.getMin());
         }
     }),
     max (new Comparator<QueryStats>() {
-        public int compare(QueryStats o1, QueryStats o2) {
+        @Override public int compare(QueryStats o1, QueryStats o2) {
             return compareLongs(o2.getMax(), o1.getMax());
         }
     }),
     count(new Comparator<QueryStats>() {
-        public int compare(QueryStats o1, QueryStats o2) {
+        @Override public int compare(QueryStats o1, QueryStats o2) {
             return compareLongs(o2.getCount(), o1.getCount());
         }
     });

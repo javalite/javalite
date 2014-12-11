@@ -46,8 +46,9 @@ public class ActiveJdbcFilter implements Filter {
 
     private static final Logger logger = LoggerFactory.getLogger(ActiveJdbcFilter.class);
 
-    private static String jndiName;
+    private String jndiName;
 
+    @Override
     public void init(FilterConfig config) throws ServletException {
 
         jndiName = config.getInitParameter("jndiName");
@@ -55,6 +56,7 @@ public class ActiveJdbcFilter implements Filter {
             throw new IllegalArgumentException("must provide jndiName parameter for this filter");
     }
 
+    @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
         long before = System.currentTimeMillis();
         try{
@@ -78,5 +80,6 @@ public class ActiveJdbcFilter implements Filter {
         logger.info("Processing took: {} milliseconds", System.currentTimeMillis() - before);
     }
 
+    @Override
     public void destroy() {}
 }

@@ -18,7 +18,6 @@ limitations under the License.
 package org.javalite.activejdbc;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 /**
  * Associations are synonymous with relationships. However, in some cases, the
@@ -27,10 +26,11 @@ import java.util.Arrays;
  *
  * @author Igor Polevoy
  */
+//TODO: move this to package org.javalite.activejdbc.associations?
 public class Association implements Serializable {
 
-    private String source, target;
-
+    private final String source;
+    private final String target;
 
     /**
      * @param source source table name of this association.
@@ -60,6 +60,7 @@ public class Association implements Serializable {
 
     @Override
     public int hashCode() {
-        return toString().hashCode();    
+        //TODO: improve hashCode() implementation in the subclasses instead of using this?
+        return toString().hashCode();
     }
 }

@@ -23,7 +23,7 @@ import org.javalite.activejdbc.DBException;
  * @author Igor Polevoy
  */
 public class NotAssociatedException extends DBException {
-    private String message ;
+    private final String message;
 
     public NotAssociatedException(String table1, String table2){
         this.message = "No association from table '" + table1 + "' to table '" + table2 +"'";

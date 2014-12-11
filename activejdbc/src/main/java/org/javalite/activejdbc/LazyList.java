@@ -40,20 +40,22 @@ public class LazyList<T extends Model> extends AbstractList<T>{
 
     private static final Logger logger = LoggerFactory.getLogger(LazyList.class);
     protected List<T> delegate = new ArrayList<T>();
-    private List<String> orderBys = new ArrayList<String>();
+    private final List<String> orderBys = new ArrayList<String>();
     private boolean hydrated = false;
-    private MetaModel metaModel;
-    private String subQuery;
-    private String fullQuery;
-    private Object[] params;
+    private final MetaModel metaModel;
+    private final String subQuery;
+    private final String fullQuery;
+    private final Object[] params;
     private long limit = -1, offset = -1;
-    private Map<Class<T>, Association> includes = new HashMap<Class<T>, Association>();
-    private boolean forPaginator;
+    private final Map<Class<T>, Association> includes = new HashMap<Class<T>, Association>();
+    private final boolean forPaginator;
 
     protected LazyList(String subQuery, MetaModel metaModel, Object ... params){
+        this.fullQuery = null;
         this.subQuery = subQuery;
         this.params = params == null? new Object[]{}: params;
         this.metaModel = metaModel;
+        this.forPaginator = false;
     }
 
     /**
@@ -63,14 +65,23 @@ public class LazyList<T extends Model> extends AbstractList<T>{
      * @param forPaginator true is this list should not check usage of limit() and offset() methods.
      * @param params
      */
-    protected LazyList(boolean forPaginator, MetaModel metaModel, String fullQuery, Object[] params){
+    protected LazyList(boolean forPaginator, MetaModel metaModel, String fullQuery, Object... params) {
         this.fullQuery = fullQuery;
+        this.subQuery = null;
         this.params = params == null? new Object[]{}: params;
         this.metaModel = metaModel;
         this.forPaginator = forPaginator;
     }
 
-    protected LazyList(){}
+    //TODO: this is only used by SuperLazyList, to be reviewed?
+    protected LazyList() {
+        this.fullQuery = null;
+        this.subQuery = null;
+        this.params = null;
+        this.metaModel = null;
+        this.forPaginator = false;
+    }
+
     /**
      *  This method limits the number of results in the resultset.
      *  It can be used in combination with the offset like this:
@@ -321,7 +332,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
 
         long start = System.currentTimeMillis();
         new DB(metaModel.getDbName()).find(sql, params).with(new RowListenerAdapter() {
-            public void onNext(Map<String, Object> rowMap) {
+            @Override public void onNext(Map<String, Object> rowMap) {
                 delegate.add((T) Model.instance(rowMap, metaModel));
             }
         });
@@ -526,105 +537,128 @@ public class LazyList<T extends Model> extends AbstractList<T>{
         }
     }
 
+    @Override
     public T get(int index) {
         hydrate();
         return delegate.get(index);
     }
 
+    @Override
     public int size() {
         hydrate();
         return delegate.size();
     }
 
+    @Override
     public boolean isEmpty() {
         hydrate();
         return delegate.isEmpty();
     }
 
+    @Override
     public boolean contains(Object o) {
         hydrate();
         return delegate.contains(o);
     }
 
+    @Override
     public Iterator<T> iterator() {
         hydrate();
         return delegate.iterator();
     }
 
+    @Override
     public Object[] toArray() {
         hydrate();
         return delegate.toArray();
     }
 
+    @Override
     public <T> T[] toArray(T[] a) {
         hydrate();
         return delegate.toArray(a);
     }
 
+    @Override
     public boolean add(T o) {
         throw new UnsupportedOperationException("this operation is not supported, cannot manipulate DB results");
     }
 
+    @Override
     public boolean remove(Object o) {
         throw new UnsupportedOperationException("this operation is not supported, cannot manipulate DB results");
     }
 
+    @Override
     public boolean containsAll(Collection c) {
         return delegate.containsAll(c);
     }
 
+    @Override
     public boolean addAll(Collection c) {
         throw new UnsupportedOperationException("this operation is not supported, cannot manipulate DB results");
     }
 
+    @Override
     public boolean addAll(int index, Collection c) {
         throw new UnsupportedOperationException("this operation is not supported, cannot manipulate DB results");
     }
 
+    @Override
     public boolean removeAll(Collection c) {
         throw new UnsupportedOperationException("this operation is not supported, cannot manipulate DB results");
     }
 
+    @Override
     public boolean retainAll(Collection c) {
         throw new UnsupportedOperationException("this operation is not supported, cannot manipulate DB results");
     }
 
+    @Override
     public void clear() {
         throw new UnsupportedOperationException("this operation is not supported, cannot manipulate DB results");
     }
 
+    @Override
     public T set(int index, T element) {
         throw new UnsupportedOperationException("this operation is not supported, cannot manipulate DB results");
     }
 
+    @Override
     public void add(int index, T element) {
         throw new UnsupportedOperationException("this operation is not supported, cannot manipulate DB results");
     }
 
+    @Override
     public T remove(int index) {
         throw new UnsupportedOperationException("this operation is not supported, cannot manipulate DB results");
     }
 
+    @Override
     public int indexOf(Object o) {
         hydrate();
         return delegate.indexOf(o);
     }
 
+    @Override
     public int lastIndexOf(Object o) {
         hydrate();
         return delegate.lastIndexOf(o);
     }
 
+    @Override
     public ListIterator<T> listIterator() {
         hydrate();
         return delegate.listIterator();
     }
 
+    @Override
     public ListIterator<T> listIterator(int index) {
         hydrate();
         return delegate.listIterator(index);
     }
 
+    @Override
     public List<T> subList(int fromIndex, int toIndex) {
         hydrate();
         return delegate.subList(fromIndex, toIndex);

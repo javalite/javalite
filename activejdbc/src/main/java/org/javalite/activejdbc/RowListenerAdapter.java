@@ -24,7 +24,8 @@ import java.util.Map;
  * Use this class in cases where you need to process an entire result set. It returns true from "next()" method.
  */
 public abstract class RowListenerAdapter implements RowListener{
-    
+
+    @Override
     public final boolean next(Map<String, Object> row) {
         onNext(row);
         return true;

@@ -24,7 +24,7 @@ import org.javalite.activejdbc.Association;
  */
 public class OneToManyPolymorphicAssociation extends Association {
 
-    private String typeLabel;
+    private final String typeLabel;
 
     /**
      * @param source source table, the one that has many targets

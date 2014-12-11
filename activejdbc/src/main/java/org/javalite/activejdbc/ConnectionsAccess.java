@@ -28,7 +28,7 @@ import java.util.*;
  */
 public class ConnectionsAccess {
     private final static Logger logger = LoggerFactory.getLogger(ConnectionsAccess.class);
-    private static ThreadLocal<HashMap<String, Connection>> connectionsTL = new ThreadLocal<HashMap<String, Connection>>();
+    private static final ThreadLocal<HashMap<String, Connection>> connectionsTL = new ThreadLocal<HashMap<String, Connection>>();
 
     static Map<String, Connection> getConnectionMap(){
         if (connectionsTL.get() == null)

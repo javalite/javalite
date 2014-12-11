@@ -24,8 +24,9 @@ import java.math.BigDecimal;
 import java.util.Locale;
 
 public class RangeValidator extends ValidatorAdapter {
-    private String attribute;
-    private Number min, max;
+    private final String attribute;
+    private final Number min;
+    private final Number max;
 
     public RangeValidator(String attribute, Number min, Number max){
         this.attribute = attribute;

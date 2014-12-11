@@ -25,8 +25,9 @@ import org.javalite.common.Convert;
  */
 public class SimpleFormatter implements Formatter{
 
-    private Class clazz;
-    private String prefix, suffix;
+    private final Class clazz;
+    private final String prefix;
+    private final String suffix;
 
     public SimpleFormatter(Class clazz, String prefix, String suffix){
         this.clazz = clazz;
@@ -34,6 +35,7 @@ public class SimpleFormatter implements Formatter{
         this.suffix = suffix;
     }
 
+    @Override
     public String format(Object value) {
         if(value.getClass() != clazz) throw new IllegalArgumentException("This formatted was configured for: "
                 + clazz + ", but you are feeding it: " + value.getClass());
@@ -41,7 +43,8 @@ public class SimpleFormatter implements Formatter{
         return prefix + Convert.toString(value) + suffix;
     }
 
+    @Override
     public Class getValueClass() {
-        return clazz;  
+        return clazz;
     }
 }

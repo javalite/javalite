@@ -27,7 +27,7 @@ import org.javalite.activejdbc.Association;
  */
 public class BelongsToAssociation extends Association {
 
-    private String  fkName;
+    private final String fkName;
 
     public BelongsToAssociation(String source, String target, String fkName) {
         super(source, target);

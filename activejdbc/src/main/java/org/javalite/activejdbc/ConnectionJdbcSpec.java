@@ -23,20 +23,26 @@ import java.util.Properties;
  * @author Igor Polevoy
  */
 public class ConnectionJdbcSpec implements ConnectionSpec{
-    private String driver, url, user, password;
-    private Properties props;
+    private final String driver;
+    private final String url;
+    private final String user;
+    private final String password;
+    private final Properties properties;
 
     public ConnectionJdbcSpec(String driver, String url, String user, String password) {
         this.driver = driver;
         this.url = url;
         this.user = user;
         this.password = password;
+        this.properties = null;
     }
 
-    public ConnectionJdbcSpec(String driver, String url, Properties props) {
+    public ConnectionJdbcSpec(String driver, String url, Properties properties) {
         this.driver = driver;
         this.url = url;
-        this.props = props;
+        this.user = null;
+        this.password = null;
+        this.properties = properties;
     }
 
     public String getDriver() {
@@ -56,6 +62,6 @@ public class ConnectionJdbcSpec implements ConnectionSpec{
     }
 
     public Properties getProps() {
-        return props;
+        return properties;
     }
 }

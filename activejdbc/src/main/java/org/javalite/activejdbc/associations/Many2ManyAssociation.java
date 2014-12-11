@@ -22,10 +22,13 @@ import org.javalite.activejdbc.Association;
 /**
  * @author Igor Polevoy
  */
+//TODO: rename to ManyToManyAssociation, using "To" instead of "2" as the other class names?
 public class Many2ManyAssociation extends Association {
 
-    private String sourceFkName, targetFkName;
-    private String join, targetPk;
+    private final String sourceFkName;
+    private final String targetFkName;
+    private final String join;
+    private final String targetPk;
 
     /**
      *

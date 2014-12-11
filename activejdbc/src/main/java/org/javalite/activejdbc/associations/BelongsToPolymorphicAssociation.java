@@ -25,7 +25,8 @@ import org.javalite.activejdbc.Association;
  */
 public class BelongsToPolymorphicAssociation extends Association {
 
-    private String typeLabel, parentClassName;
+    private final String typeLabel;
+    private final String parentClassName;
 
     public BelongsToPolymorphicAssociation(String source, String target, String typeLabel, String parentClassName) {
         super(source, target);

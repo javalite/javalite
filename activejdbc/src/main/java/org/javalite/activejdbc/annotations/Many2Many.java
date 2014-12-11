@@ -32,6 +32,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
+//TODO: rename to ManyToMany?
 public @interface Many2Many {
     /**
      * This is a type of a model that is the "other" end of the relationship.

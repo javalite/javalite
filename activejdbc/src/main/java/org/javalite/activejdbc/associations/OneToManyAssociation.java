@@ -24,7 +24,7 @@ import org.javalite.activejdbc.Association;
  */
 public class OneToManyAssociation extends Association {
 
-    private String  fkName;
+    private final String fkName;
 
     /**
      * @param source source table, the one that has many targets

@@ -617,7 +617,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * This example :
      * <pre>
      *  Employee.updateAll("bonus = ?", "10");
-     * </pre
+     * </pre>
      * In this example, all employees get a bonus of 10%.
      *
      *
@@ -1124,7 +1124,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         this.metaModelLocal = metamodelLocal;
     }
 
-    protected ModelRegistry modelRegistryLocal() {
+    ModelRegistry modelRegistryLocal() {
         if (modelRegistryLocal == null) {
             modelRegistryLocal = modelRegistry();
         }
@@ -1684,9 +1684,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         Object[] allParams = new Object[params.length + 1];
         allParams[0] = getId();
-        for (int i = 0; i < params.length; i++) {
-            allParams[i + 1] = params[i];
-        }
+        System.arraycopy(params, 0, allParams, 1, params.length);
         return new LazyList<C>(subQuery, Registry.instance().getMetaModel(targetTable), allParams);
     }
 

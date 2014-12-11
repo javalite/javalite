@@ -53,7 +53,7 @@ public class StatisticsQueue {
     public StatisticsQueue(boolean paused) {
         this.paused = paused;
         worker = Executors.newFixedThreadPool(1, new ThreadFactory() {
-            public Thread newThread(Runnable runnable) {
+            @Override public Thread newThread(Runnable runnable) {
                 Thread res = new Thread(runnable);
                 res.setDaemon(true);
                 res.setName("Statistics queue thread");
@@ -96,7 +96,7 @@ public class StatisticsQueue {
     public Future enqueue(final QueryExecutionEvent event) {
         if (!paused) {
             return worker.submit(new Runnable() {
-                public void run() {
+                @Override public void run() {
                     QueryStats queryStats = statsByQuery.get(event.getQuery());
                     if (queryStats == null) {
                         statsByQuery.put(event.getQuery(), queryStats = new QueryStats(event.getQuery()));
