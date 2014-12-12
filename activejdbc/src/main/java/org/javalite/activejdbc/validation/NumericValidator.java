@@ -25,7 +25,7 @@ import java.text.NumberFormat;
 import java.text.ParsePosition;
 
 public class NumericValidator extends ValidatorAdapter {
-    private String attribute;
+    private final String attribute;
 
     private Double min = null;
     private Double max = null;

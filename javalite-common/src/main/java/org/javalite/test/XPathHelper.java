@@ -37,7 +37,7 @@ import java.util.List;
  */
 public class XPathHelper {
 
-    private Document doc;
+    private final Document doc;
 
     /**
      * Use constructor and instance methods to only parse once and reuse a parsed tree. Use this

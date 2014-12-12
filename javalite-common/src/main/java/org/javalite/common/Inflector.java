@@ -26,14 +26,15 @@ import java.util.Arrays;
 
 public class Inflector {
 
-    private static List<String[]> singulars, plurals, irregulars;
+    private static final List<String[]> singulars;
+    private static final List<String[]> plurals;
+    private static final List<String[]> irregulars;
     private static List<String> uncountables;
 
     static {
         singulars = new ArrayList<String[]>();
         plurals = new ArrayList<String[]>();
         irregulars = new ArrayList<String[]>();
-        uncountables = new ArrayList<String>();
 
         addPlural("$", "s");
         addPlural("s$", "s");

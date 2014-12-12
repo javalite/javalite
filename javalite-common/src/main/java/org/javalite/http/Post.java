@@ -24,8 +24,8 @@ import java.io.OutputStream;
  * @author Igor Polevoy
  */
 public class Post extends Request<Post> {
-    
-    private byte[] content;
+
+    private final byte[] content;
 
     /**
      * Constructor for making POST requests.

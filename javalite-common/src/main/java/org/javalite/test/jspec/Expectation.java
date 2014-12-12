@@ -24,14 +24,11 @@ import static org.javalite.common.Inflector.capitalize;
 
 public class Expectation<T> {
 
-    private T actual;
+    private final T actual;
 
     public Expectation(T actual) {
         this.actual = actual;
     }
-
-    public Expectation() {}
-
 
     /**
      * Alias to {@link #shouldBeEqual(Object)}.

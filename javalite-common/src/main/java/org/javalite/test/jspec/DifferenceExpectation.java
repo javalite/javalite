@@ -22,7 +22,7 @@ package org.javalite.test.jspec;
  */
 public abstract class DifferenceExpectation<T> {
 
-    private T expected;
+    private final T expected;
 
     public DifferenceExpectation(T expected){
         this.expected = expected;

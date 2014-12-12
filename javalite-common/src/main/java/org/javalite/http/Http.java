@@ -16,7 +16,6 @@ limitations under the License.
 
 package org.javalite.http;
 
-import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Set;
 

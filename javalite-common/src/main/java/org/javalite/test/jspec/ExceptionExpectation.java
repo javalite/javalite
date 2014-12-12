@@ -19,7 +19,7 @@ package org.javalite.test.jspec;
 
 
 public abstract class ExceptionExpectation<T> {
-    private Class<T>  clazz;
+    private final Class<T> clazz;
 
     public ExceptionExpectation(Class<T> clazz){
         this.clazz = clazz;

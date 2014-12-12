@@ -25,8 +25,8 @@ import java.util.regex.Matcher;
 
 public class RegexpValidator extends ValidatorAdapter{
 
-    private Pattern pattern;
-    private String attribute;
+    private final Pattern pattern;
+    private final String attribute;
 
     public RegexpValidator(String attribute, String rule){
         this.pattern = Pattern.compile(rule, Pattern.CASE_INSENSITIVE);

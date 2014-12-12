@@ -24,7 +24,7 @@ import static org.javalite.common.Util.*;
 
 public class AttributePresenceValidator extends ValidatorAdapter {
 
-    private String attribute;
+    private final String attribute;
 
     public AttributePresenceValidator(String attribute) {
         this.attribute = attribute;

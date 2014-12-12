@@ -21,7 +21,7 @@ package org.javalite.test.jspec;
 
 public class TestException extends RuntimeException {
 
-    private String message;
+    private final String message;
 
     public TestException(String message) {
         this.message = message;

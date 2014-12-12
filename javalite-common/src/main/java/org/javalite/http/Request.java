@@ -33,9 +33,9 @@ import static org.javalite.common.Util.toBase64;
  */
 public abstract class Request<T extends Request> {
 
-    protected HttpURLConnection connection;
+    protected final HttpURLConnection connection;
     private boolean connected;
-    protected String url;
+    protected final String url;
 
     public Request(String url, int connectTimeout, int readTimeout) {
         try {

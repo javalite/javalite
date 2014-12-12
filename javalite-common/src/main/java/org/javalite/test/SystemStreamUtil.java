@@ -38,7 +38,7 @@ public class SystemStreamUtil {
      * Restores <code>System.out</code> to former glory.
      */
     public static void restoreSystemOut() {
-        if (out == null) throw new NullPointerException("err cannot be null");
+        if (out == null) throw new NullPointerException("out cannot be null");
         System.setOut(out);
     }
 

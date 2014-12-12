@@ -145,7 +145,7 @@ public final class Convert {
      * Expects a <code>java.sql.Date</code>, <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code>,
      * <code>Long</code> or string with format: <code>yyyy-mm-dd</code>. This method will also truncate hours, minutes, seconds and
      * milliseconds to zeros, to conform with JDBC spec:
-     * <q href="http://download.oracle.com/javase/6/docs/api/java/sql/Date.html">http://download.oracle.com/javase/6/docs/api/java/sql/Date.html</a>.
+     * <a href="http://download.oracle.com/javase/6/docs/api/java/sql/Date.html">http://download.oracle.com/javase/6/docs/api/java/sql/Date.html</a>.
      *
      * @param value argument that is possible to convert to <code>java.sql.Date</code>: <code>java.sql.Date</code>,
      * <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code>, <code>Long</code> or any object with toString() == <code>yyyy-mm-dd</code>.
@@ -171,7 +171,7 @@ public final class Convert {
 
     /**
      * This method will truncate hours, minutes, seconds and milliseconds to zeros, to conform with JDBC spec:
-     * <q href="http://download.oracle.com/javase/6/docs/api/java/sql/Date.html">http://download.oracle.com/javase/6/docs/api/java/sql/Date.html</a>.
+     * <a href="http://download.oracle.com/javase/6/docs/api/java/sql/Date.html">http://download.oracle.com/javase/6/docs/api/java/sql/Date.html</a>.
      *
      * @param time time in UTC milliseconds from the epoch
      * @return <code>java.sql.Date</code> instance representing time value
@@ -262,7 +262,7 @@ public final class Convert {
 
 
     /**
-     * Converts value to <code>Long</code> if it can. If value is a </code>Long</code>, it is returned, if it is a <code>Number</code>, it is
+     * Converts value to <code>Long</code> if it can. If value is a <code>Long</code>, it is returned, if it is a <code>Number</code>, it is
      * promoted to <code>Long</code> and then returned, if it is a <code>Date</code>, returns its getTime() value, in all other cases, it converts the value to String,
      * then tries to parse Long from it.
      *
