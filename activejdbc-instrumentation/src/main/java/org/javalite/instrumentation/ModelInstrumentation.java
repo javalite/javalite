@@ -22,26 +22,27 @@ import javassist.*;
 
 public class ModelInstrumentation{
 
-    private CtClass modelClass;
+    private final CtClass modelClass;
 
 
     public ModelInstrumentation() throws NotFoundException {
         ClassPool cp = ClassPool.getDefault();
         cp.insertClassPath(new ClassClassPath(this.getClass()));
-        modelClass = ClassPool.getDefault().get("org.javalite.activejdbc.Model");
+        modelClass = cp.get("org.javalite.activejdbc.Model");
     }
 
-    public byte[] instrument(CtClass modelClass) throws InstrumentationException {
+    public byte[] instrument(CtClass target) throws InstrumentationException {
 
         try {
-            addDelegates(modelClass);
-            CtMethod m = CtNewMethod.make("public static String getClassName() { return \"" + modelClass.getName() + "\"; }", modelClass);
-            CtMethod getClassNameMethod = modelClass.getDeclaredMethod("getClassName");
-            modelClass.removeMethod(getClassNameMethod);
-            modelClass.addMethod(m);
-            return modelClass.toBytecode();
-        }
-        catch (Exception e) {
+            addDelegates(target);
+            // actually this methods neved gets called, only Model.getDaClass() does
+            CtMethod m = CtNewMethod.make("private static Class getDaClass() { return "
+                    + modelClass.getName() + ".class; }", target);
+            CtMethod getClassNameMethod = target.getDeclaredMethod("getDaClass");
+            target.removeMethod(getClassNameMethod);
+            target.addMethod(m);
+            return target.toBytecode();
+        } catch (Exception e) {
             throw new InstrumentationException(e);
         }
     }
@@ -51,66 +52,23 @@ public class ModelInstrumentation{
         CtMethod[] modelMethods = modelClass.getDeclaredMethods();
         CtMethod[] targetMethods = target.getDeclaredMethods();
         for (CtMethod method : modelMethods) {
+            if (Modifier.isPublic(method.getModifiers()) || Modifier.isStatic(method.getModifiers())) {
+                if (targetHasMethod(targetMethods, method)) {
+                    Instrumentation.log("Detected method: " + method.getName() + ", skipping delegate.");
+                } else {
+                    CtMethod newMethod = CtNewMethod.delegator(method, target);
 
-            if(Modifier.PRIVATE == method.getModifiers()){
-                continue;
-            }
-            CtMethod newMethod = CtNewMethod.delegator(method, target);
-
-			// Include the generic signature
-			for (Object attr : method.getMethodInfo().getAttributes()) {
-				if (attr instanceof javassist.bytecode.SignatureAttribute) {
-					javassist.bytecode.SignatureAttribute signatureAttribute = (javassist.bytecode.SignatureAttribute) attr;
-					newMethod.getMethodInfo().addAttribute(signatureAttribute);
-				}
-			}
-
-            if (!targetHasMethod(targetMethods, newMethod)) {
-                target.addMethod(newMethod);
-            }
-            else{
-                Instrumentation.log("Detected method: " + newMethod.getName() + ", skipping delegate.");
+                    // Include the generic signature
+                    for (Object attr : method.getMethodInfo().getAttributes()) {
+                        if (attr instanceof javassist.bytecode.SignatureAttribute) {
+                            javassist.bytecode.SignatureAttribute signatureAttribute = (javassist.bytecode.SignatureAttribute) attr;
+                            newMethod.getMethodInfo().addAttribute(signatureAttribute);
+                        }
+                    }
+                    target.addMethod(newMethod);
+                }
             }
         }
-
-    }
-
-    //TODO: remove unused methods later
-    private void addSerializationSupport(CtClass target) throws CannotCompileException, NotFoundException {
-
-        CtMethod m = CtNewMethod.make(
-                "private void writeObject(java.io.ObjectOutputStream out)  {\n" +
-                "        out.writeObject(toMap());\n" +
-                "}", target);
-
-        CtClass ioException = ClassPool.getDefault().get("java.io.IOException");
-        CtClass classNotFoundException = ClassPool.getDefault().get("java.lang.ClassNotFoundException");
-
-        m.setExceptionTypes(new CtClass[]{ioException});
-        target.addMethod(m);
-
-        m = CtNewMethod.make(
-                "private void readObject(java.io.ObjectInputStream in) {\n" +
-                        "        fromMap((java.util.Map)in.readObject());\n" +
-                        "    }", target);
-        m.setExceptionTypes(new CtClass[]{ioException, classNotFoundException});
-        target.addMethod(m);
-    }
-
-    private CtMethod createFindById(CtClass clazz) throws CannotCompileException {
-        String body = "public static "+ clazz.getName() +" findById(Object obj)\n" +
-                "        {\n" +
-                "            return (" + clazz.getName() + ")org.javalite.activejdbc.Model.findById(obj);\n" +
-                "        }";
-        return CtNewMethod.make(body, clazz);
-    }
-
-    private CtMethod createFindFirst(CtClass clazz) throws CannotCompileException {
-        String body = " public static " + clazz.getName() + " findFirst(String s, Object params[])\n" +
-                "   {\n" +
-                "       return (" + clazz.getName() + ")org.javalite.activejdbc.Model.findFirst(s, params);\n" +
-                "   }";
-        return CtNewMethod.make(body, clazz);
     }
 
     private boolean targetHasMethod(CtMethod[] targetMethods, CtMethod delegate) {

@@ -77,8 +77,7 @@ public class Instrumentation {
     }
 
     private static void generateModelsFile(List<CtClass> models, File target) throws IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        String modelsFileName = target.getAbsolutePath() + System.getProperty("file.separator") + "activejdbc_models.properties";
-        FileOutputStream fout = new FileOutputStream(modelsFileName);
+        FileOutputStream fout = new FileOutputStream(new File(target.getAbsolutePath(), "activejdbc_models.properties"));
 
         for (CtClass model : models) {
             fout.write((model.getName() + ":" + getDatabaseName(model) + "\n").getBytes());

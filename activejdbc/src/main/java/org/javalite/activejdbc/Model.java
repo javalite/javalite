@@ -1114,7 +1114,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     protected MetaModel getMetaModelLocal() {
         if(metaModelLocal == null) {
-            metaModelLocal = getMetaModel();
+            // optimized not to depend on static or instrumented methods
+            metaModelLocal = Registry.instance().getMetaModel(this.getClass());
         }
         return metaModelLocal;
     }
@@ -1126,7 +1127,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     ModelRegistry modelRegistryLocal() {
         if (modelRegistryLocal == null) {
-            modelRegistryLocal = modelRegistry();
+            // optimized not to depend on static or instrumented methods
+            modelRegistryLocal = Registry.instance().modelRegistryOf(this.getClass());
         }
         return modelRegistryLocal;
     }
@@ -2035,7 +2037,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         catch(IllegalArgumentException e){throw e;}
         catch(ClassCastException e){throw new  IllegalArgumentException("All even arguments must be strings");}
         catch(DBException e){throw e;}
-        catch (Exception e){throw new InitException("Model '" + getClassName() + "' must provide a default constructor. Table:", e);}
+        catch (Exception e){throw new InitException("Model '" + getDaClass().getName() + "' must provide a default constructor. Table:", e);}
     }
 
 
@@ -2685,15 +2687,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     private static Class<? extends Model> getDaClass() {
-        try {
-            return (Class<? extends Model>) Class.forName(getClassName());
-        } catch (ClassNotFoundException e) {
-            throw new DBException(e.getMessage(), e);
-        }
-    }
-
-    private static String getClassName() {
-        return new ClassGetter().getClassName();
+        return new ClassGetter().get();
     }
 
     public static String getTableName() {
@@ -2723,11 +2717,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     static class ClassGetter extends SecurityManager {
-        public String getClassName() {
+        public Class get() {
             Class[] classes = getClassContext();
             for (Class clazz : classes) {
-                if (Model.class.isAssignableFrom(clazz) && clazz != null && !clazz.equals(Model.class)) {
-                    return clazz.getName();
+                if (clazz != null && !clazz.equals(Model.class) && Model.class.isAssignableFrom(clazz)) {
+                    return clazz;
                 }
             }
             throw new InitException("failed to determine Model class name, are you sure models have been instrumented?");

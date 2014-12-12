@@ -40,16 +40,16 @@ import java.util.zip.ZipFile;
  */
 public class InstrumentationModelFinder {
 
-    private CtClass modelClass;
-    private List<CtClass> models = new ArrayList<CtClass>();
-    private ClassPool cp = ClassPool.getDefault();
+    private final CtClass modelClass;
+    private final List<CtClass> models = new ArrayList<CtClass>();
+    private final ClassPool cp;
 
 
     protected InstrumentationModelFinder() throws NotFoundException, ClassNotFoundException {
-        ClassPool pool = ClassPool.getDefault();
+        cp = ClassPool.getDefault();
         //any simple class will do here, but Model - it causes slf4j to be loaded during instrumentation.
-        pool.insertClassPath(new ClassClassPath(Class.forName("org.javalite.activejdbc.Association")));
-        modelClass = pool.get("org.javalite.activejdbc.Model");
+        cp.insertClassPath(new ClassClassPath(Class.forName("org.javalite.activejdbc.Association")));
+        modelClass = cp.get("org.javalite.activejdbc.Model");
     }
 
     protected void processURL(URL url) throws URISyntaxException, IOException, ClassNotFoundException {
@@ -161,7 +161,7 @@ public class InstrumentationModelFinder {
     }
 
     protected boolean isModel(CtClass clazz) throws NotFoundException {
-        return clazz != null && clazz.subclassOf(modelClass) && !clazz.equals(modelClass) && notAbstract(clazz);
+        return clazz != null && !clazz.equals(modelClass) && notAbstract(clazz) && clazz.subclassOf(modelClass);
     }
 
     private boolean notAbstract(CtClass clazz) {
