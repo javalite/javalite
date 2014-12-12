@@ -96,8 +96,14 @@ public class Paginator<T extends Model> implements Serializable {
                 throw new IllegalArgumentException("SELECT query without FROM");
             }
             this.countQuery = "SELECT COUNT(*) " + query.substring(m.start());
+        } else if (query.equals("*")) {
+            if (params.length == 0) {
+                this.countQuery = metaModel.getDialect().selectCount(tableName);
+            } else{
+                throw new IllegalArgumentException("cannot provide parameters with query: '*'");
+            }
         } else {
-            this.countQuery = "SELECT COUNT(*) FROM " + metaModel.getTableName() + " WHERE " + query;
+            this.countQuery = metaModel.getDialect().selectCount(tableName, query);
         }
     }
 
@@ -205,17 +211,16 @@ public class Paginator<T extends Model> implements Serializable {
         if (metaModel.cached()) {
             result = (Long) QueryCache.instance().getItem(metaModel.getTableName(), countQuery, params);
             if (result == null) {
-                result = count();
+                result = doCount();
                 QueryCache.instance().addItem(metaModel.getTableName(), countQuery, params, result);
             }
         } else {
-            result = count();
+            result = doCount();
         }
         return result;
     }
 
-    private Long count(){
-        return fullQuery ? Convert.toLong(new DB(metaModel.getDbName()).firstCell(countQuery, params))
-                         : new DB(metaModel.getDbName()).count(metaModel.getTableName(), query, params);
+    private Long doCount(){
+        return Convert.toLong(new DB(metaModel.getDbName()).firstCell(countQuery, params));
     }
 }

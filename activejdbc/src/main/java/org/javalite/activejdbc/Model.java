@@ -2472,17 +2472,16 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public static Long count() {
         MetaModel metaModel = getMetaModel();
-        String sql = "SELECT COUNT(*) FROM " + metaModel.getTableName();
+        String sql = metaModel.getDialect().selectCount(metaModel.getTableName());
         Long result;
-        if(metaModel.cached()){
-         result = (Long)QueryCache.instance().getItem(metaModel.getTableName(), sql, null);
-            if(result == null)
-            {
-                result = new DB(metaModel.getDbName()).count(metaModel.getTableName());
+        if (metaModel.cached()) {
+            result = (Long) QueryCache.instance().getItem(metaModel.getTableName(), sql, null);
+            if (result == null) {
+                result = Convert.toLong(new DB(metaModel.getDbName()).firstCell(sql));
                 QueryCache.instance().addItem(metaModel.getTableName(), sql, null, result);
             }
         }else{
-            result = new DB(metaModel.getDbName()).count(metaModel.getTableName());
+            result = Convert.toLong(new DB(metaModel.getDbName()).firstCell(sql));
         }
         return result;
     }
@@ -2495,21 +2494,18 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return count of records in table under a condition.
      */
     public static Long count(String query, Object... params) {
-
         MetaModel metaModel = getMetaModel();
-
-        //attention: this SQL is only used for caching, not for real queries.
-        String sql = "SELECT COUNT(*) FROM " + metaModel.getTableName() + " where " + query;
+        String sql = metaModel.getDialect().selectCount(metaModel.getTableName(), query);
 
         Long result;
         if(metaModel.cached()){
             result = (Long)QueryCache.instance().getItem(metaModel.getTableName(), sql, params);
             if(result == null){
-                result = new DB(metaModel.getDbName()).count(metaModel.getTableName(), query, params);
+                result = Convert.toLong(new DB(metaModel.getDbName()).firstCell(sql, params));
                 QueryCache.instance().addItem(metaModel.getTableName(), sql, params, result);
             }
         }else{
-            result = new DB(metaModel.getDbName()).count(metaModel.getTableName(), query, params);
+            result = Convert.toLong(new DB(metaModel.getDbName()).firstCell(sql, params));
         }
         return result;
     }

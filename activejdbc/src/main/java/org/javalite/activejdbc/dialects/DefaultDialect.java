@@ -155,6 +155,16 @@ public class DefaultDialect implements Dialect {
     }
 
     @Override
+    public String selectCount(String table) {
+        return "SELECT COUNT(*) FROM " + table;
+    }
+
+    @Override
+    public String selectCount(String table, String where) {
+        return "SELECT COUNT(*) FROM " + table + " WHERE " + where;
+    }
+
+    @Override
     public String selectExists(MetaModel mm) {
 	    return "SELECT " + mm.getIdName() + " FROM " + mm.getTableName() + " WHERE " + mm.getIdName() + " = ?";
     }

@@ -39,6 +39,10 @@ public interface Dialect {
 
     String selectStarParametrized(String table, String... parameters);
 
+    String selectCount(String table);
+
+    String selectCount(String table, String where);
+
     String selectExists(MetaModel mm);
 
     String selectManyToManyAssociation(Many2ManyAssociation association, String sourceFkColumnName, int questionsCount);
