@@ -42,6 +42,8 @@ public class DB {
     private final static Logger logger = LoggerFactory.getLogger(DB.class);
     static final Pattern SELECT_PATTERN = Pattern.compile("^\\s*SELECT",
             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+    static final Pattern INSERT_PATTERN = Pattern.compile("^\\s*INSERT",
+            Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
 
     private final String dbName;
@@ -584,8 +586,7 @@ public class DB {
      * functionality is not supported by DB or driver.
      */
     Object execInsert(String query, String autoIncrementColumnName, Object... params) {
-        //TODO: use case insensitive Pattern
-        if (!query.toLowerCase().contains("insert"))
+        if (!INSERT_PATTERN.matcher(query).find())
             throw new IllegalArgumentException("this method is only for inserts");
 
         long start = System.currentTimeMillis();
@@ -620,6 +621,7 @@ public class DB {
                     ps.setObject(index + 1, param);
                 }
             }
+            //TODO: test executeUpdate() return value?
             ps.executeUpdate();
 
             ResultSet rs = null;

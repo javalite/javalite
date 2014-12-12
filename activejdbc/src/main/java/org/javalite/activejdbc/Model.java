@@ -2298,7 +2298,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
                 MetaModel joinMM = Registry.instance().getMetaModel(join);
                 if(joinMM == null){
-                    new DB(metaModel.getDbName()).exec("INSERT INTO " + join + " ( " + sourceFkName + ", " + targetFkName + " ) VALUES ( " + getId()+ ", " + child.getId() + ")");
+                    new DB(metaModel.getDbName()).exec(
+                            metaModel.getDialect().insertParametrized(join, sourceFkName, targetFkName),
+                            getId(), child.getId());
                 }else{
                     //TODO: write a test to cover this case:
                     //this is for Oracle, many 2 many, and all annotations used, including @IdGenerator. In this case,
@@ -2760,6 +2762,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param rightStringQuote - left quote for a string value, this can be different for different databases.
      * @return SQL INSERT string;
      */
+    //TODO: review SimpleFormatter (why should the user worry about this?!), using the Dialect instead
     public String toInsert(String leftStringQuote, String rightStringQuote){
         return toInsert(new SimpleFormatter(java.sql.Date.class, "'", "'"),
                         new SimpleFormatter(Timestamp.class, "'", "'"),

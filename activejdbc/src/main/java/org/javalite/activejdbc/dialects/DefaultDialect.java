@@ -182,5 +182,14 @@ public class DefaultDialect implements Dialect {
         return query.toString();
     }
 
+    @Override
+    public String insertParametrized(String table, String... columns) {
+        StringBuilder query = new StringBuilder().append("INSERT INTO ").append(table).append(" (");
+        join(query, columns, ", ");
+        query.append(") VALUES (");
+        appendQuestions(query, columns.length);
+        query.append(')');
+        return query.toString();
+    }
 
 }
