@@ -91,26 +91,6 @@ public enum Registry {
         return metaModels.getMetaModel(table);
     }
 
-    /**
-     * Returns MetaModel associated with a model class.
-     *
-     * @param className class name of a model.
-     * @return MetaModel associated with a model class, null if not found.
-     */
-    public MetaModel getMetaModelByClassName(String className) {
-
-        String dbName;
-        try {
-            dbName = MetaModel.getDbName((Class<? extends Model>) Class.forName(className));
-        } catch (ClassNotFoundException e) {
-            throw new InitException(e);
-        }
-        init(dbName);
-
-        return metaModels.getMetaModelByClassName(className);
-    }
-
-
     public MetaModel getMetaModel(Class<? extends Model> modelClass) {
 
         String dbName = MetaModel.getDbName(modelClass);

@@ -2690,12 +2690,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     private static Class<? extends Model> getDaClass() {
         try {
-            if (Registry.instance().initialized()) {
-                MetaModel mm = Registry.instance().getMetaModelByClassName(getClassName());
-                return mm == null ? (Class<? extends Model>) Class.forName(getClassName()) : mm.getModelClass();
-            } else {
-                return (Class<? extends Model>) Class.forName(getClassName());
-            }
+            return (Class<? extends Model>) Class.forName(getClassName());
         } catch (ClassNotFoundException e) {
             throw new DBException(e.getMessage(), e);
         }

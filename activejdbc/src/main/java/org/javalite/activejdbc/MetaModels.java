@@ -32,7 +32,6 @@ class MetaModels {
 
     private final Map<String, MetaModel> metaModelsByTableName = new CaseInsensitiveMap<MetaModel>();
     private final Map<Class<? extends Model>, MetaModel> metaModelsByClass = new HashMap<Class<? extends Model>, MetaModel>();
-    private final Map<String, MetaModel> metaModelsByClassName = new HashMap<String, MetaModel>();
     //these are all many to many associations across all models.
     private final List<Many2ManyAssociation> many2ManyAssociations = new ArrayList<Many2ManyAssociation>();
 
@@ -46,12 +45,6 @@ class MetaModels {
         if (o != null) {
             logger.warn("Double-register: {}: {}", mm.getTableName(), o);
         }
-
-        metaModelsByClassName.put(modelClass.getName(), mm);
-    }
-
-    MetaModel getMetaModelByClassName(String className) {
-        return metaModelsByClassName.get(className);
     }
 
     MetaModel getMetaModel(Class<? extends Model> modelClass) {
