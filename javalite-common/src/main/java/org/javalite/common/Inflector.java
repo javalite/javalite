@@ -29,7 +29,7 @@ public class Inflector {
     private static final List<String[]> singulars;
     private static final List<String[]> plurals;
     private static final List<String[]> irregulars;
-    private static List<String> uncountables;
+    private static final List<String> uncountables;
 
     static {
         singulars = new ArrayList<String[]>();

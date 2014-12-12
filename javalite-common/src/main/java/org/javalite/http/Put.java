@@ -25,7 +25,7 @@ import java.io.OutputStream;
  */
 public class Put extends Request<Put> {
 
-    private byte[] content;
+    private final byte[] content;
 
     /**
      * Constructor for making PUT requests.
