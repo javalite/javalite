@@ -1,11 +1,13 @@
 package org.javalite.db_migrator.maven;
 
-import org.javalite.activejdbc.Base;
+
+import org.apache.maven.plugin.MojoExecutionException;
 import org.javalite.db_migrator.Migration;
 import org.javalite.db_migrator.MigrationManager;
-import org.apache.maven.plugin.MojoExecutionException;
 
 import java.util.List;
+
+import static org.javalite.db_migrator.DbUtils.closeConnection;
 
 /**
  * Validate current schema against available migrations.
@@ -17,7 +19,7 @@ public class ValidateMojo extends AbstractDbMigrationMojo {
     public void executeMojo() throws MojoExecutionException {
         getLog().info("Validating " + getUrl() + " using migrations from " + getMigrationsPath());
         try {
-            Base.open(getDriver(), getUrl(), getUsername(), getPassword());
+            openConnection();
             MigrationManager manager = new MigrationManager(getMigrationsPath());
             List<Migration> pendingMigrations = manager.getPendingMigrations();
 
@@ -34,7 +36,7 @@ public class ValidateMojo extends AbstractDbMigrationMojo {
         } catch (Exception e) {
             throw new MojoExecutionException("Failed to validate " + getUrl(), e);
         }finally {
-            Base.close(true);
+            closeConnection();
         }
     }
 }

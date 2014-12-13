@@ -16,8 +16,12 @@ limitations under the License.
 
 package org.javalite.db_migrator;
 
-import java.io.*;
 import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+
+import static org.javalite.db_migrator.SpecBuilder.the;
 
 public class MojoIntegrationEnvironmentsSpec extends AbstractIntegrationSpec {
 
@@ -29,11 +33,8 @@ public class MojoIntegrationEnvironmentsSpec extends AbstractIntegrationSpec {
         execute(dir, mvn, "db-migrator:drop" , "-o");
 
         // create database
-        String output = execute(dir, mvn, "db-migrator:create", "-o");
-        the(output).shouldContain(String.format("[INFO] Environment: development%n" 
-                + "[INFO] Created database jdbc:mysql://localhost/test_project_devel%n" 
-                + "[INFO] Environment: staging%n" 
-                + "[INFO] Created database jdbc:mysql://localhost/test_project_stage"));
+        String output = execute(dir, mvn, "db-migrator:create", "-o", "-X");
+        the(output).shouldContain(String.format("BUILD SUCCESS"));
 
     }
 }

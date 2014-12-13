@@ -1,6 +1,6 @@
 package org.javalite.db_migrator;
 
-import org.javalite.activejdbc.Base;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,9 +8,10 @@ import java.sql.*;
 import java.util.*;
 import java.util.Date;
 
+import static java.lang.String.format;
 import static org.javalite.db_migrator.DatabaseType.HSQL;
 import static org.javalite.db_migrator.DatabaseType.SQL_SERVER;
-import static java.lang.String.format;
+import static org.javalite.db_migrator.DbUtils.*;
 
 /**
  * A trivial VersionStrategy which tracks only the minimal information required to note the current state of the database: the current version.
@@ -26,11 +27,12 @@ public class VersionStrategy {
 
     private static final Map CREATE_VERSION_TABLE_MAP;
 
-    static class DefaultMap extends HashMap<DatabaseType, String>{
+    static class DefaultMap extends HashMap<DatabaseType, String> {
         private String defaultValue = "create table %s (%s varchar(32) not null unique, %s timestamp not null, %s int not null)";
+
         @Override
         public String get(Object key) {
-            return containsKey(key)? super.get(key): defaultValue;
+            return containsKey(key) ? super.get(key) : defaultValue;
         }
     }
 
@@ -40,31 +42,52 @@ public class VersionStrategy {
         CREATE_VERSION_TABLE_MAP.put(SQL_SERVER, "create table %s (%s varchar(32) not null unique, %s datetime not null, %s int not null)");
     }
 
-    public boolean isEnabled() {
+
+    public void createSchemaVersionTable(DatabaseType dbType) {
+        String ddl = format((String) CREATE_VERSION_TABLE_MAP.get(dbType), VERSION_TABLE, VERSION_COLUMN, APPLIED_DATE_COLUMN, DURATION_COLUMN);
+        exec(ddl);
+    }
+
+    public boolean versionTableExists() {
         try {
-            Base.count(VERSION_TABLE);
+            countRows(VERSION_TABLE);
         } catch (Exception e) {
             return false;
         }
         return true;
     }
 
-    public void createSchemaVersionTable(DatabaseType dbType) {
-        String ddl = format((String) CREATE_VERSION_TABLE_MAP.get(dbType), VERSION_TABLE, VERSION_COLUMN, APPLIED_DATE_COLUMN, DURATION_COLUMN);
-        Base.exec(ddl);
-    }
-
-    public List<String> getAppliedMigrations() {
-        // Make sure migrations is enabled.
-        if (!isEnabled()) {
-            return new ArrayList<String>();
-        } else {
-            return (List<String>) Base.firstColumn("select " + VERSION_COLUMN + " from " + VERSION_TABLE);
+    public List<String> getAppliedMigrations()  {
+        Statement st = null;
+        ResultSet rs = null;
+        try{
+            st = connection().createStatement();
+            rs = st.executeQuery("select " + VERSION_COLUMN + " from " + VERSION_TABLE);
+            List<String> migrations = new ArrayList<String>();
+            while (rs.next()){
+                migrations.add(rs.getString(1));
+            }
+            return migrations;
+        }catch(SQLException e){
+            throw new MigrationException(e);
+        }finally {
+            closeQuietly(rs);
+            closeQuietly(st);
         }
     }
 
-    //todo: one line method.
     public void recordMigration(String version, Date startTime, long duration) {
-        Base.exec("insert into " + VERSION_TABLE + " values (?, ?, ?)", version, new Timestamp(startTime.getTime()), duration);
+        PreparedStatement st = null;
+        try{
+            st = connection().prepareStatement("insert into " + VERSION_TABLE + " values (?, ?, ?)");
+            st.setString(1, version);
+            st.setTimestamp(2, new Timestamp(startTime.getTime()));
+            st.setLong(3, duration);
+            st.execute();
+        }catch(Exception e){
+            throw  new MigrationException(e);
+        }finally {
+            closeQuietly(st);
+        }
     }
 }

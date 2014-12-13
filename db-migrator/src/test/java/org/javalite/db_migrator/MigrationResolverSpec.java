@@ -20,16 +20,16 @@ limitations under the License.
 
 package org.javalite.db_migrator;
 
-import org.javalite.db_migrator.MigrationResolver;
 import org.junit.Test;
 
-import static org.javalite.test.jspec.JSpec.the;
+import static junit.framework.Assert.assertEquals;
+
 
 public class MigrationResolverSpec {
 
     @Test
     public void shouldExtractVersionFromFileName() {
         MigrationResolver resolver = new MigrationResolver("blah");
-        the(resolver.extractVersion("20080718214030_tinman.sql")).shouldBeEqual("20080718214030");
+        assertEquals(resolver.extractVersion("20080718214030_tinman.sql"), "20080718214030");
     }
 }

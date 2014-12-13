@@ -1,16 +1,20 @@
 package org.javalite.db_migrator.maven;
 
+import org.apache.maven.plugin.MojoExecutionException;
+import org.javalite.db_migrator.DbUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import org.apache.maven.plugin.MojoExecutionException;
 
-import static org.javalite.common.Util.*;
-import org.javalite.db_migrator.DatabaseUtils;
+import static org.javalite.db_migrator.DbUtils.blank;
+import static org.javalite.db_migrator.DbUtils.closeQuietly;
 
 public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
+
+
 
     /**
      * @parameter
@@ -73,12 +77,13 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
         }
     }
 
+
     private void executeCurrentConfiguration() throws MojoExecutionException {
         if (blank(password)) {
             password = "";
         }
         if (blank(driver) && !blank(url)) {
-            driver = DatabaseUtils.driverClass(url);
+            driver = DbUtils.driverClass(url);
         }
 
         validateConfiguration();
@@ -154,5 +159,17 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
 
     public void setConfigFile(String configFile) {
         this.configFile = configFile;
+    }
+
+    protected void openConnection(){
+        openConnection(false);
+    }
+
+    /**
+     * @param root open connection to root URL
+     */
+    protected void openConnection(boolean root){
+        String url = root? DbUtils.extractServerUrl(getUrl()): getUrl();
+        DbUtils.openConnection(getDriver(), url, getUsername(), getPassword());
     }
 }

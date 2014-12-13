@@ -1,11 +1,12 @@
 package org.javalite.db_migrator.maven;
 
 import org.apache.maven.plugin.MojoExecutionException;
-import org.javalite.activejdbc.Base;
-import org.javalite.db_migrator.DatabaseUtils;
+import org.javalite.db_migrator.DbUtils;
+import org.javalite.db_migrator.MigrationManager;
 
 import static java.lang.String.format;
-import static org.javalite.common.Util.blank;
+import static org.javalite.db_migrator.DbUtils.*;
+
 
 /**
  * @goal create
@@ -17,8 +18,8 @@ public class CreateMojo extends AbstractDbMigrationMojo {
         try {
 
             String createSql = blank(getCreateSql()) ? "create database %s" : getCreateSql();
-            String databaseName = DatabaseUtils.extractDatabaseName(getUrl());
-            switch (DatabaseUtils.databaseType(getUrl())) {
+            String databaseName = DbUtils.extractDatabaseName(getUrl());
+            switch (DbUtils.databaseType(getUrl())) {
                 case MYSQL:
                     break;
                 case SQL_SERVER:
@@ -28,13 +29,23 @@ public class CreateMojo extends AbstractDbMigrationMojo {
                     break;
             }
 
-            Base.open(getDriver(), DatabaseUtils.extractServerUrl(getUrl()), getUsername(), getPassword());
-            Base.exec(format(createSql, databaseName));
+            openConnection(true);
+            exec(format(createSql, databaseName));
             getLog().info("Created database " + getUrl());
         } catch (Exception e) {
             throw new MojoExecutionException("Failed to create database: " + getUrl(), e);
         } finally {
-            Base.close(true);
+            closeConnection();
+        }
+
+        try{
+            openConnection();
+            new MigrationManager(getMigrationsPath()).createSchemaVersionTable();
+
+        }catch(Exception e){
+            throw  new MojoExecutionException("failed to create SCHEMA_VERSION table", e);
+        }finally {
+            closeConnection();
         }
     }
 }

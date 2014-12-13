@@ -41,18 +41,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.javalite</groupId>
-            <artifactId>javalite-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.javalite</groupId>
-            <artifactId>activejdbc</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>1.3.171</version>
