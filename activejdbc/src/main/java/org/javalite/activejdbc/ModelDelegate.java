@@ -5,6 +5,8 @@ import org.javalite.activejdbc.cache.QueryCache;
 import java.sql.Timestamp;
 import java.util.List;
 
+import static org.javalite.common.Util.*;
+
 /**
  * @author Igor Polevoy: 4/25/12 2:45 AM
  */
@@ -14,24 +16,28 @@ class ModelDelegate {
 
         //TODO: validate that the number of question marks is the same as number of parameters
 
+        StringBuilder sql = new StringBuilder().append("UPDATE ").append(metaModel.getTableName()).append(" SET ");
         Object[] allParams;
         if (metaModel.hasAttribute("updated_at")) {
-            updates = "updated_at = ?, " + updates;
+            sql.append("updated_at = ?, ");
             allParams = new Object[params.length + 1];
-            System.arraycopy(params, 0, allParams, 1, params.length);
-
             allParams[0] = new Timestamp(System.currentTimeMillis());
+            System.arraycopy(params, 0, allParams, 1, params.length);
         } else {
             allParams = params;
         }
-        String sql = "UPDATE " + metaModel.getTableName() + " SET " + updates + ((conditions != null) ? " WHERE " + conditions : "");
-        int count = new DB(metaModel.getDbName()).exec(sql, allParams);
+        sql.append(updates);
+        if (!blank(conditions)) {
+            sql.append(" WHERE ").append(conditions);
+        }
+        int count = new DB(metaModel.getDbName()).exec(sql.toString(), allParams);
         if (metaModel.cached()) {
             QueryCache.instance().purgeTableCache(metaModel.getTableName());
         }
         return count;
     }
 
+    @Deprecated
     static String[] toLowerCase(String[] arr) {
         String[] newArr = new String[arr.length];
         for (int i = 0; i < newArr.length; i++) {
