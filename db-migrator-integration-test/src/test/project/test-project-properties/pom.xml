@@ -8,7 +8,7 @@
     <artifactId>db-migrator-maven-plugin-test-properties</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>JavaLite Migrator Plugin Test</name>
+    <name>JavaLite Migrator Plugin Test - Properties</name>
 
     <build>
         <plugins>

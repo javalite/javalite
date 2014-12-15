@@ -16,45 +16,49 @@ limitations under the License.
 
 package org.javalite.db_migrator;
 
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
+import java.io.OutputStream;
+import java.io.PrintStream;
+import org.apache.maven.cli.MavenCli;
 import static org.javalite.db_migrator.DbUtils.closeQuietly;
 
 public abstract class AbstractIntegrationSpec {
 
-    protected String execute(File dir, String... args) throws IOException, InterruptedException {
-        Process p = Runtime.getRuntime().exec(args, null, dir);
-        p.waitFor();
-        String out = read(p.getInputStream());
-        String err = read(p.getErrorStream());
-        String output = "TEST MAVEN EXECUTION START >>>>>>>>>>>>>>>>>>>>>>>>\nOut: \n" + out
-                + "\nErr:" + err + "\nTEST MAVEN EXECUTION END <<<<<<<<<<<<<<<<<<<<<<";
-        if (p.exitValue() != 0) {
-            System.out.println(output);
-        }
-        return output;
-    }
-
-    public static String read(InputStream in) throws IOException {
-        if (in == null) {
-            throw new IllegalArgumentException("input stream cannot be null");
-        }
-        InputStreamReader reader = null;
+    protected String execute(String dir, String... args) throws IOException, InterruptedException {
+        OutputStream outos = null;
+        PrintStream outps = null;
+        OutputStream erros = null;
+        PrintStream errps = null;
         try {
-            reader = new InputStreamReader(in, "UTF-8");
-            char[] buffer = new char[1024];
-            StringBuilder sb = new StringBuilder();
-            int len;
-            while ((len = reader.read(buffer)) != -1) {
-                sb.append(buffer, 0, len);
+            outos = new ByteArrayOutputStream();
+            outps = new PrintStream(outos);
+            erros = new ByteArrayOutputStream();
+            errps = new PrintStream(erros);
+            MavenCli cli = new MavenCli();
+            int code = cli.doMain(args, dir, outps, errps);
+            String out = outos.toString();
+            String err = erros.toString();
+            if (code != 0) {
+                System.out.println("TEST MAVEN EXECUTION START >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+                System.out.print("Executing: mvn");
+                for (String arg : args) {
+                    System.out.print(' ');
+                    System.out.print(arg);
+                }
+                System.out.println();
+                System.out.print("Exit code: ");
+                System.out.println(code);
+                System.out.print(out);
+                System.err.print(err);
+                System.out.println("TEST MAVEN EXECUTION END <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
             }
-            return sb.toString();
+            return out + err;
         } finally {
-            closeQuietly(reader);
+            closeQuietly(errps);
+            closeQuietly(erros);
+            closeQuietly(outps);
+            closeQuietly(outos);
         }
     }
-
 }

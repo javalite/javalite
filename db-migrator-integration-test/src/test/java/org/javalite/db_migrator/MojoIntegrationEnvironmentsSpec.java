@@ -18,7 +18,6 @@ package org.javalite.db_migrator;
 
 import org.junit.Test;
 
-import java.io.File;
 import java.io.IOException;
 
 import static org.javalite.db_migrator.SpecBuilder.the;
@@ -27,14 +26,12 @@ public class MojoIntegrationEnvironmentsSpec extends AbstractIntegrationSpec {
 
     @Test
     public void shouldRunInEnvironments() throws IOException, InterruptedException {
-        File dir = new File("target/test-project-environments");
-        String mvn = System.getProperty("os.name").startsWith("Windows") ? "mvn.bat" : "mvn";
+        String dir = "target/test-project-environments";
         // drop
-        execute(dir, mvn, "db-migrator:drop" , "-o");
+        execute(dir, "db-migrator:drop", "-o");
 
         // create database
-        String output = execute(dir, mvn, "db-migrator:create", "-o", "-X");
+        String output = execute(dir, "db-migrator:create", "-o");
         the(output).shouldContain(String.format("BUILD SUCCESS"));
-
     }
 }
