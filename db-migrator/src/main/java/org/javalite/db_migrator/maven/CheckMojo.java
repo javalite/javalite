@@ -1,11 +1,13 @@
 package org.javalite.db_migrator.maven;
 
-import org.javalite.activejdbc.Base;
+
+import org.apache.maven.plugin.MojoExecutionException;
 import org.javalite.db_migrator.Migration;
 import org.javalite.db_migrator.MigrationManager;
-import org.apache.maven.plugin.MojoExecutionException;
 
 import java.util.List;
+
+import static org.javalite.db_migrator.DbUtils.closeConnection;
 
 
 /**
@@ -22,13 +24,13 @@ public class CheckMojo extends AbstractDbMigrationMojo {
 
         List<Migration> pendingMigrations;
         try {
-            Base.open(getDriver(), getUrl(), getUsername(), getPassword());
+            openConnection();
             MigrationManager manager = new MigrationManager(getMigrationsPath());
             pendingMigrations = manager.getPendingMigrations();
         } catch (Exception e) {
             throw new MojoExecutionException("Failed to check " + getUrl(), e);
         }finally {
-            Base.close(true);
+            closeConnection();
         }
 
         if (pendingMigrations.isEmpty()) return;

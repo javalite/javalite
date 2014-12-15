@@ -6,11 +6,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import org.apache.maven.plugin.MojoExecutionException;
-
-import static org.javalite.common.Util.*;
-import org.javalite.db_migrator.DatabaseUtils;
+import org.javalite.db_migrator.DbUtils;
+import static org.javalite.db_migrator.DbUtils.blank;
+import static org.javalite.db_migrator.DbUtils.closeQuietly;
 
 public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
+
+    /**
+     * @parameter expression="${basedir}"
+     * @required
+     * @readonly
+     */
+    private String basedir;
 
     /**
      * @parameter
@@ -46,9 +53,11 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
         if (blank(environments)) {
             executeCurrentConfiguration();
         } else {
-            getLog().info("Sourcing database configuration from file: " + configFile);
+            File file = blank(configFile)
+                    ? new File(basedir, "database.properties")
+                    : new File(configFile);
+            getLog().info("Sourcing database configuration from file: " + file);
             Properties properties = new Properties();
-            File file = new File(blank(configFile) ? "database.properties" : configFile);
             if (file.exists()) {
                 InputStream is = null;
                 try {
@@ -73,12 +82,13 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
         }
     }
 
+
     private void executeCurrentConfiguration() throws MojoExecutionException {
         if (blank(password)) {
             password = "";
         }
         if (blank(driver) && !blank(url)) {
-            driver = DatabaseUtils.driverClass(url);
+            driver = DbUtils.driverClass(url);
         }
 
         validateConfiguration();
@@ -154,5 +164,17 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
 
     public void setConfigFile(String configFile) {
         this.configFile = configFile;
+    }
+
+    protected void openConnection(){
+        openConnection(false);
+    }
+
+    /**
+     * @param root open connection to root URL
+     */
+    protected void openConnection(boolean root){
+        String url = root? DbUtils.extractServerUrl(getUrl()): getUrl();
+        DbUtils.openConnection(getDriver(), url, getUsername(), getPassword());
     }
 }

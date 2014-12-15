@@ -1,6 +1,5 @@
 package org.javalite.db_migrator;
 
-import org.javalite.db_migrator.MigrationManager;
 import org.junit.Ignore;
 
 @Ignore

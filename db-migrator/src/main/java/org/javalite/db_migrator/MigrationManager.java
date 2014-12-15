@@ -1,13 +1,15 @@
 package org.javalite.db_migrator;
 
 import org.apache.maven.plugin.logging.Log;
-import org.javalite.activejdbc.Base;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
+import static org.javalite.db_migrator.DbUtils.connection;
+import static org.javalite.db_migrator.DbUtils.databaseType;
 
 public class MigrationManager {
 
@@ -51,8 +53,8 @@ public class MigrationManager {
      * Migrates the database to the latest version, enabling migrations if necessary.
      */
     public void migrate(Log log, String encoding) {
-        // Are migrations enabled?
-        if (!isMigrationsEnabled()) {
+
+        if (!versionTableExists()) {
             createSchemaVersionTable();
         }
 
@@ -64,8 +66,9 @@ public class MigrationManager {
         }
         log.info("Migrating database, applying " + pendingMigrations.size() + " migration(s)");
         Migration currentMigration = null;
-        Base.openTransaction();
+
         try {
+            connection().setAutoCommit(false);
             for (Migration migration : pendingMigrations) {
                 currentMigration = migration;
                 log.info("Running migration " + currentMigration.getName());
@@ -73,10 +76,10 @@ public class MigrationManager {
 
                 currentMigration.migrate(encoding);
                 versionStrategy.recordMigration(currentMigration.getVersion(), new Date(start), (start - System.currentTimeMillis()));
-                Base.commitTransaction();
+                connection().commit();
             }
         } catch (Throwable e) {
-            Base.rollbackTransaction();
+            try{connection().rollback();}catch(Exception ex){throw new MigrationException(e);}
             assert currentMigration != null;
             throw new MigrationException("Migration for version " + currentMigration.getVersion() + " failed, rolling back and terminating migration.", e);
         }
@@ -84,15 +87,15 @@ public class MigrationManager {
     }
 
     protected DatabaseType determineDatabaseType() throws SQLException {
-        return DatabaseUtils.databaseType(Base.connection().getMetaData().getURL());
+        return databaseType(connection().getMetaData().getURL());
 
     }
 
-    protected boolean isMigrationsEnabled() {
-        return versionStrategy.isEnabled();
+    protected boolean versionTableExists() {
+        return versionStrategy.versionTableExists();
     }
 
-    protected void createSchemaVersionTable() {
+    public void createSchemaVersionTable() {
         versionStrategy.createSchemaVersionTable(dbType);
     }
 

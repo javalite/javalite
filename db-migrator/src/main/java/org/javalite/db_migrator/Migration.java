@@ -1,10 +1,14 @@
 package org.javalite.db_migrator;
 
-import org.javalite.activejdbc.Base;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
+
+import static org.javalite.db_migrator.DbUtils.exec;
 
 
 public class Migration implements Comparable {
@@ -61,7 +65,7 @@ public class Migration implements Comparable {
 
                         if (line.endsWith(delimiter)) {
                             command.append(line.substring(0, line.lastIndexOf(delimiter)));
-                            Base.exec(command.toString().trim());
+                            exec(command.toString().trim());
                             command = null;
                         }
                     } else {
@@ -74,7 +78,7 @@ public class Migration implements Comparable {
             // Check to see if we have an unexecuted statement in command.
             if (command != null && command.length() > 0) {
                 //Last statement in script is missing a terminating delimiter, executing anyway.
-                Base.exec(command.toString().trim());
+                exec(command.toString().trim());
             }
 
         } catch (Exception e) {

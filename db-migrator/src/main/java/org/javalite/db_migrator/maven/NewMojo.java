@@ -7,7 +7,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static org.javalite.common.Util.*;
+import static org.javalite.db_migrator.DbUtils.blank;
+
 
 /**
  * @goal new

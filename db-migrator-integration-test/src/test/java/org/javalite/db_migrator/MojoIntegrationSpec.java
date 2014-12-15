@@ -20,72 +20,71 @@ limitations under the License.
 
 package org.javalite.db_migrator;
 
-import java.io.*;
-import org.javalite.activejdbc.Base;
 import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+
+import static junit.framework.Assert.*;
+import static org.javalite.db_migrator.DbUtils.*;
+import static org.javalite.db_migrator.SpecBuilder.the;
 
 public class MojoIntegrationSpec extends AbstractIntegrationSpec {
 
     @Test
     public void shouldRunTestProject() throws IOException, InterruptedException {
-        run(new File("target/test-project"));
+        run("target/test-project");
     }
 
     @Test
     public void shouldRunTestProjectWithProperties() throws IOException, InterruptedException {
-        run(new File("target/test-project-properties"));
+        run("target/test-project-properties");
     }
 
-    private void run(File dir) throws IOException, InterruptedException {
-        String mvn = System.getProperty("os.name").startsWith("Windows") ? "mvn.bat" : "mvn";
+    private void run(String dir) throws IOException, InterruptedException {
         // drop
-        execute(dir, mvn, "db-migrator:drop" , "-o");
+        execute(dir, "db-migrator:drop", "-o");
 
         // create database
-        String output = execute(dir, mvn, "db-migrator:create", "-o");
-        the(output).shouldContain("[INFO] Created database jdbc:mysql://localhost/test_project");
+        String output = execute(dir, "db-migrator:create", "-o");
+        the(output).shouldContain("Created database jdbc:mysql://localhost/test_project");
+        the(output).shouldContain("BUILD SUCCESS");
 
         // migrate
-        output = execute(dir, mvn, "db-migrator:migrate" , "-o");
-        the(output).shouldContain(String.format("[INFO] Migrating database, applying 4 migration(s)%n" +
-                "[INFO] Running migration 20080718214030_base_schema.sql%n" +
-                "[INFO] Running migration 20080718214031_new_functions.sql%n" +
-                "[INFO] Running migration 20080718214032_new_proceedure.sql%n" +
-                "[INFO] Running migration 20080718214033_seed_data.sql"));
+        output = execute(dir, "db-migrator:migrate", "-o");
+        the(output).shouldContain("BUILD SUCCESS");
 
-        Base.open("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/test_project", "root", "p@ssw0rd");
-        a(Base.count("books")).shouldBeEqual(9);
-        a(Base.count("authors")).shouldBeEqual(2);
-        Base.close();
+        openConnection("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/test_project", "root", "p@ssw0rd");
+        assertEquals(countRows("books"), 9);
+        assertEquals(countRows("authors"), 2);
+        closeConnection();
 
         // drop, create and validate
-        output = execute(dir, mvn, "db-migrator:drop", "-o");
-        the(output).shouldContain("[INFO] Dropped database jdbc:mysql://localhost/test_project");
+        output = execute(dir, "db-migrator:drop", "-o");
+        the(output).shouldContain("Dropped database jdbc:mysql://localhost/test_project");
+        the(output).shouldContain("BUILD SUCCESS");
 
-        output = execute(dir, mvn, "db-migrator:create", "-o");
-        the(output).shouldContain("[INFO] Created database jdbc:mysql://localhost/test_project");
+        output = execute(dir, "db-migrator:create", "-o");
+        the(output).shouldContain("Created database jdbc:mysql://localhost/test_project");
+        the(output).shouldContain("BUILD SUCCESS");
 
-        output = execute(dir, mvn, "db-migrator:validate", "-o");
-        the(output).shouldContain(String.format("[INFO] Pending Migrations: %n" +
-                "[INFO] 20080718214030_base_schema.sql%n" +
-                "[INFO] 20080718214031_new_functions.sql%n" +
-                "[INFO] 20080718214032_new_proceedure.sql%n" +
-                "[INFO] 20080718214033_seed_data.sql"));
+        output = execute(dir, "db-migrator:validate", "-o");
+        the(output).shouldContain("BUILD SUCCESS");
 
         // now migrate and validate again
-        execute(dir, mvn, "db-migrator:migrate", "-o");
+        output = execute(dir, "db-migrator:migrate", "-o");
+        the(output).shouldContain("BUILD SUCCESS");
 
-        output = execute(dir, mvn, "db-migrator:validate", "-o");
-        the(output).shouldContain(String.format("[INFO] Database: jdbc:mysql://localhost/test_project%n" +
-                "[INFO] Up-to-date: true%n" +
-                "[INFO] No pending migrations found"));
+        output = execute(dir, "db-migrator:validate", "-o");
+        the(output).shouldContain("No pending migrations found");
+        the(output).shouldContain("BUILD SUCCESS");
 
         // creation of new migration
-        execute(dir, mvn, "db-migrator:new", "-Dname=add_people", "-o");
+        execute(dir, "db-migrator:new", "-Dname=add_people", "-o");
         File migrationsDir = new File(dir, "src/migrations");
         String migrationFile = findMigrationFile(migrationsDir, "add_people");
-        the(migrationFile).shouldNotBeNull();
-        the(new File(migrationsDir, migrationFile).delete()).shouldBeTrue();
+        assertNotNull(migrationFile);
+        assertTrue(new File(migrationsDir, migrationFile).delete());
     }
 
     // will return null of not found

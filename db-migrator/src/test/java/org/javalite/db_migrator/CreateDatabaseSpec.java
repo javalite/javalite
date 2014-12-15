@@ -1,12 +1,12 @@
 package org.javalite.db_migrator;
 
 
-import org.junit.*;
+import org.junit.Test;
 
-import static java.lang.String.*;
-import static java.lang.System.*;
+import java.sql.SQLException;
 
-import java.sql.*;
+import static java.lang.String.format;
+import static java.lang.System.getProperty;
 
 public class CreateDatabaseSpec {
     @Test
