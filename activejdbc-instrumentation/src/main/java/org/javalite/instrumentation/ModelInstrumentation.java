@@ -52,7 +52,7 @@ public class ModelInstrumentation{
         CtMethod[] modelMethods = modelClass.getDeclaredMethods();
         CtMethod[] targetMethods = target.getDeclaredMethods();
         for (CtMethod method : modelMethods) {
-            if (Modifier.isPublic(method.getModifiers()) || Modifier.isStatic(method.getModifiers())) {
+            if (Modifier.isStatic(method.getModifiers())) {
                 if (targetHasMethod(targetMethods, method)) {
                     Instrumentation.log("Detected method: " + method.getName() + ", skipping delegate.");
                 } else {
