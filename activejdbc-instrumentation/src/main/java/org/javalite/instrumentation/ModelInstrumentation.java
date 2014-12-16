@@ -18,51 +18,71 @@ limitations under the License.
 package org.javalite.instrumentation;
 
 import javassist.*;
+import javassist.bytecode.SignatureAttribute;
 
 
 public class ModelInstrumentation{
 
     private final CtClass modelClass;
-
+    private final CtClass classClass;
 
     public ModelInstrumentation() throws NotFoundException {
         ClassPool cp = ClassPool.getDefault();
         cp.insertClassPath(new ClassClassPath(this.getClass()));
-        modelClass = cp.get("org.javalite.activejdbc.Model");
+        this.modelClass = cp.get("org.javalite.activejdbc.Model");
+        this.classClass = cp.get("java.lang.Class");
     }
 
     public byte[] instrument(CtClass target) throws InstrumentationException {
 
         try {
-            addDelegates(target);
-            // actually this methods neved gets called, only Model.getDaClass() does
-            CtMethod m = CtNewMethod.make("private static Class getDaClass() { return "
-                    + modelClass.getName() + ".class; }", target);
-            CtMethod getClassNameMethod = target.getDeclaredMethod("getDaClass");
-            target.removeMethod(getClassNameMethod);
-            target.addMethod(m);
+            doInstrument(target);
             return target.toBytecode();
         } catch (Exception e) {
             throw new InstrumentationException(e);
         }
     }
 
-
-    private void addDelegates(CtClass target) throws NotFoundException, CannotCompileException {
+    private void doInstrument(CtClass target) throws NotFoundException, CannotCompileException {
         CtMethod[] modelMethods = modelClass.getDeclaredMethods();
         CtMethod[] targetMethods = target.getDeclaredMethods();
+
+        CtMethod modelGetClass = modelClass.getDeclaredMethod("getDaClass");
+        CtMethod newGetClass = CtNewMethod.copy(modelGetClass, target, null);
+        newGetClass.setBody("{ return " + target.getName() + ".class; }");
+
+        // do not convert Model class to Target class in methods
+        ClassMap classMap = new ClassMap();
+        classMap.fix(modelClass);
+
+        // convert Model.getDaClass() calls to Target.getDaClass() calls
+        CodeConverter conv = new CodeConverter();
+        conv.redirectMethodCall(modelGetClass, newGetClass);
+
         for (CtMethod method : modelMethods) {
-            if (Modifier.isStatic(method.getModifiers())) {
+            int modifiers = method.getModifiers();
+            if (Modifier.isStatic(modifiers)) {
                 if (targetHasMethod(targetMethods, method)) {
                     Instrumentation.log("Detected method: " + method.getName() + ", skipping delegate.");
                 } else {
-                    CtMethod newMethod = CtNewMethod.delegator(method, target);
+                    CtClass[] parameterTypes = method.getParameterTypes();
+                    CtMethod newMethod;
+                    if ((Modifier.isProtected(modifiers) || Modifier.isPublic(modifiers))
+                            && (parameterTypes.length == 0 || !classClass.equals(parameterTypes[0])
+                            // belongsTo() is the only method that has a Class as first parameter
+                            || ("belongsTo".equals(method.getName()) && parameterTypes.length == 1))) {
+                        newMethod = CtNewMethod.copy(method, target, classMap);
+                        newMethod.instrument(conv);
+                    } else if ("getDaClass".equals(method.getName())) {
+                        newMethod = newGetClass;
+                    } else {
+                        newMethod = CtNewMethod.delegator(method, target);
+                    }
 
                     // Include the generic signature
                     for (Object attr : method.getMethodInfo().getAttributes()) {
-                        if (attr instanceof javassist.bytecode.SignatureAttribute) {
-                            javassist.bytecode.SignatureAttribute signatureAttribute = (javassist.bytecode.SignatureAttribute) attr;
-                            newMethod.getMethodInfo().addAttribute(signatureAttribute);
+                        if (attr instanceof SignatureAttribute) {
+                            newMethod.getMethodInfo().addAttribute((SignatureAttribute) attr);
                         }
                     }
                     target.addMethod(newMethod);

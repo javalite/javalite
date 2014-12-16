@@ -59,7 +59,7 @@ public class CreateModelTest extends ActiveJDBCTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfNullPassedForNameOfAttribute() {
 
-        Person.create(null, "John", "last_name", "Margulis", "2001-01-07");
+        Person.create((String) null, "John", "last_name", "Margulis", "2001-01-07");
     }
 
     @Test

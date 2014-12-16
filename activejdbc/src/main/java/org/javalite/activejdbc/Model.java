@@ -76,7 +76,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public static MetaModel getMetaModel() {
         return getMetaModel(getDaClass());
     }
-    private static MetaModel getMetaModel(Class<? extends Model> clazz) {
+    protected static MetaModel getMetaModel(Class<? extends Model> clazz) {
         return Registry.instance().getMetaModel(clazz);
     }
 
@@ -253,7 +253,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public static SortedSet<String> attributes(){
         return attributes(getDaClass());
     }
-    private static SortedSet<String> attributes(Class<? extends Model> clazz) {
+    protected static SortedSet<String> attributes(Class<? extends Model> clazz) {
         return getMetaModel(clazz).getAttributeNames();
     }
 
@@ -264,7 +264,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public static List<Association> associations(){
         return associations(getDaClass());
     }
-    private static List<Association> associations(Class<? extends Model> clazz) {
+    protected static List<Association> associations(Class<? extends Model> clazz) {
         return getMetaModel(clazz).getAssociations();
     }
 
@@ -552,7 +552,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public static int delete(String query, Object... params) {
         return delete(getDaClass(), query, params);
     }
-    private static int delete(Class<? extends Model> clazz, String query, Object... params) {
+    protected static int delete(Class<? extends Model> clazz, String query, Object... params) {
         MetaModel metaModel = getMetaModel(clazz);
         //TODO: refactor this:
         int count = (params == null || params.length == 0)
@@ -574,7 +574,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public static boolean exists(Object id){
         return exists(getDaClass(), id);
     }
-    private static boolean exists(Class<? extends Model> clazz, Object id) {
+    protected static boolean exists(Class<? extends Model> clazz, Object id) {
         MetaModel metaModel = getMetaModel(clazz);
         return null != new DB(metaModel.getDbName()).firstCell(metaModel.getDialect().selectExists(metaModel), id);
     }
@@ -597,7 +597,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public static int deleteAll() {
         return deleteAll(getDaClass());
     }
-    private static int deleteAll(Class<? extends Model> clazz) {
+    protected static int deleteAll(Class<? extends Model> clazz) {
         MetaModel metaModel = getMetaModel(clazz);
         int count = new DB(metaModel.getDbName()).exec("DELETE FROM " + metaModel.getTableName());
         if(metaModel.cached()){
@@ -627,7 +627,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public static int update(String updates, String conditions, Object ... params) {
         return update(getDaClass(), updates, conditions, params);
     }
-    private static int update(Class<? extends Model> clazz, String updates, String conditions, Object... params) {
+    protected static int update(Class<? extends Model> clazz, String updates, String conditions, Object... params) {
         //TODO: validate that the number of question marks is the same as number of parameters
         return ModelDelegate.update(getMetaModel(clazz), updates, conditions, params);
     }
@@ -651,7 +651,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public static int updateAll(String updates, Object ... params) {
         return updateAll(getDaClass(), updates, params);
     }
-    private static int updateAll(Class<? extends Model> clazz, String updates, Object... params) {
+    protected static int updateAll(Class<? extends Model> clazz, String updates, Object... params) {
         return update(clazz, updates, null, params);
     }
 
@@ -1718,7 +1718,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     protected static NumericValidationBuilder validateNumericalityOf(String... attributes) {
         return validateNumericalityOf(getDaClass(), attributes);
     }
-    private static NumericValidationBuilder validateNumericalityOf(Class<? extends Model> clazz, String... attributes) {
+    protected static NumericValidationBuilder validateNumericalityOf(Class<? extends Model> clazz, String... attributes) {
         return modelRegistryOf(clazz).validateNumericalityOf(attributes);
     }
 
@@ -1731,7 +1731,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public static ValidationBuilder addValidator(Validator validator){
         return addValidator(getDaClass(), validator);
     }
-    private static ValidationBuilder addValidator(Class<? extends Model> clazz, Validator validator) {
+    protected static ValidationBuilder addValidator(Class<? extends Model> clazz, Validator validator) {
         return validateWith(clazz, validator);
     }
 
@@ -1749,7 +1749,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public static void removeValidator(Validator validator){
         removeValidator(getDaClass(), validator);
     }
-    private static void removeValidator(Class<? extends Model> clazz, Validator validator) {
+    protected static void removeValidator(Class<? extends Model> clazz, Validator validator) {
         modelRegistryOf(clazz).removeValidator(validator);
     }
 
@@ -1769,7 +1769,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     protected static ValidationBuilder validateRegexpOf(String attribute, String pattern) {
         return validateRegexpOf(getDaClass(), attribute, pattern);
     }
-    private static ValidationBuilder validateRegexpOf(Class<? extends Model> clazz, String attribute, String pattern) {
+    protected static ValidationBuilder validateRegexpOf(Class<? extends Model> clazz, String attribute, String pattern) {
         return modelRegistryOf(clazz).validateWith(new RegexpValidator(attribute, pattern));
     }
 
@@ -1782,7 +1782,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     protected static ValidationBuilder validateEmailOf(String attribute) {
         return validateEmailOf(getDaClass(), attribute);
     }
-    private static ValidationBuilder validateEmailOf(Class<? extends Model> clazz, String attribute) {
+    protected static ValidationBuilder validateEmailOf(Class<? extends Model> clazz, String attribute) {
         return modelRegistryOf(clazz).validateWith(new EmailValidator(attribute));
     }
 
@@ -1798,7 +1798,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     protected static ValidationBuilder validateRange(String attribute, Number min, Number max) {
         return validateRange(getDaClass(), attribute, min, max);
     }
-    private static ValidationBuilder validateRange(Class<? extends Model> clazz, String attribute, Number min, Number max) {
+    protected static ValidationBuilder validateRange(Class<? extends Model> clazz, String attribute, Number min, Number max) {
         return modelRegistryOf(clazz).validateWith(new RangeValidator(attribute, min, max));
     }
 
@@ -1811,7 +1811,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     protected static ValidationBuilder validatePresenceOf(String... attributes) {
         return validatePresenceOf(getDaClass(), attributes);
     }
-    private static ValidationBuilder validatePresenceOf(Class<? extends Model> clazz, String... attributes) {
+    protected static ValidationBuilder validatePresenceOf(Class<? extends Model> clazz, String... attributes) {
         return modelRegistryOf(clazz).validatePresenceOf(attributes);
     }
 
@@ -1823,7 +1823,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     protected static ValidationBuilder validateWith(Validator validator) {
         return validateWith(getDaClass(), validator);
     }
-    private static ValidationBuilder validateWith(Class<? extends Model> clazz, Validator validator) {
+    protected static ValidationBuilder validateWith(Class<? extends Model> clazz, Validator validator) {
         return modelRegistryOf(clazz).validateWith(validator);
     }
 
@@ -1838,7 +1838,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return convertWith(getDaClass(), converter);
     }
     @Deprecated
-    private static ValidationBuilder convertWith(Class<? extends Model> clazz, org.javalite.activejdbc.validation.Converter converter) {
+    protected static ValidationBuilder convertWith(Class<? extends Model> clazz, org.javalite.activejdbc.validation.Converter converter) {
         return validateWith(clazz, converter);
     }
 
@@ -1851,7 +1851,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     protected static void convertWith(Converter converter, String... attributes) {
         convertWith(getDaClass(), converter, attributes);
     }
-    private static void convertWith(Class<? extends Model> clazz, Converter converter, String... attributes) {
+    protected static void convertWith(Class<? extends Model> clazz, Converter converter, String... attributes) {
         modelRegistryOf(clazz).convertWith(converter, attributes);
     }
 
@@ -1869,7 +1869,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return convertDate(getDaClass(), attributeName, format);
     }
     @Deprecated
-    private static ValidationBuilder convertDate(Class<? extends Model> clazz, String attributeName, String format) {
+    protected static ValidationBuilder convertDate(Class<? extends Model> clazz, String attributeName, String format) {
         return modelRegistryOf(clazz).validateWith(new DateConverter(attributeName, format));
     }
 
@@ -1887,7 +1887,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return convertTimestamp(getDaClass(), attributeName, format);
     }
     @Deprecated
-    private static ValidationBuilder convertTimestamp(Class<? extends Model> clazz, String attributeName, String format) {
+    protected static ValidationBuilder convertTimestamp(Class<? extends Model> clazz, String attributeName, String format) {
         return modelRegistryOf(clazz).validateWith(new TimestampConverter(attributeName, format));
     }
 
@@ -1921,7 +1921,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     protected static void dateFormat(String pattern, String... attributes) {
         dateFormat(getDaClass(), pattern, attributes);
     }
-    private static void dateFormat(Class<? extends Model> clazz, String pattern, String... attributes) {
+    protected static void dateFormat(Class<? extends Model> clazz, String pattern, String... attributes) {
         modelRegistryOf(clazz).dateFormat(pattern, attributes);
     }
 
@@ -1937,7 +1937,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     protected static void dateFormat(DateFormat format, String... attributes) {
         dateFormat(getDaClass(), format, attributes);
     }
-    private static void dateFormat(Class<? extends Model> clazz, DateFormat format, String... attributes) {
+    protected static void dateFormat(Class<? extends Model> clazz, DateFormat format, String... attributes) {
         modelRegistryOf(clazz).dateFormat(format, attributes);
     }
     /**
@@ -1970,7 +1970,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     protected static void timestampFormat(String pattern, String... attributes) {
         timestampFormat(getDaClass(), pattern, attributes);
     }
-    private static void timestampFormat(Class<? extends Model> clazz, String pattern, String... attributes) {
+    protected static void timestampFormat(Class<? extends Model> clazz, String pattern, String... attributes) {
         modelRegistryOf(clazz).timestampFormat(pattern, attributes);
     }
 
@@ -1986,7 +1986,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     protected static void timestampFormat(DateFormat format, String... attributes) {
         timestampFormat(getDaClass(), format, attributes);
     }
-    private static void timestampFormat(Class<? extends Model> clazz, DateFormat format, String... attributes) {
+    protected static void timestampFormat(Class<? extends Model> clazz, DateFormat format, String... attributes) {
         modelRegistryOf(clazz).timestampFormat(format, attributes);
     }
 
@@ -1999,7 +1999,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     protected static void blankToNull(String... attributes) {
         blankToNull(getDaClass(), attributes);
     }
-    private static void blankToNull(Class<? extends Model> clazz, String... attributes) {
+    protected static void blankToNull(Class<? extends Model> clazz, String... attributes) {
         modelRegistryOf(clazz).convertWith(BlankToNullConverter.instance(), attributes);
     }
 
@@ -2012,14 +2012,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     protected static void zeroToNull(String... attributes) {
         zeroToNull(getDaClass(), attributes);
     }
-    private static void zeroToNull(Class<? extends Model> clazz, String... attributes) {
+    protected static void zeroToNull(Class<? extends Model> clazz, String... attributes) {
         modelRegistryOf(clazz).convertWith(ZeroToNullConverter.instance(), attributes);
     }
 
     public static boolean belongsTo(Class<? extends Model> targetClass) {
         return belongsTo(getDaClass(), targetClass);
     }
-    private static boolean belongsTo(Class<? extends Model> clazz, Class<? extends Model> targetClass) {
+    protected static boolean belongsTo(Class<? extends Model> clazz, Class<? extends Model> targetClass) {
         String targetTable = Registry.instance().getTableName(targetClass);
         MetaModel metaModel = getMetaModel(clazz);
         return (null != metaModel.getAssociationForTarget(targetTable, BelongsToAssociation.class) ||
@@ -2030,7 +2030,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public static void addCallbacks(CallbackListener ... listeners){
          addCallbacks(getDaClass(), listeners);
     }
-    private static void addCallbacks(Class<? extends Model> clazz, CallbackListener... listeners) {
+    protected static void addCallbacks(Class<? extends Model> clazz, CallbackListener... listeners) {
          modelRegistryOf(clazz).callbackWith(listeners);
     }
 
@@ -2115,7 +2115,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public static <T extends Model> T create(Object ... namesAndValues){
         return create(getDaClass(), namesAndValues);
     }
-    private static <T extends Model> T create(Class<? extends Model> clazz, Object... namesAndValues) {
+    protected static <T extends Model> T create(Class<? extends Model> clazz, Object... namesAndValues) {
         if(namesAndValues.length %2 != 0) throw new IllegalArgumentException("number of arguments must be even");
 
         try{
@@ -2164,7 +2164,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public static <T extends Model> T createIt(Object ... namesAndValues){
         return createIt(getDaClass(), namesAndValues);
     }
-    private static <T extends Model> T createIt(Class<? extends Model> clazz, Object... namesAndValues) {
+    protected static <T extends Model> T createIt(Class<? extends Model> clazz, Object... namesAndValues) {
         T m = (T) create(clazz, namesAndValues);
         m.saveIt();
         return m;
@@ -2173,7 +2173,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public static <T extends Model> T findById(Object id) {
         return findById(getDaClass(), id);
     }
-    private static <T extends Model> T findById(Class<? extends Model> clazz, Object id) {
+    protected static <T extends Model> T findById(Class<? extends Model> clazz, Object id) {
         if(id == null) return null;
 
         MetaModel mm = getMetaModel(clazz);
@@ -2216,7 +2216,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public static <T extends Model> LazyList<T> where(String subquery, Object... params) {
         return where(getDaClass(), subquery, params);
     }
-    private static <T extends Model> LazyList<T> where(Class<? extends Model> clazz, String subquery, Object... params) {
+    protected static <T extends Model> LazyList<T> where(Class<? extends Model> clazz, String subquery, Object... params) {
         return find(clazz, subquery, params);
     }
 
@@ -2233,7 +2233,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public static <T extends Model> LazyList<T> find(String subquery, Object... params) {
         return find(getDaClass(), subquery, params);
     }
-    private static <T extends Model> LazyList<T> find(Class<? extends Model> clazz, String subquery, Object... params) {
+    protected static <T extends Model> LazyList<T> find(Class<? extends Model> clazz, String subquery, Object... params) {
         if (subquery.trim().equals("*")) {
             if (empty(params)) {
                 return findAll(clazz);
@@ -2263,7 +2263,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public static <T extends Model> T findFirst(String subQuery, Object... params) {
         return findFirst(getDaClass(), subQuery, params);
     }
-    private static <T extends Model> T findFirst(Class<? extends Model> clazz, String subQuery, Object... params) {
+    protected static <T extends Model> T findFirst(Class<? extends Model> clazz, String subQuery, Object... params) {
         LazyList<T> results = new LazyList<T>(subQuery, getMetaModel(clazz), params).limit(1);
         return results.isEmpty() ? null : results.get(0);
     }
@@ -2297,7 +2297,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public static <T extends Model> T first(String subQuery, Object... params) {
         return first(getDaClass(), subQuery, params);
     }
-    private static <T extends Model> T first(Class<? extends Model> clazz, String subQuery, Object... params) {
+    protected static <T extends Model> T first(Class<? extends Model> clazz, String subQuery, Object... params) {
         return (T) findFirst(clazz, subQuery, params);
     }
 
@@ -2314,7 +2314,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         find(getDaClass(), query, listener);
     }
     @Deprecated
-    private static void find(Class<? extends Model> clazz, String query, final ModelListener listener) {
+    protected static void find(Class<? extends Model> clazz, String query, final ModelListener listener) {
         findWith(clazz, listener, query);
     }
 
@@ -2329,7 +2329,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public static void findWith(final ModelListener listener, String query, Object ... params) {
         findWith(getDaClass(), listener, query, params);
     }
-    private static void findWith(Class<? extends Model> clazz, final ModelListener listener, String query, Object... params) {
+    protected static void findWith(Class<? extends Model> clazz, final ModelListener listener, String query, Object... params) {
         long start = System.currentTimeMillis();
         final MetaModel metaModel = getMetaModel(clazz);
         String sql = metaModel.getDialect().selectStar(metaModel.getTableName(), query);
@@ -2360,7 +2360,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public static <T extends Model> LazyList<T> findBySQL(String fullQuery, Object... params) {
         return findBySQL(getDaClass(), fullQuery, params);
     }
-    private static <T extends Model> LazyList<T> findBySQL(Class<? extends Model> clazz, String fullQuery, Object... params) {
+    protected static <T extends Model> LazyList<T> findBySQL(Class<? extends Model> clazz, String fullQuery, Object... params) {
         return new LazyList<T>(false, getMetaModel(clazz), fullQuery,  params);
     }
 
@@ -2372,7 +2372,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public static <T extends Model> LazyList<T> findAll() {
         return findAll(getDaClass());
     }
-    private static <T extends Model> LazyList<T> findAll(Class<? extends Model> clazz) {
+    protected static <T extends Model> LazyList<T> findAll(Class<? extends Model> clazz) {
         return new LazyList(null, getMetaModel(clazz));
     }
 
@@ -2597,7 +2597,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public static Long count() {
         return count(getDaClass());
     }
-    private static Long count(Class<? extends Model> clazz) {
+    protected static Long count(Class<? extends Model> clazz) {
         MetaModel metaModel = getMetaModel(clazz);
         String sql = metaModel.getDialect().selectCount(metaModel.getTableName());
         Long result;
@@ -2623,7 +2623,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public static Long count(String query, Object... params) {
         return count(getDaClass(), query, params);
     }
-    private static Long count(Class<? extends Model> clazz, String query, Object... params) {
+    protected static Long count(Class<? extends Model> clazz, String query, Object... params) {
         MetaModel metaModel = getMetaModel(clazz);
         String sql = metaModel.getDialect().selectCount(metaModel.getTableName(), query);
 
@@ -2815,13 +2815,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     private static Class<? extends Model> getDaClass() {
-        return new ClassGetter().get();
+        throw new InitException("failed to determine Model class name, are you sure models have been instrumented?");
     }
 
     public static String getTableName() {
         return getTableName(getDaClass());
     }
-    private static String getTableName(Class<? extends Model> clazz) {
+    protected static String getTableName(Class<? extends Model> clazz) {
         return Registry.instance().getTableName(clazz);
     }
 
@@ -2845,18 +2845,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public void manageTime(boolean manage) {
         this.manageTime = manage;
-    }
-
-    static class ClassGetter extends SecurityManager {
-        public Class get() {
-            Class[] classes = getClassContext();
-            for (Class clazz : classes) {
-                if (clazz != null && !clazz.equals(Model.class) && Model.class.isAssignableFrom(clazz)) {
-                    return clazz;
-                }
-            }
-            throw new InitException("failed to determine Model class name, are you sure models have been instrumented?");
-        }
     }
 
     /**
@@ -2944,7 +2932,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public static void purgeCache(){
         purgeCache(getDaClass());
     }
-    private static void purgeCache(Class<? extends Model> clazz) {
+    protected static void purgeCache(Class<? extends Model> clazz) {
         MetaModel mm = getMetaModel(clazz);
         if(mm.cached()){
             QueryCache.instance().purgeTableCache(mm.getTableName());
