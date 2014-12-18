@@ -2652,8 +2652,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         int updated = new DB(metaModel.getDbName()).exec(query.toString(), values.toArray());
         if(metaModel.isVersioned() && updated == 0){
             throw new StaleModelException("Failed to update record for model '" + getClass() +
-                    "', with " + getIdName() + " = " + getId() + " and " + getMetaModelLocal().getVersionColumn() + " = " + get(getMetaModelLocal().getVersionColumn()) +
-                    ". Either this record does not exist anymore, or has been updated to have another record_version.");
+                    "', with " + getIdName() + " = " + getId() + " and " + getMetaModelLocal().getVersionColumn()
+                    + " = " + get(getMetaModelLocal().getVersionColumn()) +
+                    ". Either this record does not exist anymore, or has been updated to have another "
+                    + getMetaModelLocal().getVersionColumn() + '.');
         }else if(metaModel.isVersioned()){
             set(getMetaModelLocal().getVersionColumn(), getLong(getMetaModelLocal().getVersionColumn()) + 1);
         }
