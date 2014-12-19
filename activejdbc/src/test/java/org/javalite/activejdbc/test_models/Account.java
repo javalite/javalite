@@ -23,7 +23,7 @@ public class Account extends Model {
 
     static{
         validatePresenceOf("amount");
-        validateNumericalityOf("amount");
+        validateNumericalityOf("amount").convertNullIfEmpty();
         validateNumericalityOf("total")
                 .allowNull(true).greaterThan(0)
                 .lessThan(100).onlyInteger()

@@ -25,7 +25,4 @@ import org.javalite.activejdbc.annotations.VersionColumn;
  */
 @VersionColumn("lock_version")
 public class Item extends Model {
-    static {
-        validateNumericalityOf("item_number").convertNullIfEmpty();
-    }
 }

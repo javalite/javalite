@@ -1,6 +1,5 @@
 package org.javalite.activejdbc;
 
-import org.javalite.activejdbc.annotations.VersionColumn;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Item;
 import org.junit.Test;

@@ -166,21 +166,21 @@ public class ValidatorsTest extends ActiveJDBCTest {
 
     @Test
     public void shouldConvertEmptyStringToNull(){
-        deleteAndPopulateTable("items");
+        deleteAndPopulateTable("accounts");
 
-        Item it = new Item();
-        it.set("item_number", "");
-        it.validate();
-        a(it.get("item_number")).shouldBeNull();
+        Account account = new Account();
+        account.set("amount", "");
+        account.validate();
+        a(account.get("amount")).shouldBeNull();
     }
 
 
     @Test
     public void shouldReturnNullIfRequestedErrorForAttributeWhichDidNotProduceOne(){
-        deleteAndPopulateTable("items");
+        deleteAndPopulateTable("accounts");
 
-        Item it = new Item();
-        a(it.errors().get("blah")).shouldBeNull();
+        Account amount = new Account();
+        a(amount.errors().get("blah")).shouldBeNull();
     }
 
     @Test
