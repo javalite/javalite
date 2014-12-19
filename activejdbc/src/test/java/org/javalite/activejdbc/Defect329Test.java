@@ -18,6 +18,7 @@ package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Animal;
+import org.javalite.activejdbc.test_models.Item;
 import org.javalite.activejdbc.test_models.Watermelon;
 import org.junit.Test;
 
@@ -25,6 +26,22 @@ public class Defect329Test extends ActiveJDBCTest {
 
     @Test
     public void createItEmptyModelWithVersionShouldSaveRecord() {
+        // items table has lock_version version column
+        Item item = Item.createIt();
+        the(item).shouldNotBe("new");
+        the(item.getInteger("lock_version")).shouldBeEqual(1);
+
+        // update
+        item.save();
+        the(item.getInteger("lock_version")).shouldBeEqual(2);
+
+        // clean up
+        item.delete();
+    }
+    
+    @Test
+    public void createItEmptyModelWithVersionAndTimeShouldSaveRecord() {
+        // watermelons table has record_version, created_at and updated_at columns
         Watermelon watermelon = Watermelon.createIt();
         the(watermelon).shouldNotBe("new");
         the(watermelon.getInteger("record_version")).shouldBeEqual(1);
@@ -51,4 +68,3 @@ public class Defect329Test extends ActiveJDBCTest {
         animal.delete();
     }
 }
-

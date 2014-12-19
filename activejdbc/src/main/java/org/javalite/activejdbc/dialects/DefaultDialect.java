@@ -70,23 +70,31 @@ public class DefaultDialect implements Dialect {
     @Override
     public String createParametrizedInsert(MetaModel mm, List<String> nonNullAttributes){
         StringBuilder query = new StringBuilder().append("INSERT INTO ").append(mm.getTableName()).append(" (");
-        join(query, nonNullAttributes, ", ");
-        if (mm.getIdGeneratorCode() != null) {
-            query.append(", ").append(mm.getIdName());
+        if (nonNullAttributes.isEmpty()) {
+            query.append(mm.getIdName());
+        } else {
+            if (mm.getIdGeneratorCode() != null) {
+                query.append(mm.getIdName()).append(", ");
+            }
+            join(query, nonNullAttributes, ", ");
         }
         if (mm.isVersioned()) {
             query.append(", ").append(mm.getVersionColumn());
         }
         query.append(") VALUES (");
-        appendQuestions(query, nonNullAttributes.size());
-        if (mm.getIdGeneratorCode() != null) {
-            query.append(", ").append(mm.getIdGeneratorCode());
+        if (nonNullAttributes.isEmpty()) {
+            query.append(mm.getIdGeneratorCode() != null ? mm.getIdGeneratorCode() : "null");
+        } else {
+            if (mm.getIdGeneratorCode() != null) {
+                query.append(mm.getIdGeneratorCode()).append(", ");
+            }
+            appendQuestions(query, nonNullAttributes.size());
         }
         if (mm.isVersioned()) {
             query.append(", ").append(1);
         }
         query.append(')');
-        return query.toString(); 
+        return query.toString();
     }
 
     @Override
