@@ -17,6 +17,8 @@ limitations under the License.
 
 package org.javalite.activejdbc.dialects;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import org.javalite.activejdbc.MetaModel;
 
 import java.util.List;
@@ -69,30 +71,23 @@ public class DefaultDialect implements Dialect {
 
     @Override
     public String createParametrizedInsert(MetaModel mm, List<String> nonNullAttributes){
+        List<String> attributes = new ArrayList<String>();
+        List<String> values = new ArrayList<String>();
+        if (nonNullAttributes.isEmpty() && !mm.isVersioned()) {
+            attributes.add(mm.getIdName());
+            values.add(mm.getIdGeneratorCode() != null ? mm.getIdGeneratorCode() : "null");
+        }
+        attributes.addAll(nonNullAttributes);
+        values.addAll(Collections.nCopies(nonNullAttributes.size(), "?"));
+        if (mm.isVersioned()) {
+            attributes.add(mm.getVersionColumn());
+            values.add("1");
+        }
+
         StringBuilder query = new StringBuilder().append("INSERT INTO ").append(mm.getTableName()).append(" (");
-        if (nonNullAttributes.isEmpty()) {
-            query.append(mm.getIdName());
-        } else {
-            if (mm.getIdGeneratorCode() != null) {
-                query.append(mm.getIdName()).append(", ");
-            }
-            join(query, nonNullAttributes, ", ");
-        }
-        if (mm.isVersioned()) {
-            query.append(", ").append(mm.getVersionColumn());
-        }
+        join(query, attributes, ", ");
         query.append(") VALUES (");
-        if (nonNullAttributes.isEmpty()) {
-            query.append(mm.getIdGeneratorCode() != null ? mm.getIdGeneratorCode() : "null");
-        } else {
-            if (mm.getIdGeneratorCode() != null) {
-                query.append(mm.getIdGeneratorCode()).append(", ");
-            }
-            appendQuestions(query, nonNullAttributes.size());
-        }
-        if (mm.isVersioned()) {
-            query.append(", ").append(1);
-        }
+        join(query, values, ", ");
         query.append(')');
         return query.toString();
     }
