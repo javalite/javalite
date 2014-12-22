@@ -17,6 +17,7 @@ limitations under the License.
 
 package org.javalite.activejdbc.dialects;
 
+import java.util.List;
 import org.javalite.activejdbc.MetaModel;
 import org.javalite.common.Convert;
 
@@ -24,7 +25,15 @@ import org.javalite.common.Convert;
  * @author Igor Polevoy
  * @author ericbn
  */
-public class SQLiteDialect extends MySQLDialect {
+public class SQLiteDialect extends PostgreSQLDialect {
+    @Override
+    public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
+        if (limit == -1L && offset != -1L) {
+            throw new IllegalArgumentException("SQLite does not support OFFSET without LIMIT. OFFSET is a parameter of LIMIT function");
+        }
+        return super.formSelect(tableName, subQuery, orderBys, limit, offset);
+    }
+    
     @Override
     public Object overrideDriverTypeConversion(MetaModel mm, String attributeName, Object value) {
         // SQLite returns DATE and DATETIME as String or Long values

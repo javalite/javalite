@@ -69,6 +69,10 @@ public class DefaultDialect implements Dialect {
         return sql.toString();
     }
 
+    protected void appendEmptyRow(MetaModel metaModel, StringBuilder query) {
+        query.append("DEFAULT VALUES");
+    }
+
     @Override
     public String createParametrizedInsert(MetaModel mm, List<String> nonNullAttributes){
         List<String> attributes = new ArrayList<String>();
@@ -86,11 +90,11 @@ public class DefaultDialect implements Dialect {
             values.add("1");
         }
 
-        StringBuilder query = new StringBuilder().append("INSERT INTO ").append(mm.getTableName());
+        StringBuilder query = new StringBuilder().append("INSERT INTO ").append(mm.getTableName()).append(' ');
         if (attributes.isEmpty()) {
-            query.append(" DEFAULT VALUES");
+            appendEmptyRow(mm, query);
         } else {
-            query.append(" (");
+            query.append('(');
             join(query, attributes, ", ");
             query.append(") VALUES (");
             join(query, values, ", ");

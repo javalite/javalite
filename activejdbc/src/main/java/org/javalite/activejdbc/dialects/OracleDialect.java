@@ -18,6 +18,7 @@ limitations under the License.
 package org.javalite.activejdbc.dialects;
 
 import java.util.List;
+import org.javalite.activejdbc.MetaModel;
 
 
 /**
@@ -52,8 +53,8 @@ public class OracleDialect extends DefaultDialect {
     @Override
     public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
 
-        boolean needLimit = limit != -1;
-        boolean needOffset = offset != -1;
+        boolean needLimit = limit != -1L;
+        boolean needOffset = offset != -1L;
 
         StringBuilder fullQuery = new StringBuilder();
         if (needOffset) {
@@ -75,5 +76,10 @@ public class OracleDialect extends DefaultDialect {
         }
 
         return fullQuery.toString();
+    }
+
+    @Override
+    protected void appendEmptyRow(MetaModel metaModel, StringBuilder query) {
+        query.append('(').append(metaModel.getIdName()).append(") VALUES (null)");
     }
 }
