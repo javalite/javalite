@@ -161,11 +161,12 @@ public class InstrumentationModelFinder {
     }
 
     protected boolean isModel(CtClass clazz) throws NotFoundException {
-        return clazz != null && !clazz.equals(modelClass) && notAbstract(clazz) && clazz.subclassOf(modelClass);
+        return clazz != null && notAbstract(clazz) && clazz.subclassOf(modelClass) && !clazz.equals(modelClass);
     }
 
     private boolean notAbstract(CtClass clazz) {
-        return !(Modifier.isAbstract(clazz.getModifiers()) || Modifier.isInterface(clazz.getModifiers()));
+        int modifiers = clazz.getModifiers();
+        return !(Modifier.isAbstract(modifiers) || Modifier.isInterface(modifiers));
     }
 
     protected List<CtClass> getModels() {
