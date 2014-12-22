@@ -76,22 +76,26 @@ public class DefaultDialect implements Dialect {
         if (mm.getIdGeneratorCode() != null) {
             attributes.add(mm.getIdName());
             values.add(mm.getIdGeneratorCode());
-        } else if (nonNullAttributes.isEmpty() && !mm.isVersioned()) {
-            attributes.add(mm.getIdName());
-            values.add("null");
         }
-        attributes.addAll(nonNullAttributes);
-        values.addAll(Collections.nCopies(nonNullAttributes.size(), "?"));
+        if (!nonNullAttributes.isEmpty()) {
+            attributes.addAll(nonNullAttributes);
+            values.addAll(Collections.nCopies(nonNullAttributes.size(), "?"));
+        }
         if (mm.isVersioned()) {
             attributes.add(mm.getVersionColumn());
             values.add("1");
         }
 
-        StringBuilder query = new StringBuilder().append("INSERT INTO ").append(mm.getTableName()).append(" (");
-        join(query, attributes, ", ");
-        query.append(") VALUES (");
-        join(query, values, ", ");
-        query.append(')');
+        StringBuilder query = new StringBuilder().append("INSERT INTO ").append(mm.getTableName());
+        if (attributes.isEmpty()) {
+            query.append(" DEFAULT VALUES");
+        } else {
+            query.append(" (");
+            join(query, attributes, ", ");
+            query.append(") VALUES (");
+            join(query, values, ", ");
+            query.append(')');
+        }
         return query.toString();
     }
 
