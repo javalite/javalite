@@ -73,9 +73,12 @@ public class DefaultDialect implements Dialect {
     public String createParametrizedInsert(MetaModel mm, List<String> nonNullAttributes){
         List<String> attributes = new ArrayList<String>();
         List<String> values = new ArrayList<String>();
-        if (nonNullAttributes.isEmpty() && !mm.isVersioned()) {
+        if (mm.getIdGeneratorCode() != null) {
             attributes.add(mm.getIdName());
-            values.add(mm.getIdGeneratorCode() != null ? mm.getIdGeneratorCode() : "null");
+            values.add(mm.getIdGeneratorCode());
+        } else if (nonNullAttributes.isEmpty() && !mm.isVersioned()) {
+            attributes.add(mm.getIdName());
+            values.add("null");
         }
         attributes.addAll(nonNullAttributes);
         values.addAll(Collections.nCopies(nonNullAttributes.size(), "?"));
