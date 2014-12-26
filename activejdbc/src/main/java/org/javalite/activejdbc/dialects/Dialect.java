@@ -25,10 +25,6 @@ import org.javalite.activejdbc.associations.Many2ManyAssociation;
  */
 public interface Dialect {
 
-    String createParametrizedInsert(MetaModel mm, List<String> nonNullAttributes);
-
-    String createParametrizedInsertIdUnmanaged(MetaModel mm, List<String> nonNullAttributes);
-
     String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset);
 
     Object overrideDriverTypeConversion(MetaModel mm, String attributeName, Object value);
@@ -48,4 +44,6 @@ public interface Dialect {
     String selectManyToManyAssociation(Many2ManyAssociation association, String sourceFkColumnName, int questionsCount);
 
     String insertParametrized(String table, String... columns);
+
+    String insertParametrized(MetaModel metaModel, List<String> columns);
 }

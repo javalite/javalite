@@ -17,8 +17,6 @@ limitations under the License.
 
 package org.javalite.activejdbc.dialects;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import org.javalite.activejdbc.MetaModel;
 
 import java.util.List;
@@ -71,52 +69,6 @@ public class DefaultDialect implements Dialect {
 
     protected void appendEmptyRow(MetaModel metaModel, StringBuilder query) {
         query.append("DEFAULT VALUES");
-    }
-
-    @Override
-    public String createParametrizedInsert(MetaModel mm, List<String> nonNullAttributes){
-        List<String> attributes = new ArrayList<String>();
-        List<String> values = new ArrayList<String>();
-        if (mm.getIdGeneratorCode() != null) {
-            attributes.add(mm.getIdName());
-            values.add(mm.getIdGeneratorCode());
-        }
-        if (!nonNullAttributes.isEmpty()) {
-            attributes.addAll(nonNullAttributes);
-            values.addAll(Collections.nCopies(nonNullAttributes.size(), "?"));
-        }
-        if (mm.isVersioned()) {
-            attributes.add(mm.getVersionColumn());
-            values.add("1");
-        }
-
-        StringBuilder query = new StringBuilder().append("INSERT INTO ").append(mm.getTableName()).append(' ');
-        if (attributes.isEmpty()) {
-            appendEmptyRow(mm, query);
-        } else {
-            query.append('(');
-            join(query, attributes, ", ");
-            query.append(") VALUES (");
-            join(query, values, ", ");
-            query.append(')');
-        }
-        return query.toString();
-    }
-
-    @Override
-    public String createParametrizedInsertIdUnmanaged(MetaModel mm, List<String> nonNullAttributes){
-        StringBuilder query = new StringBuilder().append("INSERT INTO ").append(mm.getTableName()).append(" (");
-        join(query, nonNullAttributes, ", ");
-        if (mm.isVersioned()) {
-            query.append(", ").append(mm.getVersionColumn());
-        }
-        query.append(") VALUES (");
-        appendQuestions(query, nonNullAttributes.size());
-        if (mm.isVersioned()) {
-            query.append(", ").append(1);
-        }
-        query.append(')');
-        return query.toString();
     }
 
     protected void appendQuestions(StringBuilder query, int count) {
@@ -203,6 +155,21 @@ public class DefaultDialect implements Dialect {
         query.append(") VALUES (");
         appendQuestions(query, columns.length);
         query.append(')');
+        return query.toString();
+    }
+
+    @Override
+    public String insertParametrized(MetaModel metaModel, List<String> columns) {
+        StringBuilder query = new StringBuilder().append("INSERT INTO ").append(metaModel.getTableName()).append(' ');
+        if (columns.isEmpty()) {
+            appendEmptyRow(metaModel, query);
+        } else {
+            query.append('(');
+            join(query, columns, ", ");
+            query.append(") VALUES (");
+            appendQuestions(query, columns.size());
+            query.append(')');
+        }
         return query.toString();
     }
 

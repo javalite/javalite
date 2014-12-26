@@ -18,7 +18,6 @@ package org.javalite.activejdbc.dialects;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
-import org.javalite.activejdbc.test_models.Item;
 import org.javalite.activejdbc.test_models.Person;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -56,49 +55,18 @@ public class DefaultDialectTest extends ActiveJDBCTest {
 
     @Test
     public void testCreateParametrizedInsert() {
-        a(dialect.createParametrizedInsert(Person.getMetaModel(), Arrays.asList("name"))).shouldBeEqual(
+        a(dialect.insertParametrized(Person.getMetaModel(), Arrays.asList("name"))).shouldBeEqual(
                 "INSERT INTO people (name) VALUES (?)");
-        a(dialect.createParametrizedInsert(Person.getMetaModel(), Arrays.asList("name", "last_name"))).shouldBeEqual(
+        a(dialect.insertParametrized(Person.getMetaModel(), Arrays.asList("name", "last_name"))).shouldBeEqual(
                 "INSERT INTO people (name, last_name) VALUES (?, ?)");
     }
 
-    @Test
-    public void testCreateParametrizedInsertVersioned() {
-        a(dialect.createParametrizedInsert(Item.getMetaModel(), Arrays.asList("item_number", "item_description")))
-                .shouldBeEqual("INSERT INTO items (item_number, item_description, lock_version) VALUES (?, ?, 1)");
-    }
-
-    @Test
-    public void testCreateParametrizedInsertIdGenerator() {
-        //TODO test model with @IdGenerator
-    }
-    
-    @Test
-    public void testCreateParametrizedInsertIdUnmanaged() {
-        a(dialect.createParametrizedInsertIdUnmanaged(Person.getMetaModel(), Arrays.asList("name"))).shouldBeEqual(
-                "INSERT INTO people (name) VALUES (?)");
-        a(dialect.createParametrizedInsertIdUnmanaged(Person.getMetaModel(), Arrays.asList("name", "last_name")))
-                .shouldBeEqual("INSERT INTO people (name, last_name) VALUES (?, ?)");
-    }
-
-    @Test
-    public void testCreateParametrizedInsertIdUnmanagedVersioned() {
-        a(dialect.createParametrizedInsertIdUnmanaged(
-                Item.getMetaModel(), Arrays.asList("item_number", "item_description")))
-                .shouldBeEqual("INSERT INTO items (item_number, item_description, lock_version) VALUES (?, ?, 1)");
-    }
-
-    @Test
-    public void testCreateParametrizedInsertIdUnmanagedGenerator() {
-        //TODO test model with @IdGenerator
-    }
-    
     @Test
     public void testFormSelectWithoutTableName() {
         final String fullQuery = "SELECT name FROM people";
         a(dialect.formSelect(null, fullQuery, new ArrayList<String>(), 1, 1)).shouldBeEqual(fullQuery);
     }
-    
+
     @Test
     public void testFormSelectWithTableName() {
         a(dialect.formSelect("people", null, new ArrayList<String>(), 1, 1)).shouldBeEqual("SELECT * FROM people");

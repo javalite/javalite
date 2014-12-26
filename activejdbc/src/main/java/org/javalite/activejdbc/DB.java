@@ -583,7 +583,7 @@ public class DB {
      * @param autoIncrementColumnName name of a column that is auto-incremented.
      * @param params list of parameter values.
      * @return new value of auto-incremented column that is uniquely identifying a new record inserted. May return -1 if this
-     * functionality is not supported by DB or driver.
+     * functionality is not supported by DB or driver. Returns null if inserted rows count if not 1.
      */
     Object execInsert(String query, String autoIncrementColumnName, Object... params) {
         if (!INSERT_PATTERN.matcher(query).find())
@@ -621,8 +621,10 @@ public class DB {
                     ps.setObject(index + 1, param);
                 }
             }
-            //TODO: test executeUpdate() return value?
-            ps.executeUpdate();
+
+            if (ps.executeUpdate() != 1) {
+                return null;
+            }
 
             ResultSet rs = null;
             try{

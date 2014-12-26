@@ -2581,7 +2581,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         boolean result;
         if (getId() == null) {
-            result = doInsert();
+            result = insert();
         } else {
             result = update();
         }
@@ -2640,62 +2640,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return result;
     }
 
-
-    /**
-     * @return attributes names that have been set by client code.
-     */
-    private List<String> getValueAttributeNames(boolean includeId) {
-        List<String> attributeNames = new ArrayList<String>();
-
-        for(String name: attributes.keySet()){
-            if (!name.equalsIgnoreCase(getMetaModelLocal().getVersionColumn())) {
-                if (includeId || !name.equalsIgnoreCase(getIdName())) {
-                    attributeNames.add(name);
-                }
-            }
-        }
-        return attributeNames;
-      }
-
-
-    private boolean doInsert() {
-
-        fireBeforeCreate(this);
-        doCreatedAt();
-        doUpdatedAt();
-
-        //TODO: need to invoke checkAttributes here too, and maybe rely on MetaModel for this.
-
-        List<String> valueAttributes = getValueAttributeNames(false);
-
-        List<Object> values = new ArrayList<Object>();
-        for (String attribute : valueAttributes) {
-            values.add(this.attributes.get(attribute));
-        }
-        String query = getMetaModelLocal().getDialect().createParametrizedInsert(getMetaModelLocal(), valueAttributes);
-        try {
-            Object id = new DB(getMetaModelLocal().getDbName()).execInsert(query, getIdName(), values.toArray());
-            if(getMetaModelLocal().cached()){
-                QueryCache.instance().purgeTableCache(getMetaModelLocal().getTableName());
-            }
-
-            attributes.put(getIdName(), id);
-
-            fireAfterCreate(this);
-
-            if(getMetaModelLocal().isVersioned()){
-                set(getMetaModelLocal().getVersionColumn(), 1);
-            }
-
-            return true;
-        } catch (DBException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new DBException(e.getMessage(), e);
-        }
-    }
-
-
     /**
      * This method will save a model as new. In other words, it will not try to guess if this is a
      * new record or a one that exists in the table. It does not have "belt and suspenders", it will
@@ -2706,29 +2650,53 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public boolean insert() {
 
         fireBeforeCreate(this);
+        //TODO: fix this as created_at and updated_at attributes will be set even if insertion failed
         doCreatedAt();
         doUpdatedAt();
 
-        List<String> valueAttributes = getValueAttributeNames(true);
-
+        MetaModel metaModel = getMetaModelLocal();
+        boolean containsId = attributes.containsKey(metaModel.getIdName());
+        List<String> columns = new ArrayList<String>();
         List<Object> values = new ArrayList<Object>();
-        for (String attribute : valueAttributes) {
-            values.add(this.attributes.get(attribute));
+        if (!containsId && metaModel.getIdGeneratorCode() != null) {
+            columns.add(metaModel.getIdName());
+            values.add(metaModel.getIdGeneratorCode());
         }
-        String query = getMetaModelLocal().getDialect().createParametrizedInsertIdUnmanaged(getMetaModelLocal(), valueAttributes);
+        for (Map.Entry<String, Object> entry : attributes.entrySet()) {
+            if (metaModel.getVersionColumn().equals(entry.getKey())) {
+                continue;
+            }
+            columns.add(entry.getKey());
+            values.add(entry.getValue());
+        }
+        if (metaModel.isVersioned()) {
+            columns.add(metaModel.getVersionColumn());
+            values.add(1);
+        }
+
+        //TODO: need to invoke checkAttributes here too, and maybe rely on MetaModel for this.
+
         try {
-            long recordsUpdated = new DB(getMetaModelLocal().getDbName()).exec(query, values.toArray());
-            if(getMetaModelLocal().cached()){
-                QueryCache.instance().purgeTableCache(getMetaModelLocal().getTableName());
+            boolean done;
+            String query = metaModel.getDialect().insertParametrized(metaModel, columns);
+            if (containsId) {
+                done = (1 == new DB(metaModel.getDbName()).exec(query, values.toArray()));
+            } else {
+                Object id = new DB(metaModel.getDbName()).execInsert(query, getIdName(), values.toArray());
+                attributes.put(getIdName(), id);
+                done = (id != null);
+            }
+            if (metaModel.cached()) {
+                QueryCache.instance().purgeTableCache(metaModel.getTableName());
+            }
+
+            if (metaModel.isVersioned()) {
+                attributes.put(metaModel.getVersionColumn(), 1);
             }
 
             fireAfterCreate(this);
 
-            if(getMetaModelLocal().isVersioned()){
-                set(getMetaModelLocal().getVersionColumn(), 1);
-            }
-
-            return recordsUpdated == 1;
+            return done;
         } catch (DBException e) {
             throw e;
         } catch (Exception e) {
@@ -2744,7 +2712,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     private void doUpdatedAt() {
         if (manageTime && getMetaModelLocal().hasAttribute("updated_at")) {
-            set("updated_at", new Timestamp(System.currentTimeMillis()));
+            attributes.put("updated_at", new Timestamp(System.currentTimeMillis()));
         }
     }
 
