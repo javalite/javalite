@@ -80,7 +80,7 @@ public class WrapTag implements TemplateDirectiveModel {
             String path = containerName.substring(0, containerName.lastIndexOf("/"));
             templatePath = "/" + path + "/" + templateArgumentName;
         }else{//this is a shared partial
-            if(Util.split(templateArgumentName, "/").length < 2){
+            if(Util.split(templateArgumentName, '/').length < 2){
                 throw new IllegalArgumentException("wrong name of shared partial");
             }
             String path = templateArgumentName.substring(0, templateArgumentName.lastIndexOf("/"));
