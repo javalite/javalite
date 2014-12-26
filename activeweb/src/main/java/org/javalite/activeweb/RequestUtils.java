@@ -1,6 +1,5 @@
 package org.javalite.activeweb;
 
-import org.javalite.common.Convert;
 import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

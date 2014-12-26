@@ -20,8 +20,6 @@ import org.javalite.activeweb.controller_filters.ControllerFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * This class is to be sub-classed by the application level class called <code>app.config.AppControllerConfig</code>.

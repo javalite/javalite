@@ -72,7 +72,7 @@ public class RouteBuilder {
      * @param routeConfig what was specified in the  RouteConfig class
      */
     protected RouteBuilder(String routeConfig) {
-        String[] segmentsArr = Util.split(routeConfig, '/');
+        String[] segmentsArr = Util.split(routeConfig, "/");
         for (String segmentStr : segmentsArr) {
             Segment segment = new Segment(segmentStr);
             segments.add(segment);
@@ -232,7 +232,7 @@ public class RouteBuilder {
 
         boolean match = false;
 
-        String[] requestUriSegments = Util.split(requestUri, '/');
+        String[] requestUriSegments = Util.split(requestUri, "/");
         if(isWildcard() && requestUriSegments.length >= segments.size() && wildSegmentsMatch(requestUriSegments)){
             String[] tailArr = Arrays.copyOfRange(requestUriSegments, segments.size() - 1, requestUriSegments.length);
             wildCardValue = Util.join(tailArr, "/");

@@ -50,7 +50,7 @@ public class RenderTag implements TemplateDirectiveModel {
         }
 
 
-        String[] partialParts = Util.split(params.get("partial").toString(), '/');
+        String[] partialParts = Util.split(params.get("partial").toString(), "/");
         String partialName = partialParts[partialParts.length - 1];
         Template partialTemplate = env.getConfiguration().getTemplate(partialPath + ".ftl" );
 
@@ -96,7 +96,7 @@ public class RenderTag implements TemplateDirectiveModel {
             String path = containerName.substring(0, containerName.lastIndexOf("/"));
             templatePath = "/" + path + "/_" + templateArgumentName;
         }else{//this is a shared partial
-            if(Util.split(templateArgumentName, '/').length < 2){
+            if(Util.split(templateArgumentName, "/").length < 2){
                 throw new IllegalArgumentException("wrong name of shared partial");
             }
             String path = templateArgumentName.substring(0, templateArgumentName.lastIndexOf("/"));

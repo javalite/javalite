@@ -107,8 +107,8 @@ public class MessageTag extends FreeMarkerTag {
                 String language, country;
                 Locale locale;
                 if(localeString.contains("_")){
-                    language = split(localeString, '_')[0];
-                    country = split(localeString, '_')[1];
+                    language = split(localeString, "_")[0];
+                    country = split(localeString, "_")[1];
                     locale = new Locale(language, country);
                 }else{
                     language = localeString;
