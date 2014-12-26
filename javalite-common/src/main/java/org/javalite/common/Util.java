@@ -358,7 +358,7 @@ public final class Util {
 
     private static String trimEnd(String input, int start, int end) {
         if (start == end) {
-            return input.substring(start, end);
+            return "";
         } else {
             do {
                 end--;
