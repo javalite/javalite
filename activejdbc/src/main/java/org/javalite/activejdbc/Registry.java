@@ -163,7 +163,7 @@ public enum Registry {
       /*
        * Valid table name format: tablename or schemaname.tablename
        */
-        String[] vals = split(table, ".");
+        String[] vals = split(table, '.');
         String schema = null;
         String tableName;
 

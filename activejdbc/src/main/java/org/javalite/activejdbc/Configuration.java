@@ -61,7 +61,7 @@ public class Configuration {
                     String line;
                     while ((line = reader.readLine()) != null) {
 
-                        String[] parts = split(line, ":");
+                        String[] parts = split(line, ':');
                         String modelName = parts[0];
                         String dbName = parts[1];
 

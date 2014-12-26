@@ -308,16 +308,14 @@ public final class Util {
     }
 
     /**
-     * Splits a string into an array using a provided delimiter. The split chunks are also trimmed.
+     * Splits a string into an array using a provided delimiters. The split chunks are also trimmed.
      *
      * @param input string to split.
      * @param delimiters delimiters
-     * @return a string into an array using a provided delimiter
+     * @return a string into an array using a provided delimiters
      */
-    //TODO: why don't we use String.split()? This has a better performance?
     public static String[] split(String input, String delimiters) {
-        if(input == null) throw new NullPointerException("input cannot be null");
-
+        if (input == null) { throw new NullPointerException("input cannot be null"); }
         List<String> tokens  = new ArrayList<String>();
         StringTokenizer st = new StringTokenizer(input, delimiters);
         while(st.hasMoreTokens()){
@@ -327,11 +325,46 @@ public final class Util {
     }
 
     /**
-     * @deprecated use {@link #split(String, String)} instead
+     * Splits a string into an array using a provided delimiter. The split chunks are also trimmed.
+     *
+     * @param input string to split.
+     * @param delimiter delimiter
+     * @return a string into an array using a provided delimiter
      */
-    @Deprecated
     public static String[] split(String input, char delimiter) {
-        return split(input, String.valueOf(delimiter));
+        if (input == null) { throw new NullPointerException("input cannot be null"); }
+        List<String> tokens = new ArrayList<String>();
+        int i;
+        int start;
+        i = start = startIndexTrimmed(input, 0);
+        while (i < input.length()) {
+            if (input.charAt(i) == delimiter) {
+                tokens.add(trimEnd(input, start, i));
+                start = startIndexTrimmed(input, ++i);
+            } else {
+                i++;
+            }
+        }
+        tokens.add(trimEnd(input, start, i));
+        return tokens.toArray(new String[tokens.size()]);
+    }
+
+    private static int startIndexTrimmed(String input, int start) {
+        while (start < input.length() && Character.isWhitespace(input.charAt(start))) {
+            start++;
+        }
+        return start;
+    }
+
+    private static String trimEnd(String input, int start, int end) {
+        if (start == end) {
+            return input.substring(start, end);
+        } else {
+            do {
+                end--;
+            } while (end > start && Character.isWhitespace(input.charAt(end)));
+            return input.substring(start, end + 1);
+        }
     }
 
     /**
