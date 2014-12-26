@@ -2655,7 +2655,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         doUpdatedAt();
 
         MetaModel metaModel = getMetaModelLocal();
-        boolean containsId = attributes.containsKey(metaModel.getIdName());
+        boolean containsId = (attributes.get(metaModel.getIdName()) != null);
         List<String> columns = new ArrayList<String>();
         List<Object> values = new ArrayList<Object>();
         if (!containsId && metaModel.getIdGeneratorCode() != null) {
@@ -2663,7 +2663,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             values.add(metaModel.getIdGeneratorCode());
         }
         for (Map.Entry<String, Object> entry : attributes.entrySet()) {
-            if (metaModel.getVersionColumn().equals(entry.getKey())) {
+            if (entry.getValue() == null || metaModel.getVersionColumn().equals(entry.getKey())) {
                 continue;
             }
             columns.add(entry.getKey());
