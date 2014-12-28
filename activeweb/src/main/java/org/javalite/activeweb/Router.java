@@ -261,7 +261,7 @@ public class Router {
             }
         });
 
-        uri.append(Util.join(pairs, "&"));
+        Util.join(uri, pairs, "&");
 
         return uri.toString();
     }

@@ -17,10 +17,8 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import org.javalite.common.Util;
-import org.apache.commons.fileupload.FileItemHeaders;
 import org.apache.commons.fileupload.FileItemStream;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 

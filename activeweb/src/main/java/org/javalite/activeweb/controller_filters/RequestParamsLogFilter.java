@@ -44,12 +44,14 @@ public class RequestParamsLogFilter extends AbstractLoggingFilter {
         super();    
     }
 
+    @Override
     protected String getMessage() {
-        StringBuffer sb = new StringBuffer("\n");
-        Map<String, String[]> params = params();
+        StringBuilder sb = new StringBuilder().append('\n');
 
-        for (String param : params.keySet()) {
-            sb.append("Param: ").append(param).append("=").append(join(params.get(param), ", ")).append("\n");
+        for (Map.Entry<String, String[]> entry : params().entrySet()) {
+            sb.append("Param: ").append(entry.getKey()).append('=');
+            join(sb, entry.getValue(), ", ");
+            sb.append('\n');
         }
 
         return sb.toString();
