@@ -308,11 +308,11 @@ public final class Util {
     }
 
     /**
-     * Splits a string into an array using a provided delimiters. The split chunks are also trimmed.
+     * Splits a string into an array using provided delimiters. The split chunks are also trimmed.
      *
      * @param input string to split.
      * @param delimiters delimiters
-     * @return a string into an array using a provided delimiters
+     * @return a string split into an array using provided delimiters.
      */
     public static String[] split(String input, String delimiters) {
         if (input == null) { throw new NullPointerException("input cannot be null"); }
@@ -324,48 +324,18 @@ public final class Util {
         return tokens.toArray(new String[tokens.size()]);
     }
 
+
     /**
-     * Splits a string into an array using a provided delimiter. The split chunks are also trimmed.
+     * Splits a string into an array using provided delimiters. The split chunks are also trimmed.
      *
      * @param input string to split.
      * @param delimiter delimiter
-     * @return a string into an array using a provided delimiter
+     * @return a string split into an array using a provided delimiter.
      */
     public static String[] split(String input, char delimiter) {
-        if (input == null) { throw new NullPointerException("input cannot be null"); }
-        List<String> tokens = new ArrayList<String>();
-        int i;
-        int start;
-        i = start = startIndexTrimmed(input, 0);
-        while (i < input.length()) {
-            if (input.charAt(i) == delimiter) {
-                tokens.add(trimEnd(input, start, i));
-                start = startIndexTrimmed(input, ++i);
-            } else {
-                i++;
-            }
-        }
-        tokens.add(trimEnd(input, start, i));
-        return tokens.toArray(new String[tokens.size()]);
+        return split(input, String.valueOf(delimiter));
     }
 
-    private static int startIndexTrimmed(String input, int start) {
-        while (start < input.length() && Character.isWhitespace(input.charAt(start))) {
-            start++;
-        }
-        return start;
-    }
-
-    private static String trimEnd(String input, int start, int end) {
-        if (start == end) {
-            return "";
-        } else {
-            do {
-                end--;
-            } while (end > start && Character.isWhitespace(input.charAt(end)));
-            return input.substring(start, end + 1);
-        }
-    }
 
     /**
      * Joins the items in collection with a delimiter.

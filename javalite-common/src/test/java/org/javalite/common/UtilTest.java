@@ -41,9 +41,8 @@ public class UtilTest extends JSpecSupport {
 
     @Test
     public void testSplit(){
-        String[] split = Util.split("", ',');
-        the(split.length).shouldBeEqual(1);
-        the(split[0]).shouldBeEqual("");
+        String[] split = Util.split("", ",");
+        the(split.length).shouldBeEqual(0);
 
         split = Util.split(" \t", ',');
         the(split.length).shouldBeEqual(1);
