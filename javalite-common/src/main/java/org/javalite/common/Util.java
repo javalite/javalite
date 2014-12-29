@@ -326,7 +326,7 @@ public final class Util {
 
 
     /**
-     * Splits a string into an array using provided delimiters. The split chunks are also trimmed.
+     * Splits a string into an array using provided delimiter. The split chunks are also trimmed.
      *
      * @param input string to split.
      * @param delimiter delimiter
