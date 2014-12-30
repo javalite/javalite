@@ -121,8 +121,8 @@ public class DefaultDialect implements Dialect {
     }
 
     @Override
-    public String selectCount(String table) {
-        return "SELECT COUNT(*) FROM " + table;
+    public String selectCount(String from) {
+        return "SELECT COUNT(*) FROM " + from;
     }
 
     @Override

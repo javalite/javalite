@@ -35,7 +35,7 @@ public interface Dialect {
 
     String selectStarParametrized(String table, String... parameters);
 
-    String selectCount(String table);
+    String selectCount(String from);
 
     String selectCount(String table, String where);
 

@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
  * @author Igor Polevoy
  */
 public class Paginator<T extends Model> implements Serializable {
-    static final Pattern FROM_PATTERN = Pattern.compile("FROM", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+    static final Pattern FROM_PATTERN = Pattern.compile("\\s+FROM\\s+", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
     private final int pageSize;
     private final String query;
@@ -95,7 +95,7 @@ public class Paginator<T extends Model> implements Serializable {
             if (!m.find()) {
                 throw new IllegalArgumentException("SELECT query without FROM");
             }
-            this.countQuery = "SELECT COUNT(*) " + query.substring(m.start());
+            this.countQuery = metaModel.getDialect().selectCount(query.substring(m.end()));
         } else if (query.equals("*")) {
             if (params.length == 0) {
                 this.countQuery = metaModel.getDialect().selectCount(tableName);
