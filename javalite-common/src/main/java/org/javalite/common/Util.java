@@ -346,38 +346,7 @@ public final class Util {
      * @return a string split into an array using a provided delimiter, or an empty array if input is null
      */
     public static String[] split(String input, char delimiter) {
-        List<String> tokens = new ArrayList<String>();
-        if (input != null) {
-            int i;
-            int start;
-            i = start = startIndexTrimmed(input, 0);
-            while (i < input.length()) {
-                if (input.charAt(i) == delimiter) {
-                    addTrimmedIfNonEmpty(tokens, input, start, i);
-                    start = startIndexTrimmed(input, ++i);
-                } else {
-                    i++;
-                }
-            }
-            addTrimmedIfNonEmpty(tokens, input, start, i);
-        }
-        return tokens.toArray(new String[tokens.size()]);
-    }
-
-    private static int startIndexTrimmed(String input, int start) {
-        while (start < input.length() && Character.isWhitespace(input.charAt(start))) {
-            start++;
-        }
-        return start;
-    }
-
-    private static void addTrimmedIfNonEmpty(List<String> list, String input, int start, int end) {
-        if (end > start) {
-            do {
-                end--;
-            } while (end > start && Character.isWhitespace(input.charAt(end)));
-            list.add(input.substring(start, end + 1));
-        }
+        return split(input, String.valueOf(delimiter));
     }
 
     /**
