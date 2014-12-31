@@ -356,7 +356,7 @@ public final class Util {
      * @param delimiter delimiter to insert between elements of collection.
      * @return string with collection elements separated by delimiter. There is no trailing delimiter in the string.
      */
-    public static String join(Collection<?> collection, String delimiter) {
+    public static String join(Collection collection, String delimiter){
         if (collection.isEmpty()) { return ""; }
         StringBuilder sb = new StringBuilder();
         join(sb, collection, delimiter);
@@ -393,6 +393,22 @@ public final class Util {
         for (int i = 1; i < array.length; i++) {
             sb.append(delimiter);
             sb.append(array[i]);
+        }
+    }
+
+    /**
+     * Joins the items in list with a delimiter, and appends the result to StringBuilder.
+     *
+     * @param sb StringBuilder to append result to
+     * @param list list of items to join.
+     * @param delimiter delimiter to insert between elements of list.
+     */
+    public static void join(StringBuilder sb, List<?> list, String delimiter) {
+        if (list.isEmpty()) return;
+        sb.append(list.get(0));
+        for (int i = 1; i < list.size(); i++) {
+            sb.append(delimiter);
+            sb.append(list.get(i));
         }
     }
 
