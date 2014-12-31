@@ -172,6 +172,9 @@ public enum Registry {
         } else if (vals.length == 2) {
             schema = vals[0];
             tableName = vals[1];
+            if (schema.length() == 0 || tableName.length() == 0) {
+                throw new DBException("invalid table name : " + table);
+            }
         } else {
             throw new DBException("invalid table name: " + table);
         }

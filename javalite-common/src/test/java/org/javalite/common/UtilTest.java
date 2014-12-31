@@ -41,17 +41,23 @@ public class UtilTest extends JSpecSupport {
 
     @Test
     public void testSplit(){
-        String[] split = Util.split(null, ',');
+        String[] split = Util.split("", ',');
         the(split.length).shouldBeEqual(0);
 
-        split = Util.split("", ',');
-        the(split.length).shouldBeEqual(0);
+        split = Util.split(" ", ',');
+        the(split.length).shouldBeEqual(1);
+        the(split[0]).shouldBeEqual("");
 
-        split = Util.split(" \t", ',');
-        the(split.length).shouldBeEqual(0);
+        split = Util.split("a..b", '.');
+        the(split.length).shouldBeEqual(2);
+        the(split[0]).shouldBeEqual("a");
+        the(split[1]).shouldBeEqual("b");
 
-        split = Util.split(" ,\t ", ',');
-        the(split.length).shouldBeEqual(0);
+        split = Util.split("a . . b", '.');
+        the(split.length).shouldBeEqual(3);
+        the(split[0]).shouldBeEqual("a");
+        the(split[1]).shouldBeEqual("");
+        the(split[2]).shouldBeEqual("b");
 
         split = Util.split(" Hello, Dolly, my darling ", ',');
         the(split.length).shouldBeEqual(3);

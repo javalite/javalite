@@ -308,42 +308,31 @@ public final class Util {
     }
 
     /**
-     * Splits a string into an array using provided delimiters. The split chunks are trimmed,
-     * and empty chunks are omitted.
+     * Splits a string into an array using provided delimiters. Empty (but not blank) split chunks are omitted.
+     * The split chunks are trimmed.
      *
      * @param input string to split.
      * @param delimiters delimiters
-     * @return a string split into an array using provided delimiters, or an empty array if input is null
+     * @return a string split into an array using provided delimiters
      */
     public static String[] split(String input, String delimiters) {
+        if(input == null) throw new NullPointerException("input cannot be null");
+
         List<String> tokens  = new ArrayList<String>();
-        if (input != null) {
-            StringTokenizer st = new StringTokenizer(input, delimiters);
-            while (st.hasMoreTokens()) {
-                String token = st.nextToken().trim();
-                if (!token.isEmpty()) {
-                    tokens.add(token);
-                }
-            }
+        StringTokenizer st = new StringTokenizer(input, delimiters);
+        while(st.hasMoreTokens()){
+            tokens.add(st.nextToken().trim());
         }
         return tokens.toArray(new String[tokens.size()]);
     }
 
     /**
-     * Splits a string into an array using provided delimiter. The split chunks are trimmed,
-     * and empty chunks are omitted. If input string is <tt>null</tt>, returns an empty array.
-     *
-     * <blockquote><pre>
-     * Util.split(null, *)             = []
-     * Util.split("", *)               = []
-     * Util.split(" / ", '/')          = []
-     * Util.split("a/b/c", '/')        = ["a", "b", "c"]
-     * Util.split("/ a/ / b/ c", '/')  = ["a", "b", "c"]
-     * </pre></blockquote>
+     * Splits a string into an array using provided delimiter. Empty (but not blank) split chunks are omitted.
+     * The split chunks are trimmed.
      *
      * @param input string to split.
      * @param delimiter delimiter
-     * @return a string split into an array using a provided delimiter, or an empty array if input is null
+     * @return a string split into an array using a provided delimiter
      */
     public static String[] split(String input, char delimiter) {
         return split(input, String.valueOf(delimiter));
