@@ -24,7 +24,6 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -174,6 +173,19 @@ public class ToJsonSpec extends ActiveJDBCTest {
         the(comments.get(0).get("content")).shouldBeEqual("this is just a test comment text");
         the(tags.size()).shouldBeEqual(1);
         the(tags.get(0).get("content")).shouldBeEqual("orm");
+    }
+
+    @Test
+    public void shouldKeepParametersCase() {
+        Person p = Person.create("name", "Joe", "last_name", "Schmoe");
+
+        Map map = JsonHelper.toMap(p.toJson(true));
+        a(map.get("name")).shouldBeEqual("Joe");
+        a(map.get("last_name")).shouldBeEqual("Schmoe");
+
+        map = JsonHelper.toMap(p.toJson(true, "Name", "Last_Name"));
+        a(map.get("Name")).shouldBeEqual("Joe");
+        a(map.get("Last_Name")).shouldBeEqual("Schmoe");
     }
 }
 

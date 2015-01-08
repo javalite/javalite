@@ -158,4 +158,16 @@ public class ToFromXmlSpec extends ActiveJDBCTest {
         the(h.selectText("/articles/article[1]/tags/tag[1]/content")).shouldBeEqual("orm");
     }
 
+    @Test
+    public void shouldKeepParametersCase() {
+        Person p = Person.create("name", "Joe", "last_name", "Schmoe");
+
+        String xml = p.toXml(true, true);
+        the(xml).shouldContain("<name>Joe</name>");
+        the(xml).shouldContain("<last_name>Schmoe</last_name>");
+
+        xml = p.toXml(true, true, "Name", "Last_Name");
+        the(xml).shouldContain("<Name>Joe</Name>");
+        the(xml).shouldContain("<Last_Name>Schmoe</Last_Name>");
+    }
 }

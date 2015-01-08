@@ -782,10 +782,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         sb.append('<').append(topTag).append('>');
         if (pretty) { sb.append('\n'); }
 
-        Collection<String> attrList = (attrs != null && attrs.length > 0) ? Arrays.asList(attrs) : attributes.keySet();
+        List<String> attrList = !empty(attrs) ? Arrays.asList(attrs) : attributeNamesLowerCased();
         for (String name : attrList) {
             if (pretty) { sb.append("  ").append(indent); }
-            name = name.toLowerCase(); // force output attribute names in lowercase
             sb.append('<').append(name).append('>');
             Object v = attributes.get(name);
             if (v != null) {
@@ -886,22 +885,21 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         if (pretty) { sb.append(indent); }
         sb.append('{');
 
-        StringBuilder sbAttrs = new StringBuilder();
-        Collection<String> attrList = (attrs != null && attrs.length > 0) ? Arrays.asList(attrs) : attributes.keySet();
-        for (String name : attrList) {
-            if (sbAttrs.length() > 0) { sbAttrs.append(','); }
-            if (pretty) { sbAttrs.append("\n  ").append(indent); }
-            name = name.toLowerCase(); // force output attribute names in lowercase
-            sbAttrs.append('"').append(name).append("\":");
+        List<String> attrList = !empty(attrs) ? Arrays.asList(attrs) : attributeNamesLowerCased();
+        for (int i = 0; i < attrList.size(); i++) {
+            if (i > 0) { sb.append(','); }
+            if (pretty) { sb.append("\n  ").append(indent); }
+            String name = attrList.get(i);
+            sb.append('"').append(name).append("\":");
             Object v = attributes.get(name);
             if (v == null) {
-                sbAttrs.append("null");
+                sb.append("null");
             } else if (v instanceof Number || v instanceof Boolean) {
-                sbAttrs.append(v);
+                sb.append(v);
             } else if (v instanceof Date) {
-                sbAttrs.append('"').append(isoDateTimeFormater.format((Date) v)).append('"');
+                sb.append('"').append(isoDateTimeFormater.format((Date) v)).append('"');
             } else {
-                sbAttrs.append('"').append(Convert.toString(v)
+                sb.append('"').append(Convert.toString(v)
                         .replace("\\", "\\\\")  // \
                         .replace("\"", "\\\"")  // "
                         .replace("\b", "\\b")   // \b
@@ -912,7 +910,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 ).append('"');
             }
         }
-        sb.append(sbAttrs);
 
         if (cachedChildren != null && cachedChildren.size() > 0) {
 
@@ -981,6 +978,15 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     @Deprecated
     public void beforeClosingBrace(boolean pretty, String indent, StringWriter writer) {
         // do nothing
+    }
+
+    private List<String> attributeNamesLowerCased() {
+        Set<String> attrs = attributes.keySet();
+        List<String> list = new ArrayList<String>(attrs.size());
+        for (String attr : attrs) {
+            list.add(attr.toLowerCase());
+        }
+        return list;
     }
 
     /**
