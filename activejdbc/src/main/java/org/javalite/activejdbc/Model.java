@@ -981,9 +981,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     private List<String> attributeNamesLowerCased() {
-        Set<String> attrs = attributes.keySet();
-        List<String> list = new ArrayList<String>(attrs.size());
-        for (String attr : attrs) {
+        List<String> list = new ArrayList<String>(attributes.size());
+        for (String attr : attributes.keySet()) {
             list.add(attr.toLowerCase());
         }
         return list;
@@ -1782,7 +1781,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     /**
      * Validates email format.
      *
-     * @param attribute name of atribute that holds email value.
+     * @param attribute name of attribute that holds email value.
      * @return
      */
     protected static ValidationBuilder validateEmailOf(String attribute) {
