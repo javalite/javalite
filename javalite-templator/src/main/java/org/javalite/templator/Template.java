@@ -90,7 +90,7 @@ public class Template {
 
             //process tail if there is some
             if (i == (template.length() - 1)) {
-                String tail = template.substring(cursor + 1, i + 1);
+                String tail = template.substring(cursor == 0? 0 : cursor + 1, i + 1);
                 if (!blank(tail)) {
                     builtIn.add(new StringToken(tail));
                 }

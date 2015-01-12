@@ -30,13 +30,13 @@ public interface TemplateManager {
      * Merges values with templates and writes a merged template to the writer.
      *
      * @param values values to be merged.
-     * @param template name of template in format: <code>dir/template</code> without
+     * @param templateName name of template in format: <code>dir/template</code> without
      * file extension. This is to support multiple template technologies in the future.
      * @param writer Writer to write results to.
      *
      * @param layout name of layout, <code>null</code> if no layout is needed.
      */
-    void merge(Map values, String template, String layout, String format, Writer writer);
+    void merge(Map values, String templateName, String layout, String format, Writer writer);
 
 
     /**
