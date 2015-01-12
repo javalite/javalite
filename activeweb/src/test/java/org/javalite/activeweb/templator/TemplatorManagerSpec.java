@@ -38,7 +38,7 @@ import static org.javalite.common.Collections.map;
  */
 public class TemplatorManagerSpec extends JSpecSupport {
 
-    TemplatorManager manager = new TemplatorManager();
+    private TemplatorManager manager = new TemplatorManager();
 
     @Before
     public void before() throws IOException {
