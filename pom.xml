@@ -31,6 +31,7 @@
         <module>activeweb-testing</module>
         <module>activeweb-gwt</module>
         <module>activeweb-lessc</module>
+        <module>javalite-templator</module>
     </modules>
 
     <properties>
