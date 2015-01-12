@@ -57,9 +57,13 @@ public class ListTag extends AbstractTag {
                 throw new TemplateException("cannot process ListTag because collection '" + collectionName + "' is not a java.util.Collection or array");
             }
 
-            for (Object val : targetCollection) {
+            Object[] objects = targetCollection.toArray();
+            for (int i = 0; i < objects.length; i++) {
+                Object val = objects[i];
                 Map newVals = new HashMap(values);
                 newVals.put(varName, val);
+                newVals.put(varName + "_index", i);
+                newVals.put(varName + "_has_next", i < (objects.length - 1));
                 bodyTemplate.process(newVals, writer);
             }
         }

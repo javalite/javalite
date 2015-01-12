@@ -111,13 +111,13 @@ public class TemplateSpec {
     @Test
     public void shouldIterateWithList() {
         TemplatorConfig.instance().registerTag("list", new ListTag());
-        String source = "<html><#list people as person > name: ${person.firstName}, ${person.lastName} </#list></html>";
+        String source = "<html><#list people as person > name: ${person.firstName} ${person.lastName}, has more: ${person_has_next}, index: ${person_index} </#list></html>";
         Template template = new Template(source);
         Person2 p1 = new Person2("John", "Doe");
         Person2 p2 = new Person2("Jane", "Doe");
 
         StringWriter w = new StringWriter();
         template.process(map("people", list(p1, p2)), w);
-        a(w.toString()).shouldBeEqual("<html> name: John, Doe name: Jane, Doe</html>");
+        a(w.toString()).shouldBeEqual("<html> name: John Doe, has more: true, index: 0 name: Jane Doe, has more: false, index: 1</html>");
     }
 }
