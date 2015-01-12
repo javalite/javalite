@@ -16,8 +16,6 @@ limitations under the License.
 
 package org.javalite.activeweb.controller_filters;
 
-import org.javalite.activeweb.RequestUtils;
-
 import java.util.Map;
 
 /**

@@ -1,7 +1,6 @@
 package org.javalite.activeweb.controllers;
 
 import org.javalite.activeweb.AppController;
-import org.javalite.activeweb.controller_filters.HttpSupportFilter;
 
 import java.io.File;
 import java.io.IOException;
