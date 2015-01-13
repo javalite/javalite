@@ -20,7 +20,6 @@ import static org.javalite.common.Util.blank;
 public class TemplatorManager implements TemplateManager {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
-
     private String defaultLayout = "/layouts/default_layout";
 
     @Override
@@ -66,8 +65,6 @@ public class TemplatorManager implements TemplateManager {
     public void setTemplateLocation(String templateLocation) {
         TemplatorConfig.instance().setTemplateLocation(templateLocation);
     }
-
-
 
     public void setDefaultLayout(String layoutPath) {
         defaultLayout = layoutPath;

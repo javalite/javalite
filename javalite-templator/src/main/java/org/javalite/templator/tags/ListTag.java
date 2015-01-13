@@ -48,7 +48,7 @@ public class ListTag extends AbstractTag {
         Collection  targetCollection;
         Object collection = values.get(collectionName);
 
-        if(values.containsKey(collectionName)){ //forgiving mode, should build a strict more later
+        if(values.containsKey(collectionName)){ //forgiving mode, should build a strict mode later
             if(collection.getClass().isArray()){
                 targetCollection = Arrays.asList(collection);
             }else if(collection instanceof Collection){

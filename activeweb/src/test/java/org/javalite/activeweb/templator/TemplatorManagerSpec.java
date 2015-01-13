@@ -16,22 +16,17 @@ limitations under the License.
 
 package org.javalite.activeweb.templator;
 
-import freemarker.template.TemplateException;
 import org.dom4j.DocumentException;
-import org.javalite.activeweb.freemarker.FreeMarkerTemplateManager;
 import org.javalite.test.XPathHelper;
 import org.javalite.test.jspec.JSpecSupport;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.javalite.common.Collections.map;
 
 /**
  * @author Igor Polevoy
@@ -139,4 +134,7 @@ public class TemplatorManagerSpec extends JSpecSupport {
         manager.merge(new HashMap(), "/formatting/index", "/layouts/default_layout", "xml", sw);
         a(sw.toString()).shouldContain("XML");
     }
+
+    @Test @Ignore //TODO: complete
+    public void shouldTestCaching() {}
 }

@@ -66,7 +66,7 @@ class MergeToken extends TemplateToken {
                 if(val == null){
                     //try properties
                     try{
-                        Method m = obj.getClass().getDeclaredMethod("get" + capitalize(propertyName));
+                        Method m = obj.getClass().getMethod("get" + capitalize(propertyName));
                         val = m.invoke(obj);
                     }catch(NoSuchMethodException ignore){}
                 }

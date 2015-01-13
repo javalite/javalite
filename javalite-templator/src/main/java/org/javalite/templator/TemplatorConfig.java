@@ -4,6 +4,8 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 import org.javalite.common.Util;
+import org.javalite.templator.tags.IfTag;
+import org.javalite.templator.tags.ListTag;
 
 import javax.servlet.ServletContext;
 import java.io.File;
@@ -21,10 +23,15 @@ public enum TemplatorConfig {
 
     INSTANCE;
 
+    private TemplatorConfig(){
+        registerTag("list", ListTag.class);
+        registerTag("if", IfTag.class);
+    }
+
     private final static String CACHE_GROUP = "templates";
     private final CacheManager cacheManager = CacheManager.create();
-    private final Map<String, AbstractTag> tags = new HashMap<String, AbstractTag>();
-    private boolean cacheTemplates = blank(System.getenv("ACTIVE_ENV")) || "development".equals(System.getenv("ACTIVE_ENV"));
+    private final Map<String, Class> tags = new HashMap<String, Class>();
+    private boolean cacheTemplates = !(blank(System.getenv("ACTIVE_ENV")) || "development".equals(System.getenv("ACTIVE_ENV")));
     private String templateLocation;
     private ServletContext servletContext;
 
@@ -41,15 +48,22 @@ public enum TemplatorConfig {
         this.cacheTemplates = cacheTemplates;
     }
 
-    public void registerTag(String name, AbstractTag tag) {
-        tags.put(name, tag);
+    public void registerTag(String name, Class tagClass) {
+        if(tags.containsKey(name)){
+            throw new TemplateException("Tag named " + name + " already registered");
+        }
+        tags.put(name, tagClass);
     }
 
-    public AbstractTag getTag(String name) {
+    public AbstractTag getTag(String name)  {
         if (!tags.containsKey(name))
             throw new TemplateException("Tag named '" + name + "' was not registered");
 
-        return tags.get(name);
+        try{
+            return (AbstractTag)tags.get(name).newInstance();
+        }catch(Exception e){
+            throw  new TemplateException(e);
+        }
     }
 
     public String getTemplateSource(String templateName) {

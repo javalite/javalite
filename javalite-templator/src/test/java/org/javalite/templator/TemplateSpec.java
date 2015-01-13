@@ -1,6 +1,6 @@
 package org.javalite.templator;
 
-import org.javalite.templator.tags.ListTag;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.StringWriter;
@@ -116,7 +116,7 @@ public class TemplateSpec {
 
     @Test
     public void shouldParseSimpleTag() {
-        TemplatorConfig.instance().registerTag("list", new ListTag());
+
         String source = "<html><#list people as person /></html>";
         Template template = new Template(source);
         a(template.builtInTokens().size()).shouldBeEqual(3);
@@ -126,17 +126,18 @@ public class TemplateSpec {
 
     @Test
     public void shouldParseTagWithBody() {
-        TemplatorConfig.instance().registerTag("list", new ListTag());
-        String source = "<html><#list people as person > body </#list></html>";
+        String source = "<html><#list people as person > body </#list> <#list people as person > body1 </#list> </html>";
         Template template = new Template(source);
-        a(template.builtInTokens().size()).shouldBeEqual(3);
+        a(template.builtInTokens().size()).shouldBeEqual(5);
         AbstractTag t = (AbstractTag) template.builtInTokens().get(1);
         a(t.getBody()).shouldBeEqual(" body ");
+        t = (AbstractTag) template.builtInTokens().get(3);
+        a(t.getBody()).shouldBeEqual(" body1 ");
+
     }
 
     @Test
     public void shouldIterateWithList() {
-        TemplatorConfig.instance().registerTag("list", new ListTag());
         String source = "<html><#list people as person > name: ${person.firstName} ${person.lastName}, has more: ${person_has_next}, index: ${person_index} </#list></html>";
         Template template = new Template(source);
         Person2 p1 = new Person2("John", "Doe");
@@ -146,4 +147,52 @@ public class TemplateSpec {
         template.process(map("people", list(p1, p2)), w);
         a(w.toString()).shouldBeEqual("<html> name: John Doe, has more: true, index: 0 name: Jane Doe, has more: false, index: 1</html>");
     }
+
+    @Test
+    public void shouldIterateWithListAndSimpleCondition() {
+
+        String source = "<html><#list people as person > name: ${person.firstName} ${person.lastName} <#if person_has_next > | </#if> </#list></html>";
+        Template template = new Template(source);
+        Person2 p1 = new Person2("John", "Doe");
+        Person2 p2 = new Person2("Jane", "Kirkland");
+
+        StringWriter w = new StringWriter();
+        template.process(map("people", list(p1, p2)), w);
+        a(w.toString()).shouldBeEqual("<html> name: John Doe  |  name: Jane Kirkland </html>");
+    }
+
+    @Test @Ignore //TODO
+    public void implement() {
+        /*
+
+        Implement two operand conditions with operators:
+
+        >
+        <
+        >=
+        <=
+        ||
+        &&
+        eq - this is for .equals
+
+         */
+
+    }
+
+
+    @Test @Ignore //TODO
+    public void implement1() {
+        /*
+        implement else:
+
+         <#if condition >
+
+         <else>
+
+         <#if>
+
+         */
+
+    }
+
 }
