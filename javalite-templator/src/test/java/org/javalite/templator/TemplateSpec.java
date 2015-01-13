@@ -61,6 +61,27 @@ public class TemplateSpec {
         a(w.toString()).shouldBeEqual("<html>Hello, John - your last name is Doe</html>");
     }
 
+    class Message {
+        private final String message;
+
+        private Message(String message) {
+            this.message = message;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+    }
+
+    @Test
+    public void shouldMergeSimpleJson() {
+        String source = "{\"message\":\"${message.message}\"}";
+        Template template = new Template(source);
+
+        StringWriter w = new StringWriter();
+        template.process(map("message", new Message("Hello, world")), w);
+        a(w.toString()).shouldBeEqual("{\"message\":\"Hello, world\"}");
+    }
 
     public static class Person2 {
         private String firstName, lastName;
