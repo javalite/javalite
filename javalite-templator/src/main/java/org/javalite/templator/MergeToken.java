@@ -58,7 +58,7 @@ class MergeToken extends TemplateToken {
                 //try generic get method
                 if(val == null){
                     try{
-                        Method m = obj.getClass().getDeclaredMethod("get", String.class);
+                        Method m = obj.getClass().getMethod("get", String.class);
                         val = m.invoke(obj, propertyName);
                     }catch(NoSuchMethodException ignore){}
                 }
