@@ -1,5 +1,8 @@
 package org.javalite.templator;
 
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
 import org.javalite.common.Util;
 
 import javax.servlet.ServletContext;
@@ -8,6 +11,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.javalite.common.Util.blank;
 import static org.javalite.common.Util.readFile;
 
 /**
@@ -15,17 +19,27 @@ import static org.javalite.common.Util.readFile;
  */
 public enum TemplatorConfig {
 
-    INSTANCE; //singleton
+    INSTANCE;
 
+    private final static String CACHE_GROUP = "templates";
+    private final CacheManager cacheManager = CacheManager.create();
+    private final Map<String, AbstractTag> tags = new HashMap<String, AbstractTag>();
+    private boolean cacheTemplates = blank(System.getenv("ACTIVE_ENV")) || "development".equals(System.getenv("ACTIVE_ENV"));
     private String templateLocation;
     private ServletContext servletContext;
-
-    private final Map<String, AbstractTag> tags = new HashMap<String, AbstractTag>();
 
     public static TemplatorConfig instance() {
         return INSTANCE;
     }
 
+    /**
+     * Set to cache or not cache templates.
+     *
+     * @param cacheTemplates true to cache, false to not.
+     */
+    public void cacheTemplates(boolean cacheTemplates) {
+        this.cacheTemplates = cacheTemplates;
+    }
 
     public void registerTag(String name, AbstractTag tag) {
         tags.put(name, tag);
@@ -39,6 +53,23 @@ public enum TemplatorConfig {
     }
 
     public String getTemplateSource(String templateName) {
+        String templateSource;
+        if(cacheTemplates){
+            templateSource = getCache(templateName);
+            if(templateSource != null){
+                return templateSource;
+            }else{
+                templateSource = loadTemplate(templateName);
+                addCache(templateName, templateSource);
+                return templateSource;
+            }
+        }else{
+            return loadTemplate(templateName);
+        }
+    }
+
+
+    private String loadTemplate(String templateName){
         String slash = templateName.startsWith("/") ? "" : "/";
         //for tests, load from location
         if (templateLocation != null) {
@@ -65,10 +96,9 @@ public enum TemplatorConfig {
         try {
             URL url = servletContext.getResource(fullPath);
             return Util.read(url.openStream(), "UTF-8");
-        } catch (Exception e) {
-            throw new TemplateException(e);
-        }
+        } catch (Exception e) {throw new TemplateException(e);}
     }
+
 
     /**
      * This is used in tests.
@@ -86,4 +116,31 @@ public enum TemplatorConfig {
         this.servletContext = ctx;
     }
 
+
+    public String getCache(String key) {
+        try {
+            createIfMissing();
+            Cache c = cacheManager.getCache(CACHE_GROUP);
+            return c.get(key) == null ? null : c.get(key).getObjectValue().toString();
+        } catch (Exception e) {return null;}
+    }
+
+
+    public void addCache(String key, Object cache) {
+        createIfMissing();
+        cacheManager.getCache(CACHE_GROUP).put(new Element(key, cache));
+    }
+
+    public void flush() {
+        cacheManager.removalAll();
+    }
+
+    private void createIfMissing() {
+        //double-checked synchronization is broken in Java, but this should work just fine.
+        if (cacheManager.getCache(CACHE_GROUP) == null) {
+            try {
+                cacheManager.addCache(CACHE_GROUP);
+            } catch (net.sf.ehcache.ObjectExistsException ignore) {}
+        }
+    }
 }

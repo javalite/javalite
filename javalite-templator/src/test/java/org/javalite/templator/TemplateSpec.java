@@ -88,6 +88,32 @@ public class TemplateSpec {
         a(w.toString()).shouldBeEqual("<html>Hello, John - your last name is Doe</html>");
     }
 
+
+    public static class Person3 {
+        private String firstName, lastName;
+        public Person3(String firstName, String lastName) { this.firstName = firstName; this.lastName = lastName; }
+        public String get(String attribute) {
+            if(attribute.equals("first_name"))
+            return firstName;
+            else if(attribute.equals("last_name")){
+                return lastName;
+            }else{
+                return null;
+            }
+        }
+    }
+
+    @Test // this is for ActiveJDBC models.
+    public void shouldMergeTemplateWithGenericGetters() {
+        String source = "<html>Hello, ${person.first_name} - your last name is ${person.last_name}</html>";
+        Template template = new Template(source);
+        Person3 p = new Person3("John", "Doe");
+        StringWriter w = new StringWriter();
+        template.process(map("person", p), w);
+        a(w.toString()).shouldBeEqual("<html>Hello, John - your last name is Doe</html>");
+    }
+
+
     @Test
     public void shouldParseSimpleTag() {
         TemplatorConfig.instance().registerTag("list", new ListTag());

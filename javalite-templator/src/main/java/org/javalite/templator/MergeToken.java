@@ -55,6 +55,14 @@ class MergeToken extends TemplateToken {
                     val = objectMap.get(propertyName);
                 }
 
+                //try generic get method
+                if(val == null){
+                    try{
+                        Method m = obj.getClass().getDeclaredMethod("get", String.class);
+                        val = m.invoke(obj, propertyName);
+                    }catch(NoSuchMethodException ignore){}
+                }
+
                 if(val == null){
                     //try properties
                     try{
