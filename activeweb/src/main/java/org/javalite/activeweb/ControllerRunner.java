@@ -18,6 +18,7 @@ package org.javalite.activeweb;
 import org.javalite.activeweb.controller_filters.ControllerFilter;
 import com.google.inject.Injector;
 import org.javalite.activeweb.freemarker.AbstractFreeMarkerConfig;
+import org.javalite.activeweb.freemarker.FreeMarkerTemplateManager;
 import org.javalite.common.Inflector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,8 @@ import static org.javalite.common.Util.join;
  * @author Igor Polevoy
  */
 class ControllerRunner {
+
+    private boolean injectTags = Configuration.getTemplateManager() instanceof FreeMarkerTemplateManager;
 
     private static Logger logger = LoggerFactory.getLogger(ControllerRunner.class.getName());
     private boolean tagsInjected = false;
@@ -63,7 +66,10 @@ class ControllerRunner {
                 }
             }
 
-            injectFreemarkerTags();
+            if(injectTags){
+                injectFreemarkerTags();
+            }
+
             renderResponse(route, integrateViews);
             processFlash();
 
