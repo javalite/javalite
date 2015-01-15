@@ -49,8 +49,6 @@ class MergeToken extends TemplateToken {
             String[] parts = Util.split(mergeSpec, '.');
             this.objectName = parts[0];
             this.propertyName = parts[1];
-        } else {
-            throw new ParseException("Failed to parse: " + mergeSpec);
         }
     }
 
