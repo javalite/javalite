@@ -215,12 +215,7 @@ public class Expectation<T> {
     /**
      * Tests that an expected value is contained in the tested object. The tested object can be of the following types:
      * <ul>
-     *     <li>Any object - in this case, the string representation of this object is tested to contain a string representation of
-     *     expected value as a substring.<br/>For example, this will pass:
-     *     <pre><code>
-     *         the("meaning of life is 42").shouldContain("meaning");
-     *     </code>
-     *     </pre></li>
+     *
      *     <li><code>java.util.List</code> - in this case, the tested list is expected to contain an expected object.
      *     <br/>For example, this will pass: <pre><code>
      *         a(Arrays.asList(1, 2, 3)).shouldContain(3);
@@ -239,6 +234,12 @@ public class Expectation<T> {
      *     </code>
      *     </pre>
      *     </li>
+     *     <li>Any object - in this case, the string representation of this object is tested to contain a string representation of
+     *     expected value as a substring.<br/>For example, this will pass:
+     *     <pre><code>
+     *         the("meaning of life is 42").shouldContain("meaning");
+     *     </code>
+     *     </pre></li>
      * </ul>
      *
      * @param expected value that is expected to be contained in a tested object.
@@ -262,19 +263,13 @@ public class Expectation<T> {
         checkNull();
         if(actual instanceof List){
             List actualList = (List) actual;
-            if(actualList.contains(expected)){
-                return true;
-            }
-        }
-
-        if(actual instanceof Map){
+            return actualList.contains(expected);
+        }else if(actual instanceof Map){
             Map actualMap = (Map) actual;
-            if(actualMap.containsKey(expected)){
-                return true;
-            }
+            return actualMap.containsKey(expected);
+        }else {
+            return actual.toString().contains(expected.toString());
         }
-
-        return actual.toString().contains(expected.toString());
     }
 
     /**

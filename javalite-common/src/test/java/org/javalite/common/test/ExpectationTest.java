@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static org.javalite.common.Collections.list;
 import static org.javalite.common.Collections.map;
 import static org.javalite.test.jspec.JSpec.a;
 import static org.javalite.test.jspec.JSpec.the;
@@ -72,6 +73,27 @@ public class ExpectationTest {
 
         //map
         a(map("one", 1, "two", 2)).shouldNotContain("three");
+    }
+
+    static class Person{
+        String firstName;
+        Person(String firstName) {
+            this.firstName = firstName;
+        }
+
+        @Override
+        public String toString() {
+            return "hello";
+        }
+    }
+    @Test
+    public void shouldTestNegativeContainsWithObjects(){
+
+        List<Person> list = list(new Person("Jack"), new Person("Mary"));
+        System.out.println(list);
+        System.out.println(new Person("Mike"));
+        a(list).shouldNotContain(new Person("Mike"));
+
     }
 
 
