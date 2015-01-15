@@ -26,11 +26,13 @@ public enum TemplatorConfig {
     private TemplatorConfig(){
         registerTag("list", ListTag.class);
         registerTag("if", IfTag.class);
+        registerBuiltIn("esc", new Esc());
     }
 
     private final static String CACHE_GROUP = "templates";
     private final CacheManager cacheManager = CacheManager.create();
     private final Map<String, Class> tags = new HashMap<String, Class>();
+    private final Map<String, BuiltIn> builtIns = new HashMap<String, BuiltIn>();
     private boolean cacheTemplates = !(blank(System.getenv("ACTIVE_ENV")) || "development".equals(System.getenv("ACTIVE_ENV")));
     private String templateLocation;
     private ServletContext servletContext;
@@ -54,6 +56,26 @@ public enum TemplatorConfig {
         }
         tags.put(name, tagClass);
     }
+
+
+    public void registerBuiltIn(String name, BuiltIn builtIn) {
+        if(builtIns.containsKey(name)){
+            throw new TemplateException("BuiltIn named " + name + " already registered");
+        }
+        builtIns.put(name, builtIn);
+    }
+
+    public BuiltIn getBuiltIn(String name)  {
+        if (!builtIns.containsKey(name))
+            throw new TemplateException("BuiltIn named '" + name + "' was not registered");
+
+        try{
+            return builtIns.get(name);
+        }catch(Exception e){
+            throw  new TemplateException(e);
+        }
+    }
+
 
     public AbstractTag getTag(String name)  {
         if (!tags.containsKey(name))

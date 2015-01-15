@@ -182,6 +182,18 @@ public class TemplateSpec {
         a(w.toString()).shouldBeEqual("<html> name: John Doe  |  name: Jane Kirkland </html>");
     }
 
+    @Test
+    public void shouldUseBuiltIn() {
+
+        String source = "<html>${article.content esc}</html>";
+        Template template = new Template(source);
+        StringWriter w = new StringWriter();
+        template.process(map("article", map("content", "this & that")), w);
+
+        a(w.toString()).shouldBeEqual("<html>this &amp; that</html>");
+
+    }
+
     @Test @Ignore //TODO
     public void implement() {
         /*
