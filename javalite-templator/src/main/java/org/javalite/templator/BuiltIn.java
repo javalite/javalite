@@ -12,7 +12,12 @@ package org.javalite.templator;
  *
  * <p></p>
  *
- * Subclasses must be stateless.
+ * Think of a built-in as a function that will do the last minute formatting of a value before merging it into
+ * a template.
+ *
+ * <p></p>
+ *
+ * <strong>Subclasses must be stateless.</strong>
  *
  * @author Igor Polevoy on 1/15/15.
  */
