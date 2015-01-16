@@ -25,7 +25,6 @@ import org.javalite.activejdbc.validation.ValidationBuilder;
 import org.javalite.activejdbc.validation.ValidationException;
 import org.javalite.activejdbc.validation.Validator;
 import org.javalite.common.Convert;
-import org.javalite.common.XmlEntities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -48,6 +47,7 @@ import org.javalite.activejdbc.validation.EmailValidator;
 import org.javalite.activejdbc.validation.RangeValidator;
 import org.javalite.activejdbc.validation.RegexpValidator;
 import org.javalite.activejdbc.validation.TimestampConverter;
+import org.javalite.common.Escape;
 
 import static org.javalite.common.Inflector.*;
 import static org.javalite.common.Util.*;
@@ -782,13 +782,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         sb.append('<').append(topTag).append('>');
         if (pretty) { sb.append('\n'); }
 
-        List<String> attrList = !empty(attrs) ? Arrays.asList(attrs) : attributeNamesLowerCased();
-        for (String name : attrList) {
+        String[] names = !empty(attrs) ? attrs : attributeNamesLowerCased();
+        for (String name : names) {
             if (pretty) { sb.append("  ").append(indent); }
             sb.append('<').append(name).append('>');
             Object v = attributes.get(name);
             if (v != null) {
-                sb.append(XmlEntities.XML.escape(Convert.toString(v)));
+                Escape.xml(sb, Convert.toString(v));
             }
             sb.append("</").append(name).append('>');
             if (pretty) { sb.append('\n'); }
@@ -885,11 +885,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         if (pretty) { sb.append(indent); }
         sb.append('{');
 
-        List<String> attrList = !empty(attrs) ? Arrays.asList(attrs) : attributeNamesLowerCased();
-        for (int i = 0; i < attrList.size(); i++) {
+        String[] names = !empty(attrs) ? attrs : attributeNamesLowerCased();
+        for (int i = 0; i < names.length; i++) {
             if (i > 0) { sb.append(','); }
             if (pretty) { sb.append("\n  ").append(indent); }
-            String name = attrList.get(i);
+            String name = names[i];
             sb.append('"').append(name).append("\":");
             Object v = attributes.get(name);
             if (v == null) {
@@ -899,15 +899,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             } else if (v instanceof Date) {
                 sb.append('"').append(isoDateTimeFormater.format((Date) v)).append('"');
             } else {
-                sb.append('"').append(Convert.toString(v)
-                        .replace("\\", "\\\\")  // \
-                        .replace("\"", "\\\"")  // "
-                        .replace("\b", "\\b")   // \b
-                        .replace("\f", "\\f")   // \f
-                        .replace("\n", "\\n")   // \n
-                        .replace("\r", "\\r")   // \r
-                        .replace("\t", "\\t")   // \t
-                ).append('"');
+                sb.append('"');
+                Escape.json(sb, Convert.toString(v));
+                sb.append('"');
             }
         }
 
@@ -980,12 +974,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         // do nothing
     }
 
-    private List<String> attributeNamesLowerCased() {
-        List<String> list = new ArrayList<String>(attributes.size());
+    private String[] attributeNamesLowerCased() {
+        String[] array = new String[attributes.size()];
+        int i = 0;
         for (String attr : attributes.keySet()) {
-            list.add(attr.toLowerCase());
+            array[i++] = attr.toLowerCase();
         }
-        return list;
+        return array;
     }
 
     /**
