@@ -148,14 +148,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <code>java.sql.Date</code>, given the value is an instance of <code>S</code>, then it will be used,
      * otherwise performs a conversion using {@link Convert#toSqlDate(Object)}.
      *
-     * @param attribute name of attribute.
+     * @param attributeName name of attribute.
      * @param value value to convert.
      * @return reference to this model.
      */
-    public <T extends Model> T setDate(String attribute, Object value) {
+    public <T extends Model> T setDate(String attributeName, Object value) {
         Converter<Object, java.sql.Date> converter = modelRegistryLocal().converterForValue(
-                attribute, value, java.sql.Date.class);
-        return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toSqlDate(value));
+                attributeName, value, java.sql.Date.class);
+        return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toSqlDate(value));
     }
 
     /**
@@ -164,13 +164,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <code>java.sql.Date</code>, given the attribute value is an instance of <code>S</code>, then it will be used,
      * otherwise performs a conversion using {@link Convert#toSqlDate(Object)}.
      *
-     * @param attribute name of attribute to convert
+     * @param attributeName name of attribute to convert
      * @return value converted to <code>java.sql.Date</code>
      */
-    public java.sql.Date getDate(String attribute) {
-        Object value = getRaw(attribute);
+    public java.sql.Date getDate(String attributeName) {
+        Object value = getRaw(attributeName);
         Converter<Object, java.sql.Date> converter = modelRegistryLocal().converterForValue(
-                attribute, value, java.sql.Date.class);
+                attributeName, value, java.sql.Date.class);
         return converter != null ? converter.convert(value) : Convert.toSqlDate(value);
     }
 
@@ -213,25 +213,25 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <code>java.lang.Object</code>, given the value is an instance of <code>S</code>, then it will be used and the
      * converted value will be set.
      *
-     * @param attribute name of attribute to set. Names not related to this model will be rejected (those not matching table columns).
+     * @param attributeName name of attribute to set. Names not related to this model will be rejected (those not matching table columns).
      * @param value value of attribute. Feel free to set any type, as long as it can be accepted by your driver.
      * @return reference to self, so you can string these methods one after another.
      */
-    public <T extends Model> T set(String attribute, Object value) {
-        Converter<Object, Object> converter = modelRegistryLocal().converterForValue(attribute, value, Object.class);
-        return setRaw(attribute, converter != null ? converter.convert(value) : value);
+    public <T extends Model> T set(String attributeName, Object value) {
+        Converter<Object, Object> converter = modelRegistryLocal().converterForValue(attributeName, value, Object.class);
+        return setRaw(attributeName, converter != null ? converter.convert(value) : value);
     }
 
     /**
      * Sets raw value of an attribute, without applying conversions.
      */
-    private <T extends Model> T setRaw(String attribute, Object value) {
-        if (manageTime && attribute.equalsIgnoreCase("created_at")) {
+    private <T extends Model> T setRaw(String attributeName, Object value) {
+        if (manageTime && attributeName.equalsIgnoreCase("created_at")) {
             throw new IllegalArgumentException("cannot set 'created_at'");
         }
-        getMetaModelLocal().checkAttributeOrAssociation(attribute);
+        getMetaModelLocal().checkAttributeOrAssociation(attributeName);
 
-        attributes.put(attribute, value);
+        attributes.put(attributeName, value);
         return (T) this;
     }
 
@@ -249,11 +249,25 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     /**
      * Returns names of all attributes from this model.
      * @return names of all attributes from this model.
+     * @deprecated use {@link #attributeNames()} instead
      */
+    @Deprecated
     public static SortedSet<String> attributes(){
         return attributes(getDaClass());
     }
+    @Deprecated
     protected static SortedSet<String> attributes(Class<? extends Model> clazz) {
+        return getMetaModel(clazz).getAttributeNames();
+    }
+
+    /**
+     * Returns names of all attributes from this model.
+     * @return names of all attributes from this model.
+     */
+    public static SortedSet<String> attributeNames() {
+        return attributeNames(getDaClass());
+    }
+    protected static SortedSet<String> attributeNames(Class<? extends Model> clazz) {
         return getMetaModel(clazz).getAttributeNames();
     }
 
@@ -742,15 +756,15 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             }
             NodeList childNodes = root.getChildNodes();
 
-            Map<String, String> attributes = new HashMap<String, String>();
+            Map<String, String> attributesMap = new HashMap<String, String>();
             for(int i = 0; i < childNodes.getLength();i++){
                 Node node  = childNodes.item(i);
                 if(node instanceof Element){
                     Element child = (Element) node;
-                    attributes.put(child.getTagName(), child.getFirstChild().getNodeValue());//this is even dumber!
+                    attributesMap.put(child.getTagName(), child.getFirstChild().getNodeValue());//this is even dumber!
                 }
             }
-            fromMap(attributes);
+            fromMap(attributesMap);
         }catch(Exception e){
             throw  new InitException(e);
         }
@@ -761,28 +775,28 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @param pretty pretty format (human readable), or one line text.
      * @param declaration true to include XML declaration at the top
-     * @param attrs list of attributes to include. No arguments == include all attributes.
+     * @param attributeNames list of attributes to include. No arguments == include all attributes.
      * @return generated XML.
      */
-    public String toXml(boolean pretty, boolean declaration, String... attrs) {
+    public String toXml(boolean pretty, boolean declaration, String... attributeNames) {
         StringBuilder sb = new StringBuilder();
 
         if(declaration) {
             sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             if (pretty) { sb.append('\n'); }
         }
-        toXmlP(sb, pretty, "", attrs);
+        toXmlP(sb, pretty, "", attributeNames);
         return sb.toString();
     }
 
-    protected void toXmlP(StringBuilder sb, boolean pretty, String indent, String ... attrs) {
+    protected void toXmlP(StringBuilder sb, boolean pretty, String indent, String... attributeNames) {
 
         String topTag = underscore(getClass().getSimpleName());
         if (pretty) { sb.append(indent); }
         sb.append('<').append(topTag).append('>');
         if (pretty) { sb.append('\n'); }
 
-        String[] names = !empty(attrs) ? attrs : attributeNamesLowerCased();
+        String[] names = !empty(attributeNames) ? attributeNames : attributeNamesLowerCased();
         for (String name : names) {
             if (pretty) { sb.append("  ").append(indent); }
             sb.append('<').append(name).append('>');
@@ -805,7 +819,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             sb.append("</").append(tag).append('>');
             if (pretty) { sb.append('\n'); }
         }
-        beforeClosingTag(sb, pretty, pretty ? "  " + indent : "", attrs);
+        beforeClosingTag(sb, pretty, pretty ? "  " + indent : "", attributeNames);
         if (pretty) { sb.append(indent); }
         sb.append("</").append(topTag).append('>');
         if (pretty) { sb.append('\n'); }
@@ -816,14 +830,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @param spaces by how many spaces to indent.
      * @param declaration true to include XML declaration at the top
-     * @param attrs list of attributes to include. No arguments == include all attributes.
+     * @param attributeNames list of attributes to include. No arguments == include all attributes.
      * @return generated XML.
      *
      * @deprecated use {@link #toXml(boolean, boolean, String...)} instead
      */
     @Deprecated
-    public String toXml(int spaces, boolean declaration, String... attrs){
-        return toXml(spaces > 0, declaration, attrs);
+    public String toXml(int spaces, boolean declaration, String... attributeNames) {
+        return toXml(spaces > 0, declaration, attributeNames);
     }
 
     /**
@@ -840,11 +854,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param sb to write content to.
      * @param pretty pretty format (human readable), or one line text.
      * @param indent indent at current level
-     * @param attrs list of attributes to include
+     * @param attributeNames list of attributes to include
      */
-    public void beforeClosingTag(StringBuilder sb, boolean pretty, String indent, String... attrs) {
+    public void beforeClosingTag(StringBuilder sb, boolean pretty, String indent, String... attributeNames) {
         StringWriter writer = new StringWriter();
-        beforeClosingTag(indent.length(), writer, attrs);
+        beforeClosingTag(indent.length(), writer, attributeNames);
         sb.append(writer.toString());
     }
 
@@ -853,12 +867,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @param spaces number of spaces of indent
      * @param writer to write content to.
-     * @param attrs list of attributes to include
+     * @param attributeNames list of attributes to include
      *
      * @deprecated use {@link #beforeClosingTag(StringBuilder, boolean, String, String...)} instead
      */
     @Deprecated
-    public void beforeClosingTag(int spaces, StringWriter writer, String ... attrs) {
+    public void beforeClosingTag(int spaces, StringWriter writer, String... attributeNames) {
         // do nothing
     }
 
@@ -866,12 +880,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * Generates a JSON document from content of this model.
      *
      * @param pretty pretty format (human readable), or one line text.
-     * @param attrs  list of attributes to include. No arguments == include all attributes.
+     * @param attributeNames  list of attributes to include. No arguments == include all attributes.
      * @return generated JSON.
      */
-    public String toJson(boolean pretty, String... attrs) {
+    public String toJson(boolean pretty, String... attributeNames) {
         StringBuilder sb = new StringBuilder();
-        toJsonP(sb, pretty, "", attrs);
+        toJsonP(sb, pretty, "", attributeNames);
         return sb.toString();
     }
 
@@ -881,11 +895,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         //TODO trim time if T00:00:00
         isoDateTimeFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     }
-    protected void toJsonP(StringBuilder sb, boolean pretty, String indent, String... attrs) {
+    protected void toJsonP(StringBuilder sb, boolean pretty, String indent, String... attributeNames) {
         if (pretty) { sb.append(indent); }
         sb.append('{');
 
-        String[] names = !empty(attrs) ? attrs : attributeNamesLowerCased();
+        String[] names = !empty(attributeNames) ? attributeNames : attributeNamesLowerCased();
         for (int i = 0; i < names.length; i++) {
             if (i > 0) { sb.append(','); }
             if (pretty) { sb.append("\n  ").append(indent); }
@@ -934,7 +948,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             sb.append('}');
         }
 
-        beforeClosingBrace(sb, pretty, pretty ? "  " + indent : "", attrs);
+        beforeClosingBrace(sb, pretty, pretty ? "  " + indent : "", attributeNames);
         if (pretty) { sb.append('\n').append(indent); }
         sb.append('}');
     }
@@ -953,9 +967,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param sb to write custom content to
      * @param pretty pretty format (human readable), or one line text.
      * @param indent indent at current level
-     * @param attrs list of attributes to include
+     * @param attributeNames list of attributes to include
      */
-    public void beforeClosingBrace(StringBuilder sb, boolean pretty, String indent, String... attrs) {
+    public void beforeClosingBrace(StringBuilder sb, boolean pretty, String indent, String... attributeNames) {
         StringWriter writer = new StringWriter();
         beforeClosingBrace(pretty, indent, writer);
         sb.append(writer.toString());
@@ -1213,40 +1227,40 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *     If inference is turned off, only a value of the attribute is returned.
      * </p>
      *
-     * @param attribute name of attribute of name or related object.
+     * @param attributeName name of attribute of name or related object.
      * @return value for attribute.
      */
-    public Object get(String attribute) {
+    public Object get(String attributeName) {
         if (frozen) { throw new FrozenException(this); }
 
-        if (attribute == null) { throw new IllegalArgumentException("attribute cannot be null"); }
+        if (attributeName == null) { throw new IllegalArgumentException("attributeName cannot be null"); }
 
         // NOTE: this is a workaround for JSP pages. JSTL in cases ${item.id} does not call the getId() method, instead
         // calls item.get("id"), considering that this is a map only!
-        if (attribute.equalsIgnoreCase("id") && !attributes.containsKey("id")) {
+        if (attributeName.equalsIgnoreCase("id") && !attributes.containsKey("id")) {
             return attributes.get(getIdName());
         }
 
-        if (getMetaModelLocal().hasAttribute(attribute)) {
-            Object value = attributes.get(attribute);
-            Converter<Object, Object> converter = modelRegistryLocal().converterForValue(attribute, value, Object.class);
+        if (getMetaModelLocal().hasAttribute(attributeName)) {
+            Object value = attributes.get(attributeName);
+            Converter<Object, Object> converter = modelRegistryLocal().converterForValue(attributeName, value, Object.class);
             return converter != null ? converter.convert(value) : value;
         } else {
             String getInferenceProperty = System.getProperty("activejdbc.get.inference");
             if (getInferenceProperty == null || getInferenceProperty.equals("true")) {
                 Object returnValue;
-                if ((returnValue = tryParent(attribute)) != null) {
+                if ((returnValue = tryParent(attributeName)) != null) {
                     return returnValue;
-                } else if ((returnValue = tryPolymorphicParent(attribute)) != null) {
+                } else if ((returnValue = tryPolymorphicParent(attributeName)) != null) {
                     return returnValue;
-                } else if ((returnValue = tryChildren(attribute)) != null) {
+                } else if ((returnValue = tryChildren(attributeName)) != null) {
                     return returnValue;
-                } else if ((returnValue = tryPolymorphicChildren(attribute)) != null) {
+                } else if ((returnValue = tryPolymorphicChildren(attributeName)) != null) {
                     return returnValue;
-                } else if ((returnValue = tryOther(attribute)) != null) {
+                } else if ((returnValue = tryOther(attributeName)) != null) {
                     return returnValue;
                 } else {
-                    getMetaModelLocal().checkAttributeOrAssociation(attribute);
+                    getMetaModelLocal().checkAttributeOrAssociation(attributeName);
                     return null;
                 }
             }
@@ -1257,12 +1271,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     /**
      * Gets raw value of the attribute, without conversions applied.
      */
-    private Object getRaw(String attribute) {
+    private Object getRaw(String attributeName) {
         if(frozen) throw new FrozenException(this);
 
-        if(attribute == null) throw new IllegalArgumentException("attribute cannot be null");
+        if(attributeName == null) throw new IllegalArgumentException("attributeName cannot be null");
 
-        return attributes.get(attribute);//this should account for nulls too!
+        return attributes.get(attributeName);//this should account for nulls too!
     }
 
 
@@ -1328,12 +1342,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <code>java.lang.String</code>, given the attribute value is an instance of <code>S</code>, then it will be used,
      * otherwise performs a conversion using {@link Convert#toString(Object)}.
      *
-     * @param attribute name of attribute to convert
+     * @param attributeName name of attribute to convert
      * @return value converted to <code>String</code>
      */
-    public String getString(String attribute) {
-        Object value = getRaw(attribute);
-        Converter<Object, String> converter = modelRegistryLocal().converterForValue(attribute, value, String.class);
+    public String getString(String attributeName) {
+        Object value = getRaw(attributeName);
+        Converter<Object, String> converter = modelRegistryLocal().converterForValue(attributeName, value, String.class);
         return converter != null ? converter.convert(value) : Convert.toString(value);
     }
 
@@ -1343,12 +1357,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * string bytes are returned. Be careful out there,  this will read entire
      * Blob onto memory.
      *
-     * @param attribute name of attribute
+     * @param attributeName name of attribute
      * @return value as bytes.
      */
     //TODO: use converters here?
-    public byte[] getBytes(String attribute) {
-        Object value = get(attribute);
+    public byte[] getBytes(String attributeName) {
+        Object value = get(attributeName);
         return Convert.toBytes(value);
     }
 
@@ -1358,13 +1372,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <code>java.math.BigDecimal</code>, given the attribute value is an instance of <code>S</code>, then it will be
      * used, otherwise performs a conversion using {@link Convert#toBigDecimal(Object)}.
      *
-     * @param attribute name of attribute to convert
+     * @param attributeName name of attribute to convert
      * @return value converted to <code>java.math.BigDecimal</code>
      */
-    public BigDecimal getBigDecimal(String attribute) {
-        Object value = getRaw(attribute);
+    public BigDecimal getBigDecimal(String attributeName) {
+        Object value = getRaw(attributeName);
         Converter<Object, BigDecimal> converter = modelRegistryLocal().converterForValue(
-                attribute, value, BigDecimal.class);
+                attributeName, value, BigDecimal.class);
         return converter != null ? converter.convert(value) : Convert.toBigDecimal(value);
     }
 
@@ -1374,12 +1388,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <code>java.lang.Integer</code>, given the attribute value is an instance of <code>S</code>, then it will be used,
      * otherwise performs a conversion using {@link Convert#toInteger(Object)}.
      *
-     * @param attribute name of attribute to convert
+     * @param attributeName name of attribute to convert
      * @return value converted to <code>Integer</code>
      */
-    public Integer getInteger(String attribute) {
-        Object value = getRaw(attribute);
-        Converter<Object, Integer> converter = modelRegistryLocal().converterForValue(attribute, value, Integer.class);
+    public Integer getInteger(String attributeName) {
+        Object value = getRaw(attributeName);
+        Converter<Object, Integer> converter = modelRegistryLocal().converterForValue(attributeName, value, Integer.class);
         return converter != null ? converter.convert(value) : Convert.toInteger(value);
     }
 
@@ -1389,12 +1403,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <code>java.lang.Long</code>, given the attribute value is an instance of <code>S</code>, then it will be used,
      * otherwise performs a conversion using {@link Convert#toLong(Object)}.
      *
-     * @param attribute name of attribute to convert
+     * @param attributeName name of attribute to convert
      * @return value converted to <code>Long</code>
      */
-    public Long getLong(String attribute) {
-        Object value = getRaw(attribute);
-        Converter<Object, Long> converter = modelRegistryLocal().converterForValue(attribute, value, Long.class);
+    public Long getLong(String attributeName) {
+        Object value = getRaw(attributeName);
+        Converter<Object, Long> converter = modelRegistryLocal().converterForValue(attributeName, value, Long.class);
         return converter != null ? converter.convert(value) : Convert.toLong(value);
     }
 
@@ -1404,12 +1418,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <code>java.lang.Short</code>, given the attribute value is an instance of <code>S</code>, then it will be used,
      * otherwise performs a conversion using {@link Convert#toShort(Object)}.
      *
-     * @param attribute name of attribute to convert
+     * @param attributeName name of attribute to convert
      * @return value converted to <code>Short</code>
      */
-    public Short getShort(String attribute) {
-        Object value = getRaw(attribute);
-        Converter<Object, Short> converter = modelRegistryLocal().converterForValue(attribute, value, Short.class);
+    public Short getShort(String attributeName) {
+        Object value = getRaw(attributeName);
+        Converter<Object, Short> converter = modelRegistryLocal().converterForValue(attributeName, value, Short.class);
         return converter != null ? converter.convert(value) : Convert.toShort(value);
     }
 
@@ -1419,12 +1433,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <code>java.lang.Float</code>, given the attribute value is an instance of <code>S</code>, then it will be used,
      * otherwise performs a conversion using {@link Convert#toFloat(Object)}.
      *
-     * @param attribute name of attribute to convert
+     * @param attributeName name of attribute to convert
      * @return value converted to <code>Float</code>
      */
-    public Float getFloat(String attribute) {
-        Object value = getRaw(attribute);
-        Converter<Object, Float> converter = modelRegistryLocal().converterForValue(attribute, value, Float.class);
+    public Float getFloat(String attributeName) {
+        Object value = getRaw(attributeName);
+        Converter<Object, Float> converter = modelRegistryLocal().converterForValue(attributeName, value, Float.class);
         return converter != null ? converter.convert(value) : Convert.toFloat(value);
     }
 
@@ -1434,14 +1448,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <code>java.sql.Timestamp</code>, given the attribute value is an instance of <code>S</code>, then it will be
      * used, otherwise performs a conversion using {@link Convert#toTimestamp(Object)}.
      *
-     * @param attribute name of attribute to convert
+     * @param attributeName name of attribute to convert
      * @return instance of <code>Timestamp</code>
      */
-    public Timestamp getTimestamp(String attribute) {
-        Object value = getRaw(attribute);
+    public Timestamp getTimestamp(String attributeName) {
+        Object value = getRaw(attributeName);
         Converter<Object, Timestamp> converter = modelRegistryLocal().converterForValue(
-                attribute, value, Timestamp.class);
-        return converter != null ? converter.convert(value) : Convert.toTimestamp(get(attribute));
+                attributeName, value, Timestamp.class);
+        return converter != null ? converter.convert(value) : Convert.toTimestamp(value);
     }
 
     /**
@@ -1450,12 +1464,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <code>java.lang.Double</code>, given the attribute value is an instance of <code>S</code>, then it will be used,
      * otherwise performs a conversion using {@link Convert#toDouble(Object)}.
      *
-     * @param attribute name of attribute to convert
+     * @param attributeName name of attribute to convert
      * @return value converted to <code>Double</code>
      */
-    public Double getDouble(String attribute) {
-        Object value = getRaw(attribute);
-        Converter<Object, Double> converter = modelRegistryLocal().converterForValue(attribute, value, Double.class);
+    public Double getDouble(String attributeName) {
+        Object value = getRaw(attributeName);
+        Converter<Object, Double> converter = modelRegistryLocal().converterForValue(attributeName, value, Double.class);
         return converter != null ? converter.convert(value) : Convert.toDouble(value);
     }
 
@@ -1465,12 +1479,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <code>java.lang.Boolean</code>, given the attribute value is an instance of <code>S</code>, then it will be used,
      * otherwise performs a conversion using {@link Convert#toBoolean(Object)}.
      *
-     * @param attribute name of attribute to convert
+     * @param attributeName name of attribute to convert
      * @return value converted to <code>Boolean</code>
      */
-    public Boolean getBoolean(String attribute) {
-        Object value = getRaw(attribute);
-        Converter<Object, Boolean> converter = modelRegistryLocal().converterForValue(attribute, value, Boolean.class);
+    public Boolean getBoolean(String attributeName) {
+        Object value = getRaw(attributeName);
+        Converter<Object, Boolean> converter = modelRegistryLocal().converterForValue(attributeName, value, Boolean.class);
         return converter != null ? converter.convert(value) : Convert.toBoolean(value);
     }
 
@@ -1482,13 +1496,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <code>java.lang.String</code>, given the value is an instance of <code>S</code>, then it will be used,
      * otherwise performs a conversion using {@link Convert#toString(Object)}.
      *
-     * @param attribute name of attribute.
+     * @param attributeName name of attribute.
      * @param value value
      * @return reference to this model.
      */
-    public <T extends Model> T setString(String attribute, Object value) {
-        Converter<Object, String> converter = modelRegistryLocal().converterForValue(attribute, value, String.class);
-        return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toString(value));
+    public <T extends Model> T setString(String attributeName, Object value) {
+        Converter<Object, String> converter = modelRegistryLocal().converterForValue(attributeName, value, String.class);
+        return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toString(value));
     }
 
     /**
@@ -1497,14 +1511,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <code>java.math.BigDecimal</code>, given the value is an instance of <code>S</code>, then it will be used,
      * otherwise performs a conversion using {@link Convert#toBigDecimal(Object)}.
      *
-     * @param attribute name of attribute.
+     * @param attributeName name of attribute.
      * @param value value
      * @return reference to this model.
      */
-    public <T extends Model> T setBigDecimal(String attribute, Object value) {
+    public <T extends Model> T setBigDecimal(String attributeName, Object value) {
         Converter<Object, BigDecimal> converter = modelRegistryLocal().converterForValue(
-                attribute, value, BigDecimal.class);
-        return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toBigDecimal(value));
+                attributeName, value, BigDecimal.class);
+        return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toBigDecimal(value));
     }
 
     /**
@@ -1513,13 +1527,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <code>java.lang.Short</code>, given the value is an instance of <code>S</code>, then it will be used,
      * otherwise performs a conversion using {@link Convert#toShort(Object)}.
      *
-     * @param attribute name of attribute.
+     * @param attributeName name of attribute.
      * @param value value
      * @return reference to this model.
      */
-    public <T extends Model> T setShort(String attribute, Object value) {
-        Converter<Object, Short> converter = modelRegistryLocal().converterForValue(attribute, value, Short.class);
-        return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toShort(value));
+    public <T extends Model> T setShort(String attributeName, Object value) {
+        Converter<Object, Short> converter = modelRegistryLocal().converterForValue(attributeName, value, Short.class);
+        return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toShort(value));
     }
 
     /**
@@ -1528,13 +1542,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <code>java.lang.Integer</code>, given the value is an instance of <code>S</code>, then it will be used,
      * otherwise performs a conversion using {@link Convert#toInteger(Object)}.
      *
-     * @param attribute name of attribute.
+     * @param attributeName name of attribute.
      * @param value value
      * @return reference to this model.
      */
-    public <T extends Model> T setInteger(String attribute, Object value) {
-        Converter<Object, Integer> converter = modelRegistryLocal().converterForValue(attribute, value, Integer.class);
-        return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toInteger(value));
+    public <T extends Model> T setInteger(String attributeName, Object value) {
+        Converter<Object, Integer> converter = modelRegistryLocal().converterForValue(attributeName, value, Integer.class);
+        return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toInteger(value));
     }
 
     /**
@@ -1543,13 +1557,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <code>java.lang.Long</code>, given the value is an instance of <code>S</code>, then it will be used,
      * otherwise performs a conversion using {@link Convert#toLong(Object)}.
      *
-     * @param attribute name of attribute.
+     * @param attributeName name of attribute.
      * @param value value
      * @return reference to this model.
      */
-    public <T extends Model> T setLong(String attribute, Object value) {
-        Converter<Object, Long> converter = modelRegistryLocal().converterForValue(attribute, value, Long.class);
-        return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toLong(value));
+    public <T extends Model> T setLong(String attributeName, Object value) {
+        Converter<Object, Long> converter = modelRegistryLocal().converterForValue(attributeName, value, Long.class);
+        return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toLong(value));
     }
 
     /**
@@ -1558,13 +1572,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <code>java.lang.Float</code>, given the value is an instance of <code>S</code>, then it will be used,
      * otherwise performs a conversion using {@link Convert#toFloat(Object)}.
      *
-     * @param attribute name of attribute.
+     * @param attributeName name of attribute.
      * @param value value to convert.
      * @return reference to this model.
      */
-    public <T extends Model> T setFloat(String attribute, Object value) {
-        Converter<Object, Float> converter = modelRegistryLocal().converterForValue(attribute, value, Float.class);
-        return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toFloat(value));
+    public <T extends Model> T setFloat(String attributeName, Object value) {
+        Converter<Object, Float> converter = modelRegistryLocal().converterForValue(attributeName, value, Float.class);
+        return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toFloat(value));
     }
 
     /**
@@ -1573,14 +1587,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <code>java.sql.Timestamp</code>, given the value is an instance of <code>S</code>, then it will be used,
      * otherwise performs a conversion using {@link Convert#toTimestamp(Object)}.
      *
-     * @param attribute name of attribute.
+     * @param attributeName name of attribute.
      * @param value value
      * @return reference to this model.
      */
-    public <T extends Model> T setTimestamp(String attribute, Object value) {
+    public <T extends Model> T setTimestamp(String attributeName, Object value) {
         Converter<Object, Timestamp> converter = modelRegistryLocal().converterForValue(
-                attribute, value, Timestamp.class);
-        return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toTimestamp(value));
+                attributeName, value, Timestamp.class);
+        return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toTimestamp(value));
     }
 
     /**
@@ -1589,13 +1603,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <code>java.lang.Double</code>, given the value is an instance of <code>S</code>, then it will be used,
      * otherwise performs a conversion using {@link Convert#toDouble(Object)}.
      *
-     * @param attribute name of attribute.
+     * @param attributeName name of attribute.
      * @param value value to convert.
      * @return reference to this model.
      */
-    public <T extends Model> T setDouble(String attribute, Object value) {
-        Converter<Object, Double> converter = modelRegistryLocal().converterForValue(attribute, value, Double.class);
-        return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toDouble(value));
+    public <T extends Model> T setDouble(String attributeName, Object value) {
+        Converter<Object, Double> converter = modelRegistryLocal().converterForValue(attributeName, value, Double.class);
+        return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toDouble(value));
     }
 
     /**
@@ -1604,13 +1618,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <code>java.lang.Boolean</code>, given the value is an instance of <code>S</code>, then it will be used,
      * otherwise performs a conversion using {@link Convert#toBoolean(Object)}.
      *
-     * @param attribute name of attribute.
+     * @param attributeName name of attribute.
      * @param value value
      * @return reference to this model.
      */
-    public <T extends Model> T setBoolean(String attribute, Object value) {
-        Converter<Object, Boolean> converter = modelRegistryLocal().converterForValue(attribute, value, Boolean.class);
-        return setRaw(attribute, converter != null ? converter.convert(value) : Convert.toBoolean(value));
+    public <T extends Model> T setBoolean(String attributeName, Object value) {
+        Converter<Object, Boolean> converter = modelRegistryLocal().converterForValue(attributeName, value, Boolean.class);
+        return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toBoolean(value));
     }
 
     /**
@@ -1715,11 +1729,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return new LazyList<C>(subQuery, Registry.instance().getMetaModel(targetTable), allParams);
     }
 
-    protected static NumericValidationBuilder validateNumericalityOf(String... attributes) {
-        return validateNumericalityOf(getDaClass(), attributes);
+    protected static NumericValidationBuilder validateNumericalityOf(String... attributeNames) {
+        return validateNumericalityOf(getDaClass(), attributeNames);
     }
-    protected static NumericValidationBuilder validateNumericalityOf(Class<? extends Model> clazz, String... attributes) {
-        return modelRegistryOf(clazz).validateNumericalityOf(attributes);
+    protected static NumericValidationBuilder validateNumericalityOf(Class<? extends Model> clazz, String... attributeNames) {
+        return modelRegistryOf(clazz).validateNumericalityOf(attributeNames);
     }
 
     /**
@@ -1762,57 +1776,57 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     /**
      * Validates an attribite format with a ree hand regular expression.
      *
-     * @param attribute attribute to validate.
+     * @param attributeName attribute to validate.
      * @param pattern regexp pattern which must match  the value.
      * @return
      */
-    protected static ValidationBuilder validateRegexpOf(String attribute, String pattern) {
-        return validateRegexpOf(getDaClass(), attribute, pattern);
+    protected static ValidationBuilder validateRegexpOf(String attributeName, String pattern) {
+        return validateRegexpOf(getDaClass(), attributeName, pattern);
     }
-    protected static ValidationBuilder validateRegexpOf(Class<? extends Model> clazz, String attribute, String pattern) {
-        return modelRegistryOf(clazz).validateWith(new RegexpValidator(attribute, pattern));
+    protected static ValidationBuilder validateRegexpOf(Class<? extends Model> clazz, String attributeName, String pattern) {
+        return modelRegistryOf(clazz).validateWith(new RegexpValidator(attributeName, pattern));
     }
 
     /**
      * Validates email format.
      *
-     * @param attribute name of attribute that holds email value.
+     * @param attributeName name of attribute that holds email value.
      * @return
      */
-    protected static ValidationBuilder validateEmailOf(String attribute) {
-        return validateEmailOf(getDaClass(), attribute);
+    protected static ValidationBuilder validateEmailOf(String attributeName) {
+        return validateEmailOf(getDaClass(), attributeName);
     }
-    protected static ValidationBuilder validateEmailOf(Class<? extends Model> clazz, String attribute) {
-        return modelRegistryOf(clazz).validateWith(new EmailValidator(attribute));
+    protected static ValidationBuilder validateEmailOf(Class<? extends Model> clazz, String attributeName) {
+        return modelRegistryOf(clazz).validateWith(new EmailValidator(attributeName));
     }
 
     /**
      * Validates range. Accepted types are all java.lang.Number subclasses:
      * Byte, Short, Integer, Long, Float, Double BigDecimal.
      *
-     * @param attribute attribute to validate - should be within range.
+     * @param attributeName attribute to validate - should be within range.
      * @param min min value of range.
      * @param max max value of range.
      * @return
      */
-    protected static ValidationBuilder validateRange(String attribute, Number min, Number max) {
-        return validateRange(getDaClass(), attribute, min, max);
+    protected static ValidationBuilder validateRange(String attributeName, Number min, Number max) {
+        return validateRange(getDaClass(), attributeName, min, max);
     }
-    protected static ValidationBuilder validateRange(Class<? extends Model> clazz, String attribute, Number min, Number max) {
-        return modelRegistryOf(clazz).validateWith(new RangeValidator(attribute, min, max));
+    protected static ValidationBuilder validateRange(Class<? extends Model> clazz, String attributeName, Number min, Number max) {
+        return modelRegistryOf(clazz).validateWith(new RangeValidator(attributeName, min, max));
     }
 
     /**
      * The validation will not pass if the value is either an empty string "", or null.
      *
-     * @param attributes list of attributes to validate.
+     * @param attributeNames list of attributes to validate.
      * @return
      */
-    protected static ValidationBuilder validatePresenceOf(String... attributes) {
-        return validatePresenceOf(getDaClass(), attributes);
+    protected static ValidationBuilder validatePresenceOf(String... attributeNames) {
+        return validatePresenceOf(getDaClass(), attributeNames);
     }
-    protected static ValidationBuilder validatePresenceOf(Class<? extends Model> clazz, String... attributes) {
-        return modelRegistryOf(clazz).validatePresenceOf(attributes);
+    protected static ValidationBuilder validatePresenceOf(Class<? extends Model> clazz, String... attributeNames) {
+        return modelRegistryOf(clazz).validatePresenceOf(attributeNames);
     }
 
     /**
@@ -1846,13 +1860,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * Registers a custom converter for the specified attributes.
      *
      * @param converter custom converter
-     * @param attributes attribute names
+     * @param attributeNames attribute names
      */
-    protected static void convertWith(Converter converter, String... attributes) {
-        convertWith(getDaClass(), converter, attributes);
+    protected static void convertWith(Converter converter, String... attributeNames) {
+        convertWith(getDaClass(), converter, attributeNames);
     }
-    protected static void convertWith(Class<? extends Model> clazz, Converter converter, String... attributes) {
-        modelRegistryOf(clazz).convertWith(converter, attributes);
+    protected static void convertWith(Class<? extends Model> clazz, Converter converter, String... attributeNames) {
+        modelRegistryOf(clazz).convertWith(converter, attributeNames);
     }
 
     /**
@@ -1916,13 +1930,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * </pre></blockquote>
      *
      * @param pattern pattern to use for conversion
-     * @param attributes attribute names
+     * @param attributeNames attribute names
      */
-    protected static void dateFormat(String pattern, String... attributes) {
-        dateFormat(getDaClass(), pattern, attributes);
+    protected static void dateFormat(String pattern, String... attributeNames) {
+        dateFormat(getDaClass(), pattern, attributeNames);
     }
-    protected static void dateFormat(Class<? extends Model> clazz, String pattern, String... attributes) {
-        modelRegistryOf(clazz).dateFormat(pattern, attributes);
+    protected static void dateFormat(Class<? extends Model> clazz, String pattern, String... attributeNames) {
+        modelRegistryOf(clazz).dateFormat(pattern, attributeNames);
     }
 
     /**
@@ -1932,13 +1946,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <p>See example in {@link #dateFormat(String, String...)}.
      *
      * @param format format to use for conversion
-     * @param attributes attribute names
+     * @param attributeNames attribute names
      */
-    protected static void dateFormat(DateFormat format, String... attributes) {
-        dateFormat(getDaClass(), format, attributes);
+    protected static void dateFormat(DateFormat format, String... attributeNames) {
+        dateFormat(getDaClass(), format, attributeNames);
     }
-    protected static void dateFormat(Class<? extends Model> clazz, DateFormat format, String... attributes) {
-        modelRegistryOf(clazz).dateFormat(format, attributes);
+    protected static void dateFormat(Class<? extends Model> clazz, DateFormat format, String... attributeNames) {
+        modelRegistryOf(clazz).dateFormat(format, attributeNames);
     }
     /**
      * Registers date format for specified attributes. This format will be used to convert between
@@ -1965,13 +1979,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * </pre></blockquote>
      *
      * @param pattern pattern to use for conversion
-     * @param attributes attribute names
+     * @param attributeNames attribute names
      */
-    protected static void timestampFormat(String pattern, String... attributes) {
-        timestampFormat(getDaClass(), pattern, attributes);
+    protected static void timestampFormat(String pattern, String... attributeNames) {
+        timestampFormat(getDaClass(), pattern, attributeNames);
     }
-    protected static void timestampFormat(Class<? extends Model> clazz, String pattern, String... attributes) {
-        modelRegistryOf(clazz).timestampFormat(pattern, attributes);
+    protected static void timestampFormat(Class<? extends Model> clazz, String pattern, String... attributeNames) {
+        modelRegistryOf(clazz).timestampFormat(pattern, attributeNames);
     }
 
     /**
@@ -1983,37 +1997,37 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param format format to use for conversion
      * @param attributes attribute names
      */
-    protected static void timestampFormat(DateFormat format, String... attributes) {
-        timestampFormat(getDaClass(), format, attributes);
+    protected static void timestampFormat(DateFormat format, String... attributeNames) {
+        timestampFormat(getDaClass(), format, attributeNames);
     }
-    protected static void timestampFormat(Class<? extends Model> clazz, DateFormat format, String... attributes) {
-        modelRegistryOf(clazz).timestampFormat(format, attributes);
+    protected static void timestampFormat(Class<? extends Model> clazz, DateFormat format, String... attributeNames) {
+        modelRegistryOf(clazz).timestampFormat(format, attributeNames);
     }
 
     /**
      * Registers {@link BlankToNullConverter} for specified attributes. This will convert instances of <tt>String</tt>
      * that are empty or contain only whitespaces to <tt>null</tt>.
      *
-     * @param attributes attribute names
+     * @param attributeNames attribute names
      */
-    protected static void blankToNull(String... attributes) {
-        blankToNull(getDaClass(), attributes);
+    protected static void blankToNull(String... attributeNames) {
+        blankToNull(getDaClass(), attributeNames);
     }
-    protected static void blankToNull(Class<? extends Model> clazz, String... attributes) {
-        modelRegistryOf(clazz).convertWith(BlankToNullConverter.instance(), attributes);
+    protected static void blankToNull(Class<? extends Model> clazz, String... attributeNames) {
+        modelRegistryOf(clazz).convertWith(BlankToNullConverter.instance(), attributeNames);
     }
 
     /**
      * Registers {@link ZeroToNullConverter} for specified attributes. This will convert instances of <tt>Number</tt>
      * that are zero to <tt>null</tt>.
      *
-     * @param attributes attribute names
+     * @param attributeNames attribute names
      */
-    protected static void zeroToNull(String... attributes) {
-        zeroToNull(getDaClass(), attributes);
+    protected static void zeroToNull(String... attributeNames) {
+        zeroToNull(getDaClass(), attributeNames);
     }
-    protected static void zeroToNull(Class<? extends Model> clazz, String... attributes) {
-        modelRegistryOf(clazz).convertWith(ZeroToNullConverter.instance(), attributes);
+    protected static void zeroToNull(Class<? extends Model> clazz, String... attributeNames) {
+        modelRegistryOf(clazz).convertWith(ZeroToNullConverter.instance(), attributeNames);
     }
 
     public static boolean belongsTo(Class<? extends Model> targetClass) {

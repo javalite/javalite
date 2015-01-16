@@ -17,7 +17,7 @@ public class AttributesAndAssociationsTest extends ActiveJDBCTest{
     @Test
     public void shouldReturnCorrectAttributes(){
 
-        Collection<String> attributes = Person.attributes();
+        Collection<String> attributes = Person.attributeNames();
         a(attributes.contains("name")).shouldBeTrue();
         a(attributes.contains("last_name")).shouldBeTrue();
         a(attributes.contains("graduation_date")).shouldBeTrue();
@@ -30,7 +30,7 @@ public class AttributesAndAssociationsTest extends ActiveJDBCTest{
     @Test
     public void shouldReturnCaseInsensitiveAttributes(){
 
-        Collection<String> attributes = Person.attributes();
+        Collection<String> attributes = Person.attributeNames();
         a(attributes.contains("Name")).shouldBeTrue();
         a(attributes.contains("LAST_NAME")).shouldBeTrue();
         a(attributes.contains("graduation_date")).shouldBeTrue();
