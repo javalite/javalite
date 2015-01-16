@@ -37,7 +37,9 @@ import java.util.TreeMap;
  * @author <a href="mailto:ggregory@seagullsw.com">Gary Gregory</a>
  * @since 2.0
  * @version $Id: Entities.java 911986 2010-02-19 21:19:05Z niallp $
+ * @deprecated use Apache Commons or {@link Escape} instead
  */
+@Deprecated
 public class XmlEntities {
 
     private static final String[][] BASIC_ARRAY = {{"quot", "34"}, // " - double-quote
