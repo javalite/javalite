@@ -264,11 +264,18 @@ public final class Util {
      * @return true if value is either null or it's String representation is blank, otherwise returns false.
      */
     public static boolean blank(Object value) {
-        if(value == null){
+        if (value == null) {
             return true;
-        }else{
+        } else {
             String str = value.toString();
-            return str.length() == 0 || str.trim().length() == 0;
+            if (str != null && !str.isEmpty()) {
+                for (int i = 0; i < str.length(); i++) {
+                    if (str.charAt(i) > ' ') {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
     }
 
