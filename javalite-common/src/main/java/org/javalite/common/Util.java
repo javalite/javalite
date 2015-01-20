@@ -264,24 +264,12 @@ public final class Util {
      * @return true if value is either null or it's String representation is blank, otherwise returns false.
      */
     public static boolean blank(Object value) {
-        return value == null || blank(value.toString());
-    }
-
-    /**
-     * Returns true if str is either null or blank.
-     *
-     * @param str String to check.
-     * @return true if str is either null or blank, otherwise returns false.
-     */
-    public static boolean blank(String str) {
-        if (str != null && str.length() > 0) {
-            for (int i = 0; i < str.length(); i++) {
-                if (!Character.isWhitespace(str.charAt(i))) {
-                    return false;
-                }
-            }
+        if(value == null){
+            return true;
+        }else{
+            String str = value.toString();
+            return str.length() == 0 || str.trim().length() == 0;
         }
-        return true;
     }
 
     /**
