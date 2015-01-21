@@ -1,17 +1,17 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2015 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
 
 
@@ -27,7 +27,7 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.text.*;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import static org.javalite.common.Util.*;
 
@@ -35,11 +35,24 @@ import static org.javalite.common.Util.*;
  * Convenience class for type conversions. 
  *
  * @author Igor Polevoy
- * @author ericbn
+ * @author Eric Nielsen
  */
 public final class Convert {
+    // Calendar and DateFormat are not thread safe: http://www.javacodegeeks.com/2010/07/java-best-practices-dateformat-in.html
+    private static final ThreadLocal<Calendar> THREADLOCAL_CAL_UTC = new ThreadLocal<Calendar>() {
+        @Override protected Calendar initialValue(){
+            return Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        }
+    };
+    private static final ThreadLocal<Calendar> THREADLOCAL_CAL_DEFAULT = new ThreadLocal<Calendar>() {
+        @Override protected Calendar initialValue(){
+            return Calendar.getInstance();
+        }
+    };
 
-    private Convert() { }
+    private Convert() {
+        // not instantiable
+    }
 
     /**
      * Returns string representation of an object, including {@link java.sql.Clob}.
@@ -143,9 +156,11 @@ public final class Convert {
 
     /**
      * Expects a <code>java.sql.Date</code>, <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code>,
-     * <code>Long</code> or string with format: <code>yyyy-mm-dd</code>. This method will also truncate hours, minutes, seconds and
+     * <code>Long</code> or string with format "yyyy-MM-dd". This method will truncate hours, minutes, seconds and
      * milliseconds to zeros, to conform with JDBC spec:
      * <a href="http://download.oracle.com/javase/6/docs/api/java/sql/Date.html">http://download.oracle.com/javase/6/docs/api/java/sql/Date.html</a>.
+     *
+     * <p>This method is tread-safe.
      *
      * @param value argument that is possible to convert to <code>java.sql.Date</code>: <code>java.sql.Date</code>,
      * <code>java.sql.Timestamp</code>, <code>java.sql.Time</code>, <code>java.util.Date</code>, <code>Long</code> or any object with toString() == <code>yyyy-mm-dd</code>.
@@ -177,13 +192,58 @@ public final class Convert {
      * @return <code>java.sql.Date</code> instance representing time value
      */
     public static java.sql.Date truncateToSqlDate(long time) {
-        Calendar calendar = new GregorianCalendar();
+        Calendar calendar = THREADLOCAL_CAL_DEFAULT.get();
         calendar.setTimeInMillis(time);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         return new java.sql.Date(calendar.getTimeInMillis());
+    }
+
+    /**
+     * Converts a <code>java.util.Date</code> to a <code>String</code> in ISO 8601 format: "yyyy-MM-dd'T'HH:mm:ss'Z'"
+     * in UTC timezone for timestamps, and "yyyy-MM-dd" for instances of <code>java.sql.Date</code>.
+     *
+     * <p>This method is tread-safe.
+     *
+     * @param date date to convert
+     * @return String in ISO 8601 format
+     */
+    public static String toIsoString(java.util.Date date) {
+        if (date instanceof java.sql.Date) {
+            return date.toString();
+        }
+        Calendar cal = THREADLOCAL_CAL_UTC.get();
+        cal.setTime(date);
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH) + 1;
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        int hour = cal.get(Calendar.HOUR_OF_DAY);
+        int minute = cal.get(Calendar.MINUTE);
+        int second = cal.get(Calendar.SECOND);
+        char[] buf = new char[20];
+        buf[0] = Character.forDigit(year/1000, 10);
+        buf[1] = Character.forDigit((year/100)%10, 10);
+        buf[2] = Character.forDigit((year/10)%10, 10);
+        buf[3] = Character.forDigit(year%10, 10);
+        buf[4] = '-';
+        buf[5] = Character.forDigit(month/10, 10);
+        buf[6] = Character.forDigit(month%10, 10);
+        buf[7] = '-';
+        buf[8] = Character.forDigit(day/10, 10);
+        buf[9] = Character.forDigit(day%10, 10);
+        buf[10] = 'T';
+        buf[11] = Character.forDigit(hour/10, 10);
+        buf[12] = Character.forDigit(hour%10, 10);
+        buf[13] = ':';
+        buf[14] = Character.forDigit(minute/10, 10);
+        buf[15] = Character.forDigit(minute%10, 10);
+        buf[16] = ':';
+        buf[17] = Character.forDigit(second/10, 10);
+        buf[18] = Character.forDigit(second%10, 10);
+        buf[19] = 'Z';
+        return new String(buf);
     }
 
     /**
