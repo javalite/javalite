@@ -254,12 +254,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @deprecated use {@link #attributeNames()} instead
      */
     @Deprecated
-    public static SortedSet<String> attributes(){
+    public static List<String> attributes(){
         return attributes(getDaClass());
     }
     @Deprecated
-    protected static SortedSet<String> attributes(Class<? extends Model> clazz) {
-        return getMetaModel(clazz).getAttributeNames();
+    protected static List<String> attributes(Class<? extends Model> clazz) {
+        return Arrays.asList(lowerCased(attributeNames(clazz)));
     }
 
     /**
@@ -985,10 +985,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     private String[] attributeNamesLowerCased() {
-        String[] array = new String[attributes.size()];
+        return lowerCased(attributes.keySet());
+    }
+    private static String[] lowerCased(Collection<String> collection) {
+        String[] array = new String[collection.size()];
         int i = 0;
-        for (String attr : attributes.keySet()) {
-            array[i++] = attr.toLowerCase();
+        for (String elem : collection) {
+            array[i++] = elem.toLowerCase();
         }
         return array;
     }
