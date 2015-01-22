@@ -9,11 +9,10 @@
     <description>will generate a file with relevant information related to
         project at the time of build</description>
 
-
     <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>7</version>
+        <groupId>org.javalite</groupId>
+        <artifactId>activejdbc-root</artifactId>
+        <version>1.4.10-SNAPSHOT</version>
     </parent>
 
     <dependencies>

@@ -80,11 +80,26 @@
         <module>git-info-maven-plugin</module>
     </modules>
 
+
+    <repositories>
+        <repository>
+            <id>sonatype-nexus-plugin-snapshots</id>
+            <name>JavaLite Plugin Snapshots</name>
+            <url>http://repo.javalite.io/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
     <pluginRepositories>
         <pluginRepository>
 			<id>sonatype-nexus-plugin-snapshots</id>
-			<name>Sonatype Nexus Plugin Snapshots</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<name>JavaLite Plugin Snapshots</name>
+			<url>http://repo.javalite.io/</url>
 			<releases>
 				<enabled>false</enabled>
 			</releases>
@@ -99,7 +114,6 @@
             <id>myrepository</id>
             <url>file://C:/Users/Jenkins/repository</url>
         </snapshotRepository>
-
     </distributionManagement>
 
 </project>

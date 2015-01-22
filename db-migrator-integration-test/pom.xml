@@ -8,9 +8,9 @@
     <name>JavaLite - DB-Migrator Integration Test</name>
 
     <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>7</version>
+        <groupId>org.javalite</groupId>
+        <artifactId>activejdbc-root</artifactId>
+        <version>1.4.10-SNAPSHOT</version>
     </parent>
 
     <build>
