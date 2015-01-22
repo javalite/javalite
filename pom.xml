@@ -93,4 +93,13 @@
 			</snapshots>
 		</pluginRepository>
     </pluginRepositories>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>myrepository</id>
+            <url>file://C:/Users/Jenkins/repository</url>
+        </snapshotRepository>
+
+    </distributionManagement>
+
 </project>
