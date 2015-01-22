@@ -1,20 +1,18 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2015 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
-
-
 package org.javalite.common;
 
 import java.io.*;
@@ -25,11 +23,13 @@ import java.util.*;
 
 /**
  * @author Igor Polevoy
- * @author ericbn
+ * @author Eric Nielsen
  */
 public final class Util {
 
-    private Util() { }
+    private Util() {
+        // not instantiable
+    }
 
     /**
      * Reads contents of resource fully into a byte array.
@@ -290,15 +290,26 @@ public final class Util {
     }
 
     /**
-     * Joins the items in collection with a delimiter.
+     * Returns true if collection is either null or empty.
      *
-     * @param collection collection of items to join.
-     * @param delimiter delimiter to insert between elements of collection.
-     * @return string with collection elements separated by delimiter. There is no trailing delimiter in the string.
+     * @param collection collection to check
+     * @return true if collection is either null or empty, false otherwise
      */
-    public static String join(String[] collection, String delimiter){
+    public static boolean empty(Collection<?> collection) {
+        return collection == null || collection.isEmpty();
+    }
+
+    /**
+     * Joins the items in array with a delimiter.
+     *
+     * @param array array of items to join.
+     * @param delimiter delimiter to insert between elements of array.
+     * @return string with array elements separated by delimiter. There is no trailing delimiter in the string.
+     */
+    public static String join(String[] array, String delimiter) {
+        if (empty(array)) { return ""; }
         StringBuilder sb = new StringBuilder();
-        join(sb, collection, delimiter);
+        join(sb, array, delimiter);
         return sb.toString();
     }
 
@@ -377,22 +388,6 @@ public final class Util {
         for (int i = 1; i < array.length; i++) {
             sb.append(delimiter);
             sb.append(array[i]);
-        }
-    }
-
-    /**
-     * Joins the items in list with a delimiter, and appends the result to StringBuilder.
-     *
-     * @param sb StringBuilder to append result to
-     * @param list list of items to join.
-     * @param delimiter delimiter to insert between elements of list.
-     */
-    public static void join(StringBuilder sb, List<?> list, String delimiter) {
-        if (list.isEmpty()) return;
-        sb.append(list.get(0));
-        for (int i = 1; i < list.size(); i++) {
-            sb.append(delimiter);
-            sb.append(list.get(i));
         }
     }
 

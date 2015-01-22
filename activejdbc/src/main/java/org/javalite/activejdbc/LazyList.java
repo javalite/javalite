@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2015 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import static org.javalite.common.Util.*;
  * a number of APIs for augmenting the query.
  *
  * @author Igor Polevoy
+ * @author Eric Nielsen
  */
 public class LazyList<T extends Model> extends AbstractList<T>{
 
@@ -591,6 +592,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
 
     @Override
     public boolean containsAll(Collection c) {
+        hydrate();
         return delegate.containsAll(c);
     }
 

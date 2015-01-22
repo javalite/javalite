@@ -1,43 +1,40 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2015 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
 
 package org.javalite.activejdbc;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.*;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 /**
  * @author Igor Polevoy
+ * @author Eric Nielsen
  */
 public class ToJsonSpec extends ActiveJDBCTest {
-    ObjectMapper mapper = new ObjectMapper();
-
     @Test
-    public void shouldGenerateSimpleJson() throws IOException {
+    public void shouldGenerateSimpleJson() {
         deleteAndPopulateTable("people");
         Person p = Person.findById(1);
         //test no indent
@@ -46,11 +43,11 @@ public class ToJsonSpec extends ActiveJDBCTest {
 
         a(map.get("name")).shouldBeEqual("John");
         a(map.get("last_name")).shouldBeEqual("Smith");
-        a(map.get("dob")).shouldBeEqual("1934-12-01T00:00:00");
+        a(map.get("dob")).shouldBeEqual("1934-12-01");
     }
 
     @Test
-    public void shouldIncludePrettyChildren() throws IOException {
+    public void shouldIncludePrettyChildren() {
         deleteAndPopulateTables("users", "addresses");
         List<User> personList = User.findAll().orderBy("id").include(Address.class);
         User u = personList.get(0);
@@ -69,7 +66,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
     }
 
     @Test
-    public void shouldIncludeUglyChildren() throws IOException {
+    public void shouldIncludeUglyChildren() {
         deleteAndPopulateTables("users", "addresses");
         List<User> personList = User.findAll().orderBy("id").include(Address.class);
         User u = personList.get(0);
@@ -87,12 +84,12 @@ public class ToJsonSpec extends ActiveJDBCTest {
     }
 
     @Test
-    public void shouldIncludeOnlyProvidedAttributes() throws IOException {
+    public void shouldIncludeOnlyProvidedAttributes() {
         deleteAndPopulateTables("users", "addresses");
 
         User u = User.findById(1);
         String json = u.toJson(true, "email", "last_name");
-        mapper.readTree(json);//check validity
+        JsonHelper.readTree(json); // validate
         the(json).shouldBeEqual("{\n" +
                 "  \"email\":\"mmonroe@yahoo.com\",\n" +
                 "  \"last_name\":\"Monroe\"\n" +
@@ -100,19 +97,19 @@ public class ToJsonSpec extends ActiveJDBCTest {
     }
 
     @Test
-    public void shouldGenerateFromList() throws IOException {
+    public void shouldGenerateFromList() {
         deleteAndPopulateTables("users", "addresses");
         LazyList<User> personList = User.findAll().orderBy("id").include(Address.class);
 
         String json = personList.toJson(false);
-        mapper.readTree(json);//check validity
+        JsonHelper.readTree(json); // validate
     }
 
     @Test
-    public void shouldEscapeDoubleQuote() throws IOException {
+    public void shouldEscapeDoubleQuote() {
         Page p = new Page();
         p.set("description", "bad \"/description\"");
-        JsonNode node = mapper.readTree(p.toJson(true));
+        JsonNode node = JsonHelper.readTree(p.toJson(true));
         a(node.get("description").toString()).shouldBeEqual("\"bad \\\"/description\\\"\"");
 
         //ensure no NPE:
@@ -123,22 +120,19 @@ public class ToJsonSpec extends ActiveJDBCTest {
 
 
     @Test
-    public void shouldInjectCustomContentIntoJson() throws IOException {
+    public void shouldInjectCustomContentIntoJson() {
         deleteAndPopulateTable("posts");
 
         Post p = Post.findById(1);
         String json = p.toJson(true, "title");
 
-        Map map = mapper.readValue(json, Map.class);
+        Map map = JsonHelper.toMap(json);
         Map injected = (Map) map.get("injected");
         a(injected.get("secret_name")).shouldBeEqual("Secret Name");
     }
 
     @Test
-    public void shouldReturnSecondsInDateTime() throws IOException, ParseException {
-
-        SimpleDateFormat isoDateFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-
+    public void shouldReturnSecondsInDateTime() throws ParseException {
         Person p = new Person();
         p.set("name", "john", "last_name", "doe").saveIt();
         p.refresh();
@@ -146,16 +140,16 @@ public class ToJsonSpec extends ActiveJDBCTest {
 
         System.out.println(json);
         @SuppressWarnings("unchecked")
-        Map<String, String> map = mapper.readValue(json, Map.class);
+        Map<String, String> map = JsonHelper.toMap(json);
 
-        Date d = isoDateFormater.parse(map.get("created_at"));
+        Date d = new ISO8601DateFormat().parse(map.get("created_at"));
         // difference between date in Json and in original model instance should be less than 1000 milliseconds
         a(Math.abs(d.getTime() - p.getTimestamp("created_at").getTime()) < 1000L).shouldBeTrue();
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    public void shouldGenerateJsonForPolymorphicChildren() throws IOException {
+    public void shouldGenerateJsonForPolymorphicChildren() {
         deleteAndPopulateTables("articles", "comments", "tags");
         Article a = Article.findFirst("title = ?", "ActiveJDBC polymorphic associations");
         a.add(Comment.create("author", "igor", "content", "this is just a test comment text"));

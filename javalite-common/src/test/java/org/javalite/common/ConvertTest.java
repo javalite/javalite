@@ -1,17 +1,17 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2015 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
 
 package org.javalite.common;
@@ -25,10 +25,13 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 
 /**
  * @author Igor Polevoy
+ * @author Eric Nielsen
  */
 public class ConvertTest extends JSpecSupport {
 
@@ -43,7 +46,7 @@ public class ConvertTest extends JSpecSupport {
     }
 
     @Test
-    public void shouldTruncateToSqlDate() throws ParseException {
+    public void shouldTruncateToSqlDate() {
 
         //util date
         java.util.Date now = new java.util.Date();
@@ -72,7 +75,7 @@ public class ConvertTest extends JSpecSupport {
 
 
     @Test
-    public void shouldCovertToTimestamp() throws ParseException {
+    public void shouldCovertToTimestamp() {
 
         //string
         Timestamp ts = new Timestamp(System.currentTimeMillis());
@@ -97,7 +100,7 @@ public class ConvertTest extends JSpecSupport {
     }
 
     @Test
-    public void shouldCovertToBigDecimal() throws ParseException {
+    public void shouldCovertToBigDecimal() {
 
         //integer
         Object o = Convert.toBigDecimal(1);
@@ -121,7 +124,7 @@ public class ConvertTest extends JSpecSupport {
     }
 
     @Test
-    public void shouldCovertToLong() throws ParseException {
+    public void shouldCovertToLong() {
 
         //integer
         Object o = Convert.toLong(1);
@@ -153,7 +156,7 @@ public class ConvertTest extends JSpecSupport {
 
 
     @Test
-    public void shouldCovertToDouble() throws ParseException {
+    public void shouldCovertToDouble() {
 
         //integer
         Object o = Convert.toDouble(1);
@@ -177,7 +180,7 @@ public class ConvertTest extends JSpecSupport {
     }
 
     @Test
-    public void shouldCovertToFloat() throws ParseException {
+    public void shouldCovertToFloat() {
 
         //float
         Object o = Convert.toFloat(1F);
@@ -201,7 +204,7 @@ public class ConvertTest extends JSpecSupport {
     }
 
     @Test
-    public void shouldCovertToShort() throws ParseException {
+    public void shouldCovertToShort() {
 
         //float
         Object o = Convert.toShort(1F);
@@ -226,7 +229,7 @@ public class ConvertTest extends JSpecSupport {
     }
 
     @Test
-    public void shouldCovertToBoolean() throws ParseException {
+    public void shouldCovertToBoolean() {
 
         a(Convert.toBoolean(null)).shouldBeFalse();
 
@@ -294,5 +297,17 @@ public class ConvertTest extends JSpecSupport {
         short f = (short)0;
         a(Convert.toBoolean(t)).shouldBeTrue();
         a(Convert.toBoolean(f)).shouldBeFalse();
+    }
+
+
+    @Test
+    public void shouldCovertToIsoString() {
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        cal.set(1970, 0, 1, 0, 0, 0);
+        the(Convert.toIsoString(cal.getTime())).shouldBeEqual("1970-01-01T00:00:00Z");
+        cal.set(1912, 5, 23, 2, 15, 47);
+        the(Convert.toIsoString(cal.getTime())).shouldBeEqual("1912-06-23T02:15:47Z");
+        cal.set(2014, 11, 31, 23, 59, 59);
+        the(Convert.toIsoString(cal.getTime())).shouldBeEqual("2014-12-31T23:59:59Z");
     }
 }

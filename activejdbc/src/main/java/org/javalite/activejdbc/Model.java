@@ -1,17 +1,17 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2015 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
 
 
@@ -38,7 +38,6 @@ import java.math.BigDecimal;
 import java.sql.Clob;
 import java.sql.Timestamp;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import org.javalite.activejdbc.conversion.BlankToNullConverter;
 import org.javalite.activejdbc.conversion.ZeroToNullConverter;
@@ -55,6 +54,9 @@ import static org.javalite.common.Util.*;
 /**
  * This class is a super class of all "models" and provides most functionality
  * necessary for implementation of Active Record pattern.
+ *
+ * @author Igor Polevoy
+ * @author Eric Nielsen
  */
 public abstract class Model extends CallbackSupport implements Externalizable {
 
@@ -252,12 +254,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @deprecated use {@link #attributeNames()} instead
      */
     @Deprecated
-    public static SortedSet<String> attributes(){
+    public static List<String> attributes(){
         return attributes(getDaClass());
     }
     @Deprecated
-    protected static SortedSet<String> attributes(Class<? extends Model> clazz) {
-        return getMetaModel(clazz).getAttributeNames();
+    protected static List<String> attributes(Class<? extends Model> clazz) {
+        return Arrays.asList(lowerCased(attributeNames(clazz)));
     }
 
     /**
@@ -889,12 +891,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return sb.toString();
     }
 
-    private static final DateFormat isoDateTimeFormater;
-    static {
-        //TODO missing time zone
-        //TODO trim time if T00:00:00
-        isoDateTimeFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-    }
     protected void toJsonP(StringBuilder sb, boolean pretty, String indent, String... attributeNames) {
         if (pretty) { sb.append(indent); }
         sb.append('{');
@@ -911,7 +907,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             } else if (v instanceof Number || v instanceof Boolean) {
                 sb.append(v);
             } else if (v instanceof Date) {
-                sb.append('"').append(isoDateTimeFormater.format((Date) v)).append('"');
+                sb.append('"').append(Convert.toIsoString((Date) v)).append('"');
             } else {
                 sb.append('"');
                 Escape.json(sb, Convert.toString(v));
@@ -919,7 +915,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             }
         }
 
-        if (cachedChildren != null && cachedChildren.size() > 0) {
+        if (cachedChildren.size() > 0) {
 
             sb.append(',');
             if (pretty) { sb.append("\n  ").append(indent); }
@@ -989,10 +985,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     private String[] attributeNamesLowerCased() {
-        String[] array = new String[attributes.size()];
+        return lowerCased(attributes.keySet());
+    }
+    private static String[] lowerCased(Collection<String> collection) {
+        String[] array = new String[collection.size()];
         int i = 0;
-        for (String attr : attributes.keySet()) {
-            array[i++] = attr.toLowerCase();
+        for (String elem : collection) {
+            array[i++] = elem.toLowerCase();
         }
         return array;
     }
