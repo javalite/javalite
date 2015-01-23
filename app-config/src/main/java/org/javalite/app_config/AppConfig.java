@@ -37,8 +37,8 @@ import java.util.*;
 public class AppConfig implements Map<String, String> {
 
     private static Logger LOGGER = LoggerFactory.getLogger(AppConfig.class);
-    private static HashMap<String, Property> props = new HashMap<>();
-    private static HashMap<String, String> plainProps = new HashMap<>();
+    private static HashMap<String, Property> props = new HashMap<String, Property>();
+    private static HashMap<String, String> plainProps = new HashMap<String, String>();
 
     public static synchronized void init() {
         if (isInited()) return;
