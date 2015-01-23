@@ -83,7 +83,7 @@ public final class Convert {
             copyStream(r, sw);
             return sw.toString();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ConversionException(e);
         } finally {
             closeQuietly(sw);
             closeQuietly(r);
@@ -211,7 +211,9 @@ public final class Convert {
      * @return String in ISO 8601 format
      */
     public static String toIsoString(java.util.Date date) {
-        if (date instanceof java.sql.Date) {
+        if (date == null) {
+            return null;
+        } else if (date instanceof java.sql.Date) {
             return date.toString();
         }
         Calendar cal = THREADLOCAL_CAL_UTC.get();
