@@ -13,7 +13,6 @@
         <version>7</version>
     </parent>
 
-
     <organization>
         <name>JavaLite</name>
         <url>http://javalite.io</url>
@@ -32,7 +31,6 @@
        <developerConnection>scm:git:git@github.com:javalite/activejdbc.git</developerConnection>
        <url>git@github.com:javalite/activejdbc.git</url>
      </scm>
-
 
     <profiles>
         <profile>
@@ -78,8 +76,8 @@
         <module>db-migrator</module>
         <module>db-migrator-integration-test</module>
         <module>git-info-maven-plugin</module>
+        <module>app-config</module>
     </modules>
-
 
     <repositories>
         <repository>
