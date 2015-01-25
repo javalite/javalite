@@ -1,12 +1,11 @@
 package org.javalite.templator;
 
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.javalite.templator.tags.IfTag;
+import org.javalite.templator.tags.ListTag;
 
-import static org.javalite.common.Util.blank;
+import java.io.Writer;
+import java.util.*;
+
 import static org.javalite.common.Util.split;
 
 /**
@@ -14,103 +13,112 @@ import static org.javalite.common.Util.split;
  */
 public class Template {
 
-    private final List<TemplateToken> builtIn = new ArrayList<TemplateToken>();
+    private final List<TemplateToken> templateTokens = new ArrayList<TemplateToken>();
 
     public Template(String template) {
-        parse(template);
+        try{
+            parse(template);
+        }catch(ParseException e){
+            throw e;
+        }catch(Exception e){
+            throw new TemplateException(e);
+        }
+
     }
 
     //for testing only
-    List<TemplateToken> builtInTokens() {
-        return builtIn;
+    List<TemplateToken> templateTokens() {
+        return templateTokens;
     }
 
-    private void parse(String template) {
+    private void parse(String template) throws IllegalAccessException, InstantiationException {
+        Map<String, Class> tags = TemplatorConfig.instance().getTags();
+        Stack<AbstractTag> stack = new Stack<AbstractTag>();
+        List<AbstractTag> tagsList = new ArrayList<AbstractTag>();
 
-        int cursor = 0; // on the left are processed chars, on the right are not processed
-        for (int i = 0; i < template.length(); i++) {
-            if (i < (template.length() - 1)) {
-                // parse merge fields like ${first_name} or ${person.firstName}
-                if (template.charAt(i) == '$' && template.charAt(i + 1) == '{') {
-                    String[] arr = {"}"};
-                    Token t = findFirst(template, arr, i, false, null);
-                    if (cursor == 0) {
-                        builtIn.add(new StringToken(template.substring(cursor, i)));
+        //TODO: separate iterations through all tags, and focus on stack
+        for (int templateIndex = 0; templateIndex < template.length(); templateIndex++) {
+            for (String tagName : tags.keySet()) {
+                Class tagClass = tags.get(tagName);
+
+                AbstractTag tag; // ony used to test things
+                tag = (AbstractTag) tagClass.newInstance();
+
+                //match tag start, such as "<#list"
+                if (stack.isEmpty() && tag.matchStartAtIndex(template, templateIndex)) {
+                    tag.setTagStartIndex(templateIndex - tag.getTagStart().length());
+                    stack.push(tag);
+                    continue;
+                }
+
+                //match tag argument end, such as:    <#list people as person > body </#list>
+                //                                                         ---^
+                if (!stack.isEmpty()
+                        && stack.peek().getArgumentsEndIndex() == -1
+                        && stack.peek().marchArgumentEnd(template, templateIndex)) {
+                    AbstractTag currentTag = stack.peek();
+                    int argumentsStartIndex = currentTag.getTagStartIndex() + currentTag.getTagStart().length();
+                    int argumentsEndIndex = currentTag.getArgumentsEndIndex();
+
+                    String arguments = template.substring(argumentsStartIndex, argumentsEndIndex);
+                    currentTag.setArguments(arguments);
+                }
+
+                //match tag end, such as:    <#list people as person > body </#list>
+                //                                                       ---^
+                if (!stack.isEmpty() && stack.peek().matchEndTag(template, templateIndex)) {
+                    AbstractTag currentTag = stack.pop();
+                    tagsList.add(currentTag);
+
+                    String arguments;
+                    if (currentTag.getArgumentsEndIndex() != -1) { // we have body. case like this: <#list people as person > body </#list>
+                        arguments = template.substring(currentTag.getTagStartIndex() + currentTag.getTagStart().length(), currentTag.getArgumentsEndIndex());
+                        String body = template.substring(currentTag.getArgumentsEndIndex() + 1, currentTag.getTagEndIndex());
+                        currentTag.setBody(body);
                     } else {
-                        builtIn.add(new StringToken(template.substring(cursor + 1, i)));
+                        // this is what is between the start and end tag in case there is no body:
+                        ///<@blah arguments for blah />
+                        arguments = template.substring(currentTag.getTagStartIndex() + currentTag.getTagStart().length(), currentTag.getTagEndIndex());
                     }
-                    builtIn.add(new MergeToken(template.substring(i + 2, t.index)));
-                    i = cursor = t.index;
-
-                }
-
-                if (template.charAt(i) == '<' && template.charAt(i + 1) == '#') {
-                    int firstSpace = template.indexOf(' ', i);
-                    String tagName = template.substring(i + 2, firstSpace);
-                    String[] closers = {"/>", " >", "</#" + tagName + ">"};
-                    Token next = findFirst(template, closers, i + 2, true, null);
-
-                    //<#for collection=people partial=person />
-                    if (next.token.equals("/>")) {
-                        String argumentLine = template.substring(i + tagName.length() + 2, next.index);
-                        if (cursor == 0) {
-                            builtIn.add(new StringToken(template.substring(cursor, i)));
-                        } else {
-                            builtIn.add(new StringToken(template.substring(cursor + 1, i)));
-                        }
-                        AbstractTag tag = TemplatorConfig.instance().getTag(tagName);
-                        tag.setArguments(argumentLine);
-                        builtIn.add(tag);
-                        i = cursor = next.index + next.token.length();
-                    }
-
-                    //<#list collection=people partial=person > body </#list>
-                    if (next.token.equals(" >")) {
-                        String argumentLine = template.substring(i + tagName.length() + 2, next.index);
-                        if (cursor == 0) {
-                            builtIn.add(new StringToken(template.substring(cursor, i)));
-                        } else {
-                            builtIn.add(new StringToken(template.substring(cursor + 1, i)));
-                        }
-                        //need to get a body here.
-
-                        String[] closer = {"</#" + tagName + ">"};
-                        Token endTag = findFirst(template, closer, next.index + 2, false, null);
-
-                        String body = template.substring(next.index + 2, endTag.index);
-
-                        AbstractTag tag = TemplatorConfig.instance().getTag(tagName);
-                        tag.setBody(body);
-                        tag.setArguments(argumentLine);
-                        builtIn.add(tag);
-                        i = cursor = endTag.index + endTag.token.length() - 1;
-                    }
-                }
-            }
-
-            //process tail if there is some
-            if (i == (template.length() - 1)) {
-                String tail = template.substring(cursor == 0? 0 : cursor + 1, i + 1);
-                if (!blank(tail)) {
-                    builtIn.add(new StringToken(tail));
+                    currentTag.setArguments(arguments);
                 }
             }
         }
-    }
 
-    private Map<String, String> getArguments(String argumentLine) {
-        Map<String, String> arguments = new HashMap<String, String>();
-        String[] pairs = split(argumentLine, ' ');
-        for (String pair : pairs) {
-            if (!pair.contains("=") || pair.startsWith("=") || pair.endsWith("=")) {
-                throw new ParseException("Argument line: " + argumentLine + " does not have correct arguments");
+        if(tagsList.size() == 0){ // assuming that this is just text, no funny business
+            templateTokens.add(new StringToken(template));
+        }else{
+            //now we need to collect string chunks in between
+            for (int i = 0; i < tagsList.size(); i++) {
+                AbstractTag currentTag = tagsList.get(i);
+
+                // if this is a first tag and not at beginning of template
+                if (i == 0 && currentTag.getTagStartIndex() != 0) {
+                    templateTokens.add(new StringToken(template.substring(0, currentTag.getTagStartIndex())));
+                }
+
+                // if there is a gap between current and previous
+                if(tagsList.size() > 1 && i != 0){
+                    int startIndex = tagsList.get(i - 1).getTagEndIndex() + 1;
+                    int endIndex = currentTag.getTagStartIndex();
+                    StringToken st = new StringToken(template.substring(startIndex, endIndex ));
+                    templateTokens.add(st);
+                }
+
+                templateTokens.add(currentTag);
+
+                // if this is the last tag and there is some text after
+                if(i == (tagsList.size() - 1) && template.length() > currentTag.getTagEndIndex()) {
+                    StringToken st = new StringToken(template.substring(currentTag.getTagEndIndex() + currentTag.getMatchingEnd().length()));
+                    templateTokens.add(st);
+                }
             }
-            String[] argument = split(pair, '=');
-            arguments.put(argument[0], argument[1]);
         }
-        return arguments;
-    }
 
+        if (!stack.isEmpty()) {
+            throw new ParseException("At least one tag is not closed: " + stack.peek().getTagName());
+        }
+    }
 
     private static class Token {
         int index;
@@ -123,42 +131,10 @@ public class Template {
     }
 
 
-    private Token findFirst(String template, String[] toFind, int start, boolean suppressException, String[] excludes) {
-        //TODO: test if opening or closing characters from other tags interleave
-        //TODO: we only expect closing chars for the one that found here.
-
-
-        int closingIndex = -1;
-
-        Token first = null;
-
-        for (String toFindString : toFind) {
-            int i = template.indexOf(toFindString, start);
-            if (i != -1) {
-                if (first == null) {
-                    first = new Token(i, toFindString);
-                } else {
-
-                    if (i < first.index) {
-                        first = new Token(i, toFindString);
-                    }
-                }
-
-            }
-        }
-
-//
-//        if (!suppressException && closingIndex == -1) {
-//            //TODO:best to provide a line number and index on line. Have to decompose template into lines.
-//            throw new ParseException("Failed to find closer  " + toFind + " for field at index " + start);
-//        }
-        return first;
-    }
-
     public void process(Map values, Writer writer) {
 
         try {
-            for (TemplateToken token : builtIn) {
+            for (TemplateToken token : templateTokens) {
                 token.process(values, writer);
             }
         } catch (Exception e) {

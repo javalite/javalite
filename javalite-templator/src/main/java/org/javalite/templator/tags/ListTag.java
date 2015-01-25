@@ -7,10 +7,9 @@ import org.javalite.templator.Template;
 import org.javalite.templator.TemplateException;
 
 import java.io.Writer;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
+import static org.javalite.common.Collections.list;
 
 /**
  * Basic iterator for collections and arrays.
@@ -67,5 +66,20 @@ public class ListTag extends AbstractTag {
                 bodyTemplate.process(newVals, writer);
             }
         }
+    }
+
+    @Override
+    public String getTagStart() {
+        return "<#list";
+    }
+
+    @Override
+    public List<String> getEnds() {
+        return list("</#list>");
+    }
+
+    @Override
+    public String getArgumentEnd() {
+        return ">";
     }
 }

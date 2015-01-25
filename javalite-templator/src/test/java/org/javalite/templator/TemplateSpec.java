@@ -4,7 +4,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.List;
+import java.util.Map;
 
 import static org.javalite.common.Collections.list;
 import static org.javalite.common.Collections.map;
@@ -15,11 +17,25 @@ import static org.javalite.test.jspec.JSpec.a;
  */
 public class TemplateSpec {
 
+
+    @Test
+    public void shouldProcessTextTemplate() {
+        String source = "this is just plain text, no strings attached";
+        Template template = new Template(source);
+
+        StringWriter sw = new StringWriter();
+        template.process(map(), sw);
+
+        a(template.templateTokens().size()).shouldBeEqual(1);
+        a(sw.toString()).shouldBeEqual("this is just plain text, no strings attached");
+    }
+
+
     @Test
     public void shouldTokenizeTemplate() {
         String source = "<html>Hello, ${first_name} - your last name is ${last_name}</html>";
         Template template = new Template(source);
-        List<TemplateToken> tokens = template.builtInTokens();
+        List<TemplateToken> tokens = template.templateTokens();
         a(tokens.size()).shouldBeEqual(5);
         a(tokens.get(0).originalValue()).shouldBeEqual("<html>Hello, ");
         a(tokens.get(1).originalValue()).shouldBeEqual("first_name");
@@ -135,24 +151,43 @@ public class TemplateSpec {
     }
 
 
+    public static class BlahTag extends AbstractTag{
+        public BlahTag() {
+            super();
+        }
+
+        @Override
+        public List<String> getEnds() {
+            return list("/>");
+        }
+
+        @Override
+        public void process(Map values, Writer writer) {
+            try{writer.write("blah");}catch(Exception e){throw new TemplateException(e);}
+        }
+    }
+
     @Test
     public void shouldParseSimpleTag() {
 
-        String source = "<html><#list people as person /></html>";
+        TemplatorConfig.instance().registerTag(BlahTag.class);
+
+        String source = "<html><@blah arguments for blah /></html>";
         Template template = new Template(source);
-        a(template.builtInTokens().size()).shouldBeEqual(3);
-        AbstractTag t = (AbstractTag) template.builtInTokens().get(1);
+        a(template.templateTokens().size()).shouldBeEqual(3);
+        AbstractTag t = (AbstractTag) template.templateTokens().get(1);
+        a(t.getArgumentLine()).shouldBeEqual(" arguments for blah ");
         a(t.getBody()).shouldBeNull();
     }
 
     @Test
-    public void shouldParseTagWithBody() {
+    public void shouldParseMultipleTagsWithBody() {
         String source = "<html><#list people as person > body </#list> <#list people as person > body1 </#list> </html>";
         Template template = new Template(source);
-        a(template.builtInTokens().size()).shouldBeEqual(5);
-        AbstractTag t = (AbstractTag) template.builtInTokens().get(1);
+        a(template.templateTokens().size()).shouldBeEqual(5);
+        AbstractTag t = (AbstractTag) template.templateTokens().get(1);
         a(t.getBody()).shouldBeEqual(" body ");
-        t = (AbstractTag) template.builtInTokens().get(3);
+        t = (AbstractTag) template.templateTokens().get(3);
         a(t.getBody()).shouldBeEqual(" body1 ");
 
     }
@@ -166,20 +201,41 @@ public class TemplateSpec {
 
         StringWriter w = new StringWriter();
         template.process(map("people", list(p1, p2)), w);
-        a(w.toString()).shouldBeEqual("<html> name: John Doe, has more: true, index: 0 name: Jane Doe, has more: false, index: 1</html>");
+        a(w.toString()).shouldBeEqual("<html> name: John Doe, has more: true, index: 0  name: Jane Doe, has more: false, index: 1 </html>");
     }
 
     @Test
     public void shouldIterateWithListAndSimpleCondition() {
 
-        String source = "<html><#list people as person > name: ${person.firstName} ${person.lastName} <#if person_has_next > | </#if> </#list></html>";
+        String source = "<html><#list people as person>name: ${person.firstName} ${person.lastName}<#if person_has_next> <br> </#if></#list></html>";
         Template template = new Template(source);
         Person2 p1 = new Person2("John", "Doe");
         Person2 p2 = new Person2("Jane", "Kirkland");
 
         StringWriter w = new StringWriter();
         template.process(map("people", list(p1, p2)), w);
-        a(w.toString()).shouldBeEqual("<html> name: John Doe  |  name: Jane Kirkland </html>");
+        a(w.toString()).shouldBeEqual("<html>name: John Doe <br> name: Jane Kirkland</html>");
+    }
+
+
+    @Test @Ignore //TODO
+    public void implementNestedTags() {
+
+        /**
+         * <html>
+         *     <#list people as person>
+         *         name: ${person.firstName} ${person.lastName}
+         *
+         *         <#list person.habits as habit >
+         *             Habit: ${habit}
+         *         </#list>
+         *     <#if person_has_next>
+         *         <br>
+         *     </#if>
+         *     </#list>
+         * </html>
+         */
+
     }
 
     @Test

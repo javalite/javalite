@@ -3,11 +3,12 @@ package org.javalite.templator.tags;
 import org.javalite.common.Convert;
 import org.javalite.templator.AbstractTag;
 import org.javalite.templator.Template;
-import org.javalite.templator.TemplatorConfig;
 
 import java.io.Writer;
+import java.util.List;
 import java.util.Map;
 
+import static org.javalite.common.Collections.list;
 import static org.javalite.common.Util.split;
 
 /**
@@ -15,9 +16,7 @@ import static org.javalite.common.Util.split;
  */
 public class IfTag extends AbstractTag {
     private Template bodyTemplate;
-
     private boolean singleArgument = true;
-
     private String argumentLine;
 
 
@@ -47,5 +46,25 @@ public class IfTag extends AbstractTag {
         if(processBody){
             bodyTemplate.process(values, writer);
         }
+    }
+
+    @Override
+    public String getTagStart() {
+        return "<#if";
+    }
+
+    @Override
+    public String getMiddle() {
+        return "<#else>";
+    }
+
+    @Override
+    public List<String> getEnds() {
+        return list("</#if>");
+    }
+
+    @Override
+    public String getArgumentEnd() {
+        return ">";
     }
 }

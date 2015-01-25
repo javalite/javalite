@@ -24,8 +24,9 @@ public enum TemplatorConfig {
     INSTANCE;
 
     private TemplatorConfig(){
-        registerTag("list", ListTag.class);
-        registerTag("if", IfTag.class);
+        registerTag(ListTag.class);
+        registerTag(IfTag.class);
+        registerTag(MergeTag.class);
         registerBuiltIn("esc", new Esc());
     }
 
@@ -41,6 +42,10 @@ public enum TemplatorConfig {
         return INSTANCE;
     }
 
+    protected Map<String, Class> getTags() {
+        return tags;
+    }
+
     /**
      * Set to cache or not cache templates.
      *
@@ -50,7 +55,15 @@ public enum TemplatorConfig {
         this.cacheTemplates = cacheTemplates;
     }
 
-    public void registerTag(String name, Class tagClass) {
+    public void registerTag(Class tagClass) {
+        String name;
+        try{
+            name  = ((AbstractTag)tagClass.newInstance()).getTagName();
+        }catch(Exception e){
+            throw new TemplateException("Class: " + tagClass + " must inherit from " +
+                    AbstractTag.class.getName() + " and provide a default constructor.", e);
+        }
+
         if(tags.containsKey(name)){
             throw new TemplateException("Tag named " + name + " already registered");
         }
@@ -80,7 +93,6 @@ public enum TemplatorConfig {
     public AbstractTag getTag(String name)  {
         if (!tags.containsKey(name))
             throw new TemplateException("Tag named '" + name + "' was not registered");
-
         try{
             return (AbstractTag)tags.get(name).newInstance();
         }catch(Exception e){
