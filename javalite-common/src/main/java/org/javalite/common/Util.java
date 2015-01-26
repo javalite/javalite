@@ -23,7 +23,7 @@ import java.util.*;
 
 /**
  * @author Igor Polevoy
- * @author ericbn
+ * @author Eric Nielsen
  */
 public final class Util {
 
