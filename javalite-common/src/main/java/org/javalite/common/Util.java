@@ -25,6 +25,10 @@ import java.util.*;
  * @author Igor Polevoy
  * @author Eric Nielsen
  */
+/**
+ * @author Igor Polevoy
+ * @author ericbn
+ */
 public final class Util {
 
     private Util() {
@@ -314,7 +318,7 @@ public final class Util {
      * @return a string split into an array using provided delimiters
      */
     public static String[] split(String input, String delimiters) {
-        if(input == null) throw new NullPointerException("input cannot be null");
+        if(input == null) { throw new NullPointerException("input cannot be null"); }
 
         List<String> tokens  = new ArrayList<String>();
         StringTokenizer st = new StringTokenizer(input, delimiters);
@@ -343,7 +347,7 @@ public final class Util {
      * @param delimiter delimiter to insert between elements of collection.
      * @return string with collection elements separated by delimiter. There is no trailing delimiter in the string.
      */
-    public static String join(Collection collection, String delimiter){
+    public static String join(Collection<?> collection, String delimiter){
         if (collection.isEmpty()) { return ""; }
         StringBuilder sb = new StringBuilder();
         join(sb, collection, delimiter);
@@ -359,7 +363,7 @@ public final class Util {
      */
     public static void join(StringBuilder sb, Collection<?> collection, String delimiter) {
         if (collection.isEmpty()) { return; }
-        Iterator it = collection.iterator();
+        Iterator<?> it = collection.iterator();
         sb.append(it.next());
         while (it.hasNext()) {
             sb.append(delimiter);
@@ -423,10 +427,12 @@ public final class Util {
      * @param in  input stream to read content from.
      */
     public static void saveTo(String path, InputStream in) {
-        if (in == null)
+        if (in == null) {
             throw new IllegalArgumentException("input stream cannot be null");
-        if (path == null)
+        }
+        if (path == null) {
             throw new IllegalArgumentException("path cannot be null");
+        }
 
         FileOutputStream out = null;
         try {
