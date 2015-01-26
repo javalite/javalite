@@ -83,15 +83,7 @@ public final class Util {
      * @return contents of entire file.
      */
     public static String readFile(String fileName) {
-        FileInputStream in = null;
-        try {
-            in = new FileInputStream(fileName);
-            return read(in);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            closeQuietly(in);
-        }
+        return readFile(fileName, "UTF-8");
     }
 
     /**
