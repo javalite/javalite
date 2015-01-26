@@ -120,17 +120,21 @@ class ControllerPackageLocator {
     }
 
     private static void addClassesUrl(FilterConfig config, List<URL> urls) {
-
         Set resources = config.getServletContext().getResourcePaths("/WEB-INF/classes/");
         System.out.println(resources);
         if (!resources.isEmpty()) {
             try {
                 String first = resources.iterator().next().toString();
                 String urlString = config.getServletContext().getResource(first).toString();
-                //example:
-                // zip:/home/igor/projects/domains/vrs/domain/vrs/servers/vrs_web/tmp/_WL_user/_appsdir_vrs-ear-4.0.1-SNAPSHOT_ear/tr9ese/war/WEB-INF/lib/_wl_cls_gen.jar!/com/
-                String url = urlString.substring(urlString.indexOf(":") + 2, urlString.indexOf("!"));
-                urls.add(new URL("file:/" + url));
+                String url = null;
+                if(urlString.startsWith("zip") && urlString.contains("!")){ // example: zip:/home/igor/projects/domains/vrs/domain/vrs/servers/vrs_web/tmp/_WL_user/_appsdir_vrs-ear-4.0.1-SNAPSHOT_ear/tr9ese/war/WEB-INF/lib/_wl_cls_gen.jar!/com/
+                    url = urlString.substring(urlString.indexOf(":") + 2, urlString.indexOf("!"));
+                }else if(urlString.startsWith("jndi")){ // example: jndi:/default-host/activeweb-bootstrap-1.1-SNAPSHOT/WEB-INF/classes/app/
+                    url = urlString.substring(urlString.indexOf(":") + 2);
+                }
+                if(url != null){
+                    urls.add(new URL("file:/" + url));
+                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
