@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2015 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -34,10 +34,10 @@ import org.javalite.common.Inflector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.javalite.common.Util.*;
 
 /**
  * @author Igor Polevoy
+ * @author Eric Nielsen
  */
 public enum Registry {
 
@@ -160,22 +160,24 @@ public enum Registry {
      */
     private SortedMap<String, ColumnMetadata> fetchMetaParams(DatabaseMetaData databaseMetaData, String databaseProductName, String table) throws SQLException {
 
-      /*
-       * Valid table name format: tablename or schemaname.tablename
-       */
-        String[] vals = split(table, '.');
+        /*
+         * Valid table name format: tablename or schemaname.tablename
+         */
+        String[] names = table.split("\\.", 3);
         String schema = null;
         String tableName;
-
-        if(vals.length == 1) {
-            tableName = vals[0];
-        } else if (vals.length == 2) {
-            schema = vals[0];
-            tableName = vals[1];
-            if (schema.length() == 0 || tableName.length() == 0) {
+        switch (names.length) {
+        case 1:
+            tableName = names[0];
+            break;
+        case 2:
+            schema = names[0];
+            tableName = names[1];
+            if (schema.isEmpty() || tableName.isEmpty()) {
                 throw new DBException("invalid table name : " + table);
             }
-        } else {
+            break;
+        default:
             throw new DBException("invalid table name: " + table);
         }
 
@@ -312,7 +314,7 @@ public enum Registry {
         SortedMap<String, ColumnMetadata> columns = new CaseInsensitiveMap<ColumnMetadata>();
         while (rs.next()) {
 
-        	if (dbProduct.equals("h2") && "INFORMATION_SCHEMA".equals(rs.getString("TABLE_SCHEMA"))) {
+        	if ("h2".equals(dbProduct) && "INFORMATION_SCHEMA".equals(rs.getString("TABLE_SCHEM"))) {
                 continue; // skip h2 INFORMATION_SCHEMA table columns.
             }
             ColumnMetadata cm = new ColumnMetadata(rs.getString("COLUMN_NAME"), rs.getString("TYPE_NAME"), rs.getInt("COLUMN_SIZE"));
