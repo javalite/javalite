@@ -314,11 +314,11 @@ public final class Util {
      * @return a string split into an array using provided delimiters
      */
     public static String[] split(String input, String delimiters) {
-        if(input == null) throw new NullPointerException("input cannot be null");
+        if (input == null) { throw new NullPointerException("input cannot be null"); }
 
         List<String> tokens  = new ArrayList<String>();
         StringTokenizer st = new StringTokenizer(input, delimiters);
-        while(st.hasMoreTokens()){
+        while(st.hasMoreTokens()) {
             tokens.add(st.nextToken().trim());
         }
         return tokens.toArray(new String[tokens.size()]);
@@ -343,7 +343,7 @@ public final class Util {
      * @param delimiter delimiter to insert between elements of collection.
      * @return string with collection elements separated by delimiter. There is no trailing delimiter in the string.
      */
-    public static String join(Collection collection, String delimiter){
+    public static String join(Collection<?> collection, String delimiter) {
         if (collection.isEmpty()) { return ""; }
         StringBuilder sb = new StringBuilder();
         join(sb, collection, delimiter);
@@ -359,7 +359,7 @@ public final class Util {
      */
     public static void join(StringBuilder sb, Collection<?> collection, String delimiter) {
         if (collection.isEmpty()) { return; }
-        Iterator it = collection.iterator();
+        Iterator<?> it = collection.iterator();
         sb.append(it.next());
         while (it.hasNext()) {
             sb.append(delimiter);
@@ -423,10 +423,12 @@ public final class Util {
      * @param in  input stream to read content from.
      */
     public static void saveTo(String path, InputStream in) {
-        if (in == null)
+        if (in == null) {
             throw new IllegalArgumentException("input stream cannot be null");
-        if (path == null)
+        }
+        if (path == null) {
             throw new IllegalArgumentException("path cannot be null");
+        }
 
         FileOutputStream out = null;
         try {
@@ -489,7 +491,7 @@ public final class Util {
      * @param input bytes to encode
      * @return encoded string
      */
-    public static String toBase64(byte[] input){
+    public static String toBase64(byte[] input) {
         return Base64.getEncoder().encodeToString(input);
     }
 
@@ -499,7 +501,7 @@ public final class Util {
      * @param input Base64-encoded string.
      * @return byte array decoded from string.
      */
-    public static byte[] fromBase64(String input){
+    public static byte[] fromBase64(String input) {
         return Base64.getDecoder().decode(input);
     }
 }
