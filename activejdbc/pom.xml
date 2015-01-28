@@ -2,14 +2,14 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>activejdbc</artifactId>
     <packaging>jar</packaging>
-    <version>1.4.10-SNAPSHOT</version>
+    <version>1.4.10</version>
     <name>JavaLite - ActiveJDBC ORM Framework</name>
 
 
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>activejdbc-root</artifactId>
-        <version>1.4.10-SNAPSHOT</version>
+        <version>1.4.10</version>
     </parent>
 
     <!-- Default to H2 if no profile provided -->
@@ -18,7 +18,7 @@
         <jdbc.driver>org.h2.Driver</jdbc.driver>
         <jdbc.url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1</jdbc.url>
         <jdbc.user>sa</jdbc.user>
-        <jdbc.password></jdbc.password>
+        <jdbc.password />
         <db>h2</db>
     </properties>
 
@@ -209,7 +209,7 @@
                     </includes>
                     <systemPropertyVariables>
                         <oracle.jdbc.J2EE13Compliant>true</oracle.jdbc.J2EE13Compliant>
-                        <activejdbc.log></activejdbc.log>
+                        <activejdbc.log />
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
