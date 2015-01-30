@@ -333,8 +333,8 @@ public class LazyList<T extends Model> extends AbstractList<T>{
 
         long start = System.currentTimeMillis();
         new DB(metaModel.getDbName()).find(sql, params).with(new RowListenerAdapter() {
-            @Override public void onNext(Map<String, Object> rowMap) {
-                delegate.add((T) Model.instance(rowMap, metaModel));
+            @Override public void onNext(Map<String, Object> map) {
+                delegate.add(ModelDelegate.<T>instance(map, metaModel));
             }
         });
         LogFilter.logQuery(logger, sql, params, start);
@@ -513,17 +513,17 @@ public class LazyList<T extends Model> extends AbstractList<T>{
         }
     }
 
-    private void processOther(Many2ManyAssociation association, Class childClass) {
+    private void processOther(Many2ManyAssociation association, Class<? extends Model> childClass) {
         if(delegate.isEmpty()){//no need to process other if no models selected.
             return;
         }
-        final MetaModel childMM = Registry.instance().getMetaModel(childClass);
+        final MetaModel childMM = ModelDelegate.metaModelOf(childClass);
         final Map<Object, List<Model>> childrenByParentId = new HashMap<Object, List<Model>>();
         List ids = collect(metaModel.getIdName());
         List<Map> childResults = new DB(childMM.getDbName()).findAll(childMM.getDialect().selectManyToManyAssociation(
                 association, "the_parent_record_id", ids.size()), ids.toArray());
         for(Map res: childResults){
-            Model child = Model.instance(res, childMM);
+            Model child = ModelDelegate.instance(res, childMM, childClass);
             Object parentId = res.get("the_parent_record_id");
             if(childrenByParentId.get(parentId) == null){
                     childrenByParentId.put(parentId, new SuperLazyList<Model>());
