@@ -48,7 +48,7 @@ class ModelDelegate {
 
     static void setNamesAndValues(Model m, Object... namesAndValues) {
         if (namesAndValues.length % 2 == 1) {
-            throw new IllegalArgumentException("The number of arguments must be pair.");
+            throw new IllegalArgumentException("number of arguments must be even");
         }
         for (int i = 0; i < namesAndValues.length - 1; i += 2) {
             if (namesAndValues[i] == null) {
