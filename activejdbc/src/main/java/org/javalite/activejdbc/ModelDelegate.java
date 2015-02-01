@@ -47,8 +47,13 @@ class ModelDelegate {
     }
 
     static void setNamesAndValues(Model m, Object... namesAndValues) {
+        if (namesAndValues.length % 2 == 1) {
+            throw new IllegalArgumentException("The number of arguments must be pair.");
+        }
         for (int i = 0; i < namesAndValues.length - 1; i += 2) {
-            if (namesAndValues[i] == null) throw new IllegalArgumentException("attribute names cannot be nulls");
+            if (namesAndValues[i] == null) {
+                throw new IllegalArgumentException("attribute names cannot be nulls");
+            }
             m.set(namesAndValues[i].toString(), namesAndValues[i + 1]);
         }
     }
