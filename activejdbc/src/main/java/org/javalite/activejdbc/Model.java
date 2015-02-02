@@ -70,6 +70,61 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     protected Model() {
     }
 
+    private void fireBeforeSave() {
+        beforeSave();
+        for (CallbackListener callback : modelRegistryLocal().callbacks()) {
+            callback.beforeSave(this);
+        }
+    }
+
+    private void fireAfterSave() {
+        afterSave();
+        for (CallbackListener callback : modelRegistryLocal().callbacks()) {
+            callback.afterSave(this);
+        }
+    }
+
+    private void fireBeforeCreate() {
+        beforeCreate();
+        for (CallbackListener callback : modelRegistryLocal().callbacks()) {
+            callback.beforeCreate(this);
+        }
+    }
+
+    private void fireAfterCreate() {
+        afterCreate();
+        for (CallbackListener callback : modelRegistryLocal().callbacks()) {
+            callback.afterCreate(this);
+        }
+    }
+
+    private void fireBeforeDelete() {
+        beforeDelete();
+        for (CallbackListener callback : modelRegistryLocal().callbacks()) {
+            callback.beforeDelete(this);
+        }
+    }
+
+    private void fireAfterDelete() {
+        afterDelete();
+        for (CallbackListener callback : modelRegistryLocal().callbacks()) {
+            callback.afterDelete(this);
+        }
+    }
+
+    private void fireBeforeValidation() {
+        beforeValidation();
+        for(CallbackListener callback: modelRegistryLocal().callbacks())
+            callback.beforeValidation(this);
+    }
+
+    private void fireAfterValidation() {
+        afterValidation();
+        for (CallbackListener callback : modelRegistryLocal().callbacks()) {
+            callback.afterValidation(this);
+        }
+    }
+
     public static MetaModel getMetaModel() {
         return ModelDelegate.metaModelOf(modelClass());
     }
@@ -289,7 +344,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return true if a record was deleted, false if not.
      */
     public boolean delete() {
-        fireBeforeDelete(this);
+        fireBeforeDelete();
         boolean result;
         if( 1 == new DB(getMetaModelLocal().getDbName()).exec("DELETE FROM " + getMetaModelLocal().getTableName()
                 + " WHERE " + getIdName() + "= ?", getId())) {
@@ -304,7 +359,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         else{
             result =  false;
         }
-        fireAfterDelete(this);
+        fireAfterDelete();
         return result;
     }
 
@@ -1937,7 +1992,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * Executes all validators attached to this model.
      */
     public void validate() {
-        fireBeforeValidation(this);
+        fireBeforeValidation();
         errors = new Errors();
         List<Validator> validators = modelRegistryLocal().validators();
         if (validators != null) {
@@ -1945,7 +2000,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 validator.validate(this);
             }
         }
-        fireAfterValidation(this);
+        fireAfterValidation();
     }
 
     public boolean hasErrors() {
@@ -2385,7 +2440,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public boolean save() {
         if(frozen) throw new FrozenException(this);
 
-        fireBeforeSave(this);
+        fireBeforeSave();
 
         validate();
         if (hasErrors()) {
@@ -2398,7 +2453,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         } else {
             result = update();
         }
-        fireAfterSave(this);
+        fireAfterSave();
         return result;
     }
 
@@ -2431,7 +2486,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public boolean insert() {
 
-        fireBeforeCreate(this);
+        fireBeforeCreate();
         //TODO: fix this as created_at and updated_at attributes will be set even if insertion failed
         doCreatedAt();
         doUpdatedAt();
@@ -2476,7 +2531,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 attributes.put(metaModel.getVersionColumn(), 1);
             }
 
-            fireAfterCreate(this);
+            fireAfterCreate();
 
             return done;
         } catch (DBException e) {
