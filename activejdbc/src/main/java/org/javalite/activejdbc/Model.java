@@ -2078,8 +2078,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return newly instantiated model.
      */
     public <T extends Model> T set(Object... namesAndValues) {
-        for (int i = 0; i < namesAndValues.length - 1; ) {
-            if (namesAndValues[i] == null) { throw new IllegalArgumentException("attribute names cannot be nulls"); }
+        if (namesAndValues.length % 2 != 0) {
+            throw new IllegalArgumentException("number of arguments must be even");
+        }
+        for (int i = 0; i < namesAndValues.length; ) {
+            if (namesAndValues[i] == null) {
+                throw new IllegalArgumentException("attribute names cannot be null");
+            }
             set(namesAndValues[i++].toString(), namesAndValues[i++]);
         }
         return (T) this;

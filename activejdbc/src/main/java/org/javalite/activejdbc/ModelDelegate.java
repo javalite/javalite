@@ -131,7 +131,6 @@ public final class ModelDelegate {
     }
 
     public static <T extends Model> T create(Class<T> clazz, Object... namesAndValues) {
-        if (namesAndValues.length %2 != 0) { throw new IllegalArgumentException("number of arguments must be even"); }
         try {
             return clazz.newInstance().set(namesAndValues);
         } catch (IllegalArgumentException e) {
