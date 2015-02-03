@@ -310,4 +310,9 @@ public class ConvertTest extends JSpecSupport {
         cal.set(2014, 11, 31, 23, 59, 59);
         the(Convert.toIsoString(cal.getTime())).shouldBeEqual("2014-12-31T23:59:59Z");
     }
+
+    @Test
+    public void shouldToBytesCovertNull() {
+        the(Convert.toBytes((Object) null)).shouldBeNull();
+    }
 }

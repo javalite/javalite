@@ -62,9 +62,9 @@ public final class Convert {
      * @return string representation of an object, including {@link java.sql.Clob}.
      */
     public static String toString(Object value) {
-        if(value == null) {
+        if (value == null) {
             return null;
-        } else if(value instanceof Clob) {
+        } else if (value instanceof Clob) {
             return clobToString((Clob) value);
         } else {
             return value.toString();
@@ -403,10 +403,14 @@ public final class Convert {
      * @return value converted to byte array.
      */
     public static byte[] toBytes(Object value) {
-        if (value instanceof Blob) {
+        if (value == null) {
+            return null;
+        } else if (value instanceof byte[]) {
+            return (byte[]) value;
+        } else if (value instanceof Blob) {
             return toBytes((Blob) value);
         } else {
-            return value instanceof byte[] ? (byte[]) value : toString(value).getBytes();
+            return toString(value).getBytes();
         }
     }
 
