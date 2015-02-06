@@ -8,10 +8,8 @@ import org.junit.Test;
 import java.io.File;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static org.javalite.db_migrator.DbUtils.attach;
-import static org.javalite.db_migrator.DbUtils.detach;
-
+import static org.junit.Assert.*;
+import static org.javalite.db_migrator.DbUtils.*;
 
 public class MigrationSpec {
 

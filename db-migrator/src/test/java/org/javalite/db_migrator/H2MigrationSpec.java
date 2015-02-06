@@ -4,7 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.javalite.db_migrator.DbUtils.*;
 
 public class H2MigrationSpec {

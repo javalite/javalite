@@ -25,7 +25,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 import static org.javalite.db_migrator.DbUtils.*;
 import static org.javalite.db_migrator.SpecBuilder.the;
 

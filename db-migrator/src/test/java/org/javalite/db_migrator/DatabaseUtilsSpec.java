@@ -2,9 +2,8 @@ package org.javalite.db_migrator;
 
 import org.junit.Test;
 
-import static junit.framework.Assert.assertEquals;
-import static org.javalite.db_migrator.DbUtils.extractDatabaseName;
-import static org.javalite.db_migrator.DbUtils.extractServerUrl;
+import static org.junit.Assert.*;
+import static org.javalite.db_migrator.DbUtils.*;
 
 public class DatabaseUtilsSpec
 {
