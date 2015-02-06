@@ -89,7 +89,7 @@ public class Instrumentation {
         Object[] annotations =  model.getAnnotations();
 
         for (Object annotation : annotations) {
-            Class dbNameClass = Class.forName("org.javalite.activejdbc.annotations.DbName");
+            Class<?> dbNameClass = Class.forName("org.javalite.activejdbc.annotations.DbName");
             if(dbNameClass.isAssignableFrom(annotation.getClass())){
                 Method valueMethod = annotation.getClass().getMethod("value");
                 return valueMethod.invoke(annotation).toString();
