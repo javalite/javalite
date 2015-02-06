@@ -13,7 +13,7 @@ import static org.javalite.db_migrator.DbUtils.closeQuietly;
 public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
 
     /**
-     * @parameter expression="${basedir}"
+     * @parameter property="basedir"
      * @required
      * @readonly
      */

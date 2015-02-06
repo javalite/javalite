@@ -6,7 +6,7 @@ import org.apache.maven.project.MavenProject;
 public abstract class AbstractMigrationMojo extends AbstractMojo {
 
     /**
-     * @parameter expression="${project}"
+     * @parameter property="project"
      * @required
      */
     protected MavenProject project;

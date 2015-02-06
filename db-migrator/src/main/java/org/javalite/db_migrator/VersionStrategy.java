@@ -13,6 +13,16 @@ import static org.javalite.db_migrator.DatabaseType.HSQL;
 import static org.javalite.db_migrator.DatabaseType.SQL_SERVER;
 import static org.javalite.db_migrator.DbUtils.*;
 
+
+class DefaultMap extends HashMap<DatabaseType, String> {
+    private final String DEFAULT_VALUE = "create table %s (%s varchar(32) not null unique, %s timestamp not null, %s int not null)";
+
+    @Override
+    public String get(Object key) {
+        return containsKey(key) ? super.get(key) : DEFAULT_VALUE;
+    }
+}
+
 /**
  * A trivial VersionStrategy which tracks only the minimal information required to note the current state of the database: the current version.
  */
@@ -24,17 +34,7 @@ public class VersionStrategy {
 
     private static final Logger logger = LoggerFactory.getLogger(VersionStrategy.class);
 
-
-    private static final Map CREATE_VERSION_TABLE_MAP;
-
-    static class DefaultMap extends HashMap<DatabaseType, String> {
-        private String defaultValue = "create table %s (%s varchar(32) not null unique, %s timestamp not null, %s int not null)";
-
-        @Override
-        public String get(Object key) {
-            return containsKey(key) ? super.get(key) : defaultValue;
-        }
-    }
+    private static final Map<DatabaseType, String> CREATE_VERSION_TABLE_MAP;
 
     static {
         CREATE_VERSION_TABLE_MAP = new DefaultMap();
@@ -44,7 +44,7 @@ public class VersionStrategy {
 
 
     public void createSchemaVersionTable(DatabaseType dbType) {
-        String ddl = format((String) CREATE_VERSION_TABLE_MAP.get(dbType), VERSION_TABLE, VERSION_COLUMN, APPLIED_DATE_COLUMN, DURATION_COLUMN);
+        String ddl = format(CREATE_VERSION_TABLE_MAP.get(dbType), VERSION_TABLE, VERSION_COLUMN, APPLIED_DATE_COLUMN, DURATION_COLUMN);
         exec(ddl);
     }
 

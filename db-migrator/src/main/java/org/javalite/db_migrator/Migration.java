@@ -11,13 +11,13 @@ import java.io.LineNumberReader;
 import static org.javalite.db_migrator.DbUtils.exec;
 
 
-public class Migration implements Comparable {
+public class Migration implements Comparable<Migration> {
     private static final Logger logger = LoggerFactory.getLogger(Migration.class);
     private static final String DEFAULT_DELIMITER = ";";
     private static final String DEFAULT_DELIMITER_KEYWORD = "DELIMITER";
 
-    private File migrationFile;
-    private String version;
+    private final File migrationFile;
+    private final String version;
 
     public Migration(String version, File migrationFile) {
         this.migrationFile = migrationFile;
@@ -99,8 +99,7 @@ public class Migration implements Comparable {
         return line.startsWith("--") || line.startsWith("#") || line.startsWith("//");
     }
 
-    public int compareTo(Object o) {
-        Migration other = (Migration) o;
+    public int compareTo(Migration other) {
         return this.getVersion().compareTo(other.getVersion());
     }
 }
