@@ -37,10 +37,9 @@ import static org.javalite.common.Util.*;
  * @author Igor Polevoy
  * @author Eric Nielsen
  */
-public class LazyList<T extends Model> extends AbstractList<T>{
+public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(LazyList.class);
-    protected List<T> delegate = new ArrayList<T>();
     private final List<String> orderBys = new ArrayList<String>();
     private boolean hydrated = false;
     private final MetaModel metaModel;
@@ -51,7 +50,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
     private final Map<Class<T>, Association> includes = new HashMap<Class<T>, Association>();
     private final boolean forPaginator;
 
-    protected LazyList(String subQuery, MetaModel metaModel, Object ... params){
+    protected LazyList(String subQuery, MetaModel metaModel, Object... params) {
         this.fullQuery = null;
         this.subQuery = subQuery;
         this.params = params == null? new Object[]{}: params;
@@ -76,6 +75,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
 
     //TODO: this is only used by SuperLazyList, to be reviewed?
     protected LazyList() {
+        delegate = new ArrayList<T>();
         this.fullQuery = null;
         this.subQuery = null;
         this.params = null;
@@ -317,7 +317,8 @@ public class LazyList<T extends Model> extends AbstractList<T>{
     }
 
 
-    protected void hydrate(){
+    @Override
+    protected void hydrate() {
 
         if(hydrated) return;
 
@@ -330,7 +331,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
                 return;
             }
         }
-
+        delegate = new ArrayList<T>();
         long start = System.currentTimeMillis();
         new DB(metaModel.getDbName()).find(sql, params).with(new RowListenerAdapter() {
             @Override public void onNext(Map<String, Object> map) {
@@ -339,6 +340,7 @@ public class LazyList<T extends Model> extends AbstractList<T>{
         });
         LogFilter.logQuery(logger, sql, params, start);
         if(metaModel.cached()){
+            //TODO: review, LazyList is already unmodifiable, and this will be delegated twice when fetched from cache
             delegate = Collections.unmodifiableList(delegate);
             QueryCache.instance().addItem(metaModel.getTableName(), sql, params, delegate);
         }
@@ -536,150 +538,6 @@ public class LazyList<T extends Model> extends AbstractList<T>{
                 parent.setChildren(childClass, children);
             }
         }
-    }
-
-    @Override
-    public T get(int index) {
-        hydrate();
-        return delegate.get(index);
-    }
-
-    @Override
-    public int size() {
-        hydrate();
-        return delegate.size();
-    }
-
-    @Override
-    public boolean isEmpty() {
-        hydrate();
-        return delegate.isEmpty();
-    }
-
-    @Override
-    public boolean contains(Object o) {
-        hydrate();
-        return delegate.contains(o);
-    }
-
-    @Override
-    public Iterator<T> iterator() {
-        hydrate();
-        return delegate.iterator();
-    }
-
-    @Override
-    public Object[] toArray() {
-        hydrate();
-        return delegate.toArray();
-    }
-
-    @Override
-    public <T> T[] toArray(T[] a) {
-        hydrate();
-        return delegate.toArray(a);
-    }
-
-    @Override
-    public boolean add(T o) {
-        throw new UnsupportedOperationException("this operation is not supported, cannot manipulate DB results");
-    }
-
-    @Override
-    public boolean remove(Object o) {
-        throw new UnsupportedOperationException("this operation is not supported, cannot manipulate DB results");
-    }
-
-    @Override
-    public boolean containsAll(Collection c) {
-        hydrate();
-        return delegate.containsAll(c);
-    }
-
-    @Override
-    public boolean addAll(Collection c) {
-        throw new UnsupportedOperationException("this operation is not supported, cannot manipulate DB results");
-    }
-
-    @Override
-    public boolean addAll(int index, Collection c) {
-        throw new UnsupportedOperationException("this operation is not supported, cannot manipulate DB results");
-    }
-
-    @Override
-    public boolean removeAll(Collection c) {
-        throw new UnsupportedOperationException("this operation is not supported, cannot manipulate DB results");
-    }
-
-    @Override
-    public boolean retainAll(Collection c) {
-        throw new UnsupportedOperationException("this operation is not supported, cannot manipulate DB results");
-    }
-
-    @Override
-    public void clear() {
-        throw new UnsupportedOperationException("this operation is not supported, cannot manipulate DB results");
-    }
-
-    @Override
-    public T set(int index, T element) {
-        throw new UnsupportedOperationException("this operation is not supported, cannot manipulate DB results");
-    }
-
-    @Override
-    public void add(int index, T element) {
-        throw new UnsupportedOperationException("this operation is not supported, cannot manipulate DB results");
-    }
-
-    @Override
-    public T remove(int index) {
-        throw new UnsupportedOperationException("this operation is not supported, cannot manipulate DB results");
-    }
-
-    @Override
-    public int indexOf(Object o) {
-        hydrate();
-        return delegate.indexOf(o);
-    }
-
-    @Override
-    public int lastIndexOf(Object o) {
-        hydrate();
-        return delegate.lastIndexOf(o);
-    }
-
-    @Override
-    public ListIterator<T> listIterator() {
-        hydrate();
-        return delegate.listIterator();
-    }
-
-    @Override
-    public ListIterator<T> listIterator(int index) {
-        hydrate();
-        return delegate.listIterator(index);
-    }
-
-    @Override
-    public List<T> subList(int fromIndex, int toIndex) {
-        hydrate();
-        return delegate.subList(fromIndex, toIndex);
-    }
-
-    /**
-     * This is only to test caching.
-     * @return
-     */
-    @Override
-    public int hashCode() {
-        hydrate();
-        return delegate.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        hydrate();
-        return delegate.toString();
     }
 
     /**
