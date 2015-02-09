@@ -19,4 +19,10 @@ public class LazyListTest extends ActiveJDBCTest {
         a(Person.where("name = ? AND last_name = ?", "John", "Doe").toSql(true)
                 .endsWith(", with parameters: John, Doe")).shouldBeTrue();
     }
+
+    @Test
+    public void shouldBeEqual() {
+        deleteAndPopulateTable("people");
+        the(Person.findAll().equals(Person.findAll())).shouldBeTrue();
+    }
 }
