@@ -1703,9 +1703,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
             Object[] allParams = new Object[params.length + 1];
             allParams[0] = getId();
-            for (int i = 0; i < params.length; i++) {
-                allParams[i + 1] = params[i];
-            }
+            System.arraycopy(params, 0, allParams, 1, params.length);
             return new LazyList<C>(true, Registry.instance().getMetaModel(targetTable), query, allParams);
         } else if (oneToManyPolymorphicAssociation != null) {
             subQuery = "parent_id = ? AND " + " parent_type = '" + oneToManyPolymorphicAssociation.getTypeLabel() + "'" + additionalCriteria;
