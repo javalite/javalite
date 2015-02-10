@@ -161,8 +161,8 @@ public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
      * relationship.
      * @return instance of this <code>LazyList</code>
      */
-    public <E extends Model>  LazyList<E>  include(Class<? extends Model> ... classes){
-        if(includes.size() != 0) throw new IllegalArgumentException("Can't call include() more than once!");
+    public <E extends Model> LazyList<E> include(Class<? extends Model>... classes) {
+        if (!includes.isEmpty()) { throw new IllegalArgumentException("Can't call include() more than once!"); }
 
         for (Class<? extends Model> clazz : classes) {
             if(!metaModel.isAssociatedTo(clazz)) throw new IllegalArgumentException("Model: " + clazz.getName() + " is not associated with: " + metaModel.getModelClass().getName());

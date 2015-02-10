@@ -1,22 +1,21 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2015 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
 
 package org.javalite.activejdbc;
 
-import org.javalite.activejdbc.LazyList;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.*;
 import org.junit.Test;
@@ -40,7 +39,6 @@ public class IncludesTest extends ActiveJDBCTest{
         user = (Map)addresses.get(6).toMap().get("user");
         a(user.get("first_name")).shouldBeEqual("John");
     }
-    
 
     @Test
     public void shouldBeAbleToIncludeChildrenOne2Many() {
@@ -163,6 +161,8 @@ public class IncludesTest extends ActiveJDBCTest{
 
         //should return cached parent in both cases
         a(parent1).shouldBeTheSameAs(parent2);
+
+        the(parent1.get("name")).shouldBeEqual("Car");
     }
 
     @Test(expected = IllegalArgumentException.class)
