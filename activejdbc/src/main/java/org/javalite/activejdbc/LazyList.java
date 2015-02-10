@@ -379,10 +379,11 @@ public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
         String parentClassName = association.getParentClassName();
 
         //need to remove duplicates because more than one child can belong to the same parent.
-        List parentIds = collect("parent_id", "parent_type", parentClassName);
-        ArrayList noDuplicateList = new ArrayList(new HashSet(parentIds));
-
-        for(Model parent: new LazyList<Model>(parentMM.getIdName() + " IN (" + questions(noDuplicateList.size()) + ")", parentMM, noDuplicateList.toArray())){
+        Object[] noDuplicateArray = new HashSet(collect("parent_id", "parent_type", parentClassName)).toArray();
+        StringBuilder query = new StringBuilder().append(parentMM.getIdName()).append(" IN (");
+        appendQuestions(query, noDuplicateArray.length);
+        query.append(')');
+        for (Model parent : new LazyList<Model>(query.toString(), parentMM, noDuplicateArray)){
             parentsHasByIds.put(parentClassName + ":" + parent.getId(), parent);
         }
 
@@ -407,10 +408,11 @@ public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
         String fkName = association.getFkName();
 
         //need to remove duplicates because more than one child can belong to the same parent.
-        List parentIds = collect(fkName);
-        ArrayList noDuplicateList = new ArrayList(new HashSet(parentIds));
-
-        for(Model parent: new LazyList<Model>(parentMM.getIdName() + " IN (" + questions(noDuplicateList.size()) + ")", parentMM, noDuplicateList.toArray())){
+        Object[] noDuplicateArray = new HashSet(collect(fkName)).toArray();
+        StringBuilder query = new StringBuilder().append(parentMM.getIdName()).append(" IN (");
+        appendQuestions(query, noDuplicateArray.length);
+        query.append(')');
+        for (Model parent : new LazyList<Model>(query.toString(), parentMM, noDuplicateArray)) {
                parentsHasByIds.put(parent.getId(), parent);
         }
 
@@ -462,11 +464,8 @@ public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
         return results;
     }
 
-
-    private String questions(int number) {
-        StringBuilder sb = new StringBuilder();
-        joinAndRepeat(sb, "?", ",", number);
-        return sb.toString();
+    private void appendQuestions(StringBuilder sb, int count) {
+        joinAndRepeat(sb, "?", ", ", count);
     }
 
     private void processPolymorphicChildren(OneToManyPolymorphicAssociation association, Class childClass) {
@@ -476,8 +475,10 @@ public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
         MetaModel childMM = Registry.instance().getMetaModel(childClass);
         Map<Object, List<Model>> childrenByParentId = new HashMap<Object, List<Model>>();
         List ids = collect(metaModel.getIdName());
-
-        for (Model child : new LazyList<Model>("parent_id IN (" + questions(ids.size()) + ") AND parent_type = '" + association.getTypeLabel() + "'", childMM, ids.toArray()).orderBy(childMM.getIdName())) {
+        StringBuilder query = new StringBuilder().append("parent_id IN (");
+        appendQuestions(query, ids.size());
+        query.append(") AND parent_type = '").append(association.getTypeLabel()).append('\'');
+        for (Model child : new LazyList<Model>(query.toString(), childMM, ids.toArray()).orderBy(childMM.getIdName())) {
             if (childrenByParentId.get(child.get("parent_id")) == null) {
                 childrenByParentId.put(child.get("parent_id"), new SuperLazyList<Model>());
             }
@@ -501,7 +502,10 @@ public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
         final String fkName = association.getFkName();
         final Map<Object, List<Model>> childrenByParentId = new HashMap<Object, List<Model>>();
         List ids = collect(metaModel.getIdName());
-        for(Model child: new LazyList<Model>(fkName + " IN (" + questions(ids.size()) + ")" , childMM, ids.toArray()).orderBy(childMM.getIdName())){
+        StringBuilder query = new StringBuilder().append(fkName).append(" IN (");
+        appendQuestions(query, ids.size());
+        query.append(')');
+        for (Model child : new LazyList<Model>(query.toString(), childMM, ids.toArray()).orderBy(childMM.getIdName())) {
              if(childrenByParentId.get(child.get(fkName)) == null){
                     childrenByParentId.put(child.get(fkName), new SuperLazyList<Model>());
              }
