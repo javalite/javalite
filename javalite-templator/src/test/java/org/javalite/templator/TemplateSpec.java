@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static junit.framework.TestCase.fail;
 import static org.javalite.common.Collections.list;
 import static org.javalite.common.Collections.map;
 import static org.javalite.test.jspec.JSpec.a;
@@ -236,7 +237,7 @@ public class TemplateSpec {
     }
 
     @Test
-    public void implementNestedTags() {
+    public void shouldrenderNestedTags() {
         String source = Util.readResource("/nested.html");
 
         Person4 jimmy = new Person4("Jimmy", "Henrdix");
@@ -273,25 +274,146 @@ public class TemplateSpec {
 
     }
 
-    @Test @Ignore //TODO
-    public void implement() {
-
-
-        /*
-
-        Implement two operand conditions with operators:
-
-        >    //only for numeric types
-        <
-        >=
-        <=
-        ||
-        &&
-        eq - this is for .equals
-
-         */
-
+    @Test
+    public void shouldRejectWrongNumberOfArguments() {
+        try{
+            new Template("<html><#if one two three four> tada </#if></html>");
+        }catch(Exception e){
+            a(e.getMessage()).shouldBeEqual("Incorrect number of arguments for <#if> tag. Either provide a single value or expression with two operands.");
+            return;
+        }
+        fail();
     }
+
+
+    @Test
+    public void shouldRejectWrongIncorrectOperator() {
+        try{
+            new Template("<html><#if one bad_operator four> tada </#if></html>");
+        }catch(Exception e){
+            a(e.getMessage()).shouldBeEqual("Cannot parse operator for <#if> tag: bad_operator. The following operators supported: [lt, gt, gt=, lt=, ||, &&, ==, !=]");
+            return;
+        }
+        fail();
+    }
+
+
+
+    @Test
+    public void shouldCompareNumbersWithLT() {
+
+        String source = "<html><#if two lt three> tada </#if></html>";
+        Template template = new Template(source);
+        StringWriter w = new StringWriter();
+        template.process(map("two", 2, "three", 3), w);
+        a(w.toString()).shouldBeEqual("<html> tada </html>");
+
+        source = "<html><#if three lt two> tada </#if></html>";
+        template = new Template(source);
+        w = new StringWriter();
+        template.process(map("three", 3, "two", 2), w);
+        a(w.toString()).shouldBeEqual("<html></html>");
+    }
+
+    @Test
+    public void shouldCompareNumbersWithLTE() {
+
+        String source = "<html><#if three lt= three> tada </#if></html>";
+        Template template = new Template(source);
+        StringWriter w = new StringWriter();
+        template.process(map("three", 3, "three", 3), w);
+        a(w.toString()).shouldBeEqual("<html> tada </html>");
+    }
+
+    @Test
+    public void shouldCompareNumbersWithGTE() {
+
+        String source = "<html><#if left gt= right> tada </#if></html>";
+        Template template = new Template(source);
+        StringWriter w = new StringWriter();
+        template.process(map("left", 3, "right", 3), w);
+        a(w.toString()).shouldBeEqual("<html> tada </html>");
+
+
+        w = new StringWriter();
+        template.process(map("left", 1, "right", 3), w);
+        a(w.toString()).shouldBeEqual("<html></html>");
+    }
+
+    @Test
+    public void shouldCompareNumbersWithGT() {
+
+        String source = "<html><#if three gt two> tada </#if></html>";
+        Template template = new Template(source);
+        StringWriter w = new StringWriter();
+        template.process(map("three", 3, "two", 2), w);
+        a(w.toString()).shouldBeEqual("<html> tada </html>");
+
+        source = "<html><#if two gt three> tada </#if></html>";
+        template = new Template(source);
+        w = new StringWriter();
+        template.process(map("two", 2, "three", 3), w);
+        a(w.toString()).shouldBeEqual("<html></html>");
+    }
+
+
+    @Test
+    public void shouldCompareObjectsWithEQ() {
+
+        String source = "<html><#if word1 == word2> tada </#if></html>";
+        Template template = new Template(source);
+        StringWriter w = new StringWriter();
+        template.process(map("word1", "help", "word2", "help"), w);
+        a(w.toString()).shouldBeEqual("<html> tada </html>");
+
+        w = new StringWriter();
+        template.process(map("word1", "help!", "word2", "help?"), w);
+        a(w.toString()).shouldBeEqual("<html></html>");
+    }
+
+    @Test
+    public void shouldCompareObjectsWithNEQ() {
+
+        String source = "<html><#if word1 != word2> tada </#if></html>";
+        Template template = new Template(source);
+        StringWriter w = new StringWriter();
+        template.process(map("word1", "help!", "word2", "help?"), w);
+        a(w.toString()).shouldBeEqual("<html> tada </html>");
+
+        w = new StringWriter();
+        template.process(map("word1", "help", "word2", "help"), w);
+        a(w.toString()).shouldBeEqual("<html></html>");
+    }
+
+
+    @Test
+    public void shouldCompareBooleansWithOR() {
+
+        String source = "<html><#if cond1 || cond2> tada </#if></html>";
+        Template template = new Template(source);
+        StringWriter w = new StringWriter();
+        template.process(map("cond1", true, "cond2", true), w);
+        a(w.toString()).shouldBeEqual("<html> tada </html>");
+
+        w = new StringWriter();
+        template.process(map("cond1", true, "cond2", false), w);
+        a(w.toString()).shouldBeEqual("<html> tada </html>");
+    }
+
+    @Test
+    public void shouldCompareBooleansWithAND() {
+
+        String source = "<html><#if cond1 && cond2> tada </#if></html>";
+        Template template = new Template(source);
+        StringWriter w = new StringWriter();
+        template.process(map("cond1", true, "cond2", true), w);
+        a(w.toString()).shouldBeEqual("<html> tada </html>");
+
+        w = new StringWriter();
+        template.process(map("cond1", true, "cond2", false), w);
+        a(w.toString()).shouldBeEqual("<html></html>");
+    }
+
 
 
     @Test @Ignore //TODO
