@@ -80,7 +80,7 @@ public enum TemplatorConfig {
 
     public BuiltIn getBuiltIn(String name)  {
         if (!builtIns.containsKey(name))
-            throw new TemplateException("BuiltIn named '" + name + "' was not registered");
+            throw new TemplateException("Built-in named '" + name + "' was not registered");
 
         try{
             return builtIns.get(name);

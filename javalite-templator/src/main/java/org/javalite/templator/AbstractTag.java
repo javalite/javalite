@@ -5,10 +5,14 @@ import org.javalite.templator.tags.IfTag;
 import org.javalite.templator.tags.ListTag;
 
 import java.io.Writer;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
 import static org.javalite.common.Collections.list;
+import static org.javalite.common.Inflector.capitalize;
 
 /**
  * This class represents a custom tag written in Java and linked into template manager, such as:
@@ -38,10 +42,6 @@ public abstract class AbstractTag extends TemplateToken {
         return argumentsEndIndex;
     }
 
-    public void setArgumentsEndIndex(int argumentsEndIndex) {
-        this.argumentsEndIndex = argumentsEndIndex;
-    }
-
     public int getTagStartIndex() {
         return tagStartIndex;
     }
@@ -52,10 +52,6 @@ public abstract class AbstractTag extends TemplateToken {
 
     public int getTagEndIndex() {
         return tagEndIndex;
-    }
-
-    public void setTagEndIndex(int tagEndIndex) {
-        this.tagEndIndex = tagEndIndex;
     }
 
     public String getBody() {
@@ -185,5 +181,54 @@ public abstract class AbstractTag extends TemplateToken {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Tries to get a property value from object.
+     *
+     * @param obj object to get property value from
+     * @param propertyName name of property
+     * @return value of property, or null if not found
+     */
+    protected final Object getValue(Object obj, String propertyName) throws InvocationTargetException, IllegalAccessException {
+
+        Object val = null;
+
+        //try map
+        if (obj instanceof Map) {
+            Map objectMap = (Map) obj;
+            val = objectMap.get(propertyName);
+        }
+
+        //try generic get method
+        if (val == null) {
+            try {
+                Method m = obj.getClass().getMethod("get", String.class);
+                val = m.invoke(obj, propertyName);
+            } catch (NoSuchMethodException ignore) {
+            }
+        }
+
+        if (val == null) {
+            //try properties
+            try {
+                Method m = obj.getClass().getMethod("get" + capitalize(propertyName));
+                val = m.invoke(obj);
+            } catch (NoSuchMethodException ignore) {
+            }
+        }
+
+        if (val == null) {
+            // try public fields
+            try {
+                Field f = obj.getClass().getDeclaredField(propertyName);
+                val = f.get(obj);
+
+            } catch (NoSuchFieldException ignore) {
+            } catch (IllegalAccessException ignore) {
+            }
+        }
+
+        return val;
     }
 }

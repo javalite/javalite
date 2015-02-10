@@ -23,5 +23,8 @@ import org.javalite.activeweb.AppController;
  * @author Igor Polevoy
  */
 public class SimpleController extends AppController {
-    public void index(){}
+    public void index(){
+
+        redirect();
+    }
 }

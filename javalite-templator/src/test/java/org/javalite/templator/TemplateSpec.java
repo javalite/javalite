@@ -1,13 +1,16 @@
 package org.javalite.templator;
 
+import org.javalite.common.Util;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.String.format;
 import static org.javalite.common.Collections.list;
 import static org.javalite.common.Collections.map;
 import static org.javalite.test.jspec.JSpec.a;
@@ -16,7 +19,6 @@ import static org.javalite.test.jspec.JSpec.a;
  * @author Igor Polevoy on 1/10/15.
  */
 public class TemplateSpec {
-
 
     @Test
     public void shouldProcessTextTemplate() {
@@ -218,24 +220,45 @@ public class TemplateSpec {
     }
 
 
-    @Test @Ignore //TODO
+    public static class Person4 extends Person3{
+        private List<String> habits = new ArrayList<String>();
+        public Person4(String firstName, String lastName) {
+            super(firstName, lastName);
+        }
+
+        public List<String> getHabits() {
+            return habits;
+        }
+
+        public void addHabits(String ... habitsAr) {
+            habits.addAll(list(habitsAr));
+        }
+    }
+
+    @Test
     public void implementNestedTags() {
+        String source = Util.readResource("/nested.html");
 
-        /**
-         * <html>
-         *     <#list people as person>
-         *         name: ${person.firstName} ${person.lastName}
-         *
-         *         <#list person.habits as habit >
-         *             Habit: ${habit}
-         *         </#list>
-         *     <#if person_has_next>
-         *         <br>
-         *     </#if>
-         *     </#list>
-         * </html>
-         */
+        Person4 jimmy = new Person4("Jimmy", "Henrdix");
+        Person4 janice = new Person4("Janice", "Joplin");
 
+        jimmy.addHabits("guitar playing", "prescription drugs");
+        janice.addHabits("rock an roll", "cocaine");
+
+        Template template = new Template(source);
+
+        WhiteSpaceWriter w  = new WhiteSpaceWriter(new StringWriter());
+        template.process(map("people", list(jimmy, janice)), w);
+
+        a(w.toString()).shouldBeEqual(format("<html>%n" +
+                "name: Jimmy Henrdix%n" +
+                "Habit: guitar playing%n" +
+                "Habit: prescription drugs%n" +
+                "<br>%n" +
+                "name: Janice Joplin%n" +
+                "Habit: rock an roll%n" +
+                "Habit: cocaine%n" +
+                "</html>"));
     }
 
     @Test
@@ -252,11 +275,13 @@ public class TemplateSpec {
 
     @Test @Ignore //TODO
     public void implement() {
+
+
         /*
 
         Implement two operand conditions with operators:
 
-        >
+        >    //only for numeric types
         <
         >=
         <=

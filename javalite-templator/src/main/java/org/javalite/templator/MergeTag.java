@@ -30,24 +30,29 @@ class MergeTag extends AbstractTag {
     public void setArguments(String argumentLine) {
         super.setArguments(argumentLine);
         this.expression = argumentLine.contains(".");
-        boolean hasBuiltIn = argumentLine.contains(" ");
+        boolean hasBuiltIn = argumentLine.trim().contains(" ");
 
-        if (argumentLine.length() - argumentLine.replace(" ", "").length() > 1)
-            throw new ParseException("Merge token: " + argumentLine + " has more that one space");
+        //TODO: write tests for exceptional conditions:
+        if ((argumentLine.length() - argumentLine.replace(" ", "").length()) > 1)
+            throw new ParseException("Merge field: '" + argumentLine + "' has more than one space");
 
 
-        if (argumentLine.length() - argumentLine.replace(".", "").length() > 1)
-            throw new ParseException("Merge token: " + argumentLine + " has more that one dots");
+        if ((argumentLine.length() - argumentLine.replace(".", "").length()) > 1)
+            throw new ParseException("Merge field: '" + argumentLine + "' has more than one dots");
 
         if (hasBuiltIn) {
-            String[] parts = Util.split(argumentLine, ' ');
+            String[] parts = Util.split(argumentLine.trim(), ' ');
             String builtInName = parts[1];
             builtIn = TemplatorConfig.instance().getBuiltIn(builtInName);
 
             if (expression) {
-                parts = Util.split(parts[0], '.');
-                this.objectName = parts[0];
-                this.propertyName = parts[1];
+                String[] expr = Util.split(parts[0], '.');
+
+                if(expr.length != 2)
+                    throw new ParseException("Expression: '" + parts[0] +  "' must include object name and property name separated by a single dot. Nothing else.");
+
+                this.objectName = expr[0];
+                this.propertyName = expr[1];
             }
         } else if (expression) {
             String[] parts = Util.split(argumentLine, '.');
@@ -68,42 +73,7 @@ class MergeTag extends AbstractTag {
             if (expression) {
                 if (values.containsKey(objectName)) {
                     Object obj = values.get(objectName);
-                    Object val = null;
-
-                    //try map
-                    if (obj instanceof Map) {
-                        Map objectMap = (Map) obj;
-                        val = objectMap.get(propertyName);
-                    }
-
-                    //try generic get method
-                    if (val == null) {
-                        try {
-                            Method m = obj.getClass().getMethod("get", String.class);
-                            val = m.invoke(obj, propertyName);
-                        } catch (NoSuchMethodException ignore) {
-                        }
-                    }
-
-                    if (val == null) {
-                        //try properties
-                        try {
-                            Method m = obj.getClass().getMethod("get" + capitalize(propertyName));
-                            val = m.invoke(obj);
-                        } catch (NoSuchMethodException ignore) {
-                        }
-                    }
-
-                    if (val == null) {
-                        // try public fields
-                        try {
-                            Field f = obj.getClass().getDeclaredField(propertyName);
-                            val = f.get(obj);
-
-                        } catch (NoSuchFieldException ignore) {
-                        } catch (IllegalAccessException ignore) {
-                        }
-                    }
+                    Object val = getValue(obj, propertyName);
 
                     if (val != null) {
                         if (builtIn != null) {

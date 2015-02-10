@@ -19,7 +19,8 @@ import static org.javalite.common.Collections.list;
 public class ListTag extends AbstractTag {
 
     private Template bodyTemplate;
-    private String collectionName, varName;
+    private String collectionName, varName, propertyName, objectName;
+    private boolean expression;
 
     @Override
     public void setBody(String body) {
@@ -32,39 +33,61 @@ public class ListTag extends AbstractTag {
         super.setArguments(argumentLine);
         String[] arguments = Util.split(argumentLine, ' ');
         if(arguments.length != 3 || !arguments[1].equals("as"))
-            throw  new ParseException("List arguments must have format: 'collection as localVar'");
+            throw  new ParseException("<#list> tag arguments must have format: 'collection as localVar' or 'object.collection as localVar'");
 
+        if ((argumentLine.length() - argumentLine.replace(".", "").length()) > 1)
+            throw new ParseException("<#list> tag arguments : " + argumentLine + " has more than one dot");
+
+        this.expression = argumentLine.contains(".");
         collectionName = arguments[0];
         varName = arguments[2];
+
+        if (expression) {
+            String[] parts = Util.split(collectionName, '.');
+            this.objectName = parts[0];
+            this.propertyName = parts[1];
+        }else{
+            collectionName = arguments[0];
+        }
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void process(Map values, Writer writer) {
-        if(getBody() == null)
+        if (getBody() == null)
             throw new ParseException("List tag must have body");
 
-        Collection  targetCollection;
-        Object collection = values.get(collectionName);
-
-        if(values.containsKey(collectionName)){ //forgiving mode, should build a strict mode later
-            if(collection.getClass().isArray()){
-                targetCollection = Arrays.asList(collection);
-            }else if(collection instanceof Collection){
-                targetCollection = (Collection) collection;
-            }else{
-                throw new TemplateException("cannot process ListTag because collection '" + collectionName + "' is not a java.util.Collection or array");
+        try {
+            Collection targetCollection;
+            Object collection;
+            if (expression) {
+                collection = getValue(values.get(objectName), propertyName);
+            } else {
+                collection = values.get(collectionName);
             }
 
-            Object[] objects = targetCollection.toArray();
-            for (int i = 0; i < objects.length; i++) {
-                Object val = objects[i];
-                Map newVals = new HashMap(values);
-                newVals.put(varName, val);
-                newVals.put(varName + "_index", i);
-                newVals.put(varName + "_has_next", i < (objects.length - 1));
-                bodyTemplate.process(newVals, writer);
+            if (collection != null) { //forgiving mode, should build a strict mode later
+                if (collection.getClass().isArray()) {
+                    targetCollection = Arrays.asList(collection);
+                } else if (collection instanceof Collection) {
+                    targetCollection = (Collection) collection;
+                } else {
+                    throw new TemplateException("Cannot process ListTag because collection '" + collectionName + "' is not a java.util.Collection or array");
+                }
+
+                Object[] objects = targetCollection.toArray();
+                for (int i = 0; i < objects.length; i++) {
+                    Object val = objects[i];
+                    Map newVals = new HashMap(values);
+                    newVals.put(varName, val);
+                    newVals.put(varName + "_index", i);
+                    newVals.put(varName + "_has_next", i < (objects.length - 1));
+                    bodyTemplate.process(newVals, writer);
+                }
             }
+
+        } catch (Exception e) {
+            throw new TemplateException(e);
         }
     }
 
