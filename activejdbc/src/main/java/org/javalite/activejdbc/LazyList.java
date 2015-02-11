@@ -47,7 +47,7 @@ public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
     private final String fullQuery;
     private final Object[] params;
     private long limit = -1, offset = -1;
-    private final Map<Class<T>, Association> includes = new HashMap<Class<T>, Association>();
+    private final List<Association> includes = new ArrayList<Association>();
     private final boolean forPaginator;
 
     protected LazyList(String subQuery, MetaModel metaModel, Object... params) {
@@ -162,6 +162,7 @@ public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
      * @return instance of this <code>LazyList</code>
      */
     public <E extends Model> LazyList<E> include(Class<? extends Model>... classes) {
+        //TODO: why cannot call include() more than once?
         if (!includes.isEmpty()) { throw new IllegalArgumentException("Can't call include() more than once!"); }
 
         for (Class<? extends Model> clazz : classes) {
@@ -170,12 +171,8 @@ public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
         }
 
         //lets cache included classes and associations for future processing.
-        for(Class includeClass: classes){
-            String table = Registry.instance().getTableName(includeClass);
-            List<Association> associations = metaModel.getAssociationsForTarget(table);
-            for (Association association : associations) {
-                includes.put(includeClass, association);
-            }
+        for (Class includeClass : classes) {
+            includes.addAll(metaModel.getAssociationsForTarget(Registry.instance().getTableName(includeClass)));
         }
 
         return (LazyList<E>)this;
@@ -348,19 +345,18 @@ public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
         processIncludes();
     }
 
-    private void processIncludes(){
-        for(Class includedClass: includes.keySet()){
-            Association association = includes.get(includedClass);
-            if(association instanceof BelongsToAssociation){
-                processParent((BelongsToAssociation)association, includedClass);
-            }else if(association instanceof OneToManyAssociation){
-                processChildren((OneToManyAssociation)association, includedClass);
-            }else if(association instanceof Many2ManyAssociation){
-                processOther((Many2ManyAssociation)association, includedClass);
-            }else if(association instanceof OneToManyPolymorphicAssociation){
-                processPolymorphicChildren((OneToManyPolymorphicAssociation) association, includedClass);
-            }else if(association instanceof BelongsToPolymorphicAssociation){
-                processPolymorphicParent((BelongsToPolymorphicAssociation)association, includedClass);
+    private void processIncludes() {
+        for (Association association : includes) {
+            if (association instanceof BelongsToAssociation) {
+                processParent((BelongsToAssociation) association);
+            } else if (association instanceof OneToManyAssociation) {
+                processChildren((OneToManyAssociation) association);
+            } else if (association instanceof Many2ManyAssociation) {
+                processManyToMany((Many2ManyAssociation) association);
+            } else if (association instanceof OneToManyPolymorphicAssociation) {
+                processPolymorphicChildren((OneToManyPolymorphicAssociation) association);
+            } else if (association instanceof BelongsToPolymorphicAssociation) {
+                processPolymorphicParent((BelongsToPolymorphicAssociation) association);
             }
         }
     }
@@ -368,35 +364,34 @@ public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
     /**
      * @author Evan Leonard
      */
-    private void processPolymorphicParent(BelongsToPolymorphicAssociation association, Class parentClass) {
+    private void processPolymorphicParent(BelongsToPolymorphicAssociation association) {
         if(delegate.isEmpty()){//no need to process children if no models selected.
             return;
         }
 
-        final MetaModel parentMM = Registry.instance().getMetaModel(parentClass);
+        final MetaModel parentMetaModel = Registry.instance().getMetaModel(association.getTarget());
         final Map<Object, Model> parentsHasByIds = new HashMap<Object, Model>();
 
         String parentClassName = association.getParentClassName();
 
         //need to remove duplicates because more than one child can belong to the same parent.
         Object[] noDuplicateArray = new HashSet(collect("parent_id", "parent_type", parentClassName)).toArray();
-        StringBuilder query = new StringBuilder().append(parentMM.getIdName()).append(" IN (");
+        StringBuilder query = new StringBuilder().append(parentMetaModel.getIdName()).append(" IN (");
         appendQuestions(query, noDuplicateArray.length);
         query.append(')');
-        for (Model parent : new LazyList<Model>(query.toString(), parentMM, noDuplicateArray)){
+        for (Model parent : new LazyList<Model>(query.toString(), parentMetaModel, noDuplicateArray)) {
             parentsHasByIds.put(parentClassName + ":" + parent.getId(), parent);
         }
 
         //now that we have the parents in the has, we need to distribute them into list of children that are
         //stored in the delegate.
-        for(Model child: delegate){
-            Object fk = child.get("parent_id");
-            Model parent = parentsHasByIds.get(parentClassName + ":" + fk);
+        for (Model child : delegate) {
+            Model parent = parentsHasByIds.get(parentClassName + ":" + child.get("parent_id"));
             child.setCachedParent(parent); //this could be null, which is fine
         }
     }
 
-    private void processParent(BelongsToAssociation association, Class parentClass) {
+    private void processParent(BelongsToAssociation association) {
         if (delegate.isEmpty()) { // no need to process parents if no models selected.
             return;
         }
@@ -406,7 +401,7 @@ public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
         if (distinctParentIds.isEmpty()) {
             return;
         }
-        final MetaModel parentMetaModel = Registry.instance().getMetaModel(parentClass);
+        final MetaModel parentMetaModel = Registry.instance().getMetaModel(association.getTarget());
         final Map<Object, Model> parentById = new HashMap<Object, Model>();
 
         StringBuilder query = new StringBuilder().append(parentMetaModel.getIdName()).append(" IN (");
@@ -473,17 +468,17 @@ public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
         joinAndRepeat(sb, "?", ", ", count);
     }
 
-    private void processPolymorphicChildren(OneToManyPolymorphicAssociation association, Class childClass) {
+    private void processPolymorphicChildren(OneToManyPolymorphicAssociation association) {
         if (delegate.isEmpty()) {//no need to process children if no models selected.
             return;
         }
-        MetaModel childMM = Registry.instance().getMetaModel(childClass);
+        MetaModel childMetaModel = Registry.instance().getMetaModel(association.getTarget());
         Map<Object, List<Model>> childrenByParentId = new HashMap<Object, List<Model>>();
         List<Object> ids = collect(metaModel.getIdName());
         StringBuilder query = new StringBuilder().append("parent_id IN (");
         appendQuestions(query, ids.size());
         query.append(") AND parent_type = '").append(association.getTypeLabel()).append('\'');
-        for (Model child : new LazyList<Model>(query.toString(), childMM, ids.toArray()).orderBy(childMM.getIdName())) {
+        for (Model child : new LazyList<Model>(query.toString(), childMetaModel, ids.toArray()).orderBy(childMetaModel.getIdName())) {
             if (childrenByParentId.get(child.get("parent_id")) == null) {
                 childrenByParentId.put(child.get("parent_id"), new SuperLazyList<Model>());
             }
@@ -493,24 +488,24 @@ public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
         for (T parent : delegate) {
             List<Model> children = childrenByParentId.get(parent.getId());
             if (children != null) {
-                parent.setChildren(childClass, children);
+                parent.setChildren(childMetaModel.getModelClass(), children);
             }
         }
     }
 
 
-    private void processChildren(OneToManyAssociation association, Class childClass) {
+    private void processChildren(OneToManyAssociation association) {
         if(delegate.isEmpty()){//no need to process children if no models selected.
             return;
         }
-        final MetaModel childMM = Registry.instance().getMetaModel(childClass);
+        final MetaModel childMetaModel = Registry.instance().getMetaModel(association.getTarget());
         final String fkName = association.getFkName();
         final Map<Object, List<Model>> childrenByParentId = new HashMap<Object, List<Model>>();
         List<Object> ids = collect(metaModel.getIdName());
         StringBuilder query = new StringBuilder().append(fkName).append(" IN (");
         appendQuestions(query, ids.size());
         query.append(')');
-        for (Model child : new LazyList<Model>(query.toString(), childMM, ids.toArray()).orderBy(childMM.getIdName())) {
+        for (Model child : new LazyList<Model>(query.toString(), childMetaModel, ids.toArray()).orderBy(childMetaModel.getIdName())) {
              if(childrenByParentId.get(child.get(fkName)) == null){
                     childrenByParentId.put(child.get(fkName), new SuperLazyList<Model>());
              }
@@ -519,22 +514,22 @@ public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
         for(T parent : delegate){
             List<Model> children = childrenByParentId.get(parent.getId());
             if(children != null){
-                parent.setChildren(childClass, children);
+                parent.setChildren(childMetaModel.getModelClass(), children);
             }
         }
     }
 
-    private void processOther(Many2ManyAssociation association, Class<? extends Model> childClass) {
+    private void processManyToMany(Many2ManyAssociation association) {
         if(delegate.isEmpty()){//no need to process other if no models selected.
             return;
         }
-        final MetaModel childMM = ModelDelegate.metaModelOf(childClass);
+        final MetaModel childMetaModel = Registry.instance().getMetaModel(association.getTarget());
         final Map<Object, List<Model>> childrenByParentId = new HashMap<Object, List<Model>>();
         List<Object> ids = collect(metaModel.getIdName());
-        List<Map> childResults = new DB(childMM.getDbName()).findAll(childMM.getDialect().selectManyToManyAssociation(
+        List<Map> childResults = new DB(childMetaModel.getDbName()).findAll(childMetaModel.getDialect().selectManyToManyAssociation(
                 association, "the_parent_record_id", ids.size()), ids.toArray());
         for(Map res: childResults){
-            Model child = ModelDelegate.instance(res, childMM, childClass);
+            Model child = ModelDelegate.instance(res, childMetaModel);
             Object parentId = res.get("the_parent_record_id");
             if(childrenByParentId.get(parentId) == null){
                     childrenByParentId.put(parentId, new SuperLazyList<Model>());
@@ -543,8 +538,8 @@ public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
         }
         for(T parent : delegate){
             List<Model> children = childrenByParentId.get(parent.getId());
-            if(children != null){
-                parent.setChildren(childClass, children);
+            if (children != null) {
+                parent.setChildren(childMetaModel.getModelClass(), children);
             }
         }
     }
