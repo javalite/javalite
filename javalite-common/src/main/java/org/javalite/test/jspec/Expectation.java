@@ -259,15 +259,13 @@ public class Expectation<T> {
             throw new TestException("tested object contains the value: " + expected + ", but it should not");
     }
 
-    private boolean contains(Object expected){
+    private boolean contains(Object expected) {
         checkNull();
-        if(actual instanceof List){
-            List actualList = (List) actual;
-            return actualList.contains(expected);
-        }else if(actual instanceof Map){
-            Map actualMap = (Map) actual;
-            return actualMap.containsKey(expected);
-        }else {
+        if (actual instanceof Collection) {
+            return ((Collection) actual).contains(expected);
+        } else if (actual instanceof Map) {
+            return ((Map) actual).containsKey(expected);
+        } else {
             return actual.toString().contains(expected.toString());
         }
     }
