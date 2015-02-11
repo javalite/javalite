@@ -1,27 +1,30 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2015 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
-
-
 package org.javalite.test.jspec;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import static org.javalite.common.Inflector.capitalize;
 
+/**
+ * @author Igor Polevoy
+ * @author Eric Nielsen
+ */
 public class Expectation<T> {
 
     private final T actual;
@@ -40,30 +43,42 @@ public class Expectation<T> {
     }
 
     /**
-     * Tested value is  equal expected.
+     * Tested value is equal expected.
      *
      * @param expected expected value.
      */
     public void shouldBeEqual(T expected) {
         checkNull();
-        String expectedName = expected == null? "null":expected.getClass().getName();
-        String actualName = actual == null? "null":actual.getClass().getName();
+        if (actual == null) {
+            if (expected != null) { throw newShouldBeEqualException(expected); }
+        } else {
+            if (expected == null) { throw newShouldBeEqualException(expected); }
+            //TODO: improve Number comparison, see http://stackoverflow.com/questions/2683202/comparing-the-values-of-two-generic-numbers
+            if (actual instanceof Number && expected instanceof Number) {
+                if (((Number) actual).doubleValue() != ((Number) expected).doubleValue()) {
+                    throw newShouldBeEqualException(expected);
+                }
+            } else if (!actual.equals(expected)) {
+                throw newShouldBeEqualException(expected);
+            }
+        }
+    }
 
-        TestException te = new TestException("\nTest object: \n" +
-                actualName +  " == <" + actual + "> \n" +
-                "and expected\n" +
-                expectedName + " == <" + expected + "> \nare not equal, but they should be.");
-
-
-        if(actual == null && expected != null || actual != null && expected == null)
-            throw te;
-
-        if (actual instanceof Number && expected instanceof Number) {
-            Double t1 = ((Number) actual).doubleValue();
-            Double t2 = ((Number) expected).doubleValue();
-            if (!t1.equals(t2))
-                throw te;
-        } else if (!actual.equals(expected)) throw te;
+    private TestException newShouldBeEqualException(T expected) {
+        StringBuilder sb = new StringBuilder().append("Test object:\n");
+        if (actual == null) {
+            sb.append("null");
+        } else {
+            sb.append(actual.getClass().getName()).append(" == <").append(actual).append(">\n");
+        }
+        sb.append("and expected\n");
+        if (expected == null) {
+            sb.append("null");
+        } else {
+            sb.append(expected.getClass().getName()).append(" == <").append(expected).append(">\n");
+        }
+        sb.append("are not equal, but they should be.");
+        return new TestException(sb.toString());
     }
 
     /**
