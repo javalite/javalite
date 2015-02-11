@@ -365,29 +365,30 @@ public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
      * @author Evan Leonard
      */
     private void processPolymorphicParent(BelongsToPolymorphicAssociation association) {
-        if(delegate.isEmpty()){//no need to process children if no models selected.
+        if (delegate.isEmpty()) { // no need to process children if no models selected.
             return;
         }
-
-        final MetaModel parentMetaModel = Registry.instance().getMetaModel(association.getTarget());
-        final Map<Object, Model> parentsHasByIds = new HashMap<Object, Model>();
-
-        String parentClassName = association.getParentClassName();
-
         //need to remove duplicates because more than one child can belong to the same parent.
-        Object[] noDuplicateArray = new HashSet(collect("parent_id", "parent_type", parentClassName)).toArray();
+        Set<Object> distinctParentIds = collectDistinct("parent_id", "parent_type", association.getParentClassName());
+        distinctParentIds.remove(null); // remove null parent id
+        if (distinctParentIds.isEmpty()) {
+            return;
+        }
+        final MetaModel parentMetaModel = Registry.instance().getMetaModel(association.getTarget());
+        final Map<Object, Model> parentById = new HashMap<Object, Model>();
+
         StringBuilder query = new StringBuilder().append(parentMetaModel.getIdName()).append(" IN (");
-        appendQuestions(query, noDuplicateArray.length);
+        appendQuestions(query, distinctParentIds.size());
         query.append(')');
-        for (Model parent : new LazyList<Model>(query.toString(), parentMetaModel, noDuplicateArray)) {
-            parentsHasByIds.put(parentClassName + ":" + parent.getId(), parent);
+        for (Model parent : new LazyList<Model>(query.toString(), parentMetaModel, distinctParentIds.toArray())) {
+            parentById.put(association.getParentClassName() + ":" + parent.getId(), parent);
         }
 
         //now that we have the parents in the has, we need to distribute them into list of children that are
         //stored in the delegate.
         for (Model child : delegate) {
-            Model parent = parentsHasByIds.get(parentClassName + ":" + child.get("parent_id"));
-            child.setCachedParent(parent); //this could be null, which is fine
+            // parent could be null, which is fine
+            child.setCachedParent(parentById.get(association.getParentClassName() + ":" + child.get("parent_id")));
         }
     }
 
@@ -436,32 +437,43 @@ public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
      * @return list of collected values for a column.
      */
     public List<Object> collect(String attributeName) {
-        hydrate();
         List<Object> results = new ArrayList<Object>();
-        for (Model model : delegate) {
-            results.add(model.get(attributeName));
-        }
+        collect(results, attributeName);
         return results;
     }
 
     public Set<Object> collectDistinct(String attributeName) {
-        hydrate();
         Set<Object> results = new LinkedHashSet<Object>();
-        for (Model model : delegate) {
-            results.add(model.get(attributeName));
-        }
+        collect(results, attributeName);
         return results;
     }
 
-    public List<Object> collect(String attributeName, String filterAttribute, Object filterValue) {
+    private void collect(Collection<Object> results, String attributeName) {
         hydrate();
+        for (Model model : delegate) {
+            results.add(model.get(attributeName));
+        }
+    }
+
+    public List<Object> collect(String attributeName, String filterAttribute, Object filterValue) {
         List<Object> results = new ArrayList<Object>();
+        collect(results, attributeName, filterAttribute, filterValue);
+        return results;
+    }
+
+    public Set<Object> collectDistinct(String attributeName, String filterAttribute, Object filterValue) {
+        Set<Object> results = new LinkedHashSet<Object>();
+        collect(results, attributeName, filterAttribute, filterValue);
+        return results;
+    }
+
+    private void collect(Collection<Object> results, String attributeName, String filterAttribute, Object filterValue) {
+        hydrate();
         for (Model model : delegate) {
             if (model.get(filterAttribute).equals(filterValue)) {
                 results.add(model.get(attributeName));
             }
         }
-        return results;
     }
 
     private void appendQuestions(StringBuilder sb, int count) {
