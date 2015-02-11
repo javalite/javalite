@@ -397,36 +397,34 @@ public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
     }
 
     private void processParent(BelongsToAssociation association, Class parentClass) {
-
-        if(delegate.isEmpty()){//no need to process parents if no models selected.
+        if (delegate.isEmpty()) { // no need to process parents if no models selected.
             return;
         }
-
-        final MetaModel parentMM = Registry.instance().getMetaModel(parentClass);
-        final Map<Object, Model> parentsHasByIds = new HashMap<Object, Model>();
-
-        String fkName = association.getFkName();
-
         //need to remove duplicates because more than one child can belong to the same parent.
-        Object[] noDuplicateArray = new HashSet(collect(fkName)).toArray();
-        StringBuilder query = new StringBuilder().append(parentMM.getIdName()).append(" IN (");
-        appendQuestions(query, noDuplicateArray.length);
-        query.append(')');
-        for (Model parent : new LazyList<Model>(query.toString(), parentMM, noDuplicateArray)) {
-               parentsHasByIds.put(parent.getId(), parent);
+        Set<Object> distinctParentIds = collectDistinct(association.getFkName());
+        distinctParentIds.remove(null); // remove null parent id
+        if (distinctParentIds.isEmpty()) {
+            return;
         }
+        final MetaModel parentMetaModel = Registry.instance().getMetaModel(parentClass);
+        final Map<Object, Model> parentById = new HashMap<Object, Model>();
 
+        StringBuilder query = new StringBuilder().append(parentMetaModel.getIdName()).append(" IN (");
+        appendQuestions(query, distinctParentIds.size());
+        query.append(')');
+        for (Model parent : new LazyList<Model>(query.toString(), parentMetaModel, distinctParentIds.toArray())) {
+            parentById.put(parent.getId(), parent);
+        }
         //now that we have the parents in the has, we need to distribute them into list of children that are
         //stored in the delegate.
-        for(Model child: delegate){
-            Object fk = child.get(fkName);
-            Model parent = parentsHasByIds.get(fk);
-            child.setCachedParent(parent); //this could be null, which is fine
+        for (Model child : delegate) {
+            // parent could be null, which is fine
+            child.setCachedParent(parentById.get(child.get(association.getFkName())));
         }
     }
 
     /**
-     * Collects values from a result set that correspond to a column name.
+     * Collects values from a result set that correspond to a attribute name.
      * For example, if a list contains collection of <code>Person</code> models, then
      * you can collect first names like this:
      * <pre>
@@ -439,26 +437,33 @@ public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
      * but will use only one). In these cases, you might want to consider {@link Base#firstColumn(String, Object...)} and
      * {@link DB#firstColumn(String, Object...)}.
      *
-     * @param columnName name of column to collect.
+     * @param attributeName name of attribute to collect.
      * @return list of collected values for a column.
      */
-    public List collect(String columnName){
+    public List<Object> collect(String attributeName) {
         hydrate();
-        List results = new ArrayList();
-        for(Model model: delegate){
-            results.add(model.get(columnName));
+        List<Object> results = new ArrayList<Object>();
+        for (Model model : delegate) {
+            results.add(model.get(attributeName));
         }
-
         return results;
     }
 
-
-    public List collect(String columnName, String filterColumn, Object filterValue) {
+    public Set<Object> collectDistinct(String attributeName) {
         hydrate();
-        List results = new ArrayList();
+        Set<Object> results = new LinkedHashSet<Object>();
         for (Model model : delegate) {
-            if (model.get(filterColumn).equals(filterValue)) {
-                results.add(model.get(columnName));
+            results.add(model.get(attributeName));
+        }
+        return results;
+    }
+
+    public List<Object> collect(String attributeName, String filterAttribute, Object filterValue) {
+        hydrate();
+        List<Object> results = new ArrayList<Object>();
+        for (Model model : delegate) {
+            if (model.get(filterAttribute).equals(filterValue)) {
+                results.add(model.get(attributeName));
             }
         }
         return results;
@@ -474,7 +479,7 @@ public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
         }
         MetaModel childMM = Registry.instance().getMetaModel(childClass);
         Map<Object, List<Model>> childrenByParentId = new HashMap<Object, List<Model>>();
-        List ids = collect(metaModel.getIdName());
+        List<Object> ids = collect(metaModel.getIdName());
         StringBuilder query = new StringBuilder().append("parent_id IN (");
         appendQuestions(query, ids.size());
         query.append(") AND parent_type = '").append(association.getTypeLabel()).append('\'');
@@ -501,7 +506,7 @@ public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
         final MetaModel childMM = Registry.instance().getMetaModel(childClass);
         final String fkName = association.getFkName();
         final Map<Object, List<Model>> childrenByParentId = new HashMap<Object, List<Model>>();
-        List ids = collect(metaModel.getIdName());
+        List<Object> ids = collect(metaModel.getIdName());
         StringBuilder query = new StringBuilder().append(fkName).append(" IN (");
         appendQuestions(query, ids.size());
         query.append(')');
@@ -525,7 +530,7 @@ public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
         }
         final MetaModel childMM = ModelDelegate.metaModelOf(childClass);
         final Map<Object, List<Model>> childrenByParentId = new HashMap<Object, List<Model>>();
-        List ids = collect(metaModel.getIdName());
+        List<Object> ids = collect(metaModel.getIdName());
         List<Map> childResults = new DB(childMM.getDbName()).findAll(childMM.getDialect().selectManyToManyAssociation(
                 association, "the_parent_record_id", ids.size()), ids.toArray());
         for(Map res: childResults){

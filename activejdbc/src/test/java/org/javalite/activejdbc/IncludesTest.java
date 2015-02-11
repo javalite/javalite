@@ -173,4 +173,22 @@ public class IncludesTest extends ActiveJDBCTest{
     public void shouldRejectClassWithNoAssociation(){
         Ingredient.findAll().include(Article.class);
     }
+
+
+    @Test
+    public void shouldNotIncludeParentIfParentIdIsNull() {
+        deleteAndPopulateTable("nodes");
+
+        Node node = (Node) Node.find("name = ?", "Parent").include(Node.class).get(0);
+        // see log
+    }
+
+    @Test
+    public void shouldIncludeParentAndChildren() {
+        deleteAndPopulateTable("nodes");
+
+        Node node = (Node) Node.find("name = ?", "Self").include(Node.class).get(0);
+        // see log
+    }
+
 }

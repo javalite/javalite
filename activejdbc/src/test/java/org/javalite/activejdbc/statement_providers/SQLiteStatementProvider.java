@@ -193,6 +193,12 @@ public class SQLiteStatementProvider implements org.javalite.activejdbc.Statemen
             statements = Arrays.asList();
         } else if (table.equals("mammals")) {
             statements = Arrays.asList();
+        } else if (table.equals("nodes")) {
+            statements =  Arrays.asList(
+                    "INSERT INTO nodes VALUES (1, 'Parent', NULL);",
+                    "INSERT INTO nodes VALUES (2, 'Self', 1);",
+                    "INSERT INTO nodes VALUES (3, 'Sibling', 1);",
+                    "INSERT INTO nodes VALUES (4, 'Child', 2);");
         }else{
             statements = Arrays.asList();
         }

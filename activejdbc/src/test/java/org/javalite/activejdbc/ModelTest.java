@@ -1,20 +1,18 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2015 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
-
-
 package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.associations.NotAssociatedException;
@@ -30,8 +28,9 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import static org.javalite.common.Collections.map;
+import static org.javalite.common.Collections.*;
 
 
 public class ModelTest extends ActiveJDBCTest {
@@ -514,8 +513,17 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void shouldCollectLastNames(){
         deleteAndPopulateTable("people");
-        List expected= org.javalite.common.Collections.li("Pesci", "Smith", "Jonston", "Ali");
+        List<String> expected = list("Pesci", "Smith", "Jonston", "Ali");
         a(Person.findAll().orderBy("name").collect("last_name")).shouldBeEqual(expected);
+    }
+
+    @Test
+    public void shouldCollectDistictFirstNames() {
+        deleteAndPopulateTable("patients");
+        Set<Object> firstNames = Patient.findAll().collectDistinct("first_name");
+        the(firstNames.size()).shouldBeEqual(2);
+        the(firstNames.contains("Jim")).shouldBeTrue();
+        the(firstNames.contains("John")).shouldBeTrue();
     }
 
     @Test
