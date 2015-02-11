@@ -163,6 +163,10 @@ public class IncludesTest extends ActiveJDBCTest{
         a(parent1).shouldBeTheSameAs(parent2);
 
         the(parent1.get("name")).shouldBeEqual("Car");
+
+        List<Node> children = sedan1.getAll(Node.class);
+        the(children.size()).shouldBeEqual(1);
+        the(children.get(0).get("name")).shouldBeEqual("Sports sedan");
     }
 
     @Test(expected = IllegalArgumentException.class)
