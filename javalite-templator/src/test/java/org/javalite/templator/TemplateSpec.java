@@ -302,26 +302,26 @@ public class TemplateSpec {
     @Test
     public void shouldCompareNumbersWithLT() {
 
-        String source = "<html><#if two lt three> tada </#if></html>";
+        String source = "<html><#if left lt right> tada </#if></html>";
         Template template = new Template(source);
         StringWriter w = new StringWriter();
-        template.process(map("two", 2, "three", 3), w);
+        template.process(map("left", 2, "right", 3), w);
         a(w.toString()).shouldBeEqual("<html> tada </html>");
 
-        source = "<html><#if three lt two> tada </#if></html>";
+        source = "<html><#if left lt right> tada </#if></html>";
         template = new Template(source);
         w = new StringWriter();
-        template.process(map("three", 3, "two", 2), w);
+        template.process(map("left", 3, "right", 2), w);
         a(w.toString()).shouldBeEqual("<html></html>");
     }
 
     @Test
     public void shouldCompareNumbersWithLTE() {
 
-        String source = "<html><#if three lt= three> tada </#if></html>";
+        String source = "<html><#if left lt= right> tada </#if></html>";
         Template template = new Template(source);
         StringWriter w = new StringWriter();
-        template.process(map("three", 3, "three", 3), w);
+        template.process(map("left", 3, "right", 3), w);
         a(w.toString()).shouldBeEqual("<html> tada </html>");
     }
 
@@ -343,16 +343,16 @@ public class TemplateSpec {
     @Test
     public void shouldCompareNumbersWithGT() {
 
-        String source = "<html><#if three gt two> tada </#if></html>";
+        String source = "<html><#if left gt right> tada </#if></html>";
         Template template = new Template(source);
         StringWriter w = new StringWriter();
-        template.process(map("three", 3, "two", 2), w);
+        template.process(map("left", 3, "right", 2), w);
         a(w.toString()).shouldBeEqual("<html> tada </html>");
 
-        source = "<html><#if two gt three> tada </#if></html>";
+        source = "<html><#if left gt right> tada </#if></html>";
         template = new Template(source);
         w = new StringWriter();
-        template.process(map("two", 2, "three", 3), w);
+        template.process(map("left", 2, "right", 3), w);
         a(w.toString()).shouldBeEqual("<html></html>");
     }
 
@@ -360,28 +360,28 @@ public class TemplateSpec {
     @Test
     public void shouldCompareObjectsWithEQ() {
 
-        String source = "<html><#if word1 == word2> tada </#if></html>";
+        String source = "<html><#if left == right> tada </#if></html>";
         Template template = new Template(source);
         StringWriter w = new StringWriter();
-        template.process(map("word1", "help", "word2", "help"), w);
+        template.process(map("left", "help", "right", "help"), w);
         a(w.toString()).shouldBeEqual("<html> tada </html>");
 
         w = new StringWriter();
-        template.process(map("word1", "help!", "word2", "help?"), w);
+        template.process(map("left", "help!", "right", "help?"), w);
         a(w.toString()).shouldBeEqual("<html></html>");
     }
 
     @Test
     public void shouldCompareObjectsWithNEQ() {
 
-        String source = "<html><#if word1 != word2> tada </#if></html>";
+        String source = "<html><#if left != right> tada </#if></html>";
         Template template = new Template(source);
         StringWriter w = new StringWriter();
-        template.process(map("word1", "help!", "word2", "help?"), w);
+        template.process(map("left", "help!", "right", "help?"), w);
         a(w.toString()).shouldBeEqual("<html> tada </html>");
 
         w = new StringWriter();
-        template.process(map("word1", "help", "word2", "help"), w);
+        template.process(map("left", "help", "right", "help"), w);
         a(w.toString()).shouldBeEqual("<html></html>");
     }
 
@@ -389,28 +389,28 @@ public class TemplateSpec {
     @Test
     public void shouldCompareBooleansWithOR() {
 
-        String source = "<html><#if cond1 || cond2> tada </#if></html>";
+        String source = "<html><#if left || left> tada </#if></html>";
         Template template = new Template(source);
         StringWriter w = new StringWriter();
-        template.process(map("cond1", true, "cond2", true), w);
+        template.process(map("left", true, "left", true), w);
         a(w.toString()).shouldBeEqual("<html> tada </html>");
 
         w = new StringWriter();
-        template.process(map("cond1", true, "cond2", false), w);
+        template.process(map("left", true, "right", false), w);
         a(w.toString()).shouldBeEqual("<html> tada </html>");
     }
 
     @Test
     public void shouldCompareBooleansWithAND() {
 
-        String source = "<html><#if cond1 && cond2> tada </#if></html>";
+        String source = "<html><#if left && right> tada </#if></html>";
         Template template = new Template(source);
         StringWriter w = new StringWriter();
-        template.process(map("cond1", true, "cond2", true), w);
+        template.process(map("left", true, "right", true), w);
         a(w.toString()).shouldBeEqual("<html> tada </html>");
 
         w = new StringWriter();
-        template.process(map("cond1", true, "cond2", false), w);
+        template.process(map("left", true, "right", false), w);
         a(w.toString()).shouldBeEqual("<html></html>");
     }
 
