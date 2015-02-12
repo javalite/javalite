@@ -374,4 +374,14 @@ public class RequestDispatcherSpec extends RequestSpec {
         a(response.getContentAsString()).shouldNotContain("this is a footer");
         Configuration.setUseDefaultLayoutForErrors(true);
     }
+
+    @Test
+    public void shouldRenderSystemExceptionInCaseAjaxAndInternalError() throws IOException, ServletException {
+        request.setServletPath("/ajax");
+        request.setMethod("GET");
+        request.addHeader("X-Requested-With", "XMLHttpRequest");
+        dispatcher.doFilter(request, response, filterChain);
+        a(response.getContentAsString()).shouldNotContain("html");
+        a(response.getContentAsString()).shouldContain("java.lang.ArithmeticException: / by zero");
+    }
 }

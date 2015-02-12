@@ -268,9 +268,11 @@ public class RequestDispatcher implements Filter {
                 logger.error("ActiveWeb ERROR: \n" + getRequestProperties(), e);
             }
 
-            if (Context.getHttpRequest().getHeader("x-requested-with") != null
-                    || Context.getHttpRequest().getHeader("X-Requested-With") != null) {
+            HttpServletRequest req = Context.getHttpRequest();
+            String requestedWith = req.getHeader("x-requested-with") == null ?
+                    req.getHeader("X-Requested-With") : req.getHeader("x-requested-with");
 
+            if (requestedWith != null && requestedWith.equalsIgnoreCase("XMLHttpRequest")) {
                 try {
                     Context.getHttpResponse().setStatus(status);
                     Context.getHttpResponse().getWriter().write(getStackTraceString(e));
