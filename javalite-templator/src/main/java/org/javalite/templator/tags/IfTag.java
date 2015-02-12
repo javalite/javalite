@@ -130,6 +130,12 @@ public class IfTag extends AbstractTag {
     }
 
     @Override
+    public boolean matchMiddle(String template, int templateIndex) {
+        //TODO: implement
+        return false;
+    }
+
+    @Override
     public String getTagStart() {
         return "<#if";
     }

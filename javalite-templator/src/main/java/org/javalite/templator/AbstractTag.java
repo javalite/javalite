@@ -149,11 +149,6 @@ public abstract class AbstractTag extends TemplateToken {
         return list("</@" + tagName + ">", "/>");
     }
 
-    public boolean hasEnd(String end){
-        return getEnds().contains(end);
-    }
-
-
     public String getArgumentEnd() {
         return null;
 
@@ -230,5 +225,9 @@ public abstract class AbstractTag extends TemplateToken {
         }
 
         return val;
+    }
+
+    public boolean matchMiddle(String template, int templateIndex){
+        return false;
     }
 }

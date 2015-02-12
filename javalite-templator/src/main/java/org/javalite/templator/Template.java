@@ -45,7 +45,15 @@ public class Template {
                 tag = (AbstractTag) tagClass.newInstance();
 
                 //match tag start, such as "<#list"
+                //                      ----^
                 if (tag.matchStartAtIndex(template, templateIndex)) {
+                    tag.setTagStartIndex(templateIndex - tag.getTagStart().length());
+                    stack.push(tag);
+                    continue;
+                }
+
+
+                if (tag.matchMiddle(template, templateIndex)) {
                     tag.setTagStartIndex(templateIndex - tag.getTagStart().length());
                     stack.push(tag);
                     continue;
@@ -66,8 +74,7 @@ public class Template {
 
                 //match tag end, such as:    <#list people as person > body </#list>
                 //                                                       ---^
-                if (!stack.isEmpty()
-                        && stack.peek().matchEndTag(template, templateIndex)) {
+                if (!stack.isEmpty() && stack.peek().matchEndTag(template, templateIndex)) {
 
                     AbstractTag currentTag = stack.pop();
                     if (stack.size() == 0) {
