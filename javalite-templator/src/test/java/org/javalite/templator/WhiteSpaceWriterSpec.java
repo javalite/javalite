@@ -18,9 +18,6 @@ public class WhiteSpaceWriterSpec {
     public void shouldCondenseWhiteSpace() throws IOException {
         WhiteSpaceWriter w = new WhiteSpaceWriter(new StringWriter());
         w.write(readResource("/whitespace.txt"));
-        a(w.toString()).shouldBeEqual(format(
-                "tada hello%n" +
-                        "data oops%n" +
-                        "tada"));
+        a(w.toString()).shouldBeEqual("tada hello data oops tada");
     }
 }

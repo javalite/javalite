@@ -251,15 +251,7 @@ public class TemplateSpec {
         WhiteSpaceWriter w  = new WhiteSpaceWriter(new StringWriter());
         template.process(map("people", list(jimmy, janice)), w);
 
-        a(w.toString()).shouldBeEqual(format("<html>%n" +
-                "name: Jimmy Henrdix%n" +
-                "Habit: guitar playing%n" +
-                "Habit: prescription drugs%n" +
-                "<br>%n" +
-                "name: Janice Joplin%n" +
-                "Habit: rock an roll%n" +
-                "Habit: cocaine%n" +
-                "</html>"));
+        a(w.toString()).shouldBeEqual(format("<html> name: Jimmy Henrdix Habit: guitar playing Habit: prescription drugs <br> name: Janice Joplin Habit: rock an roll Habit: cocaine </html>"));
     }
 
     @Test
