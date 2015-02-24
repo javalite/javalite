@@ -62,7 +62,7 @@ public class ConnectionsAccess {
     }
 
     static void detach(String dbName){
-        LogFilter.log(logger, "Detached connection: {} from thread: {}", dbName, Thread.currentThread());
+        LogFilter.log(logger, "Detached connection: {} from current thread", dbName);
         getConnectionMap().remove(dbName);
     }
 
