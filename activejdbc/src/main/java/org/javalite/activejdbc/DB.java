@@ -70,7 +70,7 @@ public class DB {
         try {
             Class.forName(driver);
             Connection connection = DriverManager.getConnection(url, user, password);
-            ConnectionsAccess.attach(dbName, connection);
+            ConnectionsAccess.attach(dbName, connection, url);
         } catch (Exception e) {
             throw new InitException("Failed to connect to JDBC URL: " + url, e);
         }
@@ -88,7 +88,7 @@ public class DB {
         try {
             Class.forName(driver);
             Connection connection = DriverManager.getConnection(url, props);
-            ConnectionsAccess.attach(dbName, connection);
+            ConnectionsAccess.attach(dbName, connection, url);
         } catch (Exception e) {
             throw new InitException("Failed to connect to JDBC URL: " + url, e);
         }
@@ -106,7 +106,7 @@ public class DB {
             Context ctx = new InitialContext();
             DataSource ds = (DataSource) ctx.lookup(jndiName);
             Connection connection = ds.getConnection();
-            ConnectionsAccess.attach(dbName, connection);
+            ConnectionsAccess.attach(dbName, connection, jndiName);
         } catch (Exception e) {
             throw new InitException("Failed to connect to JNDI name: " + jndiName, e);
         }
@@ -118,7 +118,7 @@ public class DB {
      * @param connection instance of connection to attach to current thread.
      */
     public void attach(Connection connection){
-        ConnectionsAccess.attach(dbName, connection);
+        ConnectionsAccess.attach(dbName, connection, "");
     }
 
     /**
@@ -151,7 +151,7 @@ public class DB {
         checkExistingConnection(dbName);
         try {
             Connection connection = datasource.getConnection();
-            ConnectionsAccess.attach(dbName, connection);
+            ConnectionsAccess.attach(dbName, connection, datasource.toString());
         } catch (SQLException e) {
             throw new InitException(e);
         }
@@ -171,7 +171,8 @@ public class DB {
             Context ctx = new InitialContext(jndiProperties);
             DataSource ds = (DataSource) ctx.lookup(jndiName);
             Connection connection = ds.getConnection();
-            ConnectionsAccess.attach(dbName, connection);
+            ConnectionsAccess.attach(dbName, connection,
+                    jndiProperties.contains("url") ? jndiProperties.getProperty("url") : jndiName);
         } catch (Exception e) {
             throw new InitException("Failed to connect to JNDI name: " + jndiName, e);
         }
@@ -238,7 +239,7 @@ public class DB {
         try {
             DataSource ds = (DataSource) context.lookup(jndiName);
             Connection connection = ds.getConnection();
-            ConnectionsAccess.attach(dbName, connection);
+            ConnectionsAccess.attach(dbName, connection, jndiName);
         } catch (Exception e) {
             throw new InitException("Failed to connect to JNDI name: " + jndiName, e);
         }

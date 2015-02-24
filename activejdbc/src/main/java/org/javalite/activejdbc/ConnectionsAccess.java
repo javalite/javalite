@@ -53,13 +53,12 @@ public class ConnectionsAccess {
      * @param dbName
      * @param connection
      */
-    static void attach(String dbName, Connection connection) {
+    static void attach(String dbName, Connection connection, String extraInfo) {
         if(ConnectionsAccess.getConnectionMap().get(dbName) != null){
             throw new InternalException("You are opening a connection " + dbName + " without closing a previous one. Check your logic. Connection still remains on thread: " + ConnectionsAccess.getConnectionMap().get(dbName));
         }
-        LogFilter.log(logger, "Attaching connection: {}", connection);
         ConnectionsAccess.getConnectionMap().put(dbName, connection);
-        LogFilter.log(logger, "Attached connection: {} named: {} to thread: {}", connection, dbName, Thread.currentThread());
+        LogFilter.log(logger, "Attached connection: {} named: {} to current thread. Extra info: {}", connection, dbName, extraInfo);
     }
 
     static void detach(String dbName){
