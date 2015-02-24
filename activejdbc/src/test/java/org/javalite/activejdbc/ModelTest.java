@@ -618,4 +618,13 @@ public class ModelTest extends ActiveJDBCTest {
         a(p.isNew()).shouldBeTrue();
         a(p.isValid()).shouldBeTrue();
     }
+
+    @Test
+    public void testNewFromMapCaseInsensive() {
+        Person p = new Person().fromMap(map("NAME", "Joe", "Last_Name", "Schmoe", "dob", "2003-06-15"));
+
+        a(p.get("name")).shouldNotBeNull();
+        a(p.get("last_name")).shouldNotBeNull();
+        a(p.get("dob")).shouldNotBeNull();
+    }
 }
