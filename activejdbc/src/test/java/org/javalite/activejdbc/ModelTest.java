@@ -511,16 +511,16 @@ public class ModelTest extends ActiveJDBCTest {
     }
 
     @Test
-    public void shouldCollectLastNames(){
+    public void shouldCollectLastNames() {
         deleteAndPopulateTable("people");
-        List<String> expected = list("Pesci", "Smith", "Jonston", "Ali");
-        a(Person.findAll().orderBy("name").collect("last_name")).shouldBeEqual(expected);
+        List<String> lastNames = Person.findAll().orderBy("name").collect("last_name");
+        the(lastNames).shouldBeEqual(list("Pesci", "Smith", "Jonston", "Ali"));
     }
 
     @Test
     public void shouldCollectDistictFirstNames() {
         deleteAndPopulateTable("patients");
-        Set<Object> firstNames = Patient.findAll().collectDistinct("first_name");
+        Set<String> firstNames = Patient.findAll().collectDistinct("first_name");
         the(firstNames.size()).shouldBeEqual(2);
         the(firstNames.contains("Jim")).shouldBeTrue();
         the(firstNames.contains("John")).shouldBeTrue();

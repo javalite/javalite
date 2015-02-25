@@ -436,38 +436,38 @@ public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
      * @param attributeName name of attribute to collect.
      * @return list of collected values for a column.
      */
-    public List<Object> collect(String attributeName) {
-        List<Object> results = new ArrayList<Object>();
+    public List collect(String attributeName) {
+        List results = new ArrayList();
         collect(results, attributeName);
         return results;
     }
 
-    public Set<Object> collectDistinct(String attributeName) {
-        Set<Object> results = new LinkedHashSet<Object>();
+    public Set collectDistinct(String attributeName) {
+        Set results = new LinkedHashSet();
         collect(results, attributeName);
         return results;
     }
 
-    private void collect(Collection<Object> results, String attributeName) {
+    private void collect(Collection results, String attributeName) {
         hydrate();
         for (Model model : delegate) {
             results.add(model.get(attributeName));
         }
     }
 
-    public List<Object> collect(String attributeName, String filterAttribute, Object filterValue) {
-        List<Object> results = new ArrayList<Object>();
+    public List collect(String attributeName, String filterAttribute, Object filterValue) {
+        List results = new ArrayList();
         collect(results, attributeName, filterAttribute, filterValue);
         return results;
     }
 
-    public Set<Object> collectDistinct(String attributeName, String filterAttribute, Object filterValue) {
-        Set<Object> results = new LinkedHashSet<Object>();
+    public Set collectDistinct(String attributeName, String filterAttribute, Object filterValue) {
+        Set results = new LinkedHashSet();
         collect(results, attributeName, filterAttribute, filterValue);
         return results;
     }
 
-    private void collect(Collection<Object> results, String attributeName, String filterAttribute, Object filterValue) {
+    private void collect(Collection results, String attributeName, String filterAttribute, Object filterValue) {
         hydrate();
         for (Model model : delegate) {
             if (model.get(filterAttribute).equals(filterValue)) {
