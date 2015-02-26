@@ -37,7 +37,7 @@ import static org.javalite.common.Util.*;
  * @author Igor Polevoy
  * @author Eric Nielsen
  */
-public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
+public class LazyList<T extends Model> extends AbstractLazyList<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(LazyList.class);
     private final List<String> orderBys = new ArrayList<String>();
@@ -337,7 +337,6 @@ public class LazyList<T extends Model> extends UnmodifiableLazyList<T> {
         });
         LogFilter.logQuery(logger, sql, params, start);
         if(metaModel.cached()){
-            //TODO: review, LazyList is already unmodifiable, and this will be delegated twice when fetched from cache
             delegate = Collections.unmodifiableList(delegate);
             QueryCache.instance().addItem(metaModel.getTableName(), sql, params, delegate);
         }

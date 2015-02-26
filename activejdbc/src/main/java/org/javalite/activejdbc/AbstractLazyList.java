@@ -15,16 +15,17 @@ limitations under the License.
 */
 package org.javalite.activejdbc;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.RandomAccess;
 
 /**
  * @author Eric Nielsen
  */
-public abstract class UnmodifiableLazyList<E> implements List<E> {
+public abstract class AbstractLazyList<E> implements List<E>, RandomAccess {
 
     protected List<E> delegate;
 
@@ -51,12 +52,7 @@ public abstract class UnmodifiableLazyList<E> implements List<E> {
     @Override
     public Iterator<E> iterator() {
         hydrate();
-        return new Iterator<E>() {
-            private final Iterator<? extends E> it = delegate.iterator();
-            @Override public boolean hasNext() { return it.hasNext(); }
-            @Override public E next() { return it.next(); }
-            @Override public void remove() { throw new UnsupportedOperationException(); }
-        };
+        return delegate.iterator();
     }
 
     @Override
@@ -73,12 +69,14 @@ public abstract class UnmodifiableLazyList<E> implements List<E> {
 
     @Override
     public boolean add(E element) {
-        throw new UnsupportedOperationException();
+        hydrate();
+        return delegate.add(element);
     }
 
     @Override
     public boolean remove(Object o) {
-        throw new UnsupportedOperationException();
+        hydrate();
+        return delegate.remove(o);
     }
 
     @Override
@@ -89,27 +87,35 @@ public abstract class UnmodifiableLazyList<E> implements List<E> {
 
     @Override
     public boolean addAll(Collection<? extends E> c) {
-        throw new UnsupportedOperationException();
+        hydrate();
+        return delegate.addAll(c);
     }
 
     @Override
     public boolean addAll(int index, Collection<? extends E> c) {
-        throw new UnsupportedOperationException();
+        hydrate();
+        return delegate.addAll(index, c);
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        throw new UnsupportedOperationException();
+        hydrate();
+        return delegate.removeAll(c);
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        throw new UnsupportedOperationException();
+        hydrate();
+        return delegate.retainAll(c);
     }
 
     @Override
     public void clear() {
-        throw new UnsupportedOperationException();
+        if (delegate != null) {
+            delegate.clear();
+        } else {
+            delegate = new ArrayList<E>();
+        }
     }
 
     @Override
@@ -133,17 +139,20 @@ public abstract class UnmodifiableLazyList<E> implements List<E> {
 
     @Override
     public E set(int index, E element) {
-        throw new UnsupportedOperationException();
+        hydrate();
+        return delegate.set(index, element);
     }
 
     @Override
     public void add(int index, E element) {
-        throw new UnsupportedOperationException();
+        hydrate();
+        delegate.add(index, element);
     }
 
     @Override
     public E remove(int index) {
-        throw new UnsupportedOperationException();
+        hydrate();
+        return delegate.remove(index);
     }
 
     @Override
@@ -160,31 +169,20 @@ public abstract class UnmodifiableLazyList<E> implements List<E> {
 
     @Override
     public ListIterator<E> listIterator() {
-        return listIterator(0);
+        hydrate();
+        return delegate.listIterator();
     }
 
     @Override
-    public ListIterator<E> listIterator(final int index) {
+    public ListIterator<E> listIterator(int index) {
         hydrate();
-        return new ListIterator<E>() {
-            private final ListIterator<? extends E> it = delegate.listIterator(index);
-            @Override public boolean hasNext() { return it.hasNext(); }
-            @Override public E next() { return it.next(); }
-            @Override public boolean hasPrevious() { return it.hasPrevious(); }
-            @Override public E previous() { return it.previous(); }
-            @Override public int nextIndex() { return it.nextIndex(); }
-            @Override public int previousIndex() { return it.previousIndex(); }
-
-            @Override public void remove() { throw new UnsupportedOperationException(); }
-            @Override public void set(E element) { throw new UnsupportedOperationException(); }
-            @Override public void add(E element) { throw new UnsupportedOperationException(); }
-	    };
+        return delegate.listIterator(index);
     }
 
     @Override
     public List<E> subList(int fromIndex, int toIndex) {
         hydrate();
-        return Collections.unmodifiableList(delegate.subList(fromIndex, toIndex));
+        return delegate.subList(fromIndex, toIndex);
     }
 
     @Override
