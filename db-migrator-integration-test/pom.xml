@@ -2,7 +2,6 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>db-migrator-integration-test</artifactId>
     <version>1.4.11-SNAPSHOT</version>
-    <packaging>jar</packaging>
     <name>JavaLite - DB-Migrator Integration Test</name>
 
     <parent>
@@ -73,6 +72,7 @@
             <groupId>org.javalite</groupId>
             <artifactId>db-migrator-maven-plugin</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
