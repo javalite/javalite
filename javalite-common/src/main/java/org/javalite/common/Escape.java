@@ -2,7 +2,7 @@ package org.javalite.common;
 
 /**
  * @author Igor Polevoy on 1/15/15.
- * @author ericbn
+ * @author Eric Nielsen
  */
 public final class Escape {
     private Escape() {
@@ -10,7 +10,7 @@ public final class Escape {
     }
 
     private static StringBuilder createStringBuilder(int len) {
-        return new StringBuilder(len + len/8);
+        return new StringBuilder(Math.max(len + len/8, 16));
     }
 
     /**
@@ -20,8 +20,7 @@ public final class Escape {
      * @param html input
      */
     public static void html(StringBuilder sb, String html) {
-        int len = html.length();
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i < html.length(); i++) {
             char c = html.charAt(i);
             switch (c) {
             case '&':
@@ -64,8 +63,7 @@ public final class Escape {
      * @param json input
      */
     public static void json(StringBuilder sb, String json) {
-        int len = json.length();
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i < json.length(); i++) {
             char c = json.charAt(i);
             switch (c) {
             case '\\':
