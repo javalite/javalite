@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2015 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,14 +19,12 @@ package org.javalite.activejdbc.conversion;
 /**
  * Converts instances of <tt>Number</tt> that are zero to <tt>null</tt>.
  *
- * @author ericbn
+ * @author Eric Nielsen
  */
 public enum ZeroToNullConverter implements Converter<Number, Object> {
     INSTANCE;
 
     public static ZeroToNullConverter instance() { return INSTANCE; }
-
-    private ZeroToNullConverter() { }
 
     /**
      * @param sourceClass source Class

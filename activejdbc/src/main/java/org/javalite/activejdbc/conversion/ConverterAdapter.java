@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2015 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ package org.javalite.activejdbc.conversion;
  * @param <S> Source type
  * @param <T> Destination type
  *
- * @author ericbn
+ * @author Eric Nielsen
  */
 public abstract class ConverterAdapter<S, T> implements Converter<S, T> {
 
@@ -48,6 +48,5 @@ public abstract class ConverterAdapter<S, T> implements Converter<S, T> {
      * @param source instance of S, can be null
      * @return instance of S converted to type T
      */
-    //TODO: should converters receive null source values?
     protected abstract T doConvert(S source) throws Exception;
 }

@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2015 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,14 +20,22 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import static org.javalite.common.Util.*;
+
 /**
- * Converts instances of {@link String} to {@link java.sql.Date}.
+ * Converts instances of {@link String} to {@link java.sql.Date}. This class is thread-safe.
  *
- * @author ericbn
+ * @author Eric Nielsen
  */
 public class StringToSqlDateConverter extends ConverterAdapter<String, java.sql.Date> {
 
     private final DateFormat format;
+    // Calendar and DateFormat are not thread safe: http://www.javacodegeeks.com/2010/07/java-best-practices-dateformat-in.html
+    private final ThreadLocal<DateFormat> threadLocalFormat = new ThreadLocal<DateFormat>() {
+        @Override protected DateFormat initialValue() {
+            return (DateFormat) format.clone();
+        }
+    };
 
     /**
      * @param pattern pattern to use for conversion
@@ -48,11 +56,11 @@ public class StringToSqlDateConverter extends ConverterAdapter<String, java.sql.
 
     /**
      * @param source instance of String or null
-     * @return source converted to java.sql.Date
+     * @return source converted to java.sql.Date, or null if source is blank
      * @throws ParseException if conversion failed
      */
     @Override
     public java.sql.Date doConvert(String source) throws ParseException {
-        return source != null ? new java.sql.Date(format.parse(source).getTime()) : null;
+        return blank(source) ? null : new java.sql.Date(threadLocalFormat.get().parse(source).getTime());
     }
 }

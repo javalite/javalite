@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2015 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,15 +21,13 @@ import static org.javalite.common.Util.*;
 /**
  * Converts instances of <tt>String</tt> that are empty or contain only whitespaces to <tt>null</tt>.
  *
- * @author ericbn
+ * @author Eric Nielsen
  */
 public enum BlankToNullConverter implements Converter<String, Object> {
     INSTANCE;
 
     public static BlankToNullConverter instance() { return INSTANCE; }
 
-    private BlankToNullConverter() { }
-    
     /**
      * @param sourceClass source Class
      * @param destinationClass destination Class

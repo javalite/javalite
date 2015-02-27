@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2015 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,13 +20,19 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 /**
- * Converts instances of {@link java.util.Date} to {@link String}.
+ * Converts instances of {@link java.util.Date} to {@link String}. This class is thread-safe.
  *
- * @author ericbn
+ * @author Eric Nielsen
  */
 public class DateToStringConverter implements Converter<java.util.Date, String> {
 
     private final DateFormat format;
+    // Calendar and DateFormat are not thread safe: http://www.javacodegeeks.com/2010/07/java-best-practices-dateformat-in.html
+    private final ThreadLocal<DateFormat> threadLocalFormat = new ThreadLocal<DateFormat>() {
+        @Override protected DateFormat initialValue() {
+            return (DateFormat) format.clone();
+        }
+    };
 
     /**
      * @param pattern pattern to use for conversion
@@ -58,6 +64,6 @@ public class DateToStringConverter implements Converter<java.util.Date, String> 
      */
     @Override
     public String convert(java.util.Date source) {
-        return format.format(source);
+        return threadLocalFormat.get().format(source);
     }
 }
