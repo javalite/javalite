@@ -324,10 +324,7 @@ public class DB {
             Object result = null;
             long start = System.currentTimeMillis();
             ps = connection().prepareStatement(query);
-            for (int index = 0; index < params.length;) {
-                Object param = params[index++];
-                ps.setObject(index, param);
-            }
+            setParameters(ps, params);
             rs = ps.executeQuery();
             if (rs.next()) {
                 result = rs.getObject(1);
@@ -400,10 +397,7 @@ public class DB {
             List results = new ArrayList();
             long start = System.currentTimeMillis();
             ps = connection().prepareStatement(query);
-            for (int index = 0; index < params.length;) {
-                Object param = params[index++];
-                ps.setObject(index, param);
-            }
+            setParameters(ps, params);
             rs = ps.executeQuery();
             while (rs.next()) {
                 results.add(rs.getObject(1));
@@ -474,11 +468,7 @@ public class DB {
         ResultSet rs;
         try {
             ps = createStreamingPreparedStatement(query);
-            for (int index = 0; index < params.length; index++) {
-                Object param = params[index];
-                ps.setObject(index + 1, param);
-            }
-
+            setParameters(ps, params);
             rs = ps.executeQuery();
             return new RowProcessor(rs, ps);
 
@@ -572,11 +562,8 @@ public class DB {
         PreparedStatement ps = null;
         try {
             ps = connection().prepareStatement(query);
-            for (int index = 0; index < params.length; index++) {
-                Object param = params[index];
-                ps.setObject(index + 1, param);
-            }
-            int count =  ps.executeUpdate();
+            setParameters(ps, params);
+            int count = ps.executeUpdate();
             LogFilter.logQuery(logger, query, params, start);
             return count;
         } catch (SQLException e) {
@@ -795,15 +782,12 @@ public class DB {
     /**
      * Adds a batch statement using given <code>java.sql.PreparedStatement</code> and parameters.
      * @param ps <code>java.sql.PreparedStatement</code> to add batch to.
-     * @param parameters parameters for the query in <code>java.sql.PreparedStatement</code>. Parameters will be
+     * @param params parameters for the query in <code>java.sql.PreparedStatement</code>. Parameters will be
      * set on the statement in the same order as provided here.
      */
-    public void addBatch(PreparedStatement ps, Object ... parameters){
+    public void addBatch(PreparedStatement ps, Object... params) {
         try {
-
-            for (int i = 0; i < parameters.length; i++) {
-                ps.setObject((i + 1), parameters[(i)]);
-            }
+            setParameters(ps, params);
             ps.addBatch();
         } catch (SQLException e) {
             throw new DBException(e);
@@ -821,6 +805,13 @@ public class DB {
             ps.clearParameters();
         } catch (SQLException e) {
             throw new DBException(e);
+        }
+    }
+
+    private void setParameters(PreparedStatement ps, Object... params) throws SQLException {
+        for (int index = 0; index < params.length;) {
+            Object param = params[index++];
+            ps.setObject(index, param);
         }
     }
 }
