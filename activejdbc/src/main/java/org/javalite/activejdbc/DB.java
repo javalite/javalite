@@ -1,20 +1,18 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2015 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
-
-
 package org.javalite.activejdbc;
 
 import org.javalite.common.Convert;
@@ -36,6 +34,7 @@ import static org.javalite.common.Util.*;
  * can provide a logical name for a current connection. Use this class when you have more than one database in the system.
  *
  * @author Igor Polevoy
+ * @author Eric Nielsen
  */
 public class DB {
 
@@ -310,33 +309,38 @@ public class DB {
         return Convert.toLong(firstCell(sql, params));
     }
 
-
     /**
-     * This method returns a value of the first column of the first row.
-     * This query expects only one column selected in the select statement.
-     * If more than one column returned, it will throw {@link IllegalArgumentException}.
-     *
+     * This method returns the value of the first column of the first row.
+     * If query results have more than one column or more than one row, they will be ignored.
      *
      * @param query query
      * @param params parameters
      * @return fetched value, or null if query did not fetch anything.
      */
     public Object firstCell(final String query, Object... params) {
-        final Object[] result = { null };
-        long start = System.currentTimeMillis();
-        find(query, params).with(new RowListener() {
-            @Override public boolean next(Map<String, Object> row) {
-                if (row.size() > 1) {
-                    throw new IllegalArgumentException("query: " + query + " selects more than one column");
-                }
-                result[0] = row.entrySet().iterator().next().getValue();
-                return false;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            Object result = null;
+            long start = System.currentTimeMillis();
+            ps = connection().prepareStatement(query);
+            for (int index = 0; index < params.length;) {
+                Object param = params[index++];
+                ps.setObject(index, param);
             }
-        });
-        LogFilter.logQuery(logger, query, params, start);
-        return result[0];
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                result = rs.getObject(1);
+            }
+            LogFilter.logQuery(logger, query, params, start);
+            return result;
+        } catch (SQLException e) {
+            throw new DBException(query, params, e);
+        } finally {
+            closeQuietly(rs);
+            closeQuietly(ps);
+        }
     }
-
 
     /**
      * Alias to {@link #findAll(String, Object...)}
@@ -373,9 +377,8 @@ public class DB {
         return results;
     }
 
-
     /**
-     * This method returns entire resultset as one list. Do not use it for large result sets.
+     * This method returns entire resultset with one column as a list. Do not use it for large result sets.
      * Example:
      * <pre>
      *  List ssns = Base.firstColumn("select ssn from people where first_name = ?", "John");
@@ -383,27 +386,36 @@ public class DB {
      *      System.out.println(ssn);
      * </pre>
      *
-     * This methods expects a query which selects only one column from a table/view. It will throw an exception if more than one
-     * columns are fetched in a result set.
+     * This method collects the value of the first column of each row. If query results have more than one column, the
+     * remainder will be ignored.
      *
-     * @param query raw SQL query. This query is parametrized.
+     * @param query raw SQL query. This query can be parametrized.
      * @param params list of parameters for a parametrized query.
      * @return entire result set corresponding to the query.
      */
-    public List firstColumn(String query, Object ... params) {
-
-        final List results = new ArrayList();
-        long start = System.currentTimeMillis();
-        find(query, params).with(new RowListenerAdapter() {
-            @Override public void onNext(Map<String, Object> row) {
-                if(row.size() > 1) throw new IllegalArgumentException("Query selects more than one column");
-
-                results.add(row.entrySet().iterator().next().getValue());
+    public List firstColumn(String query, Object... params) {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            List results = new ArrayList();
+            long start = System.currentTimeMillis();
+            ps = connection().prepareStatement(query);
+            for (int index = 0; index < params.length;) {
+                Object param = params[index++];
+                ps.setObject(index, param);
             }
-        });
-
-        LogFilter.logQuery(logger, query, params, start);
-        return results;
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                results.add(rs.getObject(1));
+            }
+            LogFilter.logQuery(logger, query, params, start);
+            return results;
+        } catch (SQLException e) {
+            throw new DBException(query, params, e);
+        } finally {
+            closeQuietly(rs);
+            closeQuietly(ps);
+        }
     }
 
     /**
