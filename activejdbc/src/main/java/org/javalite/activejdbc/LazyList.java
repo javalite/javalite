@@ -41,7 +41,6 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(LazyList.class);
     private final List<String> orderBys = new ArrayList<String>();
-    private boolean hydrated = false;
     private final MetaModel metaModel;
     private final String subQuery;
     private final String fullQuery;
@@ -271,14 +270,11 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> {
      * @return fully loaded list.
      */
     //TODO: write test, and also test for exception.
-    public <E extends Model>  LazyList<E>  load(){
-
-        if(hydrated) throw new DBException("load() must be the last on the chain of methods");
-
+    public <E extends Model> LazyList<E> load() {
+        if (hydrated()) { throw new DBException("load() must be the last on the chain of methods"); }
         hydrate();
         return (LazyList<E>) this;
     }
-
 
     /**
      * Same as <code>toSql(true)</code>, see {@link #toSql(boolean)};
@@ -317,7 +313,7 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> {
     @Override
     protected void hydrate() {
 
-        if(hydrated) return;
+        if (hydrated()) { return; }
 
         String sql= toSql(false);
 
@@ -340,8 +336,11 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> {
             delegate = Collections.unmodifiableList(delegate);
             QueryCache.instance().addItem(metaModel.getTableName(), sql, params, delegate);
         }
-        hydrated = true;
         processIncludes();
+    }
+
+    private boolean hydrated() {
+        return delegate != null;
     }
 
     private void processIncludes() {
