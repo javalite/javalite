@@ -46,15 +46,15 @@ public class DB {
 
     public static final String DEFAULT_NAME = "default";
 
-    private final String dbName;
+    private final String name;
 
     /**
      * Creates a new DB object representing a connection to a DB.
      *
-     * @param dbName logical name for a database.
+     * @param name logical name for a database.
      */
-    public DB(String dbName){
-        this.dbName = dbName;
+    public DB(String name) {
+        this.name = name;
     }
 
     /**
@@ -66,11 +66,11 @@ public class DB {
      * @param password password.
      */
     public void open(String driver, String url, String user, String password) {
-        checkExistingConnection(dbName);
+        checkExistingConnection(name);
         try {
             Class.forName(driver);
             Connection connection = DriverManager.getConnection(url, user, password);
-            ConnectionsAccess.attach(dbName, connection, url);
+            ConnectionsAccess.attach(name, connection, url);
         } catch (Exception e) {
             throw new InitException("Failed to connect to JDBC URL: " + url, e);
         }
@@ -78,17 +78,17 @@ public class DB {
 
     /**
      * Opens a new connection in case additional driver-specific parameters need to be passed in.
-     * 
+     *
      * @param driver driver class name
      * @param url JDBC URL
      * @param props connection properties
      */
     public void open(String driver, String url, Properties props) {
-        checkExistingConnection(dbName);
+        checkExistingConnection(name);
         try {
             Class.forName(driver);
             Connection connection = DriverManager.getConnection(url, props);
-            ConnectionsAccess.attach(dbName, connection, url);
+            ConnectionsAccess.attach(name, connection, url);
         } catch (Exception e) {
             throw new InitException("Failed to connect to JDBC URL: " + url, e);
         }
@@ -98,15 +98,15 @@ public class DB {
      * Opens a connection from JNDI based on a registered name. This assumes that there is a <code>jndi.properties</code>
      * file with proper JNDI configuration in it.
      *
-     * @param jndiName name of a configured data source. 
+     * @param jndiName name of a configured data source.
      */
     public void open(String jndiName) {
-        checkExistingConnection(dbName);
+        checkExistingConnection(name);
         try {
             Context ctx = new InitialContext();
             DataSource ds = (DataSource) ctx.lookup(jndiName);
             Connection connection = ds.getConnection();
-            ConnectionsAccess.attach(dbName, connection, jndiName);
+            ConnectionsAccess.attach(name, connection, jndiName);
         } catch (Exception e) {
             throw new InitException("Failed to connect to JNDI name: " + jndiName, e);
         }
@@ -117,8 +117,8 @@ public class DB {
      *
      * @param connection instance of connection to attach to current thread.
      */
-    public void attach(Connection connection){
-        ConnectionsAccess.attach(dbName, connection, "");
+    public void attach(Connection connection) {
+        ConnectionsAccess.attach(name, connection, "");
     }
 
     /**
@@ -128,13 +128,12 @@ public class DB {
      * @return instance of a connection detached from current thread by name passed to constructor.
      */
     public Connection detach() {
-
-        Connection connection = ConnectionsAccess.getConnection(dbName);
+        Connection connection = ConnectionsAccess.getConnection(name);
         try {
-            if(connection == null){
-                throw new DBException("cannot detach connection '" + dbName + "' because it is not available");
+            if (connection == null) {
+                throw new DBException("cannot detach connection '" + name + "' because it is not available");
             }
-            ConnectionsAccess.detach(dbName);// lets free the thread from connection
+            ConnectionsAccess.detach(name); // let's free the thread from connection
             StatementCache.instance().cleanStatementCache(connection);
         } catch (DBException e) {
             logger.warn("Could not close connection! MUST INVESTIGATE POTENTIAL CONNECTION LEAK!", e);
@@ -147,11 +146,11 @@ public class DB {
      *
      * @param datasource datasource will be used to acquire a connection.
      */
-    public void open(DataSource datasource){
-        checkExistingConnection(dbName);
+    public void open(DataSource datasource) {
+        checkExistingConnection(name);
         try {
             Connection connection = datasource.getConnection();
-            ConnectionsAccess.attach(dbName, connection, datasource.toString());
+            ConnectionsAccess.attach(name, connection, datasource.toString());
         } catch (SQLException e) {
             throw new InitException(e);
         }
@@ -162,16 +161,16 @@ public class DB {
      * Opens a new connection from JNDI data source by name using explicit JNDI properties. This method can be used in cases
      * when file <code>jndi.properties</code> cannot be easily updated.
      *
-     * @param jndiName name of JNDI data source. 
+     * @param jndiName name of JNDI data source.
      * @param jndiProperties JNDI properties
      */
     public void open(String jndiName, Properties jndiProperties) {
-        checkExistingConnection(dbName);
+        checkExistingConnection(name);
         try {
             Context ctx = new InitialContext(jndiProperties);
             DataSource ds = (DataSource) ctx.lookup(jndiName);
             Connection connection = ds.getConnection();
-            ConnectionsAccess.attach(dbName, connection,
+            ConnectionsAccess.attach(name, connection,
                     jndiProperties.contains("url") ? jndiProperties.getProperty("url") : jndiName);
         } catch (Exception e) {
             throw new InitException("Failed to connect to JNDI name: " + jndiName, e);
@@ -181,23 +180,23 @@ public class DB {
 
     /**
      * This method is used internally by framework.
-     * 
+     *
      * @param spec specification for a JDBC connection.
      */
-    public void open(ConnectionSpec spec){
-        checkExistingConnection(dbName);
-        if(spec instanceof ConnectionJdbcSpec){
-            openJdbc((ConnectionJdbcSpec)spec);
-        }else if(spec instanceof ConnectionJndiSpec){
-            openJndi((ConnectionJndiSpec)spec);
-        }else{
+    public void open(ConnectionSpec spec) {
+        checkExistingConnection(name);
+        if (spec instanceof ConnectionJdbcSpec) {
+            openJdbc((ConnectionJdbcSpec) spec);
+        } else if(spec instanceof ConnectionJndiSpec) {
+            openJndi((ConnectionJndiSpec) spec);
+        } else {
             throw new IllegalArgumentException("this spec not supported: " + spec.getClass());
         }
     }
 
-    private void checkExistingConnection(String dbName){
-        if( null != ConnectionsAccess.getConnection(dbName)){
-            throw new DBException("Cannot open a new connection because existing connection is still on current thread, dbName: " + dbName + ", connection instance: " + connection()
+    private void checkExistingConnection(String name) {
+        if (null != ConnectionsAccess.getConnection(name)) {
+            throw new DBException("Cannot open a new connection because existing connection is still on current thread, name: " + name + ", connection instance: " + connection()
             + ". This might indicate a logical error in your application.");
         }
     }
@@ -233,13 +232,13 @@ public class DB {
      * This method is used internally by framework.
      *
      * @param context context.
-     * @param jndiName JNDI name. 
+     * @param jndiName JNDI name.
      */
     private void openContext(InitialContext context, String jndiName) {
         try {
             DataSource ds = (DataSource) context.lookup(jndiName);
             Connection connection = ds.getConnection();
-            ConnectionsAccess.attach(dbName, connection, jndiName);
+            ConnectionsAccess.attach(name, connection, jndiName);
         } catch (Exception e) {
             throw new InitException("Failed to connect to JNDI name: " + jndiName, e);
         }
@@ -259,9 +258,9 @@ public class DB {
      */
     public void close(boolean suppressWarning) {
         try {
-            Connection connection = ConnectionsAccess.getConnection(dbName);
+            Connection connection = ConnectionsAccess.getConnection(name);
             if(connection == null){
-                throw new DBException("cannot close connection '" + dbName + "' because it is not available");
+                throw new DBException("cannot close connection '" + name + "' because it is not available");
             }
             StatementCache.instance().cleanStatementCache(connection);
             connection.close();
@@ -270,8 +269,8 @@ public class DB {
             if (!suppressWarning) {
                 logger.warn("Could not close connection! MUST INVESTIGATE POTENTIAL CONNECTION LEAK!", e);
             }
-        }finally{
-            ConnectionsAccess.detach(dbName);// lets free the thread from connection
+        } finally {
+            ConnectionsAccess.detach(name); // let's free the thread from connection
         }
     }
 
@@ -708,9 +707,9 @@ public class DB {
      */
     public  void openTransaction() {
         try {
-            Connection c = ConnectionsAccess.getConnection(dbName);
-            if(c == null){
-                throw new DBException("Cannot open transaction, connection '" + dbName + "' not available");
+            Connection c = ConnectionsAccess.getConnection(name);
+            if (c == null) {
+                throw new DBException("Cannot open transaction, connection '" + name + "' not available");
             }
             c.setAutoCommit(false);
             LogFilter.log(logger, "Transaction opened");
@@ -725,9 +724,9 @@ public class DB {
      */
     public void commitTransaction() {
         try {
-            Connection c= ConnectionsAccess.getConnection(dbName);
-            if(c == null){
-                throw new DBException("Cannot commit transaction, connection '" + dbName + "' not available");
+            Connection c = ConnectionsAccess.getConnection(name);
+            if (c == null) {
+                throw new DBException("Cannot commit transaction, connection '" + name + "' not available");
             }
             c.commit();
             LogFilter.log(logger, "Transaction committed");
@@ -741,9 +740,9 @@ public class DB {
      */
     public void rollbackTransaction() {
         try {
-            Connection c = ConnectionsAccess.getConnection(dbName);
+            Connection c = ConnectionsAccess.getConnection(name);
             if (c == null) {
-                throw new DBException("Cannot rollback transaction, connection '" + dbName + "' not available");
+                throw new DBException("Cannot rollback transaction, connection '" + name + "' not available");
             }
             c.rollback();
             LogFilter.log(logger, "Transaction rolled back");
@@ -755,13 +754,13 @@ public class DB {
     /**
      * Provides connection from current thread.
      *
-     * @return connection from current thread. 
+     * @return connection from current thread.
      */
     public Connection connection() {
-        Connection connection = ConnectionsAccess.getConnection(dbName);
-        if(connection  == null)
-            throw new DBException("there is no connection '" + dbName + "' on this thread, are you sure you opened it?");
-
+        Connection connection = ConnectionsAccess.getConnection(name);
+        if (connection == null) {
+            throw new DBException("there is no connection '" + name + "' on this thread, are you sure you opened it?");
+        }
         return connection;
     }
 
@@ -770,8 +769,8 @@ public class DB {
      *
      * @return true if finds connection on current thread, false if not.
      */
-    public boolean hasConnection(){
-        return null != ConnectionsAccess.getConnection(dbName);
+    public boolean hasConnection() {
+        return null != ConnectionsAccess.getConnection(name);
     }
 
     /**
