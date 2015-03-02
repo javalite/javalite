@@ -44,6 +44,7 @@ public class DB {
     static final Pattern INSERT_PATTERN = Pattern.compile("^\\s*INSERT",
             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
+    public static final String DEFAULT_NAME = "default";
 
     private final String dbName;
 

@@ -35,9 +35,6 @@ import java.util.Properties;
  * @author Eric Nielsen
  */
 public class Base {
-
-    public static final String DEFAULT_DB_NAME = "default";
-
     /**
      * Opens a new connection based on JDBC properties and attaches it to a current thread.
      *
@@ -47,7 +44,7 @@ public class Base {
      * @param password password.
      */
     public static void open(String driver, String url, String user, String password) {
-       new DB(DEFAULT_DB_NAME).open(driver, url, user, password);
+       new DB(DB.DEFAULT_NAME).open(driver, url, user, password);
     }
 
 
@@ -59,7 +56,7 @@ public class Base {
      * @param props connection properties
      */
     public static void open(String driver, String url, Properties props) {
-        new DB(DEFAULT_DB_NAME).open(driver, url, props);
+        new DB(DB.DEFAULT_NAME).open(driver, url, props);
     }
 
     /**
@@ -69,7 +66,7 @@ public class Base {
      * @param jndiName name of a configured data source.
      */
     public static void open(String jndiName) {
-        new DB(DEFAULT_DB_NAME).open(jndiName);
+        new DB(DB.DEFAULT_NAME).open(jndiName);
     }
 
     /**
@@ -80,7 +77,7 @@ public class Base {
      * @param jndiProperties JNDI properties
      */
     public static void open(String jndiName, Properties jndiProperties) {
-        new DB(DEFAULT_DB_NAME).open(jndiName, jndiProperties);
+        new DB(DB.DEFAULT_NAME).open(jndiName, jndiProperties);
     }
 
     /**
@@ -89,7 +86,7 @@ public class Base {
      * @param dataSource datasource will be used to acquire a connection.
      */
     public static void open(DataSource dataSource) {
-        new DB(DEFAULT_DB_NAME).open(dataSource);
+        new DB(DB.DEFAULT_NAME).open(dataSource);
     }
 
 
@@ -99,7 +96,7 @@ public class Base {
      * @return connection attached to a current thread and named "default".
      */
     public static Connection connection() {
-        return new DB(DEFAULT_DB_NAME).connection();
+        return new DB(DB.DEFAULT_NAME).connection();
 
     }
 
@@ -109,8 +106,8 @@ public class Base {
      *
      * @return true if finds default connection on current thread, false if not.
      */
-    public static boolean hasConnection(){
-        return new DB(DEFAULT_DB_NAME).hasConnection();
+    public static boolean hasConnection() {
+        return new DB(DB.DEFAULT_NAME).hasConnection();
     }
 
 
@@ -120,14 +117,14 @@ public class Base {
      * @param suppressWarning true to not display a warning in case of a problem (connection not there)
      */
     public static void close(boolean suppressWarning) {
-        new DB(DEFAULT_DB_NAME).close(suppressWarning);
+        new DB(DB.DEFAULT_NAME).close(suppressWarning);
     }
 
     /**
      * Closes connection and detaches it from current thread.
      */
     public static void close() {
-      new DB(DEFAULT_DB_NAME).close();
+      new DB(DB.DEFAULT_NAME).close();
     }
 
     /**
@@ -136,8 +133,8 @@ public class Base {
      * @param table name of table.
      * @return count of rows in table.
      */
-    public static Long count(String table){        
-        return new DB(DEFAULT_DB_NAME).count(table);
+    public static Long count(String table) {
+        return new DB(DB.DEFAULT_NAME).count(table);
     }
 
     /**
@@ -150,9 +147,9 @@ public class Base {
      * @return copunt number of records found in a table.
      */
     public static Long count(String table, String query, Object... params) {
-        return new DB(DEFAULT_DB_NAME).count(table, query, params);
+        return new DB(DB.DEFAULT_NAME).count(table, query, params);
     }
-    
+
     /**
      * Returns a value of the first column of the first row.
      * This query expects only one column selected in the select statement.
@@ -163,7 +160,7 @@ public class Base {
      * @return fetched value, or null if query did not fetch anything.
      */
     public static Object firstCell(String query, Object... params) {
-        return new DB(DEFAULT_DB_NAME).firstCell(query, params);
+        return new DB(DB.DEFAULT_NAME).firstCell(query, params);
     }
 
     /**
@@ -179,8 +176,8 @@ public class Base {
      * @param params list of parameters for a parametrized query.
      * @return entire result set corresponding to the query.
      */
-    public static List<Map> findAll(String query, Object ... params) {
-        return new DB(DEFAULT_DB_NAME).findAll(query, params);
+    public static List<Map> findAll(String query, Object... params) {
+        return new DB(DB.DEFAULT_NAME).findAll(query, params);
     }
 
     /**
@@ -199,8 +196,8 @@ public class Base {
      * @param params list of parameters for a parametrized query.
      * @return entire result set corresponding to the query.
      */
-    public static List firstColumn(String query, Object ... params) {
-        return new DB(DEFAULT_DB_NAME).firstColumn(query, params);
+    public static List firstColumn(String query, Object... params) {
+        return new DB(DB.DEFAULT_NAME).firstColumn(query, params);
     }
 
     /**
@@ -210,7 +207,7 @@ public class Base {
      * @return entire result set corresponding to the query.
      */
     public static List<Map> findAll(String query) {
-        return new DB(DEFAULT_DB_NAME).findAll(query);
+        return new DB(DB.DEFAULT_NAME).findAll(query);
     }
 
     /**
@@ -232,7 +229,7 @@ public class Base {
      */
     @Deprecated
     public static RowProcessor find(String query, Object... params) {
-      return new DB(DEFAULT_DB_NAME).find(query, params);
+      return new DB(DB.DEFAULT_NAME).find(query, params);
     }
 
     /**
@@ -258,7 +255,7 @@ public class Base {
      * @param params parameters of parametrized query
      */
     public static void findWith(ResultSetListener listener, boolean streaming, String query, Object... params) {
-      new DB(DEFAULT_DB_NAME).findWith(listener, streaming, query, params);
+      new DB(DB.DEFAULT_NAME).findWith(listener, streaming, query, params);
     }
 
     /**
@@ -271,7 +268,7 @@ public class Base {
      */
     @Deprecated
     public static void find(String sql, RowListener listener) {
-        new DB(DEFAULT_DB_NAME).find(sql, listener);
+        new DB(DB.DEFAULT_NAME).find(sql, listener);
     }
 
     /**
@@ -286,7 +283,7 @@ public class Base {
      * @param query raw SQL query
      */
     public static void findWith(ResultSetListener listener, boolean streaming, String query) {
-        new DB(DEFAULT_DB_NAME).findWith(listener, streaming, query);
+        new DB(DB.DEFAULT_NAME).findWith(listener, streaming, query);
     }
 
     /**
@@ -295,8 +292,8 @@ public class Base {
      * @param query raw DML.
      * @return number of rows afected by query.
      */
-    public static int exec(String query){
-        return new DB(DEFAULT_DB_NAME).exec(query);
+    public static int exec(String query) {
+        return new DB(DB.DEFAULT_NAME).exec(query);
     }
 
 
@@ -307,14 +304,13 @@ public class Base {
      * @param params  query parameters.
      * @return number of records affected.
      */
-    public static int exec(String query, Object ... params){
-        return new DB(DEFAULT_DB_NAME).exec(query, params);
+    public static int exec(String query, Object... params) {
+        return new DB(DB.DEFAULT_NAME).exec(query, params);
     }
-    
 
     /**
      * This method is specific for inserts.
-     * 
+     *
      * @param query SQL for inserts.
      * @param autoIncrementColumnName name of a column that is auto-incremented.
      * @param params list of parameter values.
@@ -322,28 +318,28 @@ public class Base {
      * functionality is not supported by DB or driver.
      */
     static Object execInsert(String query, String autoIncrementColumnName, Object... params) {
-        return new DB(DEFAULT_DB_NAME).execInsert(query, autoIncrementColumnName, params);
+        return new DB(DB.DEFAULT_NAME).execInsert(query, autoIncrementColumnName, params);
     }
 
     /**
      * Opens local transaction.
      */
     public static void openTransaction() {
-        new DB(DEFAULT_DB_NAME).openTransaction();
+        new DB(DB.DEFAULT_NAME).openTransaction();
     }
 
     /**
      * Commits local transaction.
      */
     public static void commitTransaction() {
-        new DB(DEFAULT_DB_NAME).commitTransaction();
+        new DB(DB.DEFAULT_NAME).commitTransaction();
     }
 
     /**
      * Rolls back local transaction.
      */
     public static void rollbackTransaction() {
-        new DB(DEFAULT_DB_NAME).rollbackTransaction();
+        new DB(DB.DEFAULT_NAME).rollbackTransaction();
     }
 
     /**
@@ -352,8 +348,8 @@ public class Base {
      * @param parametrizedStatement Example of a statement: <code>INSERT INTO employees VALUES (?, ?)</code>.
      * @return instance of <code>java.sql.PreparedStatement</code> with compiled query.
      */
-    public static PreparedStatement startBatch(String parametrizedStatement){
-        return new DB(DEFAULT_DB_NAME).startBatch(parametrizedStatement);
+    public static PreparedStatement startBatch(String parametrizedStatement) {
+        return new DB(DB.DEFAULT_NAME).startBatch(parametrizedStatement);
     }
 
     /**
@@ -362,8 +358,8 @@ public class Base {
      * @param parameters parameters for the query in <code>java.sql.PreparedStatement</code>. Parameters will be
      * set on the statement in the same order as provided here.
      */
-    public static void addBatch(PreparedStatement ps, Object ... parameters){
-        new DB(DEFAULT_DB_NAME).addBatch(ps, parameters);
+    public static void addBatch(PreparedStatement ps, Object... parameters) {
+        new DB(DB.DEFAULT_NAME).addBatch(ps, parameters);
     }
 
     /**
@@ -371,8 +367,8 @@ public class Base {
      *
      * @param ps <code>java.sql.PreparedStatement</code> to execute batch on.
      */
-    public static void executeBatch(PreparedStatement ps){
-        new DB(DEFAULT_DB_NAME).executeBatch(ps);
+    public static void executeBatch(PreparedStatement ps) {
+        new DB(DB.DEFAULT_NAME).executeBatch(ps);
     }
 
 
@@ -381,8 +377,8 @@ public class Base {
      *
      * @param connection instance of connection to attach to current thread.
      */
-    public static void attach(Connection connection){
-        new DB(DEFAULT_DB_NAME).attach(connection);
+    public static void attach(Connection connection) {
+        new DB(DB.DEFAULT_NAME).attach(connection);
     }
 
     /**
@@ -392,6 +388,6 @@ public class Base {
      * @return instance of a default connection detached from current thread by name passed to constructor.
      */
     public static Connection detach() {
-        return new DB(DEFAULT_DB_NAME).detach();
+        return new DB(DB.DEFAULT_NAME).detach();
     }
 }
