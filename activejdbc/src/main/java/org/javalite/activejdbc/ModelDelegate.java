@@ -210,12 +210,11 @@ public final class ModelDelegate {
         long start = System.currentTimeMillis();
         final MetaModel metaModel = metaModelOf(clazz);
         String sql = metaModel.getDialect().selectStar(metaModel.getTableName(), query);
-        new DB(metaModel.getDbName()).find(sql, params).with(new RowListenerAdapter() {
-            @Override
-            public void onNext(Map<String, Object> row) {
+        new DB(metaModel.getDbName()).findWith(new RowListenerAdapter() {
+            @Override public void onNext(Map<String, Object> row) {
                 listener.onModel(instance(row, metaModel, clazz));
             }
-        });
+        }, true, sql, params);
         LogFilter.logQuery(logger, sql, null, start);
     }
 

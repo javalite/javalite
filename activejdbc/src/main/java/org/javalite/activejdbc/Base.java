@@ -1,20 +1,18 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2015 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
-
-
 package org.javalite.activejdbc;
 
 import javax.sql.DataSource;
@@ -34,11 +32,11 @@ import java.util.Properties;
  * This class is a convenience wrapper of {@link DB}
  *
  * @author Igor Polevoy
+ * @author Eric Nielsen
  */
 public class Base {
 
-    private static final String DEFAULT_DB_NAME = "default";
-
+    public static final String DEFAULT_DB_NAME = "default";
 
     /**
      * Opens a new connection based on JDBC properties and attaches it to a current thread.
@@ -172,11 +170,9 @@ public class Base {
      * This method returns entire resultset as one list. Do not use it for large result sets.
      * Example:
      * <pre>
-     * <code>
-     *  List&lt;Map&lt;String, Object&gt;&gt; people = Base.findAll(&quot;select * from people where first_name = ?&quot;, &quot;John&quot;);
-     *  for(Map person: people)
-     *      System.out.println(person.get("first_name"));
-     * </code>
+     * List&lt;Map&gt; people = Base.findAll(&quot;select * from people where first_name = ?&quot;, &quot;John&quot;);
+     * for (Map person : people)
+     *     System.out.println(person.get("first_name"));
      * </pre>
      *
      * @param query raw SQL query. This query is parametrized.
@@ -232,9 +228,37 @@ public class Base {
      * @param query raw SQL.
      * @param params list of parameters if query is parametrized.
      * @return instance of <code>RowProcessor</code> which has with() method for convenience.
+     * @deprecated use {@link #findWith(ResultSetListener, boolean, String, Object...)} instead
      */
-    public static RowProcessor find(String query, Object ... params) {
-      return new DB(DEFAULT_DB_NAME).find(query, params);       
+    @Deprecated
+    public static RowProcessor find(String query, Object... params) {
+      return new DB(DEFAULT_DB_NAME).find(query, params);
+    }
+
+    /**
+     * Executes a raw query and calls the listener to handle the results. The listener should extend
+     * {@link RowListener} to process individual rows, or implement {@link ResultSetListener} to process the whole
+     * ResultSet. For very large result sets, call this method with <tt>streaming</tt> as <tt>true</tt>, as it will
+     * create a streaming PreparedStatement (currently only available for MySQL). Example:
+     *
+     * <blockquote><pre>
+     * Base.findWith(new RowListenerAdapter() {
+     *     @Override public void onNext(Map row) {
+     *         // write your code here
+     *         Object o1 = row.get("first_name");
+     *         Object o2 = row.get("last_name");
+     *     }
+     * }, true, "select first_name, last_name from really_large_table");
+     * </pre></blockquote>
+     *
+     * @param listener a subclass of {@link RowListener} to process individual rows, or an implementation of
+     * {@link ResultSetListener} to process the whole ResultSet
+     * @param streaming true to create a streaming PreparedStatement, false otherwise
+     * @param query raw SQL query
+     * @param params parameters of parametrized query
+     */
+    public static void findWith(ResultSetListener listener, boolean streaming, String query, Object... params) {
+      new DB(DEFAULT_DB_NAME).findWith(listener, streaming, query, params);
     }
 
     /**
@@ -243,11 +267,27 @@ public class Base {
      *
      * @param sql raw SQL query.
      * @param listener client listener implementation for processing individual rows.
+     * @deprecated use {@link #findWith(ResultSetListener, boolean, String)} instead
      */
+    @Deprecated
     public static void find(String sql, RowListener listener) {
-        new DB(DEFAULT_DB_NAME).find(sql, listener);        
+        new DB(DEFAULT_DB_NAME).find(sql, listener);
     }
 
+    /**
+     * Executes a raw query and calls the listener to handle the results. The listener should extend
+     * {@link RowListener} to process individual rows, or implement {@link ResultSetListener} to process the whole
+     * ResultSet. For very large result sets, call this method with <tt>streaming</tt> as <tt>true</tt>, as it will
+     * create a streaming Statement (currently only available for MySQL).
+     *
+     * @param listener a subclass of {@link RowListener} to process individual rows, or an implementation of
+     * {@link ResultSetListener} to handle the whole ResultSet
+     * @param streaming true to create a streaming Statement, false otherwise
+     * @param query raw SQL query
+     */
+    public static void findWith(ResultSetListener listener, boolean streaming, String query) {
+        new DB(DEFAULT_DB_NAME).findWith(listener, streaming, query);
+    }
 
     /**
      * Executes DML. Use it for inserts and updates.

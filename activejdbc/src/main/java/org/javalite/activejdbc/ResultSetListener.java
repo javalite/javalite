@@ -15,24 +15,12 @@ limitations under the License.
 */
 package org.javalite.activejdbc;
 
-import java.util.Map;
-
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
- * Use this class in cases where you need to process an entire result set. It returns true from "next()" method.
+ * @author Eric Nielsen
  */
-public abstract class RowListenerAdapter extends RowListener {
-
-    @Override
-    public final boolean next(Map<String, Object> row) {
-        onNext(row);
-        return true;
-    }
-
-    /**
-     * Called when a new row is encountered.
-     *
-     * @param row Map instance containing values for a row. Keys are names of columns and values are .. values.  
-     */
-    public abstract void onNext(Map<String, Object> row);
+public interface ResultSetListener {
+    void onResultSet(ResultSet rs) throws SQLException;
 }

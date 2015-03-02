@@ -38,13 +38,11 @@ public class BaseTest extends ActiveJDBCTest {
     @Test
     public void testBaseFinder() {
         final List<Map> records = new ArrayList<Map>();
-
-        Base.find("select * from people order by id", new RowListenerAdapter() {
-            public void onNext(Map record) {
+        Base.findWith(new RowListenerAdapter() {
+            @Override public void onNext(Map record) {
                 records.add(record);
             }
-        });
-
+        }, true, "select * from people order by id");
         the(records.get(0).get("name")).shouldBeEqual("John");
         the(records.get(3).get("name")).shouldBeEqual("Joe");
     }
@@ -88,12 +86,11 @@ public class BaseTest extends ActiveJDBCTest {
 
     @Test
     public void testFindParametrized(){
-
-        Base.find("select * from people where id > ? and dob > ?", 1, getTimestamp(1935, 1, 1)).with(new RowListenerAdapter() {
+        Base.findWith(new RowListenerAdapter() {
             @Override public void onNext(Map<String, Object> row) {
                 System.out.println(row);
             }
-        });
+        }, true, "select * from people where id > ? and dob > ?", 1, getTimestamp(1935, 1, 1));
     }
 
     @Test
