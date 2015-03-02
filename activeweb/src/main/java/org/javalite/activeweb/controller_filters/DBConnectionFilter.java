@@ -98,10 +98,12 @@ public class DBConnectionFilter extends ControllerFilterAdapter {
         if (connectionWrappers != null && !connectionWrappers.isEmpty()) {
             for (ConnectionSpecWrapper connectionWrapper : connectionWrappers) {
                 DB db = new DB(connectionWrapper.getDbName());
-                if(manageTransaction){
-                    db.commitTransaction();
+                if(db.hasConnection()){
+                    if(manageTransaction){
+                        db.commitTransaction();
+                    }
+                    db.close();
                 }
-                db.close();
             }
         }
     }
@@ -124,10 +126,9 @@ public class DBConnectionFilter extends ControllerFilterAdapter {
     }
 
     /**
-     * Returns all connections which correspond to provided dbName and not for testing and.
-     * If dbName not provided, returns all connections which are not for testing.
+     * Returns all connections which correspond dbName  of this filter and not for testing
      * 
-     * @return all connections which correspond to provided dbName and not for testing and.
+     * @return all connections which correspond dbName  of this filter and not for testing.
      */
     private List<ConnectionSpecWrapper> getConnectionWrappers() {
         List<ConnectionSpecWrapper> allConnections = Configuration.getConnectionSpecWrappers();
