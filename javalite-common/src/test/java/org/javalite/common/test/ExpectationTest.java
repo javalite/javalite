@@ -146,4 +146,11 @@ public class ExpectationTest {
     public void shouldTestBooleanMethodWithCamelCase(){
         the(new A()).shouldBe("knownAsRole");
     }
+
+    @Test
+    public void shouldTestContainsStrings(){
+        List<String> numbers = list("one", "two", "three");
+        the(numbers).shouldContain("one");
+        the(numbers).shouldNotContain("four");
+    }
 }
