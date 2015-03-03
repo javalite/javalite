@@ -1,20 +1,18 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2015 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
-
-
 package org.javalite.activejdbc.dialects;
 
 import org.javalite.activejdbc.MetaModel;
@@ -27,6 +25,7 @@ import static org.javalite.common.Util.*;
 
 /**
  * @author Igor Polevoy
+ * @author Eric Nielsen
  */
 public class DefaultDialect implements Dialect {
 
@@ -41,8 +40,8 @@ public class DefaultDialect implements Dialect {
     }
 
     @Override
-    public String selectStar(String table, String query) {
-        return query != null ? "SELECT * FROM " + table + " WHERE " + query : selectStar(table);
+    public String selectStar(String table, String where) {
+        return where != null ? "SELECT * FROM " + table + " WHERE " + where : selectStar(table);
     }
 
     /**
@@ -173,4 +172,9 @@ public class DefaultDialect implements Dialect {
         return query.toString();
     }
 
+    @Override
+    public String deleteManyToManyAssociation(Many2ManyAssociation association) {
+        return "DELETE FROM " + association.getJoin()
+                + " WHERE " + association.getSourceFkName() + " = ? AND " + association.getTargetFkName() + " = ?";
+    }
 }

@@ -2351,16 +2351,15 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 child.delete();
                 return 1;
             } else if (metaModel.hasAssociation(childTable, Many2ManyAssociation.class)) {
-                Many2ManyAssociation ass = metaModel.getAssociationForTarget(childTable, Many2ManyAssociation.class);
-                return new DB(metaModel.getDbName()).exec("DELETE FROM " + ass.getJoin()
-                        + " WHERE " + ass.getSourceFkName() + " = ? AND " + ass.getTargetFkName() + " = ?",
+                return new DB(metaModel.getDbName()).exec(metaModel.getDialect().deleteManyToManyAssociation(
+                        metaModel.getAssociationForTarget(childTable, Many2ManyAssociation.class)),
                         getId(), child.getId());
             } else {
                 throw new NotAssociatedException(metaModel.getTableName(), childTable);
             }
         } else {
-            throw new IllegalArgumentException("You can only add associated model to an instance that exists in DB. " +
-                    "Save this instance first, then you will be able to add dependencies to it.");
+            throw new IllegalArgumentException("You can only add associated model to an instance that exists in DB. "
+                    + "Save this instance first, then you will be able to add dependencies to it.");
         }
     }
 

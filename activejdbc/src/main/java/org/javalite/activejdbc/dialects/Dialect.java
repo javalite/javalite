@@ -21,7 +21,7 @@ import org.javalite.activejdbc.MetaModel;
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
 
 /**
- * @author ericbn
+ * @author Eric Nielsen
  */
 public interface Dialect {
 
@@ -31,7 +31,7 @@ public interface Dialect {
 
     String selectStar(String table);
 
-    String selectStar(String table, String query);
+    String selectStar(String table, String where);
 
     String selectStarParametrized(String table, String... parameters);
 
@@ -46,4 +46,6 @@ public interface Dialect {
     String insertParametrized(String table, String... columns);
 
     String insertParametrized(MetaModel metaModel, List<String> columns);
+
+    String deleteManyToManyAssociation(Many2ManyAssociation association);
 }
