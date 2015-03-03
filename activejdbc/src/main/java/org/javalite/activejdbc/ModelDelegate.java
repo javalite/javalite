@@ -206,7 +206,8 @@ public final class ModelDelegate {
         return list.isEmpty() ? null : list.get(0);
     }
 
-    public static void findWith(final Class<? extends Model> clazz, final ModelListener listener, String query, Object... params) {
+    public static <T extends Model, M extends T> void findWith(final Class<M> clazz, final ModelListener<T> listener,
+            String query, Object... params) {
         long start = System.currentTimeMillis();
         final MetaModel metaModel = metaModelOf(clazz);
         String sql = metaModel.getDialect().selectStar(metaModel.getTableName(), query);
