@@ -1,20 +1,18 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2015 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
-
-
 package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.test.ActiveJDBCTest;
@@ -89,7 +87,7 @@ public class PolymorphicAssociationsTest extends ActiveJDBCTest {
         a.add(Comment.create("author", "ipolevoy", "content", "this is just a test comment text"));
         a.add(Comment.create("author", "rkinderman", "content", "this is another test comment text"));
         Comment c = (Comment) Comment.findAll().limit(1).orderBy("id").get(0);
-        a.remove(c);
+        a(a.remove(c)).shouldBeEqual(1);
         a(Comment.findAll().size()).shouldBeEqual(1);
     }
 

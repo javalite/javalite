@@ -2335,29 +2335,29 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * This method will throw a {@link NotAssociatedException} in case a model that has no relationship is passed.
      *
      * @param child model representing a "child" as in one to many or many to many association with this model.
+     * @return number of records affected
      */
-    public void remove(Model child){
-
-        if(child == null) throw new IllegalArgumentException("cannot remove what is null");
-
-        if(child.frozen() || child.getId() == null) throw new IllegalArgumentException("Cannot remove a child that does " +
-                "not exist in DB (either frozen, or ID not set)");
-
+    public int remove(Model child) {
+        if (child == null) { throw new IllegalArgumentException("cannot remove what is null"); }
+        if (child.frozen() || child.getId() == null) {
+            throw new IllegalArgumentException(
+                    "Cannot remove a child that does not exist in DB (either frozen, or ID not set)");
+        }
         if (getId() != null) {
             String childTable = Registry.instance().getTableName(child.getClass());
             MetaModel metaModel = getMetaModelLocal();
             if (metaModel.hasAssociation(childTable, OneToManyAssociation.class)
                     || metaModel.hasAssociation(childTable, OneToManyPolymorphicAssociation.class)) {
                 child.delete();
-            }else if(metaModel.hasAssociation(childTable, Many2ManyAssociation.class)){
+                return 1;
+            } else if (metaModel.hasAssociation(childTable, Many2ManyAssociation.class)) {
                 Many2ManyAssociation ass = metaModel.getAssociationForTarget(childTable, Many2ManyAssociation.class);
-                String join = ass.getJoin();
-                String sourceFkName = ass.getSourceFkName();
-                String targetFkName = ass.getTargetFkName();
-                new DB(metaModel.getDbName()).exec("DELETE FROM " + join + " WHERE " + sourceFkName + " = ? AND "
-                        + targetFkName + " = ?", getId(), child.getId());
-            }else
+                return new DB(metaModel.getDbName()).exec("DELETE FROM " + ass.getJoin()
+                        + " WHERE " + ass.getSourceFkName() + " = ? AND " + ass.getTargetFkName() + " = ?",
+                        getId(), child.getId());
+            } else {
                 throw new NotAssociatedException(metaModel.getTableName(), childTable);
+            }
         } else {
             throw new IllegalArgumentException("You can only add associated model to an instance that exists in DB. " +
                     "Save this instance first, then you will be able to add dependencies to it.");
