@@ -148,13 +148,9 @@ public class DefaultDialect implements Dialect {
     }
 
     @Override
-    public String insertParametrized(String table, String... columns) {
-        StringBuilder query = new StringBuilder().append("INSERT INTO ").append(table).append(" (");
-        join(query, columns, ", ");
-        query.append(") VALUES (");
-        appendQuestions(query, columns.length);
-        query.append(')');
-        return query.toString();
+    public String insertManyToManyAssociation(Many2ManyAssociation association) {
+        return "INSERT INTO " + association.getJoin()
+                + " (" + association.getSourceFkName() + ", " + association.getTargetFkName() + ") VALUES (?, ?)";
     }
 
     @Override

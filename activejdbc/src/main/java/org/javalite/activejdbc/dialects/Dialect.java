@@ -43,7 +43,7 @@ public interface Dialect {
 
     String selectManyToManyAssociation(Many2ManyAssociation association, String sourceFkColumnName, int questionsCount);
 
-    String insertParametrized(String table, String... columns);
+    String insertManyToManyAssociation(Many2ManyAssociation association);
 
     String insertParametrized(MetaModel metaModel, List<String> columns);
 

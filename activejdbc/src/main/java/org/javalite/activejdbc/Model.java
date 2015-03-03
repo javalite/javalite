@@ -2273,40 +2273,34 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 child.saveIt();//this will cause an exception in case validations fail.
             }else if(metaModel.hasAssociation(childTable, Many2ManyAssociation.class)){
                 Many2ManyAssociation ass = metaModel.getAssociationForTarget(childTable, Many2ManyAssociation.class);
-                String join = ass.getJoin();
-                String sourceFkName = ass.getSourceFkName();
-                String targetFkName = ass.getTargetFkName();
-                if(child.getId() == null)
+                if (child.getId() == null) {
                     child.saveIt();
-
-                MetaModel joinMM = Registry.instance().getMetaModel(join);
-                if(joinMM == null){
-                    new DB(metaModel.getDbName()).exec(
-                            metaModel.getDialect().insertParametrized(join, sourceFkName, targetFkName),
+                }
+                MetaModel joinMetaModel = Registry.instance().getMetaModel(ass.getJoin());
+                if (joinMetaModel == null) {
+                    new DB(metaModel.getDbName()).exec(metaModel.getDialect().insertManyToManyAssociation(ass),
                             getId(), child.getId());
-                }else{
+                } else {
                     //TODO: write a test to cover this case:
                     //this is for Oracle, many 2 many, and all annotations used, including @IdGenerator. In this case,
                     //it is best to delegate generation of insert to a model (sequences, etc.)
-                    try{
-                        Model joinModel = joinMM.getModelClass().newInstance();
-                        joinModel.set(sourceFkName, getId());
-                        joinModel.set(targetFkName, child.getId());
+                    try {
+                        Model joinModel = joinMetaModel.getModelClass().newInstance();
+                        joinModel.set(ass.getSourceFkName(), getId());
+                        joinModel.set(ass.getTargetFkName(), child.getId());
                         joinModel.saveIt();
-                    }
-                    catch(InstantiationException e){
-                        throw new InitException("failed to create a new instance of class: " + joinMM.getClass()
+                    } catch (InstantiationException e) {
+                        throw new InitException("failed to create a new instance of class: " + joinMetaModel.getClass()
                                 + ", are you sure this class has a default constructor?", e);
-                    }
-                    catch(IllegalAccessException e){throw new InitException(e);}
-                    finally {
-                        QueryCache.instance().purgeTableCache(join);
+                    } catch (IllegalAccessException e) {
+                        throw new InitException(e);
+                    } finally {
+                        QueryCache.instance().purgeTableCache(ass.getJoin());
                         QueryCache.instance().purgeTableCache(metaModel.getTableName());
                         QueryCache.instance().purgeTableCache(childTable);
                     }
                 }
-             }else if(metaModel.hasAssociation(childTable, OneToManyPolymorphicAssociation.class)){
-
+             } else if(metaModel.hasAssociation(childTable, OneToManyPolymorphicAssociation.class)) {
                 OneToManyPolymorphicAssociation ass = metaModel.getAssociationForTarget(
                         childTable, OneToManyPolymorphicAssociation.class);
                 child.set("parent_id", getId());
