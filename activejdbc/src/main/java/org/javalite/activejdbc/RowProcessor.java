@@ -21,7 +21,7 @@ import java.sql.Statement;
 
 import static org.javalite.common.Util.*;
 
-@Deprecated
+//TODO: this class does nothing relevant anymore, since ResultSetListener was introduced
 public class RowProcessor {
     private final ResultSet rs;
     private final Statement s;
@@ -31,10 +31,6 @@ public class RowProcessor {
         this.s = s;
     }
 
-    /**
-     * @deprecated use {@link DB#findWith(ResultSetListener, boolean, String, Object...)}
-     */
-    @Deprecated
     public void with(RowListener listener) {
         try {
             listener.onResultSet(rs);

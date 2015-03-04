@@ -225,9 +225,7 @@ public class Base {
      * @param query raw SQL.
      * @param params list of parameters if query is parametrized.
      * @return instance of <code>RowProcessor</code> which has with() method for convenience.
-     * @deprecated use {@link #findWith(ResultSetListener, boolean, String, Object...)} instead
      */
-    @Deprecated
     public static RowProcessor find(String query, Object... params) {
       return new DB(DB.DEFAULT_NAME).find(query, params);
     }
@@ -264,9 +262,7 @@ public class Base {
      *
      * @param sql raw SQL query.
      * @param listener client listener implementation for processing individual rows.
-     * @deprecated use {@link #findWith(ResultSetListener, boolean, String)} instead
      */
-    @Deprecated
     public static void find(String sql, RowListener listener) {
         new DB(DB.DEFAULT_NAME).find(sql, listener);
     }

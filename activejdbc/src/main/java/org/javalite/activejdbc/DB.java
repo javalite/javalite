@@ -450,9 +450,7 @@ public class DB {
      * @param query raw SQL.
      * @param params list of parameters if query is parametrized.
      * @return instance of <code>RowProcessor</code> which has with() method for convenience.
-     * @deprecated use {@link #findWith(ResultSetListener, boolean, String, Object...)} instead
      */
-    @Deprecated
     public RowProcessor find(String query, Object... params) {
         if(query.indexOf('?') == -1 && params.length != 0) throw new IllegalArgumentException("you passed arguments, but the query does not have placeholders: (?)");
 
@@ -526,9 +524,7 @@ public class DB {
      *
      * @param sql raw SQL query.
      * @param listener client listener implementation for processing individual rows.
-     * @deprecated use {@link #findWith(ResultSetListener, boolean, String)} instead
      */
-    @Deprecated
     public void find(String sql, RowListener listener) {
         findWith(listener, true, sql);
     }
