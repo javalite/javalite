@@ -16,7 +16,7 @@ import static java.lang.Runtime.getRuntime;
 public class CompileLesscFilesMojo extends AbstractMojo {
 
     /**
-     * @parameter expression="${project}"
+     * @parameter property="project"
      * @required
      */
     protected MavenProject project;
