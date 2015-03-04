@@ -456,14 +456,12 @@ public class DB {
 
         if(!SELECT_PATTERN.matcher(query).find()) { throw new IllegalArgumentException("query must be 'select' query"); }
 
-        PreparedStatement ps;
-        ResultSet rs;
         try {
-            ps = prepareStreamingStatement(query);
+            PreparedStatement ps = prepareStreamingStatement(query);
             setParameters(ps, params);
-            rs = ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
             return new RowProcessor(rs, ps);
-
+            // ps and rs will be closed by RowProcessor
         } catch (SQLException e) { throw new DBException(query, params, e); }
     }
 
