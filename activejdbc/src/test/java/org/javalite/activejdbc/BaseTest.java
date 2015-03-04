@@ -1,24 +1,20 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2015 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
-
-
 package org.javalite.activejdbc;
 
-import org.javalite.activejdbc.Base;
-import org.javalite.activejdbc.RowListenerAdapter;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.junit.Test;
 
@@ -36,7 +32,7 @@ public class BaseTest extends ActiveJDBCTest {
     }
 
     @Test
-    public void testBaseFinder() {
+    public void testBaseFindWith() {
         final List<Map> records = new ArrayList<Map>();
         Base.findWith(new RowListenerAdapter() {
             @Override public void onNext(Map record) {
@@ -48,15 +44,25 @@ public class BaseTest extends ActiveJDBCTest {
     }
 
     @Test
-    public void testBaseFindAll() {
+    public void testBaseFind() {
+        final List<Map> records = new ArrayList<Map>();
+        Base.find("select * from people order by id", new RowListenerAdapter() {
+            @Override public void onNext(Map record) {
+                records.add(record);
+            }
+        });
+        the(records.get(0).get("name")).shouldBeEqual("John");
+        the(records.get(3).get("name")).shouldBeEqual("Joe");
+    }
 
+    @Test
+    public void testBaseFindAll() {
         List<Map> records = Base.findAll("select * from people");
         a(records.size()).shouldBeEqual(4);
     }
 
     @Test
     public void testBaseFindAllParametrized() {
-
         List<Map> records = Base.findAll("select * from people where last_name = ? and name = ?", "Smith", "John");
         a(records.size()).shouldBeEqual(1);
     }
@@ -64,7 +70,6 @@ public class BaseTest extends ActiveJDBCTest {
     @Test
     public void testExec() {
         int count = Base.exec("insert into people (NAME, LAST_NAME, DOB) values('Mic', 'Jagger', ?)", getTimestamp(1962, 6, 13));
-
         List<Map> results = Base.findAll("select * from people where last_name='Jagger'");
         a(1).shouldBeEqual(results.size());
         a(1).shouldBeEqual(count);
@@ -79,18 +84,30 @@ public class BaseTest extends ActiveJDBCTest {
     @Test
     public void testExecParametrized() {
         Base.exec("insert into people (name, last_name, dob) values(?, ?, ?)", "John", "Silver", getTimestamp(1934, 2, 5));
-
         List<Map> results = Base.findAll("select * from people where last_name=?", "Silver");
         a(1).shouldBeEqual(results.size());
     }
 
     @Test
-    public void testFindParametrized(){
+    public void testFindWithParametrized() {
+        final StringBuilder sb = new StringBuilder();
         Base.findWith(new RowListenerAdapter() {
             @Override public void onNext(Map<String, Object> row) {
-                System.out.println(row);
+                sb.append(row.get("last_name"));
             }
-        }, true, "select * from people where id > ? and dob > ?", 1, getTimestamp(1935, 1, 1));
+        }, true, "select last_name from people where id > ? order by id", 1);
+        the(sb.toString()).shouldBeEqual("JonstonAliPesci");
+    }
+
+    @Test
+    public void testFindParametrized() {
+        final StringBuilder sb = new StringBuilder();
+        Base.find("select last_name from people where id > ? order by id", 1).with(new RowListenerAdapter() {
+            @Override public void onNext(Map<String, Object> row) {
+                sb.append(row.get("last_name"));
+            }
+        });
+        the(sb.toString()).shouldBeEqual("JonstonAliPesci");
     }
 
     @Test
