@@ -132,7 +132,7 @@ public enum QueryCache {
      */
     public void purgeTableCache(String tableName) {
         MetaModel mm = metaModelFor(tableName);
-        if(mm != null && enabled  && mm.cached()){
+        if(mm != null && enabled && mm.cached()){
             cacheManager.flush(new CacheEvent(mm.getTableName(), getClass().getName()));
         }
     }
