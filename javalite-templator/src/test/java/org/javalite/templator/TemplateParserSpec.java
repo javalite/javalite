@@ -23,35 +23,31 @@ public class TemplateParserSpec {
         the(sw.toString()).shouldBeEqual(source);
     }
 
+    private String processAll(List<TemplateNode> nodes, Map values) throws Exception {
+        StringWriter sw = new StringWriter();
+        for (TemplateNode node : nodes) {
+            node.process(values, sw);
+        }
+        return sw.toString();
+    }
+
     @Test
     public void shouldTokenizeTemplate() throws Exception {
         List<TemplateNode> tokens = new TemplateParser(
-                "Hello ${first_name}, your code is <b>${${foo.size()}${invalid()}}</b> ${one.two.three.four}")
+                "Hello %{first_name}, your code is <b>%{%{foo.size()}%{invalid()}}</b> %{one.two.three.four}")
                 .parse();
-        a(tokens.size()).shouldBeEqual(6);
-        Map values = map(
+        the(tokens.size()).shouldBeEqual(6);
+        the(processAll(tokens, map(
                 "first_name", "John",
                 "foo", map(),
-                "one", map("two", map("three", map("four", "five"))));
-        StringWriter sw = new StringWriter();
-        tokens.get(0).process(values, sw);
-        tokens.get(1).process(values, sw);
-        tokens.get(2).process(values, sw);
-        tokens.get(3).process(values, sw);
-        tokens.get(4).process(values, sw);
-        tokens.get(5).process(values, sw);
-        the(sw.toString()).shouldBeEqual("Hello John, your code is <b>${0${invalid()}}</b> five");
+                "one", map("two", map("three", map("four", "five")))
+        ))).shouldBeEqual("Hello John, your code is <b>%{0%{invalid()}}</b> five");
     }
 
     @Test
     public void shouldParseBuiltIn() throws Exception {
-        List<TemplateNode> tokens = new TemplateParser("<b>${article.content esc}</b>").parse();
-        a(tokens.size()).shouldBeEqual(3);
-        Map values = map("article", map("content", "R&B"));
-        StringWriter sw = new StringWriter();
-        tokens.get(0).process(values, sw);
-        tokens.get(1).process(values, sw);
-        tokens.get(2).process(values, sw);
-        the(sw.toString()).shouldBeEqual("<b>R&amp;B</b>");
+        List<TemplateNode> tokens = new TemplateParser("<b>%{article.content esc}</b>").parse();
+        the(tokens.size()).shouldBeEqual(3);
+        the(processAll(tokens, map("article", map("content", "R&B")))).shouldBeEqual("<b>R&amp;B</b>");
     }
 }

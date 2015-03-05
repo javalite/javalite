@@ -9,15 +9,12 @@ import java.util.List;
  *
  * <pre>
  * WHITESPACE = Character.isWhitespace()+
- * IDENTIFIER = (Character.isJavaIdentifierStart() excluding '$') Character.isJavaIdentifierPart()*
- * IDENTIFIER_OR_FUNCTION = IDENTIFIER ('(' ')')?
+ * IDENTIFIER = Character.isJavaIdentifierStart() Character.isJavaIdentifierPart()*
+ * IDENTIFIER_OR_FUNCTION = IDENTIFIER ("()")?
  * CHAINED_IDENTIFIERS = IDENTIFIER ('.' IDENTIFIER_OR_FUNCTION)*
- * VAR = '$' '{' CHAINED_IDENTIFIER (WHITESPACE IDENTIFIER)? '}'
+ * VAR = "%{" CHAINED_IDENTIFIER (WHITESPACE IDENTIFIER)? '}'
+ *
  * CONST = .*
- * 
- * TAG_START = '&lt;' '#'
- * TAG_END = '&lt;' '/' '#'
- * LIST_TAG = TAG_START "list" WHITESPACE IDENTIFIER WHITESPACE "as" WHITESPACE IDENTIFIER '&gt;' LIST_TAG_BODY TAG_END "list" '>'
  * </pre>
  *
  * @author Eric Nielsen
@@ -52,8 +49,7 @@ final class TemplateParser {
 
     @SuppressWarnings("empty-statement")
     private boolean _identifier() {
-        // Do not accept $ at identifier start. Will someone ever complain about this?
-        if (currentCodePoint == '$' || !Character.isJavaIdentifierStart(currentCodePoint)) { return false; }
+        if (!Character.isJavaIdentifierStart(currentCodePoint)) { return false; }
         while (next() && Character.isJavaIdentifierPart(currentCodePoint));
         return true;
     }
@@ -82,7 +78,7 @@ final class TemplateParser {
 
     private boolean _var() {
         int startIndex = index;
-        if (currentCodePoint != '$') { return false; }
+        if (currentCodePoint != '%') { return false; }
         if (!(next() && currentCodePoint == '{')) { return false; }
         List<String> identifiers = new ArrayList<String>();
         if (!(next() && _chainedIdentifiers(identifiers))) { return false; }
