@@ -305,7 +305,7 @@ public class Base {
      * @param parametrizedStatement Example of a statement: <code>INSERT INTO employees VALUES (?, ?)</code>.
      * @return instance of <code>java.sql.PreparedStatement</code> with compiled query.
      */
-    public static PreparedStatement startBatch(String parametrizedStatement){
+    public static PreparedStatement startBatch(String parametrizedStatement) {
         return new DB(DB.DEFAULT_NAME).startBatch(parametrizedStatement);
     }
 
@@ -315,7 +315,7 @@ public class Base {
      * @param parameters parameters for the query in <code>java.sql.PreparedStatement</code>. Parameters will be
      * set on the statement in the same order as provided here.
      */
-    public static void addBatch(PreparedStatement ps, Object ... parameters){
+    public static void addBatch(PreparedStatement ps, Object... parameters) {
         new DB(DB.DEFAULT_NAME).addBatch(ps, parameters);
     }
 
@@ -324,7 +324,7 @@ public class Base {
      *
      * @param ps <code>java.sql.PreparedStatement</code> to execute batch on.
      */
-    public static void executeBatch(PreparedStatement ps){
+    public static void executeBatch(PreparedStatement ps) {
         new DB(DB.DEFAULT_NAME).executeBatch(ps);
     }
 
@@ -334,7 +334,7 @@ public class Base {
      *
      * @param connection instance of connection to attach to current thread.
      */
-    public static void attach(Connection connection){
+    public static void attach(Connection connection) {
         new DB(DB.DEFAULT_NAME).attach(connection);
     }
 
