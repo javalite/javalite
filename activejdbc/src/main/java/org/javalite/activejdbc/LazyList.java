@@ -326,11 +326,11 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> {
         }
         delegate = new ArrayList<T>();
         long start = System.currentTimeMillis();
-        new DB(metaModel.getDbName()).findWith(new RowListenerAdapter() {
+        new DB(metaModel.getDbName()).find(sql, params).with(new RowListenerAdapter() {
             @Override public void onNext(Map<String, Object> map) {
                 delegate.add(ModelDelegate.<T>instance(map, metaModel));
             }
-        }, false, sql, params);
+        });
         LogFilter.logQuery(logger, sql, params, start);
         if(metaModel.cached()){
             delegate = Collections.unmodifiableList(delegate);
