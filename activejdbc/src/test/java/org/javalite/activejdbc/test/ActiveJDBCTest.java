@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.javalite.activejdbc.cache.QueryCache;
 import org.javalite.activejdbc.statement_providers.*;
 import org.javalite.common.Collections;
 import org.javalite.activejdbc.*;
@@ -78,6 +79,9 @@ public abstract class ActiveJDBCTest implements JSpecSupport {
                 break;
             case "mssql":
                 DefaultDBReset.resetSchema(getStatements("; ", "mssql_schema.sql"));
+                break;
+            case "db2":
+                DefaultDBReset.resetSchema(getStatements(";", "db2_schema.sql"));
                 break;
             case "sqlite":
                 DefaultDBReset.resetSchema(getStatements("; ", "sqlite_schema.sql"));
@@ -176,6 +180,7 @@ public abstract class ActiveJDBCTest implements JSpecSupport {
     protected void deleteAndPopulateTable(String table) {
         deleteFromTable(table);
         populateTable(table);
+        QueryCache.instance().purgeTableCache(table); // purge any cached query results
     }
 
     protected void deleteFromTable(String table){
@@ -203,6 +208,9 @@ public abstract class ActiveJDBCTest implements JSpecSupport {
                 break;
             case "mssql":
                 statementProvider = new MSSQLStatementProvider();
+                break;
+            case "db2":
+                statementProvider = new DB2StatementProvider();
                 break;
             case "sqlite":
                 statementProvider = new SQLiteStatementProvider();
