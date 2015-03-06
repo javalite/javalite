@@ -577,3 +577,20 @@ Formatting effect styles
 .subTitle {
     color: #D44413;
 }
+
+
+.topNav, .bottomNav {
+height: 3.8em;
+}
+
+.skipNav {
+padding: 3px 6px;
+}
+
+caption span {
+padding-bottom: 6px;
+}
+
+caption span span, .contentContainer ul.blockList li.blockList caption span span {
+padding: 0px;
+}
