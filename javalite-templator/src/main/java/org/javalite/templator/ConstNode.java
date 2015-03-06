@@ -1,5 +1,6 @@
 package org.javalite.templator;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -8,20 +9,20 @@ import java.util.Map;
  * @author Igor Polevoy
  * @author Eric Nielsen
  */
-class ConstNode extends TemplateNode {
+class ConstNode extends Node {
     private final String value;
 
-    public ConstNode(String value) {
+    ConstNode(String value) {
         this.value = value;
     }
 
     @Override
-    public void process(Map values, Appendable appendable) throws Exception {
+    void process(Map values, Appendable appendable) throws IOException {
         appendable.append(value);
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return value;
     }
 }
