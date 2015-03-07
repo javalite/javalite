@@ -1,9 +1,6 @@
 package org.javalite.templator;
 
 import java.util.ArrayList;
-import org.javalite.templator.BuiltIn;
-import org.javalite.templator.TemplatorConfig;
-
 
 /**
  * BNF rules:
@@ -34,49 +31,72 @@ import org.javalite.templator.TemplatorConfig;
 public final class TemplateParser {
 
     private final String source;
-    private int index = -1;
-    private int currentCodePoint;
+    private int index;
+    private boolean done;
+    private char currentChar;
     private int constStartIndex;
 
     TemplateParser(String source) {
         this.source = source;
     }
 
-    private boolean next() {
+    private void accept() {
         if (++index < source.length()) {
-            currentCodePoint = source.codePointAt(index);
-            return true;
+            currentChar = source.charAt(index);
         } else {
-            currentCodePoint = 0;
-            return false;
+            done = true;
         }
     }
-
-    private boolean accept(int codePoint) {
-        return currentCodePoint == codePoint && next();
+    private boolean accept(char c) {
+         if (!done && currentChar == c) {
+             accept();
+             return true;
+         } else {
+             return false;
+         }
     }
 
-    private boolean __whitespace() { return Character.isWhitespace(currentCodePoint); }
-
+    private boolean acceptWhitespace() {
+        if (!done && currentChar <= ' ') {
+             accept();
+             return true;
+         } else {
+             return false;
+         }
+    }
     @SuppressWarnings("empty-statement")
     private boolean _whitespace() {
-        if (!__whitespace()) { return false; }
-        while (next() && __whitespace());
+        if (!acceptWhitespace()) { return false; }
+        while (acceptWhitespace());
         return true;
     }
 
+    private boolean acceptJavaIdentifierStart() {
+        if (!done && Character.isJavaIdentifierStart(currentChar)) {
+             accept();
+             return true;
+         } else {
+             return false;
+         }
+    }
+    private boolean acceptJavaIdentifierPart() {
+        if (!done && Character.isJavaIdentifierPart(currentChar)) {
+             accept();
+             return true;
+         } else {
+             return false;
+         }
+    }
     @SuppressWarnings("empty-statement")
     private boolean _identifier() {
-        if (!Character.isJavaIdentifierStart(currentCodePoint)) { return false; }
-        while (next() && Character.isJavaIdentifierPart(currentCodePoint));
+        if (!acceptJavaIdentifierStart()) { return false; }
+        while (acceptJavaIdentifierPart());
         return true;
     }
 
     private boolean _identifierOrFunction() {
         if (!_identifier()) { return false; }
-        if (currentCodePoint == '(') {
-            if (!(next() && accept(')'))) { return false; }
-        }
+        if (accept('(') && !accept(')')) { return false; }
         return true;
     }
 
@@ -85,8 +105,7 @@ public final class TemplateParser {
         if (!_identifier()) { return null; }
         String firstIdentifier = source.substring(startIndex, index);
         ArrayList<String> identifiers = new ArrayList<String>();
-        while (currentCodePoint == '.') {
-            if (!next()) { return null; }
+        while (accept('.')) {
             startIndex = index;
             if (!_identifierOrFunction()) { return null; }
             identifiers.add(source.substring(startIndex, index));
@@ -95,13 +114,19 @@ public final class TemplateParser {
         return new Identifiers(firstIdentifier, identifiers);
     }
 
-    private boolean __lowerAlpha() { return currentCodePoint >= 'a' && currentCodePoint <= 'z'; }
-
+    private boolean acceptLowerAlpha() {
+        if (!done && currentChar >= 'a' && currentChar <= 'z') {
+            accept();
+            return true;
+        } else {
+            return false;
+        }
+    }
     @SuppressWarnings("empty-statement")
     private String _lowerAlpha() {
         int startIndex = index;
-        if (!__lowerAlpha()) { return null; }
-        while (next() && __lowerAlpha());
+        if (!acceptLowerAlpha()) { return null; }
+        while (acceptLowerAlpha());
         return source.substring(startIndex, index);
     }
 
@@ -118,8 +143,7 @@ public final class TemplateParser {
                 _whitespace(); // optional
             }
         }
-        if (currentCodePoint != '}') { return null; }
-        next();
+        if (!accept('}')) { return null; }
         return new VarNode(ident, builtIn);
     }
 
@@ -127,17 +151,9 @@ public final class TemplateParser {
         if (accept('=')) {
             return accept('=') ? Op.eq : null;
         } else if (accept('>')) {
-            if (currentCodePoint == '=') {
-                return next() ? Op.gte : null;
-            } else {
-                return Op.gt;
-            }
+            return accept('=') ? Op.gte : Op.gt;
         } else if (accept('<')) {
-            if (currentCodePoint == '=') {
-                return next() ? Op.lte : null;
-            } else {
-                return Op.lt;
-            }
+            return accept('=') ? Op.lte : Op.lt;
         } else {
             return accept('!') && accept('=') ? Op.neq : null;
         }
@@ -159,8 +175,8 @@ public final class TemplateParser {
         Exp leftExp = _term();
         if (leftExp == null) { return null; }
         _whitespace(); // optional
-        if (currentCodePoint == '|') {
-            if (!(next() && accept('|'))) { return null; }
+        if (accept('|')) {
+            if (!accept('|')) { return null; }
             _whitespace(); // optional
             Exp rightExp = _term();
             if (rightExp == null) { return null; }
@@ -173,8 +189,8 @@ public final class TemplateParser {
         Exp leftExp = _factor();
         if (leftExp == null) { return null; }
         _whitespace(); // optional
-        if (currentCodePoint == '&') {
-            if (!(next() && accept('&'))) { return null; }
+        if (accept('&')) {
+            if (!accept('&')) { return null; }
             _whitespace(); // optional
             Exp rightExp = _factor();
             if (rightExp == null) { return null; }
@@ -184,20 +200,18 @@ public final class TemplateParser {
     }
 
     private Exp _factor() {
-        switch (currentCodePoint) {
-        case '(':
-            if (!next()) { return null; }
+        if (accept('(')) {
             _whitespace(); // optional
             Exp exp = _exp();
             if (exp == null) { return null; }
             _whitespace(); // optional
             if (!accept(')')) { return null; }
             return exp;
-        case '!':
-            if (!next()) { return null; }
+        } else if (accept('!')) {
             _whitespace(); // optional
-            return new NotExp(_factor());
-        default:
+            Exp exp = _factor();
+            return exp == null ? null : new NotExp(exp);
+        } else {
             return _comparison();
         }
     }
@@ -218,8 +232,7 @@ public final class TemplateParser {
         String tagName = _lowerAlpha();
         if (tagName == null) { return null; }
         _whitespace(); // optional
-        if (currentCodePoint != '>') { return null; }
-        next();
+        if (!accept('>')) { return null; }
         return tagName;
     }
 
@@ -241,29 +254,29 @@ public final class TemplateParser {
 
     Node parse() {
         ParentNode root = new RootNode();
+        if (source == null || source.isEmpty()) { return root; }
+        currentChar = source.charAt(0);
         //TODO: refactor this
-        if (next()) {
-            for (;;) {
-                int startIndex = index;
-                Node node = _ifTagStart();
-                if (node != null) {
-                    addConstEndingAt(startIndex, root);
-                    constStartIndex = index;
-                    if (!"if".equals(parse((ParentNode) node))) {
-                        node = null;
-                    }
-                } else {
-                    node = _var();
+         while (!done) {
+            int startIndex = index;
+            Node node = _ifTagStart();
+            if (node != null) {
+                addConstEndingAt(startIndex, root);
+                constStartIndex = index;
+                if (!"if".equals(parse((ParentNode) node))) {
+                    node = null;
                 }
-                if (node == null) {
-                    if (startIndex == index) {
-                        if (!next()) { break; }
-                    }
-                } else {
-                    addConstEndingAt(startIndex, root);
-                    constStartIndex = index;
-                    root.children.add(node);
+            } else {
+                node = _var();
+            }
+            if (node == null) {
+                if (startIndex == index) {
+                    accept();
                 }
+            } else {
+                addConstEndingAt(startIndex, root);
+                constStartIndex = index;
+                root.children.add(node);
             }
         }
         addConstEndingAt(source.length(), root);
@@ -273,32 +286,30 @@ public final class TemplateParser {
     private String parse(ParentNode root) {
         //TODO: refactor this
         constStartIndex = index;
-        if (next()) {
-            for (;;) {
-                int startIndex = index;
-                String tagEndName = _tagEnd();
-                if (tagEndName != null) {
-                    addConstEndingAt(startIndex, root);
-                    constStartIndex = index;
-                    return tagEndName;
+        while (!done) {
+            int startIndex = index;
+            String tagEndName = _tagEnd();
+            if (tagEndName != null) {
+                addConstEndingAt(startIndex, root);
+                constStartIndex = index;
+                return tagEndName;
+            }
+            Node node = _ifTagStart();
+            if (node == null) {
+                node = _var();
+            } else {
+                if (!"if".equals(parse((ParentNode) node))) {
+                    node = null;
                 }
-                Node node = _ifTagStart();
-                if (node == null) {
-                    node = _var();
-                } else {
-                    if (!"if".equals(parse((ParentNode) node))) {
-                        node = null;
-                    }
+            }
+            if (node == null) {
+                if (startIndex == index) {
+                    accept();
                 }
-                if (node == null) {
-                    if (startIndex == index) {
-                        if (!next()) { break; }
-                    }
-                } else {
-                    addConstEndingAt(startIndex, root);
-                    constStartIndex = index;
-                    root.children.add(node);
-                }
+            } else {
+                addConstEndingAt(startIndex, root);
+                constStartIndex = index;
+                root.children.add(node);
             }
         }
         return null;
