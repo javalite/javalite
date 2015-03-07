@@ -9,12 +9,11 @@ import org.javalite.templator.TemplatorConfig;
  * BNF rules:
  *
  * <pre>
- * WHITESPACE = Character.isWhitespace()+
  * IDENTIFIER = Character.isJavaIdentifierStart() Character.isJavaIdentifierPart()*
  * IDENTIFIER_OR_FUNCTION = IDENTIFIER "()"?
  * CHAINED_IDENTIFIERS = IDENTIFIER ('.' IDENTIFIER_OR_FUNCTION)*
  * LOWER_ALPHA = [a-z]+
- * VAR = "%{" CHAINED_IDENTIFIER (WHITESPACE LOWER_ALPHA)? '}'
+ * VAR = "%{" CHAINED_IDENTIFIER (LOWER_ALPHA)? '}'
  *
  * CONST = .*
  *
@@ -25,8 +24,8 @@ import org.javalite.templator.TemplatorConfig;
  * FACTOR = COMPARISON | ('!' FACTOR) | ('(' EXP ')')
  *
  *
- * TAG_START = "&lt;#"
- * TAG_END = "&lt;/#"
+ * TAG_START = '&lt' '#'
+ * TAG_END = '&lt' '/' '#' LOWER_ALPHA '>'
  * IF_TAG = TAG_START "if" '(' EXPRESSION ')' '&gt;' LIST_TAG_BODY TAG_END "if" '&gt;'
  * </pre>
  *
@@ -34,7 +33,6 @@ import org.javalite.templator.TemplatorConfig;
  */
 public final class TemplateParser {
 
-    private ParentNode parent = new RootNode();
     private final String source;
     private int index = -1;
     private int currentCodePoint;
@@ -52,6 +50,10 @@ public final class TemplateParser {
             currentCodePoint = 0;
             return false;
         }
+    }
+
+    private boolean accept(int codePoint) {
+        return currentCodePoint == codePoint && next();
     }
 
     private boolean __whitespace() { return Character.isWhitespace(currentCodePoint); }
@@ -73,7 +75,7 @@ public final class TemplateParser {
     private boolean _identifierOrFunction() {
         if (!_identifier()) { return false; }
         if (currentCodePoint == '(') {
-            if (!(next() && currentCodePoint == ')' && next())) { return false; }
+            if (!(next() && accept(')'))) { return false; }
         }
         return true;
     }
@@ -104,14 +106,17 @@ public final class TemplateParser {
     }
 
     private VarNode _var() {
-        if (!(currentCodePoint == '%' && next() && currentCodePoint == '{' && next())) { return null; }
+        if (!(accept('%') && accept('{'))) { return null; }
+        _whitespace(); // optional
         Identifiers ident = _chainedIdentifiers();
         if (ident == null) { return null; }
         BuiltIn builtIn = null;
         if (_whitespace()) {
             String builtInName = _lowerAlpha();
-            if (builtInName == null) { return null; }
-            builtIn = TemplatorConfig.instance().getBuiltIn(builtInName);
+            if (builtInName != null) {
+                builtIn = TemplatorConfig.instance().getBuiltIn(builtInName);
+                _whitespace(); // optional
+            }
         }
         if (currentCodePoint != '}') { return null; }
         next();
@@ -119,22 +124,22 @@ public final class TemplateParser {
     }
 
     private Op _comparisonOp() {
-        if (currentCodePoint == '=' && next()) {
-            return currentCodePoint == '=' && next() ? Op.eq : null;
-        } else if (currentCodePoint == '>' && next()) {
+        if (accept('=')) {
+            return accept('=') ? Op.eq : null;
+        } else if (accept('>')) {
             if (currentCodePoint == '=') {
                 return next() ? Op.gte : null;
             } else {
                 return Op.gt;
             }
-        } else if (currentCodePoint == '<' && next()) {
+        } else if (accept('<')) {
             if (currentCodePoint == '=') {
                 return next() ? Op.lte : null;
             } else {
                 return Op.lt;
             }
         } else {
-            return currentCodePoint == '!' && next() && currentCodePoint == '=' && next() ? Op.neq : null;
+            return accept('!') && accept('=') ? Op.neq : null;
         }
     }
 
@@ -155,7 +160,7 @@ public final class TemplateParser {
         if (leftExp == null) { return null; }
         _whitespace(); // optional
         if (currentCodePoint == '|') {
-            if (!(next() && currentCodePoint == '|' && next())) { return null; }
+            if (!(next() && accept('|'))) { return null; }
             _whitespace(); // optional
             Exp rightExp = _term();
             if (rightExp == null) { return null; }
@@ -169,7 +174,7 @@ public final class TemplateParser {
         if (leftExp == null) { return null; }
         _whitespace(); // optional
         if (currentCodePoint == '&') {
-            if (!(next() && currentCodePoint == '&' && next())) { return null; }
+            if (!(next() && accept('&'))) { return null; }
             _whitespace(); // optional
             Exp rightExp = _factor();
             if (rightExp == null) { return null; }
@@ -186,7 +191,7 @@ public final class TemplateParser {
             Exp exp = _exp();
             if (exp == null) { return null; }
             _whitespace(); // optional
-            if (!(currentCodePoint == ')' && next())) { return null; }
+            if (!accept(')')) { return null; }
             return exp;
         case '!':
             if (!next()) { return null; }
@@ -198,37 +203,56 @@ public final class TemplateParser {
     }
 
     private boolean _tagStart() {
-        return currentCodePoint == '<' && next() && currentCodePoint == '#' && next();
+        if (!accept('<')) { return false; }
+        _whitespace(); // optional
+        if (!accept('#')) { return false; }
+        return true;
     }
 
-    private boolean _tagEnd() {
-        return currentCodePoint == '<' && next() && currentCodePoint == '/' && next() && currentCodePoint == '#' && next();
+    private String _tagEnd() {
+        if (!accept('<')) { return null; }
+        _whitespace(); // optional
+        if (!accept('/')) { return null; }
+        _whitespace(); // optional
+        if (!accept('#')) { return null; }
+        String tagName = _lowerAlpha();
+        if (tagName == null) { return null; }
+        _whitespace(); // optional
+        if (currentCodePoint != '>') { return null; }
+        next();
+        return tagName;
     }
 
-    private Node _ifTag() {
+    private Node _ifTagStart() {
         if (!_tagStart()) { return null; }
         String tagName = _lowerAlpha();
         if (!"if".equals(tagName)) { return null; }
         _whitespace(); // optional
-        if (!(currentCodePoint == '(' && next())) { return null; }
+        if (!accept('(')) { return null; }
         _whitespace(); // optional
         Exp exp = _exp();
         if (exp == null) { return null; }
         _whitespace(); // optional
-        if (!(currentCodePoint == ')' && next())) { return null; }
+        if (!accept(')')) { return null; }
         _whitespace(); // optional
-        if (currentCodePoint != '>') { return null; }
-        next();
+        if (!accept('>')) { return null; }
         return new IfNode(exp);
     }
 
     Node parse() {
+        ParentNode root = new RootNode();
         //TODO: refactor this
         if (next()) {
             for (;;) {
                 int startIndex = index;
-                Node node = _ifTag();
-                if (node == null) {
+                Node node = _ifTagStart();
+                if (node != null) {
+                    addConstEndingAt(startIndex, root);
+                    constStartIndex = index;
+                    if (!"if".equals(parse((ParentNode) node))) {
+                        node = null;
+                    }
+                } else {
                     node = _var();
                 }
                 if (node == null) {
@@ -236,19 +260,53 @@ public final class TemplateParser {
                         if (!next()) { break; }
                     }
                 } else {
-                    addConstEndingAt(startIndex);
+                    addConstEndingAt(startIndex, root);
                     constStartIndex = index;
-                    parent.children.add(node);
+                    root.children.add(node);
                 }
             }
         }
-        addConstEndingAt(source.length());
-        return parent;
+        addConstEndingAt(source.length(), root);
+        return root;
     }
 
-    private void addConstEndingAt(int endIndex) {
+    private String parse(ParentNode root) {
+        //TODO: refactor this
+        constStartIndex = index;
+        if (next()) {
+            for (;;) {
+                int startIndex = index;
+                String tagEndName = _tagEnd();
+                if (tagEndName != null) {
+                    addConstEndingAt(startIndex, root);
+                    constStartIndex = index;
+                    return tagEndName;
+                }
+                Node node = _ifTagStart();
+                if (node == null) {
+                    node = _var();
+                } else {
+                    if (!"if".equals(parse((ParentNode) node))) {
+                        node = null;
+                    }
+                }
+                if (node == null) {
+                    if (startIndex == index) {
+                        if (!next()) { break; }
+                    }
+                } else {
+                    addConstEndingAt(startIndex, root);
+                    constStartIndex = index;
+                    root.children.add(node);
+                }
+            }
+        }
+        return null;
+    }
+
+    private void addConstEndingAt(int endIndex, ParentNode root) {
         if (endIndex - 1 > constStartIndex) {
-            parent.children.add(new ConstNode(source.substring(constStartIndex, endIndex)));
+            root.children.add(new ConstNode(source.substring(constStartIndex, endIndex)));
         }
     }
 }

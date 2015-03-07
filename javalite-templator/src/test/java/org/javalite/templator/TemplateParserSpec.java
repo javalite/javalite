@@ -48,26 +48,27 @@ public class TemplateParserSpec {
 
     @Test
     public void shouldParseExpressionWithEq() throws Exception {
-        ParentNode node = (ParentNode) new TemplateParser("<#if(left==right)>").parse();
-        the(node.children.size()).shouldBeEqual(1);
-        the(process(node, map("left", "help!", "right", "help!"))).shouldBeEqual("true");
-        the(process(node, map("left", "help!", "right", "help?"))).shouldBeEqual("false");
+        ParentNode node = (ParentNode) new TemplateParser("<b><<#if(left==right)>tada</#if>></b>").parse();
+        the(node.children.size()).shouldBeEqual(3);
+        the(process(node, map("left", "help!", "right", "help!"))).shouldBeEqual("<b><tada></b>");
+        the(process(node, map("left", "help!", "right", "help?"))).shouldBeEqual("<b><></b>");
     }
 
     @Test
     public void shouldParseExpressionWithNotNeq() throws Exception {
-        ParentNode node = (ParentNode) new TemplateParser("<#if(!left!=right)>").parse();
+        ParentNode node = (ParentNode) new TemplateParser("<#if(!left!=right)>tada</#if>").parse();
         the(node.children.size()).shouldBeEqual(1);
-        the(process(node, map("left", 0, "right", 0))).shouldBeEqual("true");
-        the(process(node, map("left", 0, "right", 1))).shouldBeEqual("false");
+        the(process(node, map("left", 0, "right", 0))).shouldBeEqual("tada");
+        the(process(node, map("left", 0, "right", 1))).shouldBeEqual("");
     }
 
     @Test
     public void shouldParseExpressionWithAndParensOr() throws Exception {
-        ParentNode node = (ParentNode) new TemplateParser("<#if (first > second && (first > third || third <= second))>").parse();
+        ParentNode node = (ParentNode) new TemplateParser(
+                "<#if (first > second && (first > third || third <= second))><b>%{first}</b></#if>").parse();
         the(node.children.size()).shouldBeEqual(1);
-        the(process(node, map("first", "foo", "second", "bar", "third", "baa"))).shouldBeEqual("true");
-        the(process(node, map("first", 1, "second", 0, "third", 0))).shouldBeEqual("true");
-        the(process(node, map("first", 1, "second", 0, "third", 1))).shouldBeEqual("false");
+        the(process(node, map("first", "foo", "second", "bar", "third", "baa"))).shouldBeEqual("<b>foo</b>");
+        the(process(node, map("first", 1, "second", 0, "third", 0))).shouldBeEqual("<b>1</b>");
+        the(process(node, map("first", 1, "second", 0, "third", 1))).shouldBeEqual("");
     }
 }

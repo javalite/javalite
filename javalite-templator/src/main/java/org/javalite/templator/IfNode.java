@@ -8,7 +8,7 @@ import java.util.Map;
  *
  * @author Eric Nielsen
  */
-class IfNode extends ParentNode {
+class IfNode extends RootNode {
     private final Exp exp;
 
     IfNode(Exp exp) {
@@ -17,6 +17,8 @@ class IfNode extends ParentNode {
 
     @Override
     void process(Map values, Appendable appendable) throws IOException {
-        appendable.append(String.valueOf(exp.resultWith(values)));
+        if (exp.resultWith(values)) {
+            super.process(values, appendable);
+        }
     }
 }
