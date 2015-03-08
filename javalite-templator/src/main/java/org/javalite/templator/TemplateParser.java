@@ -22,7 +22,7 @@ import java.util.ArrayList;
  *
  *
  * TAG_START = '&lt' '#'
- * TAG_END = '&lt' '/' '#' LOWER_ALPHA '>'
+ * TAG_END = '&lt' '/' '#' LOWER_ALPHA '&gt;'
  * IF_TAG = TAG_START "if" '(' EXPRESSION ')' '&gt;' LIST_TAG_BODY TAG_END "if" '&gt;'
  * </pre>
  *
@@ -169,9 +169,11 @@ public final class TemplateParser {
         ChainedIds chainedIds = _chainedIds();
         if (chainedIds == null) { return null; }
         _whitespace(); // optional
+        //TODO: refactor this
+        int currentIndex = index;
         Comparison.Operator operator = _comparisonOperator();
         if (operator == null) {
-            return new BooleanId(chainedIds);
+            return currentIndex == index ? new BooleanId(chainedIds) : null;
         } else {
             _whitespace(); // optional
             ChainedIds rightOperand = _chainedIds();

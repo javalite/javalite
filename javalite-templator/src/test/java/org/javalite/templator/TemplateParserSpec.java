@@ -6,6 +6,7 @@ import org.junit.Test;
 import java.util.Map;
 import static org.javalite.common.Collections.*;
 import static org.javalite.test.jspec.JSpec.*;
+import org.junit.Ignore;
 
 /**
  * @author Eric Nielsen
@@ -47,7 +48,7 @@ public class TemplateParserSpec {
     }
 
     @Test
-    public void shouldParseExpressionWithEq() throws Exception {
+    public void shouldParseIfTagWithEq() throws Exception {
         ParentNode node = (ParentNode) new TemplateParser("<b><<#if(left==right)>tada</#if>></b>").parse();
         the(node.children.size()).shouldBeEqual(3);
         the(process(node, map("left", "help!", "right", "help!"))).shouldBeEqual("<b><tada></b>");
@@ -55,7 +56,7 @@ public class TemplateParserSpec {
     }
 
     @Test
-    public void shouldParseExpressionWithNotNeq() throws Exception {
+    public void shouldParseIfTagWithNotNeq() throws Exception {
         ParentNode node = (ParentNode) new TemplateParser("<#if(!left!=right)>tada</#if>").parse();
         the(node.children.size()).shouldBeEqual(1);
         the(process(node, map("left", 0, "right", 0))).shouldBeEqual("tada");
@@ -63,7 +64,7 @@ public class TemplateParserSpec {
     }
 
     @Test
-    public void shouldParseExpressionWithAndParensOr() throws Exception {
+    public void shouldParseIfTagWithAndParensOr() throws Exception {
         ParentNode node = (ParentNode) new TemplateParser(
                 "<#if (first > second && (first > third || third <= second))><b>%{first}</b></#if>").parse();
         the(node.children.size()).shouldBeEqual(1);
@@ -73,11 +74,26 @@ public class TemplateParserSpec {
     }
 
     @Test
-    public void shouldParseExpressionWithBoolean() throws Exception {
+    public void shouldParseIfTagWithBoolean() throws Exception {
         ParentNode node = (ParentNode) new TemplateParser("<#if (foo)>bar</#if>").parse();
         the(node.children.size()).shouldBeEqual(1);
         the(process(node, map("foo", true))).shouldBeEqual("bar");
         the(process(node, map("foo", false))).shouldBeEqual("");
     }
 
+    @Test
+    public void shouldNotParseInvalidIfTagWithBoolean() throws Exception {
+        String source = "<#if (foo=)>bar</#if>";
+        ParentNode node = (ParentNode) new TemplateParser(source).parse();
+        the(node.children.size()).shouldBeEqual(1);
+        the(process(node, map())).shouldBeEqual(source);
+    }
+
+    @Ignore
+    @Test
+    public void shouldParseForTag() throws Exception {
+        ParentNode node = (ParentNode) new TemplateParser("<#for item:list> %{item} </#for>").parse();
+        the(node.children.size()).shouldBeEqual(1);
+        the(process(node, map("list", list(1, 2, 3)))).shouldBeEqual(" 1  2  3 ");
+    }
 }
