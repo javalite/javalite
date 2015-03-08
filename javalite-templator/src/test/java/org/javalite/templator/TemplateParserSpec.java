@@ -71,4 +71,13 @@ public class TemplateParserSpec {
         the(process(node, map("first", 1, "second", 0, "third", 0))).shouldBeEqual("<b>1</b>");
         the(process(node, map("first", 1, "second", 0, "third", 1))).shouldBeEqual("");
     }
+
+    @Test
+    public void shouldParseExpressionWithBoolean() throws Exception {
+        ParentNode node = (ParentNode) new TemplateParser("<#if (foo)>bar</#if>").parse();
+        the(node.children.size()).shouldBeEqual(1);
+        the(process(node, map("foo", true))).shouldBeEqual("bar");
+        the(process(node, map("foo", false))).shouldBeEqual("");
+    }
+
 }

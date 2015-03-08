@@ -6,19 +6,19 @@ import java.util.ArrayList;
  * BNF rules:
  *
  * <pre>
- * IDENTIFIER = Character.isJavaIdentifierStart() Character.isJavaIdentifierPart()*
- * IDENTIFIER_OR_FUNCTION = IDENTIFIER "()"?
- * CHAINED_IDENTIFIERS = IDENTIFIER ('.' IDENTIFIER_OR_FUNCTION)*
+ * ID = javaIdentifierStart javaIdentifierPart*
+ * ID_OR_FUNC = ID "()"?
+ * CHAINED_IDS = ID ('.' ID_OR_FUNC)*
  * LOWER_ALPHA = [a-z]+
- * VAR = "%{" CHAINED_IDENTIFIER (LOWER_ALPHA)? '}'
+ * VAR = "%{" CHAINED_IDS (LOWER_ALPHA)? '}'
  *
  * CONST = .*
  *
- * COMPARISON_OP = "==" | "&gt;" | "&gt;=" | "&lt;" | "&lt;=" | "!="
- * COMPARISON = CHAINED_IDENTIFIERS COMPARISON_OP CHAINED_IDENTIFIERS
+ * COMPARISON_OPERATOR = "==" | "&gt;" | "&gt;=" | "&lt;" | "&lt;=" | "!="
+ * EXP_ID = CHAINED_IDS (COMPARISON_OPERATOR CHAINED_IDS)?
  * EXP = TERM ("||" TERM)?
  * TERM = FACTOR ("&& FACTOR)?
- * FACTOR = COMPARISON | ('!' FACTOR) | ('(' EXP ')')
+ * FACTOR = EXP_ID | ('!' FACTOR) | ('(' EXP ')')
  *
  *
  * TAG_START = '&lt' '#'
@@ -88,30 +88,28 @@ public final class TemplateParser {
          }
     }
     @SuppressWarnings("empty-statement")
-    private boolean _identifier() {
+    private boolean _id() {
         if (!acceptJavaIdentifierStart()) { return false; }
         while (acceptJavaIdentifierPart());
         return true;
     }
 
-    private boolean _identifierOrFunction() {
-        if (!_identifier()) { return false; }
-        if (accept('(') && !accept(')')) { return false; }
-        return true;
+    private boolean _idOrFunc() {
+        return _id() && (!accept('(') || accept(')'));
     }
 
-    private Identifiers _chainedIdentifiers() {
+    private ChainedIds _chainedIds() {
         int startIndex = index;
-        if (!_identifier()) { return null; }
-        String firstIdentifier = source.substring(startIndex, index);
-        ArrayList<String> identifiers = new ArrayList<String>();
+        if (!_id()) { return null; }
+        String firstId = source.substring(startIndex, index);
+        ArrayList<String> ids = new ArrayList<String>();
         while (accept('.')) {
             startIndex = index;
-            if (!_identifierOrFunction()) { return null; }
-            identifiers.add(source.substring(startIndex, index));
+            if (!_idOrFunc()) { return null; }
+            ids.add(source.substring(startIndex, index));
         }
-        identifiers.trimToSize();
-        return new Identifiers(firstIdentifier, identifiers);
+        ids.trimToSize();
+        return new ChainedIds(firstId, ids);
     }
 
     private boolean acceptLowerAlpha() {
@@ -133,8 +131,8 @@ public final class TemplateParser {
     private VarNode _var() {
         if (!(accept('%') && accept('{'))) { return null; }
         _whitespace(); // optional
-        Identifiers ident = _chainedIdentifiers();
-        if (ident == null) { return null; }
+        ChainedIds chainedIds = _chainedIds();
+        if (chainedIds == null) { return null; }
         BuiltIn builtIn = null;
         if (_whitespace()) {
             String builtInName = _lowerAlpha();
@@ -144,31 +142,42 @@ public final class TemplateParser {
             }
         }
         if (!accept('}')) { return null; }
-        return new VarNode(ident, builtIn);
+        return new VarNode(chainedIds, builtIn);
     }
 
-    private Op _comparisonOp() {
-        if (accept('=')) {
-            return accept('=') ? Op.eq : null;
-        } else if (accept('>')) {
-            return accept('=') ? Op.gte : Op.gt;
-        } else if (accept('<')) {
-            return accept('=') ? Op.lte : Op.lt;
-        } else {
-            return accept('!') && accept('=') ? Op.neq : null;
+    private Comparison.Operator _comparisonOperator() {
+        if (done) { return null; }
+        switch (currentChar) {
+        case '=':
+            accept();
+            return accept('=') ? Comparison.Operator.eq : null;
+        case '>':
+            accept();
+            return accept('=') ? Comparison.Operator.gte : Comparison.Operator.gt;
+        case '<':
+            accept();
+            return accept('=') ? Comparison.Operator.lte : Comparison.Operator.lt;
+        case '!':
+            accept();
+            return accept('=') ? Comparison.Operator.neq : null;
+        default:
+            return null;
         }
     }
 
-    private Comparison _comparison() {
-        Identifiers leftIdent = _chainedIdentifiers();
-        if (leftIdent == null) { return null; }
+    private Exp _expId() {
+        ChainedIds chainedIds = _chainedIds();
+        if (chainedIds == null) { return null; }
         _whitespace(); // optional
-        Op op = _comparisonOp();
-        if (op == null) { return null; }
-        _whitespace(); // optional
-        Identifiers rightIdent = _chainedIdentifiers();
-        if (rightIdent == null) { return null; }
-        return new Comparison(leftIdent, op, rightIdent);
+        Comparison.Operator operator = _comparisonOperator();
+        if (operator == null) {
+            return new BooleanId(chainedIds);
+        } else {
+            _whitespace(); // optional
+            ChainedIds rightOperand = _chainedIds();
+            if (rightOperand == null) { return null; }
+            return new Comparison(chainedIds, operator, rightOperand);
+        }
     }
 
     private Exp _exp() {
@@ -200,19 +209,24 @@ public final class TemplateParser {
     }
 
     private Exp _factor() {
-        if (accept('(')) {
+        if (done) { return null; }
+        Exp exp;
+        switch (currentChar) {
+        case '(':
+            accept();
             _whitespace(); // optional
-            Exp exp = _exp();
+            exp = _exp();
             if (exp == null) { return null; }
             _whitespace(); // optional
             if (!accept(')')) { return null; }
             return exp;
-        } else if (accept('!')) {
+        case '!':
+            accept();
             _whitespace(); // optional
-            Exp exp = _factor();
+            exp = _factor();
             return exp == null ? null : new NotExp(exp);
-        } else {
-            return _comparison();
+        default:
+            return _expId();
         }
     }
 
@@ -236,7 +250,7 @@ public final class TemplateParser {
         return tagName;
     }
 
-    private Node _ifTagStart() {
+    private ParentNode _ifTagStart() {
         if (!_tagStart()) { return null; }
         String tagName = _lowerAlpha();
         if (!"if".equals(tagName)) { return null; }
