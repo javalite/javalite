@@ -94,4 +94,16 @@ public class TemplateParserSpec {
         the(node.children().size()).shouldBeEqual(1);
         the(process(node, map("list", list(1, 2, 3)))).shouldBeEqual(" 1  2  3 ");
     }
+
+    @Test
+    public void shouldParseIfAndForTagsWithNestedValues() throws Exception {
+        TemplateTagNode node = (TemplateTagNode) new TemplateParser(
+                "<#if (duck.name == name)>%{duck.name}'s nephews: <#for nephew : duck.nephews>"
+                        + "%{nephew_index}. %{nephew.name}<#if (nephew_has_next)>, </#if>"
+                        + "</#for></#if>").parse();
+        the(node.children().size()).shouldBeEqual(1);
+        the(process(node, map("name", "Donald", "duck", map("name", "Donald", "nephews",
+                list(map("name", "Huey"), map("name", "Dewey"), map("name", "Louie"))))))
+                .shouldBeEqual("Donald's nephews: 0. Huey, 1. Dewey, 2. Louie");
+    }
 }

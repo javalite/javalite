@@ -8,23 +8,20 @@ import java.util.Stack;
  *
  * <pre>
  * ID = javaIdentifierStart javaIdentifierPart*
- * ID_OR_FUNC = ID "()"?
- * CHAINED_IDS = ID ('.' ID_OR_FUNC)*
+ * CHAINED_IDS = ID ('.' ID "()"?)*
  * LOWER_ALPHA = [a-z]+
  * VAR = "%{" CHAINED_IDS (LOWER_ALPHA)? '}'
  *
- * CONST = .*
- *
- * COMPARISON_OPERATOR = "==" | "&gt;" | "&gt;=" | "&lt;" | "&lt;=" | "!="
- * EXP_ID = CHAINED_IDS (COMPARISON_OPERATOR CHAINED_IDS)?
+ * COMPARISON_OPERATOR = "==" | '&gt;' | "&gt;=" | '&lt;' | "&lt;=" | "!="
  * EXP = TERM ("||" TERM)?
- * TERM = FACTOR ("&& FACTOR)?
- * FACTOR = EXP_ID | ('!' FACTOR) | ('(' EXP ')')
+ * TERM = FACTOR ("&&" FACTOR)?
+ * FACTOR = CHAINED_IDS (COMPARISON_OPERATOR CHAINED_IDS)? | ('!' FACTOR) | ('(' EXP ')')
  *
+ * TAG = '&lt;' ('#' ("if" '(' EXP ')' '&gt;')
+ *                 | ("for" ID ':' CHAINED_IDS '&gt;'))
+ *            | ('/' '#' LOWER_ALPHA '&gt;')
  *
- * TAG_START = '&lt;' '#'
- * TAG_END = '&lt;' '/' '#' LOWER_ALPHA '&gt;'
- * IF_TAG = TAG_START "if" '(' EXPRESSION ')' '&gt;' LIST_TAG_BODY TAG_END "if" '&gt;'
+ * CONTENT = (VAR | TAG | .)*
  * </pre>
  *
  * @author Eric Nielsen
@@ -95,10 +92,6 @@ public final class TemplateParser {
         return true;
     }
 
-    private boolean _idOrFunc() {
-        return _id() && (!accept('(') || accept(')'));
-    }
-
     private ChainedIds _chainedIds() {
         int startIndex = index;
         if (!_id()) { return null; }
@@ -106,7 +99,7 @@ public final class TemplateParser {
         ArrayList<String> ids = new ArrayList<String>();
         while (accept('.')) {
             startIndex = index;
-            if (!_idOrFunc()) { return null; }
+            if (!(_id() && (!accept('(') || accept(')')))) { return null; }
             ids.add(source.substring(startIndex, index));
         }
         ids.trimToSize();
@@ -171,23 +164,6 @@ public final class TemplateParser {
         }
     }
 
-    private Exp _expId() {
-        ChainedIds chainedIds = _chainedIds();
-        if (chainedIds == null) { return null; }
-        _whitespace(); // optional
-        Comparison.Operator operator = _comparisonOperator();
-        if (operator == null) {
-            return new BooleanId(chainedIds);
-        } else if (operator == Comparison.Operator.invalid) {
-            return null;
-        } else {
-            _whitespace(); // optional
-            ChainedIds rightOperand = _chainedIds();
-            if (rightOperand == null) { return null; }
-            return new Comparison(chainedIds, operator, rightOperand);
-        }
-    }
-
     private Exp _exp() {
         Exp leftExp = _term();
         if (leftExp == null) { return null; }
@@ -234,7 +210,20 @@ public final class TemplateParser {
             exp = _factor();
             return exp == null ? null : new NotExp(exp);
         default:
-            return _expId();
+            ChainedIds chainedIds = _chainedIds();
+            if (chainedIds == null) { return null; }
+            _whitespace(); // optional
+            Comparison.Operator operator = _comparisonOperator();
+            if (operator == null) {
+                return new BooleanId(chainedIds);
+            } else if (operator == Comparison.Operator.invalid) {
+                return null;
+            } else {
+                _whitespace(); // optional
+                ChainedIds rightOperand = _chainedIds();
+                if (rightOperand == null) { return null; }
+                return new Comparison(chainedIds, operator, rightOperand);
+            }
         }
     }
 
@@ -251,9 +240,27 @@ public final class TemplateParser {
             _whitespace(); // optional
             TemplateTagNode tag = null;
             if (IfNode.TAG_NAME.equals(tagName)) {
-                tag = _insideIfTagStart();
+                if (!accept('(')) { return true; }
+                _whitespace(); // optional
+                Exp exp = _exp();
+                if (exp == null) { return true; }
+                _whitespace(); // optional
+                if (!accept(')')) { return true; }
+                _whitespace(); // optional
+                if (!accept('>')) { return true; }
+                tag = new IfNode(exp);
             } else if (ForNode.TAG_NAME.equals(tagName)) {
-                tag = _insideForTagStart();
+                int idStartIndex = index;
+                if (!_id()) { return true; }
+                String itemId = source.substring(idStartIndex, index);
+                _whitespace(); // optional
+                if (!accept(':')) { return true; }
+                _whitespace(); // optional
+                ChainedIds iterableIds = _chainedIds();
+                if (iterableIds == null) { return true; }
+                _whitespace(); // optional
+                if (!accept('>')) { return true; }
+                tag =  new ForNode(itemId, iterableIds);
             }
             if (tag != null) {
                 addConstEndingAt(startIndex);
@@ -278,37 +285,12 @@ public final class TemplateParser {
         return true;
     }
 
-    private TemplateTagNode _insideIfTagStart() {
-        if (!accept('(')) { return null; }
-        _whitespace(); // optional
-        Exp exp = _exp();
-        if (exp == null) { return null; }
-        _whitespace(); // optional
-        if (!accept(')')) { return null; }
-        _whitespace(); // optional
-        if (!accept('>')) { return null; }
-        return new IfNode(exp);
-    }
-
-    private TemplateTagNode _insideForTagStart() {
-        int startIndex = index;
-        if (!_id()) { return null; }
-        String itemId = source.substring(startIndex, index);
-        _whitespace(); // optional
-        if (!accept(':')) { return null; }
-        ChainedIds iterableIds = _chainedIds();
-        if (iterableIds == null) { return null; }
-        _whitespace(); // optional
-        if (!accept('>')) { return null; }
-        return new ForNode(itemId, iterableIds);
-    }
-
     private void _content() {
-        while (!done) {
+        do {
             if (!(_var() || _tag())) {
                 accept();
             }
-        }
+        } while (!done);
         addConstEndingAt(source.length());
     }
 

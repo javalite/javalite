@@ -1,6 +1,7 @@
 package org.javalite.templator;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -24,10 +25,15 @@ class ForNode extends RootNode {
     @Override
     public void process(Map values, Appendable appendable) throws IOException {
         Iterator it = ((Iterable) iterableIds.valueFrom(values)).iterator();
+        int i = 0;
+        String indexName = itemId + "_index";
+        String hasNextName = itemId + "_has_next";
+        Map newValues = new HashMap(values);
         while (it.hasNext()) {
-            values.put(itemId, it.next());
-            super.process(values, appendable);
+            newValues.put(itemId, it.next());
+            newValues.put(indexName, i++);
+            newValues.put(hasNextName, it.hasNext());
+            super.process(newValues, appendable);
         }
-        values.remove(itemId);
     }
 }
