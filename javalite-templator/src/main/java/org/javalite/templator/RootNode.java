@@ -1,6 +1,8 @@
 package org.javalite.templator;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -8,11 +10,20 @@ import java.util.Map;
  *
  * @author Eric Nielsen
  */
-class RootNode extends ParentNode {
+class RootNode implements TemplateTagNode {
+    private final List<TemplateNode> children = new ArrayList<TemplateNode>();
 
     @Override
-    void process(Map values, Appendable appendable) throws IOException {
-        for (Node child : children) {
+    public String name() {
+        return null;
+    }
+    @Override
+    public List<TemplateNode> children() {
+        return children;
+    }
+    @Override
+    public void process(Map values, Appendable appendable) throws IOException {
+        for (TemplateNode child : children) {
             child.process(values, appendable);
         }
     }

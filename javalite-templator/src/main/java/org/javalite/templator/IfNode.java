@@ -4,11 +4,10 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * This terminal node represents a variable chunk of text in template.
- *
  * @author Eric Nielsen
  */
 class IfNode extends RootNode {
+    static final String TAG_NAME = "if";
     private final Exp exp;
 
     IfNode(Exp exp) {
@@ -16,7 +15,11 @@ class IfNode extends RootNode {
     }
 
     @Override
-    void process(Map values, Appendable appendable) throws IOException {
+    public String name() {
+        return TAG_NAME;
+    }
+    @Override
+    public void process(Map values, Appendable appendable) throws IOException {
         if (exp.resultWith(values)) {
             super.process(values, appendable);
         }

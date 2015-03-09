@@ -9,7 +9,7 @@ import java.util.Map;
  * @author Igor Polevoy
  * @author Eric Nielsen
  */
-class VarNode extends Node {
+class VarNode implements TemplateNode {
     private final ChainedIds chainedIds;
     private final BuiltIn builtIn;
 
@@ -19,7 +19,7 @@ class VarNode extends Node {
     }
 
     @Override
-    void process(Map values, Appendable appendable) throws IOException {
+    public void process(Map values, Appendable appendable) throws IOException {
         Object obj = chainedIds.valueFrom(values);
         if (obj != null) {
             if (builtIn != null) {

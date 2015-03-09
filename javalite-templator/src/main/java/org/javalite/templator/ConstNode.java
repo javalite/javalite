@@ -9,18 +9,16 @@ import java.util.Map;
  * @author Igor Polevoy
  * @author Eric Nielsen
  */
-class ConstNode extends Node {
+class ConstNode implements TemplateNode {
     private final String value;
 
     ConstNode(String value) {
         this.value = value;
     }
-
     @Override
-    void process(Map values, Appendable appendable) throws IOException {
+    public void process(Map values, Appendable appendable) throws IOException {
         appendable.append(value);
     }
-
     @Override
     public String toString() {
         return value;

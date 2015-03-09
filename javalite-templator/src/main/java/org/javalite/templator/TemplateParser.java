@@ -1,6 +1,7 @@
 package org.javalite.templator;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 /**
  * BNF rules:
@@ -21,15 +22,15 @@ import java.util.ArrayList;
  * FACTOR = EXP_ID | ('!' FACTOR) | ('(' EXP ')')
  *
  *
- * TAG_START = '&lt' '#'
- * TAG_END = '&lt' '/' '#' LOWER_ALPHA '&gt;'
+ * TAG_START = '&lt;' '#'
+ * TAG_END = '&lt;' '/' '#' LOWER_ALPHA '&gt;'
  * IF_TAG = TAG_START "if" '(' EXPRESSION ')' '&gt;' LIST_TAG_BODY TAG_END "if" '&gt;'
  * </pre>
  *
  * @author Eric Nielsen
  */
 public final class TemplateParser {
-
+    private final Stack<TemplateTagNode> stack = new Stack<TemplateTagNode>();
     private final String source;
     private int index;
     private boolean done;
@@ -128,11 +129,14 @@ public final class TemplateParser {
         return source.substring(startIndex, index);
     }
 
-    private VarNode _var() {
-        if (!(accept('%') && accept('{'))) { return null; }
+    private boolean _var() {
+        int startIndex = index;
+        // only return false if didn't accept any char
+        if (!accept('%')) { return false; }
+        if (!accept('{')) { return true; }
         _whitespace(); // optional
         ChainedIds chainedIds = _chainedIds();
-        if (chainedIds == null) { return null; }
+        if (chainedIds == null) { return true; }
         BuiltIn builtIn = null;
         if (_whitespace()) {
             String builtInName = _lowerAlpha();
@@ -141,8 +145,10 @@ public final class TemplateParser {
                 _whitespace(); // optional
             }
         }
-        if (!accept('}')) { return null; }
-        return new VarNode(chainedIds, builtIn);
+        if (!accept('}')) { return true; }
+        addConstEndingAt(startIndex);
+        stack.peek().children().add(new VarNode(chainedIds, builtIn));
+        return true;
     }
 
     private Comparison.Operator _comparisonOperator() {
@@ -150,7 +156,7 @@ public final class TemplateParser {
         switch (currentChar) {
         case '=':
             accept();
-            return accept('=') ? Comparison.Operator.eq : null;
+            return accept('=') ? Comparison.Operator.eq : Comparison.Operator.invalid;
         case '>':
             accept();
             return accept('=') ? Comparison.Operator.gte : Comparison.Operator.gt;
@@ -159,7 +165,7 @@ public final class TemplateParser {
             return accept('=') ? Comparison.Operator.lte : Comparison.Operator.lt;
         case '!':
             accept();
-            return accept('=') ? Comparison.Operator.neq : null;
+            return accept('=') ? Comparison.Operator.neq : Comparison.Operator.invalid;
         default:
             return null;
         }
@@ -169,11 +175,11 @@ public final class TemplateParser {
         ChainedIds chainedIds = _chainedIds();
         if (chainedIds == null) { return null; }
         _whitespace(); // optional
-        //TODO: refactor this
-        int currentIndex = index;
         Comparison.Operator operator = _comparisonOperator();
         if (operator == null) {
-            return currentIndex == index ? new BooleanId(chainedIds) : null;
+            return new BooleanId(chainedIds);
+        } else if (operator == Comparison.Operator.invalid) {
+            return null;
         } else {
             _whitespace(); // optional
             ChainedIds rightOperand = _chainedIds();
@@ -232,31 +238,47 @@ public final class TemplateParser {
         }
     }
 
-    private boolean _tagStart() {
+    private boolean _tag() {
+        int startIndex = index;
+        // only return false if didn't accept any char
         if (!accept('<')) { return false; }
         _whitespace(); // optional
-        if (!accept('#')) { return false; }
+        switch (currentChar) {
+        case '#':
+            accept();
+            String tagName = _lowerAlpha();
+            if (tagName == null) { return true; }
+            _whitespace(); // optional
+            TemplateTagNode tag = null;
+            if (IfNode.TAG_NAME.equals(tagName)) {
+                tag = _insideIfTagStart();
+            } else if (ForNode.TAG_NAME.equals(tagName)) {
+                tag = _insideForTagStart();
+            }
+            if (tag != null) {
+                addConstEndingAt(startIndex);
+                stack.push(tag);
+            }
+            break;
+        case '/':
+            accept();
+            _whitespace(); // optional
+            if (!accept('#')) { return true; }
+            tagName = _lowerAlpha();
+            if (tagName == null) { return true; }
+            _whitespace(); // optional
+            if (!accept('>')) { return true; }
+            if (tagName.equals(stack.peek().name())) {
+                addConstEndingAt(startIndex);
+                tag = stack.pop();
+                stack.peek().children().add(tag);
+            }
+            break;
+        }
         return true;
     }
 
-    private String _tagEnd() {
-        if (!accept('<')) { return null; }
-        _whitespace(); // optional
-        if (!accept('/')) { return null; }
-        _whitespace(); // optional
-        if (!accept('#')) { return null; }
-        String tagName = _lowerAlpha();
-        if (tagName == null) { return null; }
-        _whitespace(); // optional
-        if (!accept('>')) { return null; }
-        return tagName;
-    }
-
-    private ParentNode _ifTagStart() {
-        if (!_tagStart()) { return null; }
-        String tagName = _lowerAlpha();
-        if (!"if".equals(tagName)) { return null; }
-        _whitespace(); // optional
+    private TemplateTagNode _insideIfTagStart() {
         if (!accept('(')) { return null; }
         _whitespace(); // optional
         Exp exp = _exp();
@@ -268,72 +290,44 @@ public final class TemplateParser {
         return new IfNode(exp);
     }
 
-    Node parse() {
-        ParentNode root = new RootNode();
-        if (source == null || source.isEmpty()) { return root; }
-        currentChar = source.charAt(0);
-        //TODO: refactor this
-         while (!done) {
-            int startIndex = index;
-            Node node = _ifTagStart();
-            if (node != null) {
-                addConstEndingAt(startIndex, root);
-                constStartIndex = index;
-                if (!"if".equals(parse((ParentNode) node))) {
-                    node = null;
-                }
-            } else {
-                node = _var();
-            }
-            if (node == null) {
-                if (startIndex == index) {
-                    accept();
-                }
-            } else {
-                addConstEndingAt(startIndex, root);
-                constStartIndex = index;
-                root.children.add(node);
+    private TemplateTagNode _insideForTagStart() {
+        int startIndex = index;
+        if (!_id()) { return null; }
+        String itemId = source.substring(startIndex, index);
+        _whitespace(); // optional
+        if (!accept(':')) { return null; }
+        ChainedIds iterableIds = _chainedIds();
+        if (iterableIds == null) { return null; }
+        _whitespace(); // optional
+        if (!accept('>')) { return null; }
+        return new ForNode(itemId, iterableIds);
+    }
+
+    private void _content() {
+        while (!done) {
+            if (!(_var() || _tag())) {
+                accept();
             }
         }
-        addConstEndingAt(source.length(), root);
+        addConstEndingAt(source.length());
+    }
+
+    TemplateNode parse() {
+        TemplateTagNode root = new RootNode();
+        if (source == null || source.isEmpty()) { return root; }
+        stack.push(root);
+        currentChar = source.charAt(0);
+        _content();
+        if (stack.size() != 1) {
+            throw new IllegalStateException();
+        }
         return root;
     }
 
-    private String parse(ParentNode root) {
-        //TODO: refactor this
+    private void addConstEndingAt(int endIndex) {
+        if (endIndex > constStartIndex) {
+            stack.peek().children().add(new ConstNode(source.substring(constStartIndex, endIndex)));
+        }
         constStartIndex = index;
-        while (!done) {
-            int startIndex = index;
-            String tagEndName = _tagEnd();
-            if (tagEndName != null) {
-                addConstEndingAt(startIndex, root);
-                constStartIndex = index;
-                return tagEndName;
-            }
-            Node node = _ifTagStart();
-            if (node == null) {
-                node = _var();
-            } else {
-                if (!"if".equals(parse((ParentNode) node))) {
-                    node = null;
-                }
-            }
-            if (node == null) {
-                if (startIndex == index) {
-                    accept();
-                }
-            } else {
-                addConstEndingAt(startIndex, root);
-                constStartIndex = index;
-                root.children.add(node);
-            }
-        }
-        return null;
-    }
-
-    private void addConstEndingAt(int endIndex, ParentNode root) {
-        if (endIndex - 1 > constStartIndex) {
-            root.children.add(new ConstNode(source.substring(constStartIndex, endIndex)));
-        }
     }
 }

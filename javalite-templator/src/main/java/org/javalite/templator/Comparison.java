@@ -36,6 +36,12 @@ class Comparison extends Exp {
             @Override boolean resultWith(Object obj1, Object obj2) {
                 return obj1 == null ? obj2 != null : (obj2 == null ? true : !obj1.equals(obj2));
             }
+        },
+        invalid {
+            @Override boolean resultWith(Object obj1, Object obj2) {
+                throw new UnsupportedOperationException();
+            }
+
         };
 
         abstract boolean resultWith(Object obj1, Object obj2);
