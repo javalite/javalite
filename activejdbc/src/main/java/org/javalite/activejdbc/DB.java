@@ -350,23 +350,25 @@ public class DB {
      * This method returns entire resultset as one list. Do not use it for large result sets.
      * Example:
      * <pre>
-     * List&lt;Map&gt; people = db.findAll(&quot;select * from people where first_name = ?&quot;, &quot;John&quot;);
-     * for (Map person : people)
-     *     System.out.println(person.get("first_name"));
+     * <code>List&lt;Map&lt;String, Object&gt;&gt; people = Base.findAll(&quot;select * from people where first_name = ?&quot;, &quot;John&quot;);
+     *  for(Map person: people)
+     *      System.out.println(person.get(&quot;first_name&quot;));
+     * </code>
      * </pre>
      *
      * @param query raw SQL query. This query is parametrized.
      * @param params list of parameters for a parametrized query.
      * @return entire result set corresponding to the query.
      */
-    public List<Map> findAll(String query, Object... params) {
+    public List<Map> findAll(String query, Object ... params) {
+
         final List<Map> results = new ArrayList<Map>();
         long start = System.currentTimeMillis();
-        findWith(new RowListenerAdapter() {
+        find(query, params).with(new RowListenerAdapter() {
             @Override public void onNext(Map<String, Object> row) {
                 results.add(row);
             }
-        }, false, query, params);
+        });
         LogFilter.logQuery(logger, query, params, start);
         return results;
     }
@@ -423,13 +425,14 @@ public class DB {
      * @return entire result set corresponding to the query.
      */
     public List<Map> findAll(String query) {
-        final List<Map> results = new ArrayList<Map>();
+
+        final ArrayList<Map> results = new ArrayList<Map>();
         long start = System.currentTimeMillis();
-        findWith(new RowListenerAdapter() {
+        find(query).with(new RowListenerAdapter() {
             @Override public void onNext(Map<String, Object> row) {
                 results.add(row);
             }
-        }, false, query);
+        });
 
         LogFilter.logQuery(logger, query, null, start);
         return results;
@@ -451,60 +454,27 @@ public class DB {
      * @param params list of parameters if query is parametrized.
      * @return instance of <code>RowProcessor</code> which has with() method for convenience.
      */
-    public RowProcessor find(String query, Object... params) {
+    public RowProcessor find(String query, Object ... params) {
+
+        //TODO: count ? signs and number of params, throw exception if do not match
+
         if(query.indexOf('?') == -1 && params.length != 0) throw new IllegalArgumentException("you passed arguments, but the query does not have placeholders: (?)");
 
         if(!SELECT_PATTERN.matcher(query).find()) { throw new IllegalArgumentException("query must be 'select' query"); }
 
+        //TODO: cache prepared statements here too
+        PreparedStatement ps;
+        ResultSet rs;
         try {
-            PreparedStatement ps = prepareStreamingStatement(query);
+            ps = createStreamingPreparedStatement(query);
             setParameters(ps, params);
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
             return new RowProcessor(rs, ps);
-            // ps and rs will be closed by RowProcessor
+
         } catch (SQLException e) { throw new DBException(query, params, e); }
     }
 
-    /**
-     * Executes a raw query and calls the listener to handle the results. The listener should extend
-     * {@link RowListener} to process individual rows, or implement {@link ResultSetListener} to process the whole
-     * ResultSet. For very large result sets, call this method with <tt>streaming</tt> as <tt>true</tt>, as it will
-     * create a streaming PreparedStatement (currently only available for MySQL). Example:
-     *
-     * <blockquote><pre>
-     * db.findWith(new RowListenerAdapter() {
-     *     @Override public void onNext(Map row) {
-     *         // write your code here
-     *         Object o1 = row.get("first_name");
-     *         Object o2 = row.get("last_name");
-     *     }
-     * }, true, "select first_name, last_name from really_large_table");
-     * </pre></blockquote>
-     *
-     * @param listener a subclass of {@link RowListener} to process individual rows, or an implementation of
-     * {@link ResultSetListener} to process the whole ResultSet
-     * @param streaming true to create a streaming PreparedStatement, false otherwise
-     * @param query raw SQL query
-     * @param params parameters of parametrized query
-     */
-    public void findWith(ResultSetListener listener, boolean streaming, String query, Object... params) {
-        //TODO: cache prepared statements here too
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            ps = streaming ? prepareStreamingStatement(query) : connection().prepareStatement(query);
-            setParameters(ps, params);
-            rs = ps.executeQuery();
-            listener.onResultSet(rs);
-        } catch (SQLException e) {
-            throw new DBException(query, params, e);
-        } finally {
-            closeQuietly(rs);
-            closeQuietly(ps);
-        }
-    }
-
-    private PreparedStatement prepareStreamingStatement(String query) throws SQLException {
+    private PreparedStatement createStreamingPreparedStatement(String query) throws SQLException {
         Connection conn = connection();
         PreparedStatement res;
         if ("mysql".equalsIgnoreCase(conn.getMetaData().getDatabaseProductName())) {
@@ -524,29 +494,16 @@ public class DB {
      * @param listener client listener implementation for processing individual rows.
      */
     public void find(String sql, RowListener listener) {
-        findWith(listener, true, sql);
-    }
 
-    /**
-     * Executes a raw query and calls the listener to handle the results. The listener should extend
-     * {@link RowListener} to process individual rows, or implement {@link ResultSetListener} to process the whole
-     * ResultSet. For very large result sets, call this method with <tt>streaming</tt> as <tt>true</tt>, as it will
-     * create a streaming Statement (currently only available for MySQL).
-     *
-     * @param listener a subclass of {@link RowListener} to process individual rows, or an implementation of
-     * {@link ResultSetListener} to handle the whole ResultSet
-     * @param streaming true to create a streaming Statement, false otherwise
-     * @param query raw SQL query
-     */
-    public void findWith(ResultSetListener listener, boolean streaming, String query) {
         Statement s = null;
         ResultSet rs = null;
         try {
-            s = streaming ? createStreamingStatement() : connection().createStatement();
-            rs = s.executeQuery(query);
-            listener.onResultSet(rs);
+            s = createStreamingStatement();
+            rs = s.executeQuery(sql);
+            RowProcessor p = new RowProcessor(rs, s);
+            p.with(listener);
         } catch (SQLException e) {
-            throw new DBException(query, null, e);
+            throw new DBException(sql, null, e);
         } finally {
             closeQuietly(rs);
             closeQuietly(s);
@@ -687,7 +644,8 @@ public class DB {
         } catch (SQLException e) {
             throw new DBException(query, params, e);
         } finally {
-            // don't close ps as it is cached!
+            // don't close ps as it could have come from the cache!
+            //TODO: close ps if not cached?
         }
     }
 

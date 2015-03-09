@@ -13,15 +13,19 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and 
 limitations under the License. 
 */
+
+
 package org.javalite.activejdbc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.ResultSetMetaData;
 import java.sql.Statement;
+import java.util.SortedMap;
 
 import static org.javalite.common.Util.*;
 
-//TODO: this class does nothing relevant anymore, since ResultSetListener was introduced
+
 public class RowProcessor {
     private final ResultSet rs;
     private final Statement s;
@@ -31,14 +35,35 @@ public class RowProcessor {
         this.s = s;
     }
 
-    public void with(RowListener listener) {
+    public void with(RowListener listener){
         try {
-            listener.onResultSet(rs);
+            processRS(listener);
         } catch(SQLException e) {
             throw new DBException(e);
         } finally {
+            //TODO: shouldn't these be closed in the same scope they were created?
             closeQuietly(rs);
             closeQuietly(s);
+        }
+    }
+
+    protected void processRS(RowListener listener) throws SQLException {
+
+        ResultSetMetaData metaData = rs.getMetaData();
+
+        String labels[] = new String[metaData.getColumnCount()];
+        int i = 0;
+        while (i < labels.length) {
+            labels[i++] = metaData.getColumnLabel(i);
+        }
+
+        while (rs.next()) {
+            SortedMap<String, Object> row = new CaseInsensitiveMap<Object>();
+            i = 0;
+            while (i < labels.length) {
+                row.put(labels[i++], rs.getObject(i));
+            }
+            if (!listener.next(row)) { break; }
         }
     }
 }

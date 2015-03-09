@@ -226,34 +226,8 @@ public class Base {
      * @param params list of parameters if query is parametrized.
      * @return instance of <code>RowProcessor</code> which has with() method for convenience.
      */
-    public static RowProcessor find(String query, Object... params) {
-      return new DB(DB.DEFAULT_NAME).find(query, params);
-    }
-
-    /**
-     * Executes a raw query and calls the listener to handle the results. The listener should extend
-     * {@link RowListener} to process individual rows, or implement {@link ResultSetListener} to process the whole
-     * ResultSet. For very large result sets, call this method with <tt>streaming</tt> as <tt>true</tt>, as it will
-     * create a streaming PreparedStatement (currently only available for MySQL). Example:
-     *
-     * <blockquote><pre>
-     * Base.findWith(new RowListenerAdapter() {
-     *     @Override public void onNext(Map row) {
-     *         // write your code here
-     *         Object o1 = row.get("first_name");
-     *         Object o2 = row.get("last_name");
-     *     }
-     * }, true, "select first_name, last_name from really_large_table");
-     * </pre></blockquote>
-     *
-     * @param listener a subclass of {@link RowListener} to process individual rows, or an implementation of
-     * {@link ResultSetListener} to process the whole ResultSet
-     * @param streaming true to create a streaming PreparedStatement, false otherwise
-     * @param query raw SQL query
-     * @param params parameters of parametrized query
-     */
-    public static void findWith(ResultSetListener listener, boolean streaming, String query, Object... params) {
-      new DB(DB.DEFAULT_NAME).findWith(listener, streaming, query, params);
+    public static RowProcessor find(String query, Object ... params) {
+      return new DB(DB.DEFAULT_NAME).find(query, params);       
     }
 
     /**
@@ -264,23 +238,9 @@ public class Base {
      * @param listener client listener implementation for processing individual rows.
      */
     public static void find(String sql, RowListener listener) {
-        new DB(DB.DEFAULT_NAME).find(sql, listener);
+        new DB(DB.DEFAULT_NAME).find(sql, listener);        
     }
 
-    /**
-     * Executes a raw query and calls the listener to handle the results. The listener should extend
-     * {@link RowListener} to process individual rows, or implement {@link ResultSetListener} to process the whole
-     * ResultSet. For very large result sets, call this method with <tt>streaming</tt> as <tt>true</tt>, as it will
-     * create a streaming Statement (currently only available for MySQL).
-     *
-     * @param listener a subclass of {@link RowListener} to process individual rows, or an implementation of
-     * {@link ResultSetListener} to handle the whole ResultSet
-     * @param streaming true to create a streaming Statement, false otherwise
-     * @param query raw SQL query
-     */
-    public static void findWith(ResultSetListener listener, boolean streaming, String query) {
-        new DB(DB.DEFAULT_NAME).findWith(listener, streaming, query);
-    }
 
     /**
      * Executes DML. Use it for inserts and updates.
@@ -288,7 +248,7 @@ public class Base {
      * @param query raw DML.
      * @return number of rows afected by query.
      */
-    public static int exec(String query) {
+    public static int exec(String query){
         return new DB(DB.DEFAULT_NAME).exec(query);
     }
 
@@ -300,13 +260,14 @@ public class Base {
      * @param params  query parameters.
      * @return number of records affected.
      */
-    public static int exec(String query, Object... params) {
+    public static int exec(String query, Object ... params){
         return new DB(DB.DEFAULT_NAME).exec(query, params);
     }
+    
 
     /**
      * This method is specific for inserts.
-     *
+     * 
      * @param query SQL for inserts.
      * @param autoIncrementColumnName name of a column that is auto-incremented.
      * @param params list of parameter values.

@@ -1,6 +1,4 @@
-mvn javadoc:aggregate
-cp -rf target/site/apidocs/* ../javalite.github.io/activejdbc/
-
+#!/bin/sh
 
 mvn javadoc:aggregate
 cp -rf target/site/apidocs/* ../javalite.github.io/activejdbc/
