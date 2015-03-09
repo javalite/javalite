@@ -7,5 +7,5 @@ import org.javalite.activejdbc.annotations.DbName;
  * @author Igor Polevoy: 4/23/12 12:08 PM
  */
 @DbName("test")
-public class OtherDBModel extends Model {
+public class OtherDbModel extends Model {
 }
