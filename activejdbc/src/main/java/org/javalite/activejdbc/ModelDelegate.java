@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
+import java.util.Set;
 import org.javalite.activejdbc.associations.BelongsToAssociation;
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
 import org.javalite.activejdbc.conversion.BlankToNullConverter;
@@ -52,7 +52,7 @@ public final class ModelDelegate {
         return Arrays.asList(lowerCased(attributeNames(clazz)));
     }
 
-    public static SortedSet<String> attributeNames(Class<? extends Model> clazz) {
+    public static Set<String> attributeNames(Class<? extends Model> clazz) {
         return metaModelOf(clazz).getAttributeNames();
     }
 

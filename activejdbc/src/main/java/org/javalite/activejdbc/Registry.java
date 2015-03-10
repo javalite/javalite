@@ -13,8 +13,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-
-
 package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.annotations.*;
@@ -130,7 +128,7 @@ public enum Registry {
             String[] tables = metaModels.getTableNames(dbName);
 
             for (String table : tables) {
-                SortedMap<String, ColumnMetadata> metaParams = fetchMetaParams(databaseMetaData, databaseProductName, table);
+                Map<String, ColumnMetadata> metaParams = fetchMetaParams(databaseMetaData, databaseProductName, table);
                 registerColumnMetadata(table, metaParams);
             }
 
@@ -158,7 +156,7 @@ public enum Registry {
      * @return
      * @throws java.sql.SQLException
      */
-    private SortedMap<String, ColumnMetadata> fetchMetaParams(DatabaseMetaData databaseMetaData, String databaseProductName, String table) throws SQLException {
+    private Map<String, ColumnMetadata> fetchMetaParams(DatabaseMetaData databaseMetaData, String databaseProductName, String table) throws SQLException {
 
         /*
          * Valid table name format: tablename or schemaname.tablename
@@ -183,7 +181,7 @@ public enum Registry {
 
         ResultSet rs = databaseMetaData.getColumns(null, schema, tableName, null);
         String dbProduct = databaseMetaData.getDatabaseProductName().toLowerCase();
-        SortedMap<String, ColumnMetadata> columns = getColumns(rs, dbProduct);
+        Map<String, ColumnMetadata> columns = getColumns(rs, dbProduct);
         rs.close();
 
         //try upper case table name - Oracle uses upper case
@@ -310,8 +308,8 @@ public enum Registry {
 	}
 
 
-    private SortedMap<String, ColumnMetadata> getColumns(ResultSet rs, String dbProduct) throws SQLException {
-        SortedMap<String, ColumnMetadata> columns = new CaseInsensitiveMap<ColumnMetadata>();
+    private Map<String, ColumnMetadata> getColumns(ResultSet rs, String dbProduct) throws SQLException {
+        Map<String, ColumnMetadata> columns = new CaseInsensitiveMap<ColumnMetadata>();
         while (rs.next()) {
 
         	if ("h2".equals(dbProduct) && "INFORMATION_SCHEMA".equals(rs.getString("TABLE_SCHEM"))) {
@@ -419,7 +417,7 @@ public enum Registry {
         return metaModels.getEdges(join);
     }
 
-    private void registerColumnMetadata(String table, SortedMap<String, ColumnMetadata> metaParams) {
+    private void registerColumnMetadata(String table, Map<String, ColumnMetadata> metaParams) {
         metaModels.setColumnMetadata(table, metaParams);
     }
 }

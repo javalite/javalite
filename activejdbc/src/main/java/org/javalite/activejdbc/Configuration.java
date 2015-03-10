@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2015 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -13,8 +13,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-
-
 package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.cache.CacheManager;
@@ -43,7 +41,7 @@ public class Configuration {
     private static CacheManager cacheManager;
     private final static Logger logger = LoggerFactory.getLogger(Configuration.class);
 
-    private SortedMap<String, Dialect> dialects = new CaseInsensitiveMap<Dialect>();
+    private Map<String, Dialect> dialects = new CaseInsensitiveMap<Dialect>();
 
     protected Configuration(){
         try {

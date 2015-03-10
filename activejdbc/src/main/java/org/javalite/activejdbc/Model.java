@@ -13,8 +13,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-
-
 package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.associations.*;
@@ -57,7 +55,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     private final static Logger logger = LoggerFactory.getLogger(Model.class);
 
-    private SortedMap<String, Object> attributes = new CaseInsensitiveMap<Object>();
+    private Map<String, Object> attributes = new CaseInsensitiveMap<Object>();
     private boolean frozen = false;
     private MetaModel metaModelLocal;
     private ModelRegistry modelRegistryLocal;
@@ -129,7 +127,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return ModelDelegate.metaModelOf(modelClass());
     }
 
-    protected SortedMap<String, Object> getAttributes(){
+    protected Map<String, Object> getAttributes() {
         return attributes;
     }
 
@@ -297,7 +295,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * Returns names of all attributes from this model.
      * @return names of all attributes from this model.
      */
-    public static SortedSet<String> attributeNames() {
+    public static Set<String> attributeNames() {
         return ModelDelegate.attributeNames(modelClass());
     }
 
@@ -681,8 +679,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @return all values of the model with all attribute names converted to lower case.
      */
-    public SortedMap<String, Object> toMap(){
-        SortedMap<String, Object> retVal = new TreeMap<String, Object>();
+    public Map<String, Object> toMap(){
+        Map<String, Object> retVal = new TreeMap<String, Object>();
         for (Map.Entry<String, Object> entry : attributes.entrySet()) {
             Object v = entry.getValue();
             if (v == null) {
@@ -1998,11 +1996,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Binds a validator to an attribute if validation fails. 
+     * Binds a validator to an attribute if validation fails.
      *
      * @param errorKey key of error in errors map. Usually this is a name of attribute,
      * but not limited to that, can be anything.
-     * 
+     *
      * @param validator -validator that failed validation.
      */
     public void addValidator(Validator validator, String errorKey) {
@@ -2547,7 +2545,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         MetaModel metaModel = getMetaModelLocal();
         StringBuilder query = new StringBuilder().append("UPDATE ").append(metaModel.getTableName()).append(" SET ");
-        SortedSet<String> attributeNames = metaModel.getAttributeNamesSkipGenerated(manageTime);
+        Set<String> attributeNames = metaModel.getAttributeNamesSkipGenerated(manageTime);
         join(query, attributeNames, " = ?, ");
         query.append(" = ?");
 
@@ -2584,7 +2582,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return updated > 0;
     }
 
-    private List<Object> getAttributeValues(SortedSet<String> attributeNames) {
+    private List<Object> getAttributeValues(Set<String> attributeNames) {
         List<Object> values = new ArrayList<Object>();
         for (String attribute : attributeNames) {
             values.add(get(attribute));
