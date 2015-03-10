@@ -2698,12 +2698,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * Example:
      * <pre>
      *
-     * String insert = u.toUpdate();
+     * String update = u.toUpdate();
      * //yields this output:
-     * //INSERT INTO users (id, first_name, email, last_name) VALUES (1, 'Marilyn', 'mmonroe@yahoo.com', 'Monroe');
+     * //UPDATE students SET DOB = '1965-12-01' , FIRST_NAME = 'Jim' , LAST_NAME = 'Cary' WHERE id = 1
      * </pre>
      *
-     * @return INSERT SQL based on this model.
+     * @return UPDATE SQL based on this model.
      */
     public String toUpdate(){
 
