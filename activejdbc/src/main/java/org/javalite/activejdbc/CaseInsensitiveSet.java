@@ -15,18 +15,24 @@ limitations under the License.
 */
 package org.javalite.activejdbc;
 
-import java.util.TreeMap;
+import java.util.Collection;
+import java.util.TreeSet;
 
 /**
- * A case insensitive map for <code>java.lang.String</code> keys. The current implementation is based on
- * {@link TreeMap}, so it does not accept <code>null</code> keys and keeps entries ordered by case
+ * A case insensitive set for <code>java.lang.String</code> elements. The current implementation is based on
+ * {@link TreeSet}, so it does not accept <code>null</code> keys and keeps entries ordered by case
  * insensitive alphabetical order of keys.
  *
  * @author Eric Nielsen
  */
-public class CaseInsensitiveMap<V> extends TreeMap<String, V> {
+public class CaseInsensitiveSet extends TreeSet<String> {
 
-    public CaseInsensitiveMap() {
+    public CaseInsensitiveSet() {
         super(String.CASE_INSENSITIVE_ORDER);
+    }
+
+    public CaseInsensitiveSet(Collection<? extends String> c) {
+        this();
+        addAll(c);
     }
 }

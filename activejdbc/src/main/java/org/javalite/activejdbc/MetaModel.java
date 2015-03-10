@@ -121,9 +121,9 @@ public class MetaModel implements Serializable {
     public Set<String> getAttributeNamesSkipId() {
         if (attributeNamesNoId == null) {//no one cares about unfortunate multi-threading timing with 2 instances created
             //if someone does, use DCL with volatile
-            Set<String> attrs = new TreeSet<String>(getAttributeNames());
-            attrs.remove(getIdName());
-            attributeNamesNoId = attrs;
+            Set<String> attributes = new CaseInsensitiveSet(getAttributeNames());
+            attributes.remove(getIdName());
+            attributeNamesNoId = attributes;
         }
         return attributeNamesNoId;
     }
@@ -148,7 +148,7 @@ public class MetaModel implements Serializable {
      */
     public Set<String> getAttributeNamesSkipGenerated(boolean managed) {
         //TODO: can cache this, but will need a cache for managed=true an another for managed=false
-        Set<String> attributes = new TreeSet(getAttributeNamesSkipId());
+        Set<String> attributes = new CaseInsensitiveSet(getAttributeNamesSkipId());
 
         if(managed){
             attributes.remove("created_at");
@@ -165,8 +165,8 @@ public class MetaModel implements Serializable {
      * @return list of all attributes except those provided as arguments.
      */
     public Set<String> getAttributeNamesSkip(String ... names) {
-        Set<String> attributes = new TreeSet<String>(getAttributeNames());
-        for(String name:names){
+        Set<String> attributes = new CaseInsensitiveSet(getAttributeNames());
+        for (String name : names) {
             attributes.remove(name);
         }
         return attributes;
