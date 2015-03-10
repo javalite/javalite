@@ -482,6 +482,19 @@ public class ModelTest extends ActiveJDBCTest {
         insertSQL = s.toInsert(new SimpleFormatter(java.sql.Date.class, "to_date('", "')"));
         the(insertSQL).shouldBeEqual("INSERT INTO students (dob, first_name, id, last_name) VALUES (to_date('1965-12-01'), 'Jim', 1, 'Cary')");
     }
+    
+    @Test
+    public void shouldGenerateCorrectUpdateSQL(){
+        Student s = new Student();
+        s.set("first_name", "Jim");
+        s.set("last_name", "Cary");
+        s.set("dob", new java.sql.Date(getDate(1965, 12, 1).getTime()));
+        s.set("id", 1);
+        String updateSQL = s.toUpdate();
+        System.out.println(updateSQL);
+
+        the(updateSQL).shouldBeEqual("UPDATE students SET DOB = '1965-12-01' , FIRST_NAME = 'Jim' , LAST_NAME = 'Cary' WHERE id = 1");
+}
 
     @Test
     public void shouldGenerateValidInsertSQL() {

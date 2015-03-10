@@ -151,7 +151,7 @@
                         <configuration>
                             <outputDirectory>${project.basedir}/target/test-classes</outputDirectory>
                         </configuration>
-                    </execution>
+                    </execution> 
                 </executions>
                 <dependencies>
                     <dependency>
