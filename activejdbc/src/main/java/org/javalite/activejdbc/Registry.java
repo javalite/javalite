@@ -56,7 +56,13 @@ public enum Registry {
                 : null;
     }
 
+    /**
+     * @deprecated Not used anymore.
+     */
+    @Deprecated
     public boolean initialized() {
+        // This will return true if AT LEAST ONE DB was initialized, not if ALL were (if there are more than one).
+        // Hopefully this is not used anywhere.
         return !initedDbs.isEmpty();
     }
 
