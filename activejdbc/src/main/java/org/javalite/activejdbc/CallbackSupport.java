@@ -34,6 +34,13 @@ abstract class CallbackSupport {
     protected void afterCreate() {
         // overridable
     }
+    
+    protected void beforeUpdate() {
+        // overridable
+    }
+    protected void afterUpdate() {
+        // overridable
+    }
 
     protected void beforeDelete() {
         // overridable

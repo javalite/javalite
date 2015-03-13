@@ -37,4 +37,8 @@ public class CallbackAdapter<T extends Model> implements CallbackListener<T>{
     @Override public void beforeValidation(T m) {}
 
     @Override public void afterValidation(T m) {}
+
+    @Override public void beforeUpdate(T m) {}
+
+    @Override public void afterUpdate(T m) {}
 }
