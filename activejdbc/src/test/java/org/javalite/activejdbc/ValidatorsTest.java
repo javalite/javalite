@@ -17,6 +17,8 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.validation.ValidationException;
 import org.javalite.test.jspec.ExceptionExpectation;
@@ -64,6 +66,10 @@ public class ValidatorsTest extends ActiveJDBCTest {
         a.validate();
         a(a.errors().size()).shouldBeEqual(0);
 
+        //try numeric string with decimal separator specific to actual Locale
+        a.set("amount", "123" + DecimalFormatSymbols.getInstance().getDecimalSeparator() + "11");
+        a.validate();
+        a(a.errors().size()).shouldBeEqual(0);
 
         //try bad string with a number in it
         a.set("amount", "111 aaa");

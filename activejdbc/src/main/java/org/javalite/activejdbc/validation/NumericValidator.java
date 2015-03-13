@@ -23,6 +23,7 @@ import org.javalite.activejdbc.Model;
 
 import java.text.NumberFormat;
 import java.text.ParsePosition;
+import java.util.Locale;
 
 public class NumericValidator extends ValidatorAdapter {
     private final String attribute;
@@ -56,15 +57,21 @@ public class NumericValidator extends ValidatorAdapter {
         }
 
         //this is to check just numericality
-        if (value != null) {
-            ParsePosition pp = new ParsePosition(0);
-            String input = value.toString();
-            NumberFormat.getInstance().parse(input, pp);
-            if (pp.getIndex() != (input.length())) {
-                m.addValidator(this, attribute);
+        if(!(value instanceof Number)) {
+            if (value != null) {
+                ParsePosition pp = new ParsePosition(0);
+                String input = value.toString();
+                // toString() is not Locale dependant...
+                // ... but NumberFormat is. For Polish locale where decimal separator is "," instead of ".". Might fail some tests...
+                NumberFormat nf = NumberFormat.getInstance();
+                nf.setParseIntegerOnly(onlyInteger);
+                nf.parse(input, pp);
+                if (pp.getIndex() != (input.length())) {
+                    m.addValidator(this, attribute);
+                }
+            } else {
+                    m.addValidator(this, attribute);
             }
-        } else {
-                m.addValidator(this, attribute);
         }
 
         if(min != null){
