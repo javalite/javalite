@@ -25,14 +25,13 @@ import java.io.Writer;
 import java.math.BigDecimal;
 import java.sql.Blob;
 import java.sql.Clob;
-import java.text.*;
 import java.util.Calendar;
 import java.util.TimeZone;
 
 import static org.javalite.common.Util.*;
 
 /**
- * Convenience class for type conversions. 
+ * Convenience class for type conversions.
  *
  * @author Igor Polevoy
  * @author Eric Nielsen
@@ -56,7 +55,7 @@ public final class Convert {
 
     /**
      * Returns string representation of an object, including {@link java.sql.Clob}.
-     * For large CLOBs, be careful because this will load an entire CLOB in memory as <code>java.lang.String</code>. 
+     * For large CLOBs, be careful because this will load an entire CLOB in memory as <code>java.lang.String</code>.
      *
      * @param value value to convert.
      * @return string representation of an object, including {@link java.sql.Clob}.
@@ -108,7 +107,7 @@ public final class Convert {
      * @return true if the value is any numeric type and has a value of 1, or
      * if string type has a value of '1', 't', 'y', 'true' or 'yes'. Otherwise, return false.
      */
-    public static Boolean toBoolean(Object value){
+    public static Boolean toBoolean(Object value) {
         if (value == null) {
             return false;
         } else if (value instanceof Boolean) {
@@ -116,15 +115,15 @@ public final class Convert {
         } else if (value instanceof BigDecimal) {
             return value.equals(BigDecimal.ONE);
         } else if (value instanceof Number) {
-            return ((Number)value).intValue() == 1;
+            return ((Number) value).intValue() == 1;
         } else if (value instanceof Character) {
             char c = (Character) value;
             return c == 't' || c == 'T' || c == 'y' || c == 'Y' || c == '1';
         } else {
             String str = value.toString();
             return str.equalsIgnoreCase("true") || str.equalsIgnoreCase("t")
-                    || str.equalsIgnoreCase("yes") || str.equalsIgnoreCase("y") 
-                    || str.equals("1") || Boolean.parseBoolean(value.toString());
+                    || str.equalsIgnoreCase("yes") || str.equalsIgnoreCase("y")
+                    || str.equals("1") || Boolean.parseBoolean(str);
         }
     }
 
@@ -251,10 +250,10 @@ public final class Convert {
     /**
      * Converts any value to <code>Double</code>.
      * @param value value to convert.
-     * 
-     * @return converted double. 
+     *
+     * @return converted double.
      */
-    public static Double toDouble(Object value){
+    public static Double toDouble(Object value) {
         if (value == null) {
             return null;
         } else if (value instanceof Double) {
@@ -262,21 +261,18 @@ public final class Convert {
         } else if (value instanceof Number) {
             return ((Number) value).doubleValue();
         } else {
-            NumberFormat nf = new DecimalFormat();
             try {
-                return nf.parse(value.toString()).doubleValue();
-            } catch (ParseException e) {
+                return Double.valueOf(value.toString());
+            } catch (NumberFormatException e) {
                 throw new ConversionException("failed to convert: '" + value + "' to Double", e);
             }
         }
     }
 
-
     /**
      * If the value is instance of java.sql.Timestamp, returns it, else tries to convert the
      * value to Timestamp using {@link Timestamp#valueOf(String)}.
      * This method might trow <code>IllegalArgumentException</code> if fails at conversion.
-     *
      *
      * @see {@link Timestamp#valueOf(String)}
      * @param value value to convert.
@@ -305,20 +301,15 @@ public final class Convert {
      * @param value value to be converted to Float.
      * @return value converted to Float.
      */
-    public static Float toFloat(Object value){
+    public static Float toFloat(Object value) {
         if (value == null) {
             return null;
         } else if (value instanceof Float) {
             return (Float) value;
-        }else if (value instanceof Number) {
-            return ((Number)value).floatValue();
+        } else if (value instanceof Number) {
+            return ((Number) value).floatValue();
         } else {
-            NumberFormat nf = new DecimalFormat();
-            try {
-                return nf.parse(value.toString()).floatValue();
-            } catch (ParseException e) {
-                throw new ConversionException("failed to convert: '" + value + "' to Float", e);
-            }
+            return Float.valueOf(value.toString());
         }
     }
 
@@ -331,7 +322,7 @@ public final class Convert {
      * @param value value to be converted to Long.
      * @return value converted to Long.
      */
-    public static Long toLong(Object value){
+    public static Long toLong(Object value) {
         if (value == null) {
             return null;
         } else if (value instanceof Long) {
@@ -341,15 +332,13 @@ public final class Convert {
         } else if (value instanceof java.util.Date) {
             return ((java.util.Date) value).getTime();
         } else {
-            NumberFormat nf = new DecimalFormat();
             try {
-                return nf.parse(value.toString()).longValue();
-            } catch (ParseException e) {
+                return Long.valueOf(value.toString());
+            } catch (NumberFormatException e) {
                 throw new ConversionException("failed to convert: '" + value + "' to Long", e);
             }
         }
     }
-
 
    /**
      * Converts value to Integer if it can. If value is a Integer, it is returned, if it is a Number, it is
@@ -359,18 +348,17 @@ public final class Convert {
      * @param value value to be converted to Integer.
      * @return value converted to Integer.
      */
-    public static Integer toInteger(Object value){
+    public static Integer toInteger(Object value) {
         if (value == null) {
             return null;
         } else if (value instanceof Integer) {
             return (Integer) value;
         } else if (value instanceof Number) {
-            return ((Number)value).intValue();
+            return ((Number) value).intValue();
         } else {
-            NumberFormat nf = new DecimalFormat();
             try {
-                return nf.parse(value.toString()).intValue();
-            } catch (ParseException e) {
+                return Integer.valueOf(value.toString());
+            } catch (NumberFormatException e) {
                 throw new ConversionException("failed to convert: '" + value + "' to Integer", e);
             }
         }
@@ -384,13 +372,17 @@ public final class Convert {
      * @param value value to be converted to Integer.
      * @return value converted to Integer.
      */
-    public static BigDecimal toBigDecimal(Object value){
+    public static BigDecimal toBigDecimal(Object value) {
         if (value == null) {
             return null;
         } else if (value instanceof BigDecimal) {
             return (BigDecimal) value;
-        }else {
-            return new BigDecimal(value.toString());
+        } else {
+            try {
+                return new BigDecimal(value.toString());
+            } catch (NumberFormatException e) {
+                throw new ConversionException("failed to convert: '" + value + "' to BigDecimal", e);
+            }
         }
     }
 
@@ -440,18 +432,17 @@ public final class Convert {
      * @param value value to be converted to Integer.
      * @return value converted to Integer.
      */
-    public static Short toShort(Object  value) {
+    public static Short toShort(Object value) {
         if (value == null) {
             return null;
         } else if (value instanceof Short) {
             return (Short) value;
         } else if (value instanceof Number) {
-            return ((Number)value).shortValue();
+            return ((Number) value).shortValue();
         } else {
-            NumberFormat nf = new DecimalFormat();
             try {
-                return nf.parse(value.toString()).shortValue();
-            } catch (ParseException e) {
+                return Short.valueOf(value.toString());
+            } catch (NumberFormatException e) {
                 throw new ConversionException("failed to convert: '" + value + "' to Short", e);
             }
         }
