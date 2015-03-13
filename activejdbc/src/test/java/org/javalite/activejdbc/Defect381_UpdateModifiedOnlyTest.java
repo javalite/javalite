@@ -15,6 +15,8 @@
  */
 package org.javalite.activejdbc;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Programmer;
 import org.junit.Test;
@@ -47,4 +49,39 @@ public class Defect381_UpdateModifiedOnlyTest extends ActiveJDBCTest {
         the(prg).shouldNotBe("modified");
     }
     
+    @Test
+    public void isModifiedAfterFroMap() {
+        Programmer prg = Programmer.createIt("first_name", "John");
+        the(prg).shouldNotBe("new");
+        the(prg).shouldNotBe("modified");
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("last_name", "Doe");
+        prg.fromMap(map);
+        the(prg).shouldBe("modified");
+        prg.saveIt();
+        the(prg).shouldNotBe("modified");
+    }
+    
+    @Test
+    public void isModifiedAfterFind() {
+        Programmer prg = Programmer.createIt("first_name", "John", "last_name", "Doe");
+        the(prg).shouldNotBe("new");
+        the(prg).shouldNotBe("modified");
+        prg.set("last_name", "Roe");
+        
+        Programmer prgFromDB = Programmer.findById(prg.getId());
+        the(prgFromDB).shouldNotBe("new");
+        the(prgFromDB).shouldNotBe("modified");
+        the(prgFromDB.get("last_name")).shouldBeEqual("Doe");
+        
+        prgFromDB.set("first_name", "Jane");
+        the(prgFromDB).shouldBe("modified");
+        prgFromDB.saveIt();
+        the(prgFromDB).shouldNotBe("modified");
+        
+        prgFromDB = (Programmer) Programmer.where("id = ?", prg.getId()).get(0);
+        the(prgFromDB).shouldNotBe("new");
+        the(prgFromDB).shouldNotBe("modified");
+    }
 }
