@@ -117,10 +117,12 @@ public class DBConnectionFilter extends ControllerFilterAdapter {
         if (connectionWrappers != null && !connectionWrappers.isEmpty()) {
             for (ConnectionSpecWrapper connectionWrapper : connectionWrappers) {
                 DB db = new DB(connectionWrapper.getDbName());
-                if(manageTransaction){
-                    db.rollbackTransaction();
+                if (db.hasConnection()) {
+                    if (manageTransaction) {
+                        db.rollbackTransaction();
+                    }
+                    db.close();
                 }
-                db.close();
             }
         }
     }
