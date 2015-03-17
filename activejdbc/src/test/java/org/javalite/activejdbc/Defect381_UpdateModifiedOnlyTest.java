@@ -115,4 +115,19 @@ public class Defect381_UpdateModifiedOnlyTest extends ActiveJDBCTest {
         the(prg).shouldNotBe("new");
         the(prg).shouldNotBe("modified");
     }
+    
+    @Test
+    public void shouldBeModifiedAfterCopyTo() {
+        Programmer prg = Programmer.createIt("first_name", "John", "last_name", "Doe");
+        the(prg).shouldNotBe("new");
+        the(prg).shouldNotBe("modified");
+        
+        Programmer prg2 = Programmer.createIt("first_name", "Jane", "last_name", "Doe");
+        the(prg).shouldNotBe("new");
+        the(prg).shouldNotBe("modified");
+        
+        prg.copyTo(prg2);
+        the(prg).shouldNotBe("new");
+        the(prg2).shouldBe("modified");
+    }
 }
