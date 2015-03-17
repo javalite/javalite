@@ -26,6 +26,9 @@ public interface  CallbackListener<T extends Model> {
 
     void beforeCreate(T m);
     void afterCreate(T m);
+    
+    void beforeUpdate(T m);
+    void afterUpdate(T m);
 
     void beforeDelete(T m);
     void afterDelete(T m);

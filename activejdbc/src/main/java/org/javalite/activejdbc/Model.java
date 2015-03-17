@@ -56,6 +56,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     private final static Logger logger = LoggerFactory.getLogger(Model.class);
 
     private Map<String, Object> attributes = new CaseInsensitiveMap<Object>();
+    private final CaseInsensitiveSet dirtyAttributes = new CaseInsensitiveSet();
     private boolean frozen = false;
     private MetaModel metaModelLocal;
     private ModelRegistry modelRegistryLocal;
@@ -96,6 +97,20 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
     }
 
+    private void fireBeforeUpdate() {
+        beforeUpdate();
+        for (CallbackListener callback : modelRegistryLocal().callbacks()) {
+            callback.beforeUpdate(this);
+        }
+    }
+    
+    private void fireAfterUpdate() {
+        afterUpdate();
+        for (CallbackListener callback : modelRegistryLocal().callbacks()) {
+            callback.afterUpdate(this);
+        }
+    }
+    
     private void fireBeforeDelete() {
         beforeDelete();
         for (CallbackListener callback : modelRegistryLocal().callbacks()) {
@@ -130,6 +145,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     protected Map<String, Object> getAttributes() {
         return attributes;
     }
+    
+    protected CaseInsensitiveSet getDirtyAttributes() {
+        return dirtyAttributes;
+    }
 
     /**
      * Overrides attribute values from input map. The input map may have attributes whose name do not match the
@@ -141,6 +160,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public <T extends Model> T fromMap(Map input) {
         hydrate(input);
+        dirtyAttributes.addAll(input.keySet());
         return (T) this;
     }
 
@@ -267,9 +287,18 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         getMetaModelLocal().checkAttributeOrAssociation(attributeName);
 
         attributes.put(attributeName, value);
+        dirtyAttributes.add(attributeName);
         return (T) this;
     }
 
+    /**
+     * Will return true if any attribute of this instance was changed after latest load/save.
+     * @return true if this instance was modified.
+     */
+    public boolean isModified() {
+        return !dirtyAttributes.isEmpty();
+    }
+    
     /**
      * Will return true if this  instance is frozen, false otherwise.
      * A frozen instance cannot use used, as it has no relation to a record in table.
@@ -1115,6 +1144,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         for (String name : getMetaModelLocal().getAttributeNamesSkipId()) {
             other.getAttributes().put(name, get(name));
+            other.getDirtyAttributes().add(name);
+            // Why not use setRaw() here? Does the same and avoids duplication of code... (Garagoth)
+            // other.setRaw(name, getRaw(name));
         }
     }
 
@@ -1164,6 +1196,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                     "this ID does not exist anymore. Stale model: " + this);
         }
         fresh.copyTo(this);
+        dirtyAttributes.clear();
     }
 
     /**
@@ -2392,6 +2425,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public void thaw(){
         attributes.put(getIdName(), null);
+        dirtyAttributes.addAll(attributes.keySet());
         frozen = false;
     }
 
@@ -2517,6 +2551,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 attributes.put(metaModel.getVersionColumn(), 1);
             }
 
+            dirtyAttributes.clear(); // Clear all dirty attribute names as all were inserted. What about versionColumn ?
             fireAfterCreate();
 
             return done;
@@ -2541,25 +2576,35 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     private boolean update() {
 
+        fireBeforeUpdate();
         doUpdatedAt();
 
         MetaModel metaModel = getMetaModelLocal();
         StringBuilder query = new StringBuilder().append("UPDATE ").append(metaModel.getTableName()).append(" SET ");
         Set<String> attributeNames = metaModel.getAttributeNamesSkipGenerated(manageTime);
-        join(query, attributeNames, " = ?, ");
-        query.append(" = ?");
+        attributeNames.retainAll(dirtyAttributes);
+        if(attributeNames.size() > 0) {
+            join(query, attributeNames, " = ?, ");
+            query.append(" = ?");
+        }
 
         List<Object> values = getAttributeValues(attributeNames);
 
         if (manageTime && metaModel.hasAttribute("updated_at")) {
-            query.append(", updated_at = ?");
+            if(values.size() > 0)
+                query.append(", ");
+            query.append("updated_at = ?");
             values.add(get("updated_at"));
         }
 
         if(metaModel.isVersioned()){
-            query.append(", ").append(getMetaModelLocal().getVersionColumn()).append(" = ?");
+            if(values.size() > 0)
+                query.append(", ");
+            query.append(getMetaModelLocal().getVersionColumn()).append(" = ?");
             values.add(getLong(getMetaModelLocal().getVersionColumn()) + 1);
         }
+        if(values.isEmpty())
+            return false;
         query.append(" WHERE ").append(metaModel.getIdName()).append(" = ?");
         values.add(getId());
         if (metaModel.isVersioned()) {
@@ -2579,6 +2624,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         if(metaModel.cached()){
             QueryCache.instance().purgeTableCache(metaModel.getTableName());
         }
+        dirtyAttributes.clear();
+        fireAfterUpdate();
         return updated > 0;
     }
 
