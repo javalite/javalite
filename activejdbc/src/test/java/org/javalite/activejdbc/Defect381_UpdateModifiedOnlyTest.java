@@ -28,29 +28,36 @@ import org.junit.Test;
 public class Defect381_UpdateModifiedOnlyTest extends ActiveJDBCTest {
 
     @Test
-    public void isModifiedWhenModified() {
+    public void shouldBeModifiedWhenModified() {
         Programmer prg = Programmer.createIt("first_name", "John");
         the(prg).shouldNotBe("new");
         the(prg).shouldNotBe("modified");
         prg.set("last_name", "Doe");
         the(prg).shouldBe("modified");
+        the(prg.getDirtyAttributes()).shouldContain("last_name");
+        the(prg.getDirtyAttributes().size()).shouldBeEqual(1);
+        
         prg.saveIt();
         the(prg).shouldNotBe("modified");
+        the(prg.getDirtyAttributes().size()).shouldBeEqual(0);
     }
     
     @Test
-    public void isModifiedAfterCreated() {
+    public void shouldBeModifiedAfterCreated() {
         Programmer prg = Programmer.create("first_name", "John");
         the(prg).shouldBe("new");
         the(prg).shouldBe("modified");
         prg.set("last_name", "Doe");
         the(prg).shouldBe("modified");
+        the(prg.getDirtyAttributes()).shouldBeEqual(prg.getAttributes().keySet());
+        
         prg.saveIt();
         the(prg).shouldNotBe("modified");
+        the(prg.getDirtyAttributes().size()).shouldBeEqual(0);
     }
     
     @Test
-    public void isModifiedAfterFroMap() {
+    public void shouldBeModifiedAfterFromMap() {
         Programmer prg = Programmer.createIt("first_name", "John");
         the(prg).shouldNotBe("new");
         the(prg).shouldNotBe("modified");
@@ -64,7 +71,7 @@ public class Defect381_UpdateModifiedOnlyTest extends ActiveJDBCTest {
     }
     
     @Test
-    public void isModifiedAfterFind() {
+    public void shouldNotBeModifiedAfterFind() {
         Programmer prg = Programmer.createIt("first_name", "John", "last_name", "Doe");
         the(prg).shouldNotBe("new");
         the(prg).shouldNotBe("modified");
@@ -76,7 +83,12 @@ public class Defect381_UpdateModifiedOnlyTest extends ActiveJDBCTest {
         the(prgFromDB.get("last_name")).shouldBeEqual("Doe");
         
         prgFromDB.set("first_name", "Jane");
+        prgFromDB.set("last_name", "Moe");
         the(prgFromDB).shouldBe("modified");
+        the(prgFromDB.getDirtyAttributes()).shouldContain("first_name");
+        the(prgFromDB.getDirtyAttributes()).shouldContain("last_name");
+        the(prgFromDB.getDirtyAttributes().size()).shouldBeEqual(2);
+        
         prgFromDB.saveIt();
         the(prgFromDB).shouldNotBe("modified");
         
@@ -86,7 +98,7 @@ public class Defect381_UpdateModifiedOnlyTest extends ActiveJDBCTest {
     }
     
     @Test
-    public void isModifiedAfterDeletaAndThaw() {
+    public void shouldBeModifiedAfterDeletaAndThaw() {
         Programmer prg = Programmer.createIt("first_name", "John", "last_name", "Doe");
         the(prg).shouldNotBe("new");
         the(prg).shouldNotBe("modified");
