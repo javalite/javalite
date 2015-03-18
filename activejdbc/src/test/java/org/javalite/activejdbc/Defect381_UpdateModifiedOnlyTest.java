@@ -34,12 +34,12 @@ public class Defect381_UpdateModifiedOnlyTest extends ActiveJDBCTest {
         the(prg).shouldNotBe("modified");
         prg.set("last_name", "Doe");
         the(prg).shouldBe("modified");
-        the(prg.getDirtyAttributes()).shouldContain("last_name");
-        the(prg.getDirtyAttributes().size()).shouldBeEqual(1);
+        the(prg.getDirtyAttributeNames()).shouldContain("last_name");
+        the(prg.getDirtyAttributeNames().size()).shouldBeEqual(1);
         
         prg.saveIt();
         the(prg).shouldNotBe("modified");
-        the(prg.getDirtyAttributes().size()).shouldBeEqual(0);
+        the(prg.getDirtyAttributeNames().size()).shouldBeEqual(0);
     }
     
     @Test
@@ -49,11 +49,11 @@ public class Defect381_UpdateModifiedOnlyTest extends ActiveJDBCTest {
         the(prg).shouldBe("modified");
         prg.set("last_name", "Doe");
         the(prg).shouldBe("modified");
-        the(prg.getDirtyAttributes()).shouldBeEqual(prg.getAttributes().keySet());
+        the(prg.getDirtyAttributeNames()).shouldBeEqual(prg.getAttributes().keySet());
         
         prg.saveIt();
         the(prg).shouldNotBe("modified");
-        the(prg.getDirtyAttributes().size()).shouldBeEqual(0);
+        the(prg.getDirtyAttributeNames().size()).shouldBeEqual(0);
     }
     
     @Test
@@ -85,9 +85,9 @@ public class Defect381_UpdateModifiedOnlyTest extends ActiveJDBCTest {
         prgFromDB.set("first_name", "Jane");
         prgFromDB.set("last_name", "Moe");
         the(prgFromDB).shouldBe("modified");
-        the(prgFromDB.getDirtyAttributes()).shouldContain("first_name");
-        the(prgFromDB.getDirtyAttributes()).shouldContain("last_name");
-        the(prgFromDB.getDirtyAttributes().size()).shouldBeEqual(2);
+        the(prgFromDB.getDirtyAttributeNames()).shouldContain("first_name");
+        the(prgFromDB.getDirtyAttributeNames()).shouldContain("last_name");
+        the(prgFromDB.getDirtyAttributeNames().size()).shouldBeEqual(2);
         
         prgFromDB.saveIt();
         the(prgFromDB).shouldNotBe("modified");
@@ -109,7 +109,7 @@ public class Defect381_UpdateModifiedOnlyTest extends ActiveJDBCTest {
         prg.thaw();
         the(prg).shouldBe("new");
         the(prg).shouldBe("modified");
-        the(prg.getDirtyAttributes()).shouldBeEqual(prg.getAttributes().keySet());
+        the(prg.getDirtyAttributeNames()).shouldBeEqual(prg.getAttributes().keySet());
         
         prg.saveIt();
         the(prg).shouldNotBe("new");
