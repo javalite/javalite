@@ -56,7 +56,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     private final static Logger logger = LoggerFactory.getLogger(Model.class);
 
     private Map<String, Object> attributes = new CaseInsensitiveMap<Object>();
-    private final CaseInsensitiveSet dirtyAttributes = new CaseInsensitiveSet();
+    private final Set<String> dirtyAttributeNames = new CaseInsensitiveSet();
     private boolean frozen = false;
     private MetaModel metaModelLocal;
     private ModelRegistry modelRegistryLocal;
@@ -143,11 +143,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     protected Map<String, Object> getAttributes() {
-        return attributes;
+        return Collections.unmodifiableMap(attributes);
     }
     
-    protected CaseInsensitiveSet getDirtyAttributes() {
-        return dirtyAttributes;
+    protected Set<String> dirtyAttributeNames() {
+        return Collections.unmodifiableSet(dirtyAttributeNames);
     }
 
     /**
@@ -160,7 +160,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public <T extends Model> T fromMap(Map input) {
         hydrate(input);
-        dirtyAttributes.addAll(input.keySet());
+        dirtyAttributeNames.addAll(input.keySet());
         return (T) this;
     }
 
@@ -287,16 +287,17 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         getMetaModelLocal().checkAttributeOrAssociation(attributeName);
 
         attributes.put(attributeName, value);
-        dirtyAttributes.add(attributeName);
+        dirtyAttributeNames.add(attributeName);
         return (T) this;
     }
 
     /**
      * Will return true if any attribute of this instance was changed after latest load/save.
+     * (Instance state differs from state in DB)
      * @return true if this instance was modified.
      */
     public boolean isModified() {
-        return !dirtyAttributes.isEmpty();
+        return !dirtyAttributeNames.isEmpty();
     }
     
     /**
@@ -309,6 +310,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return frozen;
     }
 
+    /**
+     * Synonym for {@link #isModified()}.
+     *
+     * @return true if this instance was modified.
+     */
+    public boolean modified() {
+        return isModified();
+    }
 
     /**
      * Returns names of all attributes from this model.
@@ -1138,25 +1147,25 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param other target model.
      */
     public void copyTo(Model other) {
-        if (!getMetaModelLocal().getTableName().equals(other.getMetaModelLocal().getTableName())) {
-            throw new IllegalArgumentException("can only copy between the same types");
-        }
-
-        for (String name : getMetaModelLocal().getAttributeNamesSkipId()) {
-            other.getAttributes().put(name, get(name));
-            other.getDirtyAttributes().add(name);
-            // Why not use setRaw() here? Does the same and avoids duplication of code... (Garagoth)
-            // other.setRaw(name, getRaw(name));
-        }
+        other.copyFrom(this);
     }
 
     /**
-     * Copies all attribute values (except for ID, created_at and updated_at) from this instance to the other.
+     * Copies all attribute values (except for ID, created_at and updated_at) from other instance to this one.
      *
-     * @param other target model.
+     * @param other source model.
      */
     public void copyFrom(Model other) {
-        other.copyTo(this);
+        if (!getMetaModelLocal().getTableName().equals(other.getMetaModelLocal().getTableName())) {
+            throw new IllegalArgumentException("can only copy between the same types");
+        }
+        Map<String, Object> otherAttributes = other.getAttributes();
+        for (String name : getMetaModelLocal().getAttributeNamesSkipId()) {
+            attributes.put(name, otherAttributes.get(name));
+            dirtyAttributeNames.add(name);
+            // Why not use setRaw() here? Does the same and avoids duplication of code... (Garagoth)
+            // other.setRaw(name, getRaw(name));
+        }
     }
 
     /**
@@ -1196,7 +1205,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                     "this ID does not exist anymore. Stale model: " + this);
         }
         fresh.copyTo(this);
-        dirtyAttributes.clear();
+        dirtyAttributeNames.clear();
     }
 
     /**
@@ -2425,7 +2434,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public void thaw(){
         attributes.put(getIdName(), null);
-        dirtyAttributes.addAll(attributes.keySet());
+        dirtyAttributeNames.addAll(attributes.keySet());
         frozen = false;
     }
 
@@ -2551,7 +2560,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 attributes.put(metaModel.getVersionColumn(), 1);
             }
 
-            dirtyAttributes.clear(); // Clear all dirty attribute names as all were inserted. What about versionColumn ?
+            dirtyAttributeNames.clear(); // Clear all dirty attribute names as all were inserted. What about versionColumn ?
             fireAfterCreate();
 
             return done;
@@ -2582,7 +2591,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         MetaModel metaModel = getMetaModelLocal();
         StringBuilder query = new StringBuilder().append("UPDATE ").append(metaModel.getTableName()).append(" SET ");
         Set<String> attributeNames = metaModel.getAttributeNamesSkipGenerated(manageTime);
-        attributeNames.retainAll(dirtyAttributes);
+        attributeNames.retainAll(dirtyAttributeNames);
         if(attributeNames.size() > 0) {
             join(query, attributeNames, " = ?, ");
             query.append(" = ?");
@@ -2624,7 +2633,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         if(metaModel.cached()){
             QueryCache.instance().purgeTableCache(metaModel.getTableName());
         }
-        dirtyAttributes.clear();
+        dirtyAttributeNames.clear();
         fireAfterUpdate();
         return updated > 0;
     }
