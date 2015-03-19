@@ -1159,9 +1159,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         if (!getMetaModelLocal().getTableName().equals(other.getMetaModelLocal().getTableName())) {
             throw new IllegalArgumentException("can only copy between the same types");
         }
-
+        Map<String, Object> otherAttributes = other.getAttributes();
         for (String name : getMetaModelLocal().getAttributeNamesSkipId()) {
-            attributes.put(name, other.getAttributes().get(name));
+            attributes.put(name, otherAttributes.get(name));
             dirtyAttributeNames.add(name);
             // Why not use setRaw() here? Does the same and avoids duplication of code... (Garagoth)
             // other.setRaw(name, getRaw(name));

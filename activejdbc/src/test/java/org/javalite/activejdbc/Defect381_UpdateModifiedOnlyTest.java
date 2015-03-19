@@ -87,6 +87,8 @@ public class Defect381_UpdateModifiedOnlyTest extends ActiveJDBCTest {
         the(prgFromDB).shouldBe("modified");
         the(prgFromDB.dirtyAttributeNames()).shouldContain("first_name");
         the(prgFromDB.dirtyAttributeNames()).shouldContain("last_name");
+        the(prgFromDB.dirtyAttributeNames()).shouldContain("First_Name");
+        the(prgFromDB.dirtyAttributeNames()).shouldContain("LAST_NAME");
         the(prgFromDB.dirtyAttributeNames().size()).shouldBeEqual(2);
         
         prgFromDB.saveIt();
@@ -129,5 +131,14 @@ public class Defect381_UpdateModifiedOnlyTest extends ActiveJDBCTest {
         prg.copyTo(prg2);
         the(prg).shouldNotBe("new");
         the(prg2).shouldBe("modified");
+    }
+    
+    @Test
+    public void shouldBeCaseInsensitive() {
+        Programmer prg = new Programmer();
+        prg.set("FIRST_NAME", "John");
+        prg.set("First_Name", "John");
+        prg.set("first_name", "John");
+        the(prg.dirtyAttributeNames().size()).shouldBeEqual(1);
     }
 }
