@@ -143,11 +143,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     protected Map<String, Object> getAttributes() {
-        return attributes;
+        return Collections.unmodifiableMap(attributes);
     }
     
-    protected Set<String> getDirtyAttributeNames() {
-        return dirtyAttributeNames;
+    protected Set<String> dirtyAttributeNames() {
+        return Collections.unmodifiableSet(dirtyAttributeNames);
     }
 
     /**
@@ -293,6 +293,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     /**
      * Will return true if any attribute of this instance was changed after latest load/save.
+     * (Instance state differs from state in DB)
      * @return true if this instance was modified.
      */
     public boolean isModified() {
@@ -309,6 +310,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return frozen;
     }
 
+    /**
+     * Synonym for {@link #isModified()}.
+     *
+     * @return true if this instance was modified.
+     */
+    public boolean modified() {
+        return isModified();
+    }
 
     /**
      * Returns names of all attributes from this model.
@@ -1138,25 +1147,25 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param other target model.
      */
     public void copyTo(Model other) {
+        other.copyFrom(this);
+    }
+
+    /**
+     * Copies all attribute values (except for ID, created_at and updated_at) from other instance to this one.
+     *
+     * @param other source model.
+     */
+    public void copyFrom(Model other) {
         if (!getMetaModelLocal().getTableName().equals(other.getMetaModelLocal().getTableName())) {
             throw new IllegalArgumentException("can only copy between the same types");
         }
 
         for (String name : getMetaModelLocal().getAttributeNamesSkipId()) {
-            other.getAttributes().put(name, get(name));
-            other.getDirtyAttributeNames().add(name);
+            attributes.put(name, other.getAttributes().get(name));
+            dirtyAttributeNames.add(name);
             // Why not use setRaw() here? Does the same and avoids duplication of code... (Garagoth)
             // other.setRaw(name, getRaw(name));
         }
-    }
-
-    /**
-     * Copies all attribute values (except for ID, created_at and updated_at) from this instance to the other.
-     *
-     * @param other target model.
-     */
-    public void copyFrom(Model other) {
-        other.copyTo(this);
     }
 
     /**
