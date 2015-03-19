@@ -1198,7 +1198,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * Re-reads all attribute values from DB.
      *
      */
-    public void refresh() {
+    public synchronized void refresh() {
         Model fresh = ModelDelegate.findById(this.getClass(), getId());
         if (fresh == null) {
             throw new StaleModelException("Failed to refresh self because probably record with " +
