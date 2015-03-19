@@ -139,12 +139,29 @@ public class ExpectationTest {
     }
 
     public class A {
-        public boolean isKnownAsRole() {return true;}
+        public Boolean isKnownAsRole() { return Boolean.TRUE; }
+        public boolean unknown() { return false; }
+        public Boolean empty() { return null; }
     }
 
     @Test
-    public void shouldTestBooleanMethodWithCamelCase(){
+    public void shouldTestBooleanMethodWithCamelCase() {
         the(new A()).shouldBe("knownAsRole");
+    }
+
+    @Test
+    public void shouldTestBooleanMethodWithoutPrefix() {
+        the(new A()).shouldNotBe("unknown");
+    }
+
+    @Test(expected = TestException.class)
+    public void shouldFailBeBooleanMethodReturningNull() {
+        the(new A()).shouldBe("empty");
+    }
+
+    @Test(expected = TestException.class)
+    public void shouldFailNotBeBooleanMethodReturningNull() {
+        the(new A()).shouldNotBe("empty");
     }
 
     @Test

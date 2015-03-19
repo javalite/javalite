@@ -112,7 +112,7 @@ public class Expectation<T> {
 
     /**
      * Invokes a boolean method and uses return value in comparison.
-     * 
+     *
      * @param booleanMethod name of boolean method as specified in Java Beans specification. Example: if method name
      * is <code>isValid()</code>, then the string "valid" needs to be passed. This results in readable  code
      * such as:
@@ -121,7 +121,7 @@ public class Expectation<T> {
      * </pre>
      */
     public void shouldBe(String booleanMethod) {
-        invokeBoolean(booleanMethod, true);
+        invokeBoolean(booleanMethod, Boolean.TRUE);
     }
 
     /**
@@ -135,7 +135,7 @@ public class Expectation<T> {
      * </pre>
      */
     public void shouldNotBe(String booleanMethod) {
-        invokeBoolean(booleanMethod, false);
+        invokeBoolean(booleanMethod, Boolean.FALSE);
     }
 
     /**
@@ -295,7 +295,14 @@ public class Expectation<T> {
         if (actual == expected) throw new TestException("references are the same, but they should not be");
     }
 
-
+    private Method booleanMethodNamed(String name) {
+        try {
+            Method m = actual.getClass().getMethod(name);
+            return (boolean.class.equals(m.getReturnType()) || Boolean.class.equals(m.getReturnType())) ? m : null;
+        } catch (NoSuchMethodException ignore) {
+            return null;
+        }
+    }
 
     /**
      * Invokes a boolean method.
@@ -303,30 +310,30 @@ public class Expectation<T> {
      * @param booleanMethod name of method.
      * @param returnValue - if execution of boolean method should return true or false to pass the test.
      */
-    private void invokeBoolean(String booleanMethod, boolean returnValue) {
+    private void invokeBoolean(String booleanMethod, Boolean returnValue) {
         checkNull();
-        Method m = null;
-        try {
-
-            String methodName1 = "is" + capitalize(booleanMethod);
-            String methodName2 = "has" + capitalize(booleanMethod);
-
-            if (m == null)
-                try {m = actual.getClass().getMethod(methodName1);} catch (NoSuchMethodException ignore) {}
-            if (m == null)
-                try {m = actual.getClass().getMethod(methodName2);} catch (NoSuchMethodException ignore) {}
-
-            if (m == null)
-                throw new IllegalArgumentException("failed to find a matching method for class: "
-                        + actual.getClass() + ", named: " + methodName1 + " or " + methodName2);
-
-            boolean result = (Boolean)m.invoke(actual);
-
-            if(returnValue != result)
-                throw new TestException("Method: " + m.getName() + " should return " + returnValue + ", but returned " + result);
+        String methodName1 = "is" + capitalize(booleanMethod);
+        String methodName2 = "has" + capitalize(booleanMethod);
+        Method m = booleanMethodNamed(booleanMethod);
+        if (m == null) {
+            m = booleanMethodNamed(methodName1);
         }
-        catch (TestException e) {throw e;}
-        catch (Exception e) {throw new RuntimeException(e);}
+        if (m == null) {
+            m = booleanMethodNamed(methodName2);
+        }
+        if (m == null) {
+            throw new IllegalArgumentException("failed to find a matching method for class: "
+                    + actual.getClass() + ", named: " + booleanMethod + ", " + methodName1 + " or " + methodName2);
+        }
+        Object result;
+        try {
+           result = m.invoke(actual);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        if (!returnValue.equals(result)) {
+            throw new TestException("Method: " + m.getName() + " should return " + returnValue + ", but returned " + result);
+        }
     }
 
     private void checkNull(){
