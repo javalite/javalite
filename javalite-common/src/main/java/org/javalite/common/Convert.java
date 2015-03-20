@@ -201,54 +201,6 @@ public final class Convert {
     }
 
     /**
-     * Creates a <code>java.sql.Date</code> with the given parameters using the default <code>java.util.Calendar</code>.
-     *
-     * @param year Calendar-specific value for the year. Do not subtract 1900 for Gregorian or Julian calendars.
-     * @param month Calendar-specific value for the month. The first month of the year in the Gregorian and Julian
-     * calendars is JANUARY which is 0; the last depends on the number of months in a year.
-     * @param day Day of the month. The first day of the month has value 1.
-     * @return java.sql.Date instance representing given values
-     */
-    public static java.sql.Date toSqlDate(int year, int month, int day) {
-        Calendar calendar = THREADLOCAL_CAL_DEFAULT.get();
-        calendar.set(Calendar.YEAR, year);
-        calendar.set(Calendar.MONTH, month);
-        calendar.set(Calendar.DAY_OF_MONTH, day);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        return new java.sql.Date(calendar.getTimeInMillis());
-    }
-
-    /**
-     * Creates a <code>java.sql.Timestamp</code> with the given parameters using the default
-     * <code>java.util.Calendar</code>.
-     *
-     * @param year Calendar-specific value for the year. Do not subtract 1900 for Gregorian or Julian calendars.
-     * @param month Calendar-specific value for the month. The first month of the year in the Gregorian and Julian
-     * calendars is JANUARY which is 0; the last depends on the number of months in a year.
-     * @param day Day of the month. The first day of the month has value 1.
-     * @param hour Hour of the day for the 24-hour clock. For example, for 10 PM the hour of the day is 22.
-     * @param minute Minute within the hour
-     * @param second Second within the minute
-     * @param milli Millisecond within the second
-     * @return java.sql.Timestamp instance representing given values
-     */
-    public static java.sql.Timestamp toTimestamp(int year, int month, int day,
-            int hour, int minute, int second, int milli) {
-        Calendar calendar = THREADLOCAL_CAL_DEFAULT.get();
-        calendar.set(Calendar.YEAR, year);
-        calendar.set(Calendar.MONTH, month);
-        calendar.set(Calendar.DAY_OF_MONTH, day);
-        calendar.set(Calendar.HOUR_OF_DAY, hour);
-        calendar.set(Calendar.MINUTE, minute);
-        calendar.set(Calendar.SECOND, second);
-        calendar.set(Calendar.MILLISECOND, milli);
-        return new java.sql.Timestamp(calendar.getTimeInMillis());
-    }
-
-    /**
      * Converts a <code>java.util.Date</code> to a <code>String</code> in ISO 8601 format: "yyyy-MM-dd'T'HH:mm:ss'Z'"
      * in UTC timezone for timestamps, and "yyyy-MM-dd" for instances of <code>java.sql.Date</code>.
      *

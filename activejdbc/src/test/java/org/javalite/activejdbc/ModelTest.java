@@ -474,7 +474,7 @@ public class ModelTest extends ActiveJDBCTest {
         // date literals formatting is not the same for every DBMS, so not testing this here
         the(insertSQL).shouldBeEqual("INSERT INTO students (first_name, id, last_name) VALUES ('Jim', 1, 'Cary')");
 
-        s.set("dob", new java.sql.Date(getDate(1965, 12, 1).getTime()));
+        s.set("dob", getDate(1965, 12, 1));
 
         insertSQL = s.toInsert("q'{", "}'");
         the(insertSQL).shouldBeEqual("INSERT INTO students (dob, first_name, id, last_name) VALUES ('1965-12-01', q'{Jim}', 1, q'{Cary}')");
@@ -488,8 +488,8 @@ public class ModelTest extends ActiveJDBCTest {
         deleteFromTable("students");
         Student s = new Student();
         s.set("id", 1, "first_name", "Jim", "last_name", "Cary");
-        java.sql.Date dob = Convert.toSqlDate(1965, Calendar.DECEMBER, 1);
-        java.sql.Timestamp enrollmentDate = Convert.toTimestamp(1973, Calendar.JANUARY, 20, 11, 0, 0, 0);
+        java.sql.Date dob = getDate(1965, 12, 1);
+        java.sql.Timestamp enrollmentDate = getTimestamp(1973, 1, 20, 11, 0, 0, 0);
         s.setDate("dob", dob);
         s.setTimestamp("enrollment_date", enrollmentDate);
 
