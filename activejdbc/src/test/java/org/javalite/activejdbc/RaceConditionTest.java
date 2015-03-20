@@ -7,7 +7,6 @@ import org.junit.Test;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.javalite.activejdbc.test.JdbcProperties.*;
-import static org.javalite.test.jspec.JSpec.a;
 
 /**
  * @author Igor Polevoy: 4/4/12 2:40 PM
@@ -15,6 +14,7 @@ import static org.javalite.test.jspec.JSpec.a;
 public class RaceConditionTest extends ActiveJDBCTest{
 
     @Test
+    //TODO: what is test testing?
     public void shouldNotGetRaceCondition() throws InterruptedException {
 
         final ConcurrentLinkedQueue<Integer> queue = new ConcurrentLinkedQueue<Integer>();
@@ -34,9 +34,7 @@ public class RaceConditionTest extends ActiveJDBCTest{
             new Thread(r).start();
         }
 
-
-        Thread.sleep(2000);
-
+        Thread.sleep(5000);
 
         a(queue.size()).shouldEqual(10);
     }
