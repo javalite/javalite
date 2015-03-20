@@ -39,6 +39,7 @@ import java.text.DateFormat;
 import java.util.*;
 import org.javalite.activejdbc.conversion.BlankToNullConverter;
 import org.javalite.activejdbc.conversion.ZeroToNullConverter;
+import org.javalite.activejdbc.dialects.Dialect;
 import org.javalite.common.Escape;
 
 import static org.javalite.common.Inflector.*;
@@ -2677,10 +2678,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Generates INSERT SQL based on this model. Uses single quotes for all string values.
+     * Generates INSERT SQL based on this model. Uses the dialect associated with this model database to format the
+     * value literals.
      * Example:
      * <pre>
-     *
      * String insert = u.toInsert();
      * //yields this output:
      * //INSERT INTO users (id, first_name, email, last_name) VALUES (1, 'Marilyn', 'mmonroe@yahoo.com', 'Monroe');
@@ -2688,10 +2689,25 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @return INSERT SQL based on this model.
      */
-    public String toInsert(){
-        return toInsert("'", "'");
+    public String toInsert() {
+        return toInsert(getMetaModelLocal().getDialect());
     }
 
+    /**
+     * Generates INSERT SQL based on this model with the provided dialect.
+     * Example:
+     * <pre>
+     * String insert = u.toInsert(new MySQLDialect());
+     * //yields this output:
+     * //INSERT INTO users (id, first_name, email, last_name) VALUES (1, 'Marilyn', 'mmonroe@yahoo.com', 'Monroe');
+     * </pre>
+     *
+     * @param dialect dialect to be used to generate the SQL
+     * @return INSERT SQL based on this model.
+     */
+    public String toInsert(Dialect dialect) {
+        return dialect.insert(getMetaModelLocal(), attributes);
+    }
 
     /**
      * Generates INSERT SQL based on this model.
@@ -2707,8 +2723,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param leftStringQuote - left quote for a string value, this can be different for different databases.
      * @param rightStringQuote - left quote for a string value, this can be different for different databases.
      * @return SQL INSERT string;
+     * @deprecated Use {@link #toInsert(Dialect)} instead.
      */
-    //TODO: review SimpleFormatter (why should the user worry about this?!), using the Dialect instead
+    @Deprecated
     public String toInsert(String leftStringQuote, String rightStringQuote){
         return toInsert(new SimpleFormatter(java.sql.Date.class, "'", "'"),
                         new SimpleFormatter(Timestamp.class, "'", "'"),
@@ -2716,11 +2733,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * TODO: write good JavaDoc, use code  inside method above
-     *
      * @param formatters
      * @return
+     * @deprecated Use {@link #toInsert(Dialect)} instead.
      */
+    @Deprecated
     public String toInsert(Formatter... formatters){
         HashMap<Class, Formatter> formatterMap = new HashMap<Class, Formatter>();
 

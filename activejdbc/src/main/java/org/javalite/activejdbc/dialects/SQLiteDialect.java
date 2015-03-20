@@ -1,29 +1,29 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2015 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
-
-
 package org.javalite.activejdbc.dialects;
 
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
 import org.javalite.activejdbc.MetaModel;
 import org.javalite.common.Convert;
 
 /**
  * @author Igor Polevoy
- * @author ericbn
+ * @author Eric Nielsen
  */
 public class SQLiteDialect extends PostgreSQLDialect {
     @Override
@@ -47,4 +47,16 @@ public class SQLiteDialect extends PostgreSQLDialect {
         }
         return value;
     }
+
+    @Override
+    protected void appendDate(StringBuilder query, Date value) {
+        // See https://www.sqlite.org/lang_datefunc.html
+        query.append("date('").append(value.toString()).append("')");
+    }
+
+    @Override
+    protected void appendTimestamp(StringBuilder query, Timestamp value) {
+        // See https://www.sqlite.org/lang_datefunc.html
+        query.append("datetime('").append(value.toString()).append("')");
+     }
 }

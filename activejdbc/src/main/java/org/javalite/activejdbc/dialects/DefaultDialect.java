@@ -16,10 +16,13 @@ limitations under the License.
 package org.javalite.activejdbc.dialects;
 
 import org.javalite.activejdbc.MetaModel;
-
-import java.util.List;
-import java.util.regex.Pattern;
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
+import org.javalite.common.Convert;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 import static org.javalite.common.Util.*;
 
@@ -130,8 +133,9 @@ public class DefaultDialect implements Dialect {
     }
 
     @Override
-    public String selectExists(MetaModel mm) {
-	    return "SELECT " + mm.getIdName() + " FROM " + mm.getTableName() + " WHERE " + mm.getIdName() + " = ?";
+    public String selectExists(MetaModel metaModel) {
+	    return "SELECT " + metaModel.getIdName() + " FROM " + metaModel.getTableName()
+                + " WHERE " + metaModel.getIdName() + " = ?";
     }
 
     @Override
@@ -172,5 +176,47 @@ public class DefaultDialect implements Dialect {
     public String deleteManyToManyAssociation(Many2ManyAssociation association) {
         return "DELETE FROM " + association.getJoin()
                 + " WHERE " + association.getSourceFkName() + " = ? AND " + association.getTargetFkName() + " = ?";
+    }
+
+    protected void appendValue(StringBuilder query, Object value) {
+        if (value == null) {
+            query.append("NULL");
+        } else if (value instanceof Number) {
+            query.append(value);
+        } else if (value instanceof java.sql.Date) {
+            appendDate(query, (java.sql.Date) value);
+        } else if (value instanceof java.sql.Timestamp) {
+            appendTimestamp(query, (java.sql.Timestamp) value);
+        } else {
+            query.append('\'').append(Convert.toString(value)).append('\'');
+        }
+    }
+
+    protected void appendDate(StringBuilder query, java.sql.Date value) {
+        query.append("DATE ").append('\'').append(value.toString()).append('\'');
+    }
+
+    protected void appendTimestamp(StringBuilder query, java.sql.Timestamp value) {
+        query.append("TIMESTAMP ").append('\'').append(value.toString()).append('\'');
+    }
+
+    @Override
+    public String insert(MetaModel metaModel, Map<String, Object> attributes) {
+        StringBuilder query = new StringBuilder().append("INSERT INTO ").append(metaModel.getTableName()).append(' ');
+        if (attributes.isEmpty()) {
+            appendEmptyRow(metaModel, query);
+        } else {
+            query.append('(');
+            join(query, attributes.keySet(), ", ");
+            query.append(") VALUES (");
+            Iterator<Object> it = attributes.values().iterator();
+            appendValue(query, it.next());
+            while (it.hasNext()) {
+                query.append(", ");
+                appendValue(query, it.next());
+            }
+            query.append(')');
+        }
+        return query.toString();
     }
 }

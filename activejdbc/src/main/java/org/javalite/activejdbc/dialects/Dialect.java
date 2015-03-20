@@ -17,6 +17,7 @@ limitations under the License.
 package org.javalite.activejdbc.dialects;
 
 import java.util.List;
+import java.util.Map;
 import org.javalite.activejdbc.MetaModel;
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
 
@@ -48,4 +49,6 @@ public interface Dialect {
     String insertParametrized(MetaModel metaModel, List<String> columns);
 
     String deleteManyToManyAssociation(Many2ManyAssociation association);
+
+    String insert(MetaModel metaModel, Map<String, Object> attributes);
 }
