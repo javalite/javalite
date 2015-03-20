@@ -485,9 +485,8 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void shouldGenerateValidInsertSQL() {
-        deleteFromTable("students");
         Student s = new Student();
-        s.set("id", 1, "first_name", "Jim", "last_name", "Cary");
+        s.set("first_name", "Jim", "last_name", "Cary");
         java.sql.Date dob = getDate(1965, 12, 1);
         java.sql.Timestamp enrollmentDate = getTimestamp(1973, 1, 20, 11, 0, 0, 0);
         s.setDate("dob", dob);
@@ -495,9 +494,9 @@ public class ModelTest extends ActiveJDBCTest {
 
         String insertSql = s.toInsert();
         System.out.println(insertSql);
-        Base.execInsert(insertSql, s.getIdName());
+        Object id = Base.execInsert(insertSql, s.getIdName());
 
-        s = Student.findById(1);
+        s = Student.findById(id);
         the(s.get("first_name")).shouldBeEqual("Jim");
         the(s.get("last_name")).shouldBeEqual("Cary");
         the(s.get("dob")).shouldBeEqual(dob);
