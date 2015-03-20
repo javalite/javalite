@@ -465,22 +465,43 @@ public class ModelTest extends ActiveJDBCTest {
     }
 
     @Test
-    public void shouldGenerateCorrectInsertSQL(){
+    public void shouldGenerateCorrectInsertSQL() {
         Student s = new Student();
         s.set("first_name", "Jim");
         s.set("last_name", "Cary");
-        s.set("dob", new java.sql.Date(getDate(1965, 12, 1).getTime()));
         s.set("id", 1);
         String insertSQL = s.toInsert();
+        // date literals formatting is not the same for every DBMS, so not testing this here
+        the(insertSQL).shouldBeEqual("INSERT INTO students (first_name, id, last_name) VALUES ('Jim', 1, 'Cary')");
 
-        the(insertSQL).shouldBeEqual("INSERT INTO students (dob, first_name, id, last_name) VALUES ('1965-12-01', 'Jim', 1, 'Cary')");
+        s.set("dob", new java.sql.Date(getDate(1965, 12, 1).getTime()));
 
         insertSQL = s.toInsert("q'{", "}'");
-
         the(insertSQL).shouldBeEqual("INSERT INTO students (dob, first_name, id, last_name) VALUES ('1965-12-01', q'{Jim}', 1, q'{Cary}')");
 
         insertSQL = s.toInsert(new SimpleFormatter(java.sql.Date.class, "to_date('", "')"));
         the(insertSQL).shouldBeEqual("INSERT INTO students (dob, first_name, id, last_name) VALUES (to_date('1965-12-01'), 'Jim', 1, 'Cary')");
+    }
+
+    @Test
+    public void shouldGenerateValidInsertSQL() {
+        deleteFromTable("students");
+        Student s = new Student();
+        s.set("id", 1, "first_name", "Jim", "last_name", "Cary");
+        java.sql.Date dob = Convert.toSqlDate(1965, Calendar.DECEMBER, 1);
+        java.sql.Timestamp enrollmentDate = Convert.toTimestamp(1973, Calendar.JANUARY, 20, 11, 0, 0, 0);
+        s.setDate("dob", dob);
+        s.setTimestamp("enrollment_date", enrollmentDate);
+
+        String insertSql = s.toInsert();
+        System.out.println(insertSql);
+        Base.execInsert(insertSql, s.getIdName());
+
+        s = Student.findById(1);
+        the(s.get("first_name")).shouldBeEqual("Jim");
+        the(s.get("last_name")).shouldBeEqual("Cary");
+        the(s.get("dob")).shouldBeEqual(dob);
+        the(s.get("enrollment_date")).shouldBeEqual(enrollmentDate);
     }
 
     @Test
