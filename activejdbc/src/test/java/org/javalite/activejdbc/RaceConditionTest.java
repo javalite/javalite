@@ -5,6 +5,9 @@ import org.javalite.activejdbc.test_models.Person;
 import org.junit.Test;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static org.javalite.activejdbc.test.JdbcProperties.*;
 
@@ -20,8 +23,7 @@ public class RaceConditionTest extends ActiveJDBCTest{
         final ConcurrentLinkedQueue<Integer> queue = new ConcurrentLinkedQueue<Integer>();
 
         Runnable r = new Runnable() {
-            public void run() {
-
+            @Override public void run() {
                 Base.open(driver(), url(), user(), password());
                 Person p = new Person();
                 p.set("name", "Igor");
@@ -29,14 +31,12 @@ public class RaceConditionTest extends ActiveJDBCTest{
                 queue.add(1);
             }
         };
-
+        ExecutorService executor = Executors.newFixedThreadPool(10);
         for (int i = 0; i < 10; i++) {
-            new Thread(r).start();
+            executor.execute(r);
         }
-
-        Thread.sleep(5000);
-
-        a(queue.size()).shouldEqual(10);
+        executor.shutdown();
+        executor.awaitTermination(1, TimeUnit.MINUTES);
+        the(queue.size()).shouldEqual(10);
     }
-
 }
