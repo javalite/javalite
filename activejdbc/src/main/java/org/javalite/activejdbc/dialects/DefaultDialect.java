@@ -15,18 +15,21 @@ limitations under the License.
 */
 package org.javalite.activejdbc.dialects;
 
-import org.javalite.activejdbc.MetaModel;
-import org.javalite.activejdbc.associations.Many2ManyAssociation;
-import org.javalite.common.Convert;
+import static org.javalite.common.Util.blank;
+import static org.javalite.common.Util.join;
+import static org.javalite.common.Util.joinAndRepeat;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 
-import static org.javalite.common.Util.*;
+import org.javalite.activejdbc.CaseInsensitiveMap;
+import org.javalite.activejdbc.MetaModel;
+import org.javalite.activejdbc.associations.Many2ManyAssociation;
+import org.javalite.common.Convert;
 
 /**
  * @author Igor Polevoy
@@ -224,37 +227,38 @@ public class DefaultDialect implements Dialect {
     
     @Override
     public String update(MetaModel metaModel, Map<String, Object> attributes) {
-    	  StringBuilder query = new StringBuilder().append("UPDATE ").append(metaModel.getTableName()).append(' ');
-          if (attributes.isEmpty()) {
-              appendEmptyRow(metaModel, query);
-          } else {
-        	     
-        	  query.append("SET ");
-        	  String idName = metaModel.getIdName().toUpperCase();
- 
-        	  // don't include the id name in the set portion
-        	  Map<String, Object> attributesWithoutId = new HashMap<String, Object>(attributes);
-        	  attributesWithoutId.remove(idName);
-        	  
-              Iterator<Entry<String, Object>> attributesIt = attributesWithoutId.entrySet().iterator();
-              while (attributesIt.hasNext()) {
-            	  Entry<String, Object> attribute = attributesIt.next();
-            	  String key = attribute.getKey();
-            	  Object val = attribute.getValue();
+    	StringBuilder query = new StringBuilder().append("UPDATE ").append(metaModel.getTableName()).append(' ');
+    	if (attributes.isEmpty()) {
+    		throw new NoSuchElementException("No attributes set, can't create an update statement.");
+    	} else {
 
-                	  query.append(key + " = ");
-                	  appendValue(query, val); // Accommodates the different types
-                	  
-                	  if (attributesIt.hasNext()) {
-                		  query.append(", ");
-                	  } else{
-                		  query.append(" ");
-                	  }
+    		query.append("SET ");
+    		String idName = metaModel.getIdName();
 
-              }
-              query.append("WHERE ").append(idName).append(" = " + attributes.get(idName));
-          }
-          return query.toString();
+    		// don't include the id name in the set portion
+    		Map<String, Object> attributesWithoutId = new CaseInsensitiveMap<Object>();
+    		attributesWithoutId.putAll(attributes);
+    		attributesWithoutId.remove(idName);
+
+    		Iterator<Entry<String, Object>> attributesIt = attributesWithoutId.entrySet().iterator();
+    		for (;;) {
+				Entry<String, Object> attribute = attributesIt.next();
+				String key = attribute.getKey();
+				Object val = attribute.getValue();
+
+				query.append(key + " = ");
+				appendValue(query, val); // Accommodates the different types
+				
+    			if (attributesIt.hasNext()) {
+    				query.append(", ");
+    			} else {
+    				break;
+    			}
+    		}
+    		query.append(" WHERE ").append(idName).append(" = " + attributes.get(idName));
+    	}
+    	return query.toString();
+    	
     }
 
 }

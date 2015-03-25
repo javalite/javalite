@@ -28,6 +28,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import static org.javalite.common.Collections.*;
@@ -508,9 +509,17 @@ public class ModelTest extends ActiveJDBCTest {
         // Verify that the first name column changed
         the(s.get("first_name")).shouldBeEqual("Drew");
         System.out.println(updateSQL);
- 
    
     }
+        
+    @Test(expected=NoSuchElementException.class)
+    public void shouldGenerateNoSuchElementFromBlankUpdate() {
+    	// Verify that a model with no attributes throws an error
+    	Student s = new Student();
+    	s.saveIt();
+    	s.toUpdate();
+    }
+
 
     @Test
     public void shouldGenerateValidInsertSQL() {
