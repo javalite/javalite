@@ -219,4 +219,36 @@ public class DefaultDialect implements Dialect {
         }
         return query.toString();
     }
+    
+    @Override
+    public String update(MetaModel metaModel, Map<String, Object> attributes) {
+    	  StringBuilder query = new StringBuilder().append("UPDATE ").append(metaModel.getTableName()).append(' ');
+          if (attributes.isEmpty()) {
+              appendEmptyRow(metaModel, query);
+          } else {
+        	     
+        	  query.append("SET ");
+        	     
+        	  Iterator<String> keysetIt = attributes.keySet().iterator();
+              Iterator<Object> valueIt = attributes.values().iterator();
+         
+              while (valueIt.hasNext()) {
+            	  query.append(keysetIt.next() + " = ");
+            	  appendValue(query, valueIt.next()); // Accomodates the different types
+            	  
+            	  if (valueIt.hasNext()) {
+            		  query.append(", ");
+            	  } else{
+            		  query.append(" ");
+            	  }
+              }
+              
+              String idName = metaModel.getIdName();
+              query.append("WHERE ").append(idName).append(" = " + attributes.get(idName));
+          
+
+          }
+          return query.toString();
+    }
+
 }

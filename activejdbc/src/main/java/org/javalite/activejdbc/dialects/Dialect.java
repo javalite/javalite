@@ -51,4 +51,7 @@ public interface Dialect {
     String deleteManyToManyAssociation(Many2ManyAssociation association);
 
     String insert(MetaModel metaModel, Map<String, Object> attributes);
+    
+    String update(MetaModel metaModel, Map<String, Object> attributes);
+    
 }

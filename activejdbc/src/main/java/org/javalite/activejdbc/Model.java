@@ -2692,68 +2692,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public String toInsert() {
         return toInsert(getMetaModelLocal().getDialect());
     }
-    
-    /**
-     * Generates UPDATE SQL based on this model. Uses single quotes for all string values.
-     * Example:
-     * <pre>
-     *
-     * String update = u.toUpdate();
-     * //yields this output:
-     * //UPDATE students SET DOB = '1965-12-01' , FIRST_NAME = 'Jim' , LAST_NAME = 'Cary' WHERE id = 1
-     * </pre>
-     *
-     * @return UPDATE SQL based on this model.
-     */
-    public String toUpdate(){
-
-    	doUpdatedAt();
-
-    	MetaModel metaModel = getMetaModelLocal();
-    	StringBuilder query = new StringBuilder().append("UPDATE ").append(metaModel.getTableName()).append(" SET ");
-    	SortedSet<String> attributeNames = metaModel.getAttributeNamesSkipGenerated(manageTime);
-
-    	
-
-    	List<Object> values = getAttributeValues(attributeNames);
-    	List<String> attributeNamesList = new ArrayList<String>(attributeNames);
-    	for (int i = 0; i < values.size(); i++) {
-    		Object value = values.get(i);
-    		String attributeName = attributeNamesList.get(i);
-    		if (value != null) {
-    			query.append(attributeName + " = " + "'" + value + "'");
-    			
-    			if (i < values.size() -1) {
-    				query.append(" , ");
-    			}
-    		}
-    	}
-        	
-
-    	if (manageTime && metaModel.hasAttribute("updated_at")) {
-    		query.append(", updated_at = ?");
-    		values.add(get("updated_at"));
-    	}
-
-    	if(metaModel.isVersioned()){
-    		query.append(", ").append(getMetaModelLocal().getVersionColumn()).append(" = ?");
-    		values.add(getLong(getMetaModelLocal().getVersionColumn()) + 1);
-    	}
-    	query.append(" WHERE ").append(metaModel.getIdName()).append(" = " + getId());
-    	values.add(getId());
-    	
-    	
-    	if (metaModel.isVersioned()) {
-    		query.append(" AND ").append(getMetaModelLocal().getVersionColumn()).append(" = ?");
-    		values.add(get(getMetaModelLocal().getVersionColumn()));
-    	}
-
-    	if(metaModel.cached()){
-    		QueryCache.instance().purgeTableCache(metaModel.getTableName());
-    	}
-    	return query.toString();
-    }
-    
+        
 
     /**
      * Generates INSERT SQL based on this model with the provided dialect.
@@ -2769,6 +2708,38 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public String toInsert(Dialect dialect) {
         return dialect.insert(getMetaModelLocal(), attributes);
+    }
+    
+    /**
+     * Generates UPDATE SQL based on this model. Uses single quotes for all string values.
+     * Example:
+     * <pre>
+     *
+     * String update = u.toUpdate();
+     * //yields this output:
+     * //UPDATE students SET DOB = '1965-12-01' , FIRST_NAME = 'Jim' , LAST_NAME = 'Cary' WHERE id = 1
+     * </pre>
+     *
+     * @return UPDATE SQL based on this model.
+     */
+    public String toUpdate() {
+        return toUpdate(getMetaModelLocal().getDialect());
+    }
+    
+    /**
+     * Generates UPDATE SQL based on this model. Uses single quotes for all string values.
+     * Example:
+     * <pre>
+     *
+     * String update = u.toUpdate();
+     * //yields this output:
+     * //UPDATE students SET DOB = '1965-12-01' , FIRST_NAME = 'Jim' , LAST_NAME = 'Cary' WHERE id = 1
+     * </pre>
+     *
+     * @return UPDATE SQL based on this model.
+     */
+    public String toUpdate(Dialect dialect) {
+        return dialect.update(getMetaModelLocal(), attributes);
     }
 
     /**

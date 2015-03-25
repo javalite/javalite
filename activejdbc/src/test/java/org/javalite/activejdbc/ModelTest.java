@@ -493,7 +493,7 @@ public class ModelTest extends ActiveJDBCTest {
         String updateSQL = s.toUpdate();
         System.out.println(updateSQL);
 
-        the(updateSQL).shouldBeEqual("UPDATE students SET DOB = '1965-12-01' , FIRST_NAME = 'Jim' , LAST_NAME = 'Cary' WHERE id = 1");
+        the(updateSQL).shouldBeEqual("UPDATE students SET dob = DATE '1965-12-01', first_name = 'Jim', id = 1, last_name = 'Cary' WHERE id = 1");
 }
 
     @Test
