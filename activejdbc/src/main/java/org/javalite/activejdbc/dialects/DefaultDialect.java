@@ -19,9 +19,11 @@ import org.javalite.activejdbc.MetaModel;
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
 import org.javalite.common.Convert;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import static org.javalite.common.Util.*;
@@ -228,25 +230,29 @@ public class DefaultDialect implements Dialect {
           } else {
         	     
         	  query.append("SET ");
-        	     
-        	  Iterator<String> keysetIt = attributes.keySet().iterator();
-              Iterator<Object> valueIt = attributes.values().iterator();
-         
-              while (valueIt.hasNext()) {
-            	  query.append(keysetIt.next() + " = ");
-            	  appendValue(query, valueIt.next()); // Accomodates the different types
-            	  
-            	  if (valueIt.hasNext()) {
-            		  query.append(", ");
-            	  } else{
-            		  query.append(" ");
-            	  }
-              }
-              
-              String idName = metaModel.getIdName();
-              query.append("WHERE ").append(idName).append(" = " + attributes.get(idName));
-          
+        	  String idName = metaModel.getIdName().toUpperCase();
+ 
+        	  // don't include the id name in the set portion
+        	  Map<String, Object> attributesWithoutId = new HashMap<String, Object>(attributes);
+        	  attributesWithoutId.remove(idName);
+        	  
+              Iterator<Entry<String, Object>> attributesIt = attributesWithoutId.entrySet().iterator();
+              while (attributesIt.hasNext()) {
+            	  Entry<String, Object> attribute = attributesIt.next();
+            	  String key = attribute.getKey();
+            	  Object val = attribute.getValue();
 
+                	  query.append(key + " = ");
+                	  appendValue(query, val); // Accommodates the different types
+                	  
+                	  if (attributesIt.hasNext()) {
+                		  query.append(", ");
+                	  } else{
+                		  query.append(" ");
+                	  }
+
+              }
+              query.append("WHERE ").append(idName).append(" = " + attributes.get(idName));
           }
           return query.toString();
     }

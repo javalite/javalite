@@ -484,17 +484,33 @@ public class ModelTest extends ActiveJDBCTest {
     }
     
     @Test
-    public void shouldGenerateCorrectUpdateSQL(){
+    public void shouldGenerateCorrectUpdateSQL() {
+   
+    	// Create the student
+        deleteAndPopulateTable("students");
         Student s = new Student();
         s.set("first_name", "Jim");
         s.set("last_name", "Cary");
         s.set("dob", new java.sql.Date(getDate(1965, 12, 1).getTime()));
-        s.set("id", 1);
+        s.set("id", 1);        
+        s.saveIt();
+        
+        // find them, and change a column
+        s = Student.findById(1);
+        s.set("first_name", "Drew");
+        s.saveIt();
         String updateSQL = s.toUpdate();
-        System.out.println(updateSQL);
+        Base.exec(updateSQL);
+        
+        // Find them again
+        s = Student.findById(1);
 
-        the(updateSQL).shouldBeEqual("UPDATE students SET dob = DATE '1965-12-01', first_name = 'Jim', id = 1, last_name = 'Cary' WHERE id = 1");
-}
+        // Verify that the first name column changed
+        the(s.get("first_name")).shouldBeEqual("Drew");
+        System.out.println(updateSQL);
+ 
+   
+    }
 
     @Test
     public void shouldGenerateValidInsertSQL() {
