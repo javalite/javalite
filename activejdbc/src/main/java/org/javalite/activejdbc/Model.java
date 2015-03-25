@@ -2692,6 +2692,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public String toInsert() {
         return toInsert(getMetaModelLocal().getDialect());
     }
+        
 
     /**
      * Generates INSERT SQL based on this model with the provided dialect.
@@ -2707,6 +2708,38 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public String toInsert(Dialect dialect) {
         return dialect.insert(getMetaModelLocal(), attributes);
+    }
+    
+    /**
+     * Generates UPDATE SQL based on this model. Uses single quotes for all string values.
+     * Example:
+     * <pre>
+     *
+     * String update = u.toUpdate();
+     * //yields this output:
+     * //UPDATE students SET DOB = '1965-12-01' , FIRST_NAME = 'Jim' , LAST_NAME = 'Cary' WHERE id = 1
+     * </pre>
+     *
+     * @return UPDATE SQL based on this model.
+     */
+    public String toUpdate() {
+        return toUpdate(getMetaModelLocal().getDialect());
+    }
+    
+    /**
+     * Generates UPDATE SQL based on this model. Uses single quotes for all string values.
+     * Example:
+     * <pre>
+     *
+     * String update = u.toUpdate();
+     * //yields this output:
+     * //UPDATE students SET DOB = '1965-12-01' , FIRST_NAME = 'Jim' , LAST_NAME = 'Cary' WHERE id = 1
+     * </pre>
+     *
+     * @return UPDATE SQL based on this model.
+     */
+    public String toUpdate(Dialect dialect) {
+        return dialect.update(getMetaModelLocal(), attributes);
     }
 
     /**

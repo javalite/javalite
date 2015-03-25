@@ -28,6 +28,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import static org.javalite.common.Collections.*;
@@ -482,6 +483,43 @@ public class ModelTest extends ActiveJDBCTest {
         insertSQL = s.toInsert(new SimpleFormatter(java.sql.Date.class, "to_date('", "')"));
         the(insertSQL).shouldBeEqual("INSERT INTO students (dob, first_name, id, last_name) VALUES (to_date('1965-12-01'), 'Jim', 1, 'Cary')");
     }
+    
+    @Test
+    public void shouldGenerateCorrectUpdateSQL() {
+   
+    	// Create the student
+        deleteAndPopulateTable("students");
+        Student s = new Student();
+        s.set("first_name", "Jim");
+        s.set("last_name", "Cary");
+        s.set("dob", new java.sql.Date(getDate(1965, 12, 1).getTime()));
+        s.set("id", 1);        
+        s.saveIt();
+        
+        // find them, and change a column
+        s = Student.findById(1);
+        s.set("first_name", "Drew");
+        s.saveIt();
+        String updateSQL = s.toUpdate();
+        Base.exec(updateSQL);
+        
+        // Find them again
+        s = Student.findById(1);
+
+        // Verify that the first name column changed
+        the(s.get("first_name")).shouldBeEqual("Drew");
+        System.out.println(updateSQL);
+   
+    }
+        
+    @Test(expected=NoSuchElementException.class)
+    public void shouldGenerateNoSuchElementFromBlankUpdate() {
+    	// Verify that a model with no attributes throws an error
+    	Student s = new Student();
+    	s.saveIt();
+    	s.toUpdate();
+    }
+
 
     @Test
     public void shouldGenerateValidInsertSQL() {
