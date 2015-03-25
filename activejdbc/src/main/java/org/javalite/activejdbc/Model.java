@@ -2682,9 +2682,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * value literals.
      * Example:
      * <pre>
-     * String insert = u.toInsert();
+     * String sql = user.toInsert();
      * //yields this output:
-     * //INSERT INTO users (id, first_name, email, last_name) VALUES (1, 'Marilyn', 'mmonroe@yahoo.com', 'Monroe');
+     * //INSERT INTO users (id, email, first_name, last_name) VALUES (1, 'mmonroe@yahoo.com', 'Marilyn', 'Monroe')
      * </pre>
      *
      * @return INSERT SQL based on this model.
@@ -2692,15 +2692,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public String toInsert() {
         return toInsert(getMetaModelLocal().getDialect());
     }
-        
 
     /**
      * Generates INSERT SQL based on this model with the provided dialect.
      * Example:
      * <pre>
-     * String insert = u.toInsert(new MySQLDialect());
+     * String sql = user.toInsert(new MySQLDialect());
      * //yields this output:
-     * //INSERT INTO users (id, first_name, email, last_name) VALUES (1, 'Marilyn', 'mmonroe@yahoo.com', 'Monroe');
+     * //INSERT INTO users (id, email, first_name, last_name) VALUES (1, 'mmonroe@yahoo.com', 'Marilyn', 'Monroe')
      * </pre>
      *
      * @param dialect dialect to be used to generate the SQL
@@ -2711,13 +2710,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
     
     /**
-     * Generates UPDATE SQL based on this model. Uses single quotes for all string values.
+     * Generates UPDATE SQL based on this model. Uses the dialect associated with this model database to format the
+     * value literals.
      * Example:
      * <pre>
-     *
-     * String update = u.toUpdate();
+     * String sql = user.toUpdate();
      * //yields this output:
-     * //UPDATE students SET DOB = '1965-12-01' , FIRST_NAME = 'Jim' , LAST_NAME = 'Cary' WHERE id = 1
+     * //UPDATE users SET email = 'mmonroe@yahoo.com', first_name = 'Marilyn', last_name = 'Monroe' WHERE id = 1
      * </pre>
      *
      * @return UPDATE SQL based on this model.
@@ -2725,17 +2724,17 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public String toUpdate() {
         return toUpdate(getMetaModelLocal().getDialect());
     }
-    
+
     /**
-     * Generates UPDATE SQL based on this model. Uses single quotes for all string values.
+     * Generates UPDATE SQL based on this model with the provided dialect.
      * Example:
      * <pre>
-     *
-     * String update = u.toUpdate();
+     * String sql = user.toUpdate(new MySQLDialect());
      * //yields this output:
-     * //UPDATE students SET DOB = '1965-12-01' , FIRST_NAME = 'Jim' , LAST_NAME = 'Cary' WHERE id = 1
+     * //UPDATE users SET email = 'mmonroe@yahoo.com', first_name = 'Marilyn', last_name = 'Monroe' WHERE id = 1
      * </pre>
      *
+     * @param dialect dialect to be used to generate the SQL
      * @return UPDATE SQL based on this model.
      */
     public String toUpdate(Dialect dialect) {
