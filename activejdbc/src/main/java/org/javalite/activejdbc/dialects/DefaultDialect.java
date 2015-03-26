@@ -224,41 +224,31 @@ public class DefaultDialect implements Dialect {
         }
         return query.toString();
     }
-    
+
     @Override
     public String update(MetaModel metaModel, Map<String, Object> attributes) {
-    	StringBuilder query = new StringBuilder().append("UPDATE ").append(metaModel.getTableName()).append(' ');
     	if (attributes.isEmpty()) {
     		throw new NoSuchElementException("No attributes set, can't create an update statement.");
-    	} else {
-
-    		query.append("SET ");
-    		String idName = metaModel.getIdName();
-
-    		// don't include the id name in the set portion
-    		Map<String, Object> attributesWithoutId = new CaseInsensitiveMap<Object>();
-    		attributesWithoutId.putAll(attributes);
-    		attributesWithoutId.remove(idName);
-
-    		Iterator<Entry<String, Object>> attributesIt = attributesWithoutId.entrySet().iterator();
-    		for (;;) {
-				Entry<String, Object> attribute = attributesIt.next();
-				String key = attribute.getKey();
-				Object val = attribute.getValue();
-
-				query.append(key + " = ");
-				appendValue(query, val); // Accommodates the different types
-				
-    			if (attributesIt.hasNext()) {
-    				query.append(", ");
-    			} else {
-    				break;
-    			}
-    		}
-    		query.append(" WHERE ").append(idName).append(" = " + attributes.get(idName));
     	}
-    	return query.toString();
-    	
-    }
+        StringBuilder query = new StringBuilder().append("UPDATE ").append(metaModel.getTableName()).append(" SET ");
+        String idName = metaModel.getIdName();
 
+        // don't include the id name in the SET portion
+        Map<String, Object> attributesWithoutId = new CaseInsensitiveMap<Object>(attributes);
+        attributesWithoutId.remove(idName);
+
+        Iterator<Entry<String, Object>> it = attributesWithoutId.entrySet().iterator();
+        for (;;) {
+            Entry<String, Object> attribute = it.next();
+            query.append(attribute.getKey()).append(" = ");
+            appendValue(query, attribute.getValue()); // Accommodates the different types
+            if (it.hasNext()) {
+                query.append(", ");
+            } else {
+                break;
+            }
+        }
+        query.append(" WHERE ").append(idName).append(" = ").append(attributes.get(idName));
+    	return query.toString();
+    }
 }
