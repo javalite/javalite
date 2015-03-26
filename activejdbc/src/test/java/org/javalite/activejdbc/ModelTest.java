@@ -505,6 +505,22 @@ public class ModelTest extends ActiveJDBCTest {
         the(s.get("enrollment_date")).shouldBeEqual(enrollmentDate);
     }
 
+    @Test
+    public void shouldGenerateValidUpdateSQLWithTime() {
+        Alarm alarm = new Alarm();
+        alarm.setTime("alarm_time", java.sql.Time.valueOf("12:34:56"));
+        alarm.save();
+
+        String t = "01:23:45";
+        alarm.setTime("alarm_time", java.sql.Time.valueOf(t));
+        String updateSql = alarm.toUpdate();
+        the(Base.exec(updateSql)).shouldBeEqual(1);
+
+        alarm = Alarm.findById(alarm.getId());
+        the(alarm.get("alarm_time")).shouldBeA(java.sql.Time.class);
+        the(alarm.getTime("alarm_time").toString()).shouldBeEqual(t);
+    }
+
     @Test(expected = NoSuchElementException.class)
     public void shouldGenerateNoSuchElementFromBlankUpdate() {
     	// Verify that a model with no attributes throws an error
@@ -529,6 +545,20 @@ public class ModelTest extends ActiveJDBCTest {
         the(s.get("last_name")).shouldBeEqual("Cary");
         the(s.get("dob")).shouldBeEqual(dob);
         the(s.get("enrollment_date")).shouldBeEqual(enrollmentDate);
+    }
+
+    @Test
+    public void shouldGenerateValidInsertSQLWithTime() {
+        Alarm alarm = new Alarm();
+        String t = "12:34:56";
+        alarm.setTime("alarm_time", java.sql.Time.valueOf(t));
+
+        String insertSql = alarm.toInsert();
+        Object id = Base.execInsert(insertSql, alarm.getIdName());
+
+        alarm = Alarm.findById(id);
+        the(alarm.get("alarm_time")).shouldBeA(java.sql.Time.class);
+        the(alarm.getTime("alarm_time").toString()).shouldBeEqual(t);
     }
 
     @Test
