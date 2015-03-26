@@ -190,6 +190,8 @@ public class DefaultDialect implements Dialect {
             query.append(value);
         } else if (value instanceof java.sql.Date) {
             appendDate(query, (java.sql.Date) value);
+        } else if (value instanceof java.sql.Time) {
+            appendTime(query, (java.sql.Time) value);
         } else if (value instanceof java.sql.Timestamp) {
             appendTimestamp(query, (java.sql.Timestamp) value);
         } else {
@@ -199,6 +201,10 @@ public class DefaultDialect implements Dialect {
 
     protected void appendDate(StringBuilder query, java.sql.Date value) {
         query.append("DATE ").append('\'').append(value.toString()).append('\'');
+    }
+
+    protected void appendTime(StringBuilder query, java.sql.Time value) {
+        query.append("TIME ").append('\'').append(value.toString()).append('\'');
     }
 
     protected void appendTimestamp(StringBuilder query, java.sql.Timestamp value) {

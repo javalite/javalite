@@ -863,13 +863,11 @@ select coalesce(:new.id, nodes_seq.nextval) into :new.id from dual;
 end;
 
 
-
 -- BREAK
 CREATE TABLE apples (id NUMBER NOT NULL, apple_type VARCHAR(56) NOT NULL)
 -- BREAK
 ALTER TABLE apples ADD CONSTRAINT apples_pk PRIMARY KEY ( id )
 -- BREAK
-
 
 
 CREATE TABLE images (id NUMBER  NOT NULL , name VARCHAR(56) NOT NULL, content BLOB)
@@ -885,5 +883,22 @@ CREATE OR REPLACE TRIGGER images_trigger
         FOR EACH ROW
         begin
 select coalesce(:new.id, images_seq.nextval) into :new.id from dual;
+end;
+--BREAK
+
+
+CREATE TABLE alarms (id NUMBER NOT NULL, alarm_time TIME NOT NULL)
+-- BREAK
+ALTER TABLE alarms ADD CONSTRAINT alarms_pk PRIMARY KEY (id)
+-- BREAK
+CREATE SEQUENCE alarms_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER alarms_trigger
+        BEFORE INSERT ON alarms REFERENCING
+        NEW AS new
+        OLD AS old
+        FOR EACH ROW
+        begin
+select coalesce(:new.id, alarms_seq.nextval) into :new.id from dual;
 end;
 --BREAK

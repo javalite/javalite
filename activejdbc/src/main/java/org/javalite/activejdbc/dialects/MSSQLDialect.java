@@ -1,7 +1,5 @@
 package org.javalite.activejdbc.dialects;
 
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -94,12 +92,17 @@ public class MSSQLDialect extends DefaultDialect {
     }
 
     @Override
-    protected void appendDate(StringBuilder query, Date value) {
+    protected void appendDate(StringBuilder query, java.sql.Date value) {
         query.append("CONVERT(date, '").append(value.toString()).append("')");
     }
 
     @Override
-    protected void appendTimestamp(StringBuilder query, Timestamp value) {
+    protected void appendTime(StringBuilder query, java.sql.Time value) {
+        query.append("CONVERT(time, '").append(value.toString()).append("')");
+    }
+
+    @Override
+    protected void appendTimestamp(StringBuilder query, java.sql.Timestamp value) {
         query.append("CONVERT(datetime2, '").append(value.toString()).append("')");
     }
 }

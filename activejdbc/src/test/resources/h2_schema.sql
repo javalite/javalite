@@ -157,3 +157,6 @@ CREATE TABLE images (id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHA
 
 DROP TABLE IF EXISTS apples;
 CREATE TABLE apples (id int(11) NOT NULL PRIMARY KEY, apple_type VARCHAR(56) NOT NULL );
+
+DROP TABLE IF EXISTS alarms;
+CREATE TABLE alarms (id int(11) NOT NULL auto_increment PRIMARY KEY, alarm_time TIME NOT NULL);

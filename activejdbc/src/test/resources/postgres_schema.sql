@@ -164,3 +164,6 @@ CREATE TABLE images (id serial PRIMARY KEY, name VARCHAR(56) NOT NULL, content B
 DROP TABLE IF EXISTS apples;
 CREATE TABLE apples (id serial PRIMARY KEY, apple_type VARCHAR(56) NOT NULL );
 
+
+DROP TABLE IF EXISTS alarms;
+CREATE TABLE alarms (id serial PRIMARY KEY, alarm_time TIME NOT NULL);

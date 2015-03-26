@@ -15,8 +15,6 @@ limitations under the License.
 */
 package org.javalite.activejdbc.dialects;
 
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.List;
 import org.javalite.activejdbc.MetaModel;
 import org.javalite.common.Convert;
@@ -33,30 +31,38 @@ public class SQLiteDialect extends PostgreSQLDialect {
         }
         return super.formSelect(tableName, subQuery, orderBys, limit, offset);
     }
-    
+
     @Override
     public Object overrideDriverTypeConversion(MetaModel mm, String attributeName, Object value) {
-        // SQLite returns DATE and DATETIME as String or Long values
-        if (value instanceof String || value instanceof Long) {
+        // SQLite returns DATE and DATETIME as String or Number values
+        if (value instanceof String || value instanceof Number) {
             String typeName = mm.getColumnMetadata().get(attributeName).getTypeName();
             if ("DATE".equalsIgnoreCase(typeName)) {
                 return Convert.toSqlDate(value);
             } else if ("DATETIME".equalsIgnoreCase(typeName)) {
                 return Convert.toTimestamp(value);
+            } else if ("TIME".equalsIgnoreCase(typeName)) {
+                return Convert.toTime(value);
             }
         }
         return value;
     }
 
     @Override
-    protected void appendDate(StringBuilder query, Date value) {
+    protected void appendDate(StringBuilder query, java.sql.Date value) {
         // See https://www.sqlite.org/lang_datefunc.html
         query.append("date('").append(value.toString()).append("')");
     }
 
     @Override
-    protected void appendTimestamp(StringBuilder query, Timestamp value) {
+    protected void appendTime(StringBuilder query, java.sql.Time value) {
+        // See https://www.sqlite.org/lang_datefunc.html
+        query.append("time('").append(value.toString()).append("')");
+    }
+
+    @Override
+    protected void appendTimestamp(StringBuilder query, java.sql.Timestamp value) {
         // See https://www.sqlite.org/lang_datefunc.html
         query.append("datetime('").append(value.toString()).append("')");
-     }
+    }
 }

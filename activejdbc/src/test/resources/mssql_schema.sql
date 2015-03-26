@@ -316,10 +316,15 @@ END
 CREATE TABLE images (id INT IDENTITY PRIMARY KEY, name VARCHAR(56) NOT NULL, content VARBINARY(MAX));
 
 
-
-
 IF object_id('dbo.apples') IS NOT NULL
 BEGIN
     DROP TABLE [dbo].[apples]
 END
-CREATE TABLE apples (id INT PRIMARY KEY, apple_type VARCHAR(56) NOT NULL, content VARBINARY(MAX));
+CREATE TABLE apples (id INT PRIMARY KEY, apple_type VARCHAR(56) NOT NULL);
+
+
+IF object_id('dbo.alarms') IS NOT NULL
+BEGIN
+    DROP TABLE [dbo].[alarms]
+END
+CREATE TABLE alarms (id INT IDENTITY PRIMARY KEY, alarm_time TIME NOT NULL);

@@ -685,4 +685,16 @@ public class ModelTest extends ActiveJDBCTest {
         a(p.get("last_name")).shouldNotBeNull();
         a(p.get("dob")).shouldNotBeNull();
     }
+
+    @Test
+    public void shouldConvertTime() {
+        String t = "10:30:00";
+        Alarm alarm = new Alarm().setTime("alarm_time", t);
+        the(alarm.get("alarm_time")).shouldBeA(java.sql.Time.class);
+        alarm.save();
+
+        alarm = Alarm.findById(alarm.getId());
+        the(alarm.get("alarm_time")).shouldBeA(java.sql.Time.class);
+        the(alarm.getTime("alarm_time").toString()).shouldBeEqual(t);
+    }
 }

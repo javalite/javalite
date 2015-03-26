@@ -34,6 +34,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
 import java.math.BigDecimal;
 import java.sql.Clob;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.*;
@@ -1466,6 +1467,22 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
+     * Gets attribute value as <code>java.sql.Time</code>.
+     * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
+     * <code>java.sql.Time</code>, given the attribute value is an instance of <code>S</code>, then it will be
+     * used, otherwise performs a conversion using {@link Convert#toTime(Object)}.
+     *
+     * @param attributeName name of attribute to convert
+     * @return instance of <code>Timestamp</code>
+     */
+    public Time getTime(String attributeName) {
+        Object value = getRaw(attributeName);
+        Converter<Object, Time> converter = modelRegistryLocal().converterForValue(
+                attributeName, value, Time.class);
+        return converter != null ? converter.convert(value) : Convert.toTime(value);
+    }
+
+    /**
      * Gets attribute value as <code>java.sql.Timestamp</code>.
      * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
      * <code>java.sql.Timestamp</code>, given the attribute value is an instance of <code>S</code>, then it will be
@@ -1602,6 +1619,22 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public <T extends Model> T setFloat(String attributeName, Object value) {
         Converter<Object, Float> converter = modelRegistryLocal().converterForValue(attributeName, value, Float.class);
         return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toFloat(value));
+    }
+
+    /**
+     * Sets attribute value as <code>java.sql.Time</code>.
+     * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
+     * <code>java.sql.Time</code>, given the value is an instance of <code>S</code>, then it will be used,
+     * otherwise performs a conversion using {@link Convert#toTime(Object)}.
+     *
+     * @param attributeName name of attribute.
+     * @param value value
+     * @return reference to this model.
+     */
+    public <T extends Model> T setTime(String attributeName, Object value) {
+        Converter<Object, Time> converter = modelRegistryLocal().converterForValue(
+                attributeName, value, Time.class);
+        return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toTime(value));
     }
 
     /**

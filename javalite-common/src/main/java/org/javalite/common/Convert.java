@@ -142,8 +142,10 @@ public final class Convert {
             return (java.sql.Date) value;
         } else if (value instanceof java.util.Date) {
             return new java.sql.Date(((java.util.Date) value).getTime());
-        }else if (value instanceof Long) {
+        } else if (value instanceof Long) {
             return new java.sql.Date(((Long) value));
+        } else if (value instanceof Number) {
+            return new java.sql.Date(((Number) value).longValue());
         } else {
             try {
                 return java.sql.Date.valueOf(value.toString());
@@ -270,16 +272,40 @@ public final class Convert {
     }
 
     /**
-     * If the value is instance of java.sql.Timestamp, returns it, else tries to convert the
-     * value to Timestamp using {@link Timestamp#valueOf(String)}.
+     * If the value is instance of java.sql.Time, returns it, else tries to convert java.util.Date or Long to
+     * Time, else tries to convert using {@link java.sql.Time#valueOf(String)}.
      * This method might trow <code>IllegalArgumentException</code> if fails at conversion.
      *
-     * @see {@link Timestamp#valueOf(String)}
+     * @see java.sql.Time#valueOf(String)
+     * @param value value to convert
+     * @return instance of java.sql.Time
+     */
+    public static java.sql.Time toTime(Object value) {
+       if (value == null) {
+            return null;
+        } else if (value instanceof java.sql.Time) {
+            return (java.sql.Time) value;
+        } else if (value instanceof java.util.Date) {
+           return new java.sql.Time(((java.util.Date) value).getTime());
+        } else if (value instanceof Long) {
+           return new java.sql.Time((Long) value);
+        } else if (value instanceof Number) { // SQLite returns TIME as Integer
+           return new java.sql.Time(((Number) value).longValue());
+        } else {
+           return java.sql.Time.valueOf(value.toString());
+        }
+    }
+
+    /**
+     * If the value is instance of java.sql.Timestamp, returns it, else tries to convert java.util.Date or Long to
+     * Timestamp, else tries to convert using {@link java.sql.Timestamp#valueOf(String)}.
+     * This method might trow <code>IllegalArgumentException</code> if fails at conversion.
+     *
+     * @see java.sql.Timestamp#valueOf(String)
      * @param value value to convert.
      * @return instance of Timestamp.
      */
-    public static java.sql.Timestamp toTimestamp(Object value){
-
+    public static java.sql.Timestamp toTimestamp(Object value) {
        if (value == null) {
             return null;
         } else if (value instanceof java.sql.Timestamp) {
