@@ -25,9 +25,10 @@ import org.javalite.activejdbc.annotations.Many2Many;
  */
 @Many2Many(other = Course.class, join = "registrations", sourceFKName = "astudent_id", targetFKName = "acourse_id")
 public class Student extends Model {
-    static {
+    public Student() {
         dateFormat("MM/dd/yyyy", "dob");
         timestampFormat("MM/dd/yyyy h a", "enrollment_date");
         blankToNull("first_name", "last_name");
     }
+    public static Student Student = new Student();
 }

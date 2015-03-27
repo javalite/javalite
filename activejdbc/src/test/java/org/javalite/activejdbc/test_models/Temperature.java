@@ -21,7 +21,7 @@ import org.javalite.activejdbc.Model;
 
 
 public class Temperature extends Model {
-    static{
+    public Temperature() {
         validateRange("temp", 0, 100).message("temperature cannot be less than {0} or more than {1}");
     }
 }

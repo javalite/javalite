@@ -24,7 +24,7 @@ import org.javalite.activejdbc.Model;
  */
 public class Plant extends Model {
 
-    static {
+    public Plant() {
         validatePresenceOf("plant_name", "category");
         addCallbacks(PlantCallback.instance());
     }

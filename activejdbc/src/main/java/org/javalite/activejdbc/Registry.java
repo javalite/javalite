@@ -45,10 +45,11 @@ public enum Registry {
     private final static Logger logger = LoggerFactory.getLogger(Registry.class);
 
     private final MetaModels metaModels = new MetaModels();
-    private final Map<Class, ModelRegistry> modelRegistries = new HashMap<Class, ModelRegistry>();
+    private Map<Class, ModelRegistry> modelRegistries = new HashMap<Class, ModelRegistry>();
     private final Configuration configuration = new Configuration();
     private final StatisticsQueue statisticsQueue;
     private final Set<String> initedDbs = new HashSet<String>();
+    
 
     private Registry() {
         statisticsQueue = configuration.collectStatistics()
@@ -98,7 +99,7 @@ public enum Registry {
     public MetaModel getMetaModel(Class<? extends Model> modelClass) {
 
         String dbName = MetaModel.getDbName(modelClass);
-        init(dbName);
+        init(dbName, modelClass);
 
         return metaModels.getMetaModel(modelClass);
     }
@@ -112,16 +113,55 @@ public enum Registry {
         return registry;
     }
 
-     synchronized void init(String dbName) {
+//     synchronized void init(String dbName) {
+//
+//        if (initedDbs.contains(dbName)) {
+//            return;
+//        } else {
+//            initedDbs.add(dbName);
+//        }
+//
+//        try {
+//            ModelFinder.findModels(dbName);
+//            Connection c = ConnectionsAccess.getConnection(dbName);
+//            if(c == null){
+//                throw new DBException("Failed to retrieve metadata from DB, connection: '" + dbName + "' is not available");
+//            }
+//            DatabaseMetaData databaseMetaData = c.getMetaData();
+//            //TODO: this is called databaseProductName, dbType or dbProduct throughtout the code; use unique name?
+//            String databaseProductName = c.getMetaData().getDatabaseProductName();
+//            List<Class<? extends Model>> modelClasses = ModelFinder.getModelsForDb(dbName);
+//            registerModels(dbName, modelClasses, databaseProductName);
+//            String[] tables = metaModels.getTableNames(dbName);
+//
+//            for (String table : tables) {
+//                Map<String, ColumnMetadata> metaParams = fetchMetaParams(databaseMetaData, databaseProductName, table);
+//                registerColumnMetadata(table, metaParams);
+//            }
+//
+//            processOverrides(modelClasses);
+//
+//            for (String table : tables) {
+//                discoverAssociationsFor(table, dbName);
+//            }
+//        } catch (Exception e) {
+//            initedDbs.remove(dbName);
+//            if (e instanceof InitException) {
+//                throw (InitException) e;
+//            }
+//            if (e instanceof DBException) {
+//                throw (DBException) e;
+//            } else {
+//                throw new InitException(e);
+//            }
+//        }
+//    }
+    
+    synchronized void init(String dbName, List<? extends Model> models) {
 
-        if (initedDbs.contains(dbName)) {
-            return;
-        } else {
-            initedDbs.add(dbName);
-        }
-
+    	
         try {
-            ModelFinder.findModels(dbName);
+        	ModelFinder.findModels2(models);
             Connection c = ConnectionsAccess.getConnection(dbName);
             if(c == null){
                 throw new DBException("Failed to retrieve metadata from DB, connection: '" + dbName + "' is not available");
@@ -129,7 +169,8 @@ public enum Registry {
             DatabaseMetaData databaseMetaData = c.getMetaData();
             //TODO: this is called databaseProductName, dbType or dbProduct throughtout the code; use unique name?
             String databaseProductName = c.getMetaData().getDatabaseProductName();
-            List<Class<? extends Model>> modelClasses = ModelFinder.getModelsForDb(dbName);
+//            List<Class<? extends Model>> modelClasses = ModelFinder.getModelsForDb(dbName);
+            List<Class<? extends Model>> modelClasses = getModelClasses(models);
             registerModels(dbName, modelClasses, databaseProductName);
             String[] tables = metaModels.getTableNames(dbName);
 
@@ -138,7 +179,7 @@ public enum Registry {
                 registerColumnMetadata(table, metaParams);
             }
 
-            processOverrides(modelClasses);
+//            processOverrides(modelClasses);
 
             for (String table : tables) {
                 discoverAssociationsFor(table, dbName);
@@ -154,6 +195,60 @@ public enum Registry {
                 throw new InitException(e);
             }
         }
+    }
+    
+    synchronized void init(String dbName, Class<? extends Model> modelClass) {
+
+        try {
+
+        	Connection c = ConnectionsAccess.getConnection(dbName);
+        	if(c == null){
+        		throw new DBException("Failed to retrieve metadata from DB, connection: '" + dbName + "' is not available");
+        	}
+        	DatabaseMetaData databaseMetaData = c.getMetaData();
+        	//TODO: this is called databaseProductName, dbType or dbProduct throughtout the code; use unique name?
+        	String databaseProductName = c.getMetaData().getDatabaseProductName();
+
+        	// add to the model registries only if it isn't already there
+        	if (metaModels.getMetaModel(modelClass) == null) { 
+        		registerModel(dbName, modelClass, databaseProductName);
+
+
+        		String[] tables = metaModels.getTableNames(dbName);
+
+        		for (String table : tables) {
+        			Map<String, ColumnMetadata> metaParams = fetchMetaParams(databaseMetaData, databaseProductName, table);
+        			registerColumnMetadata(table, metaParams);
+        		}
+
+        		//            processOverrides(modelClasses);
+
+        		for (String table : tables) {
+        			discoverAssociationsFor(table, dbName);
+        		}
+        	}
+        } catch (Exception e) {
+        	initedDbs.remove(dbName);
+        	if (e instanceof InitException) {
+        		throw (InitException) e;
+        	}
+        	if (e instanceof DBException) {
+                throw (DBException) e;
+            } else {
+                throw new InitException(e);
+            }
+        }
+    }
+    
+    public static List<Class<? extends Model>> getModelClasses(List<? extends Model> models) {
+    	List<Class<? extends Model>> modelClasses = new ArrayList<Class<? extends Model>>();
+    	
+    	for (Model m : models) {
+    		System.out.println("model class = " + m.getClass());
+    		modelClasses.add(m.getClass());
+    	}
+    	return modelClasses;
+    	
     }
 
     /**
@@ -224,10 +319,14 @@ public enum Registry {
      */
     private void registerModels(String dbName, List<Class<? extends Model>> modelClasses, String dbType) {
         for (Class<? extends Model> modelClass : modelClasses) {
-            MetaModel mm = new MetaModel(dbName, modelClass, dbType);
-            metaModels.addMetaModel(mm, modelClass);
-            LogFilter.log(logger, "Registered model: {}", modelClass);
+        	registerModel(dbName, modelClass, dbType);
         }
+    }
+    
+    private void registerModel(String dbName, Class<? extends Model> modelClass, String dbType) {
+        MetaModel mm = new MetaModel(dbName, modelClass, dbType);
+        metaModels.addMetaModel(mm, modelClass);
+        LogFilter.log(logger, "Registered model: {}", modelClass);
     }
 
     private void processOverrides(List<Class<? extends Model>> models) {
@@ -402,7 +501,7 @@ public enum Registry {
 
     protected String getTableName(Class<? extends Model> modelClass) {
 
-        init(MetaModel.getDbName(modelClass));
+        init(MetaModel.getDbName(modelClass), modelClass);
         String tableName = metaModels.getTableName(modelClass);
         if (tableName == null) {
             throw new DBException("failed to find metamodel for " + modelClass + ". Are you sure that a corresponding table  exists in DB?");

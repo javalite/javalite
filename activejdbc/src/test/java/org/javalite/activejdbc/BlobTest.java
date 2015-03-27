@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.sql.SQLException;
-
+import static org.javalite.activejdbc.test_models.Image.Image;
 
 /**
  * @author Igor Polevoy: 7/11/12 11:31 AM

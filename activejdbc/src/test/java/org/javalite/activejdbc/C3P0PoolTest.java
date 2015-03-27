@@ -26,7 +26,7 @@ import java.sql.SQLException;
 
 import static org.javalite.test.jspec.JSpec.a;
 import static org.javalite.activejdbc.test.JdbcProperties.*;
-
+import static org.javalite.activejdbc.test_models.Person.Person;
 /**
  * Example of using c3p0 Pool 
  *

@@ -21,9 +21,12 @@ import org.javalite.activejdbc.test_models.*;
 import org.javalite.common.Convert;
 import org.javalite.test.jspec.DifferenceExpectation;
 import org.javalite.test.jspec.ExceptionExpectation;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -33,8 +36,42 @@ import java.util.Set;
 
 import static org.javalite.common.Collections.*;
 
+import static org.javalite.activejdbc.test_models.Person.Person;
+import static org.javalite.activejdbc.test_models.Course.Course;
+import static org.javalite.activejdbc.test_models.University.University;
+import static org.javalite.activejdbc.test_models.User.User;
+import static org.javalite.activejdbc.test_models.Address.Address;
+import static org.javalite.activejdbc.test_models.Library.Library;
+import static org.javalite.activejdbc.test_models.Animal.Animal;
+import static org.javalite.activejdbc.test_models.Doctor.Doctor;
+import static org.javalite.activejdbc.test_models.Patient.Patient;
+import static org.javalite.activejdbc.test_models.Book.Book;
+import static org.javalite.activejdbc.test_models.Student.Student;
+import static org.javalite.activejdbc.test_models.Alarm.Alarm;
+import static org.javalite.activejdbc.test_models.DoctorsPatients.DoctorsPatients;
+
+
 
 public class ModelTest extends ActiveJDBCTest {
+	
+	@Before
+	public void instrument() {
+//		List<Model> models = Arrays.asList(org.javalite.activejdbc.test_models.Person.Person,
+//				org.javalite.activejdbc.test_models.University.University,
+//				org.javalite.activejdbc.test_models.User.User,
+//				org.javalite.activejdbc.test_models.Address.Address,
+//				org.javalite.activejdbc.test_models.Library.Library,
+//				org.javalite.activejdbc.test_models.Animal.Animal,
+//				org.javalite.activejdbc.test_models.Doctor.Doctor,
+//				org.javalite.activejdbc.test_models.Patient.Patient,
+//				org.javalite.activejdbc.test_models.Book.Book,
+//				org.javalite.activejdbc.test_models.Student.Student,
+//				org.javalite.activejdbc.test_models.Alarm.Alarm,
+//				org.javalite.activejdbc.test_models.Course.Course,
+//				org.javalite.activejdbc.test_models.DoctorsPatients.DoctorsPatients);
+
+//		Registry.INSTANCE.init("default", models);
+	}
 
     @Test
     public void testModelFinder() {
@@ -88,6 +125,7 @@ public class ModelTest extends ActiveJDBCTest {
     public void testModelFindOne() {
         deleteAndPopulateTable("people");
         Person person = Person.findFirst("id = 2");
+        System.out.println(person);
         a(person).shouldNotBeNull();
     }
 
@@ -266,7 +304,6 @@ public class ModelTest extends ActiveJDBCTest {
         deleteAndPopulateTables("users", "addresses");
         User user = User.findById(1);
         List<Address> addresses = user.getAll(Address.class);
-
         a(3).shouldBeEqual(addresses.size());
     }
 
@@ -317,7 +354,10 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void testBelongsToMany(){
         deleteAndPopulateTables("doctors", "patients", "doctors_patients");
+        DoctorsPatients.findAll(); // need to do this in order to register the association
         a(Patient.belongsTo(Doctor.class)).shouldBeTrue();
+        
+       
     }
 
     @Test

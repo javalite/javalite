@@ -24,7 +24,7 @@ import org.javalite.activejdbc.Model;
  */
 public class Fruit extends Model {
     FruitCallbackChecker cc;
-    static{
+    public Fruit() {
         validatePresenceOf("fruit_name");
     }
 
@@ -61,4 +61,6 @@ public class Fruit extends Model {
     protected void afterDelete() {
         cc.checkAfterDelete(this);
     }
+    
+    public static Fruit Fruit = new Fruit();
 }

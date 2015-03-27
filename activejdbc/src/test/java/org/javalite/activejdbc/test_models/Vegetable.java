@@ -25,7 +25,7 @@ import org.javalite.activejdbc.Model;
 public class Vegetable extends Model {
     VegetableCallbackChecker cc;
 
-    static {
+    public Vegetable() {
         validatePresenceOf("vegetable_name", "category");
     }
 

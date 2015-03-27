@@ -21,4 +21,5 @@ import org.javalite.activejdbc.Model;
  * @author Eric Nielsen
  */
 public class Alarm extends Model {
+	public static Alarm Alarm = new Alarm();
 }

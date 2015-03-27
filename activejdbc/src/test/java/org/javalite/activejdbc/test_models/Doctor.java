@@ -25,4 +25,5 @@ import org.javalite.activejdbc.annotations.Cached;
  */
 @Cached
 public class Doctor extends Model {
+	public static Doctor Doctor = new Doctor();
 }

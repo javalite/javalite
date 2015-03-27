@@ -22,7 +22,7 @@ import org.javalite.activejdbc.Model;
  * @author Igor Polevoy
  */
 public class School extends Model {
-    static{
+    public School() {
         validatePresenceOf("school_name").message("school.name.missing");
         validatePresenceOf("school_type").message("school.type.missing");// this is missing in resource bundle
         validateEmailOf("email").message("email.format.wrong");

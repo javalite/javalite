@@ -42,7 +42,7 @@ public class SQLiteDialect extends PostgreSQLDialect {
             } else if ("DATETIME".equalsIgnoreCase(typeName)) {
                 return Convert.toTimestamp(value);
             } else if ("TIME".equalsIgnoreCase(typeName)) {
-                return Convert.toTime(value);
+                return Convert.toTimestamp(value);
             }
         }
         return value;
