@@ -4,6 +4,8 @@ import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Apple;
 import org.junit.Test;
 
+import static org.javalite.activejdbc.test_models.Apple.Apple;
+
 /**
  * @author Igor Polevoy: 11/11/12 8:44 PM
  */

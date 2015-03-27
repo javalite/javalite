@@ -19,6 +19,10 @@ import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.*;
 import org.junit.Test;
 
+import static org.javalite.activejdbc.test_models.Vehicle.Vehicle;
+import static org.javalite.activejdbc.test_models.Classification.Classification;
+import static org.javalite.activejdbc.test_models.Mammal.Mammal;
+
 import java.util.List;
 
 /**

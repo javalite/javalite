@@ -21,4 +21,6 @@ import org.javalite.activejdbc.Model;
 /**
  * @author Igor Polevoy
  */
-public class Mammal extends Model {}
+public class Mammal extends Model {
+	public static Mammal Mammal = new Mammal();
+}

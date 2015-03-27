@@ -18,7 +18,11 @@ package org.javalite.activejdbc;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.*;
 import org.junit.Test;
-
+import static org.javalite.activejdbc.test_models.Library.Library;
+import static org.javalite.activejdbc.test_models.Book.Book;
+import static org.javalite.activejdbc.test_models.Doctor.Doctor;
+import static org.javalite.activejdbc.test_models.Patient.Patient;
+import static org.javalite.activejdbc.test_models.DoctorsPatients.DoctorsPatients;
 import java.util.List;
 
 

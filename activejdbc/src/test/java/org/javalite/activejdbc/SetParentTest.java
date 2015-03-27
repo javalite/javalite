@@ -24,6 +24,11 @@ import org.javalite.activejdbc.test_models.Person;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.javalite.activejdbc.test_models.Person.Person;
+import static org.javalite.activejdbc.test_models.Motherboard.Motherboard;
+import static org.javalite.activejdbc.test_models.Keyboard.Keyboard;
+import static org.javalite.activejdbc.test_models.Computer.Computer;
+
 /**
  * @author Igor Polevoy
  */
