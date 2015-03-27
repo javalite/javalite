@@ -138,29 +138,7 @@
             </testResource>
         </testResources>
         <plugins>
-            <plugin>
-                <groupId>org.javalite</groupId>
-                <artifactId>activejdbc-instrumentation</artifactId>
-                <version>${project.version}</version>
-                <executions>
-                    <execution>
-                        <phase>process-test-classes</phase>
-                        <goals>
-                            <goal>instrument</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.basedir}/target/test-classes</outputDirectory>
-                        </configuration>
-                    </execution> 
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.javassist</groupId>
-                        <artifactId>javassist</artifactId>
-                        <version>3.18.1-GA</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
+            
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.2</version>

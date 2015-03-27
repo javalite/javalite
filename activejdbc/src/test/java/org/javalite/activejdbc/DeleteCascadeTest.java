@@ -62,6 +62,7 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
     public void shouldDeletePolymorphicChildren(){
 
         deleteAndPopulateTables("articles", "posts", "comments");
+        Comment.init();
         Article a = Article.findById(1);
         a.add(Comment.create("author", "ipolevoy", "content", "this is just a test comment text"));
         a.add(Comment.create("author", "rkinderman", "content", "this is another test comment text"));
@@ -104,11 +105,23 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
 
         //case 1: simple: follow many to many, then one to many
         deleteAndPopulateTables("doctors", "patients", "doctors_patients", "prescriptions");
-        Registry.cacheManager().flush(CacheEvent.ALL);
+//        Registry.cacheManager().flush(CacheEvent.ALL);
 
+      
+        Patient.init();
+        Prescription.init();
+        Comment.init();
+        Doctor.init();
+        DoctorsPatients.init();
+        
+  
+      
+        
         a(Prescription.count()).shouldBeEqual(5);
 
         Doctor.findById(3).deleteCascade();
+        System.out.println(DoctorsPatients.findAll());
+        System.out.println(Prescription.findAll());
 
         a(Doctor.count()).shouldBeEqual(2);
         a(DoctorsPatients.count()).shouldBeEqual(3);
@@ -135,10 +148,14 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
     public void shouldDeleteMany2ManyDeepSkippingAssociation() {
 
         deleteAndPopulateTables("doctors", "patients", "doctors_patients", "prescriptions");
+        
+        Doctor.init();
+        Prescription.init();
+        Patient.init();
+        DoctorsPatients.init();
+        
         Registry.cacheManager().flush(CacheEvent.ALL);
 
-
-        Registry.cacheManager().flush(CacheEvent.ALL);
 
         a(Doctor.count()).shouldBeEqual(3);
         a(Patient.count()).shouldBeEqual(3);
@@ -182,7 +199,7 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
     @Test
     public void shouldDeleteMany2ManyShallow(){
         deleteAndPopulateTables("doctors", "patients", "doctors_patients", "prescriptions");
-        Registry.cacheManager().flush(CacheEvent.ALL);
+//        Registry.cacheManager().flush(CacheEvent.ALL);
 
         a(Prescription.count()).shouldBeEqual(5);
 
@@ -201,7 +218,8 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
         SubClassification.deleteAll();
 
         deleteAndPopulateTables("vehicles", "mammals", "classifications");
-        Registry.cacheManager().flush(CacheEvent.ALL);
+//        System.out.println(Registry.cacheManager());
+//        Registry.cacheManager().flush(CacheEvent.ALL);
         Vehicle car = Vehicle.createIt("name", "car");
         Classification fourWheeled = Classification.create("name", "four wheeled");
         car.add(fourWheeled);

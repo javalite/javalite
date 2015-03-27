@@ -44,55 +44,56 @@ public class Configuration {
     private Map<String, Dialect> dialects = new CaseInsensitiveMap<Dialect>();
 
     protected Configuration(){
-        try {
-            Enumeration<URL> resources = getClass().getClassLoader().getResources("activejdbc_models.properties");
-            while (resources.hasMoreElements()) {
-                URL url = resources.nextElement();
-                LogFilter.log(logger, "Load models from: {}", url.toExternalForm());
-                InputStream inputStream = null;
-                InputStreamReader isreader = null;
-                BufferedReader reader = null;
-                try {
-                    inputStream = url.openStream();
-                    isreader = new InputStreamReader(inputStream);
-                    reader = new BufferedReader(isreader);
-                    String line;
-                    while ((line = reader.readLine()) != null) {
+//        try {
+//            Enumeration<URL> resources = getClass().getClassLoader().getResources("activejdbc_models.properties");
+//            while (resources.hasMoreElements()) {
+//                URL url = resources.nextElement();
+//                LogFilter.log(logger, "Load models from: {}", url.toExternalForm());
+//                InputStream inputStream = null;
+//                InputStreamReader isreader = null;
+//                BufferedReader reader = null;
+//                try {
+//                    inputStream = url.openStream();
+//                    isreader = new InputStreamReader(inputStream);
+//                    reader = new BufferedReader(isreader);
+//                    String line;
+//                    while ((line = reader.readLine()) != null) {
+//
+//                        String[] parts = split(line, ':');
+//                        String modelName = parts[0];
+//                        String dbName = parts[1];
+//
+//                        List<String> modelNames = modelsMap.get(dbName);
+//                        if (modelNames == null) {
+//                            modelNames = new ArrayList<String>();
+//                            modelsMap.put(dbName, modelNames);
+//                        }
+//                        modelNames.add(modelName);
+//                    }
+//                } finally {
+//                    closeQuietly(reader);
+//                    closeQuietly(isreader);
+//                    closeQuietly(inputStream);
+//                }
+//            }
+//        } catch (IOException e) {
+//            throw new InitException(e);
+//        }
+//        if(modelsMap.isEmpty()){
+//            LogFilter.log(logger, "ActiveJDBC Warning: Cannot locate any models, assuming project without models.");
+//            return;
+//        }
+//        try {
+//            Enumeration<URL> resources = ClassLoader.getSystemClassLoader().getResources("activejdbc.properties");
+//            while (resources.hasMoreElements()) {
+//                properties.load(resources.nextElement().openStream());
+//            }
+//        } catch (IOException e){
+//            throw new InitException(e);
+//        }
 
-                        String[] parts = split(line, ':');
-                        String modelName = parts[0];
-                        String dbName = parts[1];
-
-                        List<String> modelNames = modelsMap.get(dbName);
-                        if (modelNames == null) {
-                            modelNames = new ArrayList<String>();
-                            modelsMap.put(dbName, modelNames);
-                        }
-                        modelNames.add(modelName);
-                    }
-                } finally {
-                    closeQuietly(reader);
-                    closeQuietly(isreader);
-                    closeQuietly(inputStream);
-                }
-            }
-        } catch (IOException e) {
-            throw new InitException(e);
-        }
-        if(modelsMap.isEmpty()){
-            LogFilter.log(logger, "ActiveJDBC Warning: Cannot locate any models, assuming project without models.");
-            return;
-        }
-        try {
-            Enumeration<URL> resources = ClassLoader.getSystemClassLoader().getResources("activejdbc.properties");
-            while (resources.hasMoreElements()) {
-                properties.load(resources.nextElement().openStream());
-            }
-        } catch (IOException e){
-            throw new InitException(e);
-        }
-
-        String cacheManagerClass = properties.getProperty("cache.manager");
+//        String cacheManagerClass = properties.getProperty("cache.manager");
+        String cacheManagerClass = "org.javalite.activejdbc.cache.OSCacheManager";
         if(cacheManagerClass != null){
 
             try{
@@ -111,7 +112,8 @@ public class Configuration {
     }
 
     public boolean collectStatistics() {
-        return Convert.toBoolean(properties.getProperty("collectStatistics", "false"));
+    	return true;
+//        return Convert.toBoolean(properties.getProperty("collectStatistics", "false"));
     }
 
     public boolean collectStatisticsOnHold() {

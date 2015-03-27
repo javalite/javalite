@@ -21,6 +21,7 @@ import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.*;
 import org.junit.Test;
 
+import static org.javalite.activejdbc.test_models.Vegetable.Vegetable;
 /**
  * @author Igor Polevoy
  */
@@ -55,6 +56,7 @@ public class CallbackSupportTest extends ActiveJDBCTest {
     @Test
     public void shouldCallBeforeAfterValidate(){
         deleteAndPopulateTable("vegetables");
+        
         VegetableCallbackChecker cc = new VegetableCallbackChecker();
         Vegetable v = new Vegetable(cc);
 

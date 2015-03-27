@@ -69,6 +69,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     private Errors errors = new Errors();
 
     protected Model() {
+    	init();
     }
 
     private void fireBeforeSave() {
@@ -2865,5 +2866,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         attributes = new CaseInsensitiveMap<Object>();
         attributes.putAll((Map<String, Object>) in.readObject());
+    }
+    
+    /**
+     * Necessary to create the assocations. This adds the table to the registry.
+     */
+    public void init() {
+//    	logger.info("New instance of " + getTableName());
+    	getMetaModel();
     }
 }

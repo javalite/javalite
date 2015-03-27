@@ -45,6 +45,7 @@ public enum QueryCache {
 
     private QueryCache() {
         cacheManager = Registry.instance().getConfiguration().getCacheManager();
+        System.out.println(Registry.instance().getConfiguration().getCacheManager());
     }
 
 

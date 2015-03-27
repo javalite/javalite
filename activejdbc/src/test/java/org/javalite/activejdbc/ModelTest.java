@@ -54,24 +54,6 @@ import static org.javalite.activejdbc.test_models.DoctorsPatients.DoctorsPatient
 
 public class ModelTest extends ActiveJDBCTest {
 	
-	@Before
-	public void instrument() {
-//		List<Model> models = Arrays.asList(org.javalite.activejdbc.test_models.Person.Person,
-//				org.javalite.activejdbc.test_models.University.University,
-//				org.javalite.activejdbc.test_models.User.User,
-//				org.javalite.activejdbc.test_models.Address.Address,
-//				org.javalite.activejdbc.test_models.Library.Library,
-//				org.javalite.activejdbc.test_models.Animal.Animal,
-//				org.javalite.activejdbc.test_models.Doctor.Doctor,
-//				org.javalite.activejdbc.test_models.Patient.Patient,
-//				org.javalite.activejdbc.test_models.Book.Book,
-//				org.javalite.activejdbc.test_models.Student.Student,
-//				org.javalite.activejdbc.test_models.Alarm.Alarm,
-//				org.javalite.activejdbc.test_models.Course.Course,
-//				org.javalite.activejdbc.test_models.DoctorsPatients.DoctorsPatients);
-
-//		Registry.INSTANCE.init("default", models);
-	}
 
     @Test
     public void testModelFinder() {
@@ -125,7 +107,6 @@ public class ModelTest extends ActiveJDBCTest {
     public void testModelFindOne() {
         deleteAndPopulateTable("people");
         Person person = Person.findFirst("id = 2");
-        System.out.println(person);
         a(person).shouldNotBeNull();
     }
 
@@ -342,6 +323,7 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void testOneToManyOverrideConventionAssociation(){
         deleteAndPopulateTables("libraries", "books");
+        
         Library l = Library.findById(1);
         List<Book> books = l.getAll(Book.class);
         Library lib = (Library)books.get(0).parent(Library.class);
@@ -354,7 +336,7 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void testBelongsToMany(){
         deleteAndPopulateTables("doctors", "patients", "doctors_patients");
-        DoctorsPatients.findAll(); // need to do this in order to register the association
+        DoctorsPatients.init();
         a(Patient.belongsTo(Doctor.class)).shouldBeTrue();
         
        
@@ -381,7 +363,6 @@ public class ModelTest extends ActiveJDBCTest {
         u.add(a);
 
         u = User.findById(1);
-        System.out.println(u);
 
         a = new Address();
 
@@ -507,6 +488,7 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void shouldGenerateCorrectInsertSQL() {
+    	Course.init();
         Student s = new Student();
         s.set("first_name", "Jim");
         s.set("last_name", "Cary");

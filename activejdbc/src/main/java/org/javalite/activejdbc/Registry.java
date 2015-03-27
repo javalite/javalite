@@ -45,7 +45,8 @@ public enum Registry {
     private final static Logger logger = LoggerFactory.getLogger(Registry.class);
 
     private final MetaModels metaModels = new MetaModels();
-    private Map<Class, ModelRegistry> modelRegistries = new HashMap<Class, ModelRegistry>();
+    private Map<Class<? extends Model>, ModelRegistry> modelRegistries =
+    		new HashMap<Class<? extends Model>, ModelRegistry>();
     private final Configuration configuration = new Configuration();
     private final StatisticsQueue statisticsQueue;
     private final Set<String> initedDbs = new HashSet<String>();
@@ -220,8 +221,8 @@ public enum Registry {
         			Map<String, ColumnMetadata> metaParams = fetchMetaParams(databaseMetaData, databaseProductName, table);
         			registerColumnMetadata(table, metaParams);
         		}
-
-        		//            processOverrides(modelClasses);
+        	
+        		processOverrides(getModelClasses(dbName));
 
         		for (String table : tables) {
         			discoverAssociationsFor(table, dbName);
@@ -244,8 +245,17 @@ public enum Registry {
     	List<Class<? extends Model>> modelClasses = new ArrayList<Class<? extends Model>>();
     	
     	for (Model m : models) {
-    		System.out.println("model class = " + m.getClass());
     		modelClasses.add(m.getClass());
+    	}
+    	return modelClasses;
+    	
+    }
+    
+    public Set<Class<? extends Model>> getModelClasses(String dbName) {
+    	Set<Class<? extends Model>> modelClasses = new HashSet<Class<? extends Model>>();
+
+    	for (String tableName : metaModels.getTableNames(dbName)) {
+    		modelClasses.add(metaModels.getModelClass(tableName));
     	}
     	return modelClasses;
     	
@@ -329,7 +339,7 @@ public enum Registry {
         LogFilter.log(logger, "Registered model: {}", modelClass);
     }
 
-    private void processOverrides(List<Class<? extends Model>> models) {
+    private void processOverrides(Set<Class<? extends Model>> models) {
 
         for(Class<? extends Model> modelClass : models){
 
@@ -355,11 +365,13 @@ public enum Registry {
                 String otherPk;
                 String thisPk;
                 try {
-                    Method m = modelClass.getMethod("getMetaModel");
-                    MetaModel mm = (MetaModel) m.invoke(modelClass);
+//                    Method m = modelClass.getMethod("getMetaModel");
+//                    MetaModel mm = (MetaModel) m.invoke(modelClass);
+                    MetaModel mm = getMetaModel(source);
                     thisPk = mm.getIdName();
-                    m = otherClass.getMethod("getMetaModel");
-                    mm = (MetaModel) m.invoke(otherClass);
+//                    m = otherClass.getMethod("getMetaModel");
+//                    mm = (MetaModel) m.invoke(otherClass);
+                    mm = getMetaModel(target);
                     otherPk = mm.getIdName();
                 } catch (Exception e) {
                     throw new InitException("failed to determine PK name in many to many relationship", e);
@@ -474,6 +486,7 @@ public enum Registry {
             MetaModel targetMM = getMetaModel(target);
 
             String sourceFKName = getMetaModel(source).getFKName();
+          
             if (targetMM != sourceMM && targetMM.hasAttribute(sourceFKName)) {
                 targetMM.addAssociation(new BelongsToAssociation(target, source, sourceFKName));
                 sourceMM.addAssociation(new OneToManyAssociation(source, target, sourceFKName));

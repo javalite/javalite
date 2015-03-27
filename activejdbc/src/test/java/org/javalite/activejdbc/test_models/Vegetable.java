@@ -41,4 +41,6 @@ public class Vegetable extends Model {
     protected void afterValidation() {
         cc.checkAfterValidation(this);
     }
+    
+    public static Vegetable Vegetable = new Vegetable();
 }

@@ -148,6 +148,7 @@ public class ToFromXmlSpec extends ActiveJDBCTest {
 
     @Test
     public void shouldGenerateXmlForPolymorphicChildren() throws IOException {
+    	
         deleteAndPopulateTables("articles", "comments", "tags");
         Article a = Article.findFirst("title = ?", "ActiveJDBC polymorphic associations");
         a.add(Comment.create("author", "igor", "content", "this is just a test comment text"));
