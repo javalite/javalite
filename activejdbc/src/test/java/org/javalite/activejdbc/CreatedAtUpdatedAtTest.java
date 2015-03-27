@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import java.sql.Timestamp;
 import java.util.List;
+import static org.javalite.activejdbc.test_models.Person.Person;
 
 
 /**

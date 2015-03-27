@@ -32,4 +32,6 @@ public class Post extends Model {
         if (pretty) { writer.write('\n'); writer.write(indent); }
         writer.write("\"injected\":{\"secret_name\":\"Secret Name\"}");
     }
+    
+    public static Post Post = new Post();
 }

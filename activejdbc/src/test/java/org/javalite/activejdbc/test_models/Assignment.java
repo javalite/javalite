@@ -24,4 +24,5 @@ import org.javalite.activejdbc.annotations.Table;
  */
 @Table("programmers_projects")
 public class Assignment extends Model {
+	public static Assignment Assignment = new Assignment();
 }

@@ -24,4 +24,5 @@ public class Salary extends Model {
         validatePresenceOf("salary").message("salary is missing!!!");
         zeroToNull("salary");
     }
+   	public static Salary Salary = new Salary();
 }

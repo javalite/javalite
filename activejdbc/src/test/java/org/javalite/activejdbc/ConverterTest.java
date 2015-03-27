@@ -24,7 +24,8 @@ import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Salary;
 import org.javalite.activejdbc.test_models.Student;
 import org.junit.Test;
-
+import static org.javalite.activejdbc.test_models.Student.Student;
+import static org.javalite.activejdbc.test_models.Salary.Salary;
 public class ConverterTest extends ActiveJDBCTest {
 
     @Test

@@ -9,6 +9,7 @@ import org.junit.Test;
 import java.sql.Date;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import static org.javalite.activejdbc.test_models.Person.Person;
 
 /**
  * @author Igor Polevoy

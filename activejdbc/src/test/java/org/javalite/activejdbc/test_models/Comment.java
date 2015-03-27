@@ -24,4 +24,6 @@ import org.javalite.activejdbc.annotations.BelongsToPolymorphic;
  * @author Igor Polevoy
  */
 @BelongsToPolymorphic(parents = {Article.class, Post.class, Prescription.class})
-public class Comment extends Model {}
+public class Comment extends Model {
+	public static Comment Comment = new Comment();
+}

@@ -5,6 +5,8 @@ import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Watermelon;
 import org.junit.Test;
 
+import static org.javalite.activejdbc.test_models.Watermelon.Watermelon;
+
 /**
  * @author Igor Polevoy
  */

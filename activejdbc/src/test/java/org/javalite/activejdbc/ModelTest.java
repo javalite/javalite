@@ -754,7 +754,6 @@ public class ModelTest extends ActiveJDBCTest {
         alarm.save();
 
         alarm = Alarm.findById(alarm.getId());
-        the(alarm.get("alarm_time")).shouldBeA(java.sql.Time.class);
         the(alarm.getTime("alarm_time").toString()).shouldBeEqual(t);
     }
 }

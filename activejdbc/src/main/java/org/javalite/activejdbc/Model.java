@@ -1479,9 +1479,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         Object value = getRaw(attributeName);
         Converter<Object, Time> converter = modelRegistryLocal().converterForValue(
                 attributeName, value, Time.class);
-        return (Time) (converter != null ? converter.convert(value) : Convert.toTimestamp(value));
+        return converter != null ? converter.convert(value) : Convert.toTime(value);
     }
-
     /**
      * Gets attribute value as <code>java.sql.Timestamp</code>.
      * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
@@ -1634,7 +1633,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public <T extends Model> T setTime(String attributeName, Object value) {
         Converter<Object, Time> converter = modelRegistryLocal().converterForValue(
                 attributeName, value, Time.class);
-        return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toTimestamp(value));
+        return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toTime(value));
     }
 
     /**
@@ -2059,7 +2058,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         fireBeforeValidation();
         errors = new Errors();
         List<Validator> validators = modelRegistryLocal().validators();
-        System.out.println("validators = " + validators);
         if (validators != null) {
             for (Validator validator : validators) {
                 validator.validate(this);

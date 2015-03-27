@@ -22,4 +22,5 @@ import org.javalite.activejdbc.Model;
  * @author Igor Polevoy
  */
 public class SubClassification extends Model {
+	public static SubClassification SubClassification = new SubClassification();
 }

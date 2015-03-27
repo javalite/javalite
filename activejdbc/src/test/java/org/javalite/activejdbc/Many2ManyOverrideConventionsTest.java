@@ -18,6 +18,8 @@ limitations under the License.
 package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.test.ActiveJDBCTest;
+import static org.javalite.activejdbc.test_models.Student.Student;
+import static org.javalite.activejdbc.test_models.Course.Course;
 import org.javalite.activejdbc.test_models.Course;
 import org.javalite.activejdbc.test_models.Student;
 import org.junit.Test;

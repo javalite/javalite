@@ -17,6 +17,7 @@ limitations under the License.
 package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.test.ActiveJDBCTest;
+import static org.javalite.activejdbc.test_models.Person.Person;
 import org.javalite.activejdbc.test_models.Person;
 import org.junit.Test;
 

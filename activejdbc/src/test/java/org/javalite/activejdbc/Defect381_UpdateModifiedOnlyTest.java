@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Programmer;
+import static org.javalite.activejdbc.test_models.Programmer.Programmer;
 import org.junit.Test;
 
 /**

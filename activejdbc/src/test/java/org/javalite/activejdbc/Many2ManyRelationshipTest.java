@@ -22,6 +22,14 @@ import org.javalite.activejdbc.Model;
 import org.javalite.activejdbc.associations.NotAssociatedException;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.*;
+import static org.javalite.activejdbc.test_models.Doctor.Doctor;
+import static org.javalite.activejdbc.test_models.Patient.Patient;
+import static org.javalite.activejdbc.test_models.DoctorsPatients.DoctorsPatients;
+import static org.javalite.activejdbc.test_models.Student.Student;
+import static org.javalite.activejdbc.test_models.Programmer.Programmer;
+import static org.javalite.activejdbc.test_models.Plant.Plant;
+import static org.javalite.activejdbc.test_models.Project.Project;
+import static org.javalite.activejdbc.test_models.Assignment.Assignment;
 
 import org.junit.Test;
 

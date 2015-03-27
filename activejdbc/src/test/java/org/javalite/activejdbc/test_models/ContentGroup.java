@@ -22,4 +22,5 @@ import org.javalite.activejdbc.Model;
  * @author Igor Polevoy
  */
 public class ContentGroup extends Model {
+	public static ContentGroup ContentGroup = new ContentGroup();
 }

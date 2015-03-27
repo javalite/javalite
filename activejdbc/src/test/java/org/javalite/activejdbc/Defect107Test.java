@@ -18,6 +18,7 @@ package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.ContentGroup;
+import static org.javalite.activejdbc.test_models.ContentGroup.ContentGroup;
 import org.junit.Test;
 
 /**

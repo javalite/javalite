@@ -23,4 +23,6 @@ import org.javalite.activejdbc.annotations.BelongsToPolymorphic;
  * @author Igor Polevoy
  */
 @BelongsToPolymorphic(parents = {Vehicle.class, Mammal.class}, typeLabels = {"Vehicle", "Mammal"} )
-public class Classification extends Model {}
+public class Classification extends Model {
+	public static Classification Classification = new Classification();
+}

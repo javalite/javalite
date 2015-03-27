@@ -20,6 +20,9 @@ import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Animal;
 import org.javalite.activejdbc.test_models.Item;
 import org.javalite.activejdbc.test_models.Watermelon;
+import static org.javalite.activejdbc.test_models.Item.Item;
+import static org.javalite.activejdbc.test_models.Watermelon.Watermelon;
+import static org.javalite.activejdbc.test_models.Animal.Animal;
 import org.junit.Test;
 
 public class Defect329Test extends ActiveJDBCTest {

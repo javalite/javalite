@@ -6,4 +6,5 @@ import org.javalite.activejdbc.Model;
  * @author Igor Polevoy
  */
 public class Watermelon extends Model {
+	public static Watermelon Watermelon = new Watermelon();
 }

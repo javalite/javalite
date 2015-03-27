@@ -18,6 +18,7 @@ package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.NoArg;
+import static org.javalite.activejdbc.test_models.NoArg.NoArg;
 import org.junit.Test;
 
 import java.io.IOException;

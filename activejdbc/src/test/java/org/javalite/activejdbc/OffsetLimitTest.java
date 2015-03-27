@@ -21,7 +21,7 @@ import org.javalite.activejdbc.Model;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Page;
 import org.junit.Test;
-
+import static org.javalite.activejdbc.test_models.Page.Page;
 import java.util.List;
 
 

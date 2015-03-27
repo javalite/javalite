@@ -27,7 +27,11 @@ import org.javalite.activejdbc.test_models.*;
 import org.junit.Test;
 
 import java.util.List;
-
+import static org.javalite.activejdbc.test_models.Doctor.Doctor;
+import static org.javalite.activejdbc.test_models.Person.Person;
+import static org.javalite.activejdbc.test_models.Book.Book;
+import static org.javalite.activejdbc.test_models.Library.Library;
+import static org.javalite.activejdbc.test_models.Account.Account;
 
 /**
  * @author Igor Polevoy
@@ -84,7 +88,6 @@ public class CacheTest extends ActiveJDBCTest {
     @Test
     public void testFindById(){
         Person p1 = Person.findById(1);
-
         a(p1).shouldBeTheSameAs(Person.findById(1));
 
         //now, let's save a new person - this will blow away cache. 

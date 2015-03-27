@@ -21,4 +21,6 @@ import org.javalite.activejdbc.Model;
 /**
  * @author Igor Polevoy
  */
-public class Prescription extends Model {}
+public class Prescription extends Model {
+	public static Prescription Prescription = new Prescription();
+}

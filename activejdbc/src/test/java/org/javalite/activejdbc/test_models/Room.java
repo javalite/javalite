@@ -21,4 +21,6 @@ import org.javalite.activejdbc.Model;
 /**
  * @author Igor Polevoy
  */
-public class Room extends Model {}
+public class Room extends Model {
+	public static Room Room = new Room();
+}

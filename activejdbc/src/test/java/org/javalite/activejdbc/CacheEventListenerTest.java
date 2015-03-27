@@ -11,7 +11,7 @@ import org.junit.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-
+import static org.javalite.activejdbc.test_models.Person.Person;
 /**
  * @author Igor Polevoy
  */

@@ -23,6 +23,7 @@ import org.javalite.activejdbc.Model;
  * @author Stephane Restani
  */
 public class Cake extends Pastry {
+	public static Cake Cake = new Cake();
 
 }
 

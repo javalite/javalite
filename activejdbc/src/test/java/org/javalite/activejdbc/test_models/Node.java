@@ -14,4 +14,6 @@ public class Node extends Model {
     public Node(String name){
         set("name", name);
     }
+    
+    public static Node Node = new Node();
 }

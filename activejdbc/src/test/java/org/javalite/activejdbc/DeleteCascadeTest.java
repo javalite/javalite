@@ -10,6 +10,19 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static org.javalite.activejdbc.test_models.Address.Address;
+import static org.javalite.activejdbc.test_models.Room.Room;
+import static org.javalite.activejdbc.test_models.User.User;
+import static org.javalite.activejdbc.test_models.Post.Post;
+import static org.javalite.activejdbc.test_models.Article.Article;
+import static org.javalite.activejdbc.test_models.Comment.Comment;
+import static org.javalite.activejdbc.test_models.Classification.Classification;
+import static org.javalite.activejdbc.test_models.SubClassification.SubClassification;
+import static org.javalite.activejdbc.test_models.Vehicle.Vehicle;
+import static org.javalite.activejdbc.test_models.Doctor.Doctor;
+import static org.javalite.activejdbc.test_models.DoctorsPatients.DoctorsPatients;
+import static org.javalite.activejdbc.test_models.Patient.Patient;
+import static org.javalite.activejdbc.test_models.Prescription.Prescription;
 
 /**
  * @author Igor Polevoy
@@ -69,8 +82,10 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
      * This is to test models with annotations that override conventions.
      */
     @Test
-    public void shouldDeletePolymorphicChildrenDeep(){
+    public void shouldDeletePolymorphicChildrenDeep() {
         deleteAndPopulateTables("vehicles", "mammals", "classifications");
+        
+        
         Vehicle car = Vehicle.createIt("name", "car");
         Classification fourWheeled = Classification.create("name", "four wheeled");
         car.add(fourWheeled);
