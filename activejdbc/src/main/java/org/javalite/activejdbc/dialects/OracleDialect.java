@@ -55,16 +55,15 @@ public class OracleDialect extends DefaultDialect {
 
         StringBuilder fullQuery = new StringBuilder();
         if (needOffset) {
-            fullQuery.append("SELECT * FROM (SELECT t2.*, ROWNUM AS oracle_row_number FROM (");
+            fullQuery.append("SELECT * FROM (SELECT a.*, ROWNUM AS oracle_row_number FROM (");
         } else if (needLimit) { // if needLimit and don't needOffset
             fullQuery.append("SELECT * FROM (");
         }
-        //TODO check if this can be simplified removing the alias t
-        appendSelect(fullQuery, tableName, (needLimit || needOffset) ? "t" : null, subQuery, orderBys);
+        appendSelect(fullQuery, tableName, subQuery, orderBys);
 
         if (needOffset) {
             // Oracle offset starts with 1, not like MySQL with 0;
-            fullQuery.append(") t2) WHERE oracle_row_number >= ").append(offset + 1);
+            fullQuery.append(") a) WHERE oracle_row_number >= ").append(offset + 1);
             if (needLimit) {
                 fullQuery.append(" AND ROWNUM <= ").append(limit);
             }

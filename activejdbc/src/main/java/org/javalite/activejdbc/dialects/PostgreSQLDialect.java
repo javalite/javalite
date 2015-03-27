@@ -20,8 +20,8 @@ public class PostgreSQLDialect extends DefaultDialect {
     @Override
     public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
         StringBuilder fullQuery = new StringBuilder();
-        
-        appendSelect(fullQuery, tableName, null, subQuery, orderBys);
+
+        appendSelect(fullQuery, tableName, subQuery, orderBys);
 
         if(limit != -1){
             fullQuery.append(" LIMIT ").append(limit);

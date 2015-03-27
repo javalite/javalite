@@ -99,17 +99,11 @@ public class DefaultDialect implements Dialect {
         }
     }
 
-    protected void appendSelect(StringBuilder query, String tableName, String tableAlias, String subQuery,
-            List<String> orderBys) {
+    protected void appendSelect(StringBuilder query, String tableName, String subQuery, List<String> orderBys) {
         if (tableName == null) {
             query.append(subQuery);
         } else {
-            if (tableAlias == null) {
-                query.append("SELECT * FROM ").append(tableName);
-            } else {
-                query.append("SELECT ").append(tableAlias).append(".* FROM ").append(tableName).append(' ')
-                        .append(tableAlias);
-            }
+            query.append("SELECT * FROM ").append(tableName);
             appendSubQuery(query, subQuery);
         }
         appendOrderBy(query, orderBys);
@@ -118,7 +112,7 @@ public class DefaultDialect implements Dialect {
     @Override
     public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
         StringBuilder fullQuery = new StringBuilder();
-        appendSelect(fullQuery, tableName, null, subQuery, orderBys);
+        appendSelect(fullQuery, tableName, subQuery, orderBys);
         return fullQuery.toString();
     }
 
