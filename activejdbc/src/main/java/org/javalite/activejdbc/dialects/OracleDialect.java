@@ -50,7 +50,6 @@ public class OracleDialect extends DefaultDialect {
      */
     @Override
     public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
-
         boolean needLimit = limit != -1L;
         boolean needOffset = offset != -1L;
 
@@ -58,7 +57,7 @@ public class OracleDialect extends DefaultDialect {
         if (needOffset) {
             fullQuery.append("SELECT * FROM (SELECT t2.*, ROWNUM AS oracle_row_number FROM (");
         } else if (needLimit) { // if needLimit and don't needOffset
-            fullQuery.append("SELECT * FROM (SELECT t2.* FROM (");
+            fullQuery.append("SELECT * FROM (");
         }
         //TODO check if this can be simplified removing the alias t
         appendSelect(fullQuery, tableName, (needLimit || needOffset) ? "t" : null, subQuery, orderBys);
@@ -70,7 +69,7 @@ public class OracleDialect extends DefaultDialect {
                 fullQuery.append(" AND ROWNUM <= ").append(limit);
             }
         } else if (needLimit) {
-            fullQuery.append(") t2) WHERE ROWNUM <= ").append(limit);            
+            fullQuery.append(") WHERE ROWNUM <= ").append(limit);
         }
 
         return fullQuery.toString();
