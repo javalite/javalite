@@ -29,10 +29,10 @@ public class OracleDialect extends DefaultDialect {
      *
      * <blockquote><pre>
      * SELECT * FROM (
-     *   SELECT t2.*, ROWNUM AS oracle_row_number FROM (
-     *     SELECT t.* FROM pages t WHERE &lt;conditions&gt; ORDER BY id
-     *   ) t2
-     * ) WHERE oracle_row_number &gt;= 20 AND rownum &lt;= 10;
+     *   SELECT a.*, ROWNUM AS ORACLE_OFFSET FROM (
+     *     SELECT * FROM pages WHERE &lt;conditions&gt; ORDER BY id
+     *   ) a
+     * ) WHERE ORACLE_OFFSET &gt;= 20 AND ROWNUM &lt;= 10;
      * </pre></blockquote>
      *
      * <p>Look here for reference: <a href="http://explainextended.com/2009/05/06/oracle-row_number-vs-rownum/">Oracle: ROW_NUMBER vs ROWNUM</a>
@@ -45,7 +45,7 @@ public class OracleDialect extends DefaultDialect {
      * @param offset offset value, -1 if not needed.
      * @return Oracle - specific select query. Here is one example:
      *
-     * <pre>SELECT * FROM (SELECT t2.*, ROWNUM AS oracle_row_number FROM (SELECT t.* FROM pages t WHERE &lt;conditions&gt; ORDER BY id) t2) WHERE oracle_row_number &gt;= 20 AND rownum &lt;= 10;</pre>
+     * <pre>SELECT * FROM (SELECT a.*, ROWNUM AS ORACLE_OFFSET FROM (SELECT * FROM pages WHERE &lt;conditions&gt; ORDER BY id) a) WHERE ORACLE_OFFSET &gt;= 20 AND ROWNUM &lt;= 10;</pre>
      * Can't think of an uglier thing. Shame on you, Oracle.
      */
     @Override
@@ -55,7 +55,7 @@ public class OracleDialect extends DefaultDialect {
 
         StringBuilder fullQuery = new StringBuilder();
         if (needOffset) {
-            fullQuery.append("SELECT * FROM (SELECT a.*, ROWNUM AS oracle_row_number FROM (");
+            fullQuery.append("SELECT * FROM (SELECT a.*, ROWNUM AS ORACLE_OFFSET FROM (");
         } else if (needLimit) { // if needLimit and don't needOffset
             fullQuery.append("SELECT * FROM (");
         }
@@ -63,7 +63,7 @@ public class OracleDialect extends DefaultDialect {
 
         if (needOffset) {
             // Oracle offset starts with 1, not like MySQL with 0;
-            fullQuery.append(") a) WHERE oracle_row_number >= ").append(offset + 1);
+            fullQuery.append(") a) WHERE ORACLE_OFFSET >= ").append(offset + 1);
             if (needLimit) {
                 fullQuery.append(" AND ROWNUM <= ").append(limit);
             }
