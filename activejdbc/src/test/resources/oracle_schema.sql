@@ -884,7 +884,7 @@ CREATE OR REPLACE TRIGGER images_trigger
         begin
 select coalesce(:new.id, images_seq.nextval) into :new.id from dual;
 end;
---BREAK
+-- BREAK
 
 
 CREATE TABLE alarms (id NUMBER NOT NULL, alarm_time DATE NOT NULL)
@@ -901,4 +901,4 @@ CREATE OR REPLACE TRIGGER alarms_trigger
         begin
 select coalesce(:new.id, alarms_seq.nextval) into :new.id from dual;
 end;
---BREAK
+-- BREAK
