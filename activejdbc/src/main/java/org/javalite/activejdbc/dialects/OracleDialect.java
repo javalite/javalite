@@ -80,4 +80,10 @@ public class OracleDialect extends DefaultDialect {
     protected void appendEmptyRow(MetaModel metaModel, StringBuilder query) {
         query.append('(').append(metaModel.getIdName()).append(") VALUES (null)");
     }
+
+    @Override
+    protected void appendTime(StringBuilder query, java.sql.Time value) {
+        // Oracle has no TIME type
+        appendTimestamp(query, new java.sql.Timestamp(value.getTime()));
+    }
 }
