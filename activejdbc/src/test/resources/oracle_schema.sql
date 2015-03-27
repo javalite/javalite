@@ -887,7 +887,7 @@ end;
 --BREAK
 
 
-CREATE TABLE alarms (id NUMBER NOT NULL, alarm_time TIME NOT NULL)
+CREATE TABLE alarms (id NUMBER NOT NULL, alarm_time DATE NOT NULL)
 -- BREAK
 ALTER TABLE alarms ADD CONSTRAINT alarms_pk PRIMARY KEY (id)
 -- BREAK

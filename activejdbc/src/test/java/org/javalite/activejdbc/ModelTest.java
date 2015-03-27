@@ -517,7 +517,6 @@ public class ModelTest extends ActiveJDBCTest {
         the(Base.exec(updateSql)).shouldBeEqual(1);
 
         alarm = Alarm.findById(alarm.getId());
-        the(alarm.get("alarm_time")).shouldBeA(java.sql.Time.class);
         the(alarm.getTime("alarm_time").toString()).shouldBeEqual(t);
     }
 
@@ -557,7 +556,6 @@ public class ModelTest extends ActiveJDBCTest {
         Object id = Base.execInsert(insertSql, alarm.getIdName());
 
         alarm = Alarm.findById(id);
-        the(alarm.get("alarm_time")).shouldBeA(java.sql.Time.class);
         the(alarm.getTime("alarm_time").toString()).shouldBeEqual(t);
     }
 
@@ -714,7 +712,6 @@ public class ModelTest extends ActiveJDBCTest {
         alarm.save();
 
         alarm = Alarm.findById(alarm.getId());
-        the(alarm.get("alarm_time")).shouldBeA(java.sql.Time.class);
         the(alarm.getTime("alarm_time").toString()).shouldBeEqual(t);
     }
 }
