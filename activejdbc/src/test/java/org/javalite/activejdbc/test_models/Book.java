@@ -22,4 +22,6 @@ import org.javalite.activejdbc.annotations.BelongsTo;
 
 
 @BelongsTo(parent = Library.class, foreignKeyName = "lib_id")
-public class Book  extends Model {}
+public class Book extends Model {
+	public static Book Book = new Book();
+}

@@ -21,5 +21,7 @@ package org.javalite.activejdbc.test_models;
 /**
  * @author Stephane Restani
  */
-public class Cheese extends Meal {}
+public class Cheese extends Meal {
+	public static Cheese Cheese = new Cheese();
+}
 

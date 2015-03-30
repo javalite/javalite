@@ -22,4 +22,5 @@ import org.javalite.activejdbc.Model;
  * @author Igor Polevoy
  */
 public class Programmer extends Model {
+	public static Programmer Programmer = new Programmer();
 }

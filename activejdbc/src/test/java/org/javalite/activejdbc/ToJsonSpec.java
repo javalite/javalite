@@ -28,6 +28,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static org.javalite.activejdbc.test_models.Person.Person;
+import static org.javalite.activejdbc.test_models.User.User;
+import static org.javalite.activejdbc.test_models.Article.Article;
+import static org.javalite.activejdbc.test_models.Comment.Comment;
+import static org.javalite.activejdbc.test_models.Tag.Tag;
+import static org.javalite.activejdbc.test_models.Post.Post;
+
+
+
 /**
  * @author Igor Polevoy
  * @author Eric Nielsen

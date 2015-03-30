@@ -27,4 +27,5 @@ public class NoArg extends Model {
     public NoArg(String arg) {
         this.arg = arg;
     }
+    public static NoArg NoArg = new NoArg(null);
 }

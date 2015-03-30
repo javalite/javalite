@@ -8,4 +8,5 @@ import org.javalite.activejdbc.annotations.DbName;
  */
 @DbName("test")
 public class OtherDbModel extends Model {
+	public static OtherDbModel OtherDbModel = new OtherDbModel();
 }

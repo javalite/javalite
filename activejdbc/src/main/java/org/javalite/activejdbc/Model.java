@@ -55,7 +55,7 @@ import static org.javalite.common.Util.*;
  */
 public abstract class Model extends CallbackSupport implements Externalizable {
 
-    private final static Logger logger = LoggerFactory.getLogger(Model.class);
+    private final Logger logger = LoggerFactory.getLogger(Model.class);
 
     private Map<String, Object> attributes = new CaseInsensitiveMap<Object>();
     private final Set<String> dirtyAttributeNames = new CaseInsensitiveSet();
@@ -69,6 +69,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     private Errors errors = new Errors();
 
     protected Model() {
+    	init();
     }
 
     private void fireBeforeSave() {
@@ -140,8 +141,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
     }
 
-    public static MetaModel getMetaModel() {
-        return ModelDelegate.metaModelOf(modelClass());
+    public MetaModel getMetaModel() {
+        return ModelDelegate.metaModelOf(this.getClass());
     }
 
     protected Map<String, Object> getAttributes() {
@@ -327,24 +328,24 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @deprecated use {@link #attributeNames()} instead
      */
     @Deprecated
-    public static List<String> attributes(){
-        return ModelDelegate.attributes(modelClass());
+    public List<String> attributes(){
+        return ModelDelegate.attributes(this.getClass());
     }
 
     /**
      * Returns names of all attributes from this model.
      * @return names of all attributes from this model.
      */
-    public static Set<String> attributeNames() {
-        return ModelDelegate.attributeNames(modelClass());
+    public Set<String> attributeNames() {
+        return ModelDelegate.attributeNames(this.getClass());
     }
 
     /**
      * Returns all associations of this model.
      * @return all associations of this model.
      */
-    public static List<Association> associations() {
-        return ModelDelegate.associations(modelClass());
+    public List<Association> associations() {
+        return ModelDelegate.associations(this.getClass());
     }
 
     /**
@@ -628,8 +629,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param params   (optional) - list of parameters if a query is parametrized.
      * @return number of deleted records.
      */
-    public static int delete(String query, Object... params) {
-        return ModelDelegate.delete(modelClass(), query, params);
+    public int delete(String query, Object... params) {
+        return ModelDelegate.delete(this.getClass(), query, params);
     }
 
     /**
@@ -638,8 +639,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param id id in question.
      * @return true if corresponding record exists in DB, false if it does not.
      */
-    public static boolean exists(Object id) {
-        return ModelDelegate.exists(modelClass(), id);
+    public boolean exists(Object id) {
+        return ModelDelegate.exists(this.getClass(), id);
     }
 
     /**
@@ -657,8 +658,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @return number of records deleted.
      */
-    public static int deleteAll() {
-        return ModelDelegate.deleteAll(modelClass());
+    public int deleteAll() {
+        return ModelDelegate.deleteAll(this.getClass());
     }
 
     /**
@@ -678,8 +679,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * updates first, then conditions.
      * @return number of updated records.
      */
-    public static int update(String updates, String conditions, Object ... params) {
-        return ModelDelegate.update(modelClass(), updates, conditions, params);
+    public int update(String updates, String conditions, Object ... params) {
+        return ModelDelegate.update(this.getClass(), updates, conditions, params);
     }
 
     /**
@@ -697,8 +698,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * updates first, then conditions.
      * @return number of updated records.
      */
-    public static int updateAll(String updates, Object ... params) {
-        return ModelDelegate.updateAll(modelClass(), updates, params);
+    public int updateAll(String updates, Object ... params) {
+        return ModelDelegate.updateAll(this.getClass(), updates, params);
     }
 
     /**
@@ -1481,7 +1482,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 attributeName, value, Time.class);
         return converter != null ? converter.convert(value) : Convert.toTime(value);
     }
-
     /**
      * Gets attribute value as <code>java.sql.Timestamp</code>.
      * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
@@ -1783,8 +1783,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return new LazyList<C>(subQuery, Registry.instance().getMetaModel(targetTable), allParams);
     }
 
-    protected static NumericValidationBuilder validateNumericalityOf(String... attributeNames) {
-        return ModelDelegate.validateNumericalityOf(modelClass(), attributeNames);
+    protected NumericValidationBuilder validateNumericalityOf(String... attributeNames) {
+        return ModelDelegate.validateNumericalityOf(this.getClass(), attributeNames);
     }
 
     /**
@@ -1792,8 +1792,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @param validator new validator.
      */
-    public static ValidationBuilder addValidator(Validator validator) {
-        return ModelDelegate.validateWith(modelClass(), validator);
+    public ValidationBuilder addValidator(Validator validator) {
+        return ModelDelegate.validateWith(this.getClass(), validator);
     }
 
     /**
@@ -1807,12 +1807,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         errors.put(key, value);
     }
 
-    public static void removeValidator(Validator validator){
-        ModelDelegate.removeValidator(modelClass(), validator);
+    public void removeValidator(Validator validator){
+        ModelDelegate.removeValidator(this.getClass(), validator);
     }
 
     //TODO: missing no-arg getValidators()?
-    public static List<Validator> getValidators(Class<? extends Model> clazz) {
+    public List<Validator> getValidators(Class<? extends Model> clazz) {
         return ModelDelegate.validatorsOf(clazz);
     }
 
@@ -1823,8 +1823,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param pattern regexp pattern which must match  the value.
      * @return
      */
-    protected static ValidationBuilder validateRegexpOf(String attributeName, String pattern) {
-        return ModelDelegate.validateRegexpOf(modelClass(), attributeName, pattern);
+    protected ValidationBuilder validateRegexpOf(String attributeName, String pattern) {
+        return ModelDelegate.validateRegexpOf(this.getClass(), attributeName, pattern);
     }
 
     /**
@@ -1833,8 +1833,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attributeName name of attribute that holds email value.
      * @return
      */
-    protected static ValidationBuilder validateEmailOf(String attributeName) {
-        return ModelDelegate.validateEmailOf(modelClass(), attributeName);
+    protected ValidationBuilder validateEmailOf(String attributeName) {
+        return ModelDelegate.validateEmailOf(this.getClass(), attributeName);
     }
 
     /**
@@ -1846,8 +1846,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param max max value of range.
      * @return
      */
-    protected static ValidationBuilder validateRange(String attributeName, Number min, Number max) {
-        return ModelDelegate.validateRange(modelClass(), attributeName, min, max);
+    protected ValidationBuilder validateRange(String attributeName, Number min, Number max) {
+        return ModelDelegate.validateRange(this.getClass(), attributeName, min, max);
     }
 
     /**
@@ -1856,8 +1856,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attributeNames list of attributes to validate.
      * @return
      */
-    protected static ValidationBuilder validatePresenceOf(String... attributeNames) {
-        return ModelDelegate.validatePresenceOf(modelClass(), attributeNames);
+    protected ValidationBuilder validatePresenceOf(String... attributeNames) {
+        return ModelDelegate.validatePresenceOf(this.getClass(), attributeNames);
     }
 
     /**
@@ -1865,8 +1865,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @param validator  custom validator.
      */
-    protected static ValidationBuilder validateWith(Validator validator) {
-        return ModelDelegate.validateWith(modelClass(), validator);
+    protected ValidationBuilder validateWith(Validator validator) {
+        return ModelDelegate.validateWith(this.getClass(), validator);
     }
 
     /**
@@ -1876,8 +1876,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @deprecated use {@link #convertWith(org.javalite.activejdbc.conversion.Converter, String...)} instead
      */
     @Deprecated
-    protected static ValidationBuilder convertWith(org.javalite.activejdbc.validation.Converter converter) {
-        return ModelDelegate.convertWith(modelClass(), converter);
+    protected ValidationBuilder convertWith(org.javalite.activejdbc.validation.Converter converter) {
+        return ModelDelegate.convertWith(this.getClass(), converter);
     }
 
     /**
@@ -1886,8 +1886,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param converter custom converter
      * @param attributeNames attribute names
      */
-    protected static void convertWith(Converter converter, String... attributeNames) {
-        ModelDelegate.convertWith(modelClass(), converter, attributeNames);
+    protected void convertWith(Converter converter, String... attributeNames) {
+        ModelDelegate.convertWith(this.getClass(), converter, attributeNames);
     }
 
     /**
@@ -1900,8 +1900,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @deprecated use {@link #dateFormat(String, String...) instead
      */
     @Deprecated
-    protected static ValidationBuilder convertDate(String attributeName, String format){
-        return ModelDelegate.convertDate(modelClass(), attributeName, format);
+    protected ValidationBuilder convertDate(String attributeName, String format){
+        return ModelDelegate.convertDate(this.getClass(), attributeName, format);
     }
 
     /**
@@ -1914,8 +1914,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @deprecated use {@link #timestampFormat(String, String...) instead
      */
     @Deprecated
-    protected static ValidationBuilder convertTimestamp(String attributeName, String format){
-        return ModelDelegate.convertTimestamp(modelClass(), attributeName, format);
+    protected ValidationBuilder convertTimestamp(String attributeName, String format){
+        return ModelDelegate.convertTimestamp(this.getClass(), attributeName, format);
     }
 
     /**
@@ -1945,8 +1945,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param pattern pattern to use for conversion
      * @param attributeNames attribute names
      */
-    protected static void dateFormat(String pattern, String... attributeNames) {
-        ModelDelegate.dateFormat(modelClass(), pattern, attributeNames);
+    protected void dateFormat(String pattern, String... attributeNames) {
+        ModelDelegate.dateFormat(this.getClass(), pattern, attributeNames);
     }
 
     /**
@@ -1958,8 +1958,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param format format to use for conversion
      * @param attributeNames attribute names
      */
-    protected static void dateFormat(DateFormat format, String... attributeNames) {
-        ModelDelegate.dateFormat(modelClass(), format, attributeNames);
+    protected void dateFormat(DateFormat format, String... attributeNames) {
+        ModelDelegate.dateFormat(this.getClass(), format, attributeNames);
     }
 
     /**
@@ -1989,8 +1989,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param pattern pattern to use for conversion
      * @param attributeNames attribute names
      */
-    protected static void timestampFormat(String pattern, String... attributeNames) {
-        ModelDelegate.timestampFormat(modelClass(), pattern, attributeNames);
+    protected void timestampFormat(String pattern, String... attributeNames) {
+        ModelDelegate.timestampFormat(this.getClass(), pattern, attributeNames);
     }
 
     /**
@@ -2002,8 +2002,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param format format to use for conversion
      * @param attributeNames attribute names
      */
-    protected static void timestampFormat(DateFormat format, String... attributeNames) {
-        ModelDelegate.timestampFormat(modelClass(), format, attributeNames);
+    protected void timestampFormat(DateFormat format, String... attributeNames) {
+        ModelDelegate.timestampFormat(this.getClass(), format, attributeNames);
     }
 
     /**
@@ -2012,8 +2012,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @param attributeNames attribute names
      */
-    protected static void blankToNull(String... attributeNames) {
-        ModelDelegate.blankToNull(modelClass(), attributeNames);
+    protected void blankToNull(String... attributeNames) {
+        ModelDelegate.blankToNull(this.getClass(), attributeNames);
     }
 
     /**
@@ -2022,24 +2022,24 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @param attributeNames attribute names
      */
-    protected static void zeroToNull(String... attributeNames) {
-        ModelDelegate.zeroToNull(modelClass(), attributeNames);
+    protected void zeroToNull(String... attributeNames) {
+        ModelDelegate.zeroToNull(this.getClass(), attributeNames);
     }
 
-    public static boolean belongsTo(Class<? extends Model> targetClass) {
-        return ModelDelegate.belongsTo(modelClass(), targetClass);
+    public boolean belongsTo(Class<? extends Model> targetClass) {
+        return ModelDelegate.belongsTo(this.getClass(), targetClass);
     }
 
     /**
      * @deprecated use {@link #callbackWith(CallbackListener...)} instead
      */
     @Deprecated
-    public static void addCallbacks(CallbackListener... listeners) {
-         ModelDelegate.callbackWith(modelClass(), listeners);
+    public void addCallbacks(CallbackListener... listeners) {
+         ModelDelegate.callbackWith(this.getClass(), listeners);
     }
 
-    public static void callbackWith(CallbackListener... listeners) {
-         ModelDelegate.callbackWith(modelClass(), listeners);
+    public void callbackWith(CallbackListener... listeners) {
+         ModelDelegate.callbackWith(this.getClass(), listeners);
     }
 
     /**
@@ -2120,8 +2120,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * indexes 1, 3, 5... are values. Element at index 1 is a value for attribute at index 0 and so on.
      * @return newly instantiated model.
      */
-    public static <T extends Model> T create(Object... namesAndValues) {
-        return ModelDelegate.create(Model.<T>modelClass(), namesAndValues);
+    public <T extends Model> T create(Object... namesAndValues) {
+        return (T) ModelDelegate.create(this.getClass(), namesAndValues);
     }
 
     /**
@@ -2162,12 +2162,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * indexes 1, 3, 5... are values. Element at index 1 is a value for attribute at index 0 and so on.
      * @return newly instantiated model which also has been saved to DB.
      */
-    public static <T extends Model> T createIt(Object ... namesAndValues){
-        return ModelDelegate.createIt(Model.<T>modelClass(), namesAndValues);
+    public <T extends Model> T createIt(Object ... namesAndValues){
+        return (T) ModelDelegate.createIt(this.getClass(), namesAndValues);
     }
 
-    public static <T extends Model> T findById(Object id) {
-        return ModelDelegate.findById(Model.<T>modelClass(), id);
+    public <T extends Model> T findById(Object id) {
+        return (T) ModelDelegate.findById(this.getClass(), id);
     }
 
     /**
@@ -2201,8 +2201,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param params list of parameters corresponding to the place holders in the subquery.
      * @return instance of <code>LazyList<Model></code> containing results.
      */
-    public static <T extends Model> LazyList<T> where(String subquery, Object... params) {
-        return ModelDelegate.where(Model.<T>modelClass(), subquery, params);
+    public <T extends Model> LazyList<T> where(String subquery, Object... params) {
+        return (LazyList<T>) ModelDelegate.where(this.getClass(), subquery, params);
     }
 
     /**
@@ -2213,8 +2213,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param params list of parameters corresponding to the place holders in the subquery.
      * @return instance of <code>LazyList<Model></code> containing results.
      */
-    public static <T extends Model> LazyList<T> find(String subquery, Object... params) {
-        return ModelDelegate.where(Model.<T>modelClass(), subquery, params);
+    public <T extends Model> LazyList<T> find(String subquery, Object... params) {
+        return (LazyList<T>) ModelDelegate.where(this.getClass(), subquery, params);
     }
 
     /**
@@ -2231,8 +2231,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param params list of parameters if question marks are used as placeholders
      * @return a first result for this condition. May return null if nothing found.
      */
-    public static <T extends Model> T findFirst(String subQuery, Object... params) {
-        return ModelDelegate.findFirst(Model.<T>modelClass(), subQuery, params);
+    public <T extends Model> T findFirst(String subQuery, Object... params) {
+        return (T) ModelDelegate.findFirst(this.getClass(), subQuery, params);
     }
 
     /**
@@ -2260,8 +2260,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param params list of parameters if question marks are used as placeholders
      * @return a first result for this condition. May return null if nothing found.
      */
-    public static <T extends Model> T first(String subQuery, Object... params) {
-        return ModelDelegate.findFirst(Model.<T>modelClass(), subQuery, params);
+    public <T extends Model> T first(String subQuery, Object... params) {
+        return (T) ModelDelegate.findFirst(this.getClass(), subQuery, params);
     }
 
     /**
@@ -2272,8 +2272,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @deprecated use {@link #findWith(ModelListener, String, Object...)}.
      */
     @Deprecated
-    public static void find(String query, final ModelListener listener) {
-        ModelDelegate.findWith(modelClass(), listener, query);
+    public void find(String query, final ModelListener listener) {
+        ModelDelegate.findWith(this.getClass(), listener, query);
     }
 
     /**
@@ -2283,8 +2283,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param query sub-query (content after "WHERE" clause)
      * @param params optional parameters for a query.
      */
-    public static void findWith(final ModelListener listener, String query, Object ... params) {
-        ModelDelegate.findWith(modelClass(), listener, query, params);
+    public void findWith(final ModelListener listener, String query, Object ... params) {
+        ModelDelegate.findWith(this.getClass(), listener, query, params);
     }
 
     /**
@@ -2300,8 +2300,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param <T> - class that extends Model.
      * @return list of models representing result set.
      */
-    public static <T extends Model> LazyList<T> findBySQL(String fullQuery, Object... params) {
-        return ModelDelegate.findBySql(Model.<T>modelClass(), fullQuery, params);
+    public <T extends Model> LazyList<T> findBySQL(String fullQuery, Object... params) {
+        return (LazyList<T>) ModelDelegate.findBySql(this.getClass(), fullQuery, params);
     }
 
     /**
@@ -2309,8 +2309,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @return result list
      */
-    public static <T extends Model> LazyList<T> findAll() {
-        return ModelDelegate.findAll(Model.<T>modelClass());
+    public <T extends Model> LazyList<T> findAll() {
+        return (LazyList<T>) ModelDelegate.findAll(this.getClass());
     }
 
     /**
@@ -2525,8 +2525,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @return total count of records in table.
      */
-    public static Long count() {
-        return ModelDelegate.count(modelClass());
+    public Long count() {
+        return ModelDelegate.count(this.getClass());
     }
 
     /**
@@ -2536,8 +2536,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param params parameters (if any) for the query.
      * @return count of records in table under a condition.
      */
-    public static Long count(String query, Object... params) {
-        return ModelDelegate.count(modelClass(), query, params);
+    public Long count(String query, Object... params) {
+        return ModelDelegate.count(this.getClass(), query, params);
     }
 
     /**
@@ -2680,12 +2680,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return values;
     }
 
-    private static <T extends Model> Class<T> modelClass() {
+    private <T extends Model> Class<T> modelClass() {
         throw new InitException("failed to determine Model class name, are you sure models have been instrumented?");
     }
 
-    public static String getTableName() {
-        return ModelDelegate.tableNameOf(modelClass());
+    public String getTableName() {
+        return ModelDelegate.tableNameOf(this.getClass());
     }
 
     public Object getId() {
@@ -2840,8 +2840,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     /**
      * Use to force-purge cache associated with this table. If this table is not cached, this method has no side effect.
      */
-    public static void purgeCache(){
-        ModelDelegate.purgeCache(modelClass());
+    public void purgeCache(){
+        ModelDelegate.purgeCache(this.getClass());
     }
 
     /**
@@ -2866,5 +2866,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         attributes = new CaseInsensitiveMap<Object>();
         attributes.putAll((Map<String, Object>) in.readObject());
+    }
+    
+    /**
+     * Necessary to create the assocations. This adds the table to the registry.
+     */
+    public void init() {
+//    	logger.info("New instance of " + getTableName());
+    	getMetaModel();
     }
 }

@@ -22,9 +22,10 @@ import org.javalite.activejdbc.Model;
 import org.javalite.activejdbc.annotations.Cached;
 
 
+
 @Cached
 public class Person extends Model {
-    static{
+	public Person() {
         validatePresenceOf("name", "last_name");
         convertDate("dob", "yyyy-MM-dd");
         convertTimestamp("graduation_date", "yyyy-MM-dd");
@@ -38,4 +39,5 @@ public class Person extends Model {
         writer.write("<test>test content</test>");
         if (spaces > 0) { writer.write('\n'); }
     }
+    public static Person Person = new Person();
 }

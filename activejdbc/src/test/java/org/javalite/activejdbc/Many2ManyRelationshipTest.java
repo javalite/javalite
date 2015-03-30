@@ -23,6 +23,15 @@ import org.javalite.activejdbc.associations.NotAssociatedException;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.*;
 
+import static org.javalite.activejdbc.test_models.Doctor.Doctor;
+import static org.javalite.activejdbc.test_models.Patient.Patient;
+import static org.javalite.activejdbc.test_models.DoctorsPatients.DoctorsPatients;
+import static org.javalite.activejdbc.test_models.Student.Student;
+import static org.javalite.activejdbc.test_models.Programmer.Programmer;
+import static org.javalite.activejdbc.test_models.Plant.Plant;
+import static org.javalite.activejdbc.test_models.Project.Project;
+import static org.javalite.activejdbc.test_models.Assignment.Assignment;
+
 import org.junit.Test;
 
 import java.sql.Date;
@@ -38,6 +47,8 @@ public class Many2ManyRelationshipTest extends ActiveJDBCTest {
     @Test
     public void shouldSelectManyToManyWithGetAll(){
         deleteAndPopulateTables("doctors", "patients", "doctors_patients");
+        DoctorsPatients.init();
+        
         Doctor doctor = Doctor.findById(1);
         List<Patient> patients = doctor.getAll(Patient.class);
         a(2).shouldBeEqual(patients.size());
@@ -63,8 +74,11 @@ public class Many2ManyRelationshipTest extends ActiveJDBCTest {
         a(2).shouldBeEqual(patients.size());
     }
 
+	
+	
     @Test
     public void shouldAddNewChildInManyToManyAssociation(){
+    
         deleteAndPopulateTables("doctors", "patients", "doctors_patients");
         Doctor doctor = Doctor.findById(1);
 
@@ -107,7 +121,10 @@ public class Many2ManyRelationshipTest extends ActiveJDBCTest {
 
     @Test
     public void shouldSelectManyToManyWithGet(){
+    	
         deleteAndPopulateTables("doctors", "patients", "doctors_patients");
+        
+        DoctorsPatients.init();
         Doctor doctor = Doctor.findById(1);
         List<Patient> patients = doctor.getAll(Patient.class);
         a(2).shouldBeEqual(patients.size());

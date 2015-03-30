@@ -22,7 +22,7 @@ import org.javalite.activejdbc.test_models.Address;
 import org.javalite.activejdbc.test_models.User;
 import org.junit.Before;
 import org.junit.Test;
-
+import static org.javalite.activejdbc.test_models.Address.Address;
 import java.util.List;
 
 /**

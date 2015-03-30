@@ -8,7 +8,8 @@ import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Doctor;
 import org.javalite.activejdbc.test_models.Person;
 import org.junit.Test;
-
+import static org.javalite.activejdbc.test_models.Person.*;
+import static org.javalite.activejdbc.test_models.Doctor.*;
 /**
  * @author Igor Polevoy
  */

@@ -25,4 +25,6 @@ import org.javalite.activejdbc.annotations.IdName;
  */
 
 @IdName("animal_id")
-public class Animal extends Model {}
+public class Animal extends Model {
+	public static Animal Animal = new Animal();
+}

@@ -21,7 +21,7 @@ import org.javalite.activejdbc.Model;
 
 public class Account extends Model {
 
-    static{
+    public Account() {
         validatePresenceOf("amount");
         validateNumericalityOf("amount").convertNullIfEmpty();
         validateNumericalityOf("total")
@@ -29,4 +29,5 @@ public class Account extends Model {
                 .lessThan(100).onlyInteger()
                 .message("incorrect 'total'");
     }
+    public static Account Account = new Account();
 }

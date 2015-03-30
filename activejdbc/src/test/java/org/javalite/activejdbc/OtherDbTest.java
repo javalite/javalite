@@ -22,6 +22,9 @@ import java.util.List;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.junit.Test;
 
+import static org.javalite.activejdbc.test_models.User.User;
+import static org.javalite.activejdbc.test_models.OtherDbModel.OtherDbModel;
+
 import org.javalite.activejdbc.test_models.OtherDbModel;
 import org.javalite.activejdbc.test_models.User;
 import org.junit.After;

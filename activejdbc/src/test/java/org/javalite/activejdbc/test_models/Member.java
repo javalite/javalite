@@ -25,4 +25,5 @@ import org.javalite.activejdbc.annotations.Table;
 
 @Table("Member")
 public class Member extends Model {
+	public static Member Member = new Member();
 }

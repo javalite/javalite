@@ -23,7 +23,9 @@ import org.javalite.activejdbc.annotations.IdName;
  * @author Igor Polevoy
  */
 @IdName("ingredient_id")
-public class Ingredient extends Model {}
+public class Ingredient extends Model {
+	public static Ingredient Ingredient = new Ingredient();
+}
 
 
 

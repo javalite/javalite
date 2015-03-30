@@ -23,4 +23,5 @@ import org.javalite.activejdbc.Model;
  * @author Igor Polevoy
  */
 public class DoctorsPatients extends Model {
+	public static DoctorsPatients DoctorsPatients = new DoctorsPatients();
 }

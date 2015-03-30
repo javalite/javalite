@@ -22,4 +22,5 @@ import org.javalite.activejdbc.annotations.Cached;
 
 @Cached
 public class Library extends Model {
+	public static Library Library = new Library();
 }

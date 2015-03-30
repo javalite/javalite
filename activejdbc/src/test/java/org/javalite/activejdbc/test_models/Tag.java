@@ -8,4 +8,5 @@ import org.javalite.activejdbc.annotations.BelongsToPolymorphic;
  */
 @BelongsToPolymorphic(parents = {Article.class, Post.class})
 public class Tag extends Model {
+	public static Tag Tag = new Tag();
 }

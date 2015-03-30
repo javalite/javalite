@@ -17,11 +17,20 @@ limitations under the License.
 package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.test.ActiveJDBCTest;
+
 import org.javalite.activejdbc.test_models.*;
 import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
+
+import static org.javalite.activejdbc.test_models.Address.Address;
+import static org.javalite.activejdbc.test_models.User.User;
+import static org.javalite.activejdbc.test_models.Doctor.Doctor;
+import static org.javalite.activejdbc.test_models.Book.Book;
+import static org.javalite.activejdbc.test_models.Node.Node;
+import static org.javalite.activejdbc.test_models.Ingredient.Ingredient;
+import static org.javalite.activejdbc.test_models.Recipe.Recipe;
 
 /**
  * @author Igor Polevoy

@@ -8,4 +8,6 @@ import org.javalite.activejdbc.annotations.BelongsToParents;
 	@BelongsTo(foreignKeyName="key_id",parent=Keyboard.class),
 	@BelongsTo(foreignKeyName="mother_id",parent=Motherboard.class)
 })
-public class Computer extends Model {}
+public class Computer extends Model {
+	public static Computer Computer = new Computer();
+}

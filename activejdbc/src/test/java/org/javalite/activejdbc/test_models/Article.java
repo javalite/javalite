@@ -22,4 +22,6 @@ import org.javalite.activejdbc.Model;
 /**
  * @author Igor Polevoy
  */
-public class Article extends Model {}
+public class Article extends Model {
+	public static Article Article = new Article();
+}

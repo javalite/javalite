@@ -22,7 +22,8 @@ import org.javalite.activejdbc.annotations.Table;
 
 @Table("legacy_universities")
 public class University extends Model {
-    static{
+    public University() {
         validatePresenceOf("univ_name");
     }
+    public static University University = new University();
 }

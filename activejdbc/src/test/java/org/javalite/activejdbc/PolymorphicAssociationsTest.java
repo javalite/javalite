@@ -20,6 +20,10 @@ import org.javalite.activejdbc.test_models.Article;
 import org.javalite.activejdbc.test_models.Comment;
 
 import org.javalite.activejdbc.test_models.Post;
+
+import static org.javalite.activejdbc.test_models.Article.Article;
+import static org.javalite.activejdbc.test_models.Comment.Comment;
+import static org.javalite.activejdbc.test_models.Post.Post;
 import org.junit.Test;
 
 import java.util.List;

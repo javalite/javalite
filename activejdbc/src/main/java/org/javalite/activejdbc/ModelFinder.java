@@ -42,6 +42,23 @@ public class ModelFinder {
                     "a file activejdbc_models.properties on classpath");
         }
     }
+    
+    protected static void findModels2(List<? extends Model> models) throws IOException, ClassNotFoundException {
+        //this is for static instrumentation. In case of dynamic, the  modelClassNames will already be filled.
+    	
+        if (models != null && !models.isEmpty()) {
+            for (Model model : models) {
+                modelFound(model.getClass().getName());
+            }
+        } else {
+            throw new InitException("you are trying to work with models, but no models are found. Maybe you have " +
+                    "no models in project, or you did not instrument the models. It is expected that you have " +
+                    "a file activejdbc_models.properties on classpath");
+        }
+    }
+    
+    
+    
 
     protected static List<Class<? extends Model>> getModelsForDb(String dbName) throws IOException, ClassNotFoundException {
         synchronized (modelClassNames){

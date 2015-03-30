@@ -23,4 +23,5 @@ import org.javalite.activejdbc.Model;
  * @author Igor Polevoy
  */
 public class Course extends Model {
+	public static Course Course = new Course();
 }

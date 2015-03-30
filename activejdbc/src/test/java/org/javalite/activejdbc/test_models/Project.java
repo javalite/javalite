@@ -22,4 +22,5 @@ import org.javalite.activejdbc.Model;
  * @author Igor Polevoy
  */
 public class Project extends Model {
+	public static Project Project = new Project();
 }

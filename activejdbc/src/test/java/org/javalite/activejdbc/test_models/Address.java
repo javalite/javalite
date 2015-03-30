@@ -20,4 +20,8 @@ package org.javalite.activejdbc.test_models;
 import org.javalite.activejdbc.Model;
 
 
-public class Address extends Model {}
+public class Address extends Model {
+	public static Address Address = new Address();
+	
+}
+

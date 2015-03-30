@@ -20,8 +20,9 @@ package org.javalite.activejdbc.test_models;
 import org.javalite.activejdbc.Model;
 
 public class Salary extends Model {
-    static{
+   	public Salary() {
         validatePresenceOf("salary").message("salary is missing!!!");
         zeroToNull("salary");
     }
+   	public static Salary Salary = new Salary();
 }

@@ -22,4 +22,5 @@ import org.javalite.activejdbc.Model;
  * @author Igor Polevoy
  */
 public class Vehicle extends Model {
+	public static Vehicle Vehicle = new Vehicle();
 }

@@ -25,4 +25,5 @@ import org.javalite.activejdbc.annotations.VersionColumn;
  */
 @VersionColumn("lock_version")
 public class Item extends Model {
+	public static Item Item = new Item();
 }

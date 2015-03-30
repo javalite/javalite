@@ -23,6 +23,10 @@ import org.javalite.activejdbc.test_models.Person;
 import org.javalite.activejdbc.test_models.Sword;
 import org.junit.Test;
 
+import static org.javalite.activejdbc.test_models.Cheese.Cheese;
+import static org.javalite.activejdbc.test_models.Sword.Sword;
+import static org.javalite.activejdbc.test_models.Cake.Cake;
+
 /**
  * @author Stephane Restani
  */

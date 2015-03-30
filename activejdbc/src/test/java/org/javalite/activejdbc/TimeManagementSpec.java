@@ -8,6 +8,8 @@ import org.junit.Test;
 import java.sql.Timestamp;
 import java.util.GregorianCalendar;
 
+import static org.javalite.activejdbc.test_models.Person.Person;
+
 /**
  * @author Igor Polevoy on 9/23/14.
  */

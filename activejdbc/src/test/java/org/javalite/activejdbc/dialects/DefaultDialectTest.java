@@ -23,6 +23,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import static org.javalite.activejdbc.test_models.Person.*;
 public class DefaultDialectTest extends ActiveJDBCTest {
 
     private static Dialect dialect;
