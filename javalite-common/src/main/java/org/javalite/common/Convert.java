@@ -172,8 +172,8 @@ public final class Convert {
             return (java.sql.Date) value;
         } else if (value instanceof java.util.Date) {
             return truncateToSqlDate(((java.util.Date) value).getTime());
-        } else if (value instanceof Long) {
-            return truncateToSqlDate((Long) value);
+        } else if (value instanceof Number) {
+            return truncateToSqlDate(((Number) value).longValue());
         } else {
             try {
                 return java.sql.Date.valueOf(value.toString());
@@ -308,8 +308,8 @@ public final class Convert {
             return (java.sql.Timestamp) value;
         } else if (value instanceof java.util.Date) {
            return new java.sql.Timestamp(((java.util.Date) value).getTime());
-        } else if (value instanceof Long) {
-           return new java.sql.Timestamp((Long) value);
+        } else if (value instanceof Number) {
+           return new java.sql.Timestamp(((Number) value).longValue());
        } else {
            return java.sql.Timestamp.valueOf(value.toString());
         }
