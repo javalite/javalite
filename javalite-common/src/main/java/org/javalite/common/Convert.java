@@ -142,8 +142,6 @@ public final class Convert {
             return (java.sql.Date) value;
         } else if (value instanceof java.util.Date) {
             return new java.sql.Date(((java.util.Date) value).getTime());
-        } else if (value instanceof Long) {
-            return new java.sql.Date(((Long) value));
         } else if (value instanceof Number) {
             return new java.sql.Date(((Number) value).longValue());
         } else {
@@ -287,8 +285,6 @@ public final class Convert {
             return (java.sql.Time) value;
         } else if (value instanceof java.util.Date) {
            return new java.sql.Time(((java.util.Date) value).getTime());
-        } else if (value instanceof Long) {
-           return new java.sql.Time((Long) value);
         } else if (value instanceof Number) { // SQLite returns TIME as Integer
            return new java.sql.Time(((Number) value).longValue());
         } else {
