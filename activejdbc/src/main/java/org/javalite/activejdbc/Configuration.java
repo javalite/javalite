@@ -84,10 +84,8 @@ public class Configuration {
             return;
         }
         try {
-            Enumeration<URL> resources = ClassLoader.getSystemClassLoader().getResources("activejdbc.properties");
-            while (resources.hasMoreElements()) {
-                properties.load(resources.nextElement().openStream());
-            }
+            InputStream in = getClass().getResourceAsStream("/activejdbc.properties");
+            if (in != null) { properties.load(in); }
         } catch (IOException e){
             throw new InitException(e);
         }
