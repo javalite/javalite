@@ -53,35 +53,35 @@ public class OracleDialectTest extends ActiveJDBCTest {
     @Test
     public void testLimitOffsetNoOrderBy() {
         a(dialect.formSelect("people", null, new ArrayList<String>(), 1, 1)).shouldBeEqual(
-                "SELECT * FROM (SELECT a.*, ROWNUM AS oracle_row_number FROM ("
-                        + "SELECT * FROM people"
-                        + ") a) WHERE oracle_row_number >= 2 AND ROWNUM <= 1");
+                "SELECT * FROM (SELECT t2.*, ROWNUM AS oracle_row_number FROM ("
+                        + "SELECT t.* FROM people t"
+                        + ") t2) WHERE oracle_row_number >= 2 AND ROWNUM <= 1");
         a(dialect.formSelect("people", "last_name = ?", new ArrayList<String>(), 1, 10)).shouldBeEqual(
-                "SELECT * FROM (SELECT a.*, ROWNUM AS oracle_row_number FROM ("
-                        + "SELECT * FROM people WHERE last_name = ?"
-                        + ") a) WHERE oracle_row_number >= 11 AND ROWNUM <= 1");
+                "SELECT * FROM (SELECT t2.*, ROWNUM AS oracle_row_number FROM ("
+                        + "SELECT t.* FROM people t WHERE last_name = ?"
+                        + ") t2) WHERE oracle_row_number >= 11 AND ROWNUM <= 1");
     }
-
+    
     @Test
     public void testLimitOffset() {
         a(dialect.formSelect("pages", "", Arrays.asList("page_id"), 10, 20)).shouldBeEqual(
-                "SELECT * FROM (SELECT a.*, ROWNUM AS oracle_row_number FROM ("
-                        + "SELECT * FROM pages ORDER BY page_id"
-                        + ") a) WHERE oracle_row_number >= 21 AND ROWNUM <= 10");
+                "SELECT * FROM (SELECT t2.*, ROWNUM AS oracle_row_number FROM ("
+                        + "SELECT t.* FROM pages t ORDER BY page_id"
+                        + ") t2) WHERE oracle_row_number >= 21 AND ROWNUM <= 10");
     }
-
+    
     @Test
     public void testLimitOnlyNoOffset() {
         a(dialect.formSelect("pages", "", Arrays.asList("page_id"), 10, -1)).shouldBeEqual(
-                "SELECT * FROM (SELECT * FROM pages ORDER BY page_id) WHERE ROWNUM <= 10");
+                "SELECT * FROM (SELECT t2.* FROM (SELECT t.* FROM pages t ORDER BY page_id) t2) WHERE ROWNUM <= 10");
     }
-
+    
     @Test
     public void testOffsetOnlyNoLimit() {
         a(dialect.formSelect("pages", "content LIKE '%test%'", Arrays.asList("page_id"), -1, 20)).shouldBeEqual(
-                "SELECT * FROM (SELECT a.*, ROWNUM AS oracle_row_number FROM ("
-                        + "SELECT * FROM pages WHERE content LIKE '%test%' ORDER BY page_id"
-                        + ") a) WHERE oracle_row_number >= 21");
+                "SELECT * FROM (SELECT t2.*, ROWNUM AS oracle_row_number FROM ("
+                        + "SELECT t.* FROM pages t WHERE content LIKE '%test%' ORDER BY page_id"
+                        + ") t2) WHERE oracle_row_number >= 21");
     }
 
     @Test
@@ -93,6 +93,7 @@ public class OracleDialectTest extends ActiveJDBCTest {
     @Test
     public void testSelectFirst() {
         a(dialect.formSelect("member_goal_action", "", Arrays.asList("created_at DESC"), 1, -1)).shouldBeEqual(
-                "SELECT * FROM (SELECT * FROM member_goal_action ORDER BY created_at DESC) WHERE ROWNUM <= 1");
+                "SELECT * FROM (SELECT t2.* FROM (SELECT t.* FROM member_goal_action t ORDER BY created_at DESC) t2) WHERE ROWNUM <= 1");
     }
+
 }
