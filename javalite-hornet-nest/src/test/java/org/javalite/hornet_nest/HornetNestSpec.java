@@ -2,6 +2,10 @@ package org.javalite.hornet_nest;
 
 import org.junit.Test;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import static org.javalite.test.jspec.JSpec.a;
 
 /**
@@ -10,9 +14,12 @@ import static org.javalite.test.jspec.JSpec.a;
 public class HornetNestSpec {
 
     @Test
-    public void shouldProcessCommands() {
+    public void shouldProcessCommands() throws IOException {
+
+        Path path = Files.createTempDirectory("hornet");
+
         HornetNest hornetNest =
-                new HornetNest("/home/igor/tmp/hornet", false,
+                new HornetNest(path.toFile().getCanonicalPath(), false,
                         new QueueConfig("queuea", CommandListener.class, 50));
 
         //send 100 messages
