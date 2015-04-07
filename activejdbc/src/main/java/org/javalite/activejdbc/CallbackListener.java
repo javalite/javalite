@@ -21,6 +21,9 @@ package org.javalite.activejdbc;
  * @author Igor Polevoy
  */
 public interface  CallbackListener<T extends Model> {
+
+    void afterLoad(T m);
+
     void beforeSave(T m);
     void afterSave(T m);
 

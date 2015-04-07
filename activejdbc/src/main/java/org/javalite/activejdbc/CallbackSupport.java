@@ -24,6 +24,11 @@ abstract class CallbackSupport {
     protected void beforeSave() {
         // overridable
     }
+
+    protected void afterLoad() {
+        // overridable
+    }
+
     protected void afterSave() {
         // overridable
     }

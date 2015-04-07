@@ -228,7 +228,7 @@ public final class ModelDelegate {
         try {
             T instance = clazz.newInstance();
             instance.setMetamodelLocal(metaModel);
-            instance.hydrate(map);
+            instance.hydrate(map, true);
             return instance;
         } catch(InstantiationException e) {
             throw new InitException("Failed to create a new instance of: " + metaModel.getModelClass() + ", are you sure this class has a default constructor?");

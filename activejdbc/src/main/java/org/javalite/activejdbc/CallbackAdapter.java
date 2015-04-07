@@ -24,6 +24,8 @@ public class CallbackAdapter<T extends Model> implements CallbackListener<T>{
 
     @Override public void beforeSave(T m) {}
 
+    @Override public void afterLoad(T m) {}
+
     @Override public void afterSave(T m) {}
 
     @Override public void beforeCreate(T m) {}

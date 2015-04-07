@@ -71,6 +71,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     protected Model() {
     }
 
+    private void fireAfterLoad() {
+        afterLoad();
+        for (CallbackListener callback : modelRegistryLocal().callbacks()) {
+            callback.afterLoad(this);
+        }
+    }
+
     private void fireBeforeSave() {
         beforeSave();
         for (CallbackListener callback : modelRegistryLocal().callbacks()) {
@@ -161,7 +168,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * are new values for it.
      */
     public <T extends Model> T fromMap(Map input) {
-        hydrate(input);
+        hydrate(input, false);
         dirtyAttributeNames.addAll(input.keySet());
         return (T) this;
     }
@@ -174,7 +181,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @param attributesMap map containing values for this instance.
      */
-    protected void hydrate(Map<String, Object> attributesMap) {
+    protected void hydrate(Map<String, Object> attributesMap, boolean fireAfterLoad) {
         Set<String> attributeNames = getMetaModelLocal().getAttributeNames();
         for (Map.Entry<String, Object> entry : attributesMap.entrySet()) {
             if (attributeNames.contains(entry.getKey())) {
@@ -186,6 +193,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 }
             }
         }
+
+        if(fireAfterLoad){
+            fireAfterLoad();
+        }
+
     }
 
 
@@ -1079,7 +1091,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         } else {
             try {
                 P parent = parentClass.newInstance();
-                parent.hydrate(results.get(0));
+                parent.hydrate(results.get(0), true);
                 if (parentMM.cached()) {
                     QueryCache.instance().addItem(parentTable, query, new Object[]{fkValue}, parent);
                 }
