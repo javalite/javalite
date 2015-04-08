@@ -55,9 +55,9 @@ public class DefaultDialectTest extends ActiveJDBCTest {
 
     @Test
     public void testCreateParametrizedInsert() {
-        a(dialect.insertParametrized(Person.getMetaModel(), Arrays.asList("name"))).shouldBeEqual(
+        a(dialect.insertParametrized(Person.getMetaModel(), Arrays.asList("name"), false)).shouldBeEqual(
                 "INSERT INTO people (name) VALUES (?)");
-        a(dialect.insertParametrized(Person.getMetaModel(), Arrays.asList("name", "last_name"))).shouldBeEqual(
+        a(dialect.insertParametrized(Person.getMetaModel(), Arrays.asList("name", "last_name"), false)).shouldBeEqual(
                 "INSERT INTO people (name, last_name) VALUES (?, ?)");
     }
 
