@@ -2584,13 +2584,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         //TODO: need to invoke checkAttributes here too, and maybe rely on MetaModel for this.
 
         try {
-            boolean containsId = attributes.containsKey(metaModel.getIdName());
+            boolean containsId = (attributes.get(metaModel.getIdName()) != null); // do not use containsKey
             boolean done;
             String query = metaModel.getDialect().insertParametrized(metaModel, columns, containsId);
             if (containsId) {
                 done = (1 == new DB(metaModel.getDbName()).exec(query, values.toArray()));
             } else {
-                Object id = new DB(metaModel.getDbName()).execInsert(query, getIdName(), values.toArray());
+                Object id = new DB(metaModel.getDbName()).execInsert(query, metaModel.getIdName(), values.toArray());
                 attributes.put(metaModel.getIdName(), id);
                 done = (id != null);
             }

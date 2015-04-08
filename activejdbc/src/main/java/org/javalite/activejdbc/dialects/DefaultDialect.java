@@ -224,8 +224,8 @@ public class DefaultDialect implements Dialect {
         if (attributes.isEmpty()) {
             appendEmptyRow(metaModel, query);
         } else {
-            boolean addIdGeneratorCode = (!attributes.containsKey(metaModel.getIdName())
-                    && metaModel.getIdGeneratorCode() != null);
+            boolean addIdGeneratorCode = (metaModel.getIdGeneratorCode() != null
+                    && attributes.get(metaModel.getIdName()) == null); // do not use containsKey
             query.append('(');
             if (addIdGeneratorCode) {
                 query.append(metaModel.getIdName()).append(", ");
