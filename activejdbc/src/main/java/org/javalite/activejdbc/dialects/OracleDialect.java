@@ -78,7 +78,9 @@ public class OracleDialect extends DefaultDialect {
 
     @Override
     protected void appendEmptyRow(MetaModel metaModel, StringBuilder query) {
-        query.append('(').append(metaModel.getIdName()).append(") VALUES (null)");
+        query.append('(').append(metaModel.getIdName()).append(") VALUES (")
+                .append(metaModel.getIdGeneratorCode() != null ? metaModel.getIdGeneratorCode() : "NULL")
+                .append(')');
     }
 
     @Override

@@ -46,12 +46,12 @@ public interface Dialect {
 
     String insertManyToManyAssociation(Many2ManyAssociation association);
 
-    String insertParametrized(MetaModel metaModel, List<String> columns);
+    String insertParametrized(MetaModel metaModel, List<String> columns, boolean containsId);
 
     String deleteManyToManyAssociation(Many2ManyAssociation association);
 
     String insert(MetaModel metaModel, Map<String, Object> attributes);
-    
+
     String update(MetaModel metaModel, Map<String, Object> attributes);
-    
+
 }

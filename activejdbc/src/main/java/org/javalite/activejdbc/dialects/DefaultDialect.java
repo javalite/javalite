@@ -163,14 +163,21 @@ public class DefaultDialect implements Dialect {
     }
 
     @Override
-    public String insertParametrized(MetaModel metaModel, List<String> columns) {
+    public String insertParametrized(MetaModel metaModel, List<String> columns, boolean containsId) {
         StringBuilder query = new StringBuilder().append("INSERT INTO ").append(metaModel.getTableName()).append(' ');
         if (columns.isEmpty()) {
             appendEmptyRow(metaModel, query);
         } else {
+            boolean addIdGeneratorCode = (!containsId && metaModel.getIdGeneratorCode() != null);
             query.append('(');
+            if (addIdGeneratorCode) {
+                query.append(metaModel.getIdName()).append(", ");
+            }
             join(query, columns, ", ");
             query.append(") VALUES (");
+            if (addIdGeneratorCode) {
+                query.append(metaModel.getIdGeneratorCode()).append(", ");
+            }
             appendQuestions(query, columns.size());
             query.append(')');
         }
@@ -217,9 +224,17 @@ public class DefaultDialect implements Dialect {
         if (attributes.isEmpty()) {
             appendEmptyRow(metaModel, query);
         } else {
+            boolean addIdGeneratorCode = (!attributes.containsKey(metaModel.getIdName())
+                    && metaModel.getIdGeneratorCode() != null);
             query.append('(');
+            if (addIdGeneratorCode) {
+                query.append(metaModel.getIdName()).append(", ");
+            }
             join(query, attributes.keySet(), ", ");
             query.append(") VALUES (");
+            if (addIdGeneratorCode) {
+                query.append(metaModel.getIdGeneratorCode()).append(", ");
+            }
             Iterator<Object> it = attributes.values().iterator();
             appendValue(query, it.next());
             while (it.hasNext()) {

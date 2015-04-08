@@ -2567,13 +2567,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         doUpdatedAt();
 
         MetaModel metaModel = getMetaModelLocal();
-        boolean containsId = (attributes.get(metaModel.getIdName()) != null);
         List<String> columns = new ArrayList<String>();
         List<Object> values = new ArrayList<Object>();
-        if (!containsId && metaModel.getIdGeneratorCode() != null) {
-            columns.add(metaModel.getIdName());
-            values.add(metaModel.getIdGeneratorCode());
-        }
         for (Map.Entry<String, Object> entry : attributes.entrySet()) {
             if (entry.getValue() == null || metaModel.getVersionColumn().equals(entry.getKey())) {
                 continue;
@@ -2589,13 +2584,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         //TODO: need to invoke checkAttributes here too, and maybe rely on MetaModel for this.
 
         try {
+            boolean containsId = attributes.containsKey(metaModel.getIdName());
             boolean done;
-            String query = metaModel.getDialect().insertParametrized(metaModel, columns);
+            String query = metaModel.getDialect().insertParametrized(metaModel, columns, containsId);
             if (containsId) {
                 done = (1 == new DB(metaModel.getDbName()).exec(query, values.toArray()));
             } else {
                 Object id = new DB(metaModel.getDbName()).execInsert(query, getIdName(), values.toArray());
-                attributes.put(getIdName(), id);
+                attributes.put(metaModel.getIdName(), id);
                 done = (id != null);
             }
             if (metaModel.cached()) {

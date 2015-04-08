@@ -597,27 +597,25 @@ public class DB {
                 ps = connection.prepareStatement(query, new String[]{autoIncrementColumnName});
                 StatementCache.instance().cache(connection, query, ps);
             }
-            for (int index = 0; index < params.length; index++) {
-                Object param = params[index];
+            for (int index = 0; index < params.length;) {
+                Object param = params[index++];
                 if (param instanceof byte[]) {
                     byte[] bytes = (byte[]) param;
                     try {
                         Blob blob = connection.createBlob();
                         if (blob == null) { // SQLite
-                            ps.setBytes(index + 1, bytes);
+                            ps.setBytes(index, bytes);
                         } else {
                             blob.setBytes(1, bytes);
-                            ps.setBlob(index + 1, blob);
+                            ps.setBlob(index, blob);
                         }
                     } catch (AbstractMethodError e) {// net.sourceforge.jtds.jdbc.ConnectionJDBC2.createBlob is abstract :)
-                        ps.setObject(index + 1, param);
-                    } catch (SQLFeatureNotSupportedException e) {
-                        ps.setObject(index + 1, param);
+                        ps.setObject(index, param);
                     } catch (SQLException e) {
-                        ps.setObject(index + 1, param);
+                        ps.setObject(index, param);
                     }
-                }else{
-                    ps.setObject(index + 1, param);
+                } else {
+                    ps.setObject(index, param);
                 }
             }
 
