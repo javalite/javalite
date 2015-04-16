@@ -1,4 +1,7 @@
-package org.javalite.templator;
+package org.javalite.templator.template_parser;
+
+import org.javalite.templator.BuiltIn;
+import org.javalite.templator.TemplatorConfig;
 
 import java.util.ArrayList;
 import java.util.Stack;
@@ -34,7 +37,7 @@ public final class TemplateParser {
     private char currentChar;
     private int constStartIndex;
 
-    TemplateParser(String source) {
+    public TemplateParser(String source) {
         this.source = source;
     }
 
@@ -294,7 +297,7 @@ public final class TemplateParser {
         addConstEndingAt(source.length());
     }
 
-    TemplateNode parse() {
+    public TemplateNode parse() {
         TemplateTagNode root = new RootNode();
         if (source == null || source.isEmpty()) { return root; }
         stack.push(root);

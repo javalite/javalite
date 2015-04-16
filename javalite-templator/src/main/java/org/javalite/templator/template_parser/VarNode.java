@@ -1,4 +1,6 @@
-package org.javalite.templator;
+package org.javalite.templator.template_parser;
+
+import org.javalite.templator.BuiltIn;
 
 import java.io.IOException;
 import java.util.Map;

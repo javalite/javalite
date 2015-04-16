@@ -1,5 +1,7 @@
 package org.javalite.templator;
 
+import org.javalite.templator.template_parser.TemplateParser;
+import org.javalite.templator.template_parser.TemplateTagNode;
 import org.junit.Before;
 import org.junit.Test;
 

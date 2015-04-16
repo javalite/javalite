@@ -1,4 +1,4 @@
-package org.javalite.templator;
+package org.javalite.templator.template_parser;
 
 import java.io.IOException;
 import java.util.HashMap;

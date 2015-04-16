@@ -1,5 +1,7 @@
 package org.javalite.templator;
 
+import org.javalite.templator.TemplateToken;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;

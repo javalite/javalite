@@ -1,15 +1,15 @@
-package org.javalite.templator;
+package org.javalite.templator.template_parser;
 
 import java.util.Map;
 
 /**
  * @author Eric Nielsen
  */
-class AndExp extends Exp {
+class OrExp extends Exp {
     private final Exp leftExp;
     private final Exp rightExp;
 
-    AndExp(Exp leftExp, Exp rightExp) {
+    OrExp(Exp leftExp, Exp rightExp) {
         this.leftExp = leftExp;
         this.rightExp = rightExp;
     }
@@ -17,9 +17,9 @@ class AndExp extends Exp {
     @Override
     boolean resultWith(Map values) {
         if (leftExp.resultWith(values)) {
-            return rightExp.resultWith(values);
+            return true;
         } else {
-            return false;
+            return rightExp.resultWith(values);
         }
     }
 }

@@ -1,6 +1,10 @@
 package org.javalite.templator;
 
 import java.io.StringWriter;
+
+import org.javalite.templator.template_parser.TemplateNode;
+import org.javalite.templator.template_parser.TemplateParser;
+import org.javalite.templator.template_parser.TemplateTagNode;
 import org.junit.Test;
 
 import java.util.Map;
