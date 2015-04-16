@@ -8,6 +8,7 @@ import java.io.Writer;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -117,22 +118,22 @@ public abstract class AbstractTag extends TemplateToken {
         List<String> ends = getEnds();
         for (String end : ends) {
             boolean haveEnoughSpaceForEndTag = end.length() < index;
-            boolean  endTagMatchesLeftOfIndex = template.substring(index - end.length(), index).equals(end);
+            boolean endTagMatchesLeftOfIndex = template.substring(index - end.length(), index).equals(end);
             boolean indexOnEnd = index == template.length() - 1;
             boolean endTagMatchesEndOfTemplate = template.substring(index - end.length() + 1).equals(end);
 
-            if (haveEnoughSpaceForEndTag && endTagMatchesLeftOfIndex){
+            if (haveEnoughSpaceForEndTag && endTagMatchesLeftOfIndex) {
                 matchingEnd = end;
                 tagEndIndex = index - end.length();
                 return true;
             }
 
-            if(indexOnEnd && endTagMatchesEndOfTemplate){
-               matchingEnd = end;
+            if (indexOnEnd && endTagMatchesEndOfTemplate) {
+                matchingEnd = end;
                 tagEndIndex = index - end.length() + 1;
             }
 
-            if(matchingEnd != null){
+            if (matchingEnd != null) {
                 return true;
             }
         }
@@ -140,7 +141,7 @@ public abstract class AbstractTag extends TemplateToken {
     }
 
     public boolean matchStartAtIndex(String template, int index) {
-      return index >= getTagStart().length()
+        return index >= getTagStart().length()
                 && template.substring(index - getTagStart().length(), index).equals(getTagStart());
     }
 
@@ -166,26 +167,35 @@ public abstract class AbstractTag extends TemplateToken {
                 '}';
     }
 
-    public boolean marchArgumentEnd(String template, int index){
+    public boolean marchArgumentEnd(String template, int index) {
         String argumentEnd = getArgumentEnd();
-        if( argumentEnd == null){
+        if (argumentEnd == null) {
             return false;
-        }else if((index + 1) >= argumentEnd.length()
-                && template.substring(index - argumentEnd.length(), index).equals(argumentEnd) ){
+        } else if ((index + 1) >= argumentEnd.length()
+                && template.substring(index - argumentEnd.length(), index).equals(argumentEnd)) {
             argumentsEndIndex = index - argumentEnd.length();
             return true;
         }
         return false;
     }
 
+
+    private ThreadLocal<Map<String, Method>> methodCache = new ThreadLocal<Map<String, Method>>();
+
     /**
      * Tries to get a property value from object.
      *
-     * @param obj object to get property value from
+     * @param obj          object to get property value from
      * @param propertyName name of property
      * @return value of property, or null if not found
      */
-    protected final Object getValue(Object obj, String propertyName) throws InvocationTargetException, IllegalAccessException {
+    protected final Object getValue(Object obj, String propertyName) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+
+
+        //quick hack:
+        if (methodCache.get() == null) {
+            methodCache.set(new HashMap<String, Method>());
+        }
 
         Object val = null;
 
@@ -195,27 +205,22 @@ public abstract class AbstractTag extends TemplateToken {
             val = objectMap.get(propertyName);
         }
 
-        //try generic get method
-        if (val == null) {
-            try {
-                Method m = obj.getClass().getMethod("get", String.class);
-                val = m.invoke(obj, propertyName);
-            } catch (NoSuchMethodException ignore) {
-            }
-        }
-
         if (val == null) {
             //try properties
-            try {
-                Method m = obj.getClass().getMethod("get" + capitalize(propertyName));
-                val = m.invoke(obj);
-            } catch (NoSuchMethodException ignore) {
-            }
+            val = executeMethod(obj, "get" + capitalize(propertyName), null);
         }
+
+
+        //try generic get method
+        if (val == null) {
+            val = executeMethod(obj, "get", propertyName);
+        }
+
 
         if (val == null) {
             // try public fields
             try {
+                //TODO: optimize the same as methods.
                 Field f = obj.getClass().getDeclaredField(propertyName);
                 val = f.get(obj);
 
@@ -227,7 +232,32 @@ public abstract class AbstractTag extends TemplateToken {
         return val;
     }
 
-    public boolean matchMiddle(String template, int templateIndex){
+    private Object executeMethod(Object obj, String methodName, String propertyName) throws InvocationTargetException, IllegalAccessException {
+
+        String key = obj.getClass().getName() + "#" + methodName;
+        Method m = null;
+
+        if (!methodCache.get().containsKey(key)) {
+            try {
+                m = propertyName == null ? obj.getClass().getMethod(methodName) : obj.getClass().getMethod(methodName, String.class);
+            } catch (NoSuchMethodException e) {}
+
+            // if we find a method, we will cache it, if not we will cache null
+            methodCache.get().put(key, m);
+        } else if (methodCache.get().get(key) == null) { // we did not find this method last time!
+            return null;
+        } else {
+            m = methodCache.get().get(key); // method found!
+        }
+
+        if(m != null){
+            return propertyName == null ? m.invoke(obj) : m.invoke(obj, propertyName);
+        }else{
+            return null;
+        }
+    }
+
+    public boolean matchMiddle(String template, int templateIndex) {
         return false;
     }
 }

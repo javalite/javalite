@@ -26,7 +26,7 @@ public class TemplatorManager implements TemplateManager {
     public void merge(Map input, String template, String layout, String format, Writer writer) {
 
         String templateName = blank(format) ? template + ".html" : template + "." + format + ".html";
-        Template pageTemplate = new Template(TemplatorConfig.instance().getTemplateSource(templateName));
+        Template pageTemplate = TemplatorConfig.instance().getTemplate(templateName);
 
         if (layout == null) {//no layout
             pageTemplate.process(input, writer);
@@ -37,7 +37,7 @@ public class TemplatorManager implements TemplateManager {
             Map values = new HashMap(input);
             values.put("page_content", pageWriter.toString());
 
-            Template layoutTemplate = new Template(TemplatorConfig.instance().getTemplateSource(layout + ".html"));
+            Template layoutTemplate = TemplatorConfig.instance().getTemplate(layout + ".html");
             layoutTemplate.process(values, writer);
             logger.info("Rendered template: '" + template + "' with layout: '" + layout + "'");
         }

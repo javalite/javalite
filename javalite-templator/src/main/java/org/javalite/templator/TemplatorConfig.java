@@ -1,8 +1,5 @@
 package org.javalite.templator;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
 import org.javalite.common.Util;
 import org.javalite.templator.tags.IfTag;
 import org.javalite.templator.tags.ListTag;
@@ -30,8 +27,8 @@ public enum TemplatorConfig {
         registerBuiltIn("esc", new Esc());
     }
 
-    private final static String CACHE_GROUP = "templates";
-    private final CacheManager cacheManager = CacheManager.create();
+
+    private Map<String, Template> cacheManager = new HashMap<String, Template>();
     private final Map<String, Class> tags = new HashMap<String, Class>();
     private final Map<String, BuiltIn> builtIns = new HashMap<String, BuiltIn>();
     private boolean cacheTemplates = !(blank(System.getenv("ACTIVE_ENV")) || "development".equals(System.getenv("ACTIVE_ENV")));
@@ -100,19 +97,19 @@ public enum TemplatorConfig {
         }
     }
 
-    public String getTemplateSource(String templateName) {
-        String templateSource;
+    public Template getTemplate(String templateName) {
+        Template template;
         if(cacheTemplates){
-            templateSource = getCache(templateName);
-            if(templateSource != null){
-                return templateSource;
+            template = getCache(templateName);
+            if(template != null){
+                return template;
             }else{
-                templateSource = loadTemplate(templateName);
-                addCache(templateName, templateSource);
-                return templateSource;
+                template =  new Template(loadTemplate(templateName));
+                addCache(templateName, template);
+                return template;
             }
         }else{
-            return loadTemplate(templateName);
+            return new Template(loadTemplate(templateName));
         }
     }
 
@@ -164,31 +161,15 @@ public enum TemplatorConfig {
         this.servletContext = ctx;
     }
 
-
-    public String getCache(String key) {
-        try {
-            createIfMissing();
-            Cache c = cacheManager.getCache(CACHE_GROUP);
-            return c.get(key) == null ? null : c.get(key).getObjectValue().toString();
-        } catch (Exception e) {return null;}
+    public Template getCache(String key) {
+        return cacheManager.get(key) == null ? null : cacheManager.get(key);
     }
 
-
-    public void addCache(String key, Object cache) {
-        createIfMissing();
-        cacheManager.getCache(CACHE_GROUP).put(new Element(key, cache));
+    public void addCache(String key, Template template) {
+        cacheManager.put(key, template);
     }
 
     public void flush() {
-        cacheManager.removalAll();
-    }
-
-    private void createIfMissing() {
-        //double-checked synchronization is broken in Java, but this should work just fine.
-        if (cacheManager.getCache(CACHE_GROUP) == null) {
-            try {
-                cacheManager.addCache(CACHE_GROUP);
-            } catch (net.sf.ehcache.ObjectExistsException ignore) {}
-        }
+        cacheManager = new HashMap<String, Template>();
     }
 }
