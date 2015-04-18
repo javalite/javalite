@@ -1,19 +1,13 @@
 package org.javalite.templator;
 
 import org.javalite.common.Inflector;
-import org.javalite.templator.tags.IfTag;
-import org.javalite.templator.tags.ListTag;
 
 import java.io.Writer;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.javalite.common.Collections.list;
-import static org.javalite.common.Inflector.capitalize;
+
 
 /**
  * This class represents a custom tag written in Java and linked into template manager, such as:
@@ -26,7 +20,7 @@ import static org.javalite.common.Inflector.capitalize;
  */
 public abstract class AbstractTag extends TemplateToken {
 
-    private ThreadLocal<Map<String, Method>> methodCache = new ThreadLocal<Map<String, Method>>();
+
     private String argumentLine, body, tagName, matchingEnd = null;
     private int tagStartIndex = -1, tagEndIndex = -1, argumentsEndIndex = -1;
 
@@ -179,89 +173,6 @@ public abstract class AbstractTag extends TemplateToken {
         }
         return false;
     }
-
-    /**
-     * Tries to get a property value from object.
-     *
-     * @param obj          object to get property value from
-     * @param propertyName name of property
-     * @return value of property, or null if not found
-     */
-    protected final Object getValue(Object obj, String propertyName) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-
-
-        Object val = null;
-
-        //try map
-        if (obj instanceof Map) {
-            Map objectMap = (Map) obj;
-            return objectMap.get(propertyName);
-        }
-
-        if (val == null) {
-            //try properties
-            val = executeMethod(obj, "get" + capitalize(propertyName), null);
-            if(val != null)
-                return val;
-        }
-
-
-        //try generic get method
-        if (val == null) {
-            val = executeMethod(obj, "get", propertyName);
-            if(val != null)
-                return val;
-        }
-
-
-        if (val == null) {
-            // try public fields
-            try {
-                //TODO: optimize the same as methods.
-                Field f = obj.getClass().getDeclaredField(propertyName);
-                val = f.get(obj);
-                if(val != null)
-                    return val;
-
-            } catch (NoSuchFieldException ignore) {
-            } catch (IllegalAccessException ignore) {
-            }
-        }
-
-        return val;
-    }
-
-    private Object executeMethod(Object obj, String methodName, String propertyName) throws InvocationTargetException, IllegalAccessException {
-
-        //quick hack:
-        if (methodCache.get() == null) {
-            methodCache.set(new HashMap<String, Method>());
-        }
-
-
-        String key = obj.getClass().getName() + "#" + methodName;
-        Method m = null;
-
-        if (!methodCache.get().containsKey(key)) {
-            try {
-                m = propertyName == null ? obj.getClass().getMethod(methodName) : obj.getClass().getMethod(methodName, String.class);
-            } catch (NoSuchMethodException e) {}
-
-            // if we find a method, we will cache it, if not we will cache null
-            methodCache.get().put(key, m);
-        } else if (methodCache.get().get(key) == null) { // we did not find this method last time!
-            return null;
-        } else {
-            m = methodCache.get().get(key); // method found!
-        }
-
-        if(m != null){
-            return propertyName == null ? m.invoke(obj) : m.invoke(obj, propertyName);
-        }else{
-            return null;
-        }
-    }
-
     public boolean matchMiddle(String template, int templateIndex) {
         return false;
     }

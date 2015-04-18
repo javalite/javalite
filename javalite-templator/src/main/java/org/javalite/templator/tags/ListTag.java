@@ -7,7 +7,10 @@ import org.javalite.templator.Template;
 import org.javalite.templator.TemplateException;
 
 import java.io.Writer;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import static org.javalite.common.Collections.list;
 
@@ -51,6 +54,7 @@ public class ListTag extends AbstractTag {
         }
     }
 
+    private ThreadLocal<Map<String, Object>> mapCache =  new ThreadLocal<Map<String, Object>>();
     @Override
     @SuppressWarnings("unchecked")
     public void process(Map values, Writer writer) {
@@ -78,14 +82,12 @@ public class ListTag extends AbstractTag {
                 Object[] objects = targetCollection.toArray();
                 for (int i = 0; i < objects.length; i++) {
                     Object val = objects[i];
-                    Map newVals = new HashMap(values);
-                    newVals.put(varName, val);
-                    newVals.put(varName + "_index", i);
-                    newVals.put(varName + "_has_next", i < (objects.length - 1));
-                    bodyTemplate.process(newVals, writer);
+                    values.put(varName, val);
+                    values.put(varName + "_index", i);
+                    values.put(varName + "_has_next", i < (objects.length - 1));
+                    bodyTemplate.process(values, writer);
                 }
             }
-
         } catch (Exception e) {
             throw new TemplateException(e);
         }

@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * @author Igor Polevoy on 1/10/15.
  */
-abstract class TemplateToken {
+abstract class TemplateToken extends MethodExecutor {
     abstract void process(Map values, Writer writer) throws Exception;
     abstract String originalValue();
 }
