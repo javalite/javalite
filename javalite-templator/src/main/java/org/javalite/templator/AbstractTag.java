@@ -190,11 +190,6 @@ public abstract class AbstractTag extends TemplateToken {
     protected final Object getValue(Object obj, String propertyName) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
 
 
-        //quick hack:
-        if (methodCache.get() == null) {
-            methodCache.set(new HashMap<String, Method>());
-        }
-
         Object val = null;
 
         //try map
@@ -237,6 +232,12 @@ public abstract class AbstractTag extends TemplateToken {
     }
 
     private Object executeMethod(Object obj, String methodName, String propertyName) throws InvocationTargetException, IllegalAccessException {
+
+        //quick hack:
+        if (methodCache.get() == null) {
+            methodCache.set(new HashMap<String, Method>());
+        }
+
 
         String key = obj.getClass().getName() + "#" + methodName;
         Method m = null;
