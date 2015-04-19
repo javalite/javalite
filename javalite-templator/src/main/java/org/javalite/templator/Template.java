@@ -21,7 +21,6 @@ public class Template {
         } catch (Exception e) {
             throw new TemplateException(e);
         }
-
     }
 
     //for testing only

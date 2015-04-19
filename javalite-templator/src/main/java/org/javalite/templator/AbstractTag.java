@@ -1,10 +1,12 @@
 package org.javalite.templator;
 
+import org.javalite.common.Convert;
 import org.javalite.common.Inflector;
 
 import java.io.Writer;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static org.javalite.common.Collections.list;
 
@@ -20,6 +22,7 @@ import static org.javalite.common.Collections.list;
  */
 public abstract class AbstractTag extends TemplateToken {
 
+    private static Pattern NUMBER = Pattern.compile("^\\d*.\\d*$");
 
     private String argumentLine, body, tagName, matchingEnd = null;
     private int tagStartIndex = -1, tagEndIndex = -1, argumentsEndIndex = -1;
@@ -175,5 +178,31 @@ public abstract class AbstractTag extends TemplateToken {
     }
     public boolean matchMiddle(String template, int templateIndex) {
         return false;
+    }
+
+    /**
+     * @param objectSpec something like this: "one.two.three".
+     * @param values values from context
+     * @return result of evaluation, calling methods and properties accordingly.
+     */
+    protected Object evalObject(String objectSpec, Map values){
+        if(NUMBER.matcher(objectSpec).matches()){ //literal digit
+            return Convert.toDouble(objectSpec);
+        }
+        String[] parts  = objectSpec.split("\\.");
+        Object obj  = values.get(parts[0]);
+        if(parts.length == 1){
+            return obj;
+        }else{
+            for (int i = 1; i < parts.length; i++) {
+                String part = parts[i];
+                try{
+                    obj = getValue(obj, part);
+                }catch(Exception e){
+                    throw new TemplateException("Failed to evaluate " + parts[i -1] + "." + parts[i], e);
+                }
+            }
+            return obj;
+        }
     }
 }

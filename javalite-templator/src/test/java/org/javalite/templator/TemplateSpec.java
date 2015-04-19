@@ -56,13 +56,6 @@ public class TemplateSpec {
         a(w.toString()).shouldBeEqual("<html>Hello, John - your last name is Doe</html>");
     }
 
-    @Test(expected = ParseException.class)
-    public void should_reject_merge_token_with_more_than_one_dot() {
-        String source = "<html>Hello, ${person.first_name.last_name}";
-        new Template(source);
-    }
-
-
     public static class Person1 {
         public String firstName, lastName;
     }
@@ -154,7 +147,7 @@ public class TemplateSpec {
     }
 
 
-    public static class BlahTag extends AbstractTag{
+    public static class BlahTag extends AbstractTag {
         public BlahTag() {
             super();
         }
@@ -220,8 +213,20 @@ public class TemplateSpec {
         a(w.toString()).shouldBeEqual("<html>name: John Doe <br> name: Jane Kirkland</html>");
     }
 
+    @Test
+    public void shouldIterateOverCollectionFromContainingObject() {
+        String source = "<html><#list world.humanity.people as person>name: ${person.firstName} ${person.lastName}<#if person_has_next> <br> </#if></#list></html>";
+        Template template = new Template(source);
+        Person2 p1 = new Person2("John", "Doe");
+        Person2 p2 = new Person2("Jane", "Kirkland");
 
-    public static class Person4 extends Person3{
+        StringWriter w = new StringWriter();
+        template.process(map("world", map("humanity", map("people", list(p1, p2)))), w);
+        a(w.toString()).shouldBeEqual("<html>name: John Doe <br> name: Jane Kirkland</html>");
+    }
+
+
+    public static class Person4 extends Person3 {
         private List<String> habits = new ArrayList<String>();
         public Person4(String firstName, String lastName) {
             super(firstName, lastName);
@@ -231,7 +236,7 @@ public class TemplateSpec {
             return habits;
         }
 
-        public void addHabits(String ... habitsAr) {
+        public void addHabits(String... habitsAr) {
             habits.addAll(list(habitsAr));
         }
     }
@@ -248,7 +253,7 @@ public class TemplateSpec {
 
         Template template = new Template(source);
 
-        WhiteSpaceWriter w  = new WhiteSpaceWriter(new StringWriter());
+        WhiteSpaceWriter w = new WhiteSpaceWriter(new StringWriter());
         template.process(map("people", list(jimmy, janice)), w);
 
         a(w.toString()).shouldBeEqual(format("<html> name: Jimmy Henrdix Habit: guitar playing Habit: prescription drugs <br> name: Janice Joplin Habit: rock an roll Habit: cocaine </html>"));
@@ -268,9 +273,9 @@ public class TemplateSpec {
 
     @Test
     public void shouldRejectWrongNumberOfArguments() {
-        try{
+        try {
             new Template("<html><#if one two three four> tada </#if></html>");
-        }catch(Exception e){
+        } catch (Exception e) {
             a(e.getMessage()).shouldBeEqual("Incorrect number of arguments for <#if> tag. Either provide a single value or expression with two operands.");
             return;
         }
@@ -280,15 +285,14 @@ public class TemplateSpec {
 
     @Test
     public void shouldRejectWrongIncorrectOperator() {
-        try{
+        try {
             new Template("<html><#if one bad_operator four> tada </#if></html>");
-        }catch(Exception e){
+        } catch (Exception e) {
             a(e.getMessage()).shouldBeEqual("Cannot parse operator for <#if> tag: bad_operator. The following operators supported: [lt, gt, gt=, lt=, ||, &&, ==, !=]");
             return;
         }
         fail();
     }
-
 
 
     @Test
@@ -406,9 +410,53 @@ public class TemplateSpec {
         a(w.toString()).shouldBeEqual("<html></html>");
     }
 
+    @Test
+    public void shouldEvaluateChainedValueInMergeTag() {
+        Template template = new Template("<html>${one.two.three.four}</html>");
+        StringWriter w = new StringWriter();
+        template.process(map("one", map("two", map("three", map("four", "five")))), w);
+        a(w.toString()).shouldBeEqual("<html>five</html>");
+    }
+
+    @Test
+    public void shouldEvaluateChainedValueInIfTag() {
+        Template template = new Template("<html><#if one.two.three.four> hello </#if></html>");
+        StringWriter w = new StringWriter();
+        template.process(map("one", map("two", map("three", map("four", true)))), w);
+        a(w.toString()).shouldBeEqual("<html> hello </html>");
+
+        w = new StringWriter();
+        template.process(map("one", map("two", map("three", map("four", false)))), w);
+        a(w.toString()).shouldBeEqual("<html></html>");
+    }
+
+    @Test
+    public void shouldEvaluateChainedValueInIfTagWithOperator() {
+        Template template = new Template("<html><#if one.two.three.four gt ten.eleven> hello </#if></html>");
+        StringWriter w = new StringWriter();
+        template.process(map("one", map("two", map("three", map("four", 51))), "ten", map("eleven", 10)), w);
+        a(w.toString()).shouldBeEqual("<html> hello </html>");
+
+        w = new StringWriter();
+        template.process(map("one", map("two", map("three", map("four", 5))), "ten", map("eleven", 10)), w);
+        a(w.toString()).shouldBeEqual("<html></html>");
+    }
+
+    @Test
+    public void shouldEvaluateLiteralNumber() {
+        Template template = new Template("<html><#if one.two.three.four gt 21.34> hello </#if></html>");
+        StringWriter w = new StringWriter();
+        template.process(map("one", map("two", map("three", map("four", 51))), "ten", map("eleven", 10)), w);
+        a(w.toString()).shouldBeEqual("<html> hello </html>");
+
+        w = new StringWriter();
+        template.process(map("one", map("two", map("three", map("four", 5))), "ten", map("eleven", 10)), w);
+        a(w.toString()).shouldBeEqual("<html></html>");
+    }
 
 
-    @Test @Ignore //TODO
+    @Test
+    @Ignore //TODO
     public void implement1() {
         /*
         implement else:

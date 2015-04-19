@@ -22,7 +22,7 @@ import static org.javalite.common.Collections.list;
 public class ListTag extends AbstractTag {
 
     private Template bodyTemplate;
-    private String collectionName, varName, propertyName, objectName;
+    private String varName, objectSpec ;
     private boolean expression;
 
     @Override
@@ -38,20 +38,9 @@ public class ListTag extends AbstractTag {
         if(arguments.length != 3 || !arguments[1].equals("as"))
             throw  new ParseException("<#list> tag arguments must have format: 'collection as localVar' or 'object.collection as localVar'");
 
-        if ((argumentLine.length() - argumentLine.replace(".", "").length()) > 1)
-            throw new ParseException("<#list> tag arguments : " + argumentLine + " has more than one dot");
-
-        this.expression = argumentLine.contains(".");
-        collectionName = arguments[0];
         varName = arguments[2];
 
-        if (expression) {
-            String[] parts = Util.split(collectionName, '.');
-            this.objectName = parts[0];
-            this.propertyName = parts[1];
-        }else{
-            collectionName = arguments[0];
-        }
+        objectSpec = arguments[0];
     }
 
     private ThreadLocal<Map<String, Object>> mapCache =  new ThreadLocal<Map<String, Object>>();
@@ -63,12 +52,7 @@ public class ListTag extends AbstractTag {
 
         try {
             Collection targetCollection;
-            Object collection;
-            if (expression) {
-                collection = getValue(values.get(objectName), propertyName);
-            } else {
-                collection = values.get(collectionName);
-            }
+            Object collection = evalObject(objectSpec, values);
 
             if (collection != null) { //forgiving mode, should build a strict mode later
                 if (collection.getClass().isArray()) {
@@ -76,7 +60,7 @@ public class ListTag extends AbstractTag {
                 } else if (collection instanceof Collection) {
                     targetCollection = (Collection) collection;
                 } else {
-                    throw new TemplateException("Cannot process ListTag because collection '" + collectionName + "' is not a java.util.Collection or array");
+                    throw new TemplateException("Cannot process ListTag because collection '" + objectSpec + "' is not a java.util.Collection or array");
                 }
 
                 Object[] objects = targetCollection.toArray();
@@ -88,7 +72,11 @@ public class ListTag extends AbstractTag {
                     bodyTemplate.process(values, writer);
                 }
             }
-        } catch (Exception e) {
+
+        }catch(TemplateException e){
+            throw e;
+        }
+        catch (Exception e) {
             throw new TemplateException(e);
         }
     }

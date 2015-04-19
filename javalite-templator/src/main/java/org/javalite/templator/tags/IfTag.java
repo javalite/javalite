@@ -57,21 +57,9 @@ public class IfTag extends AbstractTag {
         boolean processBody = false;
 
         if (singleArgument) {
-            if (!values.containsKey(argument1name)) {
-                throw new TemplateException("Bad argument for <#if> tag: '" + argument1name + "' cannot be null.");
-            }
-            Object singleArg = values.get(argument1name);
-            try {
-                processBody = Convert.toBoolean(singleArg);
-            } catch (Exception e) {
-                throw new TemplateException("Bad argument for <#if> tag: '" + argument1name + "' must be a boolean.");
-            }
+            Object singleArg = evalObject(argument1name, values);
+            processBody = Convert.toBoolean(singleArg);
         } else {
-            if (!values.containsKey(argument1name) || !values.containsKey(argument2name)) {
-                throw new TemplateException("Bad arguments for <#if> tag: '" + argument1name + "' or '" +
-                        argument2name + "' cannot be null.");
-            }
-
             if (operator.equals("lt") ||
                     operator.equals("lt") ||
                     operator.equals("gt") ||
@@ -80,11 +68,11 @@ public class IfTag extends AbstractTag {
                     ) {
                 Double left, right;
                 try {
-                    left = Convert.toDouble(values.get(argument1name));
-                    right = Convert.toDouble(values.get(argument2name));
+                    left = Convert.toDouble(evalObject(argument1name, values));
+                    right = Convert.toDouble(evalObject(argument2name, values));
                 } catch (TemplateException e) {
                     throw new TemplateException("Bad arguments for <#if> tag: '" + argument1name + "' or '" +
-                            argument2name + "' must be numbers.");
+                            argument2name + "' must be numbers.", e);
                 }
 
                 if (operator.equals("lt")) {
