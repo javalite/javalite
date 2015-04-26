@@ -201,6 +201,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.18</version>
                 <configuration>
+                	<!-- fails with DE Locale as system default -->
+                	<argLine>-Duser.country=US -Duser.language=en</argLine>
                     <trimStackTrace>false</trimStackTrace>
                     <useFile>false</useFile>
                     <includes>
