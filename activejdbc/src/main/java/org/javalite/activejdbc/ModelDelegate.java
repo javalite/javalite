@@ -197,6 +197,22 @@ public final class ModelDelegate {
         return list.isEmpty() ? null : list.get(0);
     }
 
+    public static <T extends Model> T findByCompositeKeys(Class<T> clazz, Object...values) {
+        if (values == null || values.length == 0) { return null; }
+        MetaModel metaModel = metaModelOf(clazz);
+        String[] compositeKeys = metaModel.getIdCompositeKeys();
+        if (compositeKeys == null || compositeKeys.length != values.length){
+        	return null;
+        }
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < compositeKeys.length; i++) {
+			sb.append(i == 0 ? "" : " AND ").append(compositeKeys[i])
+					.append(" = ?");
+		}
+        LazyList<T> list = new LazyList<T>(sb.toString(), metaModel, values).limit(1);
+        return list.isEmpty() ? null : list.get(0);
+    }
+    
     public static <T extends Model> LazyList<T> findBySql(Class<T> clazz, String fullQuery, Object... params) {
         return new LazyList<T>(false, metaModelOf(clazz), fullQuery,  params);
     }

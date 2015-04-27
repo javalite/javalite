@@ -165,3 +165,7 @@ CREATE TABLE apples (id int(11) NOT NULL PRIMARY KEY, apple_type VARCHAR(56) NOT
 
 DROP TABLE IF EXISTS alarms;
 CREATE TABLE alarms (id int(11) NOT NULL auto_increment PRIMARY KEY, alarm_time TIME NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS composites;
+CREATE TABLE composites (first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL, email VARCHAR(56) NOT NULL, address VARCHAR(56), CONSTRAINT composites_uq UNIQUE (first_name, last_name, email)) ENGINE=InnoDB DEFAULT CHARSET=utf8;

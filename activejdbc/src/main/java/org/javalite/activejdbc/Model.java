@@ -31,6 +31,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import java.io.*;
 import java.math.BigDecimal;
 import java.sql.Clob;
@@ -38,6 +39,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.*;
+
 import org.javalite.activejdbc.conversion.BlankToNullConverter;
 import org.javalite.activejdbc.conversion.ZeroToNullConverter;
 import org.javalite.activejdbc.dialects.Dialect;
@@ -65,7 +67,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     private final Map<Class, Model> cachedParents = new HashMap<Class, Model>();
     private final Map<Class, List<Model>> cachedChildren = new HashMap<Class, List<Model>>();
     private boolean manageTime = true;
-
+    private boolean compositeKeyUpdate = false;
     private Errors errors = new Errors();
 
     protected Model() {
@@ -193,7 +195,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 }
             }
         }
-
+        if (getIdCompositeKeys() != null){
+        	compositeKeyUpdate = true;
+        }
         if(fireAfterLoad){
             fireAfterLoad();
         }
@@ -2183,6 +2187,16 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
+     * Values must be ordered like in ({@link IdCompositeKeys})
+     * 
+     * @param values Composite PK values
+     * @return Model or null
+     */
+    public static <T extends Model> T findByCompositeKeys(Object...values) {
+        return ModelDelegate.findByCompositeKeys(Model.<T>modelClass(), values);
+    }
+    
+    /**
      * Finder method for DB queries based on table represented by this model. Usually the SQL starts with:
      *
      * <code>"select * from table_name where " + subquery</code> where table_name is a table represented by this model.
@@ -2523,7 +2537,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
 
         boolean result;
-        if (getId() == null) {
+        if (getId() == null && !compositeKeyUpdate) {
             result = insert();
         } else {
             result = update();
@@ -2656,8 +2670,17 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
         if(values.isEmpty())
             return false;
-        query.append(" WHERE ").append(metaModel.getIdName()).append(" = ?");
-        values.add(getId());
+        
+		if (getIdCompositeKeys() != null) {
+			String[] compositeKeys = getIdCompositeKeys();
+			for (int i = 0; i < compositeKeys.length; i++) {
+				query.append(i == 0 ? " WHERE " : " AND ").append(compositeKeys[i]).append(" = ?");
+				values.add(get(compositeKeys[i]));
+			}
+		} else {
+			query.append(" WHERE ").append(metaModel.getIdName()).append(" = ?");
+			values.add(getId());
+		}
         if (metaModel.isVersioned()) {
             query.append(" AND ").append(getMetaModelLocal().getVersionColumn()).append(" = ?");
             values.add(get(getMetaModelLocal().getVersionColumn()));
@@ -2704,6 +2727,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return getMetaModelLocal().getIdName();
     }
 
+    public String[] getIdCompositeKeys() {
+        return getMetaModelLocal().getIdCompositeKeys();
+    }
+    
     protected void setChildren(Class childClass, List<Model> children) {
         cachedChildren.put(childClass, children);
     }
