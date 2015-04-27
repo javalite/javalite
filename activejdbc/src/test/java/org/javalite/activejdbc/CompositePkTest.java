@@ -65,4 +65,31 @@ public class CompositePkTest extends ActiveJDBCTest {
     	the(Composites.findByCompositeKeys("John", "Cash", "j.cash@spam.org")).shouldBeNull();
     	the(Composites.findByCompositeKeys("Johnny", "Cash", "j.cash@spam.com")).shouldBeNull();
     }
+    
+    @Test
+    public void shouldDeleted() {
+    	Composites.createIt("first_name", "Johnny", "last_name", "Cash", "email", "j.cash@spam.org", "address", "inserted");
+    	Composites comp = Composites.findByCompositeKeys("Johnny", "Cash", "j.cash@spam.org");
+		the(comp).shouldNotBeNull();
+		the(Composites.count()).shouldBeEqual(1);
+		comp.delete();
+		the(Composites.count()).shouldBeEqual(0);
+		the(comp.isFrozen()).shouldBeTrue();
+    }
+    
+    @Test
+    public void shouldBeNew() {
+    	
+        Composites comp = new Composites();
+        comp.set("first_name", "Johnny", "last_name", "Cash", "email", "j.cash@spam.org", "address", "inserted");
+        the(comp.isNew()).shouldBeTrue();
+        
+    	Composites.createIt("first_name", "Johnny", "last_name", "Cash", "email", "j.cash@spam.org", "address", "inserted");
+    	comp = Composites.findByCompositeKeys("Johnny", "Cash", "j.cash@spam.org");
+		the(comp).shouldNotBeNull();
+		the(comp.isNew()).shouldBeFalse();
+		
+		comp = Composites.createIt("first_name", "Johnny", "last_name", "Cash2", "email", "j.cash@spam.org", "address", "inserted");
+		the(comp.isNew()).shouldBeFalse();
+    }
 }
