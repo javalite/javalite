@@ -50,7 +50,7 @@ import static java.util.Collections.singletonList;
  *
  * @author Igor Polevoy on 3/4/15.
  */
-class HornetNest {
+public class HornetNest {
 
     private final Configuration config;
     private final JMSConfiguration jmsConfig;
