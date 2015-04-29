@@ -2507,6 +2507,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public void thaw(){
         attributes.put(getIdName(), null);
+        compositeKeyPersisted = false;
         dirtyAttributeNames.addAll(attributes.keySet());
         frozen = false;
     }
@@ -2616,6 +2617,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             String query = metaModel.getDialect().insertParametrized(metaModel, columns, containsId);
             if (containsId || getIdCompositeKeys() != null) {
                 done = (1 == new DB(metaModel.getDbName()).exec(query, values.toArray()));
+                compositeKeyPersisted = done;
             } else {
                 Object id = new DB(metaModel.getDbName()).execInsert(query, metaModel.getIdName(), values.toArray());
                 attributes.put(metaModel.getIdName(), id);
@@ -2629,9 +2631,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 attributes.put(metaModel.getVersionColumn(), 1);
             }
 
-            if (done && getIdCompositeKeys() != null){
-            	compositeKeyPersisted = true;
-            }
             dirtyAttributeNames.clear(); // Clear all dirty attribute names as all were inserted. What about versionColumn ?
             fireAfterCreate();
 
