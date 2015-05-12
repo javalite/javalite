@@ -5,6 +5,15 @@ Small application configuration library to provide different properties for appl
 
 ## Usage
 
+First, do a static import `AppConfig.p(...)` method:
+
+
+```java
+import static org.javalite.app_configAppConfig.p;
+```
+
+then, simply call a `p(..)` metod in places where you need to inject a property:
+
 ```java
 String name = p("name");
 ```
