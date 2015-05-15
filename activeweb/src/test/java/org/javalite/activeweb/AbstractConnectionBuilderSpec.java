@@ -5,7 +5,10 @@ import org.javalite.activejdbc.ConnectionJndiSpec;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.javalite.test.jspec.JSpec.a;
+import static org.javalite.test.jspec.JSpec.the;
 
 /**
  * @author Igor Polevoy on 12/1/14.
@@ -123,5 +126,29 @@ public class AbstractConnectionBuilderSpec  {
         a(connectionSpec.getUrl()).shouldBeEqual("jdbc:mysql://localhost/test");
         a(connectionSpec.getUser()).shouldBeEqual("mary");
         a(connectionSpec.getPassword()).shouldBeEqual("pwd1");
+    }
+
+
+
+    @Test
+    public void shouldOverrideConnectionSpecForTheSameEnvironment(){
+
+        class DBConfig extends AbstractDBConfig{
+            public void init(AppContext appContext) {
+                configFile("/database_new.properties");
+                environment("production", true).jndi("java:comp/env/jdbc/prod_new");
+            }
+        }
+
+        DBConfig config = new DBConfig();
+        config.init(null);
+
+        List<ConnectionSpecWrapper> wrappers = Configuration.getConnectionSpecWrappers("production");
+
+        //we configured two, one in file, one in class. But the class config overrides one in file.
+        the(wrappers.size()).shouldBeEqual(1);
+
+        ConnectionJndiSpec connectionSpec = (ConnectionJndiSpec)  wrappers.get(0).getConnectionSpec();
+        the(connectionSpec.getDataSourceJndiName()).shouldBeEqual("java:comp/env/jdbc/prod_new");
     }
 }

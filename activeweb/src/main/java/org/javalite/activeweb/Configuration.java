@@ -222,10 +222,10 @@ public class Configuration {
         return Boolean.parseBoolean(get(Params.rollback.toString().trim()));  
     }    
 
-    protected static void addConnectionWrapper(ConnectionSpecWrapper connectionWrapper) {
+    protected static void addConnectionWrapper(ConnectionSpecWrapper connectionWrapper, boolean override) {
         String connectionWrapperEnv = connectionWrapper.getEnvironment();
         List<ConnectionSpecWrapper> envConnectionWrappers = connectionWrappers.get(connectionWrapperEnv);
-        if(envConnectionWrappers == null) {
+        if(envConnectionWrappers == null || override) {
             envConnectionWrappers = new ArrayList<ConnectionSpecWrapper>();
             connectionWrappers.put(connectionWrapperEnv, envConnectionWrappers);
         }

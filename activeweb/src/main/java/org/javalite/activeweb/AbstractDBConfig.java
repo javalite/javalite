@@ -72,7 +72,7 @@ import java.util.TreeSet;
  * <li>Line 5: This is a configuration of DB connection for "hudson" environment, but for "testing" mode. The "hudson"
  * environment is a computer where this project is built by Hudson - the continuous integration server. Since Hudson
  * computer is fully automated, and this project is not running there in "standard" mode, there is no standard configuration
- * for hudson environment, just one for testing.
+ * for Jenkins environment, just one for testing.
  * <li>Line 6: This is configuration similar to one on line 3, but for "production" environment.
  * </ul>
  *
@@ -80,8 +80,21 @@ import java.util.TreeSet;
  */
 public abstract class AbstractDBConfig extends AppConfig {
 
+    /**
+     * @param environment name of environment (corresponds to env var ACTIVE_ENV)
+     * @return builder instance
+     */
     public ConnectionBuilder environment(String environment) {
         return new ConnectionBuilder(environment);
+    }
+
+    /**
+     * @param environment name of environment (corresponds to env var ACTIVE_ENV)
+     * @param override true to override any previous configuration for the same environment.
+     * @return builder instance
+     */
+    public ConnectionBuilder environment(String environment, boolean override) {
+        return new ConnectionBuilder(environment, override);
     }
 
     /**
@@ -155,7 +168,7 @@ public abstract class AbstractDBConfig extends AppConfig {
         }
         ConnectionJdbcSpec connectionSpec = new ConnectionJdbcSpec(driver, url, userName, password);
         wrapper.setConnectionSpec(connectionSpec);
-        Configuration.addConnectionWrapper(wrapper);
+        Configuration.addConnectionWrapper(wrapper, false);
     }
 
     private void createJndiWrapper(String env, String jndiName) {
@@ -163,7 +176,7 @@ public abstract class AbstractDBConfig extends AppConfig {
         wrapper.setEnvironment(env);
         ConnectionJndiSpec connectionSpec = new ConnectionJndiSpec(jndiName);
         wrapper.setConnectionSpec(connectionSpec);
-        Configuration.addConnectionWrapper(wrapper);
+        Configuration.addConnectionWrapper(wrapper, false);
     }
 
 

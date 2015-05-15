@@ -33,7 +33,13 @@ public class ConnectionBuilder {
     ConnectionBuilder(String environment) {
         connectionWrapper = new ConnectionSpecWrapper();
         connectionWrapper.setEnvironment(environment);
-        Configuration.addConnectionWrapper(connectionWrapper);
+        Configuration.addConnectionWrapper(connectionWrapper, false);
+    }
+
+    ConnectionBuilder(String environment, boolean override) {
+        connectionWrapper = new ConnectionSpecWrapper();
+        connectionWrapper.setEnvironment(environment);
+        Configuration.addConnectionWrapper(connectionWrapper, override);
     }
 
     /**
