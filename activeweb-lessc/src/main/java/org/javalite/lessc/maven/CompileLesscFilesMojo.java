@@ -2,57 +2,72 @@ package org.javalite.lessc.maven;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 
 import static java.lang.Runtime.getRuntime;
 
 
-/**
- * @goal compile
- * @phase prepare-package
- */
+@Mojo( name = "compile", defaultPhase = LifecyclePhase.PREPARE_PACKAGE)
 public class CompileLesscFilesMojo extends AbstractMojo {
 
-    /**
-     * @parameter property="project"
-     * @required
-     */
+    @Parameter( property = "project", required = true )
     protected MavenProject project;
 
-    /**
-     * @parameter
-     * @required
-     */
-    private String lesscMain = "src/main/webapp/less/main.less";
+    @Parameter( required = false )
+    private String lesscMain ;
 
-    /**
-     * @parameter
-     * @required
-     */
-    private String targetDirectory = "target/web";
+    @Parameter( required = false )
+    private String targetDirectory;
 
-    /**
-     * @parameter
-     * @required
-     */
-    private String targetFileName = "main.css";
+    @Parameter( required = false )
+    private String targetFileName;
+
+
+    @Parameter( required = false )
+    private List<LessConfig> lessConfigs;
 
     public final void execute() throws MojoExecutionException {
 
+        if ((lesscMain == null || targetDirectory == null || targetFileName == null) && lessConfigs == null
+                || lesscMain != null && targetDirectory != null && targetFileName != null && lessConfigs != null) {
+            throw new MojoExecutionException("You must provide configuration for one less file or for a list, but not both");
+        }
+
+
+        if(lessConfigs == null){
+            processFile(lesscMain, targetDirectory, targetFileName);
+        }else{
+            for (LessConfig config : lessConfigs) {
+                processFile(config.getLesscMain(), config.getTargetDirectory(), config.getTargetFileName());
+            }
+        }
+    }
+
+    private void processFile(String sourceFile, String targetDirectory, String targetFileName) throws MojoExecutionException {
+
         try {
-            String css = lessc(new File(lesscMain));
+            String css = compile(new File(sourceFile));
             File dir = new File(targetDirectory);
             if (!dir.exists()) {
                 if (!dir.mkdirs()) {
                     throw new MojoExecutionException("Failed to create directory: " + targetDirectory);
                 }
             }
-            getLog().info("Storing CSS into: " + targetDirectory + System.getProperty("file.separator") + targetFileName);
-            FileWriter writer = new FileWriter(targetDirectory + System.getProperty("file.separator") + targetFileName);
-            writer.write(css);
-            writer.close();
+
+            String path = targetDirectory + System.getProperty("file.separator") + targetFileName;
+            getLog().info("Storing CSS into: " + path);
+            Files.write(Paths.get(path), css.getBytes());
         } catch (Exception e) {
             if (e instanceof MojoExecutionException) {
                 throw (MojoExecutionException) e;
@@ -62,18 +77,18 @@ public class CompileLesscFilesMojo extends AbstractMojo {
         }
     }
 
-    public String lessc(File lessFile) throws IOException, InterruptedException, MojoExecutionException {
+    public String compile(File sourceFile) throws IOException, InterruptedException, MojoExecutionException {
 
-        if(!lessFile.exists()){
-            throw new MojoExecutionException("File: " + lessFile.getPath() + " does not exist. Current directory: " + new File(".").getCanonicalPath());
+        if(!sourceFile.exists()){
+            throw new MojoExecutionException("File: " + sourceFile.getPath() + " does not exist. Current directory: " + new File(".").getCanonicalPath());
         }
-        getLog().info("Executing: " + "lessc " + lessFile.getPath());
+        getLog().info("Executing: " + "lessc " + sourceFile.getPath());
 
         String exec = "lessc";
         if (System.getProperty("os.name").toLowerCase().contains("windows")) {
             exec += ".cmd";
         }
-        Process process = getRuntime().exec(new String[]{exec, lessFile.getPath()});
+        Process process = getRuntime().exec(new String[]{exec, sourceFile.getPath()});
         String css = read(process.getInputStream(), "UTF-8");
         String error = read(process.getErrorStream(), "UTF-8");
         if (process.waitFor() != 0) {
