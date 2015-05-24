@@ -1,6 +1,6 @@
 # ActiveWebLessc Maven Plugin compiles Lessc files into CSS
 
-## Configuration
+## Configuration with a single LESS file
 
 ```xml
 <plugin>
@@ -21,4 +21,34 @@
 
 ```
 
-This should be self-explanatory
+## Configuration with a multiple LESS files
+
+
+```xml
+<plugin>
+    <groupId>org.javalite</groupId>
+    <artifactId>activeweb-lessc-maven-plugin</artifactId>
+    <version>${proj_version}</version>
+    <configuration>
+        <lessConfigs>
+            <lessConfig implementation="org.javalite.lessc.maven.LessConfig">
+                <lesscMain>src/main/webapp/less1/bootstrap.less</lesscMain>
+                <targetDirectory>target/web1</targetDirectory>
+                <targetFileName>bootstrap.css</targetFileName>
+            </lessConfig>
+            <lessConfig implementation="org.javalite.lessc.maven.LessConfig">
+                <lesscMain>src/main/webapp/less2/bootstrap.less</lesscMain>
+                <targetDirectory>target/web2</targetDirectory>
+                <targetFileName>bootstrap.css</targetFileName>
+            </lessConfig>
+        </lessConfigs>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>compile</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+```
