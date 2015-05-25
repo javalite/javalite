@@ -12,7 +12,7 @@ import static org.javalite.test.jspec.JSpec.the;
  */
 public class IntegrationTest {
 
-    String maven = System.getProperty("os.name").contains("Windows") ? "mvn.bat" : "mvn";
+    String maven = System.getProperty("os.name").contains("Windows") ? "\"%M2_HOME%/bin/mvn.bat\"" : "mvn";
 
     protected String execute(String dir, String... args) throws IOException, InterruptedException {
         InputStream stdErr, stdOut;
