@@ -12,6 +12,8 @@ import static org.javalite.test.jspec.JSpec.the;
  */
 public class IntegrationTest {
 
+    String maven = System.getProperty("os.name").contains("Windows") ? "mvn.bat" : "mvn";
+
     protected String execute(String dir, String... args) throws IOException, InterruptedException {
         InputStream stdErr, stdOut;
         Process process = Runtime.getRuntime().exec(args, new String[]{"JAVA_HOME=" + System.getProperty("java.home")}, new File(dir));
@@ -41,7 +43,7 @@ public class IntegrationTest {
 
         String root = "target/test-project";
 
-        String output = execute(root, "mvn", "clean");
+        String output = execute(root, maven, "clean");
         the(output).shouldContain("BUILD SUCCESS");
         output = execute(root, "mvn", "install", "-o");
         the(output).shouldContain("BUILD SUCCESS");
@@ -53,9 +55,9 @@ public class IntegrationTest {
     @Test
     public void shouldCompileProjectWithMultipleLessFile() throws IOException, InterruptedException {
         String root = "target/test-project-list";
-        String output = execute(root, "mvn", "clean");
+        String output = execute(root, maven, "clean");
         the(output).shouldContain("BUILD SUCCESS");
-        output = execute(root, "mvn", "install", "-o");
+        output = execute(root, maven, "install", "-o");
         the(output).shouldContain("BUILD SUCCESS");
 
         File f = new File(root + "/target/web1/bootstrap.css");
