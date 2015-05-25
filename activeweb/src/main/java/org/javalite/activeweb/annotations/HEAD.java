@@ -21,7 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Mark an action of a controller with this annotation to receive an HTTP PUT request.
+ * Mark an action of a controller with this annotation to receive an HTTP HEAD request.
  *
  * @author Igor Polevoy
  */
