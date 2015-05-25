@@ -10,7 +10,7 @@ Please, refer to [Lessc documentation on the JavaLite site](http://javalite.io/l
 <plugin>
     <groupId>org.javalite</groupId>
     <artifactId>activeweb-lessc-maven-plugin</artifactId>
-    <version>1.11-SNAPSHOT</version>
+    <version>${activeweb.version}</version>
     <configuration>
         <lesscMain>src/main/webapp/less/bootstrap.less</lesscMain>
         <targetDirectory>target/web/css</targetDirectory>
@@ -32,7 +32,7 @@ Please, refer to [Lessc documentation on the JavaLite site](http://javalite.io/l
 <plugin>
     <groupId>org.javalite</groupId>
     <artifactId>activeweb-lessc-maven-plugin</artifactId>
-    <version>${proj_version}</version>
+    <version>${activeweb.version}</version>
     <configuration>
         <lessConfigs>
             <lessConfig implementation="org.javalite.lessc.maven.LessConfig">
