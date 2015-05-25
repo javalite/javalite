@@ -1,5 +1,9 @@
 # ActiveWebLessc Maven Plugin compiles Lessc files into CSS
 
+## Online documentation
+
+Please, refer to [Lessc documentation on the JavaLite site](http://javalite.io/lessc)
+
 ## Configuration with a single LESS file
 
 ```xml

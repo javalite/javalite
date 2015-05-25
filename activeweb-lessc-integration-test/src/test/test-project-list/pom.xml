@@ -50,6 +50,5 @@
             <artifactId>activeweb</artifactId>
             <version>${proj_version}</version>
         </dependency>
-
     </dependencies>
 </project>
