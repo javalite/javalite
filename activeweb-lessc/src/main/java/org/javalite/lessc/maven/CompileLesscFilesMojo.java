@@ -82,12 +82,14 @@ public class CompileLesscFilesMojo extends AbstractMojo {
         if(!sourceFile.exists()){
             throw new MojoExecutionException("File: " + sourceFile.getPath() + " does not exist. Current directory: " + new File(".").getCanonicalPath());
         }
-        getLog().info("Executing: " + "lessc " + sourceFile.getPath());
+
 
         String exec = "lessc";
         if (System.getProperty("os.name").toLowerCase().contains("windows")) {
             exec += ".cmd";
         }
+
+        getLog().info("Executing: " + exec + " " + sourceFile.getPath());
         Process process = getRuntime().exec(new String[]{exec, sourceFile.getPath()});
         String css = read(process.getInputStream(), "UTF-8");
         String error = read(process.getErrorStream(), "UTF-8");
