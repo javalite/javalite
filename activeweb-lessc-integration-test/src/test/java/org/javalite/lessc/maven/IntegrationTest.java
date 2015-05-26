@@ -1,6 +1,7 @@
 package org.javalite.lessc.maven;
 
 import org.apache.maven.shared.invoker.*;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.*;
@@ -36,7 +37,7 @@ public class IntegrationTest {
         return output;
     }
 
-    @Test
+    @Test @Ignore
     public void shouldCompileProjectWithSingleLessFile() throws IOException, InterruptedException, MavenInvocationException {
 
         String root = "target/test-project";
@@ -51,7 +52,7 @@ public class IntegrationTest {
         a(f.exists()).shouldBeTrue();
     }
 
-    @Test
+    @Test @Ignore
     public void shouldCompileProjectWithMultipleLessFile() throws IOException, InterruptedException, MavenInvocationException {
         String root = "target/test-project-list";
         String output = execute(root, true, "clean");
