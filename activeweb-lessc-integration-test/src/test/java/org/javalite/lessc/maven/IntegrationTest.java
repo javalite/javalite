@@ -1,8 +1,10 @@
 package org.javalite.lessc.maven;
 
+import org.apache.maven.shared.invoker.*;
 import org.junit.Test;
 
 import java.io.*;
+import java.util.Arrays;
 
 import static org.javalite.test.jspec.JSpec.a;
 import static org.javalite.test.jspec.JSpec.the;
@@ -12,20 +14,21 @@ import static org.javalite.test.jspec.JSpec.the;
  */
 public class IntegrationTest {
 
-    String maven = System.getProperty("os.name").contains("Windows") ? "cmd.exe /c mvn" : "mvn";
+    protected String execute(String root, String... args) throws IOException, InterruptedException, MavenInvocationException {
+        InvocationRequest request = new DefaultInvocationRequest();
+        request.setPomFile( new File( root + "/pom.xml" ) );
+        request.setGoals(Arrays.asList(args));
+        Invoker invoker = new DefaultInvoker();
+        invoker.setWorkingDirectory(new File(root));
 
-    protected String execute(String dir, String... args) throws IOException, InterruptedException {
-        InputStream stdErr, stdOut;
-        Process process = Runtime.getRuntime().exec(args, new String[]{"JAVA_HOME=" + System.getProperty("java.home")}, new File(dir));
-        stdErr = process.getErrorStream();
-        stdOut = process.getInputStream();
-        BufferedReader reader =  new BufferedReader(new InputStreamReader(stdOut));
-        String content = getContent(reader);
-        reader.close();
-        reader = new BufferedReader(new InputStreamReader(stdErr));
-        content += getContent(reader);
-        reader.close();
-        return content;
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+        invoker.setErrorHandler(new PrintStreamHandler(new PrintStream(outputStream), true));
+        invoker.setOutputHandler(new PrintStreamHandler(new PrintStream(errorStream), true));
+        invoker.execute(request);
+        String output = outputStream.toString();
+        output += errorStream.toString();
+        return output;
     }
 
     private String getContent(BufferedReader reader) throws IOException {
@@ -39,13 +42,14 @@ public class IntegrationTest {
     }
 
     @Test
-    public void shouldCompileProjectWithSingleLessFile() throws IOException, InterruptedException {
+    public void shouldCompileProjectWithSingleLessFile() throws IOException, InterruptedException, MavenInvocationException {
 
         String root = "target/test-project";
 
-        String output = execute(root, maven, "clean");
+        String output = execute(root, "clean");
         the(output).shouldContain("BUILD SUCCESS");
-        output = execute(root, "mvn", "install", "-o");
+
+        output = execute(root, "install", "-o");
         the(output).shouldContain("BUILD SUCCESS");
 
         File f = new File(root + "/target/web/bootstrap.css");
@@ -53,11 +57,11 @@ public class IntegrationTest {
     }
 
     @Test
-    public void shouldCompileProjectWithMultipleLessFile() throws IOException, InterruptedException {
+    public void shouldCompileProjectWithMultipleLessFile() throws IOException, InterruptedException, MavenInvocationException {
         String root = "target/test-project-list";
-        String output = execute(root, maven, "clean");
+        String output = execute(root, "clean");
         the(output).shouldContain("BUILD SUCCESS");
-        output = execute(root, maven, "install", "-o");
+        output = execute(root, "install", "-o");
         the(output).shouldContain("BUILD SUCCESS");
 
         File f = new File(root + "/target/web1/bootstrap.css");
