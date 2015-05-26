@@ -30,6 +30,9 @@ public class IntegrationTest {
         invoker.execute(request);
         String output = outputStream.toString();
         output += errorStream.toString();
+        if(!output.contains("BUILD SUCCESS")){
+            System.out.println("BUILD FAILED>>>>>>>>>>>\n" + output);
+        }
         return output;
     }
 
