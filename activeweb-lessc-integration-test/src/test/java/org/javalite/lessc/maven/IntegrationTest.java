@@ -37,7 +37,7 @@ public class IntegrationTest {
         return output;
     }
 
-    @Test @Ignore
+    @Test
     public void shouldCompileProjectWithSingleLessFile() throws IOException, InterruptedException, MavenInvocationException {
 
         String root = "target/test-project";
@@ -52,7 +52,7 @@ public class IntegrationTest {
         a(f.exists()).shouldBeTrue();
     }
 
-    @Test @Ignore
+    @Test
     public void shouldCompileProjectWithMultipleLessFile() throws IOException, InterruptedException, MavenInvocationException {
         String root = "target/test-project-list";
         String output = execute(root, true, "clean");
