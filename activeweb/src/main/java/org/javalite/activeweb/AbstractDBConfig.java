@@ -125,7 +125,7 @@ public abstract class AbstractDBConfig extends AppConfig {
      *     <li>If this method of configuration is too limiting, it is possible to mix and match both configuration
      *     methods - file-based, as well as DSL: {@link #environment(String)}</li>
      *     <li>All connections specified in a property file automatically assigned DB name "default". For more on
-     *     database names see <a href="http://javalite.io/database_connection_management">Database management</a></li>
+     *     database names see <a href="http://javalite.io/database_configuration">Database configuration</a></li>
      * </ul>
      *
      * @param file path to a file. Can be located on classpath, or on a file system. First searched on classpath,
