@@ -165,6 +165,14 @@ import static org.javalite.common.Util.blank;
  *
  *  In this example, the link is trying to make an Ajax call to a controlled action which does not exists.
  *
+ * <h4>Adding HTML5-style attributes</h4>
+ *  Use a special attribute "data", whose value will be added to the resulting tag verbatim.
+ *
+ *<pre>
+ &lt;@link_to data="data-greeting='hola' data-bye='astalavista'" ...  &gt;
+ *</pre>
+
+ *
  * @author Igor Polevoy
  */
 public class LinkToTag extends FreeMarkerTag {
@@ -253,7 +261,13 @@ public class LinkToTag extends FreeMarkerTag {
 
         tf.addAttributesExcept(params, "controller", "action", "form", "id", "method",
                 "query_string", "query_params", "context_path", "destination",
-                "before", "before_arg", "after", "after_arg", "confirm", "error", "html_id");
+                "before", "before_arg", "after", "after_arg", "confirm", "error", "html_id", "data");
+
+
+        if(params.containsKey("data")){
+            tf.textAttributes(params.get("data").toString());
+        }
+
         writer.write(tf.toString());
     }
 

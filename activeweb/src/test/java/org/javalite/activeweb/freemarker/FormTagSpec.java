@@ -160,10 +160,15 @@ public class FormTagSpec extends JSpecSupport {
         StringWriter sw = new StringWriter();
         manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", true)),
                 "/form/empty_form", sw);
+        a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple\">&nbsp;</form>");
+    }
 
+    @Test
+    public void should_add_HTML5_attributes(){
+        StringWriter sw = new StringWriter();
+        manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", true)),
+                "/form/html5_form", sw);
 
-        System.out.println(sw.toString());
-
-
+        a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple\" data-input='hello'>&nbsp;</form>");
     }
 }

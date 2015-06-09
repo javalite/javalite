@@ -125,7 +125,7 @@ public class LinkToTagSpec extends RequestSpec {
 
         sw = new StringWriter();
         manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "/rest/book", "restful", true)),
-                        "link_to/restful_id_for_new_form", sw);
+                "link_to/restful_id_for_new_form", sw);
     }
 
     /**
@@ -190,5 +190,14 @@ public class LinkToTagSpec extends RequestSpec {
         manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "simple", "restful", false)),
                 "/link_to/defect_105", sw);
         a(sw.toString()).shouldBeEqual("<a href=\"/book/read?first_name=John\" data-link=\"aw\" class=\"red_button\">Click here to read book 2</a>");
+    }
+
+    @Test
+    public void should_add_HTML5_attributes() {
+        sw = new StringWriter();
+        manager.getTag("link_to").overrideContext("");
+        manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "simple", "restful", false)),
+                "/link_to/html5", sw);
+        a(sw.toString()).shouldBeEqual("<a href=\"/book/read?first_name=John\" data-link=\"aw\" class=\"red_button\" data-attributes='hello'>Click here to read book 2</a>");
     }
 }

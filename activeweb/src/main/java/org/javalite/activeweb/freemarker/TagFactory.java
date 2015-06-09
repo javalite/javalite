@@ -29,13 +29,17 @@ import java.util.Map;
  * @author Igor Polevoy
  */
 public class TagFactory {
-    private String name, body;
-
+    private String name, body, textAttributes;
     private List<Attribute> attributes = new ArrayList<Attribute>();
+
 
     public TagFactory(String name, String body) {
         this.name = name;
         this.body = body;
+    }
+
+    public void textAttributes(String textAttributes) {
+        this.textAttributes = textAttributes;
     }
 
     public void attribute(String name, String value) {
@@ -61,6 +65,12 @@ public class TagFactory {
                 w.write("\"");
                 w.write(a.value());
                 w.write("\"");
+            }
+
+
+            if(textAttributes != null){
+                w.write(" ");
+                w.write(textAttributes);
             }
 
             if(Util.blank(body)){

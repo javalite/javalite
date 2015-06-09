@@ -81,6 +81,16 @@ public class SelectTagSpec extends RequestSpec {
     }
 
     @Test
+    public void shouldRenderHTML5Attributes() {
+        sw = new StringWriter();
+        manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "simple", "restful", false),
+                        "books", list(new SelectOption(1, "The Hitchhiker's Guide to the Galaxy"), new SelectOption(2, "All Quiet on Western Front", true))),  //<<--- -this is data passed to tag
+                "/select/html5", sw);
+
+        a(sw.toString()).shouldBeEqual("<select data-attributes='hello'><option value=\"1\">The Hitchhiker's Guide to the Galaxy</option><option value=\"2\" selected=\"true\">All Quiet on Western Front</option></select>");
+    }
+
+    @Test
     public void shouldRenderSelectTagWithBody() {
         sw = new StringWriter();
         manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "simple", "restful", false),

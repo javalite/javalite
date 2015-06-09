@@ -109,6 +109,14 @@ import static org.javalite.common.Util.blank;
  *       &lt;input type="hidden" name="blah"&gt;
  *  &lt;/form&gt;
  </pre>
+
+ * <h4>Adding HTML5-style attributes</h4>
+ *  Use a special attribute "data", whose value will be added to the resulting tag verbatim.
+ *
+ *<pre>
+ &lt;@form data="data-greeting='hola' data-bye='astalavista'" ...  &gt;
+ *</pre>
+ *
  * @author Igor Polevoy
  */
 public class FormTag  extends FreeMarkerTag{
@@ -157,13 +165,16 @@ public class FormTag  extends FreeMarkerTag{
             tf.attribute("method", "post");
         }else{
             if(params.get("method") != null)
-            tf.attribute("method", params.get("method").toString());
+                tf.attribute("method", params.get("method").toString());
         }
         if(params.get("html_id")!= null){
             tf.attribute("id", params.get("html_id").toString());
         }
 
-        tf.addAttributesExcept(params, "controller", "action", "method", "id", "html_id");
+        tf.addAttributesExcept(params, "controller", "action", "method", "id", "html_id", "data");
+        if(params.containsKey("data")){
+            tf.textAttributes(params.get("data").toString());
+        }
         tf.write(writer);
     }
 }
