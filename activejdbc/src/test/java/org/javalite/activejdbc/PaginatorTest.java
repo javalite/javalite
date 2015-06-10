@@ -1,17 +1,17 @@
 /*
 Copyright 2009-2014 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
 
 
@@ -46,7 +46,7 @@ public class PaginatorTest extends ActiveJDBCTest {
         p.getPage(1);
         a(p.getCurrentPage()).shouldBeEqual(1);
     }
-    
+
     @Test
     public void testPageCount(){
         Paginator<Item> p = new Paginator<Item>(Item.class, 10, "item_description like '%2%'");
@@ -133,5 +133,27 @@ public class PaginatorTest extends ActiveJDBCTest {
         a(items.size()).shouldBeEqual(1);
         a(items.get(0).get("item_number")).shouldBeEqual(992);
         a(p.pageCount()).shouldBeEqual(28);
+    }
+
+    @Test
+    public void should_ignore_changes_in_count_after_started(){
+        Paginator<Item> p = new Paginator<Item>(Item.class, 10, true, "*");
+        a(p.getCount()).shouldBeEqual(1000);
+        //lets add more records
+        for(int i = 1; i <= 4; i++){
+            Item.createIt("item_number", i, "item_description", "this is item # " + i);
+        }
+        a(p.getCount()).shouldBeEqual(1000);
+    }
+
+    @Test
+    public void should_not_ignore_changes_in_count_after_started(){
+        Paginator<Item> p = new Paginator<Item>(Item.class, 10, "*");
+        a(p.getCount()).shouldBeEqual(1000);
+        //lets add more records
+        for(int i = 1; i <= 4; i++){
+            Item.createIt("item_number", i, "item_description", "this is item # " + i);
+        }
+        a(p.getCount()).shouldBeEqual(1004);
     }
 }
