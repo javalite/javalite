@@ -123,6 +123,7 @@ public class HttpSupport {
      * @param values values to flash.
      */
     protected void flash(Map values){
+        checkFlasher();
         for(Object key:values.keySet() ){
             flash(key.toString(), values.get(key));
         }
@@ -169,10 +170,14 @@ public class HttpSupport {
      */
     @SuppressWarnings("unchecked")
     protected void flash(String name, Object value) {
+        checkFlasher();
+        ((Map) session().get("flasher")).put(name, value);
+    }
+
+    private void checkFlasher(){
         if (session().get("flasher") == null) {
             session().put("flasher", new HashMap());
         }
-        ((Map) session().get("flasher")).put(name, value);
     }
 
     public class HttpBuilder {

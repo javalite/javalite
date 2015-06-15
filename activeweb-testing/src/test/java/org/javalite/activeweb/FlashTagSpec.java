@@ -84,7 +84,6 @@ public class FlashTagSpec extends IntegrationSpec {
         a(responseContent()).shouldBeEqual("<div class=\"warning\">hi, there!</div>");
     }
 
-
     @Test
     public void shouldRenderFlashByName(){
         controller("flashing").integrateViews().post("save1");
@@ -96,10 +95,17 @@ public class FlashTagSpec extends IntegrationSpec {
         controller("flashing").integrateViews().post("save2");
         controller("flashing").integrateViews().get("flash_by_name");
 
-        System.out.println(responseContent());
         a(responseContent()).shouldContain("This is an error: hi");
         controller("flashing").integrateViews().get("flash_by_name");
         a(blank(responseContent())).shouldBeTrue();
     }
 
+    @Test
+    public void shouldRenderAnonymousFlash(){
+        controller("flashing").integrateViews().post("save3");
+        controller("flashing").integrateViews().get("anonymous");
+        a(responseContent()).shouldContain("Hello, anonymous flash!");
+        controller("flashing").integrateViews().get("anonymous");
+        a(responseContent()).shouldNotContain("Hello, anonymous flash!");
+    }
 }

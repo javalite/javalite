@@ -72,4 +72,13 @@ public class FlashingController extends AppController {
     }
 
 
+
+    @POST
+    public void save3(){
+        flash();
+        respond("ok"); // we do not check this output
+    }
+
+    public void anonymous(){
+    }
 }
