@@ -19,6 +19,8 @@ package org.javalite.activeweb;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.javalite.common.Util.blank;
+
 /**
  * @author Igor Polevoy
  */
@@ -81,4 +83,23 @@ public class FlashTagSpec extends IntegrationSpec {
         controller("flashing").integrateViews().get("body-with-partial");
         a(responseContent()).shouldBeEqual("<div class=\"warning\">hi, there!</div>");
     }
+
+
+    @Test
+    public void shouldRenderFlashByName(){
+        controller("flashing").integrateViews().post("save1");
+        controller("flashing").integrateViews().get("flash_by_name");
+        a(responseContent()).shouldContain("This is a warning: hi");
+        controller("flashing").integrateViews().get("flash_by_name");
+        a(blank(responseContent())).shouldBeTrue();
+
+        controller("flashing").integrateViews().post("save2");
+        controller("flashing").integrateViews().get("flash_by_name");
+
+        System.out.println(responseContent());
+        a(responseContent()).shouldContain("This is an error: hi");
+        controller("flashing").integrateViews().get("flash_by_name");
+        a(blank(responseContent())).shouldBeTrue();
+    }
+
 }

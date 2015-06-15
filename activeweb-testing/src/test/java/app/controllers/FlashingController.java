@@ -16,6 +16,7 @@ limitations under the License.
 package app.controllers;
 
 import org.javalite.activeweb.AppController;
+import org.javalite.activeweb.annotations.POST;
 
 import static org.javalite.common.Collections.map;
 
@@ -52,4 +53,23 @@ public class FlashingController extends AppController {
         view("message", "hi, there!");
         flash("warning");
     }
+
+
+    @POST
+    public void save1(){
+        flash("warning");
+        respond("ok");  // we do not check this output
+    }
+
+    @POST
+    public void save2(){
+        flash("error");
+        respond("ok"); // we do not check this output
+    }
+
+    public void flashByName(){
+        view("message", "hi");
+    }
+
+
 }
