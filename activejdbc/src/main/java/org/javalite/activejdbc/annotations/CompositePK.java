@@ -11,6 +11,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface IdCompositeKeys {
-    public String[] value();
+public @interface CompositePK {
+    String[] value();
 }

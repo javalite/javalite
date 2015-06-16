@@ -904,9 +904,9 @@ end;
 -- BREAK
 
 
-CREATE TABLE composites (first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL, email VARCHAR(56) NOT NULL,address VARCHAR(56) NOT NULL)
+CREATE TABLE developers (first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL, email VARCHAR(56) NOT NULL,address VARCHAR(56) NOT NULL)
 -- BREAK
-CREATE UNIQUE INDEX composites_uq ON composites (first_name, last_name, email) 
+CREATE UNIQUE INDEX developers_uq ON developers (first_name, last_name, email)
 -- BREAK
 
 

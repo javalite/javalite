@@ -15,15 +15,19 @@ limitations under the License.
 */
 package org.javalite.activejdbc;
 
-import org.javalite.activejdbc.annotations.IdCompositeKeys;
+import org.javalite.activejdbc.annotations.CompositePK;
 import org.javalite.activejdbc.associations.*;
 import org.javalite.activejdbc.cache.QueryCache;
+import org.javalite.activejdbc.conversion.BlankToNullConverter;
 import org.javalite.activejdbc.conversion.Converter;
+import org.javalite.activejdbc.conversion.ZeroToNullConverter;
+import org.javalite.activejdbc.dialects.Dialect;
 import org.javalite.activejdbc.validation.NumericValidationBuilder;
 import org.javalite.activejdbc.validation.ValidationBuilder;
 import org.javalite.activejdbc.validation.ValidationException;
 import org.javalite.activejdbc.validation.Validator;
 import org.javalite.common.Convert;
+import org.javalite.common.Escape;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -32,7 +36,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilderFactory;
-
 import java.io.*;
 import java.math.BigDecimal;
 import java.sql.Clob;
@@ -41,13 +44,9 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.*;
 
-import org.javalite.activejdbc.conversion.BlankToNullConverter;
-import org.javalite.activejdbc.conversion.ZeroToNullConverter;
-import org.javalite.activejdbc.dialects.Dialect;
-import org.javalite.common.Escape;
-
 import static org.javalite.common.Inflector.*;
-import static org.javalite.common.Util.*;
+import static org.javalite.common.Util.empty;
+import static org.javalite.common.Util.join;
 
 /**
  * This class is a super class of all "models" and provides most functionality
@@ -196,7 +195,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 }
             }
         }
-        if (getIdCompositeKeys() != null){
+        if (getCompositeKeys() != null){
         	compositeKeyPersisted = true;
         }
         if(fireAfterLoad){
@@ -393,8 +392,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public boolean delete() {
         fireBeforeDelete();
         int result;
-        if (getIdCompositeKeys() != null) {
-			String[] compositeKeys = getIdCompositeKeys();
+        if (getCompositeKeys() != null) {
+			String[] compositeKeys = getCompositeKeys();
 			StringBuilder query = new StringBuilder();
 			Object[] values = new Object[compositeKeys.length];
 			for (int i = 0; i < compositeKeys.length; i++) {
@@ -2197,16 +2196,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
 	/**
-	 * Composite PK values only must be ordered like in ({@link IdCompositeKeys}
-	 * )
+	 * Composite PK values in exactly the same order as specified  in {@link CompositePK}.
 	 * 
-	 * @param values
-	 *            ordered Composite PK values only!!
-	 * @return Model or null
-	 * @see IdCompositeKeys
+	 * @param values  Composite PK values in exactly the same order as specified  in {@link CompositePK}.
+	 * @return instance of a found model, or null if nothing found.
+	 * @see CompositePK
 	 */
 	public static <T extends Model> T findByCompositeKeys(Object... values) {
-		return ModelDelegate.findByCompositeKeys(Model.<T> modelClass(), values);
+		return ModelDelegate.findByCompositeKeys(Model.<T>modelClass(), values);
 	}
     
     /**
@@ -2615,9 +2612,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             boolean containsId = (attributes.get(metaModel.getIdName()) != null); // do not use containsKey
             boolean done;
             String query = metaModel.getDialect().insertParametrized(metaModel, columns, containsId);
-            if (containsId || getIdCompositeKeys() != null) {
-                done = (1 == new DB(metaModel.getDbName()).exec(query, values.toArray()));
-                compositeKeyPersisted = done;
+            if (containsId || getCompositeKeys() != null) {
+                compositeKeyPersisted  = done = (1 == new DB(metaModel.getDbName()).exec(query, values.toArray()));
             } else {
                 Object id = new DB(metaModel.getDbName()).execInsert(query, metaModel.getIdName(), values.toArray());
                 attributes.put(metaModel.getIdName(), id);
@@ -2686,8 +2682,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         if(values.isEmpty())
             return false;
         
-		if (getIdCompositeKeys() != null) {
-			String[] compositeKeys = getIdCompositeKeys();
+		if (getCompositeKeys() != null) {
+			String[] compositeKeys = getCompositeKeys();
 			for (int i = 0; i < compositeKeys.length; i++) {
 				query.append(i == 0 ? " WHERE " : " AND ").append(compositeKeys[i]).append(" = ?");
 				values.add(get(compositeKeys[i]));
@@ -2730,20 +2726,40 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         throw new InitException("failed to determine Model class name, are you sure models have been instrumented?");
     }
 
+    /**
+     * Returns name of corresponding table.
+     *
+     * @return name of corresponding table.
+     */
     public static String getTableName() {
         return ModelDelegate.tableNameOf(modelClass());
     }
 
+    /**
+     * Value of ID.
+     *
+     * @return of ID.
+     */
     public Object getId() {
         return get(getIdName());
     }
 
+    /**
+     * Name of ID column.
+     *
+     * @return Name of ID column.
+     */
     public String getIdName() {
         return getMetaModelLocal().getIdName();
     }
 
-    public String[] getIdCompositeKeys() {
-        return getMetaModelLocal().getIdCompositeKeys();
+    /**
+     * Provides a list of composite keys as specified  in {@link CompositePK}.
+     *
+     * @return a list of composite keys as specified  in {@link CompositePK}.
+     */
+    public String[] getCompositeKeys() {
+        return getMetaModelLocal().getCompositeKeys();
     }
     
     protected void setChildren(Class childClass, List<Model> children) {

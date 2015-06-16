@@ -269,15 +269,15 @@ public class DefaultDialect implements Dialect {
                 break;
             }
         }
-        if (metaModel.getIdCompositeKeys() == null){
+
+        if (metaModel.getCompositeKeys() == null){
         	query.append(" WHERE ").append(idName).append(" = ").append(attributes.get(idName));
         } else {
-        	String[] compositeKeys = metaModel.getIdCompositeKeys();
+        	String[] compositeKeys = metaModel.getCompositeKeys();
 			for (int i = 0; i < compositeKeys.length; i++) {
 				query.append(i == 0 ? " WHERE " : " AND ").append(compositeKeys[i]).append(" = ");
 				appendValue(query, attributes.get(compositeKeys[i]));
 			}
-        	
         }
     	return query.toString();
     }

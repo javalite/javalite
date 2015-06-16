@@ -35,7 +35,7 @@ public class MetaModel implements Serializable {
     private Map<String, ColumnMetadata> columnMetadata;
     private final List<Association> associations = new ArrayList<Association>();
     private final String idName;
-    private final String[] idCompositeKeys;
+    private final String[] compositeKeys;
     private final String tableName, dbType, dbName;
     private final Class<? extends Model> modelClass;
     private final boolean cached;
@@ -46,7 +46,7 @@ public class MetaModel implements Serializable {
     protected MetaModel(String dbName, Class<? extends Model> modelClass, String dbType) {
         this.modelClass = modelClass;
         this.idName = findIdName(modelClass);
-        this.idCompositeKeys = findIdCompositeKeys(modelClass);
+        this.compositeKeys = findCompositeKeys(modelClass);
         this.tableName = findTableName(modelClass);
         this.dbType = dbType;
         this.cached = isCached(modelClass);
@@ -64,9 +64,9 @@ public class MetaModel implements Serializable {
         return idNameAnnotation == null ? "id" : idNameAnnotation.value();
     }
 
-    private String[] findIdCompositeKeys(Class<? extends Model> modelClass) {
-    	IdCompositeKeys idCompositeKeysAnnotation = modelClass.getAnnotation(IdCompositeKeys.class);
-        return idCompositeKeysAnnotation == null ? null : idCompositeKeysAnnotation.value();
+    private String[] findCompositeKeys(Class<? extends Model> modelClass) {
+    	CompositePK compositeKeysAnnotation = modelClass.getAnnotation(CompositePK.class);
+        return compositeKeysAnnotation == null ? null : compositeKeysAnnotation.value();
     }
     
     private String findTableName(Class<? extends Model> modelClass) {
@@ -207,8 +207,8 @@ public class MetaModel implements Serializable {
 	 * 
 	 * @return composite primary key class
 	 */
-	public String[] getIdCompositeKeys() {
-		return idCompositeKeys;
+	public String[] getCompositeKeys() {
+		return compositeKeys;
 	}
     
     /**

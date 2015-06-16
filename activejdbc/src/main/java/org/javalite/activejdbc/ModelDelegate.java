@@ -200,7 +200,7 @@ public final class ModelDelegate {
     public static <T extends Model> T findByCompositeKeys(Class<T> clazz, Object...values) {
         if (values == null || values.length == 0) { return null; }
         MetaModel metaModel = metaModelOf(clazz);
-        String[] compositeKeys = metaModel.getIdCompositeKeys();
+        String[] compositeKeys = metaModel.getCompositeKeys();
         if (compositeKeys == null || compositeKeys.length != values.length){
         	return null;
         }
