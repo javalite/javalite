@@ -16,11 +16,11 @@ public class CompositePkTest extends ActiveJDBCTest {
 
         Developer comp1 = new Developer();
         comp1.set("first_name", "John", "last_name", "Smith", "email", "smithy@spam.org", "address", "bla");
-        comp1.insert();
+        comp1.saveIt();
 
         Developer comp2 = new Developer();
         comp2.set("first_name", "John", "last_name", "Smith2", "email", "smithy@spam.org", "address", "blabla");
-        comp2.insert();
+        comp2.saveIt();
 
         the(Developer.count()).shouldBeEqual(2);
         the(Developer.findByCompositeKeys("John", "Smith", "smithy@spam.org").get("address")).shouldBeEqual("bla");
