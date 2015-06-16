@@ -15,6 +15,7 @@ limitations under the License.
 */
 package org.javalite.activejdbc;
 
+import org.javalite.activejdbc.annotations.IdCompositeKeys;
 import org.javalite.activejdbc.associations.*;
 import org.javalite.activejdbc.cache.QueryCache;
 import org.javalite.activejdbc.conversion.Converter;
@@ -31,6 +32,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import java.io.*;
 import java.math.BigDecimal;
 import java.sql.Clob;
@@ -38,6 +40,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.*;
+
 import org.javalite.activejdbc.conversion.BlankToNullConverter;
 import org.javalite.activejdbc.conversion.ZeroToNullConverter;
 import org.javalite.activejdbc.dialects.Dialect;
@@ -65,7 +68,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     private final Map<Class, Model> cachedParents = new HashMap<Class, Model>();
     private final Map<Class, List<Model>> cachedChildren = new HashMap<Class, List<Model>>();
     private boolean manageTime = true;
-
+    private boolean compositeKeyPersisted = false;
     private Errors errors = new Errors();
 
     protected Model() {
@@ -193,7 +196,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 }
             }
         }
-
+        if (getIdCompositeKeys() != null){
+        	compositeKeyPersisted = true;
+        }
         if(fireAfterLoad){
             fireAfterLoad();
         }
@@ -365,7 +370,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return true if this is a new instance, not saved yet to DB, false otherwise
      */
     public boolean isNew(){
-        return getId() == null;
+        return getId() == null && !compositeKeyPersisted;
     }
 
 
@@ -387,23 +392,32 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public boolean delete() {
         fireBeforeDelete();
-        boolean result;
-        if( 1 == new DB(getMetaModelLocal().getDbName()).exec("DELETE FROM " + getMetaModelLocal().getTableName()
-                + " WHERE " + getIdName() + "= ?", getId())) {
-
-            frozen = true;
-            if(getMetaModelLocal().cached()){
-                QueryCache.instance().purgeTableCache(getMetaModelLocal().getTableName());
-            }
-            ModelDelegate.purgeEdges(getMetaModelLocal());
-            result = true;
-        }
-        else{
-            result =  false;
-        }
-        fireAfterDelete();
-        return result;
-    }
+        int result;
+        if (getIdCompositeKeys() != null) {
+			String[] compositeKeys = getIdCompositeKeys();
+			StringBuilder query = new StringBuilder();
+			Object[] values = new Object[compositeKeys.length];
+			for (int i = 0; i < compositeKeys.length; i++) {
+				query.append(i == 0 ? "DELETE FROM " + getMetaModelLocal().getTableName() + " WHERE " : " AND ").append(compositeKeys[i]).append(" = ?");
+				values[i] = get(compositeKeys[i]);
+			}
+			result = new DB(getMetaModelLocal().getDbName()).exec(query.toString(), values);
+		} else {
+			result = new DB(getMetaModelLocal().getDbName()).exec("DELETE FROM " + getMetaModelLocal().getTableName()
+	                + " WHERE " + getIdName() + "= ?", getId());
+		}
+		if (1 == result) {
+			frozen = true;
+			if (getMetaModelLocal().cached()) {
+				QueryCache.instance().purgeTableCache(getMetaModelLocal().getTableName());
+			}
+			ModelDelegate.purgeEdges(getMetaModelLocal());
+			fireAfterDelete();
+			return true;
+		}
+		fireAfterDelete();
+		return false;
+	}
 
 
     /**
@@ -2182,6 +2196,19 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return ModelDelegate.findById(Model.<T>modelClass(), id);
     }
 
+	/**
+	 * Composite PK values only must be ordered like in ({@link IdCompositeKeys}
+	 * )
+	 * 
+	 * @param values
+	 *            ordered Composite PK values only!!
+	 * @return Model or null
+	 * @see IdCompositeKeys
+	 */
+	public static <T extends Model> T findByCompositeKeys(Object... values) {
+		return ModelDelegate.findByCompositeKeys(Model.<T> modelClass(), values);
+	}
+    
     /**
      * Finder method for DB queries based on table represented by this model. Usually the SQL starts with:
      *
@@ -2480,6 +2507,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public void thaw(){
         attributes.put(getIdName(), null);
+        compositeKeyPersisted = false;
         dirtyAttributeNames.addAll(attributes.keySet());
         frozen = false;
     }
@@ -2523,7 +2551,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
 
         boolean result;
-        if (getId() == null) {
+        if (getId() == null && !compositeKeyPersisted) {
             result = insert();
         } else {
             result = update();
@@ -2587,8 +2615,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             boolean containsId = (attributes.get(metaModel.getIdName()) != null); // do not use containsKey
             boolean done;
             String query = metaModel.getDialect().insertParametrized(metaModel, columns, containsId);
-            if (containsId) {
+            if (containsId || getIdCompositeKeys() != null) {
                 done = (1 == new DB(metaModel.getDbName()).exec(query, values.toArray()));
+                compositeKeyPersisted = done;
             } else {
                 Object id = new DB(metaModel.getDbName()).execInsert(query, metaModel.getIdName(), values.toArray());
                 attributes.put(metaModel.getIdName(), id);
@@ -2656,8 +2685,17 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
         if(values.isEmpty())
             return false;
-        query.append(" WHERE ").append(metaModel.getIdName()).append(" = ?");
-        values.add(getId());
+        
+		if (getIdCompositeKeys() != null) {
+			String[] compositeKeys = getIdCompositeKeys();
+			for (int i = 0; i < compositeKeys.length; i++) {
+				query.append(i == 0 ? " WHERE " : " AND ").append(compositeKeys[i]).append(" = ?");
+				values.add(get(compositeKeys[i]));
+			}
+		} else {
+			query.append(" WHERE ").append(metaModel.getIdName()).append(" = ?");
+			values.add(getId());
+		}
         if (metaModel.isVersioned()) {
             query.append(" AND ").append(getMetaModelLocal().getVersionColumn()).append(" = ?");
             values.add(get(getMetaModelLocal().getVersionColumn()));
@@ -2704,6 +2742,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return getMetaModelLocal().getIdName();
     }
 
+    public String[] getIdCompositeKeys() {
+        return getMetaModelLocal().getIdCompositeKeys();
+    }
+    
     protected void setChildren(Class childClass, List<Model> children) {
         cachedChildren.put(childClass, children);
     }

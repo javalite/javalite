@@ -328,3 +328,11 @@ BEGIN
     DROP TABLE [dbo].[alarms]
 END
 CREATE TABLE alarms (id INT IDENTITY PRIMARY KEY, alarm_time TIME NOT NULL);
+
+
+IF object_id('dbo.composites') IS NOT NULL
+BEGIN
+    DROP TABLE [dbo].[composites]
+END
+CREATE TABLE composites (first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL, email VARCHAR(56) NOT NULL, address VARCHAR(56), CONSTRAINT composites_uq UNIQUE (first_name, last_name, email));
+

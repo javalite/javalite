@@ -18,6 +18,13 @@
         <url>http://javalite.io</url>
     </organization>
 
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- usage of @Override -->
+		<maven.compiler.source>1.6</maven.compiler.source>
+		<maven.compiler.target>1.6</maven.compiler.target>
+	</properties>
+	
     <licenses>
         <license>
             <name>Apache License 2.0</name>

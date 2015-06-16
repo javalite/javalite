@@ -902,3 +902,11 @@ CREATE OR REPLACE TRIGGER alarms_trigger
 select coalesce(:new.id, alarms_seq.nextval) into :new.id from dual;
 end;
 -- BREAK
+
+
+CREATE TABLE composites (first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL, email VARCHAR(56) NOT NULL,address VARCHAR(56) NOT NULL)
+-- BREAK
+CREATE UNIQUE INDEX composites_uq ON composites (first_name, last_name, email) 
+-- BREAK
+
+
