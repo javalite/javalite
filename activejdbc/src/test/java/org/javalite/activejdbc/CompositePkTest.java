@@ -42,7 +42,7 @@ public class CompositePkTest extends ActiveJDBCTest {
     @Test
     public void shouldGenerateValidSQL() {
         Developer dev = new Developer();
-        dev.set("first_name", "Johnny", "last_name", "Cash", "email", "j.cash@spam.org", "address", "inserted");
+        dev.set("first_name", "Johnny", "last_name", "Cash", "email", "j.cash@spam.org", "address", "123 Pine St");
         the(Base.exec(dev.toInsert())).shouldBeEqual(1);
         dev.set("address", "updated");
         the(Base.exec(dev.toUpdate())).shouldBeEqual(1);
@@ -60,7 +60,7 @@ public class CompositePkTest extends ActiveJDBCTest {
     
     @Test
     public void shouldReturnNullWithWrongPKs() {
-    	Developer.createIt("first_name", "Johnny", "last_name", "Cash", "email", "j.cash@spam.org", "address", "inserted");
+    	Developer.createIt("first_name", "Johnny", "last_name", "Cash", "email", "j.cash@spam.org", "address", "123 Pine St");
     	the(Developer.findByCompositeKeys("Johnny", "Casher", "j.cash@spam.org")).shouldBeNull();
     	the(Developer.findByCompositeKeys("John", "Cash", "j.cash@spam.org")).shouldBeNull();
     	the(Developer.findByCompositeKeys("Johnny", "Cash", "j.cash@spam.com")).shouldBeNull();
@@ -68,7 +68,7 @@ public class CompositePkTest extends ActiveJDBCTest {
     
     @Test
     public void shouldDeleteByPK() {
-    	Developer.createIt("first_name", "Johnny", "last_name", "Cash", "email", "j.cash@spam.org", "address", "inserted");
+    	Developer.createIt("first_name", "Johnny", "last_name", "Cash", "email", "j.cash@spam.org", "address", "123 Pine St");
     	Developer dev = Developer.findByCompositeKeys("Johnny", "Cash", "j.cash@spam.org");
 		the(dev).shouldNotBeNull();
 		the(Developer.count()).shouldBeEqual(1);
@@ -81,15 +81,15 @@ public class CompositePkTest extends ActiveJDBCTest {
     public void shouldBeNew() {
     	
         Developer dev = new Developer();
-        dev.set("first_name", "Johnny", "last_name", "Cash", "email", "j.cash@spam.org", "address", "inserted");
+        dev.set("first_name", "Johnny", "last_name", "Cash", "email", "j.cash@spam.org", "address", "123 Pine St");
         the(dev.isNew()).shouldBeTrue();
         
-    	Developer.createIt("first_name", "Johnny", "last_name", "Cash", "email", "j.cash@spam.org", "address", "inserted");
+    	Developer.createIt("first_name", "Johnny", "last_name", "Cash", "email", "j.cash@spam.org", "address", "123 Pine St");
     	dev = Developer.findByCompositeKeys("Johnny", "Cash", "j.cash@spam.org");
 		the(dev).shouldNotBeNull();
 		the(dev.isNew()).shouldBeFalse();
 		
-		dev = Developer.createIt("first_name", "Johnny", "last_name", "Cash2", "email", "j.cash@spam.org", "address", "inserted");
+		dev = Developer.createIt("first_name", "Johnny", "last_name", "Cash2", "email", "j.cash@spam.org", "address", "123 Pine St");
 		the(dev.isNew()).shouldBeFalse();
     }
 }
