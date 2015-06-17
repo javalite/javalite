@@ -6,6 +6,12 @@ Release steps:
 3. mvn release:prepare
 4. mvn release:perform
 5. Follow steps to release:
-    https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide#SonatypeOSSMavenRepositoryUsageGuide-8.ReleaseIt
+	Navigate to Staging repositories: https://oss.sonatype.org/index.html#stagingRepositories , close and release artifacts
 6. Update and test all examples to the latest released version
+
+generate release notes:
+   git log --format=format:"* %ci %an [%s](https://github.com/javalite/activejdbc/commit/%h)" --since "2015-01-30" > release_notes-June-17-2015.txt
+
+Add release notes to the site 
+
 
