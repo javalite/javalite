@@ -2,7 +2,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>db-migrator-maven-plugin</artifactId>
-    <version>1.4.11-SNAPSHOT</version>
+    <version>1.4.11</version>
     <packaging>maven-plugin</packaging>
     <name>JavaLite - DB-Migrator Maven Plugin</name>
 
@@ -10,7 +10,7 @@
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>activejdbc-root</artifactId>
-        <version>1.4.11-SNAPSHOT</version>
+        <version>1.4.11</version>
     </parent>
     <profiles>
         <profile>
