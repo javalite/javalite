@@ -24,7 +24,7 @@ import java.lang.annotation.Annotation;
  * @author Igor Polevoy
  */
 public enum HttpMethod {
-    GET, POST, PUT, DELETE, HEAD;
+    GET, POST, PUT, DELETE, HEAD, OPTIONS;
 
     /**
      * Detects a method from annotation
@@ -43,8 +43,10 @@ public enum HttpMethod {
             return DELETE;
         }else if (annotation instanceof HEAD) {
             return HEAD;
+        }else if (annotation instanceof OPTIONS) {
+            return OPTIONS;
         }else{
-            throw new IllegalArgumentException("allowable annotations: @GET, @POST, @PUT, @DELETE, @HEAD, all from 'activeweb.annotations' package.");
+            throw new IllegalArgumentException("Allowed annotations can be found in 'org.javalite.activeweb.annotations' package.");
         }
     }
 

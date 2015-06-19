@@ -320,6 +320,16 @@ public class RequestBuilder {
         submitRequest(actionName, HttpMethod.DELETE);
     }
 
+    /**
+     * Simulate HTTP OPTIONS call to an action of controller.
+     *
+     * @param actionName name of action as on a URL - not CamelCase.
+     */
+    public void options(String actionName) {
+        realAction = actionName;
+        submitRequest(actionName, HttpMethod.OPTIONS);
+    }
+
 
     private void submitRequest(String actionName, HttpMethod method) {
 
@@ -361,7 +371,7 @@ public class RequestBuilder {
         addCookiesInternal(request);
 
         //this is to fake the PUT and DELETE methods, just like a browser
-        if(!(method.equals(HttpMethod.GET) || method.equals(HttpMethod.POST))){
+        if(method.equals(HttpMethod.PUT)){
             request.setParameter("_method", method.toString());
             request.setMethod("POST");
         }else{
