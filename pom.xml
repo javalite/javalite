@@ -32,7 +32,6 @@
         <module>activeweb-gwt</module>
         <module>activeweb-lessc</module>
         <module>activeweb-lessc-integration-test</module>
-        <module>javalite-templator</module>
         <module>javalite-hornet-nest</module>
     </modules>
 
