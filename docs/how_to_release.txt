@@ -6,3 +6,6 @@
 5. Log into https://oss.sonatype.org/index.html and login.
 6. Switch to https://oss.sonatype.org/index.html#stagingRepositories and make a release.
 7. Update examples to use latest released version
+8. Add release notes page to the site using command:
+    git log --format=format:"* %ci %an [%s](https://github.com/javalite/activejdbc/commit/%h)" --since "2015-01-30" > release_notes-June-17-2015.txt
+
