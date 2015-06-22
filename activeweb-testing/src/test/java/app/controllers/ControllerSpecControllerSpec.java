@@ -26,7 +26,7 @@ public class ControllerSpecControllerSpec extends ControllerSpec {
     @Test
     public void shouldAssignInformationOnPersonWithGET() {
 
-        request().param("id", "2").get("index"); //<<========== making a request to the controller.
+        request(false).param("id", "2").get("index"); //<<========== making a request to the controller.
 
         a(assigns().get("name")).shouldEqual("John");
         a(assigns().get("last_name")).shouldEqual("Silverman");

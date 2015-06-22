@@ -27,7 +27,7 @@ public class FormatControllerSpec extends ControllerSpec {
 
     @Test
     public void shouldNotFail() {
-        request().format("xml").get("index");
+        request(false).format("xml").get("index");
         a(val("format")).shouldBeEqual("xml");
     }
 }

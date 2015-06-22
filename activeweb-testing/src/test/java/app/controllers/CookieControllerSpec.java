@@ -35,7 +35,7 @@ public class CookieControllerSpec extends ControllerSpec {
 
     @Test
     public void shouldReadCookieFromRequest(){
-        request().cookie(new Cookie("user", "Carl")).get("read_cookie");
+        request(false).cookie(new Cookie("user", "Carl")).get("read_cookie");
         a(val("user")).shouldBeEqual("Carl");
     }
 
@@ -43,7 +43,7 @@ public class CookieControllerSpec extends ControllerSpec {
     public void shouldReadHttpOnlyCookie(){
         Cookie c = new Cookie("user", "Carl");
         c.setHttpOnly();
-        request().cookie(c).get("read_cookie");
+        request(false).cookie(c).get("read_cookie");
         a(val("http_only")).shouldBeTrue();
     }
 }

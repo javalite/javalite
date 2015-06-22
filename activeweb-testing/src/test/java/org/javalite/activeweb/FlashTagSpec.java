@@ -33,7 +33,7 @@ public class FlashTagSpec extends IntegrationSpec {
 
     @Test
     public void shouldPropagateFlashMessageToNextRequestOnly(){
-        controller("flashing").get("create");
+        controller("flashing").integrateViews(false).get("create");
         a(session().get("flasher")).shouldNotBeNull();
         a(flash("saved")).shouldBeEqual("your data has been saved");
 
@@ -49,12 +49,12 @@ public class FlashTagSpec extends IntegrationSpec {
     @Test
     public void shouldPropagateFlashAsMap(){
 
-        controller("flashing").get("as-map");
+        controller("flashing").integrateViews(false).get("as-map");
         a(session().get("flasher")).shouldNotBeNull();
         a(flash("one")).shouldBeEqual(1);
         a(flash("two")).shouldBeEqual(2);
 
-        controller("flashing").get("index");
+        controller("flashing").integrateViews(false).get("index");
         a(flash("one")).shouldBeNull();
         a(flash("two")).shouldBeNull();
     }
@@ -62,13 +62,13 @@ public class FlashTagSpec extends IntegrationSpec {
     @Test
     public void shouldPropagateFlashAsVararg(){
 
-        controller("flashing").get("as-vararg");
+        controller("flashing").integrateViews(false).get("as-vararg");
 
         a(session().get("flasher")).shouldNotBeNull();
         a(flash("one")).shouldBeEqual(1);
         a(flash("two")).shouldBeEqual(2);
 
-        controller("flashing").get("index");
+        controller("flashing").integrateViews(false).get("index");
         a(flash("one")).shouldBeNull();
     }
 

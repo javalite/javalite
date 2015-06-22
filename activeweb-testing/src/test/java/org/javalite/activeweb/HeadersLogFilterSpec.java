@@ -41,7 +41,7 @@ public class HeadersLogFilterSpec extends IntegrationSpec{
     @Test
     public void shouldPrintHeadersToLog(){
         SystemStreamUtil.replaceError();
-        controller("abc-person").header("bogus", "value").get("pass_values");
+        controller("abc-person").integrateViews(false).header("bogus", "value").get("pass_values");
         //request header:
         a(SystemStreamUtil.getSystemErr().contains("Header: bogus=value")).shouldBeTrue();
 

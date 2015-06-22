@@ -37,13 +37,13 @@ public class RequestParamsControllerSpec extends ControllerSpec {
     }
     @Test
     public void shouldSendSingleParameter(){
-        request().param("name", "John").get("index");
+        request(false).param("name", "John").get("index");
         a(assigns().get("name")).shouldBeEqual("John");
     }
 
     @Test
     public void shouldSendMultipleParameters(){
-        request().params("first_name", "John", "last_name", "Smith").get("multi");
+        request(false).params("first_name", "John", "last_name", "Smith").get("multi");
         a(assigns().get("first_name")).shouldBeEqual("John");
         a(assigns().get("last_name")).shouldBeEqual("Smith");
     }
@@ -51,7 +51,7 @@ public class RequestParamsControllerSpec extends ControllerSpec {
     @Test
     public void shouldSendMultipleValues(){
 
-        request().param("states", list("Illinois", "Alabama")).get("multi-values");
+        request(false).param("states", list("Illinois", "Alabama")).get("multi-values");
         a(assigns().get("states")).shouldBeA(List.class);
         List<String> states = (List<String>) assigns().get("states");
 
@@ -62,7 +62,7 @@ public class RequestParamsControllerSpec extends ControllerSpec {
     @Test
     public void shouldSendSingleAndMultipleValues(){
 
-        request().params("name", "Anna", "states", list("Illinois", "Alabama")).get("single-multi-values");
+        request(false).params("name", "Anna", "states", list("Illinois", "Alabama")).get("single-multi-values");
         a(assigns().get("states")).shouldBeA(List.class);
         List<String> states = (List<String>) assigns().get("states");
 

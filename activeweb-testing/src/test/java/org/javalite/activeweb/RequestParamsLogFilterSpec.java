@@ -44,7 +44,7 @@ public class RequestParamsLogFilterSpec extends IntegrationSpec{
         PrintStream pout = new PrintStream(bout);
         System.setErr(pout) ;
 
-        controller("abc-person").param("bogus","val1").get("pass_values");
+        controller("abc-person").param("bogus","val1").integrateViews(false).get("pass_values");
         pout.flush();
         pout.close();
         a(bout.toString().contains("URI Full Path: /abc-person/pass_values")).shouldBeTrue();

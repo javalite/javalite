@@ -27,7 +27,7 @@ import org.javalite.activeweb.controller_filters.ControllerFilter;
 public class IntegrationSpec extends RequestSpecHelper {
 
     protected RequestBuilder controller(String controllerName){
-        return new RequestBuilder(controllerName, session(), false);
+        return new RequestBuilder(controllerName, session(), true);
     }
 
     protected void setTemplateLocation(String templateLocation){

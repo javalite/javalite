@@ -51,7 +51,7 @@ public class FilterRequestPropertiesSpec extends IntegrationSpec {
     @Test
     public void shouldSetProperPathValuesInRequest() {
         addFilter(StudentController.class, filter);
-        controller("/student").get("index");
+        controller("/student").integrateViews(false).get("index");
         a(filter.path).shouldBeEqual("/student/index");
         a(filter.method).shouldBeEqual("GET");
         a(filter.uri).shouldBeEqual("/student/index");
@@ -61,7 +61,7 @@ public class FilterRequestPropertiesSpec extends IntegrationSpec {
     @Test
     public void shouldSetProperPathValuesInRequestToControllerInSubPackage() {
         addFilter(RegistrationController.class, filter);
-        controller("/level1/level2/registration").get("index");
+        controller("/level1/level2/registration").integrateViews(false).get("index");
         a(filter.path).shouldBeEqual("/level1/level2/registration/index");
         a(filter.method).shouldBeEqual("GET");
         a(filter.uri).shouldBeEqual("/level1/level2/registration/index");

@@ -10,7 +10,7 @@ public class BlankParameterControllerSpec extends ControllerSpec {
 
     @Test
     public void shouldPassParameterWithBlankValue(){
-        request().param("flag1").get("index");
+        request(false).param("flag1").get("index");
 
         a(val("exists")).shouldBeTrue();
         a(val("flag1")).shouldEqual("");

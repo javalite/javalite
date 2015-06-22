@@ -76,7 +76,7 @@ public class ControllerSpec extends RequestSpecHelper {
      * @return instance of <code>RequestBuilder</code> with convenience methods.
      */
     protected RequestBuilder request() {
-        return new RequestBuilder(controllerPath, session(), false);
+        return new RequestBuilder(controllerPath, session(), true);
     }
 
     /**

@@ -27,7 +27,7 @@ public class XyzControllerSpec extends IntegrationSpec {
 
     @Test
     public void shouldPrependControllerPathWithSlash(){
-        controller("xyz").get("index");
+        controller("xyz").integrateViews(false).get("index");
         a(assigns().get("path").toString().startsWith("/")).shouldBeTrue();        
     }
 }

@@ -28,6 +28,6 @@ public class DeleteMethodRouteSpec extends IntegrationSpec{
     @Test
     public void shouldRouteToAppropriateDeleteMethod(){
 
-        controller("my_restful").param("_method", "DELETE").delete("destroy");
+        controller("my_restful").param("_method", "DELETE").integrateViews(false).delete("destroy");
     }
 }

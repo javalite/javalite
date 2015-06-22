@@ -26,7 +26,7 @@ public class SessionObjectConverterControllerSpec extends ControllerSpec {
 
     @Test
     public void shouldConvertInSpec(){
-        request().get("in-spec");
+        request(false).get("in-spec");
         a(sessionObject("name")).shouldBeEqual("John");
         a(sessionInteger("int")).shouldBeEqual(1);
         a(sessionDouble("double")).shouldBeEqual(1);
@@ -44,7 +44,7 @@ public class SessionObjectConverterControllerSpec extends ControllerSpec {
         session("long", 1);
         session("boolean", true);
 
-        request().get("in-controller");
+        request(false).get("in-controller");
 
         a(session("last_name", String.class)).shouldBeEqual("Smith");
 
