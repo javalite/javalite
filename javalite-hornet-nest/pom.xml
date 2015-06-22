@@ -3,14 +3,14 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>javalite-hornet-nest</artifactId>
-    <version>1.12</version>
+    <version>1.13-SNAPSHOT</version>
     <name>JavaLite - Hornet Nest</name>
     <packaging>jar</packaging>
 
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>activeweb-root</artifactId>
-        <version>1.12</version>
+        <version>1.13-SNAPSHOT</version>
     </parent>
 
     <dependencies>
