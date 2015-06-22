@@ -27,11 +27,6 @@
         </dependency>
         <dependency>
             <groupId>org.javalite</groupId>
-            <artifactId>javalite-templator</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.javalite</groupId>
             <artifactId>javalite-common</artifactId>
         </dependency>
         <dependency>
