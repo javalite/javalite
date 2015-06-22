@@ -4,14 +4,14 @@
 
     <groupId>org.javalite</groupId>
     <artifactId>activeweb-lessc-maven-plugin</artifactId>
-    <version>1.13-SNAPSHOT</version>
+    <version>1.13</version>
     <packaging>maven-plugin</packaging>
     <name>ActiveWeb - Lessc Maven Plugin</name>
 
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>activeweb-root</artifactId>
-        <version>1.13-SNAPSHOT</version>
+        <version>1.13</version>
     </parent>
 
     <properties>

@@ -4,14 +4,14 @@
     <groupId>org.javalite</groupId>
     <artifactId>activeweb-gwt</artifactId>
     <packaging>jar</packaging>
-    <version>1.13-SNAPSHOT</version>
+    <version>1.13</version>
     <name>ActiveWeb - GWT</name>
     <description>Integration between activeweb and gwt rpc services</description>
 
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>activeweb-root</artifactId>
-        <version>1.13-SNAPSHOT</version>
+        <version>1.13</version>
     </parent>
 
     <developers>
