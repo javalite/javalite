@@ -25,23 +25,23 @@ import java.util.Map;
 /**
  * Debug tag is for printing an arbitrary object from page context. FreeMarker special handling of types sometimes
  * makes it hard to see the value(s) of an object, but this tag makes it easy:
- *
+ * <p/>
  * <pre>
  * &lt;@debug print=objectname/&gt;
  * </pre>
- *
+ * <p/>
  * For instance, for a `java,util.Map` object it will print this:
  * <pre>
  *     {key1=value1, key2=value2}
  * </pre>
  *
- *
  * @author Igor Polevoy
  */
-public class DebugTag extends FreeMarkerTag{
+public class DebugTag extends FreeMarkerTag {
     @Override
     protected void render(Map params, String body, Writer writer) throws Exception {
         validateParamsPresence(params, "print");
-        writer.write(DeepUnwrap.unwrap((TemplateModel) params.get("print")).toString());
+        writer.write(params.get("print") == null ? "DebugTag: value 'print' is null!" :
+                DeepUnwrap.unwrap((TemplateModel) params.get("print")).toString());
     }
 }
