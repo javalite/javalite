@@ -1,0 +1,8 @@
+
+1. Switch to latest release version of ActiveJDBC
+2. mvn release:clean
+3. mvn release:prepare
+4. mvn release:perform
+5. Log into https://oss.sonatype.org/index.html and login.
+6. Switch to https://oss.sonatype.org/index.html#stagingRepositories and make a release.
+7. Update examples to use latest released version
