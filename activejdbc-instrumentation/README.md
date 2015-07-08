@@ -42,7 +42,7 @@ It is easy to configure defaults in every IDE to add this parameter to JVM when 
 
 ### Dynamic instrumentation and compatilility with Java 8
 
-There are some conflicts using models' static methods inside lambda expressions. So far this is the only issue. Statis instrumentation is free of conflicts and works perfectly with Java 8. 
+There are some conflicts using models' static methods inside lambda expressions. So far this is the only issue. Static instrumentation is free of conflicts and works perfectly with Java 8. 
 
 ### How to deploy ActiveJDBC applications
 
