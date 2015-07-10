@@ -178,7 +178,7 @@ public class Configuration {
             String className = get(Params.freeMarkerConfig.toString());
             return freeMarkerConfig = (AbstractFreeMarkerConfig)Class.forName(className).newInstance();
         }catch(Exception e){
-            LOGGER.warn("Failed to find implementation of '" + AbstractFreeMarkerConfig.class + "', proceeding without custom configuration of FreeMarker");
+            LOGGER.debug("Failed to find implementation of '" + AbstractFreeMarkerConfig.class + "', proceeding without custom configuration of FreeMarker");
             return null;
         }
     }
