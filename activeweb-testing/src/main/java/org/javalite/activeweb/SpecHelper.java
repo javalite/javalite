@@ -109,7 +109,7 @@ public class SpecHelper extends JSpecSupport{
             return null;
 
         Map flasher = (Map) session().get("flasher");
-        return flasher.get(name) == null? null :flasher.get(name);
+        return flasher.get(name) == null? name :flasher.get(name);
     }
 
     /**
