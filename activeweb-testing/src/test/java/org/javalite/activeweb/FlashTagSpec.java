@@ -82,7 +82,7 @@ public class FlashTagSpec extends IntegrationSpec {
     public void shouldRenderFlashWithNestedPartial(){
         controller("flashing").integrateViews().get("body-with-partial");
         a(responseContent()).shouldBeEqual("<div class=\"warning\">hi, there!</div>");
-        a(flash("warning")).shouldBeEqual("warning");
+        a(flashExists("warning")).shouldBeTrue();
     }
 
     @Test

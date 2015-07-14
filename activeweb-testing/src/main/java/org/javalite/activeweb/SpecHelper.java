@@ -109,7 +109,19 @@ public class SpecHelper extends JSpecSupport{
             return null;
 
         Map flasher = (Map) session().get("flasher");
-        return flasher.get(name) == null? name :flasher.get(name);
+        return flasher.get(name) == null? null :flasher.get(name);
+    }
+
+    /**
+     * Tests if flash by name exists.
+     *
+     * @param name name in question
+     * @return true if flash exists, false if not. Will return <code>true</code> even if flash by name exists,
+     * but its value is <code>null</code>.
+     */
+    protected Object flashExists(String name){
+        Map flasher = (Map) session().get("flasher");
+        return flasher != null && flasher.containsKey(name);
     }
 
     /**
