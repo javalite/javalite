@@ -19,6 +19,8 @@ package org.javalite.activeweb.freemarker;
 import freemarker.core.Environment;
 import freemarker.template.*;
 import org.javalite.common.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -32,6 +34,9 @@ import java.util.Set;
  * @author Igor Polevoy
  */
 public class RenderTag implements TemplateDirectiveModel {
+
+    private static Logger logger = LoggerFactory.getLogger("RenderTag");
+
     public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body) throws TemplateException, IOException {
 
         String partialArgument;
@@ -54,6 +59,7 @@ public class RenderTag implements TemplateDirectiveModel {
         String partialName = partialParts[partialParts.length - 1];
         Template partialTemplate = env.getConfiguration().getTemplate(partialPath + ".ftl" );
 
+        logger.info("rendering: " + partialPath + ".ftl" );
 
         if(!params.containsKey("collection")){
             SimpleHash envValues = getHash(env);

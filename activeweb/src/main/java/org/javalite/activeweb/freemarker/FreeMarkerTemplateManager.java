@@ -45,7 +45,7 @@ public class FreeMarkerTemplateManager implements TemplateManager {
 
     private String location;
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger("FreeMarkerTemplateManager");
 
     public FreeMarkerTemplateManager() {
         config = new Configuration();
@@ -77,6 +77,8 @@ public class FreeMarkerTemplateManager implements TemplateManager {
     public void merge(Map input, String template, String layout, String format, Writer writer) {
 
         try {
+
+            logger.info("rendering template: '" + template + "' with layout: '" + layout + "'");
 
             if(org.javalite.activeweb.Configuration.getEnv().equals("development")){
                 config.clearTemplateCache();
@@ -111,7 +113,7 @@ public class FreeMarkerTemplateManager implements TemplateManager {
                 layoutTemplate.process(values, writer);
 
                 FreeMarkerTL.setEnvironment(null);
-                logger.info("Rendered template: '" + template + "' with layout: '" + layout + "'");
+
             }
         }
         catch(FileNotFoundException e){
