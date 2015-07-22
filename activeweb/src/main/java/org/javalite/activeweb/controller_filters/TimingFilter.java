@@ -20,7 +20,7 @@ package org.javalite.activeweb.controller_filters;
  *
  * @author Igor Polevoy
  */
-public class TimingFilter  extends HttpSupportFilter {
+public class TimingFilter extends HttpSupportFilter {
 
     //must be threadlocal - filters are NOT thread safe!
     private static ThreadLocal<Long> time = new ThreadLocal<Long>();
@@ -32,6 +32,8 @@ public class TimingFilter  extends HttpSupportFilter {
 
     @Override
     public void after() {
-        logInfo("Processed request in: " + (System.currentTimeMillis() - time.get() + " milliseconds, path: " + path() + ", method: " + method()));
+        String id = session().id();
+        logInfo("Processed request in: " + (System.currentTimeMillis() - time.get() + " milliseconds, path: " + path() + ", method: " + method()
+                + (id != null ? ", session: " + id : "")));
     }
 }

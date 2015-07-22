@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Cookie {
 
-    private static Logger logger = LoggerFactory.getLogger(Cookie.class);
+    private static Logger logger = LoggerFactory.getLogger(Cookie.class.getSimpleName());
 
     private java.lang.String name;
     private java.lang.String value;

@@ -30,7 +30,7 @@ import static org.javalite.common.Collections.map;
  */
 @SuppressWarnings("unchecked")
 class ParamCopy {
-    private static Logger logger = LoggerFactory.getLogger(ParamCopy.class.getName());
+    private static Logger logger = LoggerFactory.getLogger(ParamCopy.class.getSimpleName());
 
 
     static void copyInto(Map assigns){

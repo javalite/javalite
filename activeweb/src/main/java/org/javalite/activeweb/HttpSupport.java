@@ -38,7 +38,7 @@ import static org.javalite.common.Collections.map;
  * @author Igor Polevoy
  */
 public class HttpSupport {
-    private Logger logger = LoggerFactory.getLogger(getClass().getName());
+    private Logger logger = LoggerFactory.getLogger(getClass().getSimpleName());
     private List<FormItem> formItems;
 
     protected void logInfo(String info){

@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 final class RPCControllerUtils { 
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(RPCControllerUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RPCControllerUtils.class.getSimpleName());
 
     private RPCControllerUtils() {
     }

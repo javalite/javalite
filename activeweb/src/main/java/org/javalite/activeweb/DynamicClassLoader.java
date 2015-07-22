@@ -30,7 +30,7 @@ import static org.javalite.common.Util.bytes;
  */
 class DynamicClassLoader extends ClassLoader {
 
-    private static Logger logger = LoggerFactory.getLogger(DynamicClassLoader.class);
+    private static Logger logger = LoggerFactory.getLogger(DynamicClassLoader.class.getSimpleName());
 
     private String baseDir;
 

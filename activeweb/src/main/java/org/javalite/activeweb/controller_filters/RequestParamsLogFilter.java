@@ -46,14 +46,6 @@ public class RequestParamsLogFilter extends AbstractLoggingFilter {
 
     @Override
     protected String getMessage() {
-        StringBuilder sb = new StringBuilder().append('\n');
-
-        for (Map.Entry<String, String[]> entry : params().entrySet()) {
-            sb.append("Param: ").append(entry.getKey()).append('=');
-            join(sb, entry.getValue(), ", ");
-            sb.append('\n');
-        }
-
-        return sb.toString();
+        return params().toString();
     }
 }

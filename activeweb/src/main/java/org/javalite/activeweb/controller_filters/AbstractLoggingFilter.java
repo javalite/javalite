@@ -53,7 +53,7 @@ public abstract class AbstractLoggingFilter extends HttpSupportFilter{
     }
 
     public final void before() {
-        log("** Request headers **" + System.getProperty("line.separator") + getMessage());
+        log(getMessage() + ", session: " + session().id());
     }
 
     protected void log(String message){

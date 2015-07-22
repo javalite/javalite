@@ -17,6 +17,11 @@ limitations under the License.
 package org.javalite.activeweb.controller_filters;
 
 
+import java.util.Map;
+
+import static org.javalite.common.Collections.map;
+import static org.javalite.common.Util.join;
+
 /**
  * Use this filter to log HTTP request properties to a log system.
  * request properties are not submitted parameters, but rather properties of
@@ -44,13 +49,12 @@ public class RequestPropertiesLogFilter extends AbstractLoggingFilter{
     }
 
     protected String getMessage() {
-        StringBuilder sb = new StringBuilder("\n");
-        sb.append("Request URL: ").append(url()).append("\n");
-        sb.append("ContextPath: ").append(context()).append("\n");
-        sb.append("Query String: ").append(queryString()).append("\n");
-        sb.append("URI Full Path: ").append(uri()).append("\n");
-        sb.append("URI Path: ").append(path()).append("\n");
-        sb.append("Method: ").append(method());
-        return sb.toString();
+        Map m = map("request_url", url(),
+                "context_path", context(),
+                "query_string", queryString(),
+                "uri_full_path", uri(),
+                "uri_path", path(),
+                "method", method());
+        return m.toString();
     }
 }

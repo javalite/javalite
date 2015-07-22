@@ -15,6 +15,8 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.Serializable;
 import java.util.*;
 
@@ -24,6 +26,21 @@ import java.util.*;
  * @author Igor Polevoy
  */
 public class SessionFacade implements Map {
+
+    /**
+     * Returns a session ID from underlying session.
+     *
+     * @return a session ID from underlying session, or null if session does not exist.
+     */
+    public String id(){
+        HttpServletRequest r = Context.getHttpRequest();
+        if(r == null){
+            return null;
+        }
+        HttpSession session = r.getSession(false);
+        return session == null ? null : session.getId();
+    }
+
 
     /**
      * Retrieve object from session.

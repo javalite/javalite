@@ -36,7 +36,7 @@ import java.util.jar.JarFile;
  */
 class ControllerPackageLocator {
 
-    private static Logger logger = LoggerFactory.getLogger(ControllerPackageLocator.class);
+    private static Logger logger = LoggerFactory.getLogger(ControllerPackageLocator.class.getSimpleName());
 
 
     public static List<String> locateControllerPackages(FilterConfig config) {

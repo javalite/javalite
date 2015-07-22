@@ -25,7 +25,7 @@ import java.util.Map;
 /**
  * @author Igor Polevoy
  */
-public class MockTemplateManager implements TemplateManager {
+public class MockTemplateManager extends TemplateManager {
     private Map values; String template, layout, format;
 
     public void merge(Map values, String template, String layout, String format, Writer writer) {

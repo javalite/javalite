@@ -38,14 +38,14 @@ import static org.javalite.common.Util.blank;
 /**
  * @author Igor Polevoy
  */
-public class FreeMarkerTemplateManager implements TemplateManager {
+public class FreeMarkerTemplateManager extends TemplateManager {
 
     private Configuration config;
     private String defaultLayout;
 
     private String location;
 
-    private Logger logger = LoggerFactory.getLogger("FreeMarkerTemplateManager");
+    private Logger logger = LoggerFactory.getLogger(getClass().getSimpleName());
 
     public FreeMarkerTemplateManager() {
         config = new Configuration();
@@ -78,7 +78,7 @@ public class FreeMarkerTemplateManager implements TemplateManager {
 
         try {
 
-            logger.info("rendering template: '" + template + "' with layout: '" + layout + "'");
+            logger.info("rendering template: '" + template + "' with layout: '" + layout + "', session: " + sessionId());
 
             if(org.javalite.activeweb.Configuration.getEnv().equals("development")){
                 config.clearTemplateCache();

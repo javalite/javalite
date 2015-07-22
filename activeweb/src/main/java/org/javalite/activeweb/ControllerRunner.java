@@ -40,7 +40,7 @@ class ControllerRunner {
 
     private boolean injectTags = Configuration.getTemplateManager() instanceof FreeMarkerTemplateManager;
 
-    private static Logger logger = LoggerFactory.getLogger(ControllerRunner.class.getName());
+    private static Logger logger = LoggerFactory.getLogger(ControllerRunner.class.getSimpleName());
     private boolean tagsInjected = false;
 
     protected void run(Route route, boolean integrateViews) throws Exception {
@@ -60,7 +60,8 @@ class ControllerRunner {
                     //Configuration.getTemplateManager().
                     injectController(route.getController());
                     if(Configuration.logRequestParams()){
-                        logger.info("Executing controller: " + route.getController().getClass().getName() + "." + actionMethod);
+                        logger.info("Executing controller: " + route.getController().getClass().getName() + "." + actionMethod +
+                                ", session: " + new SessionFacade().id());
                     }
                     executeAction(route.getController(), actionMethod);
                 }

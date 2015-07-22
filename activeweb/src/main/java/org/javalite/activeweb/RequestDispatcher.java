@@ -36,7 +36,7 @@ import static org.javalite.common.Collections.map;
  * @author Igor Polevoy
  */
 public class RequestDispatcher implements Filter {
-    private Logger logger = LoggerFactory.getLogger(getClass().getName());
+    private Logger logger = LoggerFactory.getLogger(getClass().getSimpleName());
     private FilterConfig filterConfig;
     private List<String> exclusions = new ArrayList<String>();
     private ControllerRunner runner = new ControllerRunner();

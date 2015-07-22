@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class DBSpecHelper {
 
-    private static Logger logger = LoggerFactory.getLogger(DBSpecHelper.class);
+    private static Logger logger = LoggerFactory.getLogger(DBSpecHelper.class.getSimpleName());
 
     public static void initDBConfig() {
 

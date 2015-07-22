@@ -35,7 +35,7 @@ import java.util.Set;
  */
 public class RenderTag implements TemplateDirectiveModel {
 
-    private static Logger logger = LoggerFactory.getLogger("RenderTag");
+    private static Logger logger = LoggerFactory.getLogger(RenderTag.class.getSimpleName());
 
     public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body) throws TemplateException, IOException {
 

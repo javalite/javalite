@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * @author Igor Polevoy
  */
-public interface TemplateManager {
+public abstract class TemplateManager {
 
     /**
      * Merges values with templates and writes a merged template to the writer.
@@ -36,24 +36,31 @@ public interface TemplateManager {
      *
      * @param layout name of layout, <code>null</code> if no layout is needed.
      */
-    void merge(Map values, String templateName, String layout, String format, Writer writer);
+    public abstract void merge(Map values, String templateName, String layout, String format, Writer writer);
 
 
     /**
      * Same as {@link #merge(java.util.Map, String, String, String, java.io.Writer)}, but uses default layout and default format (html).
      */
-    void merge(Map values, String template, Writer writer);
+    public abstract void merge(Map values, String template, Writer writer);
 
     /**
      * A template manager might need a context to be able to load templates from it.
      *
      * @param ctx servlet context
      */
-    void setServletContext(ServletContext ctx);
+    public abstract void setServletContext(ServletContext ctx);
 
 
     /**
      * @param templateLocation this can be absolute or relative.
      */
-    void setTemplateLocation(String templateLocation);
+    public abstract void setTemplateLocation(String templateLocation);
+
+    /**
+     * Session ID from underlying session, or null if session does not exist.
+     */
+    protected String sessionId(){
+        return new SessionFacade().id();
+    }
 }
