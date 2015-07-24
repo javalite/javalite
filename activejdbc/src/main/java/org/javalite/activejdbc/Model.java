@@ -1401,6 +1401,19 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
+     * Gets attribute value as <code>String</code> by calling {@link Model#getString(String)}.
+     * If {@link Model#getString(String)} returns <code>null</code>, returns the provided default value.
+     *
+     * @param attributeName name of attribute to convert
+     * @param defaultValue default value to be returned if {@link Model#getString(String)} returns <code>null</code>
+     * @return value converted to <code>String</code> or defaultValue
+     */
+    public String getString(String attributeName, String defaultValue) {
+        String value = getString(attributeName);
+        return value == null ? defaultValue : value;
+    }
+
+    /**
      * Gets a value as bytes. If the column is Blob, bytes are
      * read directly, if not, then the value is converted to String first, then
      * string bytes are returned. Be careful out there,  this will read entire
@@ -1427,7 +1440,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public BigDecimal getBigDecimal(String attributeName) {
         Object value = getRaw(attributeName);
         Converter<Object, BigDecimal> converter = modelRegistryLocal().converterForValue(
-                attributeName, value, BigDecimal.class);
+            attributeName, value, BigDecimal.class);
         return converter != null ? converter.convert(value) : Convert.toBigDecimal(value);
     }
 
@@ -1447,6 +1460,19 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
+     * Gets attribute value as <code>Integer</code> by calling {@link Model#getInteger(String)}.
+     * If {@link Model#getInteger(String)} returns <code>null</code>, returns the provided default value.
+     *
+     * @param attributeName name of attribute to convert
+     * @param defaultValue default value to be returned if {@link Model#getInteger(String)} returns <code>null</code>
+     * @return value converted to <code>Integer</code> or defaultValue
+     */
+    public Integer getInteger(String attributeName, Integer defaultValue) {
+        Integer value = getInteger(attributeName);
+        return value == null ? defaultValue : value;
+    }
+
+    /**
      * Gets attribute value as <code>Long</code>.
      * If there is a {@link Converter} registered for the attribute that converts from Class <code>S</code> to Class
      * <code>java.lang.Long</code>, given the attribute value is an instance of <code>S</code>, then it will be used,
@@ -1457,8 +1483,22 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public Long getLong(String attributeName) {
         Object value = getRaw(attributeName);
-        Converter<Object, Long> converter = modelRegistryLocal().converterForValue(attributeName, value, Long.class);
+        Converter<Object, Long> converter = modelRegistryLocal().converterForValue(attributeName,
+            value, Long.class);
         return converter != null ? converter.convert(value) : Convert.toLong(value);
+    }
+
+    /**
+     * Gets attribute value as <code>Long</code> by calling {@link Model#getLong(String)}.
+     * If {@link Model#getLong(String)} returns <code>null</code>, returns the provided default value.
+     *
+     * @param attributeName name of attribute to convert
+     * @param defaultValue default value to be returned if {@link Model#getLong(String)} returns <code>null</code>
+     * @return value converted to <code>Long</code> or defaultValue
+     */
+    public Long getLong(String attributeName, Long defaultValue) {
+        Long value = getLong(attributeName);
+        return value == null ? defaultValue : value;
     }
 
     /**
@@ -1472,8 +1512,22 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public Short getShort(String attributeName) {
         Object value = getRaw(attributeName);
-        Converter<Object, Short> converter = modelRegistryLocal().converterForValue(attributeName, value, Short.class);
+        Converter<Object, Short> converter = modelRegistryLocal().converterForValue(attributeName,
+            value, Short.class);
         return converter != null ? converter.convert(value) : Convert.toShort(value);
+    }
+
+    /**
+     * Gets attribute value as <code>Short</code> by calling {@link Model#getShort(String)}.
+     * If {@link Model#getShort(String)} returns <code>null</code>, returns the provided default value.
+     *
+     * @param attributeName name of attribute to convert
+     * @param defaultValue default value to be returned if {@link Model#getShort(String)} returns <code>null</code>
+     * @return value converted to <code>Short</code> or defaultValue
+     */
+    public Short getShort(String attributeName, Short defaultValue) {
+        Short value = getShort(attributeName);
+        return value == null ? defaultValue : value;
     }
 
     /**
@@ -1487,8 +1541,22 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public Float getFloat(String attributeName) {
         Object value = getRaw(attributeName);
-        Converter<Object, Float> converter = modelRegistryLocal().converterForValue(attributeName, value, Float.class);
+        Converter<Object, Float> converter = modelRegistryLocal().converterForValue(attributeName,
+            value, Float.class);
         return converter != null ? converter.convert(value) : Convert.toFloat(value);
+    }
+
+    /**
+     * Gets attribute value as <code>Float</code> by calling {@link Model#getFloat(String)}.
+     * If {@link Model#getFloat(String)} returns <code>null</code>, returns the provided default value.
+     *
+     * @param attributeName name of attribute to convert
+     * @param defaultValue default value to be returned if {@link Model#getFloat(String)} returns <code>null</code>
+     * @return value converted to <code>Float</code> or defaultValue
+     */
+    public Float getFloat(String attributeName, Float defaultValue) {
+        Float value = getFloat(attributeName);
+        return value == null ? defaultValue : value;
     }
 
     /**
@@ -1503,8 +1571,21 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public Time getTime(String attributeName) {
         Object value = getRaw(attributeName);
         Converter<Object, Time> converter = modelRegistryLocal().converterForValue(
-                attributeName, value, Time.class);
+            attributeName, value, Time.class);
         return converter != null ? converter.convert(value) : Convert.toTime(value);
+    }
+
+    /**
+     * Gets attribute value as <code>Time</code> by calling {@link Model#getTime(String)}.
+     * If {@link Model#getTime(String)} returns <code>null</code>, returns the provided default value.
+     *
+     * @param attributeName name of attribute to convert
+     * @param defaultValue default value to be returned if {@link Model#getTime(String)} returns <code>null</code>
+     * @return value converted to <code>Time</code> or defaultValue
+     */
+    public Time getTime(String attributeName, Time defaultValue) {
+        Time value = getTime(attributeName);
+        return value == null ? defaultValue : value;
     }
 
     /**
@@ -1519,8 +1600,21 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public Timestamp getTimestamp(String attributeName) {
         Object value = getRaw(attributeName);
         Converter<Object, Timestamp> converter = modelRegistryLocal().converterForValue(
-                attributeName, value, Timestamp.class);
+            attributeName, value, Timestamp.class);
         return converter != null ? converter.convert(value) : Convert.toTimestamp(value);
+    }
+
+    /**
+     * Gets attribute value as <code>Timestamp</code> by calling {@link Model#getTimestamp(String)}.
+     * If {@link Model#getTimestamp(String)} returns <code>null</code>, returns the provided default value.
+     *
+     * @param attributeName name of attribute to convert
+     * @param defaultValue default value to be returned if {@link Model#getTimestamp(String)} returns <code>null</code>
+     * @return value converted to <code>Timestamp</code> or defaultValue
+     */
+    public Timestamp getTimestamp(String attributeName, Timestamp defaultValue) {
+        Timestamp value = getTimestamp(attributeName);
+        return value == null ? defaultValue : value;
     }
 
     /**
@@ -1534,8 +1628,22 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public Double getDouble(String attributeName) {
         Object value = getRaw(attributeName);
-        Converter<Object, Double> converter = modelRegistryLocal().converterForValue(attributeName, value, Double.class);
+        Converter<Object, Double> converter = modelRegistryLocal().converterForValue(attributeName,
+            value, Double.class);
         return converter != null ? converter.convert(value) : Convert.toDouble(value);
+    }
+
+    /**
+     * Gets attribute value as <code>Double</code> by calling {@link Model#getDouble(String)}.
+     * If {@link Model#getDouble(String)} returns <code>null</code>, returns the provided default value.
+     *
+     * @param attributeName name of attribute to convert
+     * @param defaultValue default value to be returned if {@link Model#getDouble(String)} returns <code>null</code>
+     * @return value converted to <code>Double</code> or defaultValue
+     */
+    public Double getDouble(String attributeName, Double defaultValue) {
+        Double value = getDouble(attributeName);
+        return value == null ? defaultValue : value;
     }
 
     /**
@@ -1549,8 +1657,22 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public Boolean getBoolean(String attributeName) {
         Object value = getRaw(attributeName);
-        Converter<Object, Boolean> converter = modelRegistryLocal().converterForValue(attributeName, value, Boolean.class);
+        Converter<Object, Boolean> converter = modelRegistryLocal().converterForValue(attributeName,
+            value, Boolean.class);
         return converter != null ? converter.convert(value) : Convert.toBoolean(value);
+    }
+
+    /**
+     * Gets attribute value as <code>Boolean</code> by calling {@link Model#getBoolean(String)}.
+     * If {@link Model#getBoolean(String)} returns <code>null</code>, returns the provided default value.
+     *
+     * @param attributeName name of attribute to convert
+     * @param defaultValue default value to be returned if {@link Model#getBoolean(String)} returns <code>null</code>
+     * @return value converted to <code>Boolean</code> or defaultValue
+     */
+    public Boolean getBoolean(String attributeName, Boolean defaultValue) {
+        Boolean value = getBoolean(attributeName);
+        return value == null ? defaultValue : value;
     }
 
     /*************************** typed setters *****************************************/
