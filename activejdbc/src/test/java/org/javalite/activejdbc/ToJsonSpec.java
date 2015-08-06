@@ -181,5 +181,22 @@ public class ToJsonSpec extends ActiveJDBCTest {
         a(map.get("Name")).shouldBeEqual("Joe");
         a(map.get("Last_Name")).shouldBeEqual("Schmoe");
     }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldIncludeParents() {
+        deleteAndPopulateTables("libraries", "books", "readers");
+        List<Book> books = Book.findAll().orderBy(Book.getMetaModel().getIdName()).include(Reader.class, Library.class);
+
+        Map book = JsonHelper.toMap(books.get(0).toJson(true));
+        Map parents = (Map) book.get("parents");
+        the(parents.size()).shouldBeEqual(1);
+
+        List<Map> libraries = (List<Map>) parents.get("libraries");
+        the(libraries.size()).shouldBeEqual(1);
+
+        Map library = libraries.get(0);
+        a(library.get("address")).shouldBeEqual("124 Pine Street");
+    }
 }
 

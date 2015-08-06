@@ -114,14 +114,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             callback.beforeUpdate(this);
         }
     }
-    
+
     private void fireAfterUpdate() {
         afterUpdate();
         for (CallbackListener callback : modelRegistryLocal().callbacks()) {
             callback.afterUpdate(this);
         }
     }
-    
+
     private void fireBeforeDelete() {
         beforeDelete();
         for (CallbackListener callback : modelRegistryLocal().callbacks()) {
@@ -156,7 +156,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     protected Map<String, Object> getAttributes() {
         return Collections.unmodifiableMap(attributes);
     }
-    
+
     protected Set<String> dirtyAttributeNames() {
         return Collections.unmodifiableSet(dirtyAttributeNames);
     }
@@ -317,7 +317,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public boolean isModified() {
         return !dirtyAttributeNames.isEmpty();
     }
-    
+
     /**
      * Will return true if this  instance is frozen, false otherwise.
      * A frozen instance cannot use used, as it has no relation to a record in table.
@@ -968,6 +968,39 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 Escape.json(sb, Convert.toString(v));
                 sb.append('"');
             }
+        }
+
+        if (cachedParents.size() > 0) {
+
+            sb.append(',');
+            if (pretty) { sb.append("\n  ").append(indent); }
+            sb.append("\"parents\":{");
+
+            List<Class> parentClasses = new ArrayList<Class>();
+            parentClasses.addAll(cachedParents.keySet());
+            for (int i = 0; i < parentClasses.size(); i++) {
+                if (i > 0) { sb.append(','); }
+                Class parentClass = parentClasses.get(i);
+                String name = pluralize(parentClasses.get(i).getSimpleName()).toLowerCase();
+                if (pretty) { sb.append("\n    ").append(indent); }
+                sb.append('"').append(name).append("\":[");
+                Model parent = cachedParents.get(parentClass);
+                if (pretty) {
+                    sb.append('\n');
+                }
+                parent.toJsonP(sb, pretty, (pretty ? "      " + indent : ""));
+
+                if(i < (parentClasses.size() - 1)){
+                    sb.append(',');
+                }
+
+                if (pretty) {
+                    sb.append("\n    ").append(indent);
+                }
+                sb.append(']');
+            }
+            if (pretty) { sb.append("\n  ").append(indent); }
+            sb.append('}');
         }
 
         if (cachedChildren.size() > 0) {
@@ -2197,7 +2230,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
 	/**
 	 * Composite PK values in exactly the same order as specified  in {@link CompositePK}.
-	 * 
+	 *
 	 * @param values  Composite PK values in exactly the same order as specified  in {@link CompositePK}.
 	 * @return instance of a found model, or null if nothing found.
 	 * @see CompositePK
@@ -2205,7 +2238,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 	public static <T extends Model> T findByCompositeKeys(Object... values) {
 		return ModelDelegate.findByCompositeKeys(Model.<T>modelClass(), values);
 	}
-    
+
     /**
      * Finder method for DB queries based on table represented by this model. Usually the SQL starts with:
      *
@@ -2681,7 +2714,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
         if(values.isEmpty())
             return false;
-        
+
 		if (getCompositeKeys() != null) {
 			String[] compositeKeys = getCompositeKeys();
 			for (int i = 0; i < compositeKeys.length; i++) {
@@ -2761,7 +2794,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public String[] getCompositeKeys() {
         return getMetaModelLocal().getCompositeKeys();
     }
-    
+
     protected void setChildren(Class childClass, List<Model> children) {
         cachedChildren.put(childClass, children);
     }
@@ -2807,7 +2840,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public String toInsert(Dialect dialect) {
         return dialect.insert(getMetaModelLocal(), attributes);
     }
-    
+
     /**
      * Generates UPDATE SQL based on this model. Uses the dialect associated with this model database to format the
      * value literals.
