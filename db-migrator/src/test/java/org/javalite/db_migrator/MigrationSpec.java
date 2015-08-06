@@ -8,8 +8,10 @@ import org.junit.Test;
 import java.io.File;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.javalite.db_migrator.DbUtils.*;
+import static junit.framework.Assert.assertEquals;
+import static org.javalite.db_migrator.DbUtils.attach;
+import static org.javalite.db_migrator.DbUtils.detach;
+
 
 public class MigrationSpec {
 
@@ -96,23 +98,5 @@ public class MigrationSpec {
         assertEquals(statements.size(), 2);
         assertEquals(statements.get(0), "create table users ( username varchar not null, password varchar not null )");
         assertEquals(statements.get(1), "create table roles ( name varchar not null unique, description text not null )");
-    }
-
-    @Test
-    public void shouldHandleNewLinesAndSpacesInStatements() throws Exception {
-        Migration m = new Migration("123", new File("src/test/resources/sql/newlines_and_spaces.sql"));
-        m.migrate(null);
-        List statements = getStatements();
-
-        for (Object o : statements) {
-
-            String statement = o.toString().trim();
-            if(!statement.equals("")){
-
-                System.out.println("===");
-                System.out.println(o);
-            }
-
-        }
     }
 }
