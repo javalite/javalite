@@ -596,8 +596,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         for (Association association : associations) {
             String join = ((Many2ManyAssociation)association).getJoin();
             String sourceFK = ((Many2ManyAssociation)association).getSourceFkName();
-            String query = "DELETE FROM " + join + " WHERE " + sourceFK + " = " + getId();
-            new DB(getMetaModelLocal().getDbName()).exec(query);
+            new DB(getMetaModelLocal().getDbName()).exec("DELETE FROM " + join + " WHERE " + sourceFK + " = ?", getId());
         }
     }
 
