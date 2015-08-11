@@ -604,8 +604,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         List<OneToManyAssociation> childAssociations = getMetaModelLocal().getOneToManyAssociations(Collections.<Association>emptyList());
         for (OneToManyAssociation association : childAssociations) {
             String  target = association.getTarget();
-            String query = "DELETE FROM " + target + " WHERE " + association.getFkName() + " = ?";
-            new DB(getMetaModelLocal().getDbName()).exec(query, getId());
+            new DB(getMetaModelLocal().getDbName()).exec("DELETE FROM " + target + " WHERE " + association.getFkName() + " = ?", getId());
         }
     }
 
@@ -614,8 +613,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         for (OneToManyPolymorphicAssociation association : polymorphics) {
             String  target = association.getTarget();
             String parentType = association.getTypeLabel();
-            String query = "DELETE FROM " + target + " WHERE parent_id = ? AND parent_type = ?";
-            new DB(getMetaModelLocal().getDbName()).exec(query, getId(), parentType);
+            new DB(getMetaModelLocal().getDbName()).exec("DELETE FROM " + target + " WHERE parent_id = ? AND parent_type = ?", getId(), parentType);
         }
     }
 
