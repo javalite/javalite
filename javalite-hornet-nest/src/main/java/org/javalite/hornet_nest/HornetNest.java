@@ -18,6 +18,8 @@ limitations under the License.
 package org.javalite.hornet_nest;
 
 import org.hornetq.api.core.TransportConfiguration;
+import org.hornetq.api.core.management.ObjectNameBuilder;
+import org.hornetq.api.jms.management.JMSQueueControl;
 import org.hornetq.core.config.Configuration;
 import org.hornetq.core.config.impl.ConfigurationImpl;
 import org.hornetq.core.remoting.impl.invm.InVMAcceptorFactory;
@@ -33,9 +35,16 @@ import org.hornetq.jms.server.config.impl.JMSQueueConfigurationImpl;
 import org.hornetq.jms.server.embedded.EmbeddedJMS;
 
 import javax.jms.*;
+import javax.management.MBeanServerInvocationHandler;
+import javax.management.ObjectName;
 import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
 import static java.util.Collections.singletonList;
+import static org.javalite.hornet_nest.NestUtil.message2Command;
 
 /**
  * Wrapper for embedded HornetQ. It is an embedded in-memory
@@ -57,6 +66,8 @@ public class HornetNest {
     private Connection consumerConnection;
     private Connection producerConnection;
     private EmbeddedJMS jmsServer;
+    private QueueConfig[] queueConfigs;
+    private boolean configured = false;
 
     /**
      * Creates and configures a new instance.
@@ -226,29 +237,167 @@ public class HornetNest {
     public void stop() {
         try {
             consumerConnection.close();
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
         try {
             producerConnection.close();
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
 
         try {
             jmsServer.stop();
+        } catch (Exception e) {}
+    }
+
+    /**
+     * Receives a command from a queue synchronously. If this queue also has listeners, then commands will be distributed across
+     * all consumers.
+     *
+     * @param queueName name of queue
+     * @return command if found. If command not found, this method will block till a command is present in queue.
+     *
+     * @see {@link #receiveCommand(String, long)}
+     */
+    public Command receiveCommand(String queueName) {
+        return receiveCommand(queueName, 0);
+    }
+
+    /**
+     * Receives a command from a queue synchronously. If this queue also has listeners, then commands will be distributed across
+     * all consumers.
+     *
+     * @param queueName name of queue
+     * @param timeout timeout in milliseconds. If a command is not received during a timeout, this methods returns null.
+     *
+     * @return command if found. If command not found, this method will block till a command is present in queue or a timeout expires.
+     */
+    public Command receiveCommand(String queueName, long timeout) {
+        Session session = null;
+        try{
+            session = consumerConnection.createSession();
+            Queue queue = (Queue) jmsServer.lookup("/queue/" + queueName);
+            MessageConsumer consumer = session.createConsumer(queue);
+            return message2Command((TextMessage) consumer.receive(timeout));
         } catch (Exception e) {
+            throw new HornetNestException("Could not get command", e);
+        }finally {
+            try{ if(session != null)session.close(); }catch(Throwable e){}
+        }
+    }
+
+    /**
+     * Returns top commands in queue. Does not remove anything from queue. This method can be used for
+     * an admin tool to peek inside the queue.
+     *
+     * @param count number of commands to lookup.
+     * @return top commands in queue.
+     */
+    public List<Command> getTopCommands(int count, String queueName)  {
+        List<Command> res = new ArrayList<>();
+        Session session = null;
+        try {
+            session = consumerConnection.createSession();
+            Queue queue = (Queue) jmsServer.lookup("/queue/" + queueName);
+            Enumeration messages = session.createBrowser(queue).getEnumeration();
+            for(int i = 0; i < count && messages.hasMoreElements(); i++) {
+                TextMessage msg = (TextMessage)messages.nextElement();
+                res.add(message2Command(msg));
+            }
+            return res;
+        } catch (Exception e) {
+            throw new HornetNestException("Could not lookup commands", e);
+        } finally {
+            try{ if(session != null)session.close(); }catch(Throwable e){}
+        }
+    }
+
+    private JMSQueueControl getQueueControl(String queue) {
+        ObjectName queueName;
+        try {
+            queueName = ObjectNameBuilder.DEFAULT.getJMSQueueObjectName(queue);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return MBeanServerInvocationHandler.newProxyInstance(ManagementFactory.getPlatformMBeanServer(),
+                queueName, JMSQueueControl.class, false);
+    }
+
+    /**
+     * Resumes a paused queue
+     *
+     * @param queueName queue name
+     */
+    public void resume(String queueName) {
+        try {
+            getQueueControl(queueName).resume();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Pauses a queue. A paused queue stops delivering commands to listeners. It still can accumulate commands.
+     *
+     * @param queueName queue name.
+     */
+    public void pause(String queueName) {
+        try {
+            getQueueControl(queueName).pause();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * @param queueName queue name
+     * @return true if queue is paused, false if not.
+     */
+    public boolean isPaused(String queueName) {
+        try {
+            return getQueueControl(queueName).isPaused();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Removes messages from queue.
+     *
+     * @param queueName queue name
+     * @param filter filter selector as  in JMS specification.
+     *               See: <a href="http://docs.oracle.com/cd/E19798-01/821-1841/bncer/index.html">JMS Message Selectors</a>
+     * @return number of messages removed
+     */
+    public int  removeMessages(String queueName, String filter) {
+        try {
+            return getQueueControl(queueName).removeMessages(filter);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Removes all messages from queue.
+     *
+     * @param queueName queue name.
+     * @return number of messages removed
+     */
+    public int removeAllMessages(String queueName) {
+        try {
+            return getQueueControl(queueName).removeMessages(null);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
 
     /**
-     * Use to set additional configuration.
+     * Get additional JMS configuration.
      */
     public JMSConfiguration getJmsConfig() {
         return jmsConfig;
     }
 
     /**
-     * Use to set additional configuration.
+     * Get additional server configuration.
      */
     public Configuration getConfig() {
         return config;

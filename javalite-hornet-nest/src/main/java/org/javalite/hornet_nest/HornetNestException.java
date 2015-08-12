@@ -23,6 +23,10 @@ public class HornetNestException extends RuntimeException {
     public HornetNestException() {
     }
 
+    public HornetNestException(Throwable cause) {
+        super(cause);
+    }
+
     public HornetNestException(String message) {
         super(message);
     }

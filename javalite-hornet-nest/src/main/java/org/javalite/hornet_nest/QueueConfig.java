@@ -30,13 +30,13 @@ public class QueueConfig {
      * Creates a specification of a queue for HornetNest
      *
      * @param name human readable name of queue
-     * @param commandClassListener CommandListener class
+     * @param commandListenerClass CommandListener class
      * @param listenerCount number of listeners to attach to a queue. Effectively this
      *                      is a number of processing threads.
      */
-    public  QueueConfig(String name, Class commandClassListener, int listenerCount) {
+    public  QueueConfig(String name, Class commandListenerClass, int listenerCount) {
         this.name = name;
-        this.commandListenerClass = commandClassListener;
+        this.commandListenerClass = commandListenerClass;
         this.listenerCount = listenerCount;
     }
 

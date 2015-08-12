@@ -20,6 +20,8 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
+import static org.javalite.hornet_nest.NestUtil.message2Command;
+
 /**
  * @author Igor Polevoy on 4/5/15.
  */
@@ -27,12 +29,9 @@ public class CommandListener implements MessageListener{
 
     @Override
     public void onMessage(Message message) {
-        TextMessage tm = (TextMessage) message;
         try {
-            String className = tm.getStringProperty("command_class");
-            Command command = (Command) Class.forName(className).newInstance();
-            command.fromString(tm.getText());
-            onCommand(command);
+            TextMessage tm = (TextMessage) message;
+            onCommand(message2Command(tm));
         } catch (Exception e) {
             throw new HornetNestException("Failed to process command", e);
         }
