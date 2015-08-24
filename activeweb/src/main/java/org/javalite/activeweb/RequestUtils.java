@@ -107,10 +107,15 @@ public class RequestUtils {
     /**
      * Returns true if this request is Ajax.
      *
+     * @see <a href="http://en.wikipedia.org/wiki/List_of_HTTP_header_fields">List_of_HTTP_header_fields</a>
      * @return true if this request is Ajax.
      */
     public static boolean isXhr(){
-        return header("X-Requested-With") != null || header("x-requested-with") != null;
+        String xhr = header("X-Requested-With");
+        if(xhr == null) {
+            xhr = header("x-requested-with");
+        }
+        return xhr != null && xhr.toLowerCase().equals("xmlhttprequest");
     }
 
 

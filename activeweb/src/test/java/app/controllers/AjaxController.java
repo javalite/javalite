@@ -28,4 +28,9 @@ public class AjaxController extends AppController {
         int x = 10/i;
 
     }
+
+    public void hello(){
+        Boolean xhr = xhr();
+        respond(xhr.toString());
+    }
 }

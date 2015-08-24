@@ -384,4 +384,22 @@ public class RequestDispatcherSpec extends RequestSpec {
         a(response.getContentAsString()).shouldNotContain("html");
         a(response.getContentAsString()).shouldContain("java.lang.ArithmeticException: / by zero");
     }
+
+    @Test
+    public void shouldRecognizeAjax() throws IOException, ServletException {
+        request.setServletPath("/ajax/hello");
+        request.setMethod("GET");
+        request.addHeader("X-Requested-With", "XMLHttpRequest");
+        dispatcher.doFilter(request, response, filterChain);
+        a(response.getContentAsString()).shouldBeEqual("true");
+    }
+
+    @Test
+    public void shouldIgnoreBadAjaxHeader() throws IOException, ServletException {
+        request.setServletPath("/ajax/hello");
+        request.setMethod("GET");
+        request.addHeader("X-Requested-With", "baaad header");
+        dispatcher.doFilter(request, response, filterChain);
+        a(response.getContentAsString()).shouldBeEqual("false");
+    }
 }
