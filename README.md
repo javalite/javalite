@@ -70,5 +70,5 @@ For more information, follow here: http://javalite.io
 
 ## Acknowledgement
 
-Special thanks to folks are [IntelliJ](http://www.jetbrains.com/) for granting a license to this project
+Special thanks to folks at [IntelliJ](http://www.jetbrains.com/) for granting a license to this project
 
