@@ -27,4 +27,4 @@ All documentation is placed here: [http://javalite.io](http://javalite.io)
 
 ## Acknowledgement
 
-Special thanks to folks are [IntelliJ](http://www.jetbrains.com/) for granting a license to this project
+Special thanks to folks at [IntelliJ](http://www.jetbrains.com/) for granting a license to this project
