@@ -16,6 +16,8 @@ limitations under the License.
 
 package org.javalite.hornet_nest;
 
+import com.google.inject.Injector;
+
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
@@ -26,6 +28,8 @@ import static org.javalite.hornet_nest.NestUtil.message2Command;
  * @author Igor Polevoy on 4/5/15.
  */
 public class CommandListener implements MessageListener{
+
+    private Injector injector;
 
     @Override
     public void onMessage(Message message) {
@@ -38,7 +42,13 @@ public class CommandListener implements MessageListener{
     }
 
     public <T extends Command> void onCommand(T command) {
+        if(injector != null){
+            injector.injectMembers(command);
+        }
         command.execute();
     }
 
+    public void setInjector(Injector injector) {
+        this.injector = injector;
+    }
 }

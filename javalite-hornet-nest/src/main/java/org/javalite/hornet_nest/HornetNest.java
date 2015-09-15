@@ -17,6 +17,7 @@ limitations under the License.
 
 package org.javalite.hornet_nest;
 
+import com.google.inject.Injector;
 import org.hornetq.api.core.TransportConfiguration;
 import org.hornetq.api.core.management.ObjectNameBuilder;
 import org.hornetq.api.jms.management.JMSQueueControl;
@@ -66,8 +67,6 @@ public class HornetNest {
     private Connection consumerConnection;
     private Connection producerConnection;
     private EmbeddedJMS jmsServer;
-    private QueueConfig[] queueConfigs;
-    private boolean configured = false;
 
     /**
      * Creates and configures a new instance.
@@ -77,7 +76,21 @@ public class HornetNest {
      *                  See <a href="http://docs.jboss.org/hornetq/2.2.5.Final/user-manual/en/html/libaio.html">Libaio Native Libraries</a>
      * @param queueConfigs vararg of QueueConfig> instances.
      */
+
     public HornetNest(String dataDirectory, boolean useLibAio, QueueConfig... queueConfigs) {
+        this(dataDirectory, useLibAio, null, queueConfigs);
+    }
+
+    /**
+     * Creates and configures a new instance.
+     *
+     * @param dataDirectory root directory where persistent messages are stored
+     * @param useLibAio true to use libaio, false if not installed.
+     *                  See <a href="http://docs.jboss.org/hornetq/2.2.5.Final/user-manual/en/html/libaio.html">Libaio Native Libraries</a>
+     * @param  injector Google Guice injector. Used to inject dependency members into commands if needed.
+     * @param queueConfigs vararg of QueueConfig> instances.
+     */
+    public HornetNest(String dataDirectory, boolean useLibAio, Injector injector, QueueConfig... queueConfigs) {
         jmsServer = new EmbeddedJMS();
         config = new ConfigurationImpl();
         jmsConfig = new JMSConfigurationImpl();
@@ -100,7 +113,7 @@ public class HornetNest {
             consumerConnection = connectionFactory.createConnection();
             producerConnection = connectionFactory.createConnection();
 
-            configureListeners(queueConfigs);
+            configureListeners(injector, queueConfigs);
         } catch (Exception e) {
             throw new HornetNestException("Failed to start EmbeddedJMS", e);
         }
@@ -161,11 +174,12 @@ public class HornetNest {
         }
     }
 
-    private void configureListeners(QueueConfig... queueConfigs) throws JMSException, IllegalAccessException, InstantiationException {
+    private void configureListeners(Injector injector, QueueConfig... queueConfigs) throws JMSException, IllegalAccessException, InstantiationException {
         for (QueueConfig queueConfig : queueConfigs) {
             Queue queue = (Queue) jmsServer.lookup("/queue/" + queueConfig.getName());
             for (int i = 0; i < queueConfig.getListenerCount(); i++) {
                 CommandListener listener = (CommandListener) queueConfig.getCommandListenerClass().newInstance();
+                listener.setInjector(injector);
                 Session session = consumerConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
                 session.createConsumer(queue).setMessageListener(listener);
             }

@@ -1,5 +1,8 @@
 package org.javalite.hornet_nest;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import org.javalite.hornet_nest.services.GreetingModule;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,7 +26,7 @@ public class HornetNestSpec {
     }
 
     @Test
-    public void shouldProcessCommands() throws IOException {
+    public void shouldProcessCommands() throws IOException, InterruptedException {
 
         HornetNest hornetNest = new HornetNest(filePath, false, new QueueConfig(QUEUE_NAME, CommandListener.class, 50));
 
@@ -34,9 +37,8 @@ public class HornetNestSpec {
 
         //messages will execute in about 2 seconds, because we send 100 messages, but only have 50 threads.
         //lets wait for 3 seconds, then validate result
-        try {
-            Thread.sleep(5000);
-        } catch (Exception e) {}
+        Thread.sleep(5000);
+
 
         hornetNest.stop();
         a(HelloCommand.counter()).shouldBeEqual(100);
@@ -104,5 +106,18 @@ public class HornetNestSpec {
         a(commands.size()).shouldBeEqual(0);
 
         hornetNest.stop();
+    }
+
+    @Test
+    public void shouldInjectDependencyIntoCommand() throws InterruptedException {
+
+        Injector injector = Guice.createInjector(new GreetingModule());
+        HornetNest hornetNest = new HornetNest(filePath, false, injector, new QueueConfig(QUEUE_NAME, CommandListener.class, 1));
+        hornetNest.send(QUEUE_NAME, new HelloInjectedCommand("The greeting is: "));
+
+        Thread.sleep(2000);
+
+        hornetNest.stop();
+        a(HelloInjectedCommand.result).shouldBeEqual("The greeting is: hi");
     }
 }
