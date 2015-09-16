@@ -30,12 +30,10 @@ import org.javalite.common.Convert;
 import org.javalite.common.Escape;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import java.io.*;
 import java.math.BigDecimal;
 import java.sql.Clob;
@@ -45,6 +43,7 @@ import java.text.DateFormat;
 import java.util.*;
 
 import static org.javalite.common.Inflector.*;
+import static org.javalite.common.Util.blank;
 import static org.javalite.common.Util.empty;
 import static org.javalite.common.Util.join;
 
@@ -798,29 +797,31 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param xml xml to read model attributes from.
      */
     public void fromXml(String xml) {
-
-        try{
-            //such dumb API!
-            Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
-            String topTag = underscore(getClass().getSimpleName());
-            Element root = document.getDocumentElement();
-
-            if(!root.getTagName().equals(topTag)){
-                throw new InitException("top node has to match model name: " + topTag);
-            }
-            NodeList childNodes = root.getChildNodes();
-
-            Map<String, String> attributesMap = new HashMap<String, String>();
-            for(int i = 0; i < childNodes.getLength();i++){
-                Node node  = childNodes.item(i);
-                if(node instanceof Element){
-                    Element child = (Element) node;
-                    attributesMap.put(child.getTagName(), child.getFirstChild().getNodeValue());//this is even dumber!
+        try {
+            XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new ByteArrayInputStream(xml.getBytes()));
+            String attr = null;
+            String chars = null;
+            Map<Object, Object> res = new HashMap<Object, Object>();
+            while (reader.hasNext()) {
+                int event = reader.next();
+                switch (event) {
+                    case XMLStreamConstants.START_ELEMENT:
+                        attr = reader.getLocalName();
+                        break;
+                    case XMLStreamConstants.CHARACTERS:
+                        chars = reader.getText().trim();;
+                        break;
+                    case XMLStreamConstants.END_ELEMENT:
+                        if (attr != null && !blank(chars)) {
+                            res.put(attr, chars);
+                        }
+                        attr = chars = null;
+                        break;
                 }
             }
-            fromMap(attributesMap);
-        }catch(Exception e){
-            throw  new InitException(e);
+            fromMap(res);
+        } catch (XMLStreamException e) {
+            throw new InitException(e);
         }
     }
 

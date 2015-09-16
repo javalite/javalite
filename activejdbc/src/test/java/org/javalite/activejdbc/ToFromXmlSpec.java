@@ -66,6 +66,23 @@ public class ToFromXmlSpec extends ActiveJDBCTest {
         a(p.getDate("dob")).shouldBeEqual(f.parse("1962-06-13"));
     }
 
+    @Test
+    public void shouldNotFailXmlNoValue() throws ParseException {
+        deleteAndPopulateTables("people");
+
+        Person p = new Person();
+        String xml = readResource("/person_no_val.xml");
+        p.fromXml(xml);
+        p.saveIt();
+        p.refresh();
+
+        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd");
+
+        a(p.get("name")).shouldBeEqual("John");
+        a(p.get("last_name")).shouldBeEqual("Doe");
+        a(p.getDate("graduation_date")).shouldBeNull();
+        a(p.getDate("dob")).shouldBeEqual(f.parse("1962-06-13"));
+    }
 
     @Test
     public void shouldIncludeChildren(){
