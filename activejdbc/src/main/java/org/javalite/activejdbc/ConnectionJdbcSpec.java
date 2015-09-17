@@ -20,6 +20,8 @@ package org.javalite.activejdbc;
 import java.util.Properties;
 
 /**
+ * Specification for a JDBC connection
+ *
  * @author Igor Polevoy
  */
 public class ConnectionJdbcSpec implements ConnectionSpec{

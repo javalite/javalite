@@ -23,10 +23,14 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Pattern;
 
-import static org.javalite.common.Util.*;
+import static org.javalite.common.Util.closeQuietly;
+import static org.javalite.common.Util.empty;
 
 /**
  * This class provides a number of convenience methods for opening/closing database connections, running various
@@ -110,6 +114,32 @@ public class DB {
         } catch (Exception e) {
             throw new InitException("Failed to connect to JNDI name: " + jndiName, e);
         }
+    }
+
+
+    /**
+     * This method will open a connection defined in the file 'database.properties' located at
+     * root of classpath. The connection picked from the file is defined by <code>ACTIVE_ENV</code>
+     * environment variable. If this variable is not defined, it defaults to 'development' environment.
+     *
+     * If there is JUnit on classpath, this method assumes it is running under test, and defaults to 'test'.
+     *
+     */
+    public void open(){
+        String env = System.getenv("ACTIVE_ENV");
+        if(env == null){
+            env = "development";
+        }
+        //this is a hack to see if we are running under tests.
+        if(getClass().getResource("/org/junit/Test.class") != null){
+            env = "test";
+        }
+        ConnectionSpec spec = Registry.instance().getConfiguration().getConnectionSpec(env);
+        if(spec == null){
+            throw new DBException("Could not find configuration in a property file for environment: " + env +
+                    ". Are you sure you have a database.properties file configured?");
+        }
+        open(spec);
     }
 
     /**

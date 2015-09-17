@@ -20,10 +20,7 @@ import org.javalite.activejdbc.dialects.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.util.*;
 import org.javalite.common.Convert;
@@ -41,7 +38,9 @@ public class Configuration {
     private static CacheManager cacheManager;
     private final static Logger logger = LoggerFactory.getLogger(Configuration.class);
 
-    private Map<String, Dialect> dialects = new CaseInsensitiveMap<Dialect>();
+    private Map<String, Dialect> dialects = new CaseInsensitiveMap<>();
+
+    private Map<String, ConnectionSpec> connectionSpecMap = new HashMap<>();
 
     protected Configuration(){
         try {
@@ -102,7 +101,62 @@ public class Configuration {
             }
 
         }
+
+        loadConnectionsSpecs();
     }
+
+    private void loadConnectionsSpecs() {
+        try{
+            Properties connectionProps = readPropertyFile(properties.getProperty("env.connections.file"));
+            for (String env : getEnvironments(connectionProps)) {
+                String jndiName = env + "." + "jndi";
+                if (connectionProps.containsKey(jndiName)) {
+                    connectionSpecMap.put(env, new ConnectionJndiSpec(jndiName));
+                } else {
+                    String driver = connectionProps.getProperty(env + ".driver");
+                    String userName = connectionProps.getProperty(env + ".username");
+                    String password = connectionProps.getProperty(env + ".password");
+                    String url = connectionProps.getProperty(env + ".url");
+                    if (driver == null || userName == null || password == null || url == null) {
+                        throw new InitException("Four JDBC properties are expected: driver, username, password, url for environment: " + env);
+                    }
+                    connectionSpecMap.put(env, new ConnectionJdbcSpec(driver, url, userName, password));
+                }
+            }
+        }catch(Exception e){
+            // in case property file not found, do nothing
+        }
+    }
+
+    public ConnectionSpec getConnectionSpec(String environment){
+        return connectionSpecMap.get(environment);
+    }
+
+
+    //get environments defined in properties
+    private Set<String> getEnvironments(Properties props) {
+        Set<String> environments = new HashSet<String>();
+        for (Object k : props.keySet()) {
+            String environment = k.toString().split("\\.")[0];
+            environments.add(environment);
+        }
+        return new TreeSet<String>(environments);
+    }
+
+    //read from classpath, if not found, fead from file system. If not found there, throw exception
+    private Properties readPropertyFile(String file) throws IOException {
+        InputStream in = getClass().getResourceAsStream(file);
+        Properties props = new Properties();
+        if (in != null) {
+            props.load(in);
+        } else {
+            FileInputStream fin = new FileInputStream(file);
+            props.load(fin);
+            fin.close();
+        }
+        return props;
+    }
+
 
     List<String> getModelNames(String dbName) throws IOException {
         return modelsMap.get(dbName);

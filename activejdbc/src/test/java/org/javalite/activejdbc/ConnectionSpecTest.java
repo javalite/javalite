@@ -22,6 +22,7 @@ import static org.javalite.activejdbc.test.JdbcProperties.*;
 import org.junit.Test;
 
 import javax.naming.NamingException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 import static org.javalite.test.jspec.JSpec.a;
@@ -31,8 +32,6 @@ import static org.javalite.test.jspec.JSpec.a;
  * @author Igor Polevoy
  */
 public class ConnectionSpecTest  {
-
-
 
     @Test
     public void testJdbc() {
@@ -85,5 +84,17 @@ public class ConnectionSpecTest  {
             e = ex;
         }
         a(e).shouldNotBeNull();
+    }
+
+    /**
+     * This test should only be executed under mysql Maven profile because
+     * the database.properties file contains
+     */
+    @Test
+    public void shouldOpenConnectionFromPropertiesFile(){
+        DB db = new DB("default");
+        db.open();
+        a(db.connection()).shouldNotBeNull();
+        db.close();
     }
 }

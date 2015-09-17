@@ -20,6 +20,8 @@ package org.javalite.activejdbc;
 import javax.naming.InitialContext;
 
 /**
+ * Specification for a JNDI connection.
+ *
  * @author Igor Polevoy
  */
 public class ConnectionJndiSpec implements ConnectionSpec{
