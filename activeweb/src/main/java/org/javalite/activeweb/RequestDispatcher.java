@@ -131,8 +131,10 @@ public class RequestDispatcher implements Filter {
             appConfig.init(context);
             if(appConfig instanceof  Bootstrap){
                 appBootstrap = (Bootstrap) appConfig;
-                if(!Configuration.isTesting() && appBootstrap.getInjector() != null){
-                    Context.getControllerRegistry().setInjector(appBootstrap.getInjector());
+                if(!Configuration.isTesting() ){
+                    if(appBootstrap.getInjector() != null){
+                        Context.getControllerRegistry().setInjector(appBootstrap.getInjector());
+                    }
                 }
             }
             appConfig.completeInit();
