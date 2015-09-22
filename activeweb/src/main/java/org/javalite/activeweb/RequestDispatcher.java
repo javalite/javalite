@@ -15,6 +15,7 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
+import com.google.inject.Injector;
 import org.javalite.activejdbc.DB;
 import org.javalite.common.Util;
 import org.slf4j.Logger;
@@ -132,9 +133,7 @@ public class RequestDispatcher implements Filter {
             if(appConfig instanceof  Bootstrap){
                 appBootstrap = (Bootstrap) appConfig;
                 if(!Configuration.isTesting() ){
-                    if(appBootstrap.getInjector() != null){
-                        Context.getControllerRegistry().setInjector(appBootstrap.getInjector());
-                    }
+                    Context.getControllerRegistry().setInjector(appBootstrap.getInjector());
                 }
             }
             appConfig.completeInit();
