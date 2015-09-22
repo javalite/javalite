@@ -45,12 +45,26 @@ public abstract class Bootstrap extends AppConfig{
     /**
      * Called when application is destroyed (un-deployed).
      * Override to catch event.
+     *
      * 
      * @param context app context instance
      */
     public void destroy(AppContext context){}
 
+    /**
+     *
+     * Sets a Google Guice Injector to use to inject dependencies into filters, controllers and tags.
+     *
+     * <p>
+     *     This method has no effect during testing. Each test class will set its own injector
+     *     with mocks for testing.
+     * </p>
+     *
+     * @param injector Injector instance to use for dependency injection.
+     */
     public void setInjector(Injector injector){
-        Context.getControllerRegistry().setInjector(injector);
+        if(!Configuration.isTesting()){
+            Context.getControllerRegistry().setInjector(injector);
+        }
     }
 }
