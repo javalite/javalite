@@ -35,4 +35,14 @@ public class HelloControllerSpec extends ControllerSpec {
         request().integrateViews().get("index");
         a(responseContent()).shouldBeEqual("hello");
     }
+
+
+    @Test
+    public void shouldRaiseExceptionIfRequestNotTerminated(){
+        try{
+            request();
+        }catch(Exception e){
+            a(e.getMessage()).shouldBeEqual("Are you sure you terminated the request() with post(), get(), etc. method?");
+        }
+    }
 }

@@ -65,6 +65,11 @@ public class RequestSpecHelper extends SpecHelper{
 
             //content can be provided simply by respond() method
             String content = ((MockHttpServletResponse) Context.getHttpResponse()).getContentAsString();
+
+            if(integrateViews == null){
+                throw new RuntimeException("Are you sure you terminated the request() with post(), get(), etc. method?");
+            }
+
             if(!integrateViews && blank(content)){
                 throw new SpecException("Use integrateViews() method to generate response content");
             }
