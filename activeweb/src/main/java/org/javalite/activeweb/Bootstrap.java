@@ -60,6 +60,9 @@ public abstract class Bootstrap extends AppConfig{
      *     with mocks for testing.
      * </p>
      *
+     * @deprecated This method will be removed in future versions. Instead, override {@link #getInjector()} method
+     * to produce your injector.
+     *
      * @param injector Injector instance to use for dependency injection.
      */
     public void setInjector(Injector injector){
@@ -67,4 +70,20 @@ public abstract class Bootstrap extends AppConfig{
             Context.getControllerRegistry().setInjector(injector);
         }
     }
+
+    /**
+     * Subclasses need to override this method to return instance of Injector to use for dependency injection.
+     *
+     * <p></p>
+
+     * <strong>
+     *     This method is NOT USED during testing. Each test class will set its own injector
+     *     with mocks for testing.
+     * </strong>
+     *
+     * @return instance of Injector to use to inject dependencies into controllers, filters and tags.
+     */
+    public Injector getInjector(){
+        return null;
+    };
 }
