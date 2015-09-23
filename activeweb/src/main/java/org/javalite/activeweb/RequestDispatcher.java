@@ -129,7 +129,7 @@ public class RequestDispatcher implements Filter {
         try {
             Class c = Class.forName(configClassName);
             appConfig = (AppConfig) c.newInstance();
-
+            appConfig.init(context);
             if(appConfig instanceof  Bootstrap){
                 appBootstrap = (Bootstrap) appConfig;
                 if(!Configuration.isTesting() ){
