@@ -33,8 +33,6 @@ public class DBSpecHelper {
 
     public static void initDBConfig() {
 
-        Configuration.setTesting(true);
-
         String dbConfigClassName = Configuration.get("dbconfig");
         try {
             Object dbconfig = Class.forName(dbConfigClassName).newInstance();

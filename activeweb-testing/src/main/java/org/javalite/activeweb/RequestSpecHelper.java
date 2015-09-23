@@ -18,9 +18,7 @@ package org.javalite.activeweb;
 
 import org.javalite.common.Convert;
 import org.javalite.test.jspec.TestException;
-import org.junit.After;
 import org.junit.Before;
-import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.util.ArrayList;
@@ -36,6 +34,10 @@ import static org.javalite.common.Util.blank;
  */
 public class RequestSpecHelper extends SpecHelper{
 
+    @Before
+    public final void atStart00(){
+        Configuration.setTesting(true);
+    }
     /**
      * Provides status code set on response by controller
      *

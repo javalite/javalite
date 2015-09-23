@@ -52,6 +52,7 @@ public class SpecHelper extends JSpecSupport{
 
         Context.setTLs(null, new MockHttpServletResponse(), new MockFilterConfig(),
                 new ControllerRegistry(new MockFilterConfig()), new AppContext(), new RequestContext(), null);
+
     }
 
     @After
