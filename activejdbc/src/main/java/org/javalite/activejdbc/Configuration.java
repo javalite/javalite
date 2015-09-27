@@ -107,7 +107,11 @@ public class Configuration {
 
     private void loadConnectionsSpecs() {
         try{
-            Properties connectionProps = readPropertyFile(properties.getProperty("env.connections.file"));
+
+            String propertyFileName = properties == null ? "database.properties"
+                    : properties.getProperty("env.connections.file", "database.properties");
+
+            Properties connectionProps = readPropertyFile(propertyFileName);
             for (String env : getEnvironments(connectionProps)) {
                 String jndiName = env + "." + "jndi";
                 if (connectionProps.containsKey(jndiName)) {
@@ -143,9 +147,11 @@ public class Configuration {
         return new TreeSet<String>(environments);
     }
 
-    //read from classpath, if not found, fead from file system. If not found there, throw exception
+    //read from classpath, if not found, read from file system. If not found there, throw exception
     private Properties readPropertyFile(String file) throws IOException {
-        InputStream in = getClass().getResourceAsStream(file);
+
+        String fileName = file.startsWith("/") ? file : "/" + file;
+        InputStream in = getClass().getResourceAsStream(fileName);
         Properties props = new Properties();
         if (in != null) {
             props.load(in);
