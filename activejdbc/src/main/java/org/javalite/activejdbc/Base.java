@@ -44,7 +44,7 @@ public class Base {
      * If there is JUnit on classpath, this method assumes it is running under test, and defaults to 'test'.
      *
      */
-    public void open(){
+    public static void open(){
         new DB(DB.DEFAULT_NAME).open();
     }
 
