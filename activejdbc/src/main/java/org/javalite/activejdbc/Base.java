@@ -35,6 +35,19 @@ import java.util.Properties;
  * @author Eric Nielsen
  */
 public class Base {
+
+    /**
+     * This method will open a connection defined in the file 'database.properties' located at
+     * root of classpath. The connection picked from the file is defined by <code>ACTIVE_ENV</code>
+     * environment variable. If this variable is not defined, it defaults to 'development' environment.
+     *
+     * If there is JUnit on classpath, this method assumes it is running under test, and defaults to 'test'.
+     *
+     */
+    public void open(){
+        new DB(DB.DEFAULT_NAME).open();
+    }
+
     /**
      * Opens a new connection based on JDBC properties and attaches it to a current thread.
      *
