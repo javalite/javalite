@@ -1,0 +1,18 @@
+group 'org.javalite'
+version '1.4.9'
+
+apply plugin: 'groovy'
+apply plugin: 'maven'
+
+sourceCompatibility = 1.7
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+    compile group: 'org.javalite', name: 'activejdbc', version: '1.4.9'
+    compile group: 'org.javalite', name: 'activejdbc-instrumentation', version: '1.4.9'
+}
