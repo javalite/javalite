@@ -339,6 +339,8 @@ public class Base {
      *
      * @return an array of update counts containing one element for each command in the batch.
      * The elements of the array are ordered according to the order in which commands were added to the batch.
+     *
+     * @see <a href="http://docs.oracle.com/javase/7/docs/api/java/sql/Statement.html#executeBatch()">Statement#executeBatch()</a>
      */
     public static int[] executeBatch(PreparedStatement ps) {
         return new DB(DB.DEFAULT_NAME).executeBatch(ps);
