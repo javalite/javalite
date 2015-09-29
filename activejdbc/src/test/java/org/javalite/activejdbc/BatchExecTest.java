@@ -45,8 +45,8 @@ public class BatchExecTest extends ActiveJDBCTest {
             int[] counts = Base.executeBatch(ps);
 
             the(counts.length).shouldBeEqual(2);
-            the((counts[0] == 1) || (counts[0] == Statement.SUCCESS_NO_INFO)).shouldBeTrue(); //Oracle!!
-            the((counts[1] == 1) || (counts[1] == Statement.SUCCESS_NO_INFO)).shouldBeTrue();
+            the(counts[0] == 1 || counts[0] == Statement.SUCCESS_NO_INFO).shouldBeTrue(); //Oracle!!
+            the(counts[1] == 1 || counts[1] == Statement.SUCCESS_NO_INFO).shouldBeTrue();
 
             List<Map> people = Base.findAll("select * from people order by name");
 
