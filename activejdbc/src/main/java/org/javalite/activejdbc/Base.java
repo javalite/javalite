@@ -336,9 +336,12 @@ public class Base {
      * Executes a batch on <code>java.sql.PreparedStatement</code>.
      *
      * @param ps <code>java.sql.PreparedStatement</code> to execute batch on.
+     *
+     * @return an array of update counts containing one element for each command in the batch.
+     * The elements of the array are ordered according to the order in which commands were added to the batch.
      */
-    public static void executeBatch(PreparedStatement ps) {
-        new DB(DB.DEFAULT_NAME).executeBatch(ps);
+    public static int[] executeBatch(PreparedStatement ps) {
+        return new DB(DB.DEFAULT_NAME).executeBatch(ps);
     }
 
 

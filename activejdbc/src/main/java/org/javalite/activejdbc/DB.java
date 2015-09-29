@@ -825,11 +825,15 @@ public class DB {
      * Executes a batch on <code>java.sql.PreparedStatement</code>.
      *
      * @param ps <code>java.sql.PreparedStatement</code> to execute batch on.
+     *
+     * @return an array of update counts containing one element for each command in the batch.
+     * The elements of the array are ordered according to the order in which commands were added to the batch.
      */
-    public void executeBatch(PreparedStatement ps){
+    public int[] executeBatch(PreparedStatement ps){
         try {
-            ps.executeBatch();
+            int[] counters = ps.executeBatch();
             ps.clearParameters();
+            return counters;
         } catch (SQLException e) {
             throw new DBException(e);
         }

@@ -41,7 +41,11 @@ public class BatchExecTest extends ActiveJDBCTest {
 
             Base.addBatch(ps, "Mic", "Jagger", getDate(1962, 1, 1));
             Base.addBatch(ps, "Marilyn", "Monroe", getDate(1932, 1, 1));
-            Base.executeBatch(ps);
+            int[] counts = Base.executeBatch(ps);
+
+            the(counts.length).shouldBeEqual(2);
+            the(counts[0]).shouldBeEqual(1);
+            the(counts[1]).shouldBeEqual(1);
 
             List<Map> people = Base.findAll("select * from people order by name");
 
