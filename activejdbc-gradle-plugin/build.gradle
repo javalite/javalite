@@ -16,3 +16,53 @@ dependencies {
     compile group: 'org.javalite', name: 'activejdbc', version: '1.4.11'
     compile group: 'org.javalite', name: 'activejdbc-instrumentation', version: '1.4.11'
 }
+
+task docJar(type: Jar, dependsOn: groovydoc) {
+    classifier = 'javadoc'
+    from 'build/docs/groovydoc'
+}
+
+task sourceJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives jar
+    archives docJar
+    archives sourceJar
+}
+
+task generatePom {
+    outputs.file 'pom.xml'
+    pom {
+        project {
+            packaging 'jar'
+            description 'Gradle plugin for performing build time ActiveJDBC instrumentation'
+            url 'https://github.com/javalite/activejdbc/'
+            parent {
+                groupId 'org.javalite'
+                artifactId 'activejdbc-root'
+                version '1.4.12-SNAPSHOT'
+            }
+            scm {
+                url 'scm:git:git@github.com:javalite/activejdbc.git'
+                connection 'scm:git:git@github.com:javalite/activejdbc.git'
+                developerConnection 'git@github.com:javalite/activejdbc.git'
+            }
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+        }
+    }.writeTo('pom.xml')
+}
+
+clean {
+    delete 'pom.xml'
+}
+
+build.dependsOn << generatePom
