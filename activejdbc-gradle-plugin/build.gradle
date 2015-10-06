@@ -2,8 +2,6 @@ group 'org.javalite'
 version '1.4.12-SNAPSHOT'
 
 apply plugin: 'groovy'
-apply plugin: 'maven'
-apply plugin: 'signing'
 
 sourceCompatibility = 1.7
 
@@ -34,43 +32,28 @@ task sourceJar(type: Jar) {
     from sourceSets.main.allSource
 }
 
+// copy the compiled classes into the maven output dir so it can assemble the jar
+task moveClasses(type: Copy, dependsOn: 'compileGroovy') {
+    from "$buildDir/classes"
+    into 'target/classes'
+}
+
+task moveJars(type: Copy, dependsOn: ['docJar', 'sourceJar']) {
+    from "$buildDir/libs"
+    into 'target'
+
+    // exclude the main jar, we need to let maven assemble it in order for the pom to be included
+    exclude jar.archivePath.name
+}
+
+build.dependsOn << [moveJars, moveClasses]
+
+clean {
+    delete 'target'
+}
+
 artifacts {
     archives jar
     archives docJar
     archives sourceJar
 }
-
-signing {
-    required { !version.endsWith("SNAPSHOT") && gradle.taskGraph.hasTask("uploadArchives") }
-    sign configurations.archives
-}
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            configuration = configurations.deployerJars
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                // authentication(userName: sonatypeUsername, password: sonatypePassword)
-            }
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-            pom.project {
-                packaging 'jar'
-                description 'Gradle plugin for performing build time ActiveJDBC instrumentation'
-                url 'https://github.com/javalite/activejdbc/'
-                scm {
-                    url 'scm:git:git@github.com:javalite/activejdbc.git'
-                    connection 'scm:git:git@github.com:javalite/activejdbc.git'
-                    developerConnection 'git@github.com:javalite/activejdbc.git'
-               }
-                licenses {
-                    license {
-                        name 'The Apache Software License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        distribution 'repo'
-                    }
-                }
-            }
-        }
-    }
-}
-
