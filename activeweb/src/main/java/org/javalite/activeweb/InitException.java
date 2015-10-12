@@ -28,12 +28,12 @@ public class InitException  extends RuntimeException{
     }
 
     public InitException(String message, Throwable cause) {
-        super(message + ": " + cause.getClass() + ":" + cause.getMessage(), cause);
-        setStackTrace(cause.getStackTrace());
+        super(message, cause);
+
     }
 
     public InitException(Throwable cause) {
         super(cause);
-        setStackTrace(cause.getStackTrace());
+
     }
 }
