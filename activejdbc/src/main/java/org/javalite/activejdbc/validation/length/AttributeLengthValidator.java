@@ -2,7 +2,6 @@ package org.javalite.activejdbc.validation.length;
 
 import org.javalite.activejdbc.Model;
 import org.javalite.activejdbc.validation.ValidatorAdapter;
-import org.javalite.activejdbc.validation.length.option.LengthOption;
 
 import java.util.Locale;
 
@@ -36,7 +35,7 @@ public class AttributeLengthValidator extends ValidatorAdapter {
 
     public AttributeLengthValidator with(LengthOption lengthOption) {
         this.lengthOption = lengthOption;
-        setMessage(lengthOption.getParameterizedMessage());
+        setMessage(lengthOption.getParametrizedMessage());
         return this;
     }
 

@@ -1863,6 +1863,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         errors.put(key, value);
     }
 
+    /**
+     * Removes a validator from model.
+     *
+     * @param validator validator to remove. It needs to be an exact reference validator instance to
+     *                  remove. If argument was not added to this model before, this method will
+     *                  do nothing.
+     */
     public static void removeValidator(Validator validator){
         ModelDelegate.removeValidator(modelClass(), validator);
     }

@@ -1,4 +1,4 @@
-package org.javalite.activejdbc.validation.length.option;
+package org.javalite.activejdbc.validation.length;
 
 /**
  * The attribute length must be more than or equal to the given value.
@@ -20,7 +20,7 @@ public class Min implements LengthOption {
     }
 
     @Override
-    public String getParameterizedMessage() {
+    public String getParametrizedMessage() {
         return "attribute should have a minimum length of {0}";
     }
 

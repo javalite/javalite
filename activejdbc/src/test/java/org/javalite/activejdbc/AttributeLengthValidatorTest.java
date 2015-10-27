@@ -3,10 +3,10 @@ package org.javalite.activejdbc;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.User;
 import org.javalite.activejdbc.validation.length.*;
-import org.javalite.activejdbc.validation.length.option.Exact;
-import org.javalite.activejdbc.validation.length.option.Max;
-import org.javalite.activejdbc.validation.length.option.Min;
-import org.javalite.activejdbc.validation.length.option.Range;
+import org.javalite.activejdbc.validation.length.Exact;
+import org.javalite.activejdbc.validation.length.Max;
+import org.javalite.activejdbc.validation.length.Min;
+import org.javalite.activejdbc.validation.length.Range;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,19 +22,20 @@ public class AttributeLengthValidatorTest extends ActiveJDBCTest {
         AttributeLengthValidator validator = AttributeLengthValidator.on("first_name").with(Min.of(4));
 
         User u = new User();
-        u.set("email", "igor@polevoy.org");
+        u.set("email", "john@doe.com");
         u.set("first_name", "Igor");
 
-        u.addValidator(validator);
+        User.addValidator(validator);
         u.validate();
         a(u.errors().size()).shouldBeEqual(0);
-        u.removeValidator(validator);
+        User.removeValidator(validator);
 
         validator = AttributeLengthValidator.on("first_name").with(Min.of(5));
-        u.addValidator(validator);
+        User.addValidator(validator);
         u.validate();
         a(u.errors().size()).shouldBeEqual(1);
-        u.removeValidator(validator);
+        a(u.errors().get("first_name")).shouldBeEqual("attribute should have a minimum length of 5");
+        User.removeValidator(validator);
     }
 
     @Test
@@ -42,19 +43,20 @@ public class AttributeLengthValidatorTest extends ActiveJDBCTest {
         AttributeLengthValidator validator = AttributeLengthValidator.on("first_name").with(Max.of(10));
 
         User u = new User();
-        u.set("email", "igor@polevoy.org");
+        u.set("email", "john@doe.com");
         u.set("first_name", "Igor");
 
-        u.addValidator(validator);
+        User.addValidator(validator);
         u.validate();
         a(u.errors().size()).shouldBeEqual(0);
 
-        u.removeValidator(validator);
+        User.removeValidator(validator);
         validator = AttributeLengthValidator.on("first_name").with(Max.of(3));
-        u.addValidator(validator);
+        User.addValidator(validator);
         u.validate();
         a(u.errors().size()).shouldBeEqual(1);
-        u.removeValidator(validator);
+        a(u.errors().get("first_name")).shouldBeEqual("attribute should have a maximum length of 3");
+        User.removeValidator(validator);
     }
 
     @Test
@@ -62,19 +64,20 @@ public class AttributeLengthValidatorTest extends ActiveJDBCTest {
         AttributeLengthValidator validator = AttributeLengthValidator.on("first_name").with(Exact.of(4));
 
         User u = new User();
-        u.set("email", "igor@polevoy.org");
+        u.set("email", "john@doe.com");
         u.set("first_name", "Igor");
 
-        u.addValidator(validator);
+        User.addValidator(validator);
         u.validate();
         a(u.errors().size()).shouldBeEqual(0);
 
-        u.removeValidator(validator);
+        User.removeValidator(validator);
         validator = AttributeLengthValidator.on("first_name").with(Exact.of(3));
-        u.addValidator(validator);
+        User.addValidator(validator);
         u.validate();
         a(u.errors().size()).shouldBeEqual(1);
-        u.removeValidator(validator);
+        a(u.errors().get("first_name")).shouldBeEqual("attribute should have an exact length of 3");
+        User.removeValidator(validator);
     }
 
     @Test
@@ -82,19 +85,20 @@ public class AttributeLengthValidatorTest extends ActiveJDBCTest {
         AttributeLengthValidator validator = AttributeLengthValidator.on("first_name").with(Range.of(0, 5));
 
         User u = new User();
-        u.set("email", "igor@polevoy.org");
+        u.set("email", "john@doe.com");
         u.set("first_name", "Igor");
 
-        u.addValidator(validator);
+        User.addValidator(validator);
         u.validate();
         a(u.errors().size()).shouldBeEqual(0);
 
-        u.removeValidator(validator);
+        User.removeValidator(validator);
         validator = AttributeLengthValidator.on("first_name").with(Range.of(5, 5));
-        u.addValidator(validator);
+        User.addValidator(validator);
         u.validate();
         a(u.errors().size()).shouldBeEqual(1);
-        u.removeValidator(validator);
+        a(u.errors().get("first_name")).shouldBeEqual("attribute should have a length between 5 and 5 (inclusive)");
+        User.removeValidator(validator);
     }
 
     @Test
@@ -102,15 +106,17 @@ public class AttributeLengthValidatorTest extends ActiveJDBCTest {
         AttributeLengthValidator validator = AttributeLengthValidator.on("first_name").with(Min.of(2));
 
         User u = new User();
-        u.set("email", "igor@polevoy.org");
+        u.set("email", "john@doe.com");
         u.set("first_name", 5);
-        u.addValidator(validator);
+        User.addValidator(validator);
         try {
             u.validate();
             a(false);
         } catch (final IllegalArgumentException e) {
             a(true);
             a(e.getMessage().equals("Attribute must be a String"));
+        }finally {
+            User.removeValidator(validator);
         }
     }
 }

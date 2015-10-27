@@ -1,4 +1,4 @@
-package org.javalite.activejdbc.validation.length.option;
+package org.javalite.activejdbc.validation.length;
 
 /**
  * The attribute length must be between the given minimum and maximum length (inclusive).
@@ -23,7 +23,7 @@ public class Range implements LengthOption {
     }
 
     @Override
-    public String getParameterizedMessage() {
+    public String getParametrizedMessage() {
         return "attribute should have a length between {0} and {1} (inclusive)";
     }
 

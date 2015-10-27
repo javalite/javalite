@@ -1,4 +1,4 @@
-package org.javalite.activejdbc.validation.length.option;
+package org.javalite.activejdbc.validation.length;
 
 /**
  * Attribute Length validation option.
@@ -6,7 +6,7 @@ package org.javalite.activejdbc.validation.length.option;
 public interface LengthOption {
     boolean validate(String fieldValue);
 
-    String getParameterizedMessage();
+    String getParametrizedMessage();
 
     Object[] getMessageParameters();
 }

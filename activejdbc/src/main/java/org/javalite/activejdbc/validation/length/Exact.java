@@ -1,4 +1,4 @@
-package org.javalite.activejdbc.validation.length.option;
+package org.javalite.activejdbc.validation.length;
 
 /**
  * The attribute length must be equal to a given value.
@@ -20,7 +20,7 @@ public class Exact implements LengthOption {
     }
 
     @Override
-    public String getParameterizedMessage() {
+    public String getParametrizedMessage() {
         return "attribute should have an exact length of {0}";
     }
 
