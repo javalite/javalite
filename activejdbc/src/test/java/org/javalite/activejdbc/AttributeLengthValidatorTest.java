@@ -3,12 +3,10 @@ package org.javalite.activejdbc;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.User;
 import org.javalite.activejdbc.validation.length.*;
-import org.javalite.activejdbc.validation.length.Exact;
-import org.javalite.activejdbc.validation.length.Max;
-import org.javalite.activejdbc.validation.length.Min;
-import org.javalite.activejdbc.validation.length.Range;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Locale;
 
 public class AttributeLengthValidatorTest extends ActiveJDBCTest {
 
@@ -118,5 +116,22 @@ public class AttributeLengthValidatorTest extends ActiveJDBCTest {
         }finally {
             User.removeValidator(validator);
         }
+    }
+
+    @Test
+    public void testErrorsWithInternationalization() {
+
+        User u = new User();
+        u.set("email", "john@doe.com");
+        u.set("first_name", "Igor");
+
+        AttributeLengthValidator validator = AttributeLengthValidator.on("first_name").with(Range.of(5, 5));
+        validator.setMessage("validation.length.range");
+        User.addValidator(validator);
+        u.validate();
+        a(u.errors().size()).shouldBeEqual(1);
+        a(u.errors().get("first_name")).shouldBeEqual("Attribute should have a length between 5 and 5 (inclusive).");
+        a(u.errors(new Locale("de", "DE")).get("first_name")).shouldBeEqual("Attribut sollte eine L\u00E4nge zwischen 5 und 5 (inklusive).");
+        User.removeValidator(validator);
     }
 }
