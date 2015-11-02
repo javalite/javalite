@@ -9,7 +9,6 @@
         <version>1.4.12-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.javalite</groupId>
     <artifactId>activejdbc-gradle-plugin</artifactId>
     <version>1.4.12-SNAPSHOT</version>
     <name>JavaLite - Gradle Instrumentation Plugin</name>
