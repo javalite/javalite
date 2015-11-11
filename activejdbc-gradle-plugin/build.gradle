@@ -34,7 +34,7 @@ task sourceJar(type: Jar) {
 
 // copy the compiled classes into the maven output dir so it can assemble the jar
 task moveClasses(type: Copy, dependsOn: 'compileGroovy') {
-    from "$buildDir/classes"
+    from sourceSets.main.output
     into 'target/classes'
 }
 
