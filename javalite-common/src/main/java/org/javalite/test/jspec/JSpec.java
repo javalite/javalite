@@ -23,6 +23,17 @@ public final class JSpec{
         return new Expectation<Object>(o1);
     }
 
+    /**
+     * Synonym of methods {@link JSpec#the(Object)} or {@link JSpec#a(Object)}.
+     *
+     * @param o1 instance for checking
+     * @return generalized expectation
+     */
+    public static Expectation<Object> $(Object o1){
+        return a(o1);
+    }
+
+
     public static Expectation<Object> the(Object o1){
         return a(o1);
     }
