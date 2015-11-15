@@ -18,6 +18,9 @@ package org.javalite.activeweb;
 
 import org.javalite.common.Convert;
 import org.javalite.test.jspec.TestException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.junit.Before;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -314,4 +317,45 @@ public class RequestSpecHelper extends SpecHelper{
         return cookie(name).getValue();
     }
 
+
+    /**
+     * Parses controller response content and selects content of HTML element using CSS selectors.<br>
+     * <strong>Example:</strong><br>
+     *
+     *  <pre>
+     *     request().get("index");
+     *     a(find("div[class='greeting']").shouldEqual("Hello!");
+     *  </pre>
+     *
+     * @param cssQuery CSS query. Implementation is based on <a href="http://jsoup.org/">JSoup</a>.
+     * @return contents of selected element as text.
+     */
+    protected String text(String cssQuery){
+        Document doc = Jsoup.parse(responseContent().replace("'", "\"")); //TODO: this replacement can be removed
+        // when this PL is accepted: https://github.com/jhy/jsoup/pull/655 and a new JSoup version released
+        Elements elements  = doc.select(cssQuery);
+        if(elements.isEmpty()){
+            return null;
+        }else if(elements.size() > 1){
+            throw new IllegalArgumentException("Your query points to multiple elements. Choose only one.");
+        }
+
+        return elements.get(0).text();
+    }
+
+    /**
+     * Parses controller response and counts elements that are found by a CSS query.
+     * <strong>Example:</strong><br>
+     *
+     *  <pre>
+     *     request().get("index");
+     *     a(count("div[class='main']").shouldEqual(1);
+     *  </pre>
+
+     * @param cssQuery CSS query. Implementation is based on <a href="http://jsoup.org/">JSoup</a>.
+     * @return number of elements in HTML document that were matching the query.
+     */
+    public int count(String cssQuery) {
+        return Jsoup.parse(responseContent().replace("'", "\"")).select(cssQuery).size();
+    }
 }
