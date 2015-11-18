@@ -1,7 +1,10 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 group 'org.javalite'
 version '1.4.12-SNAPSHOT'
 
 apply plugin: 'groovy'
+apply plugin: 'maven'
 
 sourceCompatibility = 1.7
 
@@ -46,8 +49,6 @@ task moveJars(type: Copy, dependsOn: ['docJar', 'sourceJar']) {
     exclude jar.archivePath.name
 }
 
-build.dependsOn << [moveJars, moveClasses]
-
 clean {
     delete 'target'
 }
@@ -56,4 +57,40 @@ artifacts {
     archives jar
     archives docJar
     archives sourceJar
+}
+
+build.dependsOn << ['testPluginSubproject', 'moveJars', 'moveClasses']
+
+task testDaemonBuild1(type: TestProjectBuild) {
+    useDaemon = true
+}
+
+task testDaemonBuild2(type: TestProjectBuild) {
+    useDaemon = true
+}
+
+task testNormalBuild1(type: TestProjectBuild) {}
+task testNormalBuild2(type: TestProjectBuild) {}
+
+task testPluginSubproject(dependsOn: ['test', 'install', 'testDaemonBuild1', 'testDaemonBuild2', 'testNormalBuild1', 'testNormalBuild2'])
+
+class TestProjectBuild extends Exec {
+
+    boolean useDaemon = false
+
+    TestProjectBuild() {
+        workingDir = 'test-project'
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            executable = '../gradlew.bat'
+        } else {
+            executable = '../gradlew'
+        }
+    }
+
+    @Override
+    protected void exec() {
+        def daemonArg = (useDaemon) ? '--daemon' : '--no-daemon'
+        setArgs([daemonArg, '--stacktrace', "-Pplugin.project.jar=${project.jar.archivePath}", "-Pparent.version=${project.version}", 'clean', 'test'])
+        super.exec()
+    }
 }

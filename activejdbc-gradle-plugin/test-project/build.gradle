@@ -1,0 +1,43 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+    dependencies {
+        classpath "org.javalite:activejdbc-gradle-plugin:${property('parent.version')}"
+        classpath 'org.flywaydb:flyway-gradle-plugin:3.2.1'
+        classpath "com.h2database:h2:1.4.187"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'org.javalite.activejdbc'
+apply plugin: 'org.flywaydb.flyway'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.javalite:activejdbc:1.4.11'
+    compile "com.h2database:h2:1.4.187"
+    testCompile 'junit:junit:4.12'
+}
+
+sourceCompatibility = 1.7
+
+task cleanDb(type: Delete) {
+    delete 'build/testdb.*'
+}
+
+flyway {
+    url = 'jdbc:h2:file:./build/testdb'
+}
+
+test {
+    dependsOn << 'cleanDb'
+    dependsOn << 'flywayMigrate'
+    testLogging.events 'passed', 'skipped', 'failed'
+    testLogging.exceptionFormat = 'full'
+    testLogging.showStandardStreams = true
+}
