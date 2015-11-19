@@ -38,10 +38,18 @@ public class Instrumentation {
     private final InstrumentationModelFinder modelFinder;
     private String outputDirectory;
 
+    /**
+     * Creates an instrumentation instance using the default shared {@link ClassPool} for finding classes.
+     */
     public Instrumentation() {
         this(null);
     }
 
+    /**
+     * Creates an instrumentation instance using the specified {@link ClassPool} for finding classes.
+     *
+     * @param classPool a custom class pool for looking up classes to instrument, reverts to the default if null.
+     */
     public Instrumentation(ClassPool classPool) {
         this.modelFinder = createModelFinder(classPool);
     }
