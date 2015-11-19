@@ -62,14 +62,8 @@ artifacts {
 
 build.dependsOn << ['testPluginSubproject', 'moveJars', 'moveClasses']
 
-task testDaemonBuild1(type: TestProjectBuild) {
-    useDaemon = true
-}
-
-task testDaemonBuild2(type: TestProjectBuild) {
-    useDaemon = true
-}
-
+task testDaemonBuild1(type: TestProjectBuild) { useDaemon = true }
+task testDaemonBuild2(type: TestProjectBuild) { useDaemon = true }
 task testNormalBuild1(type: TestProjectBuild) {}
 task testNormalBuild2(type: TestProjectBuild) {}
 
@@ -79,19 +73,21 @@ class TestProjectBuild extends Exec {
 
     boolean useDaemon = false
 
-    TestProjectBuild() {
-        workingDir = 'test-project'
-        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-            executable = '../gradlew.bat'
-        } else {
-            executable = '../gradlew'
-        }
-    }
-
     @Override
     protected void exec() {
+        workingDir = 'test-project'
+
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            commandLine = ['cmd', '/c', '..\\gradlew.bat']
+        } else {
+            commandLine = ['../gradlew']
+        }
+
         def daemonArg = (useDaemon) ? '--daemon' : '--no-daemon'
-        setArgs([daemonArg, '--stacktrace', "-Pactivejdbc.version=${project.version}", 'clean', 'test'])
+        [daemonArg, '--stacktrace', "-Pactivejdbc.version=${project.version}", 'test'].each { arg ->
+            commandLine = commandLine + arg
+        }
+
         super.exec()
     }
 }
