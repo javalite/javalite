@@ -10,6 +10,7 @@ sourceCompatibility = 1.7
 
 repositories {
     mavenCentral()
+    maven { url 'http://repo.javalite.io' }
 }
 
 configurations {
@@ -19,8 +20,8 @@ configurations {
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    compile group: 'org.javalite', name: 'activejdbc', version: '1.4.11'
-    compile group: 'org.javalite', name: 'activejdbc-instrumentation', version: '1.4.11'
+    compile group: 'org.javalite', name: 'activejdbc', version: "${project.version}"
+    compile group: 'org.javalite', name: 'activejdbc-instrumentation', version: "${project.version}"
 
     deployerJars group: 'org.apache.maven.wagon', name: 'wagon-http', version: '2.2'
 }
@@ -90,7 +91,7 @@ class TestProjectBuild extends Exec {
     @Override
     protected void exec() {
         def daemonArg = (useDaemon) ? '--daemon' : '--no-daemon'
-        setArgs([daemonArg, '--stacktrace', "-Pplugin.project.jar=${project.jar.archivePath}", "-Pparent.version=${project.version}", 'clean', 'test'])
+        setArgs([daemonArg, '--stacktrace', "-Pactivejdbc.version=${project.version}", 'clean', 'test'])
         super.exec()
     }
 }

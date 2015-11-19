@@ -4,7 +4,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath "org.javalite:activejdbc-gradle-plugin:${property('parent.version')}"
+        classpath "org.javalite:activejdbc-gradle-plugin:${property('activejdbc.version')}"
         classpath 'org.flywaydb:flyway-gradle-plugin:3.2.1'
         classpath "com.h2database:h2:1.4.187"
     }
@@ -16,10 +16,11 @@ apply plugin: 'org.flywaydb.flyway'
 
 repositories {
     mavenCentral()
+    maven { url 'http://repo.javalite.io/' }
 }
 
 dependencies {
-    compile 'org.javalite:activejdbc:1.4.11'
+    compile "org.javalite:activejdbc:${property('activejdbc.version')}"
     compile "com.h2database:h2:1.4.187"
     testCompile 'junit:junit:4.12'
 }
@@ -27,11 +28,11 @@ dependencies {
 sourceCompatibility = 1.7
 
 task cleanDb(type: Delete) {
-    delete 'build/testdb.*'
+    delete 'build/testdb'
 }
 
 flyway {
-    url = 'jdbc:h2:file:./build/testdb'
+    url = 'jdbc:h2:file:./build/testdb/db'
 }
 
 test {

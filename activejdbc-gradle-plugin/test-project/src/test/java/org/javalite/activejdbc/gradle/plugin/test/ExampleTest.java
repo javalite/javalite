@@ -14,7 +14,7 @@ public class ExampleTest {
 
     @Test
     public void testOk() {
-        Base.open("org.h2.Driver", "jdbc:h2:file:./build/testdb", null, null);
+        Base.open("org.h2.Driver", "jdbc:h2:file:./build/testdb/db", null, null);
         for (String name : Arrays.asList("foo", "bar", "baz")) {
             Example e = new Example();
             e.set("name", name);

@@ -46,7 +46,11 @@ public class InstrumentationModelFinder {
 
 
     protected InstrumentationModelFinder() throws NotFoundException, ClassNotFoundException {
-        cp = ClassPool.getDefault();
+        this(ClassPool.getDefault());
+    }
+
+    protected InstrumentationModelFinder(ClassPool cp) throws ClassNotFoundException, NotFoundException {
+        this.cp = cp;
         //any simple class will do here, but Model - it causes slf4j to be loaded during instrumentation.
         cp.insertClassPath(new ClassClassPath(Class.forName("org.javalite.activejdbc.Association")));
         modelClass = cp.get("org.javalite.activejdbc.Model");
