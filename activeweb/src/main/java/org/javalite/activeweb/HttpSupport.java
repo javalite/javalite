@@ -22,6 +22,8 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.javalite.common.Convert;
 import org.javalite.common.Util;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1660,5 +1662,27 @@ public class HttpSupport {
             headers.put(name, Context.getHttpResponse().getHeader(name));
         }
         return headers;
+    }
+
+    /**
+     * Cleans HTML from harmful tags, making XSS impossible.
+     * <p>For example, input like this:</p>
+     *
+     * <pre>
+     *      &lt;html&gt;&lt;script&gt; alert('hello');&lt;/script&gt;&lt;div&gt;this is a clean part&lt;/div&gt;&lt;/html&gt;
+     * </pre>
+     *
+     * Will produce output like this:
+     *
+     * <pre>
+     *     this is a clean part
+     * </pre>
+     *
+     * @param unsafeContent unsafe content. Something that an end user typed into a text area, or input that may include
+     *                      a script tag or other garbage.
+     * @return sanitized version of input
+     */
+    protected String sanitize(String unsafeContent){
+        return Jsoup.clean(unsafeContent, Whitelist.basic());
     }
 }

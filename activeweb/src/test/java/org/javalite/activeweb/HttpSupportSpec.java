@@ -238,4 +238,14 @@ public class HttpSupportSpec extends RequestSpec{
         String merged = response.getContentAsString();
         a(merged).shouldBeEqual(format("What is your name?%n- My name is John Doe"));
     }
+
+    @Test //https://github.com/javalite/activeweb/issues/244
+    public void shouldSanitizeBadContent() throws IOException, ServletException {
+        request.setServletPath("/Sanitize");
+        request.setMethod("POST");
+        request.addParameter("attack", "<html><script> alert('hello');</script><div>this is a clean part</div></html>");
+        dispatcher.doFilter(request, response, filterChain);
+        String result = response.getContentAsString();
+        a(result).shouldBeEqual("this is a clean part");
+    }
 }
