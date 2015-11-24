@@ -20,7 +20,7 @@ public class InjectionTagControllerSpec extends ControllerSpec {
 
     @Test
     public void shouldInjectIntoTag(){
-        request().integrateViews().get("index");
+        request().get("index");
         a(responseContent()).shouldBeEqual("Greeter message: Hello from real greeter");
     }
 }

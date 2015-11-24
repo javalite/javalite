@@ -20,7 +20,7 @@ public class MyRestfulControllerSpec extends AppIntegrationSpec {
     @Test
     public void shouldFixDefect106(){
 
-        controller("/my_restful").integrateViews().get("index");
+        controller("/my_restful").get("index");
 
         System.out.println(responseContent());
 

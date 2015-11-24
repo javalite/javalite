@@ -34,13 +34,13 @@ public class LinkToControllerSpec extends ControllerSpec {
 
     @Test
     public void shouldInferControllerNameFromContext(){
-        request().integrateViews().get("index");
+        request().get("index");
         a(responseContent()).shouldBeEqual("<a href=\"/test_context/link_to/index2\" data-link=\"aw\">Index 2 </a>");
     }
 
     @Test
     public void shouldOverrideContextControllerWithAttributeController(){
-        request().integrateViews().get("index2");
+        request().get("index2");
         a(responseContent()).shouldBeEqual("<a href=\"/test_context/abc_person/index2\" data-link=\"aw\">Index 2 </a>");
     }
 }

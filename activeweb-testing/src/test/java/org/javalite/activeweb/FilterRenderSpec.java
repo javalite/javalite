@@ -34,7 +34,7 @@ public class FilterRenderSpec extends IntegrationSpec{
     
     @Test
     public void shouldRenderFromFilter(){
-        controller("abc_person").param("user", "Jim").integrateViews().get("index");
+        controller("abc_person").param("user", "Jim").get("index");
         a(responseContent()).shouldBeEqual("Jim");
     }
 

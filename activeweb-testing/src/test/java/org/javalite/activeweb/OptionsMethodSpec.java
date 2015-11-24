@@ -27,7 +27,7 @@ public class OptionsMethodSpec extends IntegrationSpec{
 
     @Test
     public void shouldRouteToAppropriateDeleteMethod(){
-        controller("options").integrateViews().options("index");
+        controller("options").options("index");
         a(responseContent()).shouldBeEqual("ok");
     }
 }

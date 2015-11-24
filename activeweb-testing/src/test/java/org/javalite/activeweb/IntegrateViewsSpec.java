@@ -15,7 +15,7 @@ public class IntegrateViewsSpec extends IntegrationSpec {
 
     @Test
     public void shouldRenderWithoutCallingIntegrateViews(){
-        controller("student").integrateViews().get("index");
+        controller("student").get("index");
         a(responseContent()).shouldBeEqual("hello");
     }
 }

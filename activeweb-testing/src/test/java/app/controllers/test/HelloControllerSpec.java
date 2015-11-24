@@ -32,7 +32,7 @@ public class HelloControllerSpec extends ControllerSpec {
 
     @Test
     public void shouldFindControllerNameInSubPackage(){
-        request().integrateViews().get("index");
+        request().get("index");
         a(responseContent()).shouldBeEqual("hello");
     }
 

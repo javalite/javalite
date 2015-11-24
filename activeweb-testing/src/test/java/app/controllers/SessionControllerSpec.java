@@ -37,13 +37,13 @@ public class SessionControllerSpec extends ControllerSpec {
 
     @Test
     public void shouldAccessSessionObject(){
-        request().integrateViews().get("index");
+        request().get("index");
         a(responseContent()).shouldBeEqual("Hello, John");
     }
 
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldRejectSettingNameSessionIntoParams(){
-        request().integrateViews().get("bad_action");
+        request().get("bad_action");
     }
 }

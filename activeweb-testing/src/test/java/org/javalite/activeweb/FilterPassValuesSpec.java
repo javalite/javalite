@@ -35,7 +35,7 @@ public class FilterPassValuesSpec  extends IntegrationSpec{
 
     @Test
     public void shouldPassValueFromFilterToView(){
-        controller("abc-person").integrateViews().get("pass_values");
+        controller("abc-person").get("pass_values");
         a(responseContent()).shouldBeEqual("Alec Boldwin");
     }
 

@@ -34,7 +34,7 @@ public class ActiveWebParamsControllerSpec extends ControllerSpec {
     @Test
     public void shouldAssignAWMapToView(){
 
-        request().integrateViews().get("index");
+        request().get("index");
         String response = responseContent();
 
         a(response.contains("restful = false")).shouldBeTrue();

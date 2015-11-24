@@ -65,7 +65,6 @@ public class UploadControllerSpec extends IntegrationSpec{
                 .contentType("multipart/form-data")
                 .formItem(new FileItem("hello1.txt", "hello1", "text/plain", "greetings!".getBytes()))
                 .formItem(new FileItem("hello2.txt", "hello2", "text/plain", ".. and salutations!".getBytes()))
-                .integrateViews()
                 .post("upload");
         String html = responseContent();
 
@@ -83,7 +82,6 @@ public class UploadControllerSpec extends IntegrationSpec{
                 .contentType("multipart/form-data")
                 .formItem(new FileItem("hello1.txt", "hello1", "text/plain", "greetings!".getBytes()))
                 .formItem(new FileItem("hello2.txt", "hello2", "text/plain", ".. and salutations!".getBytes()))
-                .integrateViews()
                 .post("upload-multipart");
         String html = responseContent();
 
@@ -100,11 +98,8 @@ public class UploadControllerSpec extends IntegrationSpec{
         controller("upload").contentType("multipart/form-data")
                 .id("123")
                 .formItem(new FileItem("hello2.txt", "hello2", "text/plain", ".. and salutations!".getBytes()))
-                .integrateViews()
                 .post("with-id");
-
         a(assigns().get("id")).shouldNotBeNull();
-
         a(responseContent()).shouldBeEqual("<html> <div> <div>hello2.txt</div> <div>.. and salutations!</div> </div> </html>");
     }
 

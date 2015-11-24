@@ -32,7 +32,7 @@ public class RenderControllerSpec extends ControllerSpec {
 
     @Test
     public void shouldCallCorrectTemplate(){
-        request().integrateViews().get("use-render");
+        request().get("use-render");
         a(responseContent()).shouldBeEqual("success");
         a(template()).shouldBeEqual("/render/use-render");
     }
