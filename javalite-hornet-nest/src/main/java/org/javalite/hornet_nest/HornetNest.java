@@ -109,11 +109,16 @@ public class HornetNest {
             jmsServer.setJmsConfiguration(jmsConfig);
             jmsServer.start();
 
+
             ConnectionFactory connectionFactory = (ConnectionFactory) jmsServer.lookup("/cf");
+            if(connectionFactory == null){
+                throw new HornetNestException("Failed to start EmbeddedJMS due to previous errors. Please, see earlier output from HornetQ.");
+            }
             consumerConnection = connectionFactory.createConnection();
             producerConnection = connectionFactory.createConnection();
-
             configureListeners(injector, queueConfigs);
+        } catch (HornetNestException e) {
+            throw e;
         } catch (Exception e) {
             throw new HornetNestException("Failed to start EmbeddedJMS", e);
         }
