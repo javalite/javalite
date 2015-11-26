@@ -31,12 +31,17 @@ public class IncludesTest extends ActiveJDBCTest{
     @Test
     public void shouldBeAbleToIncludeParentOne2Many() {
         deleteAndPopulateTables("users", "addresses");
-        List<Address> addresses = Address.findAll().orderBy("id").include(User.class);
-        a(addresses.get(0).toMap().get("user")).shouldNotBeNull();
-        Map user = (Map)addresses.get(0).toMap().get("user");
+        List<Address> addresses = Address.where("city = ?", "Springfield").orderBy("id").include(User.class);
+        //ensure that the parent is actually cached
+        User u1 = addresses.get(0).parent(User.class);
+        User u2 = addresses.get(0).parent(User.class);
+        a(u1).shouldBeTheSameAs(u2);
+
+        a(addresses.get(0).get("user")).shouldNotBeNull();
+        User user = (User) addresses.get(0).get("user");
         a(user.get("first_name")).shouldBeEqual("Marilyn");
 
-        user = (Map)addresses.get(6).toMap().get("user");
+        user = (User)addresses.get(6).get("user");
         a(user.get("first_name")).shouldBeEqual("John");
     }
 
