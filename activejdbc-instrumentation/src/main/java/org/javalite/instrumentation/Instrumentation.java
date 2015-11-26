@@ -17,7 +17,6 @@ limitations under the License.
 
 package org.javalite.instrumentation;
 
-import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.NotFoundException;
 
@@ -35,36 +34,7 @@ import java.util.List;
  */
 public class Instrumentation {
 
-    private final InstrumentationModelFinder modelFinder;
     private String outputDirectory;
-
-    /**
-     * Creates an instrumentation instance using the default shared {@link ClassPool} for finding classes.
-     */
-    public Instrumentation() {
-        this(null);
-    }
-
-    /**
-     * Creates an instrumentation instance using the specified {@link ClassPool} for finding classes.
-     *
-     * @param classPool a custom class pool for looking up classes to instrument, reverts to the default if null.
-     */
-    public Instrumentation(ClassPool classPool) {
-        this.modelFinder = createModelFinder(classPool);
-    }
-
-    private static InstrumentationModelFinder createModelFinder(ClassPool classPool) {
-        try {
-            if (classPool == null) {
-                return new InstrumentationModelFinder();
-            } else {
-                return new InstrumentationModelFinder(classPool);
-            }
-        } catch (ClassNotFoundException | NotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public void setOutputDirectory(String outputDirectory) {
         this.outputDirectory = outputDirectory;
@@ -78,11 +48,12 @@ public class Instrumentation {
         try {
             System.out.println("**************************** START INSTRUMENTATION ****************************");
             System.out.println("Directory: " + outputDirectory);
+            InstrumentationModelFinder mf = new InstrumentationModelFinder();
             File target = new File(outputDirectory);
-            modelFinder.processDirectoryPath(target);
+            mf.processDirectoryPath(target);
             ModelInstrumentation mi = new ModelInstrumentation();
 
-            for (CtClass clazz : modelFinder.getModels()) {
+            for (CtClass clazz : mf.getModels()) {
                 byte[] bytecode = mi.instrument(clazz);
                 String fileName = getFullFilePath(clazz);
                 FileOutputStream fout = new FileOutputStream(fileName);
@@ -92,7 +63,7 @@ public class Instrumentation {
                 System.out.println("Instrumented class: " + fileName );
             }
 
-            generateModelsFile(modelFinder.getModels(), target);
+            generateModelsFile(mf.getModels(), target);
             System.out.println("**************************** END INSTRUMENTATION ****************************");
         }
         catch (Exception e) {

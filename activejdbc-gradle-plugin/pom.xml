@@ -72,7 +72,6 @@
                 <configuration>
                     <executable>${gradleScript}</executable>
                     <arguments>
-                        <argument>--stacktrace</argument>
                         <argument>build</argument>
                     </arguments>
                 </configuration>
