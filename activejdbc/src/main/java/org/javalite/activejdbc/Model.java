@@ -2366,8 +2366,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <pre>
      * List<Rule> rules = Rule.findBySQL("select rule.*, goal_identifier from rule, goal where goal.goal_id = rule.goal_id order by goal_identifier asc, rule_type desc");
      * </pre>
-     * Ensure that the query returns all columns associated with this model, so that the resulting models could hydrate itself properly.
-     * Returned columns that are not part of this model will be ignored, but can be used for caluses like above.
+     * Ensure that the query returns all columns associated with this model, so that the resulting models could hydrate themselves properly.
+     * Returned columns that are not part of this model will be ignored, but can be used for clauses like above.
      *
      * @param fullQuery free-form SQL.
      * @param params parameters if query is parametrized.
