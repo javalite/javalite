@@ -22,6 +22,7 @@ import org.javalite.common.Convert;
 import org.javalite.test.jspec.DifferenceExpectation;
 import org.javalite.test.jspec.ExceptionExpectation;
 import org.junit.Test;
+import redis.clients.jedis.Jedis;
 
 import java.io.*;
 import java.util.Calendar;
@@ -37,13 +38,29 @@ import static org.javalite.common.Collections.*;
 public class ModelTest extends ActiveJDBCTest {
 
     @Test
-    public void testModelFinder() {
+    public void testModelFinder() throws IOException, ClassNotFoundException {
         deleteAndPopulateTable("people");
         Person p = new Person();
         p.set("name", "igor", "last_name", "polevoy").saveIt();
         p.refresh();
-        List<Person> list = Person.where("name = 'John'").orderBy("dob desc");
+        LazyList<Person> list = Person.where("name = 'John'").orderBy("dob desc");
         a(1).shouldBeEqual(list.size());
+
+        Jedis jedis = new Jedis("localhost");
+
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        ObjectOutput objectOutput = new ObjectOutputStream(bout);
+
+        objectOutput.writeObject(list);
+        objectOutput.close();
+        byte[] bytes = bout.toByteArray();
+        jedis.hset(Person.getTableName().getBytes(), "query123".getBytes(), bytes);
+        bytes = jedis.hget(Person.getTableName().getBytes(), "query123".getBytes());
+
+        ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes));
+        Object o = in.readObject();
+        System.out.println(o);
+
     }
 
     @Test
