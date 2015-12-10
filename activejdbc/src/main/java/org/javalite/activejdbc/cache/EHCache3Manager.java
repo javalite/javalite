@@ -18,7 +18,6 @@ package org.javalite.activejdbc.cache;
 
 import org.ehcache.Cache;
 import org.ehcache.CacheManagerBuilder;
-import org.ehcache.config.CacheConfiguration;
 import org.ehcache.config.CacheConfigurationBuilder;
 import org.ehcache.config.xml.XmlConfiguration;
 import org.javalite.activejdbc.InitException;
@@ -38,6 +37,9 @@ public class EHCache3Manager extends CacheManager {
 
     private static final Logger logger = LoggerFactory.getLogger(EHCacheManager.class);
     private org.ehcache.CacheManager cacheManager;
+    private final CacheConfigurationBuilder<String, Object> cacheTemplate;
+
+    private final Object lock = new Object();
 
 
     public EHCache3Manager() throws ClassNotFoundException, SAXException, InstantiationException, IOException, IllegalAccessException {
@@ -48,12 +50,7 @@ public class EHCache3Manager extends CacheManager {
 
         XmlConfiguration xmlConfiguration = new XmlConfiguration(url);
 
-        // how to use this???
-        //CacheConfigurationBuilder<String, Object> cacheBuilder
-        // = xmlConfiguration.newCacheConfigurationBuilderFromTemplate("activejdbc", String.class, Object.class);
-
-
-
+        cacheTemplate = xmlConfiguration.newCacheConfigurationBuilderFromTemplate("activejdbc", String.class, Object.class);
         cacheManager = CacheManagerBuilder.newCacheManager(xmlConfiguration);
         cacheManager.init();
     }
@@ -62,26 +59,17 @@ public class EHCache3Manager extends CacheManager {
     @Override
     public Object getCache(String group, String key) {
         try {
-            createIfMissing(group);
-            Cache c = cacheManager.getCache(group, String.class, Object.class);
-            return c.get(key) == null ? null : c.get(key);
+            Cache<String, Object> c = getCacheForGroupOrCreateIt(group);
+            return c.get(key);
         } catch (Exception e) {
             logger.warn("{}", e, e);
             return null;
         }
     }
 
-    private void createIfMissing(String group) {
-        //double-checked synchronization is broken in Java, but this should work just fine.
-        if (cacheManager.getCache(group, String.class, Object.class) == null) {
-            cacheManager.createCache(group, CacheConfigurationBuilder.newCacheConfigurationBuilder().buildConfig(String.class, Object.class));
-        }
-    }
-
     @Override
     public void addCache(String group, String key, Object cache) {
-        createIfMissing(group);
-        cacheManager.getCache(group, String.class, Object.class).put(key, cache);
+        getCacheForGroupOrCreateIt(group).put(key, cache);
     }
 
     @Override
@@ -89,7 +77,22 @@ public class EHCache3Manager extends CacheManager {
         if (event.getType().equals(CacheEvent.CacheEventType.ALL)) {
             logger.warn(getClass() + " does not support flushing all caches. Flush one group at the time.");
         } else if (event.getType().equals(CacheEvent.CacheEventType.GROUP)) {
-            cacheManager.removeCache(event.getGroup());
+            synchronized (lock) {
+                cacheManager.removeCache(event.getGroup());
+            }
         }
+    }
+
+    private Cache<String, Object> getCacheForGroupOrCreateIt(String group) {
+        Cache<String, Object> cache = cacheManager.getCache(group, String.class, Object.class);
+        if (cache == null) {
+            synchronized (lock) {
+                cache = cacheManager.getCache(group, String.class, Object.class);
+                if (cache == null) {
+                    cache = cacheManager.createCache(group, cacheTemplate.buildConfig(String.class, Object.class));
+                }
+            }
+        }
+        return cache;
     }
 }
