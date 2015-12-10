@@ -22,6 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Cache implementation based on EHCache 2.
+ *
  * @author Igor Polevoy
  */
 public class EHCacheManager extends CacheManager {

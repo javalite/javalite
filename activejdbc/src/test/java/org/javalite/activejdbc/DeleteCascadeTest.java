@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class DeleteCascadeTest extends ActiveJDBCTest{
 
-    @Test
+    @Test 
     public void shouldDeleteOneToManyDeep(){
         deleteAndPopulateTables("users", "addresses", "rooms");
 
@@ -33,7 +33,7 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
 
         //verify total count after delete
         a(Address.count()).shouldBeEqual(4);
-
+        
         //verify that no relations left in child table
         a(Address.where("user_id = ?", 1).size()).shouldBeEqual(0);
 
@@ -120,10 +120,15 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
     public void shouldDeleteMany2ManyDeepSkippingAssociation() {
 
         deleteAndPopulateTables("doctors", "patients", "doctors_patients", "prescriptions");
-        Registry.cacheManager().flush(CacheEvent.ALL);
+        Registry.cacheManager().flush(new CacheEvent("doctors", ""));
+        Registry.cacheManager().flush(new CacheEvent("patients", ""));
+        Registry.cacheManager().flush(new CacheEvent("prescriptions", ""));
 
 
-        Registry.cacheManager().flush(CacheEvent.ALL);
+
+        Doctor.findAll().dump();
+        Patient.findAll().dump();
+        Prescription.findAll().dump();
 
         a(Doctor.count()).shouldBeEqual(3);
         a(Patient.count()).shouldBeEqual(3);
