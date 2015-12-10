@@ -1,6 +1,7 @@
 package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.cache.CacheEvent;
+import org.javalite.activejdbc.cache.QueryCache;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.*;
 import org.junit.After;
@@ -15,6 +16,21 @@ import java.util.List;
  * @author Igor Polevoy
  */
 public class DeleteCascadeTest extends ActiveJDBCTest{
+
+    @Before
+    public void onStart(){
+
+        Person.findAll(); // bootstraps models
+        QueryCache.instance().purgeTableCache("doctors");
+        QueryCache.instance().purgeTableCache("patients");
+        purgeCache("doctors", "patients", "vehicles", "mammals", "classifications");
+    }
+
+    private void purgeCache(String ... tables){
+        for (String table : tables) {
+            QueryCache.instance().purgeTableCache(table);
+        }
+    }
 
     @Test 
     public void shouldDeleteOneToManyDeep(){
@@ -89,7 +105,7 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
 
         //case 1: simple: follow many to many, then one to many
         deleteAndPopulateTables("doctors", "patients", "doctors_patients", "prescriptions");
-        Registry.cacheManager().flush(CacheEvent.ALL);
+
 
         a(Prescription.count()).shouldBeEqual(5);
 
@@ -120,10 +136,6 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
     public void shouldDeleteMany2ManyDeepSkippingAssociation() {
 
         deleteAndPopulateTables("doctors", "patients", "doctors_patients", "prescriptions");
-        Registry.cacheManager().flush(CacheEvent.ALL);
-
-
-        Registry.cacheManager().flush(CacheEvent.ALL);
 
         a(Doctor.count()).shouldBeEqual(3);
         a(Patient.count()).shouldBeEqual(3);
@@ -167,7 +179,6 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
     @Test
     public void shouldDeleteMany2ManyShallow(){
         deleteAndPopulateTables("doctors", "patients", "doctors_patients", "prescriptions");
-        Registry.cacheManager().flush(CacheEvent.ALL);
 
         a(Prescription.count()).shouldBeEqual(5);
 
@@ -186,7 +197,7 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
         SubClassification.deleteAll();
 
         deleteAndPopulateTables("vehicles", "mammals", "classifications");
-        Registry.cacheManager().flush(CacheEvent.ALL);
+
         Vehicle car = Vehicle.createIt("name", "car");
         Classification fourWheeled = Classification.create("name", "four wheeled");
         car.add(fourWheeled);

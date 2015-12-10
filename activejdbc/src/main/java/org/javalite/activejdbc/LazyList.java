@@ -23,8 +23,7 @@ import org.javalite.common.Inflector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.*;
 
 import static org.javalite.common.Util.*;
@@ -37,7 +36,7 @@ import static org.javalite.common.Util.*;
  * @author Igor Polevoy
  * @author Eric Nielsen
  */
-public class LazyList<T extends Model> extends AbstractLazyList<T> {
+public class LazyList<T extends Model> extends AbstractLazyList<T> implements Externalizable {
 
     private static final Logger logger = LoggerFactory.getLogger(LazyList.class);
     private final List<String> orderBys = new ArrayList<String>();
@@ -73,7 +72,7 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> {
     }
 
     //TODO: this is only used by SuperLazyList, to be reviewed?
-    protected LazyList() {
+    public LazyList() {
         delegate = new ArrayList<T>();
         this.fullQuery = null;
         this.subQuery = null;
@@ -573,5 +572,15 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> {
             p.write('\n');
         }
         p.flush();
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeObject(delegate);
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        delegate = (List<T>) in.readObject();
     }
 }
