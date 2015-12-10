@@ -23,6 +23,6 @@ public class LazyListTest extends ActiveJDBCTest {
     @Test
     public void shouldBeEqual() {
         deleteAndPopulateTable("people");
-        the(Person.findAll().equals(Person.findAll())).shouldBeTrue(); // only works with in-memory cache
+        the(Person.findAll().equals(Person.findAll())).shouldBeTrue();
     }
 }

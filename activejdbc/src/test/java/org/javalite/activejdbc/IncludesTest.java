@@ -113,7 +113,7 @@ public class IncludesTest extends ActiveJDBCTest{
 
         List<Patient> patients1 = doctors.get(0).getAll(Patient.class);
         List<Patient> patients2 = doctors.get(0).getAll(Patient.class);
-        a(patients1).shouldBeTheSameAs(patients2); // only works  with in-memory cache
+        a(patients1).shouldBeTheSameAs(patients2);
     }
 
     @Test

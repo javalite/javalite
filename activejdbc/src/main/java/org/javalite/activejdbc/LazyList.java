@@ -23,7 +23,8 @@ import org.javalite.common.Inflector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.*;
 
 import static org.javalite.common.Util.*;
@@ -36,7 +37,7 @@ import static org.javalite.common.Util.*;
  * @author Igor Polevoy
  * @author Eric Nielsen
  */
-public class LazyList<T extends Model> extends AbstractLazyList<T> implements Externalizable {
+public class LazyList<T extends Model> extends AbstractLazyList<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(LazyList.class);
     private final List<String> orderBys = new ArrayList<String>();
@@ -72,7 +73,7 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
     }
 
     //TODO: this is only used by SuperLazyList, to be reviewed?
-    public LazyList() {
+    protected LazyList() {
         delegate = new ArrayList<T>();
         this.fullQuery = null;
         this.subQuery = null;
@@ -298,7 +299,7 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
             sql = metaModel.getDialect().formSelect(null, fullQuery, orderBys, limit, offset);
         }else{
             sql = fullQuery != null ? fullQuery
-                : metaModel.getDialect().formSelect(metaModel.getTableName(), subQuery, orderBys, limit, offset);
+                    : metaModel.getDialect().formSelect(metaModel.getTableName(), subQuery, orderBys, limit, offset);
         }
         if (showParameters) {
             StringBuilder sb = new StringBuilder(sql).append(", with parameters: ");
@@ -515,9 +516,9 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
         appendQuestions(query, ids.size());
         query.append(')');
         for (Model child : new LazyList<Model>(query.toString(), childMetaModel, ids.toArray()).orderBy(childMetaModel.getIdName())) {
-             if(childrenByParentId.get(child.get(fkName)) == null){
-                    childrenByParentId.put(child.get(fkName), new SuperLazyList<Model>());
-             }
+            if(childrenByParentId.get(child.get(fkName)) == null){
+                childrenByParentId.put(child.get(fkName), new SuperLazyList<Model>());
+            }
             childrenByParentId.get(child.get(fkName)).add(child);
         }
         for(T parent : delegate){
@@ -541,8 +542,8 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
             Model child = ModelDelegate.instance(res, childMetaModel);
             Object parentId = res.get("the_parent_record_id");
             if(childrenByParentId.get(parentId) == null){
-                    childrenByParentId.put(parentId, new SuperLazyList<Model>());
-             }
+                childrenByParentId.put(parentId, new SuperLazyList<Model>());
+            }
             childrenByParentId.get(parentId).add(child);
         }
         for(T parent : delegate){
@@ -572,15 +573,5 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
             p.write('\n');
         }
         p.flush();
-    }
-
-    @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(delegate);
-    }
-
-    @Override
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        delegate = (List<T>) in.readObject();
     }
 }
