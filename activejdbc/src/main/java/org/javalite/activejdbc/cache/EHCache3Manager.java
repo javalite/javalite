@@ -77,8 +77,9 @@ public class EHCache3Manager extends CacheManager {
         if (event.getType().equals(CacheEvent.CacheEventType.ALL)) {
             logger.warn(getClass() + " does not support flushing all caches. Flush one group at the time.");
         } else if (event.getType().equals(CacheEvent.CacheEventType.GROUP)) {
-            synchronized (lock) {
-                cacheManager.removeCache(event.getGroup());
+            final Cache<String, Object> cache = cacheManager.getCache(event.getGroup(), String.class, Object.class);
+            if (cache != null) {
+                cache.clear();
             }
         }
     }
