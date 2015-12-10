@@ -51,6 +51,10 @@ public class EHCache3Manager extends CacheManager {
         XmlConfiguration xmlConfiguration = new XmlConfiguration(url);
 
         cacheTemplate = xmlConfiguration.newCacheConfigurationBuilderFromTemplate("activejdbc", String.class, Object.class);
+
+        if(cacheTemplate == null){
+            throw new InitException("Please, provide a <cache-template name=\"activejdbc\"> element in  activejdbc-ehcache.xml file");
+        }
         cacheManager = CacheManagerBuilder.newCacheManager(xmlConfiguration);
         cacheManager.init();
     }

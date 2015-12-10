@@ -95,6 +95,8 @@ public class Configuration {
             try{
                 Class cmc = Class.forName(cacheManagerClass);
                 cacheManager = (CacheManager)cmc.newInstance();
+            }catch(InitException e){
+                throw e;
             }catch(Exception e){
                 throw new InitException("failed to initialize a CacheManager. Please, ensure that the property " +
                         "'cache.manager' points to correct class which extends 'org.javalite.activejdbc.cache.CacheManager' class and provides a default constructor.", e);
