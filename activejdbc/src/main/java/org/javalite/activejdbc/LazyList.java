@@ -576,14 +576,12 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
 
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
-
-            out.writeObject(delegate);
+        out.writeObject(delegate);
 
     }
 
-    @Override
+    @Override @SuppressWarnings("unchecked")
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-
         delegate = (List<T>) in.readObject();
     }
 }

@@ -36,11 +36,10 @@ import java.net.URL;
 public class EHCache3Manager extends CacheManager {
 
     private static final Logger logger = LoggerFactory.getLogger(EHCacheManager.class);
-    private org.ehcache.CacheManager cacheManager;
     private final CacheConfigurationBuilder<String, Object> cacheTemplate;
-
     private final Object lock = new Object();
 
+    private org.ehcache.CacheManager cacheManager;
 
     public EHCache3Manager() throws ClassNotFoundException, SAXException, InstantiationException, IOException, IllegalAccessException {
         URL url = getClass().getResource("/activejdbc-ehcache.xml");
