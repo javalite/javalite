@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.sql.Connection;
 import java.util.*;
 
 import static org.javalite.activejdbc.LogFilter.*;
@@ -31,6 +32,7 @@ import static org.javalite.common.Util.*;
 
 public class MetaModel implements Serializable {
     private final static Logger logger = LoggerFactory.getLogger(MetaModel.class);
+    private static final ThreadLocal<HashMap<Class, String>> shardingTableNamesTL = new ThreadLocal<>();
 
     private Map<String, ColumnMetadata> columnMetadata;
     private final List<Association> associations = new ArrayList<Association>();
@@ -53,6 +55,35 @@ public class MetaModel implements Serializable {
         this.dbName = dbName;
         this.idGeneratorCode = findIdGeneratorCode(modelClass);
         this.versionColumn = findVersionColumn(modelClass);
+    }
+
+    static Map<Class,String> getTableNamesMap(){
+        if (shardingTableNamesTL.get() == null)
+            shardingTableNamesTL.set(new HashMap<Class, String>());
+        return shardingTableNamesTL.get();
+    }
+
+    /**
+     * Sets a table name for this model. The table name is attached to a current thread and will remain there
+     * until it is set with a different value or cleared with {@link #clearShardTableName()} method.
+     * Table name set with this method overrides a table name naturally mapped to this model.
+     *
+     * <p>
+     *    Method {@link #getTableName()} will return this value for all operations related to this table.
+     * </p>
+     *
+     * @param tableName name of a table this model will read from current thread.
+     */
+    public void setShardTableName(String tableName){
+        getTableNamesMap().put(modelClass, tableName);
+    }
+
+    /**
+     * Clears sharding name of table attached to current thread. The name was supposedly attached by the {@link #setShardTableName(String)}
+     * method.
+     */
+    public void clearShardTableName(){
+        getTableNamesMap().remove(modelClass);
     }
 
     private boolean isCached(Class<? extends Model> modelClass) {
@@ -108,7 +139,11 @@ public class MetaModel implements Serializable {
     }
 
     public String getTableName() {
-        return tableName;
+        if(getTableNamesMap().containsKey(modelClass)){
+            return getTableNamesMap().get(modelClass);
+        }else{
+            return tableName;
+        }
     }
 
     void setColumnMetadata(Map<String, ColumnMetadata> columnMetadata){
