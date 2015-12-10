@@ -299,7 +299,7 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> {
             sql = metaModel.getDialect().formSelect(null, fullQuery, orderBys, limit, offset);
         }else{
             sql = fullQuery != null ? fullQuery
-                : metaModel.getDialect().formSelect(metaModel.getTableName(), subQuery, orderBys, limit, offset);
+                    : metaModel.getDialect().formSelect(metaModel.getTableName(), subQuery, orderBys, limit, offset);
         }
         if (showParameters) {
             StringBuilder sb = new StringBuilder(sql).append(", with parameters: ");
@@ -516,9 +516,9 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> {
         appendQuestions(query, ids.size());
         query.append(')');
         for (Model child : new LazyList<Model>(query.toString(), childMetaModel, ids.toArray()).orderBy(childMetaModel.getIdName())) {
-             if(childrenByParentId.get(child.get(fkName)) == null){
-                    childrenByParentId.put(child.get(fkName), new SuperLazyList<Model>());
-             }
+            if(childrenByParentId.get(child.get(fkName)) == null){
+                childrenByParentId.put(child.get(fkName), new SuperLazyList<Model>());
+            }
             childrenByParentId.get(child.get(fkName)).add(child);
         }
         for(T parent : delegate){
@@ -542,8 +542,8 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> {
             Model child = ModelDelegate.instance(res, childMetaModel);
             Object parentId = res.get("the_parent_record_id");
             if(childrenByParentId.get(parentId) == null){
-                    childrenByParentId.put(parentId, new SuperLazyList<Model>());
-             }
+                childrenByParentId.put(parentId, new SuperLazyList<Model>());
+            }
             childrenByParentId.get(parentId).add(child);
         }
         for(T parent : delegate){
