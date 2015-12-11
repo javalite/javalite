@@ -198,9 +198,11 @@ public abstract class AppController extends HttpSupport {
             if (annotations.length == 0) {
                 return Collections.singletonList(HttpMethod.GET);
             } else {
-                List<HttpMethod> res = new ArrayList<HttpMethod>();
+                List<HttpMethod> res = new ArrayList<>();
                 for (Annotation annotation : annotations) {
-                    res.add(HttpMethod.valueOf(annotation.annotationType().getSimpleName()));
+                    try {
+                        res.add(HttpMethod.valueOf(annotation.annotationType().getSimpleName()));
+                    } catch (IllegalArgumentException ignore) {} // we do not know this annotation
                 }
                 return res;
             }
