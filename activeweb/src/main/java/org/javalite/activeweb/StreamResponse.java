@@ -39,6 +39,7 @@ class StreamResponse extends ControllerResponse{
                 out.write(bytes, 0, x);
             }
             out.flush();
+            out.close();
         }
         catch(Exception e){
             throw new ControllerException(e);
