@@ -93,7 +93,7 @@ public final class Convert {
      * Copying stream
      */
     private static void copyStream(Reader r, Writer w) throws IOException {
-        char buffer[] = new char[4096];
+        char[] buffer = new char[4096];
         for (int n = 0; -1 != (n = r.read(buffer));) {
             w.write(buffer, 0, n);
         }

@@ -125,7 +125,7 @@ public class InstrumentationModelFinder {
      */
     private void findFiles(File directory) throws IOException, ClassNotFoundException {
 
-        File files[] = directory.listFiles(new FilenameFilter() {
+        File[] files = directory.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 return name.endsWith(".class");
             }
