@@ -42,6 +42,10 @@ public class JavaAgent {
     private static final Set<ClassLoader> loaders = new HashSet<ClassLoader>();
     private static Method modelFound;
 
+    private JavaAgent() {
+        
+    }
+    
     @SuppressWarnings("unchecked")
     public static void premain(String args, java.lang.instrument.Instrumentation inst) {
 

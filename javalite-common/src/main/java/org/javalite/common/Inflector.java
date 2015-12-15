@@ -89,6 +89,10 @@ public class Inflector {
 
         uncountables = Arrays.asList("equipment", "information", "rice", "money", "species", "series", "fish", "sheep");
     }
+    
+    private Inflector() {
+        
+    }
 
     public static void addPlural(String rule, String replacement){
         plurals.add(0, new String[]{rule, replacement});

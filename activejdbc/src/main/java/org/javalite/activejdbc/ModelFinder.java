@@ -29,6 +29,10 @@ public class ModelFinder {
 
     private static final List<String> modelClassNames = new ArrayList<String>();
 
+    private ModelFinder() {
+        
+    }
+    
     protected static void findModels(String dbName) throws IOException, ClassNotFoundException {
         //this is for static instrumentation. In case of dynamic, the  modelClassNames will already be filled.
         List<String> models = Registry.instance().getConfiguration().getModelNames(dbName);

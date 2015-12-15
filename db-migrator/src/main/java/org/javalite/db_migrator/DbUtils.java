@@ -24,6 +24,10 @@ public class DbUtils {
     private static final String DB2_FRAGMENT = ":db2:";
     private static final String ORACLE_FRAGMENT = ":oracle:";
 
+    private DbUtils() {
+        
+    }
+    
     /**
      * Given a jdbc url, this tries to determine the target database and returns the driver class name as a string.
      *

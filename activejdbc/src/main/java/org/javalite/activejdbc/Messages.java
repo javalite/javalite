@@ -34,6 +34,10 @@ public class Messages {
 
     private static final String BUNDLE = "activejdbc_messages";
 
+    private Messages() {
+        
+    }
+    
     /**
      * Looks for a localized property/message in <code>activejdbc_messages</code> bundle.
      *

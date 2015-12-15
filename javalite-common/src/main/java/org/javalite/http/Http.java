@@ -37,8 +37,10 @@ public class Http {
      * Read timeout in milliseconds. Set this value to what you like to override default.
      */
     public static int READ_TIMEOUT = 5000;
-
-
+    
+    private Http() {
+        
+    }
 
     /**
      * Executes a POST request.
