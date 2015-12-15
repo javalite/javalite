@@ -30,7 +30,7 @@ import static org.javalite.common.Util.*;
 
 
 public class MetaModel implements Serializable {
-    private final static Logger logger = LoggerFactory.getLogger(MetaModel.class);
+    private static final Logger logger = LoggerFactory.getLogger(MetaModel.class);
 
     private Map<String, ColumnMetadata> columnMetadata;
     private final List<Association> associations = new ArrayList<Association>();

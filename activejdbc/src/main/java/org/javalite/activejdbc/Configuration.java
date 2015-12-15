@@ -36,7 +36,7 @@ public class Configuration {
     private Map<String, List<String>> modelsMap = new HashMap<String, List<String>>();
     private Properties properties = new Properties();
     private static CacheManager cacheManager;
-    private final static Logger logger = LoggerFactory.getLogger(Configuration.class);
+    private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
 
     private Map<String, Dialect> dialects = new CaseInsensitiveMap<>();
 

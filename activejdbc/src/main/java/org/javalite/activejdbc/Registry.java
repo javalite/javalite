@@ -42,7 +42,7 @@ public enum Registry {
     //our singleton!
     INSTANCE;
 
-    private final static Logger logger = LoggerFactory.getLogger(Registry.class);
+    private static final Logger logger = LoggerFactory.getLogger(Registry.class);
 
     private final MetaModels metaModels = new MetaModels();
     private final Map<Class, ModelRegistry> modelRegistries = new HashMap<Class, ModelRegistry>();

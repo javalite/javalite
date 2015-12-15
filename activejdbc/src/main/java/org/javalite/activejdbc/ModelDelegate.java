@@ -34,7 +34,7 @@ import static org.javalite.common.Util.*;
  * @author Eric Nielsen
  */
 public final class ModelDelegate {
-    private final static Logger logger = LoggerFactory.getLogger(ModelDelegate.class);
+    private static final Logger logger = LoggerFactory.getLogger(ModelDelegate.class);
 
     private ModelDelegate() {
         // not instantiable

@@ -26,7 +26,7 @@ import java.util.*;
  */
 class MetaModels {
 
-    private final static Logger logger = LoggerFactory.getLogger(MetaModels.class);
+    private static final Logger logger = LoggerFactory.getLogger(MetaModels.class);
 
     private final Map<String, MetaModel> metaModelsByTableName = new CaseInsensitiveMap<MetaModel>();
     private final Map<Class<? extends Model>, MetaModel> metaModelsByClass = new HashMap<Class<? extends Model>, MetaModel>();
