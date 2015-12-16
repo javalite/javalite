@@ -25,6 +25,7 @@ import java.util.Map;
 public class UserTag extends FreeMarkerTag{
     @Override
     protected void render(Map params, String body, Writer writer) throws Exception {
-        writer.write("" + session().get("user"));
+        writer.write("User is: " + session().get("user") + ", as well as: " + session("user")
+                + ", as well as: " + sessionObject("user"));
     }
 }

@@ -38,7 +38,7 @@ public class SessionControllerSpec extends ControllerSpec {
     @Test
     public void shouldAccessSessionObject(){
         request().get("index");
-        a(responseContent()).shouldBeEqual("Hello, John");
+        a(responseContent()).shouldBeEqual("User is: John, as well as: John, as well as: John");
     }
 
 

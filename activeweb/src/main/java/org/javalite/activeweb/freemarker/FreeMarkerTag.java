@@ -428,8 +428,9 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
     }
 
     /**
-     * Returns reference to a current session. Creates a new session of one does not exist.
-     * @return reference to a current session.
+     * Returns reference to a current session map.
+     *
+     * @return reference to a current session map.
      */
     protected Map session(){
         Map session;
@@ -441,6 +442,10 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
             session = new HashMap();
         }
         return Collections.unmodifiableMap(session);
+    }
+
+    private SimpleHash getSessionHash(){
+        return (SimpleHash)get("session");
     }
 
     /**
@@ -466,7 +471,7 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
      * @return value of session attribute of null if not found
      */
     protected  Object session(String name){
-        return session(name);
+        return session().get(name);
     }
 
     /**
