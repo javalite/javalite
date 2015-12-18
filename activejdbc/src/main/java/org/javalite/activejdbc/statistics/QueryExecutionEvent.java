@@ -17,15 +17,20 @@ limitations under the License.
 
 package org.javalite.activejdbc.statistics;
 
+import java.util.regex.Pattern;
+
 /**
  * @author Igor Polevoy
  */
 public class QueryExecutionEvent {
+
+    private static final Pattern IN_PATTERN = Pattern.compile("(IN|in)\\s*\\(.*\\)", Pattern.CASE_INSENSITIVE);
+
     private final String query;
     private final long time;
 
     public QueryExecutionEvent(String query, long time) {
-        this.query = query;
+        this.query = IN_PATTERN.matcher(query).replaceAll("IN (...)");
         this.time = time;
     }
 

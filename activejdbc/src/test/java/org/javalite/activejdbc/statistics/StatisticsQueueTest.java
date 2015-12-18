@@ -17,22 +17,22 @@ limitations under the License.
 
 package org.javalite.activejdbc.statistics;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
 import static org.javalite.test.jspec.JSpec.a;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.javalite.test.jspec.JSpec.the;
 
 /**
  * @author Igor Polevoy
  */
 public class StatisticsQueueTest {
-    private static final Logger logger = LoggerFactory.getLogger(StatisticsQueueTest.class);
 
     private StatisticsQueue queue;
 
@@ -48,7 +48,7 @@ public class StatisticsQueueTest {
     @Before
     public void setUp() throws ExecutionException, InterruptedException {
         queue = new StatisticsQueue(false);
-        List<Future> futures = new ArrayList<Future>();
+        List<Future> futures = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             futures.add(queue.enqueue(new QueryExecutionEvent("test", 10 + i)));
             futures.add(queue.enqueue(new QueryExecutionEvent("test1", 20 + i)));
@@ -101,5 +101,12 @@ public class StatisticsQueueTest {
         //could be a race condition, lets wait till all messages are processed
         wait(future);
         a(queue.getReportSortedBy("avg").size()).shouldBeEqual(reportSize);
+    }
+
+
+    @Test // related to: https://github.com/javalite/activejdbc/issues/451
+    public void shouldNormalizeInSelects(){
+        QueryExecutionEvent event = new QueryExecutionEvent("select * from people where id IN (1,2,3,4)", 1);
+        the(event.getQuery()).shouldBeEqual("select * from people where id IN (...)");
     }
 }
