@@ -19,6 +19,7 @@ package org.javalite.activejdbc.cache;
 
 
 import org.javalite.activejdbc.LogFilter;
+import org.javalite.activejdbc.MetaModel;
 import org.javalite.activejdbc.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,7 +120,9 @@ public enum QueryCache {
      * @param tableName table name whose caches are to be purged.
      */
     public void purgeTableCache(String tableName) {
-        if(enabled  && Registry.instance().getMetaModel(tableName).cached()){
+        if(enabled){
+        	MetaModel mm = Registry.instance().getMetaModel(tableName);
+        	if (mm != null && mm.cached())
             cacheManager.flush(new CacheEvent(tableName, getClass().getName()));
         }
     }

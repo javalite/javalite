@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.javalite.activejdbc.cache.QueryCache;
 import org.javalite.activejdbc.statement_providers.*;
 import org.javalite.common.Collections;
 import org.javalite.activejdbc.*;
@@ -73,7 +74,9 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
             OracleDBReset.resetOracle(getStatements("-- BREAK", "oracle_schema.sql"));
         } else if (db().equals("mssql")) {
             DefaultDBReset.resetSchema(getStatements("; ", "mssql_schema.sql"));
-        } else if (db().equals("sqlite")) {
+        } else if (db().equals("db2")) {
+            DefaultDBReset.resetSchema(getStatements(";", "db2_schema.sql"));
+       } else if (db().equals("sqlite")) {
             DefaultDBReset.resetSchema(getStatements("; ", "sqlite_schema.sql"));
         }
     }
@@ -169,6 +172,7 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
     protected void deleteAndPopulateTable(String table) {
         deleteFromTable(table);
         populateTable(table);
+        QueryCache.instance().purgeTableCache(table); // purge any cached query results
     }
 
     protected void deleteFromTable(String table){
@@ -191,6 +195,8 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
             statementProvider = new H2StatementProvider();
         } else if (db().equals("mssql")) {
             statementProvider = new MSSQLStatementProvider();
+        } else if (db().equals("db2")) {
+            statementProvider = new DB2StatementProvider();
         } else if (db().equals("sqlite")) {
             statementProvider = new SQLiteStatementProvider();
         } else {
