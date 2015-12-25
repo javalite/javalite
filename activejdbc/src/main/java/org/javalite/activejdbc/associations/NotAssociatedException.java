@@ -18,6 +18,7 @@ limitations under the License.
 package org.javalite.activejdbc.associations;
 
 import org.javalite.activejdbc.DBException;
+import org.javalite.activejdbc.Model;
 
 /**
  * @author Igor Polevoy
@@ -25,8 +26,8 @@ import org.javalite.activejdbc.DBException;
 public class NotAssociatedException extends DBException {
     private final String message;
 
-    public NotAssociatedException(String table1, String table2){
-        this.message = "No association from table '" + table1 + "' to table '" + table2 +"'";
+    public  NotAssociatedException(Class<? extends Model> sourceClass, Class<? extends Model> targetClass){
+        this.message = "No association from model '" + sourceClass + "' to model '" + targetClass +"'";
     }
 
     @Override

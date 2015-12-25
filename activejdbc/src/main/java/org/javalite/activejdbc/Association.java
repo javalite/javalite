@@ -26,34 +26,34 @@ import java.io.Serializable;
  *
  * @author Igor Polevoy
  */
-//TODO: move this to package org.javalite.activejdbc.associations?
+//TODO: move this class to associations package, but also see InstrumentationModelFinder:51
 public class Association implements Serializable {
 
-    private final String source;
-    private final String target;
+    private final Class<? extends Model> source;
+    private final Class<? extends Model> target;
 
     /**
-     * @param source source table name of this association.
-     * @param target target table name of this association.
+     * @param source source class of this association.
+     * @param target target class of this association.
      */
-    protected Association(String source, String target) {
+    protected Association(Class<? extends Model> source, Class<? extends Model> target) {
         this.source = source;
         this.target = target;
     }
 
     /**
-     * Returns source table name of this association.
-     * @return source table name of this association.
+     * Returns source class of this association.
+     * @return source class of this association.
      */
-    public String getSource() {
+    public Class<? extends Model> getSourceClass() {
         return source;
     }
 
     /**
-     * Returns target table name of this association.
-     * @return target table name of this association.
+     * Returns target class of this association.
+     * @return target class of this association.
      */
-    public String getTarget() {
+    public Class<? extends Model> getTargetClass() {
         return target;
     }
 
@@ -61,6 +61,7 @@ public class Association implements Serializable {
     @Override
     public int hashCode() {
         //TODO: improve hashCode() implementation in the subclasses instead of using this?
+        // The toString() is already unique across every subclass, so should be OK
         return toString().hashCode();
     }
 }

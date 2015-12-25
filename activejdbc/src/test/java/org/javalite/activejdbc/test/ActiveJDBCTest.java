@@ -63,18 +63,25 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
     }
 
     protected void generateSchema() throws SQLException, ClassNotFoundException {
-        if (db().equals("mysql")) {
-            DefaultDBReset.resetSchema(getStatements(";", "mysql_schema.sql"));
-        }else if (db().equals("postgresql")) {
-            DefaultDBReset.resetSchema(getStatements(";", "postgres_schema.sql"));
-        } else if (db().equals("h2")) {
-            DefaultDBReset.resetSchema(getStatements(";", "h2_schema.sql"));
-        } else if (db().equals("oracle")) {
-            OracleDBReset.resetOracle(getStatements("-- BREAK", "oracle_schema.sql"));
-        } else if (db().equals("mssql")) {
-            DefaultDBReset.resetSchema(getStatements("; ", "mssql_schema.sql"));
-        } else if (db().equals("sqlite")) {
-            DefaultDBReset.resetSchema(getStatements("; ", "sqlite_schema.sql"));
+        switch (db()) {
+            case "mysql":
+                DefaultDBReset.resetSchema(getStatements(";", "mysql_schema.sql"));
+                break;
+            case "postgresql":
+                DefaultDBReset.resetSchema(getStatements(";", "postgres_schema.sql"));
+                break;
+            case "h2":
+                DefaultDBReset.resetSchema(getStatements(";", "h2_schema.sql"));
+                break;
+            case "oracle":
+                OracleDBReset.resetOracle(getStatements("-- BREAK", "oracle_schema.sql"));
+                break;
+            case "mssql":
+                DefaultDBReset.resetSchema(getStatements("; ", "mssql_schema.sql"));
+                break;
+            case "sqlite":
+                DefaultDBReset.resetSchema(getStatements("; ", "sqlite_schema.sql"));
+                break;
         }
     }
 
@@ -104,7 +111,7 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
     /**
      * Convenience method for testing.
      *
-     * @param year
+     * @param year year
      * @param month - 1 through 12
      * @param day   - day of month
      * @return Timestamp instance
@@ -116,13 +123,13 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
     /**
      * Convenience method for testing.
      *
-     * @param year
+     * @param year year
      * @param month 1 through 12
      * @param day day of month
      * @param hour 0 through 23
-     * @param minute
-     * @param second
-     * @param millisecond
+     * @param minute minute
+     * @param second second
+     * @param millisecond millisecond
      * @return Timestamp instance
      */
     public Timestamp getTimestamp(int year, int month, int day,
@@ -137,7 +144,7 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
     /**
      * Convenience method for testing.
      *
-     * @param year
+     * @param year year
      * @param month 1 through 12
      * @param day day of month
      * @return time value
@@ -180,21 +187,28 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
     }
 
     private StatementProvider getStatementProvider(){
-        StatementProvider statementProvider = null;
-        if (db().equals("mysql")) {
-            statementProvider = new MySQLStatementProvider();
-        } else if (db().equals("oracle")) {
-            statementProvider = new OracleStatementProvider();
-        } else if (db().equals("postgresql")) {
-            statementProvider = new PostgreSQLStatementProvider();
-        } else if (db().equals("h2")) {
-            statementProvider = new H2StatementProvider();
-        } else if (db().equals("mssql")) {
-            statementProvider = new MSSQLStatementProvider();
-        } else if (db().equals("sqlite")) {
-            statementProvider = new SQLiteStatementProvider();
-        } else {
-        	throw new RuntimeException("Unknown db:" + db());
+        StatementProvider statementProvider;
+        switch (db()) {
+            case "mysql":
+                statementProvider = new MySQLStatementProvider();
+                break;
+            case "oracle":
+                statementProvider = new OracleStatementProvider();
+                break;
+            case "postgresql":
+                statementProvider = new PostgreSQLStatementProvider();
+                break;
+            case "h2":
+                statementProvider = new H2StatementProvider();
+                break;
+            case "mssql":
+                statementProvider = new MSSQLStatementProvider();
+                break;
+            case "sqlite":
+                statementProvider = new SQLiteStatementProvider();
+                break;
+            default:
+                throw new RuntimeException("Unknown db:" + db());
         }
         return statementProvider;
     }

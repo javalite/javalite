@@ -18,6 +18,7 @@ limitations under the License.
 package org.javalite.activejdbc.associations;
 
 import org.javalite.activejdbc.Association;
+import org.javalite.activejdbc.Model;
 
 /**
  * @author Igor Polevoy
@@ -31,7 +32,7 @@ public class OneToManyPolymorphicAssociation extends Association {
      * @param target target table - many targets belong to source.
      * @param typeLabel
      */
-    public OneToManyPolymorphicAssociation(String source, String target,  String typeLabel) {
+    public OneToManyPolymorphicAssociation(Class<? extends Model> source, Class<? extends Model> target, String typeLabel) {
         super(source, target);
         this.typeLabel = typeLabel;
     }
@@ -42,21 +43,18 @@ public class OneToManyPolymorphicAssociation extends Association {
 
     @Override
     public String toString() {
-        return new StringBuilder().append(getSource()).append("  ----------<  ").append(getTarget())
-                .append(", type: ").append("has-many-polymorphic").toString();
+        return getSourceClass().getSimpleName() + "  ----------<  " + getTargetClass().getSimpleName() + ", type: " + "has-many-polymorphic";
     }
 
     @Override
     public boolean equals(Object other) {
-
-        if(other == null || !other.getClass().equals(getClass())){
+        if (other == null || !other.getClass().equals(getClass())) {
             return false;
+        } else {
+            OneToManyPolymorphicAssociation otherAss = (OneToManyPolymorphicAssociation) other;
+            return otherAss.typeLabel.equals(typeLabel)
+                    && otherAss.getSourceClass().equals(getSourceClass())
+                    && otherAss.getTargetClass().equals(getTargetClass());
         }
-
-        OneToManyPolymorphicAssociation otherAss =(OneToManyPolymorphicAssociation)other;
-
-        return otherAss.typeLabel.equals(typeLabel)
-                && otherAss.getSource().equals(getSource())
-                && otherAss.getTarget().equals(getTarget());
     }
 }

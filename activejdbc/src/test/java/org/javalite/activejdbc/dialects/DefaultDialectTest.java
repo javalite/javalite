@@ -18,6 +18,7 @@ package org.javalite.activejdbc.dialects;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
+import org.javalite.activejdbc.test_models.Patient;
 import org.javalite.activejdbc.test_models.Person;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

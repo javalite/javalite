@@ -18,6 +18,7 @@ limitations under the License.
 package org.javalite.activejdbc.associations;
 
 import org.javalite.activejdbc.Association;
+import org.javalite.activejdbc.Model;
 
 /**
  *
@@ -28,8 +29,8 @@ public class BelongsToPolymorphicAssociation extends Association {
     private final String typeLabel;
     private final String parentClassName;
 
-    public BelongsToPolymorphicAssociation(String source, String target, String typeLabel, String parentClassName) {
-        super(source, target);
+    public BelongsToPolymorphicAssociation(Class<? extends Model> sourceModelClass, Class<? extends Model> targetModelClass, String typeLabel, String parentClassName) {
+        super(sourceModelClass, targetModelClass);
         this.typeLabel = typeLabel;
         this.parentClassName = parentClassName;
     }
@@ -44,8 +45,7 @@ public class BelongsToPolymorphicAssociation extends Association {
 
     @Override
     public String toString() {
-        return new StringBuilder().append(getSource()).append("  >----------  ").append(getTarget())
-                .append(", type: ").append("belongs-to-polymorphic").toString();
+        return getSourceClass().getSimpleName() + "  >----------  " + getTargetClass().getSimpleName() + ", type: " + "belongs-to-polymorphic";
     }
 
     @Override
@@ -58,7 +58,7 @@ public class BelongsToPolymorphicAssociation extends Association {
         BelongsToPolymorphicAssociation otherAss =(BelongsToPolymorphicAssociation)other;
 
         return otherAss.typeLabel.equals(typeLabel)
-                && otherAss.getSource().equals(getSource())
-                && otherAss.getTarget().equals(getTarget());
+                && otherAss.getSourceClass().equals(getSourceClass())
+                && otherAss.getTargetClass().equals(getTargetClass());
     }
 }

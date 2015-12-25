@@ -19,12 +19,14 @@ package org.javalite.activejdbc.cache;
 
 
 import org.javalite.activejdbc.LogFilter;
+import org.javalite.activejdbc.MetaModel;
 import org.javalite.activejdbc.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
+import static org.javalite.activejdbc.ModelDelegate.metaModelFor;
 import static org.javalite.common.Util.*;
 
 /**
@@ -42,8 +44,7 @@ public enum QueryCache {
     private final CacheManager cacheManager;
 
     //singleton
-
-    private QueryCache() {
+    QueryCache() {
         cacheManager = Registry.instance().getConfiguration().getCacheManager();
     }
 
@@ -109,18 +110,30 @@ public enum QueryCache {
 
 
     private String getKey(String tableName, String query, Object[] params) {
-        return new StringBuilder(tableName).append(query).append(params == null ? null : Arrays.asList(params).toString()).toString();
+        return tableName + query + (params == null ? null : Arrays.asList(params).toString());
     }
 
     /**
      * This method purges (removes) all caches associated with a table, if caching is enabled and
      * a corresponding model is marked cached.
      *
-     * @param tableName table name whose caches are to be purged.
+     * @param metaModel meta-model whose caches are to purge.
+     */
+    public void purgeTableCache(MetaModel metaModel) {
+        if(enabled  && metaModel.cached()){
+            cacheManager.flush(new CacheEvent(metaModel.getTableName(), getClass().getName()));
+        }
+    }
+
+    /**
+     * Use {@link #purgeTableCache(MetaModel)} whenever you can.
+     *
+     * @param tableName name of table whose caches to purge.
      */
     public void purgeTableCache(String tableName) {
-        if(enabled  && Registry.instance().getMetaModel(tableName).cached()){
-            cacheManager.flush(new CacheEvent(tableName, getClass().getName()));
+        MetaModel mm = metaModelFor(tableName);
+        if(mm != null && enabled  && mm.cached()){
+            cacheManager.flush(new CacheEvent(mm.getTableName(), getClass().getName()));
         }
     }
 

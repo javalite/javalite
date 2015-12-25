@@ -15,10 +15,11 @@ public class DefaultDBReset {
     static void resetSchema(String[] statements) throws SQLException {
         Connection connection = Base.connection();
         for (String statement: statements) {
-            if(Util.blank(statement)) continue;
-            Statement st = connection.createStatement();
-            st.executeUpdate(statement);
-            st.close();
+            if (!Util.blank(statement)) {
+                Statement st = connection.createStatement();
+                st.executeUpdate(statement);
+                st.close();
+            }
         }        
     }
     

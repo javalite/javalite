@@ -15,6 +15,7 @@ limitations under the License.
 */
 package org.javalite.activejdbc.dialects;
 
+import static org.javalite.activejdbc.ModelDelegate.metaModelOf;
 import static org.javalite.common.Util.blank;
 import static org.javalite.common.Util.join;
 import static org.javalite.common.Util.joinAndRepeat;
@@ -28,6 +29,7 @@ import java.util.regex.Pattern;
 
 import org.javalite.activejdbc.CaseInsensitiveMap;
 import org.javalite.activejdbc.MetaModel;
+import org.javalite.activejdbc.Registry;
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
 import org.javalite.common.Convert;
 
@@ -145,10 +147,11 @@ public class DefaultDialect implements Dialect {
 
     @Override
     public String selectManyToManyAssociation(Many2ManyAssociation association, String sourceFkColumnName, int questionsCount) {
-        StringBuilder query = new StringBuilder().append("SELECT ").append(association.getTarget()).append(".*, t.")
+        String targetTable = metaModelOf(association.getTargetClass()).getTableName();
+        StringBuilder query = new StringBuilder().append("SELECT ").append(targetTable).append(".*, t.")
                 .append(association.getSourceFkName()).append(" AS ").append(sourceFkColumnName).append(" FROM ")
-                .append(association.getTarget()).append(" INNER JOIN ").append(association.getJoin()).append(" t ON ")
-                .append(association.getTarget()).append('.').append(association.getTargetPk()).append(" = t.")
+                .append(targetTable).append(" INNER JOIN ").append(association.getJoin()).append(" t ON ")
+                .append(targetTable).append('.').append(association.getTargetPk()).append(" = t.")
                 .append(association.getTargetFkName()).append(" WHERE t.").append(association.getSourceFkName())
                 .append(" IN (");
         appendQuestions(query, questionsCount);

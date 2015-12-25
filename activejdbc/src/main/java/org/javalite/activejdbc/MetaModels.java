@@ -28,8 +28,8 @@ class MetaModels {
 
     private final static Logger logger = LoggerFactory.getLogger(MetaModels.class);
 
-    private final Map<String, MetaModel> metaModelsByTableName = new CaseInsensitiveMap<MetaModel>();
-    private final Map<Class<? extends Model>, MetaModel> metaModelsByClass = new HashMap<Class<? extends Model>, MetaModel>();
+    private final Map<String, MetaModel> metaModelsByTableName = new CaseInsensitiveMap<>();
+    private final Map<Class<? extends Model>, MetaModel> metaModelsByClass = new HashMap<>();
     //these are all many to many associations across all models.
     private final List<Many2ManyAssociation> many2ManyAssociations = new ArrayList<Many2ManyAssociation>();
 
@@ -77,12 +77,19 @@ class MetaModels {
         metaModelsByTableName.get(table).setColumnMetadata(metaParams);
     }
 
+    /**
+     * An edge is a table in a many to many relationship that is not a join.
+     *
+     * @param join join table
+     *
+     * @return edges for a join.
+     */
     protected List<String> getEdges(String join) {
         List<String> results = new ArrayList<String>();
         for (Many2ManyAssociation a : many2ManyAssociations) {
-            if (a.getJoin().equalsIgnoreCase(join)){
-                results.add(a.getSource());
-                results.add(a.getTarget());
+            if (a.getJoin().equalsIgnoreCase(join)) {
+                results.add(getMetaModel(a.getSourceClass()).getTableName());
+                results.add(getMetaModel(a.getTargetClass()).getTableName());
             }
         }
         return results;

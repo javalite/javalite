@@ -24,6 +24,8 @@ import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.javalite.activejdbc.ModelDelegate.metaModelFor;
+
 /**
  * This class supports pagination of result sets in ActiveJDBC. This is useful for paging through tables. If the
  * Model subclass is annotated with @{@link org.javalite.activejdbc.annotations.Cached}, then this class will
@@ -98,7 +100,7 @@ public class Paginator<T extends Model> implements Serializable {
         this.query = query;
         this.params = params;
         String tableName = Registry.instance().getTableName(modelClass);
-        this.metaModel = Registry.instance().getMetaModel(tableName);
+        this.metaModel = metaModelFor(tableName);
 
         this.fullQuery = DB.SELECT_PATTERN.matcher(query).find();
         if (fullQuery) {
