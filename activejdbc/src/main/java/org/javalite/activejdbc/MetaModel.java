@@ -26,11 +26,10 @@ import java.util.*;
 
 import static org.javalite.activejdbc.LogFilter.*;
 import static org.javalite.common.Inflector.*;
-import static org.javalite.common.Util.*;
 
 
 public class MetaModel implements Serializable {
-    private final static Logger logger = LoggerFactory.getLogger(MetaModel.class);
+    private static final Logger logger = LoggerFactory.getLogger(MetaModel.class);
     private static final ThreadLocal<HashMap<Class, String>> shardingTableNamesTL = new ThreadLocal<>();
 
     private Map<String, ColumnMetadata> columnMetadata;
