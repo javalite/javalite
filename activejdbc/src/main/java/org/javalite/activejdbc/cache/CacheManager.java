@@ -30,7 +30,7 @@ import java.util.List;
  * @author Igor Polevoy
  */
 public abstract class CacheManager {
-    private final static Logger logger = LoggerFactory.getLogger(CacheManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(CacheManager.class);
 
     List<CacheEventListener> listeners = new ArrayList<CacheEventListener>();
 

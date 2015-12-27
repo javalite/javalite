@@ -137,7 +137,7 @@ public class XmlEntities {
         }
     }
 
-    static abstract class MapIntMap implements XmlEntities.EntityMap {
+    abstract static class MapIntMap implements XmlEntities.EntityMap {
         protected final Map mapNameToValue;
 
         protected final Map mapValueToName;
