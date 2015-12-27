@@ -49,7 +49,7 @@ public class RowProcessor {
 
         ResultSetMetaData metaData = rs.getMetaData();
 
-        String labels[] = new String[metaData.getColumnCount()];
+        String[] labels = new String[metaData.getColumnCount()];
         int i = 0;
         while (i < labels.length) {
             labels[i++] = metaData.getColumnLabel(i);
