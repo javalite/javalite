@@ -42,7 +42,7 @@ import static org.javalite.common.Util.empty;
  */
 public class DB {
 
-    private final static Logger logger = LoggerFactory.getLogger(DB.class);
+    private static final Logger logger = LoggerFactory.getLogger(DB.class);
     static final Pattern SELECT_PATTERN = Pattern.compile("^\\s*SELECT",
             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
     static final Pattern INSERT_PATTERN = Pattern.compile("^\\s*INSERT",

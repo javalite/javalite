@@ -57,7 +57,7 @@ import static org.javalite.common.Util.*;
  */
 public abstract class Model extends CallbackSupport implements Externalizable {
 
-    private final static Logger logger = LoggerFactory.getLogger(Model.class);
+    private static final Logger logger = LoggerFactory.getLogger(Model.class);
 
     private Map<String, Object> attributes = new CaseInsensitiveMap<Object>();
     private final Set<String> dirtyAttributeNames = new CaseInsensitiveSet();

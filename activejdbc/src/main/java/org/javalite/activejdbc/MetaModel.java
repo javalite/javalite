@@ -26,6 +26,7 @@ import java.util.*;
 
 import static org.javalite.activejdbc.LogFilter.*;
 import static org.javalite.common.Inflector.*;
+import static org.javalite.common.Util.*;
 
 
 public class MetaModel implements Serializable {

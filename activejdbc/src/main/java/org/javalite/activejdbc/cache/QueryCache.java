@@ -37,7 +37,7 @@ import static org.javalite.common.Util.*;
 public enum QueryCache {
     INSTANCE;
 
-    private final static Logger logger = LoggerFactory.getLogger(QueryCache.class);
+    private static final Logger logger = LoggerFactory.getLogger(QueryCache.class);
 
     private final boolean enabled = Registry.instance().getConfiguration().cacheEnabled();
 
