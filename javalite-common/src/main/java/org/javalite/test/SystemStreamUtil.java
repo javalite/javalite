@@ -15,6 +15,10 @@ public class SystemStreamUtil {
     private static ByteArrayOutputStream outStream;
     private static ByteArrayOutputStream errorStream;
 
+    private SystemStreamUtil() {
+        
+    }
+    
     /**
      * Replaces <code>System.out</code> with internal buffer. All calls such as <code>System.out.print...</code>
      * will go to this buffer and not to STDIO

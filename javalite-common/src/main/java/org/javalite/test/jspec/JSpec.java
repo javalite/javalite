@@ -19,6 +19,10 @@ package org.javalite.test.jspec;
 
 public final class JSpec{
     
+    private JSpec() {
+        
+    }
+    
     public static Expectation<Object> a(Object o1){
         return new Expectation<Object>(o1);
     }

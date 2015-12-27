@@ -42,6 +42,10 @@ public class LogFilter {
             setLogExpression("a{10000000}");
         }
     }
+    
+    private LogFilter() {
+        
+    }
 
     public static void setLogExpression(String regexp){
         pattern = Pattern.compile(regexp, Pattern.CASE_INSENSITIVE);

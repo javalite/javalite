@@ -36,6 +36,10 @@ import java.util.Properties;
  */
 public class Base {
 
+    private Base() {
+        
+    }
+    
     /**
      * This method will open a connection defined in the file 'database.properties' located at
      * root of classpath. The connection picked from the file is defined by <code>ACTIVE_ENV</code>
