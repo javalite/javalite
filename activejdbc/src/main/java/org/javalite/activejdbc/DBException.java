@@ -26,20 +26,23 @@ import static org.javalite.common.Util.*;
  */
 public class DBException extends RuntimeException{
 
-    String message;
+    final String message;
 
     public DBException(Throwable cause) {
         super(cause);
         this.setStackTrace(cause.getStackTrace());
+        this.message = null;
     }
 
     public DBException(String message) {
         super(message);
+        this.message = null;
     }
 
     public DBException(String message, Throwable cause) {
         super(message, cause);
         this.setStackTrace(cause.getStackTrace());
+        this.message = null;
     }
 
 
@@ -67,5 +70,6 @@ public class DBException extends RuntimeException{
 
     public DBException() {
         super();
+        this.message = null;
     }
 }

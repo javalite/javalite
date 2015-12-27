@@ -78,7 +78,7 @@ public class MigrationManager {
                 versionStrategy.recordMigration(currentMigration.getVersion(), new Date(start), (start - System.currentTimeMillis()));
                 connection().commit();
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             try{connection().rollback();}catch(Exception ex){throw new MigrationException(e);}
             assert currentMigration != null;
             throw new MigrationException("Migration for version " + currentMigration.getVersion() + " failed, rolling back and terminating migration.", e);

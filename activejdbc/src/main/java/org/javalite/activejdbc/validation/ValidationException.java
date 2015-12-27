@@ -27,8 +27,8 @@ import java.util.Locale;
  * @author Igor Polevoy
  */
 public class ValidationException extends DBException {
-    private String message = "";
-    private Model source;
+    private final String message;
+    private final Model source;
 
     public ValidationException(Model m){
         message = m.errors().toString();
@@ -38,6 +38,7 @@ public class ValidationException extends DBException {
     public ValidationException(String message) {
         super(message);
         this.message = message;
+        this.source = null;
     }
 
     @Override
