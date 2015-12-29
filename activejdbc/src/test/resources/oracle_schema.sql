@@ -66,19 +66,19 @@ FOR EACH ROW
 
 
 -- BREAK
-CREATE TABLE shard1_temperatures (id  NUMBER NOT NULL, temp NUMBER)
+CREATE TABLE shard2_temperatures (id  NUMBER NOT NULL, temp NUMBER)
 -- BREAK
-ALTER TABLE shard1_temperatures ADD CONSTRAINT shard1_temperatures_pk PRIMARY KEY ( id )
+ALTER TABLE shard2_temperatures ADD CONSTRAINT shard2_temperatures_pk PRIMARY KEY ( id )
 -- BREAK
-CREATE SEQUENCE shard1_temperatures_seq START WITH 1 INCREMENT BY 1
+CREATE SEQUENCE shard2_temperatures_seq START WITH 1 INCREMENT BY 1
 -- BREAK
-CREATE OR REPLACE TRIGGER shard1_temperatures_trigger
-BEFORE INSERT ON shard1_temperatures REFERENCING
+CREATE OR REPLACE TRIGGER shard2_temperatures_trigger
+BEFORE INSERT ON shard2_temperatures REFERENCING
     NEW AS new
     OLD AS old
 FOR EACH ROW
     begin
-        select coalesce(:new.id, shard1_temperatures_seq.nextval) into :new.id from dual;
+        select coalesce(:new.id, shard2_temperatures_seq.nextval) into :new.id from dual;
     end;
 
 
