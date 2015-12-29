@@ -63,7 +63,7 @@ public class ShardingSpec extends ActiveJDBCTest {
         Temperature.metaModel().setShardTableName("shard1_temperatures");
         Temperature t = new Temperature();
         t.set("temp", 44).saveIt();
-        Object temp = Base.firstCell("select temp from shard1_temperatures order by id desc limit 1");
+        Object temp = Base.firstCell("select temp from shard1_temperatures order by id desc");
         the(temp).shouldBeEqual(44);
     }
 
@@ -149,7 +149,7 @@ public class ShardingSpec extends ActiveJDBCTest {
 
 
     //// MANY TO MANY:
-    @Test @Ignore
+    @Test
     public void should_access_shard_in_many_to_many() {
 
         clearMany2Many();
