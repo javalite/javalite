@@ -8,14 +8,26 @@ CREATE TABLE accounts (id  INTEGER PRIMARY KEY AUTOINCREMENT, account VARCHAR(56
 DROP TABLE IF EXISTS temperatures;
 CREATE TABLE temperatures (id  INTEGER PRIMARY KEY AUTOINCREMENT, temp SMALLINT);
 
+DROP TABLE IF EXISTS shard1_temperatures;
+CREATE TABLE shard1_temperatures (id  INTEGER PRIMARY KEY AUTOINCREMENT, temp SMALLINT);
+
+DROP TABLE IF EXISTS shard2_temperatures;
+CREATE TABLE shard2_temperatures (id  INTEGER PRIMARY KEY AUTOINCREMENT, temp SMALLINT);
+
 DROP TABLE IF EXISTS salaries;
 CREATE TABLE salaries (id  INTEGER PRIMARY KEY AUTOINCREMENT , salary DECIMAL(7, 2));
 
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (id  INTEGER PRIMARY KEY AUTOINCREMENT , first_name VARCHAR(56), last_name VARCHAR(56), email VARCHAR(56));
 
+DROP TABLE IF EXISTS shard1_users;
+CREATE TABLE shard1_users (id  INTEGER PRIMARY KEY AUTOINCREMENT , first_name VARCHAR(56), last_name VARCHAR(56), email VARCHAR(56));
+
 DROP TABLE IF EXISTS addresses;
 CREATE TABLE addresses (id  INTEGER PRIMARY KEY AUTOINCREMENT , address1 VARCHAR(56), address2 VARCHAR(56), city VARCHAR(56), state VARCHAR(56), zip VARCHAR(56), user_id int(11));
+
+DROP TABLE IF EXISTS shard1_addresses;
+CREATE TABLE shard1_addresses (id  INTEGER PRIMARY KEY AUTOINCREMENT , address1 VARCHAR(56), address2 VARCHAR(56), city VARCHAR(56), state VARCHAR(56), zip VARCHAR(56), user_id int(11));
 
 DROP TABLE IF EXISTS rooms;
 CREATE TABLE rooms (id  INTEGER PRIMARY KEY AUTOINCREMENT , name VARCHAR(56), address_id int(11));
@@ -38,11 +50,17 @@ CREATE TABLE animals (animal_id  INTEGER PRIMARY KEY AUTOINCREMENT , animal_name
 DROP TABLE IF EXISTS patients;
 CREATE TABLE patients (id  INTEGER PRIMARY KEY AUTOINCREMENT , first_name VARCHAR(56), last_name VARCHAR(56));
 
+DROP TABLE IF EXISTS shard1_patients;
+CREATE TABLE shard1_patients (id  INTEGER PRIMARY KEY AUTOINCREMENT , first_name VARCHAR(56), last_name VARCHAR(56));
+
 DROP TABLE IF EXISTS prescriptions;
 CREATE TABLE prescriptions (id  INTEGER PRIMARY KEY AUTOINCREMENT , name VARCHAR(56), patient_id int(11));
 
 DROP TABLE IF EXISTS doctors;
 CREATE TABLE doctors (id  INTEGER PRIMARY KEY AUTOINCREMENT , first_name VARCHAR(56), last_name VARCHAR(56), discipline varchar(56));
+
+DROP TABLE IF EXISTS shard1_doctors;
+CREATE TABLE shard1_doctors (id  INTEGER PRIMARY KEY AUTOINCREMENT , first_name VARCHAR(56), last_name VARCHAR(56), discipline varchar(56));
 
 DROP TABLE IF EXISTS doctors_patients;
 CREATE TABLE doctors_patients (id  INTEGER PRIMARY KEY AUTOINCREMENT , doctor_id int(11), patient_id int(11));
@@ -63,11 +81,20 @@ CREATE TABLE items (id  INTEGER PRIMARY KEY AUTOINCREMENT , item_number int(11),
 DROP TABLE IF EXISTS articles;
 CREATE TABLE articles (id  INTEGER PRIMARY KEY AUTOINCREMENT , title VARCHAR(56), content TEXT);
 
+DROP TABLE IF EXISTS shard1_articles;
+CREATE TABLE shard1_articles (id  INTEGER PRIMARY KEY AUTOINCREMENT , title VARCHAR(56), content TEXT);
+
 DROP TABLE IF EXISTS posts;
 CREATE TABLE posts (id  INTEGER PRIMARY KEY AUTOINCREMENT , title VARCHAR(56), post TEXT);
 
+DROP TABLE IF EXISTS shard1_posts;
+CREATE TABLE shard1_posts (id  INTEGER PRIMARY KEY AUTOINCREMENT , title VARCHAR(56), post TEXT);
+
 DROP TABLE IF EXISTS comments;
 CREATE TABLE comments (id  INTEGER PRIMARY KEY AUTOINCREMENT , author VARCHAR(56), content TEXT, parent_id int(11), parent_type VARCHAR(256));
+
+DROP TABLE IF EXISTS shard1_comments;
+CREATE TABLE shard1_comments (id  INTEGER PRIMARY KEY AUTOINCREMENT , author VARCHAR(56), content TEXT, parent_id int(11), parent_type VARCHAR(256));
 
 DROP TABLE IF EXISTS tags;
 CREATE TABLE tags (id  INTEGER PRIMARY KEY AUTOINCREMENT , content TEXT, parent_id int(11), parent_type VARCHAR(256));

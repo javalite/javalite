@@ -1,3 +1,4 @@
+-- noinspection SqlNoDataSourceInspectionForFile
 IF object_id('dbo.people') IS NOT NULL
 BEGIN
     DROP TABLE [dbo].[people]
@@ -16,6 +17,20 @@ BEGIN
 END
 CREATE TABLE temperatures (id  INT IDENTITY PRIMARY KEY, temp SMALLINT);
 
+
+IF object_id('dbo.shard1_temperatures') IS NOT NULL
+    BEGIN
+        DROP TABLE [dbo].[shard1_temperatures]
+    END
+CREATE TABLE shard1_temperatures (id  INT IDENTITY PRIMARY KEY, temp SMALLINT);
+
+
+IF object_id('dbo.shard2_temperatures') IS NOT NULL
+    BEGIN
+        DROP TABLE [dbo].[shard2_temperatures]
+    END
+CREATE TABLE shard2_temperatures (id  INT IDENTITY PRIMARY KEY, temp SMALLINT);
+
 IF object_id('dbo.salaries') IS NOT NULL
 BEGIN
     DROP TABLE [dbo].[salaries]
@@ -28,11 +43,24 @@ BEGIN
 END
 CREATE TABLE users (id  INT IDENTITY PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), email VARCHAR(56));
 
+IF object_id('dbo.shard1_users') IS NOT NULL
+    BEGIN
+        DROP TABLE [dbo].[shard1_users]
+    END
+CREATE TABLE shard1_users (id  INT IDENTITY PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), email VARCHAR(56));
+
 IF object_id('dbo.addresses') IS NOT NULL
 BEGIN
     DROP TABLE [dbo].[addresses]
 END
 CREATE TABLE addresses (id  INT IDENTITY PRIMARY KEY, address1 VARCHAR(56), address2 VARCHAR(56), city VARCHAR(56), state VARCHAR(56), zip VARCHAR(56), user_id INT);
+
+IF object_id('dbo.shard1_addresses') IS NOT NULL
+    BEGIN
+        DROP TABLE [dbo].[shard1_addresses]
+    END
+CREATE TABLE shard1_addresses (id  INT IDENTITY PRIMARY KEY, address1 VARCHAR(56), address2 VARCHAR(56), city VARCHAR(56), state VARCHAR(56), zip VARCHAR(56), user_id INT);
+
 
 IF object_id('dbo.rooms') IS NOT NULL
 BEGIN
@@ -76,6 +104,12 @@ BEGIN
 END
 CREATE TABLE patients (id  INT IDENTITY PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56));
 
+IF object_id('dbo.shard1_patients') IS NOT NULL
+    BEGIN
+        DROP TABLE [dbo].[shard1_patients]
+    END
+CREATE TABLE shard1_patients (id  INT IDENTITY PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56));
+
 IF object_id('dbo.prescriptions') IS NOT NULL
 BEGIN
     DROP TABLE [dbo].[prescriptions]
@@ -87,6 +121,13 @@ BEGIN
     DROP TABLE [dbo].[doctors]
 END
 CREATE TABLE doctors (id  INT IDENTITY PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), discipline varchar(56));
+
+IF object_id('dbo.shard1_doctors') IS NOT NULL
+    BEGIN
+        DROP TABLE [dbo].[shard1_doctors]
+    END
+CREATE TABLE shard1_doctors (id  INT IDENTITY PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), discipline varchar(56));
+
 
 IF object_id('dbo.doctors_patients') IS NOT NULL
 BEGIN
@@ -125,11 +166,23 @@ BEGIN
 END
 CREATE TABLE articles (id  INT IDENTITY PRIMARY KEY, title VARCHAR(56), content TEXT);
 
+IF object_id('dbo.shard1_articles') IS NOT NULL
+    BEGIN
+        DROP TABLE [dbo].[shard1_articles]
+    END
+CREATE TABLE shard1_articles (id  INT IDENTITY PRIMARY KEY, title VARCHAR(56), content TEXT);
+
 IF object_id('dbo.posts') IS NOT NULL
 BEGIN
     DROP TABLE [dbo].[posts]
 END
 CREATE TABLE posts (id  INT IDENTITY PRIMARY KEY, title VARCHAR(56), post TEXT);
+
+IF object_id('dbo.shard1_posts') IS NOT NULL
+    BEGIN
+        DROP TABLE [dbo].[shard1_posts]
+    END
+CREATE TABLE shard1_posts (id  INT IDENTITY PRIMARY KEY, title VARCHAR(56), post TEXT);
 
 IF object_id('dbo.comments') IS NOT NULL
 BEGIN
@@ -137,6 +190,11 @@ BEGIN
 END
 CREATE TABLE comments (id  INT IDENTITY PRIMARY KEY, author VARCHAR(56), content TEXT, parent_id INT, parent_type VARCHAR(256));
 
+IF object_id('dbo.shard1_comments') IS NOT NULL
+    BEGIN
+        DROP TABLE [dbo].[shard1_comments]
+    END
+CREATE TABLE shard1_comments (id  INT IDENTITY PRIMARY KEY, author VARCHAR(56), content TEXT, parent_id INT, parent_type VARCHAR(256));
 
 IF object_id('dbo.tags') IS NOT NULL
 BEGIN

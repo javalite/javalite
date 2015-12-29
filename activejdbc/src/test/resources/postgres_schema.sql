@@ -1,3 +1,4 @@
+-- noinspection SqlDialectInspectionForFile
 DROP TABLE IF EXISTS people;
 CREATE TABLE people (id serial PRIMARY KEY, name VARCHAR(56) NOT NULL, last_name VARCHAR(56), dob DATE, graduation_date DATE, created_at TIMESTAMP, updated_at TIMESTAMP);
 
@@ -7,14 +8,26 @@ CREATE TABLE accounts (id  serial PRIMARY KEY, account VARCHAR(56), description 
 DROP TABLE IF EXISTS temperatures;
 CREATE TABLE temperatures (id  serial PRIMARY KEY, temp SMALLINT);
 
+DROP TABLE IF EXISTS shard1_temperatures;
+CREATE TABLE shard1_temperatures (id  serial PRIMARY KEY, temp SMALLINT);
+
+DROP TABLE IF EXISTS shard2_temperatures;
+CREATE TABLE shard2_temperatures (id  serial PRIMARY KEY, temp SMALLINT);
+
 DROP TABLE IF EXISTS salaries;
 CREATE TABLE salaries (id  serial PRIMARY KEY, salary DECIMAL(7, 2));
 
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (id  serial PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), email VARCHAR(56));
 
+DROP TABLE IF EXISTS shard1_users;
+CREATE TABLE shard1_users (id  serial PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), email VARCHAR(56));
+
 DROP TABLE IF EXISTS addresses;
 CREATE TABLE addresses (id  serial PRIMARY KEY, address1 VARCHAR(56), address2 VARCHAR(56), city VARCHAR(56), state VARCHAR(56), zip VARCHAR(56), user_id INT);
+
+DROP TABLE IF EXISTS shard1_addresses;
+CREATE TABLE shard1_addresses (id  serial PRIMARY KEY, address1 VARCHAR(56), address2 VARCHAR(56), city VARCHAR(56), state VARCHAR(56), zip VARCHAR(56), user_id INT);
 
 DROP TABLE IF EXISTS rooms;
 CREATE TABLE rooms (id  serial PRIMARY KEY, name VARCHAR(56), address_id INT);
@@ -37,11 +50,17 @@ CREATE TABLE animals (animal_id  serial PRIMARY KEY, animal_name VARCHAR(56));
 DROP TABLE IF EXISTS patients;
 CREATE TABLE patients (id  serial PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56));
 
+DROP TABLE IF EXISTS shard1_patients;
+CREATE TABLE shard1_patients (id  serial PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56));
+
 DROP TABLE IF EXISTS prescriptions;
 CREATE TABLE prescriptions (id  serial PRIMARY KEY, name VARCHAR(56), patient_id INT);
 
 DROP TABLE IF EXISTS doctors;
 CREATE TABLE doctors (id  serial PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), discipline varchar(56));
+
+DROP TABLE IF EXISTS shard1_doctors;
+CREATE TABLE shard1_doctors (id  serial PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), discipline varchar(56));
 
 DROP TABLE IF EXISTS doctors_patients;
 CREATE TABLE doctors_patients (id  serial PRIMARY KEY, doctor_id INT, patient_id INT);
@@ -62,16 +81,23 @@ CREATE TABLE items (id  serial PRIMARY KEY, item_number INT, item_description VA
 DROP TABLE IF EXISTS articles;
 CREATE TABLE articles (id  serial PRIMARY KEY, title VARCHAR(56), content TEXT);
 
+DROP TABLE IF EXISTS shard1_articles;
+CREATE TABLE shard1_articles (id  serial PRIMARY KEY, title VARCHAR(56), content TEXT);
+
 DROP TABLE IF EXISTS posts;
 CREATE TABLE posts (id  serial PRIMARY KEY, title VARCHAR(56), post TEXT);
+
+DROP TABLE IF EXISTS shard1_posts;
+CREATE TABLE shard1_posts (id  serial PRIMARY KEY, title VARCHAR(56), post TEXT);
 
 DROP TABLE IF EXISTS comments;
 CREATE TABLE comments (id  serial PRIMARY KEY, author VARCHAR(56), content TEXT, parent_id INT, parent_type VARCHAR(256));
 
+DROP TABLE IF EXISTS shard1_comments;
+CREATE TABLE shard1_comments (id  serial PRIMARY KEY, author VARCHAR(56), content TEXT, parent_id INT, parent_type VARCHAR(256));
 
 DROP TABLE IF EXISTS tags;
 CREATE TABLE tags (id  serial PRIMARY KEY, content TEXT, parent_id INT, parent_type VARCHAR(256));
-
 
 DROP TABLE IF EXISTS fruits;
 CREATE TABLE fruits (id  serial PRIMARY KEY, fruit_name VARCHAR(56), category VARCHAR(56), created_at TIMESTAMP, updated_at TIMESTAMP);
