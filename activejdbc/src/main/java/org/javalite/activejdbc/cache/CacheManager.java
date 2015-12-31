@@ -56,12 +56,25 @@ public abstract class CacheManager {
 
 
     /**
-     * Flash cache.
+     * Flashes cache.
      *
+     * @param propagate true to propagate event to listeners, false to not propagate
      * @param event type of caches to flush.
      */
-    public final void flush(CacheEvent event){
+    public final void flush(CacheEvent event, boolean propagate){
         doFlush(event);
+        if(propagate){
+            propagate(event);
+        }
+
+        if (logger.isInfoEnabled()) {
+            String message = "Cache purged: " + (event.getType() == CacheEvent.CacheEventType.ALL
+                    ? "all caches" : "table: " + event.getGroup());
+            LogFilter.log(logger, message);
+        }
+    }
+
+    private void propagate(CacheEvent event){
         for(CacheEventListener listener: listeners){
             try{
                 listener.onFlush(event);
@@ -69,11 +82,16 @@ public abstract class CacheManager {
                 logger.warn("failed to propagate cache event: {} to listener: {}", event, listener, e);
             }
         }
-        if (logger.isInfoEnabled()) {
-            String message = "Cache purged: " + (event.getType() == CacheEvent.CacheEventType.ALL
-                    ? "all caches" : "table: " + event.getGroup());
-            LogFilter.log(logger, message);
-        }
+    }
+
+
+    /**
+     * Flashes cache.
+     *
+     * @param event type of caches to flush.
+     */
+    public final void flush(CacheEvent event){
+        flush(event, true);
     }
 
     public final void addCacheEventListener(CacheEventListener listener){

@@ -53,7 +53,7 @@ public class CacheEvent {
      */
     public CacheEvent( String group, String source){
         if(group == null)
-            throw new IllegalArgumentException("group canot be null");
+            throw new IllegalArgumentException("group cannot be null");
         
         this.type = CacheEventType.GROUP;
         this.source = source;
