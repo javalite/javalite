@@ -22,6 +22,7 @@ import org.javalite.activeweb.AppController;
 import static org.javalite.common.Collections.map;
 
 import java.io.*;
+import java.nio.file.Files;
 
 /**
  * @author Igor Polevoy
@@ -47,5 +48,10 @@ public class StreamController extends AppController {
 
     public void streamWithContentTypeAndHeaders() throws IOException {
         outputStream("text/plain", map("Content-Length", 5), 200).write("hello".getBytes());
+    }
+
+    public void deleteFile() throws IOException {
+        File f = new File(param("file"));
+        sendFile(f, true);
     }
 }

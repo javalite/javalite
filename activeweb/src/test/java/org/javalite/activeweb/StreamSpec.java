@@ -16,17 +16,11 @@ limitations under the License.
 
 package org.javalite.activeweb;
 
-import org.javalite.test.jspec.JSpecSupport;
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockFilterConfig;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 
-import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
@@ -86,5 +80,23 @@ public class StreamSpec extends RequestSpec {
         a(response.getStatus()).shouldBeEqual(200);
         a(response.getHeader("Content-Length")).shouldEqual("5");
         a(response.getContentType()).shouldEqual("text/plain");
+    }
+
+    @Test
+    public void shouldDeleteFileAfterProcessing() throws ServletException, IOException {
+
+        //create a file:
+        File file = File.createTempFile("file123", "suffix");
+        FileOutputStream outputStream = new FileOutputStream(file);
+        outputStream.write("hello".getBytes());
+        outputStream.flush();
+        outputStream.close();
+
+        request.setServletPath("/stream/delete-file");
+        request.setMethod("GET");
+        request.setParameter("file", file.getCanonicalPath());
+        dispatcher.doFilter(request, response, filterChain);
+        a(response.getContentAsString()).shouldBeEqual("hello");
+        the(file.exists()).shouldBeFalse();
     }
 }

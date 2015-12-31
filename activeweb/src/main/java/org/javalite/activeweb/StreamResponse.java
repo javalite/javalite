@@ -28,18 +28,11 @@ class StreamResponse extends ControllerResponse{
     StreamResponse(InputStream in){
         this.in = in;
     }
+
     @Override
     void doProcess() {
         try{
-            OutputStream out = Context.getHttpResponse().getOutputStream();
-            byte[] bytes = new byte[1024];
-
-            int x;
-            while((x = in.read(bytes)) != -1){
-                out.write(bytes, 0, x);
-            }
-            out.flush();
-            in.close();
+            stream(in, Context.getHttpResponse().getOutputStream());
         }
         catch(Exception e){
             throw new ControllerException(e);

@@ -15,6 +15,9 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,6 +65,15 @@ abstract class ControllerResponse {
             Context.getHttpResponse().setContentType(contentType);
         }
         doProcess();
+    }
+
+    protected final void  stream(InputStream in, OutputStream out) throws IOException {
+        byte[] bytes = new byte[1024];
+        int x;
+        while((x = in.read(bytes)) != -1){
+            out.write(bytes, 0, x);
+        }
+        in.close();
     }
 
     abstract void doProcess();

@@ -490,12 +490,13 @@ public class HttpSupport {
      * "Content-Disposition" based on a file name.
      *
      * @param file file to download.
+     * @param delete true to delete the file after processing
      * @return builder instance.
      * @throws FileNotFoundException thrown if file not found.
      */
-    protected HttpBuilder sendFile(File file) throws FileNotFoundException {
+    protected HttpBuilder sendFile(File file, boolean delete) throws FileNotFoundException {
         try{
-            StreamResponse resp = new StreamResponse(new FileInputStream(file));
+            FileResponse resp = new FileResponse(file, delete);
             Context.setControllerResponse(resp);
             HttpBuilder builder = new HttpBuilder(resp);
             builder.header("Content-Disposition", "attachment; filename=" + file.getName());
@@ -503,6 +504,19 @@ public class HttpSupport {
         }catch(Exception e){
             throw new ControllerException(e);
         }
+    }
+
+    /**
+     * Convenience method for downloading files. This method will force the browser to find a handler(external program)
+     *  for  this file (content type) and will provide a name of file to the browser. This method sets an HTTP header
+     * "Content-Disposition" based on a file name.
+     *
+     * @param file file to download.
+     * @return builder instance.
+     * @throws FileNotFoundException thrown if file not found.
+     */
+    protected HttpBuilder sendFile(File file) throws FileNotFoundException {
+       return sendFile(file, false);
     }
 
 
