@@ -196,3 +196,7 @@ CREATE TABLE alarms (id int(11) NOT NULL auto_increment PRIMARY KEY, alarm_time 
 
 DROP TABLE IF EXISTS developers;
 CREATE TABLE developers (first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL, email VARCHAR(56) NOT NULL, address VARCHAR(56), CONSTRAINT developers_uq UNIQUE (first_name, last_name, email)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+# interval is a reserved word in MySQL
+DROP TABLE IF EXISTS `interval`;
+CREATE TABLE `interval` (id int(11) NOT NULL auto_increment PRIMARY KEY, `begin` INT, `end` INT);
