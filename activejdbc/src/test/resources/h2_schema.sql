@@ -193,3 +193,7 @@ CREATE TABLE alarms (id int(11) NOT NULL auto_increment PRIMARY KEY, alarm_time 
 
 DROP TABLE IF EXISTS developers;
 CREATE TABLE developers (first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL, email VARCHAR(56) NOT NULL, address VARCHAR(56), CONSTRAINT developers_uq PRIMARY KEY (first_name, last_name, email));
+
+
+DROP TABLE IF EXISTS "Wild Animals";
+CREATE TABLE "Wild Animals" (id int(11) auto_increment PRIMARY KEY, "Name" VARCHAR(56) NOT NULL);

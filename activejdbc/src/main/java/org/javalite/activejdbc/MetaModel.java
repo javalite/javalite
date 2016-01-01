@@ -332,7 +332,14 @@ public class MetaModel implements Serializable {
      * @return true if this attribute is present in this meta model, false of not.
      */
     boolean hasAttribute(String attribute) {
-        return columnMetadata != null && columnMetadata.containsKey(attribute);
+        if(columnMetadata != null){
+            if(columnMetadata.containsKey(attribute)){
+                return true;
+            }else if(attribute.startsWith("\"") && attribute.endsWith("\"")){
+                return columnMetadata.containsKey(attribute.substring(1, attribute.length() - 1));
+            }
+        }
+        return false;
     }
 
     protected boolean hasAssociation(Class<? extends Model> targetClass, Class<? extends Association> associationClass){
