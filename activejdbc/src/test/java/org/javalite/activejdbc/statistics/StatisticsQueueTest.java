@@ -109,4 +109,11 @@ public class StatisticsQueueTest {
         QueryExecutionEvent event = new QueryExecutionEvent("select * from people where id IN (1,2,3,4)", 1);
         the(event.getQuery()).shouldBeEqual("select * from people where id IN (...)");
     }
+
+
+    @Test // related to: https://github.com/javalite/activejdbc/issues/452
+    public void shouldNormalizeOffset(){
+        QueryExecutionEvent event = new QueryExecutionEvent("select * from pages where lesson_id=? order by the_index limit 1 offset 0", 1);
+        the(event.getQuery()).shouldBeEqual("select * from pages where lesson_id=? order by the_index limit 1 offset ...");
+    }
 }

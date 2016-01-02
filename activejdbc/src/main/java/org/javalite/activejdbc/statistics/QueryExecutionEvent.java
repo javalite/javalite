@@ -25,12 +25,14 @@ import java.util.regex.Pattern;
 public class QueryExecutionEvent {
 
     private static final Pattern IN_PATTERN = Pattern.compile("(IN|in)\\s*\\(.*\\)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern OFFSET_PATTERN = Pattern.compile("(offset|OFFSET|Offset)\\s*\\d*", Pattern.CASE_INSENSITIVE);
 
-    private final String query;
+    private String query;
     private final long time;
 
     public QueryExecutionEvent(String query, long time) {
         this.query = IN_PATTERN.matcher(query).replaceAll("IN (...)");
+        this.query = OFFSET_PATTERN.matcher(this.query).replaceAll("offset ...");
         this.time = time;
     }
 
