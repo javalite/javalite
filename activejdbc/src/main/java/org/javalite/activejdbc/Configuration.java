@@ -16,6 +16,7 @@ limitations under the License.
 package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.cache.CacheManager;
+import org.javalite.activejdbc.cache.NopeCacheManager;
 import org.javalite.activejdbc.dialects.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +92,6 @@ public class Configuration {
 
         String cacheManagerClass = properties.getProperty("cache.manager");
         if(cacheManagerClass != null){
-
             try{
                 Class cmc = Class.forName(cacheManagerClass);
                 cacheManager = (CacheManager)cmc.newInstance();
@@ -99,11 +99,11 @@ public class Configuration {
                 throw e;
             }catch(Exception e){
                 throw new InitException("failed to initialize a CacheManager. Please, ensure that the property " +
-                        "'cache.manager' points to correct class which extends 'org.javalite.activejdbc.cache.CacheManager' class and provides a default constructor.", e);
+                        "'cache.manager' points to correct class which extends '" + CacheManager.class.getName() + "' and provides a default constructor.", e);
             }
-
+        }else{
+            cacheManager = new NopeCacheManager();
         }
-
         loadConnectionsSpecs();
     }
 

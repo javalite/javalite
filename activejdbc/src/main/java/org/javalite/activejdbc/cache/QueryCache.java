@@ -68,7 +68,7 @@ public enum QueryCache {
      */
     public void addItem(String tableName, String query, Object[] params, Object cache) {
         if (enabled) {
-            cacheManager.addCache(tableName, cacheManager.getKey(tableName, query, params), cache);
+            cacheManager.addCache(tableName, getKey(tableName, query, params), cache);
         }
     }
 
@@ -83,7 +83,7 @@ public enum QueryCache {
     public Object getItem(String tableName, String query, Object[] params) {
 
         if (enabled) {
-            String key = cacheManager.getKey(tableName, query, params);
+            String key = getKey(tableName, query, params);
             Object item = cacheManager.getCache(tableName, key);
             if (item == null) {
                 logAccess(query, params, "MISS");
@@ -109,7 +109,33 @@ public enum QueryCache {
     }
 
 
+    private String getKey(String tableName, String query, Object[] params) {
+        return tableName + query + (params == null ? null : Arrays.asList(params).toString());
+    }
 
+    /**
+     * This method purges (removes) all caches associated with a table, if caching is enabled and
+     * a corresponding model is marked cached.
+     *
+     * @param metaModel meta-model whose caches are to purge.
+     */
+    public void purgeTableCache(MetaModel metaModel) {
+        if(enabled  && metaModel.cached()){
+            cacheManager.flush(new CacheEvent(metaModel.getTableName(), getClass().getName()));
+        }
+    }
+
+    /**
+     * Use {@link #purgeTableCache(MetaModel)} whenever you can.
+     *
+     * @param tableName name of table whose caches to purge.
+     */
+    public void purgeTableCache(String tableName) {
+        MetaModel mm = metaModelFor(tableName);
+        if(mm != null && enabled  && mm.cached()){
+            cacheManager.flush(new CacheEvent(mm.getTableName(), getClass().getName()));
+        }
+    }
 
     public CacheManager getCacheManager(){
         return cacheManager;
