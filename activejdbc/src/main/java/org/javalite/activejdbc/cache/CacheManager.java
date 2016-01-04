@@ -18,11 +18,15 @@ limitations under the License.
 package org.javalite.activejdbc.cache;
 
 import org.javalite.activejdbc.LogFilter;
+import org.javalite.activejdbc.MetaModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import static org.javalite.activejdbc.ModelDelegate.metaModelFor;
 
 /**
  * Abstract method to be sub-classed by various caching technologies.
@@ -43,7 +47,7 @@ public abstract class CacheManager {
     public abstract Object getCache(String group, String key);
 
     /**
-     * Adds item to cache. 
+     * Adds item to cache.
      *
      * @param group group name of cache.
      * @param key key of the item.
@@ -103,6 +107,38 @@ public abstract class CacheManager {
     }
 
     public final void removeAllCacheEventListeners(){
-        listeners = new ArrayList<CacheEventListener>();
+        listeners = new ArrayList<>();
+    }
+
+    /**
+     * This method purges (removes) all caches associated with a table, if caching is enabled and
+     * a corresponding model is marked cached.
+     *
+     * @param metaModel meta-model whose caches are to purge.
+     */
+    public void purgeTableCache(MetaModel metaModel) {
+        flush(new CacheEvent(metaModel.getTableName(), getClass().getName()));
+    }
+
+    /**
+     * Use {@link #purgeTableCache(MetaModel)} whenever you can.
+     *
+     * @param tableName name of table whose caches to purge.
+     */
+    public void purgeTableCache(String tableName) {
+        flush(new CacheEvent(tableName, getClass().getName()));
+    }
+
+
+    /**
+     * Generates a cache key. Subclasses may override this implementation.
+     *
+     * @param tableName name of a table
+     * @param query query
+     * @param params query parameters.
+     * @return generated key for tied to these parameters.
+     */
+    public String getKey(String tableName, String query, Object[] params) {
+        return tableName + query + (params == null ? null : Arrays.asList(params).toString());
     }
 }

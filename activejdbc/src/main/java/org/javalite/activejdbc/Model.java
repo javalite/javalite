@@ -427,7 +427,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 		if (1 == result) {
 			frozen = true;
 			if (metaModelOf(getClass()).cached()) {
-				QueryCache.instance().purgeTableCache(metaModelLocal);
+                Registry.cacheManager().purgeTableCache(metaModelLocal);
 			}
 			ModelDelegate.purgeEdges(metaModelLocal);
 			fireAfterDelete();
@@ -2434,9 +2434,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                     } catch (IllegalAccessException e) {
                         throw new InitException(e);
                     } finally {
-                        QueryCache.instance().purgeTableCache(ass.getJoin());
-                        QueryCache.instance().purgeTableCache(metaModel);
-                        QueryCache.instance().purgeTableCache(childMetaModel);
+                        Registry.cacheManager().purgeTableCache(ass.getJoin());
+                        Registry.cacheManager().purgeTableCache(metaModel);
+                        Registry.cacheManager().purgeTableCache(childMetaModel);
                     }
                 }
              } else if(metaModel.hasAssociation(child.getClass(), OneToManyPolymorphicAssociation.class)) {
@@ -2647,7 +2647,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 done = (id != null);
             }
             if (metaModel.cached()) {
-                QueryCache.instance().purgeTableCache(metaModel);
+                Registry.cacheManager().purgeTableCache(metaModel);
             }
 
             if (metaModel.isVersioned()) {
@@ -2734,7 +2734,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             set(metaModelLocal.getVersionColumn(), getLong(metaModelLocal.getVersionColumn()) + 1);
         }
         if(metaModel.cached()){
-            QueryCache.instance().purgeTableCache(metaModel);
+            Registry.cacheManager().purgeTableCache(metaModel);
         }
         dirtyAttributeNames.clear();
         fireAfterUpdate();

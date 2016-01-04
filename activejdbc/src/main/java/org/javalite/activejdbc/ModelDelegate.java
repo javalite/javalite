@@ -166,7 +166,7 @@ public final class ModelDelegate {
             ? new DB(metaModel.getDbName()).exec("DELETE FROM " + metaModel.getTableName() + " WHERE " + query)
             : new DB(metaModel.getDbName()).exec("DELETE FROM " + metaModel.getTableName() + " WHERE " + query, params);
         if (metaModel.cached()) {
-            QueryCache.instance().purgeTableCache(metaModel);
+            Registry.cacheManager().purgeTableCache(metaModel);
         }
         purgeEdges(metaModel);
         return count;
@@ -176,7 +176,7 @@ public final class ModelDelegate {
         MetaModel metaModel = metaModelOf(clazz);
         int count = new DB(metaModel.getDbName()).exec("DELETE FROM " + metaModel.getTableName());
         if (metaModel.cached()) {
-            QueryCache.instance().purgeTableCache(metaModel);
+            Registry.cacheManager().purgeTableCache(metaModel);
         }
         purgeEdges(metaModel);
         return count;
@@ -293,7 +293,7 @@ public final class ModelDelegate {
     public static void purgeCache(Class<? extends Model> clazz) {
         MetaModel metaModel = metaModelOf(clazz);
         if (metaModel.cached()) {
-            QueryCache.instance().purgeTableCache(metaModel);
+            Registry.cacheManager().purgeTableCache(metaModel);
         }
     }
 
@@ -308,13 +308,13 @@ public final class ModelDelegate {
 
         List<Association> associations = metaModel.getAssociations();
         for(Association association: associations){
-            QueryCache.instance().purgeTableCache(metaModelOf(association.getTargetClass()));
+            Registry.cacheManager().purgeTableCache(metaModelOf(association.getTargetClass()));
         }
 
         //Purge edges in case this model represents a join
         List<String> edges = Registry.instance().getEdges(metaModel.getTableName());
         for(String edge: edges){
-            QueryCache.instance().purgeTableCache(edge);
+            Registry.cacheManager().purgeTableCache(edge);
         }
     }
 
@@ -355,7 +355,7 @@ public final class ModelDelegate {
         }
         int count = new DB(metaModel.getDbName()).exec(sql.toString(), allParams);
         if (metaModel.cached()) {
-            QueryCache.instance().purgeTableCache(metaModel);
+            Registry.cacheManager().purgeTableCache(metaModel);
         }
         return count;
     }
