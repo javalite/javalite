@@ -32,6 +32,7 @@ public abstract class AbstractRouteConfig extends AppConfig{
 
     /**
      * Use to ignore requests. Usually you want to ignore requests for static content, such as css files, images. etc.
+     * The order of this method compared to route() methods is irrelevant,
      *
      * @param ignores list of regular expressions matching the URI. If an expression matches the request URI, such request ill be ignored
      *                by the framework. It will be processed by container.
