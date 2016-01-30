@@ -121,7 +121,7 @@ public abstract class Request<T extends Request> {
      *
      * @return response content from server as bytes.
      */
-    public byte[] bytes() {
+    public byte[]  bytes() {
 
         connect();
 

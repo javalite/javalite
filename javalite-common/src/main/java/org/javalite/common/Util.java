@@ -16,9 +16,6 @@ limitations under the License.
 package org.javalite.common;
 
 import java.io.*;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.*;
 
 /**
@@ -106,7 +103,7 @@ public final class Util {
     }
 
     /**
-     * @deprecated use {@link #closeQuietly(java.io.Closeable)} instead. Two problems can arise if resources are not
+     * @deprecated use {@link #closeQuietly(AutoCloseable)} instead. Two problems can arise if resources are not
      * closed quietly in the finally block: (1) If there are multiple close() calls, and one of the first ones throws
      * an Exception, then the following ones will never be called. (2) If an Exception is thrown inside the
      * try { ... } catch block and another Exception is thrown by a close() call in the finally { ... } block, then the
@@ -122,26 +119,17 @@ public final class Util {
         }
     }
 
-    public static void closeQuietly(Closeable c) {
+    /**
+     * Closes a resource and swallows exception if thrown during a close.
+     *
+     * @param autoCloseable resource to close
+     */
+    public static void closeQuietly(AutoCloseable autoCloseable) {
         try {
-            if (c != null) { c.close(); }
-        } catch (IOException e) {
-        }
+            if (autoCloseable != null) { autoCloseable.close(); }
+        } catch (Exception ignore) {}
     }
 
-    public static void closeQuietly(ResultSet rs) {
-        try {
-            if (rs != null) { rs.close(); }
-        } catch (SQLException e) {
-        }
-    }
-
-    public static void closeQuietly(Statement st) {
-        try {
-            if (st != null) { st.close(); }
-        } catch (SQLException e) {
-        }
-    }
 
     /**
      * Reads contents of the input stream fully and returns it as String. Sets UTF-8 encoding internally.
