@@ -1,4 +1,4 @@
-package org.javalite.hornet_nest.services;
+package org.javalite.async.services;
 
 /**
  * @author Igor Polevoy on 9/15/15.

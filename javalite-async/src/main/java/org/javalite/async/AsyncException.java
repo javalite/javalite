@@ -14,24 +14,24 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package org.javalite.hornet_nest;
+package org.javalite.async;
 
 /**
  * @author Igor Polevoy on 4/4/15.
  */
-public class HornetNestException extends RuntimeException {
-    public HornetNestException() {
+public class AsyncException extends RuntimeException {
+    public AsyncException() {
     }
 
-    public HornetNestException(Throwable cause) {
+    public AsyncException(Throwable cause) {
         super(cause);
     }
 
-    public HornetNestException(String message) {
+    public AsyncException(String message) {
         super(message);
     }
 
-    public HornetNestException(String message, Throwable cause) {
+    public AsyncException(String message, Throwable cause) {
         super(message, cause);
     }
 }

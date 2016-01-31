@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 
-package org.javalite.hornet_nest;
+package org.javalite.async;
 
 /**
  * Implementations of this interface will have to know how to serialize themselves into

@@ -1,11 +1,11 @@
-package org.javalite.hornet_nest;
+package org.javalite.async;
 
 import javax.jms.TextMessage;
 
 /**
  * @author Igor Polevoy on 8/11/15.
  */
-public class NestUtil {
+class AsyncUtil {
     static Command message2Command(TextMessage message){
         try {
 
@@ -18,7 +18,7 @@ public class NestUtil {
                 return command;
             }
         } catch (Exception e) {
-            throw new HornetNestException("Failed to process command", e);
+            throw new AsyncException("Failed to convert message to command", e);
         }
     }
 }

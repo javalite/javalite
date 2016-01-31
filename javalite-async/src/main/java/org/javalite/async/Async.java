@@ -15,69 +15,74 @@ limitations under the License.
 */
 
 
-package org.javalite.hornet_nest;
+package org.javalite.async;
 
 import com.google.inject.Injector;
-import org.hornetq.api.core.TransportConfiguration;
-import org.hornetq.api.core.management.ObjectNameBuilder;
-import org.hornetq.api.jms.management.JMSQueueControl;
-import org.hornetq.core.config.Configuration;
-import org.hornetq.core.config.impl.ConfigurationImpl;
-import org.hornetq.core.remoting.impl.invm.InVMAcceptorFactory;
-import org.hornetq.core.remoting.impl.invm.InVMConnectorFactory;
-import org.hornetq.core.server.JournalType;
-import org.hornetq.core.settings.impl.AddressFullMessagePolicy;
-import org.hornetq.core.settings.impl.AddressSettings;
-import org.hornetq.jms.server.config.ConnectionFactoryConfiguration;
-import org.hornetq.jms.server.config.JMSConfiguration;
-import org.hornetq.jms.server.config.impl.ConnectionFactoryConfigurationImpl;
-import org.hornetq.jms.server.config.impl.JMSConfigurationImpl;
-import org.hornetq.jms.server.config.impl.JMSQueueConfigurationImpl;
-import org.hornetq.jms.server.embedded.EmbeddedJMS;
+import org.apache.activemq.artemis.api.core.TransportConfiguration;
+import org.apache.activemq.artemis.api.core.management.ObjectNameBuilder;
+import org.apache.activemq.artemis.api.jms.management.JMSQueueControl;
+import org.apache.activemq.artemis.core.config.Configuration;
+import org.apache.activemq.artemis.core.config.impl.ConfigurationImpl;
+import org.apache.activemq.artemis.core.remoting.impl.invm.InVMAcceptorFactory;
+import org.apache.activemq.artemis.core.remoting.impl.invm.InVMConnectorFactory;
+import org.apache.activemq.artemis.core.server.JournalType;
+import org.apache.activemq.artemis.core.settings.impl.AddressFullMessagePolicy;
+import org.apache.activemq.artemis.core.settings.impl.AddressSettings;
+import org.apache.activemq.artemis.jms.server.config.ConnectionFactoryConfiguration;
+import org.apache.activemq.artemis.jms.server.config.JMSConfiguration;
+import org.apache.activemq.artemis.jms.server.config.impl.ConnectionFactoryConfigurationImpl;
+import org.apache.activemq.artemis.jms.server.config.impl.JMSConfigurationImpl;
+import org.apache.activemq.artemis.jms.server.config.impl.JMSQueueConfigurationImpl;
+import org.apache.activemq.artemis.jms.server.embedded.EmbeddedJMS;
 
 import javax.jms.*;
+import javax.jms.Queue;
 import javax.management.MBeanServerInvocationHandler;
 import javax.management.ObjectName;
 import java.io.File;
 import java.lang.management.ManagementFactory;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 
 import static java.util.Collections.singletonList;
-import static org.javalite.hornet_nest.NestUtil.message2Command;
+import static org.javalite.common.Util.closeQuietly;
 
 /**
- * Wrapper for embedded HornetQ. It is an embedded in-memory
+ * Wrapper for embedded Apache ActiveMQ Artemis. It is an embedded in-memory
  * JMS server for asynchronous processing. It can be used in standalone applications,
  * but specifically useful in web apps for processing asynchronous jobs without delaying
  * web responses.
  *
- * It sets many configuration parameters of HornetQ {@link org.hornetq.jms.server.embedded.EmbeddedJMS} to
+ * It sets many configuration parameters of Artemis {@link org.apache.activemq.artemis.jms.server.embedded.EmbeddedJMS} to
  * sensible values so you do not have to.
  *
  * This class also implements a Command Pattern for ease of writing asynchronous code.
  *
  * @author Igor Polevoy on 3/4/15.
  */
-public class HornetNest {
+public class Async {
 
+    private Injector injector;
     private final Configuration config;
     private final JMSConfiguration jmsConfig;
     private Connection consumerConnection;
     private Connection producerConnection;
     private EmbeddedJMS jmsServer;
 
+    private List<MessageConsumer> messageConsumers = new ArrayList<>();
+    private List<Session> sessions = new ArrayList<>();
+    private List<QueueConfig> queueConfigsList = new ArrayList<>();
+    private boolean started = false;
+
     /**
      * Creates and configures a new instance.
      *
      * @param dataDirectory root directory where persistent messages are stored
      * @param useLibAio true to use libaio, false if not installed.
-     *                  See <a href="http://docs.jboss.org/hornetq/2.2.5.Final/user-manual/en/html/libaio.html">Libaio Native Libraries</a>
+     *
      * @param queueConfigs vararg of QueueConfig> instances.
      */
 
-    public HornetNest(String dataDirectory, boolean useLibAio, QueueConfig... queueConfigs) {
+    public Async(String dataDirectory, boolean useLibAio, QueueConfig... queueConfigs) {
         this(dataDirectory, useLibAio, null, queueConfigs);
     }
 
@@ -85,49 +90,43 @@ public class HornetNest {
      * Creates and configures a new instance.
      *
      * @param dataDirectory root directory where persistent messages are stored
-     * @param useLibAio true to use libaio, false if not installed.
-     *                  See <a href="http://docs.jboss.org/hornetq/2.2.5.Final/user-manual/en/html/libaio.html">Libaio Native Libraries</a>
+     * @param useLibAio true to use libaio, false to use NIO.
      * @param  injector Google Guice injector. Used to inject dependency members into commands if needed.
      * @param queueConfigs vararg of QueueConfig> instances.
      */
-    public HornetNest(String dataDirectory, boolean useLibAio, Injector injector, QueueConfig... queueConfigs) {
-        jmsServer = new EmbeddedJMS();
-        config = new ConfigurationImpl();
-        jmsConfig = new JMSConfigurationImpl();
+    public Async(String dataDirectory, boolean useLibAio, Injector injector, QueueConfig... queueConfigs) {
+
 
         try {
+            this.injector = injector;
+            jmsServer = new EmbeddedJMS();
+            config = new ConfigurationImpl();
+            jmsConfig = new JMSConfigurationImpl();
+            Collections.addAll(queueConfigsList, queueConfigs);
             configureLocations(dataDirectory);
             configureAcceptor();
             configureConnectionFactory();
             configurePaging();
-            config.setJournalType(useLibAio ? JournalType.ASYNCIO : JournalType.NIO);
+
             configureQueues(queueConfigs);
 
+            config.setJournalType(useLibAio ? JournalType.ASYNCIO : JournalType.NIO);
             config.setThreadPoolMaxSize(-1);
             config.setScheduledThreadPoolMaxSize(10);
             jmsServer.setConfiguration(config);
             jmsServer.setJmsConfiguration(jmsConfig);
-            jmsServer.start();
-
-
-            ConnectionFactory connectionFactory = (ConnectionFactory) jmsServer.lookup("/cf");
-            if(connectionFactory == null){
-                throw new HornetNestException("Failed to start EmbeddedJMS due to previous errors. Please, see earlier output from HornetQ.");
-            }
-            consumerConnection = connectionFactory.createConnection();
-            producerConnection = connectionFactory.createConnection();
-            configureListeners(injector, queueConfigs);
-        } catch (HornetNestException e) {
+        } catch (AsyncException e) {
             throw e;
         } catch (Exception e) {
-            throw new HornetNestException("Failed to start EmbeddedJMS", e);
+            throw new AsyncException("Failed to start EmbeddedJMS", e);
         }
     }
 
 
+
     private void configureLocations(String dataDirectory) {
         if (dataDirectory == null || !new File(dataDirectory).exists()) {
-            throw new HornetNestException("Must provide data directory that exists");
+            throw new AsyncException("Must provide data directory that exists");
         }
         config.setBindingsDirectory(dataDirectory + "/bindings");
         config.setJournalDirectory(dataDirectory + "/journal");
@@ -143,7 +142,10 @@ public class HornetNest {
     }
 
     private void configureConnectionFactory() {
-        ConnectionFactoryConfiguration cfConfig = new ConnectionFactoryConfigurationImpl("cf", false, singletonList("connector"), "/cf");
+
+        ConnectionFactoryConfiguration cfConfig = new ConnectionFactoryConfigurationImpl();
+        cfConfig.setName("cf").setConnectorNames(singletonList("connector")).setBindings("/cf");
+
         /*see https://community.jboss.org/thread/160367
                 Re: Connection timeout issues - Connection failure has been detected
                 In my case, below configuration (made on JBoss 7.1.1.Final) has helped:
@@ -166,27 +168,37 @@ public class HornetNest {
         config.getAddressesSettings().put("jms.queue.*", addressSettings);
     }
 
-    private void checkRange(int value, int min, int max, String name) {
+    private void checkInRange(int value, int min, int max, String name) {
         if (value < min || value > max) {
-            throw new HornetNestException("incorrect " + name + " value");
+            throw new AsyncException("incorrect " + name + " value");
+        }
+    }
+
+    private void checkStarted(){
+        if(!started){
+            throw new AsyncException("Server not started.");
         }
     }
 
     private void configureQueues(QueueConfig... queueConfigs) throws JMSException, IllegalAccessException, InstantiationException {
         for (QueueConfig queueConfig : queueConfigs) {
-            jmsConfig.getQueueConfigurations().add(new JMSQueueConfigurationImpl(queueConfig.getName(), null, true,
-                    "/queue/" + queueConfig.getName()));
+            JMSQueueConfigurationImpl configuration = new JMSQueueConfigurationImpl();
+            configuration.setName(queueConfig.getName()).setSelector("").setDurable(queueConfig.isDurable()).setBindings("/queue/" + queueConfig.getName());
+            jmsConfig.getQueueConfigurations().add(configuration);
         }
     }
 
-    private void configureListeners(Injector injector, QueueConfig... queueConfigs) throws JMSException, IllegalAccessException, InstantiationException {
+    private void configureListeners(Injector injector, List<QueueConfig> queueConfigs) throws JMSException, IllegalAccessException, InstantiationException {
         for (QueueConfig queueConfig : queueConfigs) {
             Queue queue = (Queue) jmsServer.lookup("/queue/" + queueConfig.getName());
             for (int i = 0; i < queueConfig.getListenerCount(); i++) {
                 CommandListener listener = (CommandListener) queueConfig.getCommandListenerClass().newInstance();
                 listener.setInjector(injector);
                 Session session = consumerConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-                session.createConsumer(queue).setMessageListener(listener);
+                MessageConsumer consumer = session.createConsumer(queue);
+                consumer.setMessageListener(listener);
+                sessions.add(session);
+                messageConsumers.add(consumer);
             }
         }
         consumerConnection.start();
@@ -227,26 +239,52 @@ public class HornetNest {
      * @param timeToLive the message's lifetime (in milliseconds, where 0 is to never expire)
      */
     public void send(String queueName, Command command, int deliveryMode, int priority, int timeToLive) {
+        checkStarted();
+
         try {
-            checkRange(deliveryMode, 1, 2, "delivery mode");
-            checkRange(priority, 0, 9, "priority");
+            checkInRange(deliveryMode, 1, 2, "delivery mode");
+            checkInRange(priority, 0, 9, "priority");
             if (timeToLive < 0)
-                throw new HornetNestException("time to live cannot be negative");
+                throw new AsyncException("time to live cannot be negative");
 
             Queue queue = (Queue) jmsServer.lookup("/queue/" + queueName);
             if (queue == null)
-                throw new HornetNestException("Failed to find queue: " + queueName);
+                throw new AsyncException("Failed to find queue: " + queueName);
 
             Session session = producerConnection.createSession();
             TextMessage msg = session.createTextMessage(command.toString());
             msg.setStringProperty("command_class", command.getClass().getName());
             MessageProducer p = session.createProducer(queue);
             p.send(msg, deliveryMode, priority, timeToLive);
-        } catch (HornetNestException e) {
+        } catch (AsyncException e) {
             throw e;
         } catch (Exception e) {
-            throw new HornetNestException("Failed to send message", e);
+            throw new AsyncException("Failed to send message", e);
         }
+    }
+
+
+    /**
+     * Starts the server.
+     */
+    public void start(){
+
+        try {
+            jmsServer.start();
+
+            ConnectionFactory connectionFactory = (ConnectionFactory) jmsServer.lookup("/cf");
+            if(connectionFactory == null){
+                throw new AsyncException("Failed to start EmbeddedJMS server due to previous errors.");
+            }
+            consumerConnection = connectionFactory.createConnection();
+            producerConnection = connectionFactory.createConnection();
+
+            configureListeners(injector, queueConfigsList);
+            started = true;
+        } catch (Exception e) {
+            throw new AsyncException(e);
+        }
+
     }
 
 
@@ -254,16 +292,23 @@ public class HornetNest {
      * Stops this JMS server.
      */
     public void stop() {
-        try {
-            consumerConnection.close();
-        } catch (Exception e) {}
-        try {
-            producerConnection.close();
-        } catch (Exception e) {}
+
+        for (MessageConsumer consumer : messageConsumers) {
+            closeQuietly(consumer);
+        }
+
+        for (Session session : sessions) {
+            closeQuietly(session);
+        }
+
+        closeQuietly(consumerConnection);
+        closeQuietly(producerConnection);
 
         try {
             jmsServer.stop();
-        } catch (Exception e) {}
+        } catch (Exception ignore) {}
+
+        started = false;
     }
 
     /**
@@ -289,16 +334,13 @@ public class HornetNest {
      * @return command if found. If command not found, this method will block till a command is present in queue or a timeout expires.
      */
     public Command receiveCommand(String queueName, long timeout) {
-        Session session = null;
-        try{
-            session = consumerConnection.createSession();
+        checkStarted();
+        try(Session session = consumerConnection.createSession()){
             Queue queue = (Queue) jmsServer.lookup("/queue/" + queueName);
             MessageConsumer consumer = session.createConsumer(queue);
-            return message2Command((TextMessage) consumer.receive(timeout));
+            return AsyncUtil.message2Command((TextMessage) consumer.receive(timeout));
         } catch (Exception e) {
-            throw new HornetNestException("Could not get command", e);
-        }finally {
-            try{ if(session != null)session.close(); }catch(Throwable e){}
+            throw new AsyncException("Could not get command", e);
         }
     }
 
@@ -310,34 +352,58 @@ public class HornetNest {
      * @return top commands in queue.
      */
     public List<Command> getTopCommands(int count, String queueName)  {
+        checkStarted();
         List<Command> res = new ArrayList<>();
-        Session session = null;
-        try {
-            session = consumerConnection.createSession();
+
+        try(Session session = consumerConnection.createSession()) {
+            ;
             Queue queue = (Queue) jmsServer.lookup("/queue/" + queueName);
             Enumeration messages = session.createBrowser(queue).getEnumeration();
             for(int i = 0; i < count && messages.hasMoreElements(); i++) {
                 TextMessage msg = (TextMessage)messages.nextElement();
-                res.add(message2Command(msg));
+                res.add(AsyncUtil.message2Command(msg));
             }
             return res;
         } catch (Exception e) {
-            throw new HornetNestException("Could not lookup commands", e);
-        } finally {
-            try{ if(session != null)session.close(); }catch(Throwable e){}
+            throw new AsyncException("Could not lookup commands", e);
         }
     }
 
-    private JMSQueueControl getQueueControl(String queue) {
-        ObjectName queueName;
-        try {
-            queueName = ObjectNameBuilder.DEFAULT.getJMSQueueObjectName(queue);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    private JMSQueueControl getQueueControl(String queue) throws Exception {
+        checkStarted();
+        ObjectName queueName = ObjectNameBuilder.DEFAULT.getJMSQueueObjectName(queue);
         return MBeanServerInvocationHandler.newProxyInstance(ManagementFactory.getPlatformMBeanServer(),
                 queueName, JMSQueueControl.class, false);
     }
+
+    /**
+     * Returns counts of messages for all queues.
+     *
+     * @return map, where a key is a queue name, and value is a number of messages currently in that queue.0
+     */
+    public Map<String, Long> getMessageCounts(){
+        Map<String, Long> counts = new HashMap<>();
+        for (QueueConfig queueConfig : queueConfigsList) {
+            counts.put(queueConfig.getName(), getMessageCount(queueConfig.getName()));
+        }
+        return counts;
+    }
+
+
+    /**
+     * Returns number of messages currently in queue
+     *
+     * @param queue queue name
+     * @return number of messages currently in queue
+     */
+    public long getMessageCount(String queue){
+        try {
+            return getQueueControl(queue).getMessageCount();
+        } catch (Exception e) {
+            throw new AsyncException(e);
+        }
+    }
+
 
     /**
      * Resumes a paused queue
@@ -348,7 +414,7 @@ public class HornetNest {
         try {
             getQueueControl(queueName).resume();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new AsyncException(e);
         }
     }
 
@@ -361,7 +427,7 @@ public class HornetNest {
         try {
             getQueueControl(queueName).pause();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new AsyncException(e);
         }
     }
 
@@ -373,7 +439,7 @@ public class HornetNest {
         try {
             return getQueueControl(queueName).isPaused();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new AsyncException(e);
         }
     }
 
@@ -389,7 +455,7 @@ public class HornetNest {
         try {
             return getQueueControl(queueName).removeMessages(filter);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new AsyncException(e);
         }
     }
 
@@ -403,7 +469,7 @@ public class HornetNest {
         try {
             return getQueueControl(queueName).removeMessages(null);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new AsyncException(e);
         }
     }
 

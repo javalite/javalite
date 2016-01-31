@@ -1,7 +1,7 @@
-package org.javalite.hornet_nest;
+package org.javalite.async;
 
 import com.google.inject.Inject;
-import org.javalite.hornet_nest.services.GreetingService;
+import org.javalite.async.services.GreetingService;
 
 /**
  * @author Igor Polevoy on 4/5/15.

@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package org.javalite.hornet_nest;
+package org.javalite.async;
 
 /**
  * Simple configuration of  queue.
@@ -25,9 +25,10 @@ public class QueueConfig {
     private String name;
     private Class commandListenerClass;
     private int listenerCount;
+    private boolean durable = true;
 
     /**
-     * Creates a specification of a queue for HornetNest
+     * Creates a specification of a queue for Async. By default the queue is durable (can save messages to hard drive).
      *
      * @param name human readable name of queue
      * @param commandListenerClass CommandListener class
@@ -40,6 +41,22 @@ public class QueueConfig {
         this.listenerCount = listenerCount;
     }
 
+    /**
+     * Creates a specification of a queue for Async
+     *
+     * @param name human readable name of queue
+     * @param commandListenerClass CommandListener class
+     * @param listenerCount number of listeners to attach to a queue. Effectively this
+     *                      is a number of processing threads.
+     * @param durable true to enable to save messages to hard drive, false otherwise.
+     */
+    public  QueueConfig(String name, Class commandListenerClass, int listenerCount, boolean durable) {
+        this.name = name;
+        this.commandListenerClass = commandListenerClass;
+        this.listenerCount = listenerCount;
+        this.durable = durable;
+    }
+
     public String getName() {
         return name;
     }
@@ -50,5 +67,9 @@ public class QueueConfig {
 
     public int getListenerCount() {
         return listenerCount;
+    }
+
+    public boolean isDurable() {
+        return durable;
     }
 }

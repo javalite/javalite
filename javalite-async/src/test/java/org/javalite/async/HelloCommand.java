@@ -1,4 +1,4 @@
-package org.javalite.hornet_nest;
+package org.javalite.async;
 
 /**
  * @author Igor Polevoy on 4/5/15.
@@ -6,6 +6,10 @@ package org.javalite.hornet_nest;
 public class HelloCommand implements Command {
 
     private static Integer counter = 0;
+
+    public static void reset() {
+        counter = 0;
+    }
 
     public static int counter() {
         return counter;
