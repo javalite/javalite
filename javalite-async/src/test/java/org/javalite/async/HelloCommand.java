@@ -3,9 +3,17 @@ package org.javalite.async;
 /**
  * @author Igor Polevoy on 4/5/15.
  */
-public class HelloCommand implements Command {
+public class HelloCommand extends Command {
 
     private static Integer counter = 0;
+    private String message;
+
+
+    public HelloCommand(String message) {
+        this.message = message;
+    }
+
+    public HelloCommand() {} //necessary to provide
 
     public static void reset() {
         counter = 0;
@@ -15,32 +23,18 @@ public class HelloCommand implements Command {
         return counter;
     }
 
-    private String message;
-
-    public HelloCommand(String message) {
-        this.message = message;
-    }
-
-    public HelloCommand() {} //necessary to provide
-
-    @Override
-    public void fromString(String commandString) {
-        this.message = commandString;
-    }
-
-    @Override
-    public String toString() {
-        return message;
-    }
-
     @Override
     public void execute() {
         try {
             Thread.sleep(1000);
-        } catch (InterruptedException e) {}
+        } catch (InterruptedException ignore) {}
 
         synchronized (counter){
             counter++;
         }
+    }
+
+    public String getMessage() {
+        return message;
     }
 }

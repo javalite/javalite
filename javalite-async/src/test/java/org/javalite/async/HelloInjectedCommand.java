@@ -6,7 +6,7 @@ import org.javalite.async.services.GreetingService;
 /**
  * @author Igor Polevoy on 4/5/15.
  */
-public class HelloInjectedCommand implements Command {
+public class HelloInjectedCommand extends Command {
 
     @Inject
     private GreetingService greetingService;
@@ -20,11 +20,6 @@ public class HelloInjectedCommand implements Command {
     }
 
     public HelloInjectedCommand() {} // have to have a default constructor
-
-    @Override
-    public void fromString(String commandString) {
-        this.message = commandString;
-    }
 
     @Override
     public String toString() {

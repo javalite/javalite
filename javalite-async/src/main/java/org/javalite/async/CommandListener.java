@@ -33,20 +33,20 @@ public class CommandListener implements MessageListener{
     public void onMessage(Message message) {
         try {
             TextMessage tm = (TextMessage) message;
-            onCommand(AsyncUtil.message2Command(tm));
+            onCommand(Command.fromXml(tm.getText()));
         } catch (Exception e) {
             throw new AsyncException("Failed to process command", e);
         }
     }
 
-    public <T extends Command> void onCommand(T command) {
+     <T extends Command> void onCommand(T command) {
         if(injector != null){
             injector.injectMembers(command);
         }
         command.execute();
     }
 
-    public void setInjector(Injector injector) {
+    void setInjector(Injector injector) {
         this.injector = injector;
     }
 }

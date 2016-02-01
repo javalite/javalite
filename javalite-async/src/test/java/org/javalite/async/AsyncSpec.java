@@ -85,10 +85,10 @@ public class AsyncSpec {
             async.send(QUEUE_NAME, new HelloCommand("Hello, Dolly " + i));
         }
 
-        a(async.receiveCommand(QUEUE_NAME).toString()).shouldBeEqual("Hello, Dolly 0");
-        a(async.receiveCommand(QUEUE_NAME).toString()).shouldBeEqual("Hello, Dolly 1");
-        
-        Command c = async.receiveCommand(QUEUE_NAME, 100); // returns null because there are only 2 commands were sent
+        a(async.receiveCommand(QUEUE_NAME, HelloCommand.class).getMessage()).shouldBeEqual("Hello, Dolly 0");
+        a(async.receiveCommand(QUEUE_NAME, HelloCommand.class).getMessage()).shouldBeEqual("Hello, Dolly 1");
+
+        Command c = async.receiveCommand(QUEUE_NAME, 100); // returns null because there were only 2 commands sent
         a(c).shouldBeNull();
         
         async.stop();

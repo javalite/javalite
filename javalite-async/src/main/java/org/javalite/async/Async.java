@@ -34,6 +34,8 @@ import org.apache.activemq.artemis.jms.server.config.impl.ConnectionFactoryConfi
 import org.apache.activemq.artemis.jms.server.config.impl.JMSConfigurationImpl;
 import org.apache.activemq.artemis.jms.server.config.impl.JMSQueueConfigurationImpl;
 import org.apache.activemq.artemis.jms.server.embedded.EmbeddedJMS;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
 import javax.jms.Queue;
@@ -48,9 +50,9 @@ import static org.javalite.common.Util.closeQuietly;
 
 /**
  * Wrapper for embedded Apache ActiveMQ Artemis. It is an embedded in-memory
- * JMS server for asynchronous processing. It can be used in standalone applications,
+ * JMS server for asynchronous processing. JavaLite Async can be used in standalone applications,
  * but specifically useful in web apps for processing asynchronous jobs without delaying
- * web responses.
+ * rendering web responses.
  *
  * It sets many configuration parameters of Artemis {@link org.apache.activemq.artemis.jms.server.embedded.EmbeddedJMS} to
  * sensible values so you do not have to.
@@ -61,6 +63,9 @@ import static org.javalite.common.Util.closeQuietly;
  */
 public class Async {
 
+    private final static Logger LOGGER = LoggerFactory.getLogger("JavaLite Async");
+
+    private static final String QUEUE_NAMESPACE = "/queue/";
     private Injector injector;
     private final Configuration config;
     private final JMSConfiguration jmsConfig;
@@ -122,8 +127,6 @@ public class Async {
         }
     }
 
-
-
     private void configureLocations(String dataDirectory) {
         if (dataDirectory == null || !new File(dataDirectory).exists()) {
             throw new AsyncException("Must provide data directory that exists");
@@ -183,14 +186,14 @@ public class Async {
     private void configureQueues(QueueConfig... queueConfigs) throws JMSException, IllegalAccessException, InstantiationException {
         for (QueueConfig queueConfig : queueConfigs) {
             JMSQueueConfigurationImpl configuration = new JMSQueueConfigurationImpl();
-            configuration.setName(queueConfig.getName()).setSelector("").setDurable(queueConfig.isDurable()).setBindings("/queue/" + queueConfig.getName());
+            configuration.setName(queueConfig.getName()).setSelector("").setDurable(queueConfig.isDurable()).setBindings(QUEUE_NAMESPACE + queueConfig.getName());
             jmsConfig.getQueueConfigurations().add(configuration);
         }
     }
 
     private void configureListeners(Injector injector, List<QueueConfig> queueConfigs) throws JMSException, IllegalAccessException, InstantiationException {
         for (QueueConfig queueConfig : queueConfigs) {
-            Queue queue = (Queue) jmsServer.lookup("/queue/" + queueConfig.getName());
+            Queue queue = (Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueConfig.getName());
             for (int i = 0; i < queueConfig.getListenerCount(); i++) {
                 CommandListener listener = (CommandListener) queueConfig.getCommandListenerClass().newInstance();
                 listener.setInjector(injector);
@@ -247,13 +250,12 @@ public class Async {
             if (timeToLive < 0)
                 throw new AsyncException("time to live cannot be negative");
 
-            Queue queue = (Queue) jmsServer.lookup("/queue/" + queueName);
+            Queue queue = (Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueName);
             if (queue == null)
                 throw new AsyncException("Failed to find queue: " + queueName);
 
             Session session = producerConnection.createSession();
-            TextMessage msg = session.createTextMessage(command.toString());
-            msg.setStringProperty("command_class", command.getClass().getName());
+            TextMessage msg = session.createTextMessage(command.toXml());
             MessageProducer p = session.createProducer(queue);
             p.send(msg, deliveryMode, priority, timeToLive);
         } catch (AsyncException e) {
@@ -284,9 +286,7 @@ public class Async {
         } catch (Exception e) {
             throw new AsyncException(e);
         }
-
     }
-
 
     /**
      * Stops this JMS server.
@@ -306,7 +306,9 @@ public class Async {
 
         try {
             jmsServer.stop();
-        } catch (Exception ignore) {}
+        } catch (Exception e) {
+            LOGGER.warn("exception trying to stop broker.", e);
+        }
 
         started = false;
     }
@@ -326,6 +328,38 @@ public class Async {
 
     /**
      * Receives a command from a queue synchronously. If this queue also has listeners, then commands will be distributed across
+     * all consumers. This method will block until a command becomes available for this consumer.
+     *
+     * @param queueName name of queue
+     * @param type expected class of a command
+     * @return command if found. If command not found, this method will block till a command is present in queue.
+     *
+     * @see {@link #receiveCommand(String, long)}
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends Command> T receiveCommand(String queueName, Class<T> type) {
+        return (T) receiveCommand(queueName, 0);
+    }
+
+    /**
+     * Receives a command from a queue synchronously. If this queue also has listeners, then commands will be distributed across
+     * all consumers.
+     *
+     * @param queueName name of queue
+     * @param timeout  timeout in milliseconds. If a command is not received during a timeout, this methods returns null.
+     * @param type expected class of a command
+     * @return command if found. If command not found, this method will block till a command is present in queue.
+     *
+     * @see {@link #receiveCommand(String, long)}
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends Command> T receiveCommand(String queueName,  int timeout, Class<T> type) {
+        return (T) receiveCommand(queueName, timeout);
+    }
+
+
+    /**
+     * Receives a command from a queue synchronously. If this queue also has listeners, then commands will be distributed across
      * all consumers.
      *
      * @param queueName name of queue
@@ -336,9 +370,10 @@ public class Async {
     public Command receiveCommand(String queueName, long timeout) {
         checkStarted();
         try(Session session = consumerConnection.createSession()){
-            Queue queue = (Queue) jmsServer.lookup("/queue/" + queueName);
+            Queue queue = (Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueName);
             MessageConsumer consumer = session.createConsumer(queue);
-            return AsyncUtil.message2Command((TextMessage) consumer.receive(timeout));
+            TextMessage message = (TextMessage) consumer.receive(timeout);
+            return message == null ? null : Command.fromXml(message.getText());
         } catch (Exception e) {
             throw new AsyncException("Could not get command", e);
         }
@@ -356,12 +391,11 @@ public class Async {
         List<Command> res = new ArrayList<>();
 
         try(Session session = consumerConnection.createSession()) {
-            ;
-            Queue queue = (Queue) jmsServer.lookup("/queue/" + queueName);
+            Queue queue = (Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueName);
             Enumeration messages = session.createBrowser(queue).getEnumeration();
             for(int i = 0; i < count && messages.hasMoreElements(); i++) {
                 TextMessage msg = (TextMessage)messages.nextElement();
-                res.add(AsyncUtil.message2Command(msg));
+                res.add(Command.fromXml(msg.getText()));
             }
             return res;
         } catch (Exception e) {
