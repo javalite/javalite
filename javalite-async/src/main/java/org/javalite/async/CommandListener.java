@@ -39,7 +39,7 @@ public class CommandListener implements MessageListener{
         }
     }
 
-     protected <T extends Command> void onCommand(T command) {
+     public  <T extends Command> void onCommand(T command) {
         if(injector != null){
             injector.injectMembers(command);
         }
