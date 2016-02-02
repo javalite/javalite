@@ -55,7 +55,7 @@ public abstract class Command {
     /**
      * Subclasses are to provide implementation of this method to get application-specific work done.
      */
-    protected abstract void execute();
+    public abstract void execute();
 
     /**
      * Serializes this object into XML. The output is used by {@link #fromXml(String)} to de-serialize a command
