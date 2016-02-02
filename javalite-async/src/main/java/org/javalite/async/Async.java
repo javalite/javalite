@@ -197,6 +197,9 @@ public class Async {
             for (int i = 0; i < queueConfig.getListenerCount(); i++) {
                 CommandListener listener = (CommandListener) queueConfig.getCommandListenerClass().newInstance();
                 listener.setInjector(injector);
+                if(injector != null){
+                    injector.injectMembers(listener);
+                }
                 Session session = consumerConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
                 MessageConsumer consumer = session.createConsumer(queue);
                 consumer.setMessageListener(listener);

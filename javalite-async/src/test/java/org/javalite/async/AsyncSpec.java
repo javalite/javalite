@@ -158,4 +158,19 @@ public class AsyncSpec {
         async.stop();
         a(HelloCommand.counter()).shouldBeEqual(20);
     }
+
+    @Test
+    public void shouldInjectDependencyIntoCommandListener() throws InterruptedException {
+
+        Injector injector = Guice.createInjector(new GreetingModule());
+        Async async = new Async(filePath, false, injector, new QueueConfig(QUEUE_NAME, HelloCommandListener.class, 1));
+        async.start();
+
+        async.send(QUEUE_NAME, new HelloCommand("Hi, there"));
+
+        //SEE ASSERTION INSIDE HelloCommandListener.
+
+        Thread.sleep(1000);
+        async.stop();
+    }
 }
