@@ -531,6 +531,22 @@ public class Async {
         }
     }
 
+    /**
+     * Moves all messages from one queue to another
+     * @param source name of source queue
+     * @param target name of target queue
+     *
+     * @return number of messages moved
+     */
+    public int moveMessages(String source, String target){
+
+        try {
+            return getQueueControl(source).moveMessages("", target);
+        } catch (Exception e) {
+            throw new AsyncException(e);
+        }
+    }
+
 
     /**
      * Get additional JMS configuration.
