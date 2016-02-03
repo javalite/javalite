@@ -222,6 +222,12 @@ public class Async {
 
     ///******* PUBLIC METHODS BELOW ***********///
 
+    /**
+     * Call this method once after a constructor in order to create a Netty instance to accept out of VM messages.
+     *
+     * @param host host to bind to
+     * @param port port to listen on
+     */
     public void configureNetty(String host, int port){
         Map<String, Object> params = map(TransportConstants.HOST_PROP_NAME, host, TransportConstants.PORT_PROP_NAME, port);
         config.getAcceptorConfigurations().add(new TransportConfiguration(NettyAcceptorFactory.class.getName(), params));
