@@ -25,6 +25,8 @@ import org.apache.activemq.artemis.core.config.Configuration;
 import org.apache.activemq.artemis.core.config.impl.ConfigurationImpl;
 import org.apache.activemq.artemis.core.remoting.impl.invm.InVMAcceptorFactory;
 import org.apache.activemq.artemis.core.remoting.impl.invm.InVMConnectorFactory;
+import org.apache.activemq.artemis.core.remoting.impl.netty.NettyAcceptorFactory;
+import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants;
 import org.apache.activemq.artemis.core.server.JournalType;
 import org.apache.activemq.artemis.core.settings.impl.AddressFullMessagePolicy;
 import org.apache.activemq.artemis.core.settings.impl.AddressSettings;
@@ -46,6 +48,7 @@ import java.lang.management.ManagementFactory;
 import java.util.*;
 
 import static java.util.Collections.singletonList;
+import static org.javalite.common.Collections.map;
 import static org.javalite.common.Util.closeQuietly;
 
 /**
@@ -218,6 +221,11 @@ public class Async {
     }
 
     ///******* PUBLIC METHODS BELOW ***********///
+
+    public void configureNetty(String host, int port){
+        Map<String, Object> params = map(TransportConstants.HOST_PROP_NAME, host, TransportConstants.PORT_PROP_NAME, port);
+        config.getAcceptorConfigurations().add(new TransportConfiguration(NettyAcceptorFactory.class.getName(), params));
+    }
 
     /**
      * Sends a command into a queue for processing
