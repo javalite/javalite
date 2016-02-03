@@ -65,6 +65,8 @@ public class Async {
 
     private final static Logger LOGGER = LoggerFactory.getLogger("JavaLite Async");
 
+    private final static int MIN_LARGE_MESSAGE_SIZE = 100 * 4096;
+
     private static final String QUEUE_NAMESPACE = "/queue/";
     private Injector injector;
     private final Configuration config;
@@ -112,19 +114,22 @@ public class Async {
             configureAcceptor();
             configureConnectionFactory();
             configurePaging();
-
             configureQueues(queueConfigs);
-
-            config.setJournalType(useLibAio ? JournalType.ASYNCIO : JournalType.NIO);
+            configureJournal(useLibAio);
             config.setThreadPoolMaxSize(-1);
             config.setScheduledThreadPoolMaxSize(10);
-            jmsServer.setConfiguration(config);
-            jmsServer.setJmsConfiguration(jmsConfig);
+
         } catch (AsyncException e) {
             throw e;
         } catch (Exception e) {
             throw new AsyncException("Failed to start EmbeddedJMS", e);
         }
+    }
+
+    private void configureJournal(boolean useLibAio){
+        config.setJournalType(useLibAio ? JournalType.ASYNCIO : JournalType.NIO);
+        config.setJournalBufferSize_AIO(2 * MIN_LARGE_MESSAGE_SIZE);
+        config.setJournalBufferSize_NIO(2 * MIN_LARGE_MESSAGE_SIZE);
     }
 
     private void configureLocations(String dataDirectory) {
@@ -156,9 +161,11 @@ public class Async {
                 <connection-ttl>-1</connection-ttl>
                 <reconnect-attempts>-1</reconnect-attempts>
                */
+
         cfConfig.setClientFailureCheckPeriod(Long.MAX_VALUE);
         cfConfig.setConnectionTTL(-1);
         cfConfig.setReconnectAttempts(-1);
+        cfConfig.setCompressLargeMessages(true);
         jmsConfig.getConnectionFactoryConfigurations().add(cfConfig);
     }
 
@@ -212,7 +219,6 @@ public class Async {
 
     ///******* PUBLIC METHODS BELOW ***********///
 
-
     /**
      * Sends a command into a queue for processing
      *
@@ -247,7 +253,7 @@ public class Async {
     public void send(String queueName, Command command, int deliveryMode, int priority, int timeToLive) {
         checkStarted();
 
-        try {
+        try(Session session = producerConnection.createSession()) {
             checkInRange(deliveryMode, 1, 2, "delivery mode");
             checkInRange(priority, 0, 9, "priority");
             if (timeToLive < 0)
@@ -257,7 +263,6 @@ public class Async {
             if (queue == null)
                 throw new AsyncException("Failed to find queue: " + queueName);
 
-            Session session = producerConnection.createSession();
             TextMessage msg = session.createTextMessage(command.toXml());
             MessageProducer p = session.createProducer(queue);
             p.send(msg, deliveryMode, priority, timeToLive);
@@ -268,13 +273,15 @@ public class Async {
         }
     }
 
-
     /**
      * Starts the server.
      */
     public void start(){
 
         try {
+            jmsServer.setConfiguration(config);
+            jmsServer.setJmsConfiguration(jmsConfig);
+
             jmsServer.start();
 
             ConnectionFactory connectionFactory = (ConnectionFactory) jmsServer.lookup("/cf");
