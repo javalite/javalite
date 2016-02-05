@@ -2,6 +2,8 @@ package org.javalite.async;
 
 import org.junit.Test;
 
+import java.io.IOException;
+
 import static org.javalite.test.jspec.JSpec.a;
 
 /**
@@ -10,10 +12,20 @@ import static org.javalite.test.jspec.JSpec.a;
 public class CommandSpec {
 
     @Test
-    public void shouldSerializeDeserialize(){
+    public void shouldSerializeDeserializeXML(){
         HelloCommand helloCommand = new HelloCommand("Thanks for all the fish...");
         String xml = helloCommand.toXml();
         HelloCommand helloCommand1 = Command.fromXml(xml, HelloCommand.class);
+        a(helloCommand1.getMessage()).shouldBeEqual("Thanks for all the fish...");
+        a(helloCommand).shouldNotBeTheSameAs(helloCommand1);
+    }
+
+    @Test
+    public void shouldSerializeDeserializeBinary() throws IOException {
+        HelloCommand helloCommand = new HelloCommand("Thanks for all the fish...");
+        byte[] bytes  = helloCommand.toBytes();
+
+        HelloCommand helloCommand1 = Command.fromBytes(bytes, HelloCommand.class);
         a(helloCommand1.getMessage()).shouldBeEqual("Thanks for all the fish...");
         a(helloCommand).shouldNotBeTheSameAs(helloCommand1);
     }

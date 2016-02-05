@@ -18,6 +18,7 @@ package org.javalite.async;
 
 import com.google.inject.Injector;
 
+import javax.jms.BytesMessage;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
@@ -32,8 +33,14 @@ public class CommandListener implements MessageListener{
     @Override
     public void onMessage(Message message) {
         try {
-            TextMessage tm = (TextMessage) message;
-            onCommand(Command.fromXml(tm.getText()));
+            Command command;
+            if(message instanceof TextMessage){
+                command = Command.fromXml(((TextMessage) message).getText());
+            } else { // assume BytesMessage
+                BytesMessage msg = (BytesMessage) message;
+                command = Command.fromBytes(Async.getBytes(msg));
+            }
+            onCommand(command);
         } catch (Exception e) {
             throw new AsyncException("Failed to process command", e);
         }

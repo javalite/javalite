@@ -19,6 +19,13 @@ package org.javalite.async;
 
 import com.thoughtworks.xstream.XStream;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
+
 /**
  * Super class of all commands. Only the method {@link #execute()} is to be provided by subclasses to
  * do real application work.
@@ -66,4 +73,44 @@ public abstract class Command {
     public final String toXml() {
         return X_STREAM.toXML(this);
     }
+
+    /**
+     * Flattens(serializes, dehydrates, etc.) this instance to a binary representation.
+     *
+     * @return a binary representation
+     * @throws IOException
+     */
+    public byte[] toBytes() throws IOException {
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        ZipOutputStream stream = new ZipOutputStream(bout);
+        ZipEntry ze = new ZipEntry("async_message");
+        stream.putNextEntry(ze);
+        stream.write(toXml().getBytes());
+        ze.clone();
+        stream.flush();
+        stream.close();
+        return  bout.toByteArray();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends Command> T fromBytes(byte[] bytes) throws IOException {
+        ZipInputStream zin  = new ZipInputStream(new ByteArrayInputStream(bytes));
+        ZipEntry ze = zin.getNextEntry();
+        if(ze == null){
+            throw new AsyncException("something is seriously wrong with serialization");
+        }
+        ByteArrayOutputStream bout  = new ByteArrayOutputStream();
+        byte[] buffer = new byte[2048];
+        int len;
+        while((len = zin.read(buffer)) != -1) {
+            bout.write(buffer, 0, len);
+        }
+        return  (T) Command.fromXml(bout.toString());
+    }
+
+
+    public static <T extends Command> T fromBytes(byte[] bytes, Class<T> type) throws IOException {
+        return fromBytes(bytes);
+    }
+
 }

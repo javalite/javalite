@@ -66,17 +66,17 @@ import static org.javalite.common.Util.closeQuietly;
  */
 public class Async {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger("JavaLite Async");
-
-    private final static int MIN_LARGE_MESSAGE_SIZE = 100 * 4096;
-
+    private static final Logger LOGGER = LoggerFactory.getLogger("JavaLite Async");
+    private static final int MIN_LARGE_MESSAGE_SIZE = 100 * 4096;
     private static final String QUEUE_NAMESPACE = "/queue/";
+
     private Injector injector;
     private final Configuration config;
     private final JMSConfiguration jmsConfig;
     private Connection consumerConnection;
     private Connection producerConnection;
     private EmbeddedJMS jmsServer;
+    private boolean binaryMode = false;
 
     private List<MessageConsumer> messageConsumers = new ArrayList<>();
     private List<Session> sessions = new ArrayList<>();
@@ -222,6 +222,18 @@ public class Async {
 
     ///******* PUBLIC METHODS BELOW ***********///
 
+
+    /**
+     * If true, uses binary mode to send messages. If set to false (default), will send messages
+     * as strings. Test which method is faster in your environment for your CPU and IO performance.
+     * generally, binary mode will use a lot less IO, but more CPU and vice versa.
+     *
+     * @param binaryMode true to send messages in binary mode, false to send as strings.
+     */
+    public void setBinaryMode(boolean binaryMode) {
+        this.binaryMode = binaryMode;
+    }
+
     /**
      * Call this method once after a constructor in order to create a Netty instance to accept out of VM messages.
      *
@@ -277,9 +289,17 @@ public class Async {
             if (queue == null)
                 throw new AsyncException("Failed to find queue: " + queueName);
 
-            TextMessage msg = session.createTextMessage(command.toXml());
+            Message message;
+            if(binaryMode){
+                BytesMessage msg = session.createBytesMessage();
+                msg.writeBytes(command.toBytes());
+                message = msg;
+            }else{
+                message = session.createTextMessage(command.toXml());
+            }
+
             MessageProducer p = session.createProducer(queue);
-            p.send(msg, deliveryMode, priority, timeToLive);
+            p.send(message, deliveryMode, priority, timeToLive);
         } catch (AsyncException e) {
             throw e;
         } catch (Exception e) {
@@ -396,12 +416,25 @@ public class Async {
         try(Session session = consumerConnection.createSession()){
             Queue queue = (Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueName);
             MessageConsumer consumer = session.createConsumer(queue);
-            TextMessage message = (TextMessage) consumer.receive(timeout);
-            return message == null ? null : Command.fromXml(message.getText());
+            Message m = consumer.receive(timeout);
+            if(m == null){
+                return null;
+            }else{
+                Command command;
+                if(binaryMode){
+                    BytesMessage message = (BytesMessage) m;
+                    command = Command.fromBytes(getBytes(message));
+                }else {
+                    TextMessage message = (TextMessage) m;
+                    command = Command.fromXml(message.getText());
+                }
+                return command;
+            }
         } catch (Exception e) {
             throw new AsyncException("Could not get command", e);
         }
     }
+
 
     /**
      * Returns top commands in queue. Does not remove anything from queue. This method can be used for
@@ -418,13 +451,28 @@ public class Async {
             Queue queue = (Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueName);
             Enumeration messages = session.createBrowser(queue).getEnumeration();
             for(int i = 0; i < count && messages.hasMoreElements(); i++) {
-                TextMessage msg = (TextMessage)messages.nextElement();
-                res.add(Command.fromXml(msg.getText()));
+                Command command;
+                if(binaryMode){
+                    BytesMessage message = (BytesMessage)messages.nextElement();
+                    command = Command.fromBytes(getBytes(message));
+                }else{
+                    TextMessage msg = (TextMessage)messages.nextElement();
+                    command = Command.fromXml(msg.getText());
+                }
+                res.add(command);
             }
             return res;
         } catch (Exception e) {
             throw new AsyncException("Could not lookup commands", e);
         }
+    }
+
+    protected static byte[] getBytes(BytesMessage message) throws JMSException {
+        //ok to cast long to int; do not expect gigantic messages
+        int len = (int)message.getBodyLength();
+        byte[] bytes = new byte[len];
+        message.readBytes(bytes, len);
+        return bytes;
     }
 
     private JMSQueueControl getQueueControl(String queue) throws Exception {
