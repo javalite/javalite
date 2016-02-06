@@ -416,18 +416,17 @@ public class Async {
         try(Session session = consumerConnection.createSession()){
             Queue queue = (Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueName);
             MessageConsumer consumer = session.createConsumer(queue);
-            Message m = consumer.receive(timeout);
-            if(m == null){
+            Message message = consumer.receive(timeout);
+            if(message == null){
                 return null;
             }else{
                 Command command;
                 if(binaryMode){
-                    BytesMessage message = (BytesMessage) m;
-                    command = Command.fromBytes(getBytes(message));
+                    command = Command.fromBytes(getBytes((BytesMessage) message));
                 }else {
-                    TextMessage message = (TextMessage) m;
-                    command = Command.fromXml(message.getText());
+                    command = Command.fromXml(((TextMessage)message).getText());
                 }
+                command.setJMSMessageID(message.getJMSMessageID());
                 return command;
             }
         } catch (Exception e) {
@@ -452,13 +451,13 @@ public class Async {
             Enumeration messages = session.createBrowser(queue).getEnumeration();
             for(int i = 0; i < count && messages.hasMoreElements(); i++) {
                 Command command;
+                Message message = (Message) messages.nextElement();
                 if(binaryMode){
-                    BytesMessage message = (BytesMessage)messages.nextElement();
-                    command = Command.fromBytes(getBytes(message));
+                    command = Command.fromBytes(getBytes((BytesMessage) message));
                 }else{
-                    TextMessage msg = (TextMessage)messages.nextElement();
-                    command = Command.fromXml(msg.getText());
+                    command = Command.fromXml(((TextMessage)message).getText());
                 }
+                command.setJMSMessageID(message.getJMSMessageID());
                 res.add(command);
             }
             return res;

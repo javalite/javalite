@@ -37,9 +37,9 @@ public class CommandListener implements MessageListener{
             if(message instanceof TextMessage){
                 command = Command.fromXml(((TextMessage) message).getText());
             } else { // assume BytesMessage
-                BytesMessage msg = (BytesMessage) message;
-                command = Command.fromBytes(Async.getBytes(msg));
+                command = Command.fromBytes(Async.getBytes((BytesMessage) message));
             }
+            command.setJMSMessageID(message.getJMSMessageID());
             onCommand(command);
         } catch (Exception e) {
             throw new AsyncException("Failed to process command", e);

@@ -115,11 +115,11 @@ public abstract class Command {
         return fromBytes(bytes);
     }
 
-    public String getJmsMessageId() {
+    public String getJMSMessageID() {
         return jmsMessageId;
     }
 
-    public void setJmsMessageId(String jmsMessageId) {
+    public void setJMSMessageID(String jmsMessageId) {
         this.jmsMessageId = jmsMessageId;
     }
 }

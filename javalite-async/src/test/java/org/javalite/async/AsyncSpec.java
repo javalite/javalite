@@ -109,6 +109,8 @@ public class AsyncSpec {
         List<Command> commands = async.getTopCommands(10, QUEUE_NAME);
         a(commands.size()).shouldBeEqual(2);
 
+        a(commands.get(0).getJMSMessageID()).shouldNotBeNull();
+
         async.removeAllMessages(QUEUE_NAME);
 
         commands = async.getTopCommands(10, QUEUE_NAME);
