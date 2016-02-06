@@ -34,6 +34,8 @@ import java.util.zip.ZipOutputStream;
  */
 public abstract class Command {
 
+    private String jmsMessageId;
+
     private static final XStream X_STREAM = new XStream(new CDATAXppDriver());
 
     /**
@@ -113,4 +115,11 @@ public abstract class Command {
         return fromBytes(bytes);
     }
 
+    public String getJmsMessageId() {
+        return jmsMessageId;
+    }
+
+    public void setJmsMessageId(String jmsMessageId) {
+        this.jmsMessageId = jmsMessageId;
+    }
 }
