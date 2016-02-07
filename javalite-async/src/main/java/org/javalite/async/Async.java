@@ -581,6 +581,7 @@ public class Async {
 
     /**
      * Moves all messages from one queue to another
+     *
      * @param source name of source queue
      * @param target name of target queue
      *
@@ -590,6 +591,24 @@ public class Async {
 
         try {
             return getQueueControl(source).moveMessages("", target);
+        } catch (Exception e) {
+            throw new AsyncException(e);
+        }
+    }
+
+    /**
+     * Moves a message from one queue to another
+     *
+     * @param messageId JMS message id of a message to move
+     * @param source name of source queue
+     * @param target name of target queue
+     *
+     * @return true if message moved
+     */
+    public boolean moveMessages(String messageId, String source, String target){
+
+        try {
+            return getQueueControl(source).moveMessage(messageId, target);
         } catch (Exception e) {
             throw new AsyncException(e);
         }
