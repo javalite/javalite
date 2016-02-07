@@ -204,12 +204,13 @@ public class Async {
     private void configureListeners(Injector injector, List<QueueConfig> queueConfigs) throws JMSException, IllegalAccessException, InstantiationException {
         for (QueueConfig queueConfig : queueConfigs) {
             Queue queue = (Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueConfig.getName());
+            CommandListener listener = (CommandListener) queueConfig.getCommandListenerClass().newInstance();
+            listener.setInjector(injector);
+            if(injector != null){
+                injector.injectMembers(listener);
+            }
+
             for (int i = 0; i < queueConfig.getListenerCount(); i++) {
-                CommandListener listener = (CommandListener) queueConfig.getCommandListenerClass().newInstance();
-                listener.setInjector(injector);
-                if(injector != null){
-                    injector.injectMembers(listener);
-                }
                 Session session = consumerConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
                 MessageConsumer consumer = session.createConsumer(queue);
                 consumer.setMessageListener(listener);

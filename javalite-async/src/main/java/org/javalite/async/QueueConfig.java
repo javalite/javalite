@@ -31,7 +31,7 @@ public class QueueConfig {
      * Creates a specification of a queue for Async. By default the queue is durable (can save messages to hard drive).
      *
      * @param name human readable name of queue
-     * @param commandListenerClass CommandListener class
+     * @param commandListenerClass CommandListener class. Listeners must be thread safe.
      * @param listenerCount number of listeners to attach to a queue. Effectively this
      *                      is a number of processing threads.
      */
@@ -45,7 +45,7 @@ public class QueueConfig {
      * Creates a specification of a queue for Async
      *
      * @param name human readable name of queue
-     * @param commandListenerClass CommandListener class
+     * @param commandListenerClass CommandListener class. Listeners must be thread safe.
      * @param listenerCount number of listeners to attach to a queue. Effectively this
      *                      is a number of processing threads.
      * @param durable true to enable to save messages to hard drive, false otherwise.
