@@ -605,7 +605,7 @@ public class Async {
      *
      * @return true if message moved
      */
-    public boolean moveMessages(String messageId, String source, String target){
+    public boolean moveMessage(String messageId, String source, String target){
 
         try {
             return getQueueControl(source).moveMessage(messageId, target);
