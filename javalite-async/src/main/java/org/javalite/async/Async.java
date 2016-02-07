@@ -467,7 +467,7 @@ public class Async {
         }
     }
 
-    protected static byte[] getBytes(BytesMessage message) throws JMSException {
+    public static byte[] getBytes(BytesMessage message) throws JMSException {
         //ok to cast long to int; do not expect gigantic messages
         int len = (int)message.getBodyLength();
         byte[] bytes = new byte[len];
