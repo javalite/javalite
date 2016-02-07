@@ -15,7 +15,7 @@ public class CommandSpec {
     public void shouldSerializeDeserializeXML(){
         HelloCommand helloCommand = new HelloCommand("Thanks for all the fish...");
         String xml = helloCommand.toXml();
-        HelloCommand helloCommand1 = Command.fromXml(xml, HelloCommand.class);
+        HelloCommand helloCommand1 = Command.fromXml(xml);
         a(helloCommand1.getMessage()).shouldBeEqual("Thanks for all the fish...");
         a(helloCommand).shouldNotBeTheSameAs(helloCommand1);
     }
@@ -25,7 +25,7 @@ public class CommandSpec {
         HelloCommand helloCommand = new HelloCommand("Thanks for all the fish...");
         byte[] bytes  = helloCommand.toBytes();
 
-        HelloCommand helloCommand1 = Command.fromBytes(bytes, HelloCommand.class);
+        HelloCommand helloCommand1 = Command.fromBytes(bytes);
         a(helloCommand1.getMessage()).shouldBeEqual("Thanks for all the fish...");
         a(helloCommand).shouldNotBeTheSameAs(helloCommand1);
     }

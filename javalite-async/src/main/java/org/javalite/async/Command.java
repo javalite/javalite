@@ -45,21 +45,11 @@ public abstract class Command {
      *
      * @return new instance of a command initialized with data from <code>commandXml</code>  argument.
      */
-    public static Command fromXml(String commandXml) {
-        return (Command) X_STREAM.fromXML(commandXml);
-    }
-
-    /**
-     * Same as {@link #fromXml(String)}, but with added generics argument for convenience.
-     *
-     * @param commandXml XML string representing a serialized instance of a command.
-     * @param type       expected type
-     * @return new instance of a command initialized with data from <code>commandXml</code>  argument.
-     */
-    @SuppressWarnings("unchecked")
-    public static <T extends Command> T fromXml(String commandXml, Class<T> type) {
+    public static <T extends Command> T  fromXml(String commandXml) {
         return (T) X_STREAM.fromXML(commandXml);
     }
+
+
 
     /**
      * Subclasses are to provide implementation of this method to get application-specific work done.
@@ -108,11 +98,6 @@ public abstract class Command {
             bout.write(buffer, 0, len);
         }
         return  (T) Command.fromXml(bout.toString());
-    }
-
-
-    public static <T extends Command> T fromBytes(byte[] bytes, Class<T> type) throws IOException {
-        return fromBytes(bytes);
     }
 
     public String getJMSMessageID() {
