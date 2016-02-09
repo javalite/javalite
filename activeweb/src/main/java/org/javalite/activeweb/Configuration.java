@@ -126,7 +126,24 @@ public class Configuration {
         String logRequest = System.getProperty("activeweb.log.request");
         return logRequest != null && logRequest.equals("true");
     }
-    
+
+
+    /**
+     * Returns true if the environment is the same as argument.
+     *
+     * @param environment name of environment in question.
+     * @return true if argument equals value of environment variable <code>ACTIVE_ENV</code>, false if not.
+     */
+    public static boolean runningIn(String environment){
+        return getEnv().equals(environment);
+    }
+
+    /**
+     * Returns name of environment, such as "development", "production", etc.
+     * This is a value that is usually setup with an environment variable <code>ACTIVE_ENV</code>.
+     *
+     * @return name of environment
+     */
     public static String getEnv(){
         if(ENV == null){
             ENV = System.getProperty("ACTIVE_ENV") == null? System.getenv().get("ACTIVE_ENV"): System.getProperty("ACTIVE_ENV");
