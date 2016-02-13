@@ -55,14 +55,20 @@ public class HeadersLogFilter extends AbstractLoggingFilter {
     }
 
     protected String getMessage() {
-        return format(headers());
+        return "Request headers: " + format(headers());
     }
 
     private String format(Map<String, String> headers){
-        StringBuilder sb = new StringBuilder("\n");
+        StringBuilder sb = new StringBuilder("{");
+        int i = 0;
         for (String header : headers.keySet()) {
-            sb.append("Header: ").append(header).append("=").append(headers.get(header)).append("\n");
+            sb.append("\"").append(header).append("\" : \"").append(headers.get(header)).append("\"");
+            if(i < (headers.size() - 1)){
+                sb.append(", ");
+            }
+            i++;
         }
+        sb.append("}");
         return sb.toString();
     }
 
@@ -70,7 +76,7 @@ public class HeadersLogFilter extends AbstractLoggingFilter {
     public void after() {
         if(printResponseHeaders){
             String message = format(getResponseHeaders());
-            log("** Response headers **" + System.getProperty("line.separator") + message);
+            log("Response headers: "  + message);
         }
     }
 }

@@ -43,10 +43,11 @@ public class HeadersLogFilterSpec extends IntegrationSpec{
         SystemStreamUtil.replaceError();
         controller("abc-person").integrateViews(false).header("bogus", "value").get("pass_values");
         //request header:
-        a(SystemStreamUtil.getSystemErr().contains("Header: bogus=value")).shouldBeTrue();
+
+        a(SystemStreamUtil.getSystemErr().contains("Request headers: {\"bogus\" : \"value\"}")).shouldBeTrue();
 
         //response header:
-        a(SystemStreamUtil.getSystemErr().contains("Header: Content-Type=text/html")).shouldBeTrue();
+        a(SystemStreamUtil.getSystemErr().contains("Response headers: {\"Content-Type\" : \"text/html\"}")).shouldBeTrue();
 
         SystemStreamUtil.restoreSystemErr();
     }

@@ -78,7 +78,6 @@ public abstract class Command {
         ZipEntry ze = new ZipEntry("async_message");
         stream.putNextEntry(ze);
         stream.write(toXml().getBytes());
-        ze.close();
         stream.flush();
         stream.close();
         return  bout.toByteArray();

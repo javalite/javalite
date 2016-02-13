@@ -18,8 +18,8 @@ limitations under the License.
 package org.javalite.activeweb;
 
 
-import org.javalite.activeweb.controller_filters.RequestPropertiesLogFilter;
 import app.controllers.AbcPersonController;
+import org.javalite.activeweb.controller_filters.RequestParamsLogFilter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,7 +34,7 @@ public class RequestParamsLogFilterSpec extends IntegrationSpec{
 
     @Before
     public void before(){
-        addFilter(AbcPersonController.class, new RequestPropertiesLogFilter());
+        addFilter(AbcPersonController.class, new RequestParamsLogFilter());
     }
 
     @Test
@@ -47,6 +47,6 @@ public class RequestParamsLogFilterSpec extends IntegrationSpec{
         controller("abc-person").param("bogus","val1").integrateViews(false).get("pass_values");
         pout.flush();
         pout.close();
-        a(bout.toString().contains("uri_full_path=/abc-person/pass_values")).shouldBeTrue();
+        a(bout.toString().contains("{bogus: [val1]}")).shouldBeTrue();
     }
 }
