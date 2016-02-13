@@ -59,7 +59,7 @@ public class RenderTag implements TemplateDirectiveModel {
         String partialName = partialParts[partialParts.length - 1];
         Template partialTemplate = env.getConfiguration().getTemplate(partialPath + ".ftl" );
 
-        logger.info("rendering: " + partialPath + ".ftl" );
+        logger.debug("rendering: " + partialPath + ".ftl" );
 
         if(!params.containsKey("collection")){
             SimpleHash envValues = getHash(env);
