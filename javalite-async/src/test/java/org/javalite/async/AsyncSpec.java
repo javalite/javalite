@@ -29,7 +29,7 @@ public class AsyncSpec {
     @Test
     public void shouldProcessCommands() throws IOException, InterruptedException {
 
-        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, CommandListener.class, 50));
+        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
 
         async.start();
 
@@ -50,7 +50,7 @@ public class AsyncSpec {
 
     @Test
     public void shouldListTopCommands() throws Exception {
-        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, CommandListener.class, 100));
+        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 100));
 
         async.start();
 
@@ -78,7 +78,7 @@ public class AsyncSpec {
     @Test
     public void shouldGetCommandsSynchronously() throws Exception {
 
-        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, CommandListener.class, 0));
+        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 0));
 
         async.start();
         for(int i = 0; i < 2; i++){
@@ -98,7 +98,7 @@ public class AsyncSpec {
     @Test
     public void shouldRemoveMessages() throws Exception {
 
-        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, CommandListener.class, 0));
+        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 0));
 
         async.start();
 
@@ -123,7 +123,7 @@ public class AsyncSpec {
     public void shouldInjectDependencyIntoCommand() throws InterruptedException {
 
         Injector injector = Guice.createInjector(new GreetingModule());
-        Async async = new Async(filePath, false, injector, new QueueConfig(QUEUE_NAME, CommandListener.class, 1));
+        Async async = new Async(filePath, false, injector, new QueueConfig(QUEUE_NAME, new CommandListener(), 1));
 
         async.start();
 
@@ -138,7 +138,7 @@ public class AsyncSpec {
     @Test
     public void shouldStartStopBroker() throws IOException, InterruptedException {
 
-        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, CommandListener.class, 50));
+        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
         async.start();
         for(int i = 0; i < 10; i++){
             async.send(QUEUE_NAME, new HelloCommand("Message: " + i));
@@ -165,7 +165,7 @@ public class AsyncSpec {
     public void shouldInjectDependencyIntoCommandListener() throws InterruptedException {
 
         Injector injector = Guice.createInjector(new GreetingModule());
-        Async async = new Async(filePath, false, injector, new QueueConfig(QUEUE_NAME, HelloCommandListener.class, 1));
+        Async async = new Async(filePath, false, injector, new QueueConfig(QUEUE_NAME, new HelloCommandListener(), 1));
         async.start();
 
         async.send(QUEUE_NAME, new HelloCommand("Hi, there"));

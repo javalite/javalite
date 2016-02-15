@@ -18,42 +18,46 @@ package org.javalite.async;
 
 import com.google.inject.Injector;
 
-import javax.jms.BytesMessage;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.TextMessage;
+import javax.jms.*;
+import java.io.IOException;
 
 /**
  * @author Igor Polevoy on 4/5/15.
  */
-public class CommandListener implements MessageListener{
+public class CommandListener implements MessageListener {
 
     private Injector injector;
 
     @Override
     public void onMessage(Message message) {
         try {
-            Command command;
-            if(message instanceof TextMessage){
-                command = Command.fromXml(((TextMessage) message).getText());
-            } else { // assume BytesMessage
-                command = Command.fromBytes(Async.getBytes((BytesMessage) message));
-            }
+            Command command = parseCommand(message);
             command.setJMSMessageID(message.getJMSMessageID());
+            if (injector != null) {
+                injector.injectMembers(command);
+            }
             onCommand(command);
         } catch (Exception e) {
             throw new AsyncException("Failed to process command", e);
         }
     }
 
-     public  <T extends Command> void onCommand(T command) {
-        if(injector != null){
-            injector.injectMembers(command);
-        }
+    public <T extends Command> void onCommand(T command) {
         command.execute();
     }
 
     void setInjector(Injector injector) {
         this.injector = injector;
+    }
+
+    protected Command parseCommand(Message message) throws IOException, JMSException {
+        Command command;
+        if (message instanceof TextMessage) {
+            command = Command.fromXml(((TextMessage) message).getText());
+        } else {
+            byte[] bytes = Async.getBytes((BytesMessage) message);
+            command = Command.fromBytes(bytes);
+        }
+        return command;
     }
 }

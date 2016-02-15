@@ -23,36 +23,34 @@ package org.javalite.async;
  */
 public class QueueConfig {
     private String name;
-    private Class commandListenerClass;
+    private CommandListener  commandListener;
     private int listenerCount;
-    private boolean durable = true;
+    private boolean durable;
 
     /**
      * Creates a specification of a queue for Async. By default the queue is durable (can save messages to hard drive).
      *
      * @param name human readable name of queue
-     * @param commandListenerClass CommandListener class. Listeners must be thread safe.
+     * @param commandListener CommandListener instance, must be thread safe.
      * @param listenerCount number of listeners to attach to a queue. Effectively this
      *                      is a number of processing threads.
      */
-    public  QueueConfig(String name, Class commandListenerClass, int listenerCount) {
-        this.name = name;
-        this.commandListenerClass = commandListenerClass;
-        this.listenerCount = listenerCount;
+     public   QueueConfig(String name, CommandListener commandListener, int listenerCount) {
+        this(name, commandListener, listenerCount, true);
     }
 
     /**
      * Creates a specification of a queue for Async
      *
      * @param name human readable name of queue
-     * @param commandListenerClass CommandListener class. Listeners must be thread safe.
+     * @param commandListener CommandListener instance, must be thread safe.
      * @param listenerCount number of listeners to attach to a queue. Effectively this
      *                      is a number of processing threads.
      * @param durable true to enable to save messages to hard drive, false otherwise.
      */
-    public  QueueConfig(String name, Class commandListenerClass, int listenerCount, boolean durable) {
+    public  QueueConfig(String name, CommandListener commandListener, int listenerCount, boolean durable) {
         this.name = name;
-        this.commandListenerClass = commandListenerClass;
+        this.commandListener = commandListener;
         this.listenerCount = listenerCount;
         this.durable = durable;
     }
@@ -61,8 +59,8 @@ public class QueueConfig {
         return name;
     }
 
-    public Class getCommandListenerClass() {
-        return commandListenerClass;
+    public CommandListener getCommandListener() {
+        return commandListener;
     }
 
     public int getListenerCount() {

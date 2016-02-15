@@ -29,7 +29,7 @@ public class AsyncBinarySpec {
     @Test
     public void shouldProcessCommands() throws IOException, InterruptedException {
 
-        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, CommandListener.class, 50));
+        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
 
         async.setBinaryMode(true);
         async.start();
@@ -51,7 +51,7 @@ public class AsyncBinarySpec {
 
     @Test
     public void shouldListTopCommands() throws Exception {
-        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, CommandListener.class, 100));
+        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 100));
 
         async.setBinaryMode(true);
         async.start();
@@ -80,7 +80,7 @@ public class AsyncBinarySpec {
     @Test
     public void shouldGetCommandsSynchronously() throws Exception {
 
-        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, CommandListener.class, 0));
+        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 0));
 
         async.setBinaryMode(true);
         async.start();
@@ -101,7 +101,7 @@ public class AsyncBinarySpec {
     @Test
     public void shouldRemoveMessages() throws Exception {
 
-        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, CommandListener.class, 0));
+        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 0));
 
         async.setBinaryMode(true);
         async.start();
@@ -125,7 +125,7 @@ public class AsyncBinarySpec {
     public void shouldInjectDependencyIntoCommand() throws InterruptedException {
 
         Injector injector = Guice.createInjector(new GreetingModule());
-        Async async = new Async(filePath, false, injector, new QueueConfig(QUEUE_NAME, CommandListener.class, 1));
+        Async async = new Async(filePath, false, injector, new QueueConfig(QUEUE_NAME, new CommandListener(), 1));
 
         async.setBinaryMode(true);
         async.start();
@@ -141,7 +141,7 @@ public class AsyncBinarySpec {
     @Test
     public void shouldStartStopBroker() throws IOException, InterruptedException {
 
-        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, CommandListener.class, 50));
+        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
         async.setBinaryMode(true);
         async.start();
         for(int i = 0; i < 10; i++){
@@ -169,7 +169,7 @@ public class AsyncBinarySpec {
     public void shouldInjectDependencyIntoCommandListener() throws InterruptedException {
 
         Injector injector = Guice.createInjector(new GreetingModule());
-        Async async = new Async(filePath, false, injector, new QueueConfig(QUEUE_NAME, HelloCommandListener.class, 1));
+        Async async = new Async(filePath, false, injector, new QueueConfig(QUEUE_NAME, new HelloCommandListener(), 1));
         async.setBinaryMode(true);
         async.start();
 
