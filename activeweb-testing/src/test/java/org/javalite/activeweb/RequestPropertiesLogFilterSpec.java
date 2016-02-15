@@ -45,6 +45,10 @@ public class RequestPropertiesLogFilterSpec extends IntegrationSpec{
         controller("abc-person").param("bogus","val1").integrateViews(false).get("pass_values");
         pout.flush();
         pout.close();
-        a(bout.toString().contains("uri_full_path=/abc-person/pass_values, request_url=http://localhost/abc-person/pass_values, query_string=null")).shouldBeTrue();
+        System.out.println(bout.toString());
+        String res = bout.toString();
+        a(res).shouldContain("uri_full_path=/abc-person/pass_values");
+        a(res).shouldContain("request_url=http://localhost/abc-person/pass_values");
+        a(res).shouldContain("query_string=null");
     }
 }
