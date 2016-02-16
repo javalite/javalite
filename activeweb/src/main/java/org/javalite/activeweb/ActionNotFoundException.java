@@ -23,4 +23,8 @@ public class ActionNotFoundException extends WebException{
     public ActionNotFoundException(Throwable cause) {
         super(cause);
     }
+
+    public ActionNotFoundException(String message) {
+        super(message);
+    }
 }

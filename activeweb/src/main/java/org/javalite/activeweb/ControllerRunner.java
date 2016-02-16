@@ -1,17 +1,17 @@
 /*
 Copyright 2009-2014 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
 package org.javalite.activeweb;
 
@@ -33,7 +33,7 @@ import static org.javalite.common.Util.join;
 
 /**
  * One of the main classes of the framework, responsible for execution of controllers and filters.
- * 
+ *
  * @author Igor Polevoy
  */
 class ControllerRunner {
@@ -193,6 +193,9 @@ class ControllerRunner {
         }
     }
 
+    /**
+     * Checks if the action method supports requested HTTP method
+     */
     private boolean checkActionMethod(AppController controller, String actionMethod) {
         HttpMethod method = HttpMethod.getMethod(Context.getHttpRequest());
         if (!controller.actionSupportsHttpMethod(actionMethod, method)) {
@@ -201,6 +204,8 @@ class ControllerRunner {
             res.setStatus(405);
             logger.warn("Requested action does not support HTTP method: " + method.name() + ", returning status code 405.");
             Context.setControllerResponse(res);
+
+            //TODO: candidate for caching below, list of allowed HTTP methods
             //see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
             Context.getHttpResponse().setHeader("Allow", join(controller.allowedActions(actionMethod), ", "));
             return false;
@@ -287,10 +292,14 @@ class ControllerRunner {
     private void executeAction(Object controller, String actionName) {
         try{
             Method m = controller.getClass().getMethod(actionName);
+            Class c = m.getDeclaringClass();
+            if(!AppController.class.isAssignableFrom(m.getDeclaringClass())){ // see https://github.com/javalite/activeweb/issues/272
+                throw new ActionNotFoundException("Cannot execute action '" + actionName + "' on controller: " + controller);
+            }
             m.invoke(controller);
         }catch(InvocationTargetException e){
             if(e.getCause() != null && e.getCause() instanceof  WebException){
-                throw (WebException)e.getCause();                
+                throw (WebException)e.getCause();
             }else if(e.getCause() != null && e.getCause() instanceof RuntimeException){
                 throw (RuntimeException)e.getCause();
             }else if(e.getCause() != null){

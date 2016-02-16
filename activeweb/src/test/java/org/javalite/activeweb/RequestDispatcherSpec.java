@@ -402,4 +402,14 @@ public class RequestDispatcherSpec extends RequestSpec {
         dispatcher.doFilter(request, response, filterChain);
         a(response.getContentAsString()).shouldBeEqual("false");
     }
+
+    @Test
+    public void should404_OnObjectMethods() throws IOException, ServletException {
+        request.setServletPath("/ajax/wait");
+        request.setMethod("GET");
+        request.addHeader("X-Requested-With", "baaad header");
+        dispatcher.doFilter(request, response, filterChain);
+        System.out.println(response.getStatus());
+        System.out.println(response.getContentAsString());
+    }
 }
