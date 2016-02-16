@@ -22,6 +22,6 @@ public class StatisticsFilter extends HttpSupportFilter{
     @Override
     public void after() {
         Registry.instance().getStatisticsQueue().enqueue(
-                new QueryExecutionEvent(getRoute().getController() + "#" + getRoute().getActionName(), System.currentTimeMillis() - start.get()));
+                new QueryExecutionEvent(getRoute().getController().getClass().getName() + "#" + getRoute().getActionName(), System.currentTimeMillis() - start.get()));
     }
 }
