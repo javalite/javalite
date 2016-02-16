@@ -30,7 +30,7 @@ import static org.javalite.activejdbc.ModelDelegate.metaModelFor;
 import static org.javalite.common.Util.*;
 
 /**
- * This is a main cache facade. It could be architected in the future to add more cache implementations besides OSCache.
+ * This is a main cache facade.
  *
  * @author Igor Polevoy
  */

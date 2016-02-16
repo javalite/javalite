@@ -179,12 +179,7 @@ public class CacheTest extends ActiveJDBCTest {
             }
         };
         Registry.cacheManager().addCacheEventListener(cl);
-
         Registry.cacheManager().flush(new CacheEvent("people", "blah"), false);
-
         $(count1).shouldBeEqual(0);
-
-
-
     }
 }
