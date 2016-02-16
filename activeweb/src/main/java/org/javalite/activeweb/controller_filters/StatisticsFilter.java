@@ -12,7 +12,7 @@ import org.javalite.activejdbc.statistics.QueryExecutionEvent;
  */
 public class StatisticsFilter extends HttpSupportFilter{
 
-    private static ThreadLocal<Long> start;
+    private static ThreadLocal<Long> start = new ThreadLocal<>();
 
     @Override
     public void before() {
