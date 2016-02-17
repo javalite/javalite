@@ -59,6 +59,7 @@ public class IntegrationTest {
         the(output).shouldContain("BUILD SUCCESS");
         output = execute(root, true,  "install");
         the(output).shouldContain("BUILD SUCCESS");
+        the(output).shouldContain("--verbose");
 
         File f = new File(root + "/target/web1/bootstrap.css");
         a(f.exists()).shouldBeTrue();

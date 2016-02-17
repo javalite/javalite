@@ -9,7 +9,7 @@
     <name>Lessc Test Project</name>
 
     <properties>
-        <proj_version>1.12-SNAPSHOT</proj_version>
+        <proj_version>1.14-SNAPSHOT</proj_version>
     </properties>
 
     <build>
@@ -29,6 +29,7 @@
                             <lesscMain>src/main/webapp/less2/bootstrap.less</lesscMain>
                             <targetDirectory>target/web2</targetDirectory>
                             <targetFileName>bootstrap.css</targetFileName>
+                            <lesscArguments>--verbose</lesscArguments>
                         </lessConfig>
                     </lessConfigs>
                 </configuration>

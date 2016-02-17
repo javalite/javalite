@@ -6,7 +6,7 @@ import org.apache.maven.plugins.annotations.Parameter;
  * @author Igor Polevoy on 5/22/15.
  */
 public class LessConfig {
-    private String lesscMain, targetDirectory, targetFileName;
+    private String lesscMain, targetDirectory, targetFileName, lesscArguments;
 
     public String getLesscMain() {
         return lesscMain;
@@ -32,12 +32,11 @@ public class LessConfig {
         this.targetFileName = targetFileName;
     }
 
-    @Override
-    public String toString() {
-        return "LessConfig{" +
-                "lesscMain='" + lesscMain + '\'' +
-                ", targetDirectory='" + targetDirectory + '\'' +
-                ", targetFileName='" + targetFileName + '\'' +
-                '}';
+    public String getLesscArguments() {
+        return lesscArguments;
+    }
+
+    public void setLesscArguments(String lesscArguments) {
+        this.lesscArguments = lesscArguments;
     }
 }
