@@ -21,7 +21,7 @@ public class HelpMojo extends AbstractMojo {
         getLog().info("db-migrator:create");
         getLog().info("  creates database configured in pom");
         getLog().info("db-migrator:new");
-        getLog().info("  creates a new migration file");
+        getLog().info("  creates a new migration file. Example: 'mvn db-migrator:new -Dname=create_books_table'");
         getLog().info("db-migrator:check");
         getLog().info("  checks that no pending migrations remain. " +
                 "This can be used in build lifecycle to fail the build if pending migrations are found");

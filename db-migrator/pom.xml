@@ -116,6 +116,12 @@
             <version>1.7.5</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.javalite</groupId>
+            <artifactId>javalite-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
     </dependencies>
 
 </project>

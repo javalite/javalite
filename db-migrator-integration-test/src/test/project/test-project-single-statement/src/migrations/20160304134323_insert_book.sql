@@ -1,0 +1,5 @@
+SINGLE_STATEMENT
+INSERT INTO books VALUES (1, '112345678908', 'Book
+
+ \;
+ A', now(), 123 );

@@ -1,13 +1,14 @@
 package org.javalite.db_migrator;
 
+import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.io.LineNumberReader;
+import java.util.Arrays;
+import java.util.List;
 
+import static org.javalite.common.Util.join;
 import static org.javalite.db_migrator.DbUtils.exec;
 
 
@@ -33,44 +34,51 @@ public class Migration implements Comparable {
     }
 
     public void migrate(String encoding) throws Exception {
+        String file = Util.readFile(migrationFile.getCanonicalPath(), encoding == null ? "UTF-8" : encoding);
+        String[] lines = Util.split(file, System.getProperty("line.separator"));
+        if (lines.length > 1 && lines[0].trim().equals("SINGLE_STATEMENT")) {
+            processSingleStatement(lines);
+        } else {
+            processMultipleStatements(lines);
+        }
+    }
 
+    private void processMultipleStatements(String[] lines) {
 
+        String delimiter = DEFAULT_DELIMITER;
         StringBuilder command = null;
         try {
-            String delimiter = DEFAULT_DELIMITER;
-            LineNumberReader lineReader = new LineNumberReader(new InputStreamReader(new FileInputStream(migrationFile), encoding == null? "UTF-8" : encoding));
-            String line;
-            while ((line = lineReader.readLine()) != null) {
+            for (String line : lines) {
                 if (command == null) {
                     command = new StringBuilder();
                 }
 
-                line = line.trim(); // Strip extra whitespace too?
+                line = line.trim();
 
-                if (line.length() < 1) {
-                    // Do nothing, it's an empty line.
-                } else if (commentLine(line)) {
-                    logger.debug(line);
-                } else {
-                    if (startsWithIgnoreCase(line, DEFAULT_DELIMITER_KEYWORD)) {
-                        delimiter = line.substring(10).trim();
-                    } else if ((command.length() == 0) && startsWithIgnoreCase(line, "create ") && containsIgnoreCase(line, " as ")) {
-                        delimiter = line.substring(line.toLowerCase().lastIndexOf(" as ") + 4);
-                        command.append(line);
-                        command.append(" ");
-                    } else if (line.contains(delimiter)) {
-                        if (line.startsWith(delimiter)) {
-                            delimiter = DEFAULT_DELIMITER;
-                        }
-
-                        if (line.endsWith(delimiter)) {
-                            command.append(line.substring(0, line.lastIndexOf(delimiter)));
-                            exec(command.toString().trim());
-                            command = null;
-                        }
+                if (line.length() >= 1) {
+                    if (commentLine(line)) {
+                        logger.debug(line);
                     } else {
-                        command.append(line);
-                        command.append(" ");
+                        if (startsWithIgnoreCase(line, DEFAULT_DELIMITER_KEYWORD)) {
+                            delimiter = line.substring(10).trim();
+                        } else if ((command.length() == 0) && startsWithIgnoreCase(line, "create ") && containsIgnoreCase(line, " as ")) {
+                            delimiter = line.substring(line.toLowerCase().lastIndexOf(" as ") + 4);
+                            command.append(line);
+                            command.append(" ");
+                        } else if (line.contains(delimiter)) {
+                            if (line.startsWith(delimiter)) {
+                                delimiter = DEFAULT_DELIMITER;
+                            }
+
+                            if (line.endsWith(delimiter)) {
+                                command.append(line.substring(0, line.lastIndexOf(delimiter)));
+                                exec(command.toString().trim());
+                                command = null;
+                            }
+                        } else {
+                            command.append(line);
+                            command.append(" ");
+                        }
                     }
                 }
             }
@@ -80,11 +88,16 @@ public class Migration implements Comparable {
                 //Last statement in script is missing a terminating delimiter, executing anyway.
                 exec(command.toString().trim());
             }
-
         } catch (Exception e) {
             logger.error("Error executing: {}", command, e);
             throw e;
         }
+    }
+
+    private void processSingleStatement(String[] lines) {
+        List<String> statementLines = Arrays.asList(lines).subList(1, lines.length);
+        String statement = join(statementLines, System.getProperty("line.separator"));
+        exec(statement);
     }
 
     private boolean containsIgnoreCase(String line, String sub) {
