@@ -106,8 +106,6 @@ public class RequestDispatcher implements Filter {
 
         } catch (IllegalArgumentException e) {
             throw e;
-        }catch(ConfigurationException e){
-            throw  e;
         } catch (Exception e) {
             logger.debug("Did not find custom routes. Going with built in defaults: " + getCauseMessage(e));
         }
@@ -149,8 +147,8 @@ public class RequestDispatcher implements Filter {
                 logger.error("Failed to create and init a new instance of class: " + configClassName, e);
                 throw new InitException(e);
             }else{
-                logger.error("Failed to create and init a new instance of class: " + configClassName
-                        + ", proceeding without it. " + e, e);
+                logger.info("Failed to create and init a new instance of class: " + configClassName
+                        + ", proceeding without it.");
             }
         }
     }
