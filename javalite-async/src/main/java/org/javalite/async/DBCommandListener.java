@@ -19,8 +19,6 @@ import org.slf4j.LoggerFactory;
  */
 public class DBCommandListener extends CommandListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DBCommandListener.class);
-
     private String jndiConnection;
 
     /**
@@ -38,7 +36,6 @@ public class DBCommandListener extends CommandListener {
      */
     public DBCommandListener() {}
 
-
     /**
      * @param command command to execute.
      */
@@ -51,11 +48,8 @@ public class DBCommandListener extends CommandListener {
             }else{
                 Base.open();
             }
-
             Base.openTransaction();
-            long start = System.currentTimeMillis();
             command.execute();
-            LOGGER.info(command.getClass().getSimpleName() + " processed in " + (System.currentTimeMillis() - start) + " ms");
             Base.commitTransaction();
         } catch (Exception e) {
             try {
@@ -63,13 +57,11 @@ public class DBCommandListener extends CommandListener {
                     Base.rollbackTransaction();
                 }
             } catch (Exception ignore) {}
-            LOGGER.error("Could not process command " + command.toString(), e);
             onException(command, e);
         } finally {
             try {
                 Base.close();
-            } catch (Exception ignore) {
-            }
+            } catch (Exception ignore) {}
         }
     }
 
@@ -80,6 +72,4 @@ public class DBCommandListener extends CommandListener {
      * @param exception exception caught during command execution
      */
     protected void onException(Command command, Exception exception) {}
-
-
 }

@@ -17,6 +17,8 @@ limitations under the License.
 package org.javalite.async;
 
 import com.google.inject.Injector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
 import java.io.IOException;
@@ -25,6 +27,8 @@ import java.io.IOException;
  * @author Igor Polevoy on 4/5/15.
  */
 public class CommandListener implements MessageListener {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommandListener.class);
 
     private Injector injector;
 
@@ -36,7 +40,9 @@ public class CommandListener implements MessageListener {
             if (injector != null) {
                 injector.injectMembers(command);
             }
+            long start = System.currentTimeMillis();
             onCommand(command);
+            LOGGER.info(command.getClass().getSimpleName() + " processed in " + (System.currentTimeMillis() - start) + " ms");
         } catch (Exception e) {
             throw new AsyncException("Failed to process command", e);
         }
