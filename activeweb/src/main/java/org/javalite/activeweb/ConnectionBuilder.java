@@ -84,8 +84,8 @@ public class ConnectionBuilder {
     }
 
     /**
-     * Marks this connection to be used for testing. Whe n you use any of the testing classes, such as DBSpec, DBControllerSpec,
-     * DNIntegrationSpec and AppIntegrationSpec from activeweb-testing package, they all will use a connection that is marked
+     * Marks this connection to be used for testing. When you use any of the testing classes, such as DBSpec, DBControllerSpec,
+     * DBIntegrationSpec and AppIntegrationSpec from activeweb-testing package, they all will use a connection that is marked
      * by this method.
      *
      * @return self
