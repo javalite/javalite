@@ -23,6 +23,7 @@
 		<!-- usage of @Override -->
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
+        <skipTests>false</skipTests>
 	</properties>
 	
     <licenses>
@@ -55,6 +56,33 @@
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.19</version>
+                    <configuration>
+                        <reportFormat>brief</reportFormat>
+                        <trimStackTrace>true</trimStackTrace>
+                        <useFile>false</useFile>
+                        <skipTests>${skipTests}</skipTests>
+                        <includes>
+                            <include>**/*Spec*.java</include>
+                            <include>**/*Test*.java</include>
+                        </includes>
+                        <!-- fails with DE Locale as system default -->
+                        <argLine>-Duser.country=US -Duser.language=en</argLine>
+                        <trimStackTrace>false</trimStackTrace>
+                        <useFile>false</useFile>
+                        <includes>
+                            <include>**/*Spec*.java</include>
+                            <include>**/*Test*.java</include>
+                        </includes>
+                        <systemPropertyVariables>
+                            <oracle.jdbc.J2EE13Compliant>true</oracle.jdbc.J2EE13Compliant>
+                            <activejdbc.log />
+                        </systemPropertyVariables>
+                    </configuration>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>

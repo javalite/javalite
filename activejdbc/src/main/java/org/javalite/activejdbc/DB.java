@@ -130,10 +130,6 @@ public class DB {
         if(env == null){
             env = "development";
         }
-        //this is a hack to see if we are running under tests.
-        if(getClass().getResource("/org/junit/Test.class") != null){
-            env = "test";
-        }
         ConnectionSpec spec = Registry.instance().getConfiguration().getConnectionSpec(env);
         if(spec == null){
             throw new DBException("Could not find configuration in a property file for environment: " + env +
