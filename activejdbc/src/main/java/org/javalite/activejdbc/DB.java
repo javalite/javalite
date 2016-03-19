@@ -126,13 +126,12 @@ public class DB {
      *
      */
     public void open(){
-        String env = System.getenv("ACTIVE_ENV");
-        if(env == null){
-            env = "development";
-        }
-        ConnectionSpec spec = Registry.instance().getConfiguration().getConnectionSpec(env);
+
+        Configuration config = Registry.instance().getConfiguration();
+        ConnectionSpec spec = config.getCurrentConnectionSpec();
+        String conf = config.getEnvironment();
         if(spec == null){
-            throw new DBException("Could not find configuration in a property file for environment: " + env +
+            throw new DBException("Could not find configuration in a property file for environment: " + config.getEnvironment() +
                     ". Are you sure you have a database.properties file configured?");
         }
         open(spec);
@@ -388,7 +387,7 @@ public class DB {
      */
     public List<Map> findAll(String query, Object ... params) {
 
-        final List<Map> results = new ArrayList<Map>();
+        final List<Map> results = new ArrayList<>();
         long start = System.currentTimeMillis();
         find(query, params).with(new RowListenerAdapter() {
             @Override public void onNext(Map<String, Object> row) {

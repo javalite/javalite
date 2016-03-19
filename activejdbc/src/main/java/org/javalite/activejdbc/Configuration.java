@@ -132,12 +132,61 @@ public class Configuration {
         }catch(Exception e){
             // in case property file not found, do nothing
         }
+
+        overrideFromEnvironmentVariables();
+        overrideFromSystemProperties();
+    }
+
+    /**
+     * Overrides current environment's connection spec from system properties.
+     */
+    private void overrideFromEnvironmentVariables() {
+        String  url = System.getenv("ACTIVEJDBC.URL");
+        String  user = System.getenv("ACTIVEJDBC.USER");
+        String  password = System.getenv("ACTIVEJDBC.PASSWORD");
+        String  driver = System.getenv("ACTIVEJDBC.DRIVER");
+        if(!blank(url) && !blank(user) && !blank(password) && !blank(driver)){
+            connectionSpecMap.put(getEnvironment(), new ConnectionJdbcSpec(driver, url, user, password));
+        }
+    }
+
+    /**
+     * Overrides current environment's connection spec from system properties.
+     */
+    private void overrideFromSystemProperties() {
+        String  url = System.getProperty("activejdbc.url");
+        String  user = System.getProperty("activejdbc.user");
+        String  password = System.getProperty("activejdbc.user");
+        String  driver = System.getProperty("activejdbc.user");
+        if(!blank(url) && !blank(user) && !blank(password) && !blank(driver)){
+            connectionSpecMap.put(getEnvironment(), new ConnectionJdbcSpec(driver, url, user, password));
+        }
     }
 
     public ConnectionSpec getConnectionSpec(String environment){
         return connectionSpecMap.get(environment);
     }
 
+    /**
+     * Finds a connection {@link ConnectionSpec} that corresponds to system properties,
+     * environment variables of <code>database.properties</code> configuration, whichever is found first.
+     * Configuration of system properties overrides environment variables, which overrides
+     * <code>database.properties</code>.
+     *
+     * @return {@link ConnectionSpec} used by {@link DB#open()} to open a "default" connection, as well as {@link Base#open()} methods.
+     */
+    public  ConnectionSpec getCurrentConnectionSpec(){
+        return getConnectionSpec(getEnvironment());
+    }
+
+
+    /**
+     * @return current environment as specified by environment variable <code>ACTIVE_ENV</code>.
+     * Defaults to "development" if no environment variable provided.
+     */
+    public String getEnvironment(){
+        return System.getenv("ACTIVE_ENV")  == null ? "development" : System.getenv("ACTIVE_ENV");
+    }
 
     //get environments defined in properties
     private Set<String> getEnvironments(Properties props) {
