@@ -8,9 +8,10 @@ import org.junit.Test;
 import java.io.File;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
+import static org.javalite.common.Util.readResource;
 import static org.javalite.db_migrator.DbUtils.attach;
 import static org.javalite.db_migrator.DbUtils.detach;
+import static org.javalite.test.jspec.JSpec.a;
 
 
 public class MigrationSpec {
@@ -38,9 +39,9 @@ public class MigrationSpec {
         m.migrate(null);
         List statements = getStatements();
 
-        assertEquals(statements.size(), 2);
-        assertEquals(statements.get(0), "create table users ( username varchar not null, password varchar not null )");
-        assertEquals(statements.get(1), "alter table users add index (username), add unique (username)");
+        a(statements.size()).shouldBeEqual(2);
+        shouldBeEqual(statements.get(0), "/expected/create_users.sql");
+        shouldBeEqual(statements.get(1), "/expected/alter_users.sql");
     }
 
     private List getStatements() {
@@ -52,8 +53,8 @@ public class MigrationSpec {
         Migration m = new Migration("123", new File("src/test/resources/sql/complex.sql"));
         m.migrate(null);
         List statements = getStatements();
-        assertEquals(statements.size(), 1);
-        assertEquals(statements.get(0), "update dav_file set parent = ( select id from ( select id from dav_file where name = '__SITE_PROTECTED__' ) as x ) where ( name = 'templates' and parent is null ) or ( name = 'velocity' and parent is null ) or ( name = 'tags' and parent is null ) or ( name = 'ctd' and parent is null )");
+        a(statements.size()).shouldBeEqual(1);
+        shouldBeEqual(statements.get(0), "/expected/dav_file.sql");
     }
 
     @Test
@@ -61,10 +62,11 @@ public class MigrationSpec {
         Migration m = new Migration("123", new File("src/test/resources/sql/stored-procedure-mysql.sql"));
         m.migrate(null);
         List statements = getStatements();
-        assertEquals(statements.size(), 3);
-        assertEquals(statements.get(0), "CREATE FUNCTION hello (s CHAR(20)) RETURNS CHAR(50) DETERMINISTIC RETURN CONCAT('Hello, ',s,'!')");
-        assertEquals(statements.get(1), "CREATE FUNCTION weighted_average (n1 INT, n2 INT, n3 INT, n4 INT) RETURNS INT DETERMINISTIC BEGIN DECLARE avg INT; SET avg = (n1+n2+n3*2+n4*4)/8; RETURN avg; END");
-        assertEquals(statements.get(2), "CREATE PROCEDURE payment(payment_amount DECIMAL(6,2), payment_seller_id INT) BEGIN DECLARE n DECIMAL(6,2); SET n = payment_amount - 1.00; INSERT INTO Moneys VALUES (n, CURRENT_DATE); IF payment_amount > 1.00 THEN UPDATE Sellers SET commission = commission + 1.00 WHERE seller_id = payment_seller_id; END IF; END");
+        a(statements.size()).shouldBeEqual(3);
+        a(statements.get(0)).shouldBeEqual("CREATE FUNCTION hello (s CHAR(20)) RETURNS CHAR(50) DETERMINISTIC RETURN CONCAT('Hello, ',s,'!')");
+        shouldBeEqual(statements.get(1), "/expected/weighted_average.sql");
+        shouldBeEqual(statements.get(1), "/expected/weighted_average.sql");
+        shouldBeEqual(statements.get(2), "/expected/payment.sql");
     }
 
     @Test
@@ -72,11 +74,11 @@ public class MigrationSpec {
         Migration m = new Migration("123", new File("src/test/resources/sql/stored-procedure-postgresql.sql"));
         m.migrate(null);
         List statements = getStatements();
-        assertEquals(statements.size(), 4);
-        assertEquals(statements.get(0), "CREATE FUNCTION getQtyOrders(customerID int) RETURNS int AS $$ DECLARE qty int; BEGIN SELECT COUNT(*) INTO qty FROM Orders WHERE accnum = customerID; RETURN qty; END; $$ LANGUAGE plpgsql");
-        assertEquals(statements.get(1), "CREATE FUNCTION one() RETURNS integer AS ' SELECT 1 AS result; ' LANGUAGE SQL");
-        assertEquals(statements.get(2), "CREATE FUNCTION emp_stamp() RETURNS trigger AS $emp_stamp$ BEGIN IF NEW.empname IS NULL THEN RAISE EXCEPTION 'empname cannot be null'; END IF; IF NEW.salary IS NULL THEN RAISE EXCEPTION '% cannot have null salary', NEW.empname; END IF; IF NEW.salary < 0 THEN RAISE EXCEPTION '% cannot have a negative salary', NEW.empname; END IF; NEW.last_date := current_timestamp; NEW.last_user := current_user; RETURN NEW; END; $emp_stamp$ LANGUAGE plpgsql");
-        assertEquals(statements.get(3), "SELECT one()");
+        a(statements.size()).shouldBeEqual(4);
+        shouldBeEqual(statements.get(0), "/expected/getQtyOrders.sql");
+        shouldBeEqual(statements.get(1), "/expected/one.sql");
+        shouldBeEqual(statements.get(2), "/expected/emp_stamp.sql");
+        a(statements.get(3).toString().trim()).shouldBeEqual("SELECT one();".trim());
     }
 
     @Test
@@ -84,10 +86,10 @@ public class MigrationSpec {
         Migration m = new Migration("123", new File("src/test/resources/sql/function-mysql.sql"));
         m.migrate(null);
         List statements = getStatements();
-        assertEquals(statements.size(), 3);
-        assertEquals(statements.get(0), "DROP FUNCTION IF EXISTS simpleFunction");
-        assertEquals(statements.get(1), "CREATE FUNCTION simpleFunction() RETURNS varchar(100) READS SQL DATA begin declare message varchar(100) default 'Hello Word'; return message; end");
-        assertEquals(statements.get(2), "select simpleFunction()");
+        a(statements.size()).shouldBeEqual(3);
+        shouldBeEqual(statements.get(0), "/expected/drop_simple.sql");
+        shouldBeEqual(statements.get(1), "/expected/simpleFunction.sql");
+        shouldBeEqual(statements.get(2), "/expected/selectSimpleFunction.sql");
     }
 
     @Test
@@ -95,8 +97,16 @@ public class MigrationSpec {
         Migration m = new Migration("123", new File("src/test/resources/sql/missing-last-deliminator.sql"));
         m.migrate(null);
         List statements = getStatements();
-        assertEquals(statements.size(), 2);
-        assertEquals(statements.get(0), "create table users ( username varchar not null, password varchar not null )");
-        assertEquals(statements.get(1), "create table roles ( name varchar not null unique, description text not null )");
+        a(statements.size()).shouldBeEqual(2);
+        shouldBeEqual(statements.get(0), "/expected/create_users.sql");
+        shouldBeEqual(statements.get(1), "/expected/roles.sql");
+    }
+
+    private void shouldBeEqual(Object operand1, String resourceName){
+        a(stripNL(operand1)).shouldBeEqual(stripNL(readResource(resourceName)));
+    }
+
+    private String stripNL(Object in){
+        return in.toString().trim().replace("\n", "").replace("\r", "");
     }
 }

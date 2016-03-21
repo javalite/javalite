@@ -244,19 +244,7 @@ public final class Util {
      * @return true if value is either null or it's String representation is blank, otherwise returns false.
      */
     public static boolean blank(Object value) {
-        if (value == null) {
-            return true;
-        } else {
-            String str = value.toString();
-            if (str != null && !str.isEmpty()) {
-                for (int i = 0; i < str.length(); i++) {
-                    if (str.charAt(i) > ' ') {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
+        return value == null || value.toString().trim().length() == 0;
     }
 
     /**

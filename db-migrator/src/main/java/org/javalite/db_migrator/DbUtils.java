@@ -159,12 +159,13 @@ public class DbUtils {
         return connectionTL.get();
     }
 
-    public static int exec(String query){
+    public static int exec(String statement){
         Statement s = null;
         try {
             s = connection().createStatement();
-            int count = s.executeUpdate(query);
-            logger.info(query);
+            logger.info("Executing: " + statement);
+            int count = s.executeUpdate(statement);
+
             return count;
         } catch (SQLException e) {
             throw new RuntimeException(e);

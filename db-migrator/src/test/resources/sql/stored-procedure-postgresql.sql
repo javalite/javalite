@@ -1,3 +1,5 @@
+DELIMITER ;;
+
 CREATE FUNCTION getQtyOrders(customerID int) RETURNS int AS $$
 DECLARE
     qty int;
@@ -9,9 +11,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+;;
+
 CREATE FUNCTION one() RETURNS integer AS '
     SELECT 1 AS result;
 ' LANGUAGE SQL;
+
+;;
 
 CREATE FUNCTION emp_stamp() RETURNS trigger AS $emp_stamp$
   BEGIN
@@ -34,5 +40,7 @@ CREATE FUNCTION emp_stamp() RETURNS trigger AS $emp_stamp$
     RETURN NEW;
   END;
 $emp_stamp$ LANGUAGE plpgsql;
+
+;;
 
 SELECT one();
