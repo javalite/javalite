@@ -156,8 +156,8 @@ public class Configuration {
     private void overrideFromSystemProperties() {
         String  url = System.getProperty("activejdbc.url");
         String  user = System.getProperty("activejdbc.user");
-        String  password = System.getProperty("activejdbc.user");
-        String  driver = System.getProperty("activejdbc.user");
+        String  password = System.getProperty("activejdbc.password");
+        String  driver = System.getProperty("activejdbc.driver");
         if(!blank(url) && !blank(user) && !blank(password) && !blank(driver)){
             connectionSpecMap.put(getEnvironment(), new ConnectionJdbcSpec(driver, url, user, password));
         }
