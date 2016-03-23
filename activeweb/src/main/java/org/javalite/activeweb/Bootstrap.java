@@ -18,6 +18,8 @@ package org.javalite.activeweb;
 import org.javalite.activeweb.freemarker.FreeMarkerTag;
 import org.javalite.activeweb.freemarker.FreeMarkerTemplateManager;
 import com.google.inject.Injector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is an abstract class designed to be overridden in the application. The name for a subclass is:
@@ -29,6 +31,8 @@ import com.google.inject.Injector;
  * @author Igor Polevoy
  */
 public abstract class Bootstrap extends AppConfig{
+
+    private static final Logger  logger = LoggerFactory.getLogger(Bootstrap.class);
 
     @Deprecated
     protected void registerTag(String name, FreeMarkerTag tag){
@@ -67,6 +71,7 @@ public abstract class Bootstrap extends AppConfig{
      */
     public void setInjector(Injector injector){
         if(!Configuration.isTesting()){
+            logger.warn("WARNING!!! Method Bootstrap#setInjector(Injector) is deprecated and will be removed in future versions. Please switch to Bootstrap#getInjector() instead.");
             Context.getControllerRegistry().setInjector(injector);
         }
     }
