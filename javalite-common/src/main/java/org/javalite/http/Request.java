@@ -136,8 +136,10 @@ public abstract class Request<T extends Request> {
             }
         } catch (Exception e) {
             throw new HttpException("Failed URL: " + url, e);
+        }finally {
+            dispose();
         }
-        dispose();
+
         return bout.toByteArray();
     }
 
@@ -149,11 +151,11 @@ public abstract class Request<T extends Request> {
     public String text() {
         try {
             connect();
-            String result = responseCode() >= 400 ? read(connection.getErrorStream()) : read(connection.getInputStream());
-            dispose();
-            return result;
+            return responseCode() >= 400 ? read(connection.getErrorStream()) : read(connection.getInputStream());
         } catch (IOException e) {
             throw new HttpException("Failed URL: " + url, e);
+        }finally {
+            dispose();
         }
     }
 
@@ -167,11 +169,11 @@ public abstract class Request<T extends Request> {
     public String text(String encoding) {
         try {
             connect();
-            String result = responseCode() >= 400 ? read(connection.getErrorStream()) : read(connection.getInputStream(), encoding);
-            dispose();
-            return result;
+            return responseCode() >= 400 ? read(connection.getErrorStream()) : read(connection.getInputStream(), encoding);
         } catch (IOException e) {
             throw new HttpException("Failed URL: " + url, e);
+        }finally {
+            dispose();
         }
     }
 
