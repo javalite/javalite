@@ -217,7 +217,7 @@
     <distributionManagement>
         <snapshotRepository>
             <id>myrepository</id>
-            <url>/var/www/</url>
+            <url>file:///var/www/</url>
         </snapshotRepository>
     </distributionManagement>
 
