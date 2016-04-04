@@ -60,7 +60,7 @@ public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
     /**
      * The enclosing project.
      *
-     * @parameter property="${project}"
+     * @parameter property="project"
      * @required
      * @readonly
      */
