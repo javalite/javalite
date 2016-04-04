@@ -217,7 +217,7 @@
     <distributionManagement>
         <snapshotRepository>
             <id>myrepository</id>
-            <url>file://C:/Users/Jenkins/repository</url>
+            <url>/var/www/</url>
         </snapshotRepository>
     </distributionManagement>
 
