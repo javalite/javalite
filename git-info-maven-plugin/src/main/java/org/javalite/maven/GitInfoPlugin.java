@@ -38,7 +38,7 @@ public class GitInfoPlugin extends AbstractMojo {
     /**
      * The enclosing project.
      *
-     * @parameter property="project"
+     * @parameter property="${project}"
      * @required
      * @readonly
      */
