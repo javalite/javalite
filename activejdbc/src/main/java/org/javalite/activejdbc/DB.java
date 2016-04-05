@@ -485,8 +485,6 @@ public class DB {
 
         if(query.indexOf('?') == -1 && params.length != 0) throw new IllegalArgumentException("you passed arguments, but the query does not have placeholders: (?)");
 
-        if(!SELECT_PATTERN.matcher(query).find()) { throw new IllegalArgumentException("query must be 'select' query"); }
-
         //TODO: cache prepared statements here too
         PreparedStatement ps;
         ResultSet rs;
@@ -578,7 +576,6 @@ public class DB {
      * @return number of records affected.
      */
     public int exec(String query, Object... params){
-        if(SELECT_PATTERN.matcher(query).find()) { throw new IllegalArgumentException("expected DML, but got select..."); }
 
         if(query.indexOf('?') == -1) throw new IllegalArgumentException("query must be parametrized");
 
