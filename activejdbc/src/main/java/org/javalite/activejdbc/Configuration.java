@@ -117,7 +117,7 @@ public class Configuration {
             for (String env : getEnvironments(connectionProps)) {
                 String jndiName = env + "." + "jndi";
                 if (connectionProps.containsKey(jndiName)) {
-                    connectionSpecMap.put(env, new ConnectionJndiSpec(jndiName));
+                    connectionSpecMap.put(env, new ConnectionJndiSpec(connectionProps.getProperty(jndiName)));
                 } else {
                     String driver = connectionProps.getProperty(env + ".driver");
                     String userName = connectionProps.getProperty(env + ".username");
