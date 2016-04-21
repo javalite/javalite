@@ -148,6 +148,11 @@ public class Configuration {
         if(!blank(url) && !blank(user) && !blank(password) && !blank(driver)){
             connectionSpecMap.put(getEnvironment(), new ConnectionJdbcSpec(driver, url, user, password));
         }
+
+        String  jndi = System.getenv("ACTIVEJDBC.JNDI");
+        if(!blank(jndi)){
+            connectionSpecMap.put(getEnvironment(), new ConnectionJndiSpec(jndi));
+        }
     }
 
     /**
@@ -160,6 +165,11 @@ public class Configuration {
         String  driver = System.getProperty("activejdbc.driver");
         if(!blank(url) && !blank(user) && !blank(password) && !blank(driver)){
             connectionSpecMap.put(getEnvironment(), new ConnectionJdbcSpec(driver, url, user, password));
+        }
+
+        String  jndi = System.getenv("activejdbc.jndi");
+        if(!blank(jndi)){
+            connectionSpecMap.put(getEnvironment(), new ConnectionJndiSpec(jndi));
         }
     }
 
