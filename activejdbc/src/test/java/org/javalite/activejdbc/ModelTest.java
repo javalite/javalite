@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import static org.javalite.activejdbc.test.JdbcProperties.driver;
 import static org.javalite.common.Collections.*;
 
 
@@ -517,7 +518,12 @@ public class ModelTest extends ActiveJDBCTest {
         the(Base.exec(updateSql)).shouldBeEqual(1);
 
         alarm = Alarm.findById(alarm.getId());
-        the(alarm.getString("alarm_time").startsWith(t)).shouldBeTrue();
+
+        if(driver().contains("jtds")){
+            the(alarm.getString("alarm_time").startsWith(t)).shouldBeTrue();
+        }else {
+            the(alarm.getTime("alarm_time").toString()).shouldBeEqual(t);
+        }
     }
 
     @Test(expected = NoSuchElementException.class)
@@ -556,7 +562,12 @@ public class ModelTest extends ActiveJDBCTest {
         Object id = Base.execInsert(insertSql, alarm.getIdName());
 
         alarm = Alarm.findById(id);
-        the(alarm.getTime("alarm_time").toString()).shouldBeEqual(t);
+
+        if(driver().contains("jtds")){
+            the(alarm.getString("alarm_time").startsWith(t)).shouldBeTrue();
+        }else {
+            the(alarm.getTime("alarm_time").toString()).shouldBeEqual(t);
+        }
     }
 
     @Test
@@ -696,7 +707,7 @@ public class ModelTest extends ActiveJDBCTest {
     }
 
     @Test
-    public void testNewFromMapCaseInsensive() {
+    public void testNewFromMapCaseInsensitive() {
         Person p = new Person().fromMap(map("NAME", "Joe", "Last_Name", "Schmoe", "dob", "2003-06-15"));
 
         a(p.get("name")).shouldNotBeNull();
@@ -712,6 +723,11 @@ public class ModelTest extends ActiveJDBCTest {
         alarm.save();
 
         alarm = Alarm.findById(alarm.getId());
-        the(alarm.getTime("alarm_time").toString()).shouldBeEqual(t);
+
+        if(driver().contains("jtds")){
+            the(alarm.getString("alarm_time").startsWith(t)).shouldBeTrue();
+        }else {
+            the(alarm.getTime("alarm_time").toString()).shouldBeEqual(t);
+        }
     }
 }
