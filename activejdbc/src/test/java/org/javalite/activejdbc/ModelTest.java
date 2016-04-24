@@ -517,6 +517,7 @@ public class ModelTest extends ActiveJDBCTest {
         the(Base.exec(updateSql)).shouldBeEqual(1);
 
         alarm = Alarm.findById(alarm.getId());
+        System.out.println("ALARM: " + alarm.get("alarm_time").getClass() + " " + alarm.get("alarm_time"));
         the(alarm.getTime("alarm_time").toString()).shouldBeEqual(t);
     }
 
