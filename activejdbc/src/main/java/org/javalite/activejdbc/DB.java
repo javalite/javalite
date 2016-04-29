@@ -119,17 +119,18 @@ public class DB {
 
     /**
      * This method will open a connection defined in the file 'database.properties' located at
-     * root of classpath. The connection picked from the file is defined by <code>ACTIVE_ENV</code>
-     * environment variable. If this variable is not defined, it defaults to 'development' environment.
+     * root of classpath. The connection picked up from the file is defined by <code>ACTIVE_ENV</code>
+     * environment variable or <code>active_env</code> system property.
+     * If this variable is not defined, it defaults to 'development' environment.
      *
+     * <p></p>
      * If there is JUnit on classpath, this method assumes it is running under test, and defaults to 'test'.
      *
+     * @see Configuration#getEnvironment()
      */
     public void open(){
-
         Configuration config = Registry.instance().getConfiguration();
         ConnectionSpec spec = config.getCurrentConnectionSpec();
-        String conf = config.getEnvironment();
         if(spec == null){
             throw new DBException("Could not find configuration in a property file for environment: " + config.getEnvironment() +
                     ". Are you sure you have a database.properties file configured?");

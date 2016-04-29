@@ -191,11 +191,22 @@ public class Configuration {
 
 
     /**
-     * @return current environment as specified by environment variable <code>ACTIVE_ENV</code>.
+     * @return current environment as specified by environment variable <code>ACTIVE_ENV</code>
+     * of <code>active_env</code> system property. System property value overrides environment variable.
+     *
      * Defaults to "development" if no environment variable provided.
      */
     public String getEnvironment(){
-        return System.getenv("ACTIVE_ENV")  == null ? "development" : System.getenv("ACTIVE_ENV");
+        String env = "development";
+
+        if(!blank(System.getenv("ACTIVE_ENV"))){
+            env = System.getenv("ACTIVE_ENV");
+        }
+
+        if(!blank(System.getProperty("active_env"))){
+            env = System.getProperty("active_env");
+        }
+        return env;
     }
 
     //get environments defined in properties
