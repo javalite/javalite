@@ -167,7 +167,7 @@ public class Configuration {
             connectionSpecMap.put(getEnvironment(), new ConnectionJdbcSpec(driver, url, user, password));
         }
 
-        String  jndi = System.getenv("activejdbc.jndi");
+        String  jndi = System.getProperty("activejdbc.jndi");
         if(!blank(jndi)){
             connectionSpecMap.put(getEnvironment(), new ConnectionJndiSpec(jndi));
         }
