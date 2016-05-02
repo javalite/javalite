@@ -151,10 +151,27 @@ public class Http {
         }
     }
 
+    /**
+     * Create multipart request
+     *
+     * @param url URL to send to
+     * @return new Multipart request
+     */
     public static Multipart multipart(String url) {
         return new Multipart(url, CONNECTION_TIMEOUT, READ_TIMEOUT);
     }
 
+    /**
+     * Create multipart request
+     *
+     * @param url URL to send to
+     * @param connectTimeout connect timeout
+     * @param readTimeout read timeout
+     * @return new Multipart request
+     */
+    public static Multipart multipart(String url, int connectTimeout, int readTimeout) {
+        return new Multipart(url, connectTimeout, connectTimeout);
+    }
 
     /**
      * Executes a DELETE request.
