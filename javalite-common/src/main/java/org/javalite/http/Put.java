@@ -30,13 +30,13 @@ public class Put extends Request<Put> {
     /**
      * Constructor for making PUT requests.
      *
-     * @param uri URI of resource.
+     * @param url URL of resource.
      * @param content content to be "put" into a resource.
      * @param connectTimeout connection timeout.
      * @param readTimeout read timeout.
      */
-    public Put(String uri, byte[] content, int connectTimeout, int readTimeout) {
-        super(uri, connectTimeout, readTimeout);
+    public Put(String url, byte[] content, int connectTimeout, int readTimeout) {
+        super(url, connectTimeout, readTimeout);
         this.content = content;
     }
     

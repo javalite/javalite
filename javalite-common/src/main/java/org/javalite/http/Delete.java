@@ -26,12 +26,12 @@ public class Delete extends Request<Delete> {
     /**
      * Constructor for making DELETE requests.
      *
-     * @param uri URI of resource.
+     * @param url URL of resource.
      * @param connectTimeout connection timeout.
      * @param readTimeout read timeout.
      */
-    public Delete(String uri, int connectTimeout, int readTimeout) {
-        super(uri, connectTimeout, readTimeout);
+    public Delete(String url, int connectTimeout, int readTimeout) {
+        super(url, connectTimeout, readTimeout);
     }
 
     @Override

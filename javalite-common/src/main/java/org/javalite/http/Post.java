@@ -30,13 +30,13 @@ public class Post extends Request<Post> {
     /**
      * Constructor for making POST requests.
      *
-     * @param uri URI of resource.
+     * @param url URL of resource.
      * @param content content to be posted to the resource.
      * @param connectTimeout connection timeout.
      * @param readTimeout read timeout.
      */
-    public Post(String uri, byte[] content, int connectTimeout, int readTimeout) {
-        super(uri, connectTimeout, readTimeout);
+    public Post(String url, byte[] content, int connectTimeout, int readTimeout) {
+        super(url, connectTimeout, readTimeout);
         this.content = content;
     }
 

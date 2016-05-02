@@ -27,12 +27,12 @@ public class Get extends Request<Get> {
     /**
      * Constructor for making GET requests.
      *
-     * @param uri            URI of resource.
+     * @param url            URL of resource.
      * @param connectTimeout connection timeout.
      * @param readTimeout    read timeout.
      */
-    public Get(String uri, int connectTimeout, int readTimeout) {
-        super(uri, connectTimeout, readTimeout);
+    public Get(String url, int connectTimeout, int readTimeout) {
+        super(url, connectTimeout, readTimeout);
     }
 
     @Override

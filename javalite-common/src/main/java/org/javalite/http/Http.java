@@ -151,6 +151,10 @@ public class Http {
         }
     }
 
+    public static Multipart multipart(String url) {
+        return new Multipart(url, CONNECTION_TIMEOUT, READ_TIMEOUT);
+    }
+
 
     /**
      * Executes a DELETE request.
