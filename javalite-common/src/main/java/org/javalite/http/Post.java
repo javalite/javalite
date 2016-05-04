@@ -75,6 +75,39 @@ public class Post extends Request<Post> {
         }
     }
 
+
+    /**
+     * Convenience method to add multiple parameters to the request.
+     * <p></p>
+     * Names and values alternate: name1, value1, name2, value2, etc.
+     *
+     * @param namesAndValues names/values of multiple fields to be added to the request.
+     * @return self
+     */
+    public Post params(String ... namesAndValues){
+
+        if(namesAndValues == null ){
+            throw new NullPointerException("'names and values' cannot be null");
+        }
+
+        if(namesAndValues.length % 2 != 0){
+            throw new IllegalArgumentException("mus pas even number of arguments");
+        }
+
+        for (int i = 0; i < namesAndValues.length - 1; i += 2) {
+            if (namesAndValues[i] == null) throw new IllegalArgumentException("parameter names cannot be nulls");
+            params.put(namesAndValues[i], namesAndValues[i + 1]);
+        }
+        return this;
+    }
+
+    /**
+     * Adds a parameter to the request as in a HTML form.
+     *
+     * @param name name of parameter
+     * @param value value of parameter
+     * @return self
+     */
     public Post param(String name, String value){
         params.put(name, value);
         return this;
