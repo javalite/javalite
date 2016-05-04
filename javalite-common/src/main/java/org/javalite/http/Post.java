@@ -16,7 +16,15 @@ limitations under the License.
 
 package org.javalite.http;
 
+import org.javalite.common.Collections;
+
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.javalite.common.Collections.map;
 
 /**
  * Executes a POST request.
@@ -26,6 +34,7 @@ import java.io.OutputStream;
 public class Post extends Request<Post> {
 
     private final byte[] content;
+    private Map<String, String> params = new HashMap<>();
 
     /**
      * Constructor for making POST requests.
@@ -47,8 +56,18 @@ public class Post extends Request<Post> {
             connection.setDoOutput(true);
             connection.setUseCaches(false);
             connection.setRequestMethod("POST");
+
+            if(params.size() > 0){
+                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            }
             OutputStream out = connection.getOutputStream();
-            out.write(content);
+            if(params.size() > 0){
+                out.write(Http.map2Content(params).getBytes());
+            }
+            if(content != null){
+                out.write(content);
+            }
+
             out.flush();
             return this;
         } catch (Exception e) {
@@ -56,11 +75,19 @@ public class Post extends Request<Post> {
         }
     }
 
+    public Post param(String name, String value){
+        params.put(name, value);
+        return this;
+    }
+
     public static void main(String[] args) {
-        Post post = Http.post("http://localhost:8080/kitchensink/http/post", "this is a post content").header("Content-type", "text/json");
-        //System.out.println(post.text());
-        //System.out.println(post.headers());
-        System.out.println(post.responseCode());
-        System.out.println(post.responseMessage());
+//        Post post = Http.post("http://localhost:8080/kitchensink/http/post", "this is a post content").header("Content-type", "text/json");
+//        //System.out.println(post.text());
+//        //System.out.println(post.headers());
+//        System.out.println(post.responseCode());
+//        System.out.println(post.responseMessage());
+
+        Post post = Http.post("http://localhost:8080/hello").param("name", "John");
+        System.out.println(post.text());
     }
 }

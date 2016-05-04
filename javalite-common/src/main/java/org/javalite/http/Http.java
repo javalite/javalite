@@ -55,6 +55,21 @@ public class Http {
 
     /**
      * Executes a POST request.
+     *  Often used to post form parameters:
+     *
+     * <pre>
+     *     Http.post("http://example.com/create").param("name1", "val1");
+     * </pre>
+     *
+     * @param uri     url of resource.
+     * @return {@link Post} object.
+     */
+    public static Post post(String uri) {
+        return post(uri, null, CONNECTION_TIMEOUT, READ_TIMEOUT);
+    }
+
+    /**
+     * Executes a POST request.
      *
      * @param uri     url of resource.
      * @param content content to be posted.
@@ -77,6 +92,27 @@ public class Http {
 
         try {
             return new Post(url, content, connectTimeout, readTimeout);
+        } catch (Exception e) {
+            throw new HttpException("Failed URL: " + url, e);
+        }
+    }
+
+    /**
+     * Executes a POST request. Often used to post form parameters:
+     *
+     * <pre>
+     *     Http.post("http://example.com/create").param("name1", "val1");
+     * </pre>
+     *
+     * @param url            url of resource.
+     * @param connectTimeout connection timeout in milliseconds.
+     * @param readTimeout    read timeout in milliseconds.
+     * @return {@link Post} object.
+     */
+    public static Post post(String url, int connectTimeout, int readTimeout) {
+
+        try {
+            return new Post(url, null, connectTimeout, readTimeout);
         } catch (Exception e) {
             throw new HttpException("Failed URL: " + url, e);
         }
