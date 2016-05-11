@@ -37,6 +37,7 @@ public class Multipart extends Request<Multipart> {
             connection.setDoOutput(true); // indicates POST method
             connection.setDoInput(true);
             connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+            connection.setInstanceFollowRedirects(redirect);
             outputStream = connection.getOutputStream();
             writer = new PrintWriter(new OutputStreamWriter(outputStream), true);
             sendData();

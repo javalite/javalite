@@ -39,6 +39,7 @@ public class Delete extends Request<Delete> {
         try {
             connection.setDoOutput(true);
             connection.setRequestMethod("DELETE");
+            connection.setInstanceFollowRedirects(redirect);
             connection.connect();
             return this;
         } catch (Exception e) {

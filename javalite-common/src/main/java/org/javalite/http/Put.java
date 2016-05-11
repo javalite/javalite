@@ -46,6 +46,7 @@ public class Put extends Request<Put> {
             connection.setDoOutput(true);
             connection.setDoInput(true);
             connection.setRequestMethod("PUT");
+            connection.setInstanceFollowRedirects(redirect);
             OutputStream os = connection.getOutputStream();
             os.write(content);
             os.flush();

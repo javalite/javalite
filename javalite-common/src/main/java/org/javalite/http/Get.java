@@ -40,6 +40,7 @@ public class Get extends Request<Get> {
         try {
             connection.setDoInput(true);
             connection.setDoOutput(true);
+            connection.setInstanceFollowRedirects(redirect);
             connection.setUseCaches(false);
             connection.setRequestMethod("GET");
             return this;
@@ -49,8 +50,7 @@ public class Get extends Request<Get> {
     }
 
     public static void main(String[] args) {
-        
-        Get get = Http.get("http://localhost:8080/manager/html").basic("tomcat", "tomcat");
+        Get get = Http.get("https://www.yahoo.com");
         System.out.println(get.text());
         System.out.println(get.headers());
         System.out.println(get.responseCode());

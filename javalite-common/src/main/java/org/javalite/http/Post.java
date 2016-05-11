@@ -56,6 +56,7 @@ public class Post extends Request<Post> {
             connection.setDoOutput(true);
             connection.setUseCaches(false);
             connection.setRequestMethod("POST");
+            connection.setInstanceFollowRedirects(redirect);
 
             if(params.size() > 0){
                 connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");

@@ -35,6 +35,7 @@ public abstract class Request<T extends Request> {
 
     protected final HttpURLConnection connection;
     private boolean connected;
+    protected boolean redirect = false;
     protected final String url;
 
     public Request(String url, int connectTimeout, int readTimeout) {
@@ -61,6 +62,17 @@ public abstract class Request<T extends Request> {
         return (T) this;
     }
 
+    /**
+     * Configures this request to follow redirects. Default is <code>false</code>.
+     *
+     * @see https://docs.oracle.com/javase/7/docs/api/java/net/HttpURLConnection.html#instanceFollowRedirects
+     * @param redirect true to follow, false to not.
+     * @return self
+     */
+    public T redirect(boolean redirect) {
+        this.redirect = redirect;
+        return (T) this;
+    }
 
     /**
      * Returns input stream to read server response from.
