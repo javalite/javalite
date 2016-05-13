@@ -26,6 +26,7 @@ class RenderTemplateResponse extends ControllerResponse{
     private String template, format;
     private String layout = Configuration.getDefaultLayout();
     private TemplateManager templateManager;
+    private boolean defaultLayout = true;
 
     /**
      * Constructs a response object for rendering pages. This can be used for regular responses.
@@ -70,6 +71,11 @@ class RenderTemplateResponse extends ControllerResponse{
 
     public void setLayout(String layout) {
         this.layout = layout;
+        this.defaultLayout = false; // in some bizarre cases, when  you need default_layout set manually inside action!
+    }
+
+    public boolean hasDefaultLayout(){
+        return defaultLayout;
     }
 
     protected void setTemplateManager(TemplateManager templateManager){

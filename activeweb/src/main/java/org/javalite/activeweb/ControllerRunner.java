@@ -151,8 +151,7 @@ class ControllerRunner {
     //this is configuration of explicit response. If render() method was called in controller, we already have instance of
     // response on current thread.
     private void configureExplicitResponse(Route route, String controllerLayout, RenderTemplateResponse resp) throws InstantiationException, IllegalAccessException {
-            String responseLayout = resp.getLayout();
-            if(!Configuration.getDefaultLayout().equals(controllerLayout) && Configuration.getDefaultLayout().equals(responseLayout)){
+            if(!Configuration.getDefaultLayout().equals(controllerLayout) && resp.hasDefaultLayout()){
                 resp.setLayout(controllerLayout);
             }
             if(resp.getContentType() == null){
