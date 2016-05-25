@@ -145,9 +145,7 @@ public abstract class AbstractDBConfig extends AppConfig {
                     String userName = props.getProperty(env + ".username");
                     String password = props.getProperty(env + ".password");
                     String url = props.getProperty(env + ".url");
-                    if (driver == null || userName == null || password == null || url == null) {
-                        throw new InitException("Four JDBC properties are expected: driver, username, password, url for environment: " + env);
-                    }
+                    checkProps(driver, userName, password, url, env);
                     createJdbcWrapper(env, driver, url, userName, password);
                 }
             }
@@ -158,10 +156,19 @@ public abstract class AbstractDBConfig extends AppConfig {
         }
     }
 
+    private void checkProps(String driver, String userName, String password, String url, String env){
+        if (driver == null || userName == null || password == null || url == null){
+            throw new InitException("Four JDBC properties are expected: driver, username, password, url for environment: " + env);
+        }
+    }
+
     private void createJdbcWrapper(String env, String driver, String url, String userName, String password) {
         ConnectionSpecWrapper wrapper = new ConnectionSpecWrapper();
         if(env.equals("test")){
             wrapper.setEnvironment("development");
+            wrapper.setTesting(true);
+        } else if(env.endsWith(".test")) {
+            wrapper.setEnvironment(env.split("\\.")[0]);
             wrapper.setTesting(true);
         }else{
             wrapper.setEnvironment(env);
@@ -181,12 +188,18 @@ public abstract class AbstractDBConfig extends AppConfig {
 
 
     private Set<String> getEnvironments(Properties props) {
-        Set<String> environments = new HashSet<String>();
-        for (Object k : props.keySet()) {
-            String environment = k.toString().split("\\.")[0];
-            environments.add(environment);
+        Set<String> environments = new HashSet<>();
+        for (String prop : props.stringPropertyNames()) {
+            String[] parts =  prop.split("\\.");
+            if(parts.length == 2){
+                environments.add(parts[0]);
+            }else if(parts.length == 3 && parts[1].equals("test")){
+                environments.add(parts[0] + ".test");
+            }else {
+                throw new ConfigurationException("Incorrect property: " + prop);
+            }
         }
-        return new TreeSet<String>(environments);
+        return environments;
     }
 
     private Properties readPropertyFile(String file) throws IOException {

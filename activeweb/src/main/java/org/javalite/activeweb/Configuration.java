@@ -39,10 +39,9 @@ public class Configuration {
         freeMarkerConfig, route_config, maxUploadSize
     }
 
-    private static final Configuration instance = new Configuration();
     private static Properties props = new Properties();
     private static TemplateManager templateManager;
-    private static HashMap<String, List<ConnectionSpecWrapper>> connectionWrappers = new HashMap<String, List<ConnectionSpecWrapper>>();
+    private static HashMap<String, List<ConnectionSpecWrapper>> connectionWrappers = new HashMap<>();
     private static boolean testing = false;
     private static String ENV;
     private static boolean activeReload = !blank(System.getProperty("active_reload")) && System.getProperty("active_reload").equals("true");
@@ -254,7 +253,7 @@ public class Configuration {
         String connectionWrapperEnv = connectionWrapper.getEnvironment();
         List<ConnectionSpecWrapper> envConnectionWrappers = connectionWrappers.get(connectionWrapperEnv);
         if(envConnectionWrappers == null || override) {
-            envConnectionWrappers = new ArrayList<ConnectionSpecWrapper>();
+            envConnectionWrappers = new ArrayList<>();
             connectionWrappers.put(connectionWrapperEnv, envConnectionWrappers);
         }
         envConnectionWrappers.add(connectionWrapper);
@@ -286,7 +285,7 @@ public class Configuration {
 
     //for tests only
     protected static void resetConnectionWrappers() {
-        connectionWrappers = new HashMap<String, List<ConnectionSpecWrapper>>();
+        connectionWrappers = new HashMap<>();
     }
 
     protected static void clearConnectionWrappers(String env) {
@@ -305,7 +304,5 @@ public class Configuration {
     public static File getTmpDir() {
         return new File(System.getProperty("java.io.tmpdir"));
     }
-
-    private static List<IgnoreSpec> ignoreSpecs = new ArrayList<IgnoreSpec>();
 
 }

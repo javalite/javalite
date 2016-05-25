@@ -135,7 +135,7 @@ public class AbstractConnectionBuilderSpec  {
 
         class DBConfig extends AbstractDBConfig{
             public void init(AppContext appContext) {
-                configFile("/database_new.properties");
+                configFile("/database1.properties");
                 environment("production", true).jndi("java:comp/env/jdbc/prod_new");
             }
         }
@@ -145,10 +145,51 @@ public class AbstractConnectionBuilderSpec  {
 
         List<ConnectionSpecWrapper> wrappers = Configuration.getConnectionSpecWrappers("production");
 
-        //we configured two, one in file, one in class. But the class config overrides one in file.
+        //we configured two for production, one in file, one in class. But the class config overrides one in file.
         the(wrappers.size()).shouldBeEqual(1);
 
         ConnectionJndiSpec connectionSpec = (ConnectionJndiSpec)  wrappers.get(0).getConnectionSpec();
         the(connectionSpec.getDataSourceJndiName()).shouldBeEqual("java:comp/env/jdbc/prod_new");
+    }
+
+
+    /**
+     * This feature is needed because often times, you have different configuration locally vs another
+     * environment where you need to run tests. It is possible to achieve with Maven profiles, but kind of hacky.
+     * Example: development env requires to connect to localhost. Jenkins when running tests, requires to connect to jenkins_db host.
+     * This feature is not specific to Jenkins :)
+     *
+     * The new solution is clean.
+     */
+    @Test
+    public void should_configure_different_test_configs_for_development_and_jenkins(){
+
+        class DBConfig extends AbstractDBConfig{
+            public void init(AppContext appContext) {
+                configFile("/database2.properties");
+            }
+        }
+
+        DBConfig config = new DBConfig();
+        config.init(null);
+
+        List<ConnectionSpecWrapper> wrappers = Configuration.getConnectionSpecWrappers("development");
+
+        the(wrappers.size()).shouldBeEqual(2);
+
+
+        ConnectionSpecWrapper dev = null;
+        ConnectionSpecWrapper test = null;
+
+        //have to do this because the order of specs is not deterministic
+        for (ConnectionSpecWrapper connectionSpecWrapper : wrappers) {
+            if(connectionSpecWrapper.isTesting()){
+                test = connectionSpecWrapper;
+            }else {
+                dev = connectionSpecWrapper;
+            }
+        }
+        the(((ConnectionJdbcSpec)test.getConnectionSpec()).getUrl()).shouldBeEqual("jdbc:mysql://localhost/test");
+        the(((ConnectionJdbcSpec)dev.getConnectionSpec()).getUrl()).shouldBeEqual("jdbc:mysql://localhost/dev");
     }
 }
