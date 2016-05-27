@@ -21,6 +21,7 @@ import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.javalite.common.Convert;
+import org.javalite.common.JsonHelper;
 import org.javalite.common.Util;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
@@ -948,10 +949,6 @@ public class HttpSupport {
     }
 
 
-    public static void main(String[] args){
-        System.out.println(HttpSupport.parseHashName("account[name]"));
-    }
-
     /**
      * Sets character encoding for request. Has to be called before reading any parameters of getting input
      * stream.
@@ -1699,4 +1696,95 @@ public class HttpSupport {
     protected String sanitize(String unsafeContent){
         return Jsoup.clean(unsafeContent, Whitelist.basic());
     }
+
+    /**
+     * Returns InputStream of the request.
+     *
+     * @return InputStream of the request
+     */
+    protected InputStream getRequestInputStream() throws IOException {
+        return Context.getHttpRequest().getInputStream();
+    }
+
+    /**
+     * Alias to {@link #getRequestInputStream()}.
+     * @return input stream to read data sent by client.
+     * @throws IOException
+     */
+    protected InputStream getRequestStream() throws IOException {
+        return Context.getHttpRequest().getInputStream();
+    }
+
+    /**
+     * Reads entire request data as String. Do not use for large data sets to avoid
+     * memory issues, instead use {@link #getRequestInputStream()}.
+     *
+     * @return data sent by client as string.
+     * @throws IOException
+     */
+    protected String getRequestString() throws IOException {
+        return Util.read(Context.getHttpRequest().getInputStream());
+    }
+
+    /**
+     * Reads entire request data as byte array. Do not use for large data sets to avoid
+     * memory issues.
+     *
+     * @return data sent by client as string.
+     * @throws IOException
+     */
+    protected byte[] getRequestBytes() throws IOException {
+        return Util.bytes(Context.getHttpRequest().getInputStream());
+    }
+
+
+    /**
+     * Converts posted JSON array to a Java List. Example of a JSON array: <code>[1, 2, 3]</code>.
+     *
+     * @return Java List converted from posted JSON string.
+     */
+    protected List jsonList() {
+        checkJsonContentType();
+        try {
+            return JsonHelper.toList(getRequestString());
+        } catch (IOException e) {
+            throw new WebException(e);
+        }
+    }
+
+    private void checkJsonContentType(){
+        if(!(header("Content-Type") != null && header("Content-Type").equals("application/json")) ){
+            throw new WebException("Trying to convert JSON to object, but Content-Type is " + header("Content-Type") + ", not 'application/json'");
+        }
+    }
+
+    /**
+     * Converts posted JSON map to a Java Map. Example JSON map: <code>{"name":"John", "age":21}</code>.
+     *
+     * @return Java Map converted from posted JSON string map.
+     */
+    protected Map jsonMap() {
+        checkJsonContentType();
+        try {
+            return JsonHelper.toMap(getRequestString());
+        } catch (IOException e) {
+            throw new WebException(e);
+        }
+    }
+
+
+    /**
+     * Converts posted JSON maps to a Java Maps array. Example JSON map: <code>[{"name":"John", "age":21}, {"name":"Jane", "age":20}]</code>.
+     *
+     * @return Java Maps converted from posted JSON string maps.
+     */
+    protected Map[] jsonMaps() {
+        checkJsonContentType();
+        try {
+            return JsonHelper.toMaps(getRequestString());
+        } catch (IOException e) {
+            throw new WebException(e);
+        }
+    }
+
 }

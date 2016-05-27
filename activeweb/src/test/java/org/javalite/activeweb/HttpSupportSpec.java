@@ -248,4 +248,50 @@ public class HttpSupportSpec extends RequestSpec{
         String result = response.getContentAsString();
         a(result).shouldBeEqual("this is a clean part");
     }
+
+    @Test
+    public void shouldRequireContentTypeToConvertJSON() throws IOException, ServletException {
+        request.setServletPath("/json/map");
+        request.setMethod("POST");
+        request.setContent("{\"name\"}:\"John\"".getBytes());
+        dispatcher.doFilter(request, response, filterChain);
+        String result = response.getContentAsString();
+        a(result).shouldContain("Trying to convert JSON to object, but Content-Type is null, not 'application/json'");
+    }
+
+    @Test
+    public void shouldConvertJSONMap() throws IOException, ServletException {
+        request.setServletPath("/json/map");
+        request.setMethod("POST");
+        request.setContentType("application/json");
+
+        request.setContent("{\"name\":\"John\"}".getBytes());
+        dispatcher.doFilter(request, response, filterChain);
+        String result = response.getContentAsString();
+        a(result).shouldBeEqual("response: John");
+    }
+
+    @Test
+    public void shouldConvertJSONMaps() throws IOException, ServletException {
+        request.setServletPath("/json/maps");
+        request.setMethod("POST");
+        request.setContentType("application/json");
+
+        request.setContent("[{\"name\":\"John\"},{\"name\":\"Sam\"}]".getBytes());
+        dispatcher.doFilter(request, response, filterChain);
+        String result = response.getContentAsString();
+        a(result).shouldBeEqual("response: John, Sam");
+    }
+
+    @Test
+    public void shouldConvertJSONList() throws IOException, ServletException {
+        request.setServletPath("/json/list");
+        request.setMethod("POST");
+        request.setContentType("application/json");
+
+        request.setContent("[1,2,3]".getBytes());
+        dispatcher.doFilter(request, response, filterChain);
+        String result = response.getContentAsString();
+        a(result).shouldBeEqual("response: 1, 2");
+    }
 }

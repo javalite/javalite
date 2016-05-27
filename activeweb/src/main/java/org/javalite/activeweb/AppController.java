@@ -35,9 +35,6 @@ import java.util.Map;
  * @author Igor Polevoy
  */
 public abstract class AppController extends HttpSupport {
-    
-    
-
 
     /**
      * Assigns value that will be passed into view.
@@ -46,7 +43,6 @@ public abstract class AppController extends HttpSupport {
      * @param value value.
      */
     protected void assign(String name, Object value) {
-
         KeyWords.check(name);
         Context.getValues().put(name, value);
     }
@@ -108,40 +104,7 @@ public abstract class AppController extends HttpSupport {
         return Context.getHttpRequest().getQueryString();
     }
 
-    protected InputStream getRequestInputStream() throws IOException {
-        return Context.getHttpRequest().getInputStream();
-    }
 
-    /**
-     * Alias to {@link #getRequestInputStream()}.
-     * @return input stream to read data sent by client.
-     * @throws IOException
-     */
-    protected InputStream getRequestStream() throws IOException {
-        return Context.getHttpRequest().getInputStream();
-    }
-
-    /**
-     * Reads entire request data as String. Do not use for large data sets to avoid
-     * memory issues, instead use {@link #getRequestInputStream()}.
-     *
-     * @return data sent by client as string.
-     * @throws IOException
-     */
-    protected String getRequestString() throws IOException {
-        return Util.read(Context.getHttpRequest().getInputStream());
-    }
-
-    /**
-     * Reads entire request data as byte array. Do not use for large data sets to avoid
-     * memory issues.
-     *
-     * @return data sent by client as string.
-     * @throws IOException
-     */
-    protected byte[] getRequestBytes() throws IOException {        
-        return Util.bytes(Context.getHttpRequest().getInputStream());
-    }
 
 
     /**
