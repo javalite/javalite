@@ -15,6 +15,11 @@ import java.util.Map;
 
 public class JsonHelper {
     private static final ObjectMapper mapper = new ObjectMapper();
+    
+    private JsonHelper() {
+        
+    }
+    
     static {
         mapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
