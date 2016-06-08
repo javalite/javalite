@@ -61,13 +61,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     private Map<String, Object> attributes = new CaseInsensitiveMap<Object>();
     private final Set<String> dirtyAttributeNames = new CaseInsensitiveSet();
-    private boolean frozen = false;
+    private boolean frozen;
     private MetaModel metaModelLocal;
     private ModelRegistry modelRegistryLocal;
     private final Map<Class, Model> cachedParents = new HashMap<Class, Model>();
     private final Map<Class, List<Model>> cachedChildren = new HashMap<Class, List<Model>>();
     private boolean manageTime = true;
-    private boolean compositeKeyPersisted = false;
+    private boolean compositeKeyPersisted;
     private Errors errors = new Errors();
 
     protected Model() {

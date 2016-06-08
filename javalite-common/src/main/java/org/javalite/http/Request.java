@@ -35,7 +35,7 @@ public abstract class Request<T extends Request> {
 
     protected final HttpURLConnection connection;
     private boolean connected;
-    protected boolean redirect = false;
+    protected boolean redirect;
     protected final String url;
 
     public Request(String url, int connectTimeout, int readTimeout) {

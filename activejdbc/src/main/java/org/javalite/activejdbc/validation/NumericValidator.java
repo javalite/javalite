@@ -28,9 +28,9 @@ import java.util.Locale;
 public class NumericValidator extends ValidatorAdapter {
     private final String attribute;
 
-    private Double min = null;
-    private Double max = null;
-    private boolean allowNull = false, onlyInteger = false, convertNullIfEmpty = false;
+    private Double min;
+    private Double max;
+    private boolean allowNull, onlyInteger, convertNullIfEmpty;
 
 
     public NumericValidator(String attribute) {

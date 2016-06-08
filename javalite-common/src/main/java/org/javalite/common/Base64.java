@@ -733,15 +733,15 @@ public class Base64 {
      */
     private static class EncOutputStream extends FilterOutputStream {
 
-        private int leftover = 0;
+        private int leftover;
         private int b0, b1, b2;
-        private boolean closed = false;
+        private boolean closed;
 
         private final char[] base64;    // byte->base64 mapping
         private final byte[] newline;   // line separator, if needed
         private final int linemax;
         private final boolean doPadding;// whether or not to pad
-        private int linepos = 0;
+        private int linepos;
 
         EncOutputStream(OutputStream os, char[] base64,
                         byte[] newline, int linemax, boolean doPadding) {
@@ -848,13 +848,13 @@ public class Base64 {
         private final InputStream is;
         private final boolean isMIME;
         private final int[] base64;      // base64 -> byte mapping
-        private int bits = 0;            // 24-bit buffer for decoding
+        private int bits;            // 24-bit buffer for decoding
         private int nextin = 18;         // next available "off" in "bits" for input;
         // -> 18, 12, 6, 0
         private int nextout = -8;        // next available "off" in "bits" for output;
         // -> 8, 0, -8 (no byte for output)
-        private boolean eof = false;
-        private boolean closed = false;
+        private boolean eof;
+        private boolean closed;
 
         DecInputStream(InputStream is, int[] base64, boolean isMIME) {
             this.is = is;
