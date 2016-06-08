@@ -31,12 +31,12 @@ public class Http {
     /**
      * Connection timeout in milliseconds. Set this value to what you like to override default.
      */
-    public static int CONNECTION_TIMEOUT = 5000;
+    public static final int CONNECTION_TIMEOUT = 5000;
 
     /**
      * Read timeout in milliseconds. Set this value to what you like to override default.
      */
-    public static int READ_TIMEOUT = 5000;
+    public static final int READ_TIMEOUT = 5000;
     
     private Http() {
         
