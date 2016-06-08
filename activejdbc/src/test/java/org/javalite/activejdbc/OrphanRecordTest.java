@@ -30,6 +30,7 @@ import java.util.List;
  */
 public class OrphanRecordTest extends ActiveJDBCTest {
 
+    @Override
     @Before
     public void before() throws Exception {
         super.before();

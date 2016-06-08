@@ -73,6 +73,7 @@ public class Many2ManyAssociation extends Association {
         return getSourceClass().getSimpleName() + "  >---------<  " + getTargetClass().getSimpleName() + ", type: " + "many-to-many" + ", join: " + join;
     }
 
+    @Override
     public boolean equals(Object other) {
 
         if(other == null || !other.getClass().equals(getClass())){

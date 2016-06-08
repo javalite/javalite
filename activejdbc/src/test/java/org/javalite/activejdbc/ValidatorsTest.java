@@ -151,6 +151,7 @@ public class ValidatorsTest extends ActiveJDBCTest {
         //cause exception
         u.set("email", "this is not email value");
         expect(new ExceptionExpectation(ValidationException.class) {
+            @Override
             public void exec() {
                 u.saveIt();
             }

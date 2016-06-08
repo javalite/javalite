@@ -29,6 +29,7 @@ import org.junit.Test;
  */
 public class SetParentTest extends ActiveJDBCTest {
 
+    @Override
     @Before
     public void before() throws Exception {
         super.before();

@@ -40,6 +40,7 @@ public class BaseTest extends ActiveJDBCTest {
         final List<Map> records = new ArrayList<Map>();
 
         Base.find("select * from people order by id", new RowListenerAdapter() {
+            @Override
             public void onNext(Map record) {
                 records.add(record);
             }

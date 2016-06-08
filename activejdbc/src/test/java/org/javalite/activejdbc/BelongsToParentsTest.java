@@ -9,7 +9,8 @@ import org.javalite.activejdbc.test_models.Motherboard;
 
 public class BelongsToParentsTest extends ActiveJDBCTest {
 
-	public void before() throws Exception { 
+	@Override
+    public void before() throws Exception { 
 		super.before();
 
         deleteFromTable("computers");
