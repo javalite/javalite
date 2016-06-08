@@ -31,6 +31,6 @@ import java.lang.annotation.ElementType;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface BelongsTo {
-    public Class<? extends Model> parent();
-    public String foreignKeyName();
+    Class<? extends Model> parent();
+    String foreignKeyName();
 }
