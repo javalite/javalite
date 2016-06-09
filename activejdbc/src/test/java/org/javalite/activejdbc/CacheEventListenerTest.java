@@ -17,6 +17,7 @@ import java.io.PrintStream;
  */
 public class CacheEventListenerTest extends ActiveJDBCTest {
 
+    @Override
     @After
     public void after(){
         super.after();

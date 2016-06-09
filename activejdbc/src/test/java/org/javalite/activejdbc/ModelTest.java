@@ -143,6 +143,7 @@ public class ModelTest extends ActiveJDBCTest {
         deleteAndPopulateTable("people");
         final Person p = new Person();
         expect(new ExceptionExpectation(IllegalArgumentException.class) {
+            @Override
             public void exec() {
                 p.set("NAME1", "Igor");
             }
@@ -155,6 +156,7 @@ public class ModelTest extends ActiveJDBCTest {
         final Person p = new Person();
 
         expect(new ExceptionExpectation(IllegalArgumentException.class) {
+            @Override
             public void exec() {
                 p.set("person_id", "hehe");
             }
@@ -237,6 +239,7 @@ public class ModelTest extends ActiveJDBCTest {
     public void testBatchUpdateAll() {
         deleteAndPopulateTable("people");
         expect(new DifferenceExpectation(Person.find("last_name like ?", "Smith").size()) {
+            @Override
             public Object exec() {
                 Person.updateAll("last_name = ?", "Smith");
                 return Person.find("last_name like ?", "Smith").size();
@@ -276,12 +279,14 @@ public class ModelTest extends ActiveJDBCTest {
         deleteAndPopulateTables("users", "addresses");
         final User user = User.findById(1);
         expect(new ExceptionExpectation(NotAssociatedException.class){
+            @Override
             public void exec() {
                 user.getAll(Book.class);//wrong table
             }
         });
 
         expect(new ExceptionExpectation(NotAssociatedException.class){
+            @Override
             public void exec() {
                 user.getAll(Book.class);//non-existent table
             }
@@ -409,12 +414,14 @@ public class ModelTest extends ActiveJDBCTest {
         a.delete();
 
         expect(new ExceptionExpectation(FrozenException.class) {
+            @Override
             public void exec() {
                 a.saveIt();
             }
         });
 
         expect(new ExceptionExpectation(FrozenException.class) {
+            @Override
             public void exec() {
                 u.add(a);
             }
@@ -590,6 +597,7 @@ public class ModelTest extends ActiveJDBCTest {
     public void shouldCreateModelWithSingleSetter(){
         deleteAndPopulateTable("people");
         expect(new DifferenceExpectation(Person.count()) {
+            @Override
             public Object exec() {
                 new Person().set("name", "Marilyn", "last_name", "Monroe", "dob", "1935-12-06").saveIt();
                 return (Person.count());

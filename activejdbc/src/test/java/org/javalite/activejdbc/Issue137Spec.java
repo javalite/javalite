@@ -35,6 +35,7 @@ public class Issue137Spec extends ActiveJDBCTest {
         Person.callbackWith(adapter);
     }
 
+    @Override
     @Before
     public void before() throws Exception {
         super.before();
