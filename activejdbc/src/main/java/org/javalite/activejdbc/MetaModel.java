@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.Map.Entry;
 
 import static org.javalite.activejdbc.LogFilter.*;
 import static org.javalite.common.Inflector.*;
@@ -355,8 +356,8 @@ public class MetaModel implements Serializable {
         final StringBuilder t = new StringBuilder();
         t.append("MetaModel: ").append(tableName).append(", ").append(modelClass).append("\n");
         if(columnMetadata != null){
-            for (String key : columnMetadata.keySet()) {
-                t.append(columnMetadata.get(key)).append(", ");
+            for (Entry<String, ColumnMetadata> metadata : columnMetadata.entrySet()) {
+                t.append(metadata.getValue()).append(", ");
             }
         }
 

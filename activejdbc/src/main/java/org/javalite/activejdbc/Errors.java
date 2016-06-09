@@ -185,9 +185,9 @@ public class Errors implements Map<String, String> {
     public Set<Entry<String, String>> entrySet() {
         Set<Entry<String, String>> entries = new LinkedHashSet<Entry<String, String>>();
 
-        for(Object key: validators.keySet()){
-            String value = validators.get(key).formatMessage(locale);
-            entries.add(new ErrorEntry(key.toString(), value));
+        for(Entry<String, Validator> validator: validators.entrySet()){
+            String value = validator.getValue().formatMessage(locale);
+            entries.add(new ErrorEntry(validator.getKey(), value));
         }
         return entries;
     }

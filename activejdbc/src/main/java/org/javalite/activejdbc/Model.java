@@ -42,6 +42,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.*;
+import java.util.Map.Entry;
 
 import static org.javalite.activejdbc.ModelDelegate.metaModelFor;
 import static org.javalite.activejdbc.ModelDelegate.metaModelOf;
@@ -764,18 +765,18 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             }
 
         }
-        for(Class parentClass: cachedParents.keySet()){
-            retVal.put(underscore(parentClass.getSimpleName()), cachedParents.get(parentClass).toMap());
+        for(Entry<Class, Model> parent: cachedParents.entrySet()){
+            retVal.put(underscore(parent.getKey().getSimpleName()), parent.getValue().toMap());
         }
 
-        for(Class childClass: cachedChildren.keySet()){
-            List<Model> children = cachedChildren.get(childClass);
+        for(Entry<Class, List<Model>> cachedChild: cachedChildren.entrySet()){
+            List<Model> children = cachedChild.getValue();
 
             List<Map> childMaps = new ArrayList<Map>(children.size());
             for(Model child:children){
                 childMaps.add(child.toMap());
             }
-            retVal.put(tableize(childClass.getSimpleName()), childMaps);
+            retVal.put(tableize(cachedChild.getKey().getSimpleName()), childMaps);
         }
         return retVal;
     }
@@ -873,12 +874,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             sb.append("</").append(name).append('>');
             if (pretty) { sb.append('\n'); }
         }
-        for (Class childClass : cachedChildren.keySet()) {
+        for (Entry<Class, List<Model>> cachedChild : cachedChildren.entrySet()) {
             if (pretty) { sb.append("  ").append(indent); }
-            String tag = pluralize(underscore(childClass.getSimpleName()));
+            String tag = pluralize(underscore(cachedChild.getKey().getSimpleName()));
             sb.append('<').append(tag).append('>');
             if (pretty) { sb.append('\n'); }
-            for (Model child : cachedChildren.get(childClass)) {
+            for (Model child : cachedChild.getValue()) {
                 child.toXmlP(sb, pretty, "    " + indent);
             }
             if (pretty) { sb.append("  ").append(indent); }
