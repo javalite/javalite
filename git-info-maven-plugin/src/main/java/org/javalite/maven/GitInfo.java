@@ -30,12 +30,9 @@ import static org.javalite.common.Util.read;
  */
 public class GitInfo {
 
-    public static void main(String[] args) throws IOException {
-        System.out.println(genHtml());
-    }
-    
+
     private GitInfo() {
-        
+
     }
 
 
