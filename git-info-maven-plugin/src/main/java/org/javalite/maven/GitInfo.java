@@ -17,7 +17,6 @@ limitations under the License.
 
 package org.javalite.maven;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
@@ -29,12 +28,6 @@ import static org.javalite.common.Util.read;
  * @author Igor Polevoy: 3/15/12 2:56 PM
  */
 public class GitInfo {
-
-
-    private GitInfo() {
-
-    }
-
 
     protected static String genHtml() {
         StringBuilder html = new StringBuilder();
