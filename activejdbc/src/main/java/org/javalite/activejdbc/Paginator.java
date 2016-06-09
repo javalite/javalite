@@ -47,7 +47,7 @@ public class Paginator<T extends Model> implements Serializable {
     private int currentPage;
     private final boolean fullQuery;
     private final String countQuery;
-    private boolean suppressCounts = false;
+    private boolean suppressCounts;
     private Long count = 0L;
 
 

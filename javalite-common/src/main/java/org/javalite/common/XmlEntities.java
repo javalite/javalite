@@ -245,7 +245,7 @@ public class XmlEntities {
         // TODO this class is not thread-safe
         protected final int growBy;
 
-        protected int size = 0;
+        protected int size;
 
         protected String[] names;
 
