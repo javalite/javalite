@@ -53,8 +53,8 @@ public final class HumanDate
             throw new IllegalArgumentException("toTime must be >= fromTime");
         }
 
-        long distanceInSeconds = Math.round((toTime - fromTime) / 1000);
-        long distanceInMinutes = Math.round(distanceInSeconds / 60);
+        long distanceInSeconds = (toTime - fromTime) / 1000;
+        long distanceInMinutes = distanceInSeconds / 60;
 
         if (distanceInMinutes == 0) { return "less than a minute"; }
         if (distanceInMinutes == 1) { return "a minute"; }
