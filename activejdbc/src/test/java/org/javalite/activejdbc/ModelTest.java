@@ -38,6 +38,37 @@ import static org.javalite.common.Collections.*;
 public class ModelTest extends ActiveJDBCTest {
 
     @Test
+    public void testModelMultipleWhere() {
+        Person.deleteAll();
+        Person.createIt("name", "Name_1", "last_name", "LastName_1");
+        Person.createIt("name", "Name_1", "last_name", "LastName_1");
+        Person.createIt("name", "Name_1", "last_name", "LastName_2");
+
+        List<Person> list = Person.where("name = 'Name_1'").where("last_name = 'LastName_1'");
+        a(2).shouldBeEqual(list.size());
+
+        list = Person.where("name = 'Name_1'").where("last_name = 'LastName_2'");
+        a(1).shouldBeEqual(list.size());
+
+        list = Person.where("name = 'Name_1'").where("last_name = 'LastName_3'");
+        a(0).shouldBeEqual(list.size());
+    }
+
+    @Test
+    public void testModelWhereFirst() {
+        Person.deleteAll();
+        Person.createIt("name", "Name_1", "last_name", "LastName_2");
+        Person.createIt("name", "Name_2", "last_name", "LastName_1");
+        Person.createIt("name", "Name_1", "last_name", "LastName_1");
+
+        Person person = Person.where("name = 'Name_1'").first();
+        a("LastName_2").shouldBeEqual(person.getString("last_name"));
+
+        person = Person.where("last_name = 'LastName_1'").first();
+        a("Name_2").shouldBeEqual(person.getString("name"));
+    }
+
+    @Test
     public void testModelFinder() {
         deleteAndPopulateTable("people");
         Person p = new Person();
