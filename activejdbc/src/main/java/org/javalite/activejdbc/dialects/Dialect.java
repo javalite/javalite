@@ -16,17 +16,18 @@ limitations under the License.
 
 package org.javalite.activejdbc.dialects;
 
-import java.util.List;
-import java.util.Map;
 import org.javalite.activejdbc.MetaModel;
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Eric Nielsen
  */
 public interface Dialect {
 
-    String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset);
+    String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset, String... column);
 
     Object overrideDriverTypeConversion(MetaModel mm, String attributeName, Object value);
 

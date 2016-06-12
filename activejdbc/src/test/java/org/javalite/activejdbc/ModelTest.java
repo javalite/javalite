@@ -69,6 +69,18 @@ public class ModelTest extends ActiveJDBCTest {
     }
 
     @Test
+    public void testModelSelectColumns() {
+        Person.deleteAll();
+        Person.createIt("name", "Name_1", "last_name", "LastName_2");
+        Person.createIt("name", "Name_2", "last_name", "LastName_1");
+        Person.createIt("name", "Name_1", "last_name", "LastName_1");
+
+        Person person = Person.where("name = 'Name_1'").select("name").first();
+        a(person.getString("name")).shouldNotBeNull();
+        a(person.getString("last_name")).shouldBeNull();
+    }
+
+    @Test
     public void testModelFinder() {
         deleteAndPopulateTable("people");
         Person p = new Person();

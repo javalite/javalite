@@ -48,6 +48,7 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
     private long limit = -1, offset = -1;
     private final List<Association> includes = new ArrayList<Association>();
     private final boolean forPaginator;
+    private final Set<String> columns = new HashSet<String>();
 
     protected LazyList(String subQuery, MetaModel metaModel, Object... params) {
         this.fullQuery = null;
@@ -331,10 +332,10 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
     public String toSql(boolean showParameters) {
         String sql;
         if(forPaginator){
-            sql = metaModel.getDialect().formSelect(null, fullQuery, orderBys, limit, offset);
+            sql = metaModel.getDialect().formSelect(null, fullQuery, orderBys, limit, offset, buildColumns());
         }else{
             sql = fullQuery != null ? fullQuery
-                    : metaModel.getDialect().formSelect(metaModel.getTableName(), subQuery, orderBys, limit, offset);
+                    : metaModel.getDialect().formSelect(metaModel.getTableName(), subQuery, orderBys, limit, offset, buildColumns());
         }
         if (showParameters) {
             StringBuilder sb = new StringBuilder(sql).append(", with parameters: ");
@@ -372,6 +373,40 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
             QueryCache.instance().addItem(metaModel.getTableName(), sql, params, delegate);
         }
         processIncludes();
+    }
+
+    /**
+     * todo support myssql/oracle
+     * select only need columns
+     * @param columns
+     * @return
+     */
+    public <E extends Model> LazyList<E> select(String ... columns) {
+        for (String c : columns) {
+            if (c != null && c.length() > 0) {
+                this.columns.add(c);
+            }
+        }
+        return (LazyList<E>) this;
+    }
+
+    private String buildColumns(){
+        StringBuilder columnString = new StringBuilder();
+        int size = columns.size();
+        int index = 0;
+        if (size > 0) {
+            for (String c : columns) {
+                columnString.append(c);
+                if (index < (size - 1)) {
+                    columnString.append(",");
+                }
+                index++;
+            }
+        } else {
+            columnString.append("*");
+        }
+
+        return columnString.toString();
     }
 
     private boolean hydrated() {

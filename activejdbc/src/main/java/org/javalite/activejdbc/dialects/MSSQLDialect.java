@@ -1,11 +1,12 @@
 package org.javalite.activejdbc.dialects;
 
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.javalite.activejdbc.DBException;
 import org.javalite.activejdbc.MetaModel;
 import org.javalite.common.Util;
+
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MSSQLDialect extends DefaultDialect {
     protected final Pattern selectPattern = Pattern.compile("^\\s*SELECT\\s*",
@@ -23,7 +24,7 @@ public class MSSQLDialect extends DefaultDialect {
      * @return query with
      */
     @Override
-    public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
+    public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset, String... column) {
         boolean needLimit = limit != -1;
         boolean needOffset = offset != -1;
 

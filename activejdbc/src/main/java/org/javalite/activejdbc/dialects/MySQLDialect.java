@@ -17,19 +17,20 @@ limitations under the License.
 
 package org.javalite.activejdbc.dialects;
 
-import java.util.List;
 import org.javalite.activejdbc.MetaModel;
+
+import java.util.List;
 
 /**
  * @author Igor Polevoy
  */
 public class MySQLDialect extends PostgreSQLDialect {
     @Override
-    public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
+    public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset, String... column) {
         if (limit == -1L && offset != -1L) {
             throw new IllegalArgumentException("MySQL does not support OFFSET without LIMIT. OFFSET is a parameter of LIMIT function");
         }
-        return super.formSelect(tableName, subQuery, orderBys, limit, offset);
+        return super.formSelect(tableName, subQuery, orderBys, limit, offset, column);
     }
 
     @Override

@@ -15,8 +15,9 @@ limitations under the License.
 */
 package org.javalite.activejdbc.dialects;
 
-import java.util.List;
 import org.javalite.activejdbc.MetaModel;
+
+import java.util.List;
 
 /**
  * @author Igor Polevoy
@@ -49,7 +50,7 @@ public class OracleDialect extends DefaultDialect {
      * Can't think of an uglier thing. Shame on you, Oracle.
      */
     @Override
-    public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
+    public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset, String... column) {
 
         boolean needLimit = limit != -1L;
         boolean needOffset = offset != -1L;
