@@ -41,7 +41,7 @@ public class PaginatorTest extends ActiveJDBCTest {
 
     @Test
     public void testCurrentPage(){
-        Paginator<Item> p = new Paginator<Item>(Item.class, 10, "*");
+        Paginator<Item> p = new Paginator<>(Item.class, 10, "*");
         a(p.getCurrentPage()).shouldBeEqual(0);
         p.getPage(1);
         a(p.getCurrentPage()).shouldBeEqual(1);
@@ -49,19 +49,19 @@ public class PaginatorTest extends ActiveJDBCTest {
 
     @Test
     public void testPageCount(){
-        Paginator<Item> p = new Paginator<Item>(Item.class, 10, "item_description like '%2%'");
+        Paginator<Item> p = new Paginator<>(Item.class, 10, "item_description like '%2%'");
         a(p.pageCount()).shouldBeEqual(28);
     }
 
     @Test
     public void testGetPage(){
-        Paginator<Item> p = new Paginator<Item>(Item.class, 10, "item_description like ?", "%2%").orderBy("item_number");
+        Paginator<Item> p = new Paginator<>(Item.class, 10, "item_description like ?", "%2%").orderBy("item_number");
         List<Item> items = p.getPage(28);
         a(items.size()).shouldBeEqual(1);
         a(items.get(0).get("item_number")).shouldBeEqual(992);
 
 
-        final Paginator<Item> p1 = new Paginator<Item>(Item.class, 10, "*").orderBy("item_number");
+        final Paginator<Item> p1 = new Paginator<>(Item.class, 10, "*").orderBy("item_number");
         items = p1.getPage(2);
         a(items.size()).shouldBeEqual(10);
         a(items.get(0).get("item_number")).shouldBeEqual(11);//page start
@@ -70,14 +70,14 @@ public class PaginatorTest extends ActiveJDBCTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testThrowExceptionIfWrongArgument(){
-        final Paginator<Item> p1 = new Paginator<Item>(Item.class, 10, "*").orderBy("item_number");
+        final Paginator<Item> p1 = new Paginator<>(Item.class, 10, "*").orderBy("item_number");
         p1.getPage(-2);
     }
 
     @Test
     public void testThatPaginatorIsSerializable() throws IOException, ClassNotFoundException {
 
-        Paginator<Item> p = new Paginator<Item>(Item.class, 10, "*").orderBy("item_number");
+        Paginator<Item> p = new Paginator<>(Item.class, 10, "*").orderBy("item_number");
         //serialize:
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         ObjectOutputStream oout  = new ObjectOutputStream(bout);
@@ -94,7 +94,7 @@ public class PaginatorTest extends ActiveJDBCTest {
     @Test
     public void testPreviousAndNext(){
         //for this query we have only 28 pages
-        Paginator<Item> p = new Paginator<Item>(Item.class, 10, "item_description like '%2%'");
+        Paginator<Item> p = new Paginator<>(Item.class, 10, "item_description like '%2%'");
 
         p.getPage(27);
         a(p.hasNext()).shouldBeTrue();
@@ -111,7 +111,7 @@ public class PaginatorTest extends ActiveJDBCTest {
         a(p.hasNext()).shouldBeTrue();
 
 
-        p = new Paginator<Item>(Item.class, 10, "*").orderBy("item_number");
+        p = new Paginator<>(Item.class, 10, "*").orderBy("item_number");
         a(p.getPage(1).size()).shouldBeEqual(10);
 
         a(p.getPage(2).get(0).get("item_number")).shouldBeEqual(11);
@@ -128,7 +128,7 @@ public class PaginatorTest extends ActiveJDBCTest {
     @Test
     public void shouldPaginateWithRawSql(){
 
-        Paginator<Item> p = new Paginator<Item>(Item.class, 10, "select * from items where item_description like '%2%'").orderBy("item_number");
+        Paginator<Item> p = new Paginator<>(Item.class, 10, "select * from items where item_description like '%2%'").orderBy("item_number");
         List<Item> items = p.getPage(28);
         a(items.size()).shouldBeEqual(1);
         a(items.get(0).get("item_number")).shouldBeEqual(992);
@@ -137,7 +137,7 @@ public class PaginatorTest extends ActiveJDBCTest {
 
     @Test
     public void should_ignore_changes_in_count_after_started(){
-        Paginator<Item> p = new Paginator<Item>(Item.class, 10, true, "*");
+        Paginator<Item> p = new Paginator<>(Item.class, 10, true, "*");
         a(p.getCount()).shouldBeEqual(1000);
         //lets add more records
         for(int i = 1; i <= 4; i++){
@@ -148,7 +148,7 @@ public class PaginatorTest extends ActiveJDBCTest {
 
     @Test
     public void should_not_ignore_changes_in_count_after_started(){
-        Paginator<Item> p = new Paginator<Item>(Item.class, 10, "*");
+        Paginator<Item> p = new Paginator<>(Item.class, 10, "*");
         a(p.getCount()).shouldBeEqual(1000);
         //lets add more records
         for(int i = 1; i <= 4; i++){

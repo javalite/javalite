@@ -34,7 +34,7 @@ enum StatementCache {
 
     static StatementCache instance() { return INSTANCE; }
 
-    private final ConcurrentMap<Connection, Map<String, PreparedStatement>> statementCache = new ConcurrentHashMap<Connection, Map<String, PreparedStatement>>();
+    private final ConcurrentMap<Connection, Map<String, PreparedStatement>> statementCache = new ConcurrentHashMap<>();
 
     private StatementCache() { }
 

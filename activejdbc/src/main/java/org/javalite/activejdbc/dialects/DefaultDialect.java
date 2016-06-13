@@ -258,7 +258,7 @@ public class DefaultDialect implements Dialect {
         String idName = metaModel.getIdName();
 
         // don't include the id name in the SET portion
-        Map<String, Object> attributesWithoutId = new CaseInsensitiveMap<Object>(attributes);
+        Map<String, Object> attributesWithoutId = new CaseInsensitiveMap<>(attributes);
         attributesWithoutId.remove(idName);
 
         Iterator<Entry<String, Object>> it = attributesWithoutId.entrySet().iterator();

@@ -12,7 +12,7 @@ import java.util.List;
 public class OracleStatementProvider implements StatementProvider {
     @Override
     public List<String> getPopulateStatements(String table) {
-        List<String> statements = new ArrayList<String>();
+        List<String> statements = new ArrayList<>();
         if (table.equals("people")) {
             statements =  Arrays.asList(
                     "INSERT INTO people (id, name, last_name, dob, graduation_date, created_at, updated_at) VALUES(1, 'John', 'Smith', '01-Dec-1934', '01-Dec-1954', SYSDATE, SYSDATE)",
@@ -183,7 +183,7 @@ public class OracleStatementProvider implements StatementProvider {
             statements = Arrays.asList();
         }
 
-        ArrayList<String> all = new ArrayList<String>();
+        ArrayList<String> all = new ArrayList<>();
         all.add("DROP TRIGGER " + table + "_trigger");
         all.add("DROP SEQUENCE " + table + "_seq");
         all.add("CREATE  SEQUENCE " + table + "_seq START WITH 1 INCREMENT BY 1" );

@@ -29,7 +29,7 @@ public class ValidationBuilder<T extends Validator> {
     }
 
     public ValidationBuilder(T validator) {
-        validators = new ArrayList<T>(1);
+        validators = new ArrayList<>(1);
         validators.add(validator);
     }
 

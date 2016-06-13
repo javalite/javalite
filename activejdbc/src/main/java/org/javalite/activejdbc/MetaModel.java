@@ -34,7 +34,7 @@ public class MetaModel implements Serializable {
     private static final ThreadLocal<HashMap<Class, String>> shardingTableNamesTL = new ThreadLocal<>();
 
     private Map<String, ColumnMetadata> columnMetadata;
-    private final List<Association> associations = new ArrayList<Association>();
+    private final List<Association> associations = new ArrayList<>();
     private final String idName;
     private final String[] compositeKeys;
     private final String tableName, dbType, dbName;
@@ -309,7 +309,7 @@ public class MetaModel implements Serializable {
      * table and specified type.
      */
     public List<Association> getAssociationsForTarget(Class<? extends Model> targetModelClass) {
-        List<Association> result = new ArrayList<Association>();
+        List<Association> result = new ArrayList<>();
 
         for (Association association : associations) {
             if (association.getTargetClass().equals(targetModelClass)) {
@@ -376,7 +376,7 @@ public class MetaModel implements Serializable {
     }
 
     protected List<OneToManyAssociation> getOneToManyAssociations(List<Association> exclusions) {
-        List<OneToManyAssociation> one2Manies = new ArrayList<OneToManyAssociation>();
+        List<OneToManyAssociation> one2Manies = new ArrayList<>();
         for (Association association : associations) {
             if(association.getClass().equals(OneToManyAssociation.class) && !exclusions.contains(association)){
                 one2Manies.add((OneToManyAssociation)association);
@@ -386,7 +386,7 @@ public class MetaModel implements Serializable {
     }
 
     protected List<OneToManyPolymorphicAssociation>  getPolymorphicAssociations(List<Association> exclusions) {
-        List<OneToManyPolymorphicAssociation> one2Manies = new ArrayList<OneToManyPolymorphicAssociation>();
+        List<OneToManyPolymorphicAssociation> one2Manies = new ArrayList<>();
         for (Association association : associations) {
             if(association.getClass().equals(OneToManyPolymorphicAssociation.class) && !exclusions.contains(association)){
                 one2Manies.add((OneToManyPolymorphicAssociation)association);
@@ -396,7 +396,7 @@ public class MetaModel implements Serializable {
     }
 
     protected List<Many2ManyAssociation>  getManyToManyAssociations(List<Association> excludedAssociations) {
-        List<Many2ManyAssociation> many2Manies = new ArrayList<Many2ManyAssociation>();
+        List<Many2ManyAssociation> many2Manies = new ArrayList<>();
         for (Association association : associations) {
             if(association.getClass().equals(Many2ManyAssociation.class) && !excludedAssociations.contains(association)){
                 many2Manies .add((Many2ManyAssociation)association);

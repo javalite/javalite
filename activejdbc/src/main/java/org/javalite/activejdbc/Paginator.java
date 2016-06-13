@@ -212,7 +212,7 @@ public class Paginator<T extends Model> implements Serializable {
     }
 
     private LazyList<T> findAll() {
-        return new LazyList<T>(null, metaModel);
+        return new LazyList<>(null, metaModel);
     }
 
     /**
