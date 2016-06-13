@@ -60,13 +60,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     private static final Logger logger = LoggerFactory.getLogger(Model.class);
 
-    private Map<String, Object> attributes = new CaseInsensitiveMap<Object>();
+    private Map<String, Object> attributes = new CaseInsensitiveMap<>();
     private final Set<String> dirtyAttributeNames = new CaseInsensitiveSet();
     private boolean frozen;
     private MetaModel metaModelLocal;
     private ModelRegistry modelRegistryLocal;
-    private final Map<Class, Model> cachedParents = new HashMap<Class, Model>();
-    private final Map<Class, List<Model>> cachedChildren = new HashMap<Class, List<Model>>();
+    private final Map<Class, Model> cachedParents = new HashMap<>();
+    private final Map<Class, List<Model>> cachedChildren = new HashMap<>();
     private boolean manageTime = true;
     private boolean compositeKeyPersisted;
     private Errors errors = new Errors();
@@ -571,7 +571,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
 
     private void deleteMany2ManyDeep(List<Many2ManyAssociation> many2ManyAssociations){
-        List<Model>  allMany2ManyChildren = new ArrayList<Model>();
+        List<Model>  allMany2ManyChildren = new ArrayList<>();
         for (Association association : many2ManyAssociations) {
             Class<? extends Model> targetModelClass = association.getTargetClass();
             allMany2ManyChildren.addAll(getAll(targetModelClass));
@@ -753,7 +753,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return all values of the model with all attribute names converted to lower case.
      */
     public Map<String, Object> toMap(){
-        Map<String, Object> retVal = new TreeMap<String, Object>();
+        Map<String, Object> retVal = new TreeMap<>();
         for (Map.Entry<String, Object> entry : attributes.entrySet()) {
             Object v = entry.getValue();
             if (v != null) {
@@ -772,7 +772,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         for(Entry<Class, List<Model>> cachedChild: cachedChildren.entrySet()){
             List<Model> children = cachedChild.getValue();
 
-            List<Map> childMaps = new ArrayList<Map>(children.size());
+            List<Map> childMaps = new ArrayList<>(children.size());
             for(Model child:children){
                 childMaps.add(child.toMap());
             }
@@ -813,7 +813,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new ByteArrayInputStream(xml.getBytes()));
             String attr = null;
             String chars = null;
-            Map<Object, Object> res = new HashMap<Object, Object>();
+            Map<Object, Object> res = new HashMap<>();
             while (reader.hasNext()) {
                 int event = reader.next();
                 switch (event) {
@@ -986,7 +986,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             if (pretty) { sb.append("\n  ").append(indent); }
             sb.append("\"parents\":{");
 
-            List<Class> parentClasses = new ArrayList<Class>();
+            List<Class> parentClasses = new ArrayList<>();
             parentClasses.addAll(cachedParents.keySet());
             for (int i = 0; i < parentClasses.size(); i++) {
                 if (i > 0) { sb.append(','); }
@@ -1019,7 +1019,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             if (pretty) { sb.append("\n  ").append(indent); }
             sb.append("\"children\":{");
 
-            List<Class> childClasses = new ArrayList<Class>();
+            List<Class> childClasses = new ArrayList<>();
             childClasses.addAll(cachedChildren.keySet());
             for (int i = 0; i < childClasses.size(); i++) {
                 if (i > 0) { sb.append(','); }
@@ -1822,7 +1822,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             Object[] allParams = new Object[params.length + 1];
             allParams[0] = getId();
             System.arraycopy(params, 0, allParams, 1, params.length);
-            return new LazyList<C>(true, metaModelOf(manyToManyAssociation.getTargetClass()), query, allParams);
+            return new LazyList<>(true, metaModelOf(manyToManyAssociation.getTargetClass()), query, allParams);
         } else if (oneToManyPolymorphicAssociation != null) {
             subQuery = "parent_id = ? AND " + " parent_type = '" + oneToManyPolymorphicAssociation.getTypeLabel() + "'" + additionalCriteria;
         } else {
@@ -1832,7 +1832,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         Object[] allParams = new Object[params.length + 1];
         allParams[0] = getId();
         System.arraycopy(params, 0, allParams, 1, params.length);
-        return new LazyList<C>(subQuery, targetMM, allParams);
+        return new LazyList<>(subQuery, targetMM, allParams);
     }
 
     protected static NumericValidationBuilder validateNumericalityOf(String... attributeNames) {
@@ -2518,7 +2518,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * After this method, this instance is equivalent to an empty, just created instance.
      */
     public void reset() {
-        attributes = new CaseInsensitiveMap<Object>();
+        attributes = new CaseInsensitiveMap<>();
     }
 
     /**
@@ -2621,8 +2621,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         doUpdatedAt();
 
         MetaModel metaModel = metaModelLocal;
-        List<String> columns = new ArrayList<String>();
-        List<Object> values = new ArrayList<Object>();
+        List<String> columns = new ArrayList<>();
+        List<Object> values = new ArrayList<>();
         for (Map.Entry<String, Object> entry : attributes.entrySet()) {
             if (entry.getValue() != null && !metaModel.getVersionColumn().equals(entry.getKey())) {
                 columns.add(entry.getKey());
@@ -2743,7 +2743,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     private List<Object> getAttributeValues(Set<String> attributeNames) {
-        List<Object> values = new ArrayList<Object>();
+        List<Object> values = new ArrayList<>();
         for (String attribute : attributeNames) {
             values.add(get(attribute));
         }
@@ -2898,7 +2898,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     @Deprecated
     public String toInsert(Formatter... formatters){
-        HashMap<Class, Formatter> formatterMap = new HashMap<Class, Formatter>();
+        HashMap<Class, Formatter> formatterMap = new HashMap<>();
 
         for(Formatter f: formatters){
             formatterMap.put(f.getValueClass(), f);
@@ -2958,7 +2958,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        attributes = new CaseInsensitiveMap<Object>();
+        attributes = new CaseInsensitiveMap<>();
         attributes.putAll((Map<String, Object>) in.readObject());
     }
 }

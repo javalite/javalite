@@ -62,7 +62,7 @@ public class Defect381_UpdateModifiedOnlyTest extends ActiveJDBCTest {
         the(prg).shouldNotBe("new");
         the(prg).shouldNotBe("modified");
 
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("last_name", "Doe");
         prg.fromMap(map);
         the(prg).shouldBe("modified");

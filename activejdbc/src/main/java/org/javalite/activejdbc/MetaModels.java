@@ -31,7 +31,7 @@ class MetaModels {
     private final Map<String, MetaModel> metaModelsByTableName = new CaseInsensitiveMap<>();
     private final Map<Class<? extends Model>, MetaModel> metaModelsByClass = new HashMap<>();
     //these are all many to many associations across all models.
-    private final List<Many2ManyAssociation> many2ManyAssociations = new ArrayList<Many2ManyAssociation>();
+    private final List<Many2ManyAssociation> many2ManyAssociations = new ArrayList<>();
 
     void addMetaModel(MetaModel mm, Class<? extends Model> modelClass) {
         Object o = metaModelsByClass.put(modelClass, mm);
@@ -55,7 +55,7 @@ class MetaModels {
 
     String[] getTableNames(String dbName) {
 
-        ArrayList<String> tableNames = new ArrayList<String>();
+        ArrayList<String> tableNames = new ArrayList<>();
         for (MetaModel metaModel : metaModelsByTableName.values()) {
             if (metaModel.getDbName().equals(dbName))
                 tableNames.add(metaModel.getTableName());
@@ -85,7 +85,7 @@ class MetaModels {
      * @return edges for a join.
      */
     protected List<String> getEdges(String join) {
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
         for (Many2ManyAssociation a : many2ManyAssociations) {
             if (a.getJoin().equalsIgnoreCase(join)) {
                 results.add(getMetaModel(a.getSourceClass()).getTableName());

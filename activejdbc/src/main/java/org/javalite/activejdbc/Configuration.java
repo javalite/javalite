@@ -34,7 +34,7 @@ import static org.javalite.common.Util.*;
 public class Configuration {
 
     //key is a DB name, value is a list of model names
-    private Map<String, List<String>> modelsMap = new HashMap<String, List<String>>();
+    private Map<String, List<String>> modelsMap = new HashMap<>();
     private Properties properties = new Properties();
     private static CacheManager cacheManager;
     private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
@@ -65,7 +65,7 @@ public class Configuration {
 
                         List<String> modelNames = modelsMap.get(dbName);
                         if (modelNames == null) {
-                            modelNames = new ArrayList<String>();
+                            modelNames = new ArrayList<>();
                             modelsMap.put(dbName, modelNames);
                         }
                         modelNames.add(modelName);
@@ -211,12 +211,12 @@ public class Configuration {
 
     //get environments defined in properties
     private Set<String> getEnvironments(Properties props) {
-        Set<String> environments = new HashSet<String>();
+        Set<String> environments = new HashSet<>();
         for (Object k : props.keySet()) {
             String environment = k.toString().split("\\.")[0];
             environments.add(environment);
         }
-        return new TreeSet<String>(environments);
+        return new TreeSet<>(environments);
     }
 
     //read from classpath, if not found, read from file system. If not found there, throw exception

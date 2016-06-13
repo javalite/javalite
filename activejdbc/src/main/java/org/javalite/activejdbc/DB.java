@@ -452,7 +452,7 @@ public class DB {
      */
     public List<Map> findAll(String query) {
 
-        final ArrayList<Map> results = new ArrayList<Map>();
+        final ArrayList<Map> results = new ArrayList<>();
         long start = System.currentTimeMillis();
         find(query).with(new RowListenerAdapter() {
             @Override public void onNext(Map<String, Object> row) {
@@ -762,7 +762,7 @@ public class DB {
      * @return a names' list of current connections.
      */
     public static List<String> getCurrrentConnectionNames(){
-        return new ArrayList<String>(ConnectionsAccess.getConnectionMap().keySet());
+        return new ArrayList<>(ConnectionsAccess.getConnectionMap().keySet());
     }
 
     /**

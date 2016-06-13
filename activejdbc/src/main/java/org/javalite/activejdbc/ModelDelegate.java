@@ -215,7 +215,7 @@ public final class ModelDelegate {
     }
     
     public static <T extends Model> LazyList<T> findBySql(Class<T> clazz, String fullQuery, Object... params) {
-        return new LazyList<T>(false, metaModelOf(clazz), fullQuery,  params);
+        return new LazyList<>(false, metaModelOf(clazz), fullQuery, params);
     }
 
     public static <T extends Model> T findFirst(Class<T> clazz, String subQuery, Object... params) {
@@ -401,7 +401,7 @@ public final class ModelDelegate {
                         "cannot provide parameters with query: '*', use findAll() method instead");
             }
         }
-        return new LazyList<T>(subquery, metaModelOf(clazz), params);
+        return new LazyList<>(subquery, metaModelOf(clazz), params);
     }
 
     public static void zeroToNull(Class<? extends Model> clazz, String... attributeNames) {
