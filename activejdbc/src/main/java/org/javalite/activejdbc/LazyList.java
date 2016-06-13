@@ -39,7 +39,7 @@ import static org.javalite.common.Util.*;
  */
 public class LazyList<T extends Model> extends AbstractLazyList<T> implements Externalizable {
 
-    private static final Logger logger = LoggerFactory.getLogger(LazyList.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LazyList.class);
     private final List<String> orderBys = new ArrayList<String>();
     private final MetaModel metaModel;
     private final String subQuery;
@@ -331,7 +331,7 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
                 delegate.add(ModelDelegate.<T>instance(map, metaModel));
             }
         });
-        LogFilter.logQuery(logger, sql, params, start);
+        LogFilter.logQuery(LOGGER, sql, params, start);
         if(metaModel.cached()){
             delegate = Collections.unmodifiableList(delegate);
             QueryCache.instance().addItem(metaModel.getTableName(), sql, params, delegate);

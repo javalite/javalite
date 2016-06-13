@@ -37,7 +37,7 @@ public class Configuration {
     private Map<String, List<String>> modelsMap = new HashMap<String, List<String>>();
     private Properties properties = new Properties();
     private static CacheManager cacheManager;
-    private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
 
     private Map<String, Dialect> dialects = new CaseInsensitiveMap<>();
 
@@ -48,7 +48,7 @@ public class Configuration {
             Enumeration<URL> resources = getClass().getClassLoader().getResources("activejdbc_models.properties");
             while (resources.hasMoreElements()) {
                 URL url = resources.nextElement();
-                LogFilter.log(logger, "Load models from: {}", url.toExternalForm());
+                LogFilter.log(LOGGER, "Load models from: {}", url.toExternalForm());
                 InputStream inputStream = null;
                 InputStreamReader isreader = null;
                 BufferedReader reader = null;
@@ -80,7 +80,7 @@ public class Configuration {
             throw new InitException(e);
         }
         if(modelsMap.isEmpty()){
-            LogFilter.log(logger, "ActiveJDBC Warning: Cannot locate any models, assuming project without models.");
+            LogFilter.log(LOGGER, "ActiveJDBC Warning: Cannot locate any models, assuming project without models.");
             return;
         }
         try {

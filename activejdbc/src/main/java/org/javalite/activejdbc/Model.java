@@ -58,7 +58,7 @@ import static org.javalite.common.Util.*;
  */
 public abstract class Model extends CallbackSupport implements Externalizable {
 
-    private static final Logger logger = LoggerFactory.getLogger(Model.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Model.class);
 
     private Map<String, Object> attributes = new CaseInsensitiveMap<Object>();
     private final Set<String> dirtyAttributeNames = new CaseInsensitiveSet();
@@ -635,7 +635,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             String targetTableName = metaModelOf(association.getTargetClass()).getTableName();
             Class c = Registry.instance().getModelClass(targetTableName, false);
             if(c == null){// this model is probably not defined as a class, but the table exists!
-                logger.error("ActiveJDBC WARNING: failed to find a model class for: {}, maybe model is not defined for this table?"
+                LOGGER.error("ActiveJDBC WARNING: failed to find a model class for: {}, maybe model is not defined for this table?"
                         + " There might be a risk of running into integrity constrain violation if this model is not defined.",
                         targetTableName);
             }
@@ -1124,7 +1124,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
 
         if (fkValue == null) {
-            logger.debug("Attribute: {} is null, cannot determine parent. Child record: {}", fkName, this);
+            LOGGER.debug("Attribute: {} is null, cannot determine parent. Child record: {}", fkName, this);
             return null;
         }
 
