@@ -37,7 +37,7 @@ public class BaseTest extends ActiveJDBCTest {
 
     @Test
     public void testBaseFinder() {
-        final List<Map> records = new ArrayList<Map>();
+        final List<Map> records = new ArrayList<>();
 
         Base.find("select * from people order by id", new RowListenerAdapter() {
             @Override

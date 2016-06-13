@@ -9,7 +9,7 @@ import java.util.List;
 public class MSSQLStatementProvider implements StatementProvider {
     public List<String> getPopulateStatements(String table) {
 
-        List<String> statements = new ArrayList<String>();
+        List<String> statements = new ArrayList<>();
         if (table.equals("people")) {
             statements =  Arrays.asList(
                     "INSERT INTO people (id, name, last_name, dob, graduation_date, created_at, updated_at) VALUES(1, 'John', 'Smith', '1934-12-01', '1954-12-01', GETDATE(), GETDATE());",
@@ -185,7 +185,7 @@ public class MSSQLStatementProvider implements StatementProvider {
             statements = Arrays.asList();
         }
 
-        ArrayList<String> all = new ArrayList<String>();
+        ArrayList<String> all = new ArrayList<>();
 
         all.add("SET IDENTITY_INSERT " + table + " ON;");
         all.addAll(statements);

@@ -45,10 +45,10 @@ public enum Registry {
     private static final Logger LOGGER = LoggerFactory.getLogger(Registry.class);
 
     private final MetaModels metaModels = new MetaModels();
-    private final Map<Class, ModelRegistry> modelRegistries = new HashMap<Class, ModelRegistry>();
+    private final Map<Class, ModelRegistry> modelRegistries = new HashMap<>();
     private final Configuration configuration = new Configuration();
     private final StatisticsQueue statisticsQueue;
-    private final Set<String> initedDbs = new HashSet<String>();
+    private final Set<String> initedDbs = new HashSet<>();
 
     private Registry() {
         statisticsQueue = configuration.collectStatistics()
@@ -319,7 +319,7 @@ public enum Registry {
 
 
     private Map<String, ColumnMetadata> getColumns(ResultSet rs, String dbProduct) throws SQLException {
-        Map<String, ColumnMetadata> columns = new CaseInsensitiveMap<ColumnMetadata>();
+        Map<String, ColumnMetadata> columns = new CaseInsensitiveMap<>();
         while (rs.next()) {
             // skip h2 INFORMATION_SCHEMA table columns.
             if (!"h2".equals(dbProduct) || !"INFORMATION_SCHEMA".equals(rs.getString("TABLE_SCHEM"))) {

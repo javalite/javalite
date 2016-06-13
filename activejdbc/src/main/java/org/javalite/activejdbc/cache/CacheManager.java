@@ -36,7 +36,7 @@ import static org.javalite.activejdbc.ModelDelegate.metaModelFor;
 public abstract class CacheManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(CacheManager.class);
 
-    List<CacheEventListener> listeners = new ArrayList<CacheEventListener>();
+    List<CacheEventListener> listeners = new ArrayList<>();
 
     /**
      * Returns a cached item. Can return null if not found.

@@ -32,7 +32,7 @@ import static org.javalite.common.Util.*;
 enum StatementCache {
     INSTANCE;
 
-    private final ConcurrentMap<Connection, Map<String, PreparedStatement>> statementCache = new ConcurrentHashMap<Connection, Map<String, PreparedStatement>>();
+    private final ConcurrentMap<Connection, Map<String, PreparedStatement>> statementCache = new ConcurrentHashMap<>();
 
     private StatementCache() { }
     

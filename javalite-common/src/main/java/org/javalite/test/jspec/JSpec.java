@@ -24,7 +24,7 @@ public final class JSpec{
     }
     
     public static Expectation<Object> a(Object o1){
-        return new Expectation<Object>(o1);
+        return new Expectation<>(o1);
     }
 
     /**
