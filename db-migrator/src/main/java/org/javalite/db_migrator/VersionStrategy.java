@@ -15,6 +15,9 @@ import static org.javalite.db_migrator.DbUtils.*;
 
 
 class DefaultMap extends HashMap<DatabaseType, String> {
+    
+    private static final long serialVersionUID = 1L;
+    
     private final String DEFAULT_VALUE = "create table %s (%s varchar(32) not null unique, %s timestamp not null, %s int not null)";
 
     @Override
