@@ -19,6 +19,7 @@ import static org.javalite.db_migrator.DbUtils.closeConnection;
  * @phase process-test-resources
  */
 public class CheckMojo extends AbstractDbMigrationMojo {
+    @Override
     public void executeMojo() throws MojoExecutionException {
         getLog().info("Checking " + getUrl() + " using migrations from " + getMigrationsPath());
 

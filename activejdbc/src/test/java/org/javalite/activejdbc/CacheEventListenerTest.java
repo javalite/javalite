@@ -31,6 +31,7 @@ public class CacheEventListenerTest extends ActiveJDBCTest {
             public int groupCount = 0, allCount = 0;
             public String groupName;
 
+            @Override
             public void onFlush(CacheEvent event) {
                 if (event.getType().equals(CacheEvent.CacheEventType.ALL)) {
                     allCount += 1;
@@ -65,6 +66,7 @@ public class CacheEventListenerTest extends ActiveJDBCTest {
         final boolean[] triggered = {false};
 
         class BadEventListener implements CacheEventListener {
+            @Override
             public void onFlush(CacheEvent event) {
                 triggered[0] = true;
                 throw new RuntimeException("I'm a bad, baaad listener...."); 

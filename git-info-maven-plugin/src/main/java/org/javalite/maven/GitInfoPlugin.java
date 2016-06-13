@@ -44,6 +44,7 @@ public class GitInfoPlugin extends AbstractMojo {
      */
     protected MavenProject project;
 
+    @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         String targetDirectory = project.getBuild().getOutputDirectory();
         String htm = GitInfo.genHtml();

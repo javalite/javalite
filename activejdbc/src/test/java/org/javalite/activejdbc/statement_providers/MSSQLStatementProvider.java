@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MSSQLStatementProvider implements StatementProvider {
+    @Override
     public List<String> getPopulateStatements(String table) {
 
         List<String> statements = new ArrayList<String>();
@@ -194,6 +195,7 @@ public class MSSQLStatementProvider implements StatementProvider {
     }
 
 
+    @Override
     public String getDeleteStatement(String table){
         return "TRUNCATE TABLE " + table + ";";
     }
