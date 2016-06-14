@@ -25,8 +25,6 @@ package org.javalite.activejdbc;
  * @author Igor Polevoy
  */
 public class SuperLazyList<T extends Model> extends LazyList<T> {
-    
-    private static final long serialVersionUID = 1L;
 
     protected SuperLazyList(){}
 

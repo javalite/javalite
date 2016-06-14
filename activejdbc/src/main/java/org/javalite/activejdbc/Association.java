@@ -29,8 +29,6 @@ import java.io.Serializable;
 //TODO: move this class to associations package, but also see InstrumentationModelFinder:51
 public class Association implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    
     private final Class<? extends Model> source;
     private final Class<? extends Model> target;
 
