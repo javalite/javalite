@@ -37,6 +37,9 @@ import static org.javalite.activejdbc.ModelDelegate.metaModelFor;
  * @author Igor Polevoy
  */
 public class Paginator<T extends Model> implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+    
     static final Pattern FROM_PATTERN = Pattern.compile("\\s+FROM\\s+", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
     private final int pageSize;

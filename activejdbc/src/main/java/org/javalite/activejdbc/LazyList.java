@@ -39,6 +39,8 @@ import static org.javalite.common.Util.*;
  */
 public class LazyList<T extends Model> extends AbstractLazyList<T> implements Externalizable {
 
+    private static final long serialVersionUID = 1L;
+    
     private static final Logger logger = LoggerFactory.getLogger(LazyList.class);
     private final List<String> orderBys = new ArrayList<String>();
     private final MetaModel metaModel;

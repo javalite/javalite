@@ -30,6 +30,9 @@ import static org.javalite.common.Inflector.*;
 
 
 public class MetaModel implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+    
     private static final Logger logger = LoggerFactory.getLogger(MetaModel.class);
     private static final ThreadLocal<HashMap<Class, String>> shardingTableNamesTL = new ThreadLocal<>();
 

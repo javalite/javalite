@@ -27,6 +27,8 @@ import org.javalite.activejdbc.Model;
  * @author Igor Polevoy
  */
 public class BelongsToAssociation extends Association {
+    
+    private static final long serialVersionUID = 1L;
 
     private final String fkName;
 
