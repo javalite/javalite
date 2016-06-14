@@ -42,7 +42,7 @@ public enum Registry {
     //our singleton!
     INSTANCE;
 
-    private static final Logger logger = LoggerFactory.getLogger(Registry.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Registry.class);
 
     private final MetaModels metaModels = new MetaModels();
     private final Map<Class, ModelRegistry> modelRegistries = new HashMap<Class, ModelRegistry>();
@@ -210,10 +210,10 @@ public enum Registry {
         }
 
         if(columns.size() > 0){
-            LogFilter.log(logger, "Fetched metadata for table: {}", table);
+            LogFilter.log(LOGGER, "Fetched metadata for table: {}", table);
         }
         else{
-            logger.warn("Failed to retrieve metadata for table: '{}'."
+            LOGGER.warn("Failed to retrieve metadata for table: '{}'."
                     + " Are you sure this table exists? For some databases table names are case sensitive.",
                     table);
         }
@@ -230,7 +230,7 @@ public enum Registry {
         for (Class<? extends Model> modelClass : modelClasses) {
             MetaModel mm = new MetaModel(dbName, modelClass, dbType);
             metaModels.addMetaModel(mm, modelClass);
-            LogFilter.log(logger, "Registered model: {}", modelClass);
+            LogFilter.log(LOGGER, "Registered model: {}", modelClass);
         }
     }
 

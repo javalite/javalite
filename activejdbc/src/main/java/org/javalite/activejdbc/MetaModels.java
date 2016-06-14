@@ -26,7 +26,7 @@ import java.util.*;
  */
 class MetaModels {
 
-    private static final Logger logger = LoggerFactory.getLogger(MetaModels.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MetaModels.class);
 
     private final Map<String, MetaModel> metaModelsByTableName = new CaseInsensitiveMap<>();
     private final Map<Class<? extends Model>, MetaModel> metaModelsByClass = new HashMap<>();
@@ -36,12 +36,12 @@ class MetaModels {
     void addMetaModel(MetaModel mm, Class<? extends Model> modelClass) {
         Object o = metaModelsByClass.put(modelClass, mm);
         if (o != null) {
-            logger.warn("Double-register: {}: {}", modelClass, o);
+            LOGGER.warn("Double-register: {}: {}", modelClass, o);
         }
         o = metaModelsByTableName.put(mm.getTableName(), mm);
         many2ManyAssociations.addAll(mm.getManyToManyAssociations(Collections.<Association>emptyList()));
         if (o != null) {
-            logger.warn("Double-register: {}: {}", mm.getTableName(), o);
+            LOGGER.warn("Double-register: {}: {}", mm.getTableName(), o);
         }
     }
 

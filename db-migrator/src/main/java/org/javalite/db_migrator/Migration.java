@@ -13,7 +13,7 @@ import static org.javalite.db_migrator.DbUtils.exec;
 
 
 public class Migration implements Comparable {
-    private static final Logger logger = LoggerFactory.getLogger(Migration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Migration.class);
     private static final String DEFAULT_DELIMITER = ";";
     private static final String DELIMITER_KEYWORD = "DELIMITER";
     private static final String[] COMMENT_CHARS = new String[]{"--", "#", "//"};
@@ -65,7 +65,7 @@ public class Migration implements Comparable {
                 exec(statement);
             }
         } catch (Exception e) {
-            logger.error("Error executing migration file: {}", migrationFile.getCanonicalPath(), e);
+            LOGGER.error("Error executing migration file: {}", migrationFile.getCanonicalPath(), e);
             throw e;
         }
     }

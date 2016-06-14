@@ -36,7 +36,7 @@ import static org.javalite.common.Util.*;
  * @author Eric Nielsen
  */
 public final class ModelDelegate {
-    private static final Logger logger = LoggerFactory.getLogger(ModelDelegate.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelDelegate.class);
 
     private ModelDelegate() {
         // not instantiable
@@ -234,7 +234,7 @@ public final class ModelDelegate {
                 listener.onModel(instance(row, metaModel, clazz));
             }
         });
-        LogFilter.logQuery(logger, sql, null, start);
+        LogFilter.logQuery(LOGGER, sql, null, start);
     }
 
     static <T extends Model> T instance(Map<String, Object> map, MetaModel metaModel) {

@@ -27,7 +27,7 @@ import java.util.*;
  * @author Igor Polevoy
  */
 public class ConnectionsAccess {
-    private static final Logger logger = LoggerFactory.getLogger(ConnectionsAccess.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConnectionsAccess.class);
     private static final ThreadLocal<HashMap<String, Connection>> connectionsTL = new ThreadLocal<HashMap<String, Connection>>();
 
     private ConnectionsAccess() {
@@ -62,11 +62,11 @@ public class ConnectionsAccess {
             throw new InternalException("You are opening a connection " + dbName + " without closing a previous one. Check your logic. Connection still remains on thread: " + ConnectionsAccess.getConnectionMap().get(dbName));
         }
         ConnectionsAccess.getConnectionMap().put(dbName, connection);
-        LogFilter.log(logger, "Attached connection: {} named: {} to current thread. Extra info: {}", connection, dbName, extraInfo);
+        LogFilter.log(LOGGER, "Attached connection: {} named: {} to current thread. Extra info: {}", connection, dbName, extraInfo);
     }
 
     static void detach(String dbName){
-        LogFilter.log(logger, "Detached connection: {} from current thread", dbName);
+        LogFilter.log(LOGGER, "Detached connection: {} from current thread", dbName);
         getConnectionMap().remove(dbName);
     }
 
