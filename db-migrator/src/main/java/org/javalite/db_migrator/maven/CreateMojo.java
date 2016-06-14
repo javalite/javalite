@@ -13,7 +13,6 @@ import static org.javalite.db_migrator.DbUtils.*;
  */
 public class CreateMojo extends AbstractDbMigrationMojo {
 
-    @Override
     public void executeMojo() throws MojoExecutionException {
 
         try {

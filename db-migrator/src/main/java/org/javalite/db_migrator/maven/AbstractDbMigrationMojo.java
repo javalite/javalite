@@ -49,7 +49,6 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
      */
     private String configFile;
 
-    @Override
     public final void execute() throws MojoExecutionException {
         if (blank(environments)) {
             executeCurrentConfiguration();

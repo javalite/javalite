@@ -159,7 +159,6 @@ public class CacheTest extends ActiveJDBCTest {
     @Test
     public void shouldNotPropagateCacheEventForNonCachedModels(){
         CacheEventListener cl = new CacheEventListener() {
-            @Override
             public void onFlush(CacheEvent event) {
                 count++;
             }
@@ -175,7 +174,6 @@ public class CacheTest extends ActiveJDBCTest {
     @Test
     public void shouldNotPropagateCacheEventOnFlush(){
         CacheEventListener cl = new CacheEventListener() {
-            @Override
             public void onFlush(CacheEvent event) {
                 count1++;
             }

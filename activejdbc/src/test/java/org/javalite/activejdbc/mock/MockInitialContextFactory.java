@@ -26,7 +26,6 @@ import java.util.Hashtable;
  * @author Igor Polevoy
  */
 public class MockInitialContextFactory implements InitialContextFactory {
-    @Override
     public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
         return new MockContext();
     }

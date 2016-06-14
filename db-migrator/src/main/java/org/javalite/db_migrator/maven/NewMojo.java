@@ -15,7 +15,6 @@ import static org.javalite.db_migrator.DbUtils.blank;
  */
 public class NewMojo extends AbstractMigrationMojo {
 
-    @Override
     public void execute() throws MojoExecutionException {
         if (blank(System.getProperty("name"))) {
             getLog().error("Must provide name for migration: -Dname=migration_name");

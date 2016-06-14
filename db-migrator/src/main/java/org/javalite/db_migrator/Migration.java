@@ -79,7 +79,6 @@ public class Migration implements Comparable {
         return false;
     }
 
-    @Override
     public int compareTo(Object o) {
         Migration other = (Migration) o;
         return this.getVersion().compareTo(other.getVersion());

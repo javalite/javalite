@@ -7,7 +7,6 @@ import org.apache.maven.plugin.MojoExecutionException;
  * @goal reset
  */
 public class ResetMojo extends AbstractDbMigrationMojo {
-    @Override
     public void executeMojo() throws MojoExecutionException {
         getLog().info("Resetting database " + getUrl());
 
