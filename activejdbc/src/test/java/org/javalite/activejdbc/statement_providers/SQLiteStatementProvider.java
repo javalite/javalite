@@ -25,7 +25,6 @@ import java.util.List;
  * @author Igor Polevoy on 11/15/14.
  */
 public class SQLiteStatementProvider implements org.javalite.activejdbc.StatementProvider {
-    @Override
     public List<String> getPopulateStatements(String table) {
 
         List<String> statements = new ArrayList<String>();
@@ -212,7 +211,6 @@ public class SQLiteStatementProvider implements org.javalite.activejdbc.Statemen
     }
 
 
-    @Override
     public String getDeleteStatement(String table){
         return "DELETE FROM " + table + ";";
     }

@@ -113,7 +113,6 @@ public class XmlEntities {
          * {@inheritDoc}
          */
         // TODO not thread-safe as there is a window between changing the two maps
-        @Override
         public void add(String name, int value) {
             mapNameToValue.put(name, Integer.valueOf(value));
             mapValueToName.put(value, name);
@@ -122,7 +121,6 @@ public class XmlEntities {
         /**
          * {@inheritDoc}
          */
-        @Override
         public String name(int value) {
             return (String) mapValueToName.get(value);
         }
@@ -130,7 +128,6 @@ public class XmlEntities {
         /**
          * {@inheritDoc}
          */
-        @Override
         public int value(String name) {
             Object value = mapNameToValue.get(name);
             if (value == null) {
@@ -159,7 +156,6 @@ public class XmlEntities {
         /**
          * {@inheritDoc}
          */
-        @Override
         public void add(String name, int value) {
             mapNameToValue.put(name, Integer.valueOf(value));
             mapValueToName.put(Integer.valueOf(value), name);
@@ -168,7 +164,6 @@ public class XmlEntities {
         /**
          * {@inheritDoc}
          */
-        @Override
         public String name(int value) {
             return (String) mapValueToName.get(Integer.valueOf(value));
         }
@@ -176,7 +171,6 @@ public class XmlEntities {
         /**
          * {@inheritDoc}
          */
-        @Override
         public int value(String name) {
             Object value = mapNameToValue.get(name);
             if (value == null) {
@@ -213,7 +207,6 @@ public class XmlEntities {
         /**
          * {@inheritDoc}
          */
-        @Override
         public String name(int value) {
             if (value < LOOKUP_TABLE_SIZE) {
                 return lookupTable()[value];
@@ -283,7 +276,6 @@ public class XmlEntities {
         /**
          * {@inheritDoc}
          */
-        @Override
         public void add(String name, int value) {
             ensureCapacity(size + 1);
             names[size] = name;
@@ -312,7 +304,6 @@ public class XmlEntities {
         /**
          * {@inheritDoc}
          */
-        @Override
         public String name(int value) {
             for (int i = 0; i < size; ++i) {
                 if (values[i] == value) {
@@ -325,7 +316,6 @@ public class XmlEntities {
         /**
          * {@inheritDoc}
          */
-        @Override
         public int value(String name) {
             for (int i = 0; i < size; ++i) {
                 if (names[i].equals(name)) {
@@ -388,7 +378,6 @@ public class XmlEntities {
         /**
          * {@inheritDoc}
          */
-        @Override
         public void add(String name, int value) {
             ensureCapacity(size + 1);
             int insertAt = binarySearch(value);
@@ -406,7 +395,6 @@ public class XmlEntities {
         /**
          * {@inheritDoc}
          */
-        @Override
         public String name(int value) {
             int index = binarySearch(value);
             if (index < 0) {

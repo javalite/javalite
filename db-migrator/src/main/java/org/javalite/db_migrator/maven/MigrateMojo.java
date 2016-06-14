@@ -15,7 +15,6 @@ import static org.javalite.db_migrator.DbUtils.closeConnection;
  */
 public class MigrateMojo extends AbstractDbMigrationMojo {
 
-    @Override
     public void executeMojo() throws MojoExecutionException {
         getLog().info("Migrating " + getUrl() + " using migrations at " + getMigrationsPath());
         try {

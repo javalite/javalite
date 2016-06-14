@@ -10,7 +10,6 @@ import java.util.List;
  * @author Igor Polevoy
  */
 public class H2StatementProvider implements StatementProvider {
-    @Override
     public List<String> getPopulateStatements(String table) {
 
         List<String> statements = new ArrayList<String>();
@@ -200,7 +199,6 @@ public class H2StatementProvider implements StatementProvider {
         return all;
     }
 
-    @Override
     public String getDeleteStatement(String table){
         return "DELETE FROM " + table + ";";
     }

@@ -67,7 +67,6 @@ public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
     protected MavenProject project;
 
 
-    @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
             addCP();//this will add a runtime classpath to the plugin

@@ -8,7 +8,6 @@ import org.apache.maven.plugin.MojoExecutionException;
  * @goal help
  */
 public class HelpMojo extends AbstractMojo {
-    @Override
     public void execute() throws MojoExecutionException {
 
         getLog().info("");

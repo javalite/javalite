@@ -16,7 +16,6 @@ import static org.javalite.db_migrator.DbUtils.closeConnection;
  * @goal validate
  */
 public class ValidateMojo extends AbstractDbMigrationMojo {
-    @Override
     public void executeMojo() throws MojoExecutionException {
         getLog().info("Validating " + getUrl() + " using migrations from " + getMigrationsPath());
         try {
