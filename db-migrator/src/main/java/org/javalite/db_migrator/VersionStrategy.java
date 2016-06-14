@@ -32,7 +32,7 @@ public class VersionStrategy {
     public static final String APPLIED_DATE_COLUMN = "applied_on";
     public static final String DURATION_COLUMN = "duration";
 
-    private static final Logger logger = LoggerFactory.getLogger(VersionStrategy.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(VersionStrategy.class);
 
     private static final Map<DatabaseType, String> CREATE_VERSION_TABLE_MAP;
 

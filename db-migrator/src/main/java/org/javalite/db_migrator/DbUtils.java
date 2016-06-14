@@ -12,7 +12,7 @@ public class DbUtils {
 
     private static ThreadLocal<Connection> connectionTL = new ThreadLocal<Connection>();
 
-    private static Logger logger = LoggerFactory.getLogger(DbUtils.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(DbUtils.class);
 
     private static final String POSTGRESQL_FRAGMENT = ":postgresql:";
     private static final String MYSQL_FRAGMENT = ":mysql:";
@@ -163,7 +163,7 @@ public class DbUtils {
         Statement s = null;
         try {
             s = connection().createStatement();
-            logger.info("Executing: " + statement);
+            LOGGER.info("Executing: " + statement);
             int count = s.executeUpdate(statement);
 
             return count;

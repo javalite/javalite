@@ -27,7 +27,7 @@ import static org.javalite.common.Convert.toInteger;
  * @author Igor Polevoy on 12/7/15.
  */
 public class RedisCacheManager extends CacheManager {
-    private static final Logger logger = LoggerFactory.getLogger(RedisCacheManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RedisCacheManager.class);
 
     private BinaryJedis jedis;
 
@@ -75,7 +75,7 @@ public class RedisCacheManager extends CacheManager {
             byte[] bytes = bout.toByteArray();
             jedis.hset(group.getBytes(), key.getBytes(), bytes);
         } catch (Exception e) {
-            logger.error("Failed to add object to cache with group: " + group + " and key: " + key, e);
+            LOGGER.error("Failed to add object to cache with group: " + group + " and key: " + key, e);
         }
     }
 

@@ -44,7 +44,7 @@ import org.slf4j.Logger;
  */
 public class ActiveJdbcFilter implements Filter {
 
-    private static final Logger logger = LoggerFactory.getLogger(ActiveJdbcFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActiveJdbcFilter.class);
 
     private String jndiName;
 
@@ -77,7 +77,7 @@ public class ActiveJdbcFilter implements Filter {
 
             Base.close();
         }
-        logger.info("Processing took: {} milliseconds", System.currentTimeMillis() - before);
+        LOGGER.info("Processing took: {} milliseconds", System.currentTimeMillis() - before);
     }
 
     @Override
