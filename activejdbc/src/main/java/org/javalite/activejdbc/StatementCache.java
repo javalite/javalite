@@ -32,11 +32,11 @@ import static org.javalite.common.Util.*;
 enum StatementCache {
     INSTANCE;
 
-    static StatementCache instance() { return INSTANCE; }
-
     private final ConcurrentMap<Connection, Map<String, PreparedStatement>> statementCache = new ConcurrentHashMap<Connection, Map<String, PreparedStatement>>();
 
     private StatementCache() { }
+    
+    static StatementCache instance() { return INSTANCE; }
 
     PreparedStatement getPreparedStatement(Connection connection, String query) {
         if (!statementCache.containsKey(connection)) {
