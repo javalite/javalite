@@ -30,7 +30,7 @@ import static org.javalite.common.Inflector.*;
 
 
 public class MetaModel implements Serializable {
-    private static final Logger logger = LoggerFactory.getLogger(MetaModel.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MetaModel.class);
     private static final ThreadLocal<HashMap<Class, String>> shardingTableNamesTL = new ThreadLocal<>();
 
     private Map<String, ColumnMetadata> columnMetadata;
@@ -321,7 +321,7 @@ public class MetaModel implements Serializable {
 
     protected void addAssociation(Association association) {
         if (!associations.contains(association)) {
-            log(logger, "Association found: {}", association);
+            log(LOGGER, "Association found: {}", association);
             associations.add(association);
         }
     }

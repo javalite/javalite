@@ -27,6 +27,11 @@ import static org.javalite.common.Util.*;
 public class DBException extends RuntimeException{
 
     final String message;
+    
+    public DBException() {
+        super();
+        this.message = null;
+    }
 
     public DBException(Throwable cause) {
         super(cause);
@@ -67,9 +72,5 @@ public class DBException extends RuntimeException{
     public String getMessage() {
         return message == null ? super.getMessage() : message;
     }
-
-    public DBException() {
-        super();
-        this.message = null;
-    }
+    
 }

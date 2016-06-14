@@ -39,6 +39,10 @@ public class AppConfig implements Map<String, String> {
     private static Logger LOGGER = LoggerFactory.getLogger(AppConfig.class);
     private static HashMap<String, Property> props = new HashMap<String, Property>();
     private static HashMap<String, String> plainProps = new HashMap<String, String>();
+    
+    public AppConfig() {
+        init();
+    }
 
     public static synchronized void init() {
         if (isInited()) return;
@@ -156,11 +160,6 @@ public class AppConfig implements Map<String, String> {
 
 
     /////////// Implementation of Map interface below ///////////////////
-
-
-    public AppConfig() {
-        init();
-    }
 
     @Override
     public int size() {

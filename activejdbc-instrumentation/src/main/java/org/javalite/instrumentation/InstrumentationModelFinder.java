@@ -43,6 +43,7 @@ public class InstrumentationModelFinder {
     private final CtClass modelClass;
     private final List<CtClass> models = new ArrayList<CtClass>();
     private final ClassPool cp;
+    private String currentDirectoryPath;
 
 
     protected InstrumentationModelFinder() throws NotFoundException, ClassNotFoundException {
@@ -91,8 +92,6 @@ public class InstrumentationModelFinder {
         } catch (ClassNotFoundException ignore) {
         }
     }
-
-    private String currentDirectoryPath;
 
     protected void processDirectoryPath(File directory) throws IOException, ClassNotFoundException {
         currentDirectoryPath = directory.getCanonicalPath();

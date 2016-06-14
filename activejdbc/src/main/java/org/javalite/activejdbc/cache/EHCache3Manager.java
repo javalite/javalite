@@ -35,7 +35,7 @@ import java.net.URL;
  */
 public class EHCache3Manager extends CacheManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(EHCacheManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EHCacheManager.class);
     private final CacheConfigurationBuilder<String, Object> cacheTemplate;
     private final Object lock = new Object();
 
@@ -65,7 +65,7 @@ public class EHCache3Manager extends CacheManager {
             Cache<String, Object> c = getCacheForGroupOrCreateIt(group);
             return c.get(key);
         } catch (Exception e) {
-            logger.warn("{}", e, e);
+            LOGGER.warn("{}", e, e);
             return null;
         }
     }
@@ -78,7 +78,7 @@ public class EHCache3Manager extends CacheManager {
     @Override
     public void doFlush(CacheEvent event) {
         if (event.getType().equals(CacheEvent.CacheEventType.ALL)) {
-            logger.warn(getClass() + " does not support flushing all caches. Flush one group at the time.");
+            LOGGER.warn(getClass() + " does not support flushing all caches. Flush one group at the time.");
         } else if (event.getType().equals(CacheEvent.CacheEventType.GROUP)) {
             final Cache<String, Object> cache = cacheManager.getCache(event.getGroup(), String.class, Object.class);
             if (cache != null) {
