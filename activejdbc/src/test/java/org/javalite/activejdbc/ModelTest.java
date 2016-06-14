@@ -59,6 +59,7 @@ public class ModelTest extends ActiveJDBCTest {
     public void testModelFinderWithListener() {
         deleteAndPopulateTable("people");
         Person.findWith(new ModelListener<Person>() {
+            @Override
             public void onModel(Person person) {
                 System.out.println("Found person: " + person);
             }
@@ -77,6 +78,7 @@ public class ModelTest extends ActiveJDBCTest {
         }
 
         ModelListener<Person> modelListener = new ModelListener<Person>() {
+            @Override
             public void onModel(Person person) {
                 counter ++;
             }

@@ -42,6 +42,7 @@ public class ExpectationTest {
         a(new Toyota()).shouldBeA(Car.class);
 
         class Job implements Runnable{
+            @Override
             public void run() {}
         }
 

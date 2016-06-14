@@ -11,6 +11,7 @@ import static org.javalite.db_migrator.DbUtils.*;
  * @goal drop
  */
 public class DropMojo extends AbstractDbMigrationMojo {
+    @Override
     public void executeMojo() throws MojoExecutionException {
         try {
             String dropSql = blank(getDropSql()) ? "drop database %s" : getDropSql();
