@@ -21,8 +21,6 @@ import java.io.Serializable;
 
 public class ColumnMetadata implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    
     private final String columnName;
     private final String typeName;
     private final int columnSize;

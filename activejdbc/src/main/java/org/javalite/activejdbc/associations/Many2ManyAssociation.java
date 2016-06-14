@@ -25,8 +25,6 @@ import org.javalite.activejdbc.Model;
  */
 //TODO: rename to ManyToManyAssociation, using "To" instead of "2" as the other class names?
 public class Many2ManyAssociation extends Association {
-    
-    private static final long serialVersionUID = 1L;
 
     private final String sourceFkName;
     private final String targetFkName;
