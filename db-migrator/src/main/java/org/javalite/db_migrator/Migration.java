@@ -5,6 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,8 +38,7 @@ public class Migration implements Comparable {
     }
 
     public void migrate(String encoding) throws Exception {
-        String file = Util.readFile(migrationFile.getCanonicalPath(), encoding == null ? "UTF-8" : encoding);
-        String[] lines = file.split(System.getProperty("line.separator"));
+        List<String> lines = Files.readAllLines(Paths.get(migrationFile.getCanonicalPath()), encoding != null ? Charset.forName(encoding) : Charset.defaultCharset());
         String delimiter = DEFAULT_DELIMITER;
         List<String> statements = new ArrayList<>();
         try {
