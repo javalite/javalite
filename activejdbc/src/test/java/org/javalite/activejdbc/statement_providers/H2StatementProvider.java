@@ -12,7 +12,7 @@ import java.util.List;
 public class H2StatementProvider implements StatementProvider {
     public List<String> getPopulateStatements(String table) {
 
-        List<String> statements = new ArrayList<String>();
+        List<String> statements = new ArrayList<>();
         if (table.equals("people")) {
             statements =  Arrays.asList(
                     "INSERT INTO people (id, name, last_name, dob, graduation_date, created_at, updated_at) VALUES(1, 'John', 'Smith', '1934-12-01', '1954-12-01', now(), now());",
@@ -187,7 +187,7 @@ public class H2StatementProvider implements StatementProvider {
             statements = Arrays.asList();
         }
 
-        ArrayList<String> all = new ArrayList<String>();
+        ArrayList<String> all = new ArrayList<>();
 
         //https://groups.google.com/forum/#!searchin/h2-database/reset$20auto_increment/h2-database/PqkE1-tK_M4/I7MBEpHOZFQJ
         if(table.equals("animals")){

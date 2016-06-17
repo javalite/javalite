@@ -31,7 +31,7 @@ public class Errors implements Map<String, String> {
 
     private Locale locale;
 
-    private final Map<String, Validator> validators = new CaseInsensitiveMap<Validator>();
+    private final Map<String, Validator> validators = new CaseInsensitiveMap<>();
 
 
     /**
@@ -149,7 +149,7 @@ public class Errors implements Map<String, String> {
 
     @Override
     public Collection<String> values() {
-        List<String> messageList = new ArrayList<String>();
+        List<String> messageList = new ArrayList<>();
         for(java.util.Map.Entry<String, Validator> v: validators.entrySet()){
             messageList.add(((Validator)v.getValue()).formatMessage(locale));
         }
@@ -183,7 +183,7 @@ public class Errors implements Map<String, String> {
 
     @Override
     public Set<Entry<String, String>> entrySet() {
-        Set<Entry<String, String>> entries = new LinkedHashSet<Entry<String, String>>();
+        Set<Entry<String, String>> entries = new LinkedHashSet<>();
 
         for(Entry<String, Validator> validator: validators.entrySet()){
             String value = validator.getValue().formatMessage(locale);
