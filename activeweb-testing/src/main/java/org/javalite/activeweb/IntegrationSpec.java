@@ -30,6 +30,7 @@ public class IntegrationSpec extends RequestSpecHelper {
         return new RequestBuilder(controllerName, session(), true);
     }
 
+    @Override
     protected void setTemplateLocation(String templateLocation){
         Configuration.getTemplateManager().setTemplateLocation(templateLocation);
     }

@@ -70,10 +70,12 @@ public class FreeMarkerTemplateManager extends TemplateManager {
         }
     }
 
+    @Override
     public void merge(Map values, String template, Writer writer) {
         merge(values, template, defaultLayout, null, writer);
     }
 
+    @Override
     public void merge(Map input, String template, String layout, String format, Writer writer) {
 
         try {
@@ -133,6 +135,7 @@ public class FreeMarkerTemplateManager extends TemplateManager {
 
     }
     
+    @Override
     public void setServletContext(ServletContext ctx) {
         if(location == null)
             config.setServletContextForTemplateLoading(ctx, "WEB-INF/views/");
@@ -154,6 +157,7 @@ public class FreeMarkerTemplateManager extends TemplateManager {
 
 
 
+    @Override
     public void setTemplateLocation(String templateLocation) {
         location = templateLocation;
 

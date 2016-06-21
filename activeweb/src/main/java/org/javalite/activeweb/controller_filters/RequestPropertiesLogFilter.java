@@ -47,6 +47,7 @@ public class RequestPropertiesLogFilter extends AbstractLoggingFilter{
         super();    
     }
 
+    @Override
     protected String getMessage() {
         Map m = map("request_url", url(),
                 "context_path", context(),

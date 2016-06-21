@@ -47,6 +47,7 @@ public class TagFactory {
 
     }
 
+    @Override
     public String toString() {
         StringWriter sw = new StringWriter();
         write(sw);

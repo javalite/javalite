@@ -38,6 +38,7 @@ public abstract class AppController extends HttpSupport {
      * @param name name of a value.
      * @param value value.
      */
+    @Override
     protected void assign(String name, Object value) {
         KeyWords.check(name);
         Context.getValues().put(name, value);
@@ -49,6 +50,7 @@ public abstract class AppController extends HttpSupport {
      * @param name name of object to be passed to view
      * @param value object to be passed to view
      */
+    @Override
     protected void view(String name, Object value) {
         assign(name, value);
     }
@@ -96,6 +98,7 @@ public abstract class AppController extends HttpSupport {
         return Context.getHttpRequest().getServletPath();
     }
 
+    @Override
     protected String queryString() {
         return Context.getHttpRequest().getQueryString();
     }

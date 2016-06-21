@@ -52,6 +52,7 @@ public abstract class AbstractLoggingFilter extends HttpSupportFilter{
         this.level = level;
     }
 
+    @Override
     public final void before() {
         log(getMessage() + ", session: " + session().id());
     }
