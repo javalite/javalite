@@ -16,7 +16,6 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
  * @author Igor Polevoy

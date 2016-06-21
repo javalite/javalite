@@ -1,7 +1,5 @@
 package org.javalite.lessc.maven;
 
-import org.apache.maven.plugins.annotations.Parameter;
-
 /**
  * @author Igor Polevoy on 5/22/15.
  */

@@ -1,8 +1,6 @@
 package org.javalite.async;
 
 import org.javalite.activejdbc.Base;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Standard command listener to process commands that require a database access.
