@@ -10,7 +10,7 @@ import java.io.FileInputStream;
  * @author Igor Polevoy on 12/30/15.
  */
 class FileResponse extends ControllerResponse {
-    Logger logger = LoggerFactory.getLogger(FileResponse.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileResponse.class);
 
     private File file;
     private boolean delete = false;
@@ -33,7 +33,7 @@ class FileResponse extends ControllerResponse {
             stream(new FileInputStream(file), Context.getHttpResponse().getOutputStream());
             if (delete) {
                 if (!file.delete()) {
-                    logger.warn("failed to delete file: " + file + " after processing");
+                    LOGGER.warn("failed to delete file: " + file + " after processing");
                 }
             }
         } catch (Exception e) {

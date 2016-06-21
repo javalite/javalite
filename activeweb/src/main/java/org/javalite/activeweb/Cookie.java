@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Cookie {
 
-    private static Logger logger = LoggerFactory.getLogger(Cookie.class.getSimpleName());
+    private static Logger LOGGER = LoggerFactory.getLogger(Cookie.class.getSimpleName());
 
     private java.lang.String name;
     private java.lang.String value;
@@ -134,7 +134,7 @@ public class Cookie {
         try {
             servletCookie.getClass().getMethod("setHttpOnly", boolean.class).invoke(servletCookie, awCookie.isHttpOnly());
         } catch (Exception e) {
-            logger.warn("You are trying to set HttpOnly on a cookie, but it appears you are running on Servlet version before 3.0.");
+            LOGGER.warn("You are trying to set HttpOnly on a cookie, but it appears you are running on Servlet version before 3.0.");
         }
     }
 
@@ -143,7 +143,7 @@ public class Cookie {
         try {
             return (Boolean)servletCookie.getClass().getMethod("isHttpOnly").invoke(servletCookie);
         } catch (Exception e) {
-            logger.warn("You are trying to get HttpOnly from a cookie, but it appears you are running on Servlet version before 3.0. Returning false.. which can be false!");
+            LOGGER.warn("You are trying to get HttpOnly from a cookie, but it appears you are running on Servlet version before 3.0. Returning false.. which can be false!");
             return false; //return default. Should we be throwing exception here?
         }
     }

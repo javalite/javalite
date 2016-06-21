@@ -35,7 +35,7 @@ import java.util.Set;
  */
 public class RenderTag implements TemplateDirectiveModel {
 
-    private static Logger logger = LoggerFactory.getLogger(RenderTag.class.getSimpleName());
+    private static Logger LOGGER = LoggerFactory.getLogger(RenderTag.class.getSimpleName());
 
     public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body) throws TemplateException, IOException {
 
@@ -59,7 +59,7 @@ public class RenderTag implements TemplateDirectiveModel {
         String partialName = partialParts[partialParts.length - 1];
         Template partialTemplate = env.getConfiguration().getTemplate(partialPath + ".ftl" );
 
-        logger.debug("rendering: " + partialPath + ".ftl" );
+        LOGGER.debug("rendering: " + partialPath + ".ftl" );
 
         if(!params.containsKey("collection")){
             SimpleHash envValues = getHash(env);

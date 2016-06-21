@@ -36,7 +36,7 @@ import java.util.jar.JarFile;
  */
 class ControllerPackageLocator {
 
-    private static Logger logger = LoggerFactory.getLogger(ControllerPackageLocator.class.getSimpleName());
+    private static Logger LOGGER = LoggerFactory.getLogger(ControllerPackageLocator.class.getSimpleName());
 
 
     public static List<String> locateControllerPackages(FilterConfig config) {
@@ -112,7 +112,7 @@ class ControllerPackageLocator {
                 urls.add(config.getServletContext().getResource((String) jar));
             }
             catch (MalformedURLException e) {
-                logger.warn("Failed to get resource: " + jar);
+                LOGGER.warn("Failed to get resource: " + jar);
             }
         }
         addClassesUrl(config, urls);
