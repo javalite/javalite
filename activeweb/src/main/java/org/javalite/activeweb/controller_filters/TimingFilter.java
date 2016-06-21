@@ -23,7 +23,7 @@ package org.javalite.activeweb.controller_filters;
 public class TimingFilter extends HttpSupportFilter {
 
     //must be threadlocal - filters are NOT thread safe!
-    private static ThreadLocal<Long> time = new ThreadLocal<Long>();
+    private static ThreadLocal<Long> time = new ThreadLocal<>();
 
     @Override
     public void before() {

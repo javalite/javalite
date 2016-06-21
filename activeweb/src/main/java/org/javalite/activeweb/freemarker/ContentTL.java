@@ -24,7 +24,7 @@ import java.util.Map;
  * @author Igor Polevoy
  */
 public class ContentTL {
-    private static ThreadLocal<Map<String, List<String>>> contentTL = new ThreadLocal<Map<String, List<String>>>();
+    private static ThreadLocal<Map<String, List<String>>> contentTL = new ThreadLocal<>();
 
     private ContentTL() {}
     

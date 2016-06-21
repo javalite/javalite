@@ -10,13 +10,13 @@ import java.util.Map;
  */
 public class RequestContext {
 
-    private Map<String, Object> values = new HashMap<String, Object>();
+    private Map<String, Object> values = new HashMap<>();
 
     /**
      * User segments are values extracted from the URL if user segments were used on a URL,
      * They are available as regular parameters using param("name") inside controllers and filter.
      */
-    private Map<String, String> userSegments = new HashMap<String, String>();
+    private Map<String, String> userSegments = new HashMap<>();
 
 
     protected Object get(String name){

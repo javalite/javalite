@@ -30,7 +30,7 @@ import java.util.Map;
  */
 public class TagFactory {
     private String name, body, textAttributes;
-    private List<Attribute> attributes = new ArrayList<Attribute>();
+    private List<Attribute> attributes = new ArrayList<>();
 
 
     public TagFactory(String name, String body) {

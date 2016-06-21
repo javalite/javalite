@@ -36,8 +36,8 @@ public class RouteBuilder {
     private String actionName, id, routeConfig;
     private AppController controller;
     private Class<? extends AppController> type;
-    private List<Segment> segments = new ArrayList<Segment>();
-    private List<HttpMethod> methods = new ArrayList<HttpMethod>();
+    private List<Segment> segments = new ArrayList<>();
+    private List<HttpMethod> methods = new ArrayList<>();
 
     private String wildcardName;
     private String wildCardValue;

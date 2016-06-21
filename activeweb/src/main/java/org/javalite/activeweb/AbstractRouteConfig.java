@@ -8,10 +8,10 @@ import java.util.List;
  */
 public abstract class AbstractRouteConfig extends AppConfig{
 
-    private List<RouteBuilder> routes = new ArrayList<RouteBuilder>();
+    private List<RouteBuilder> routes = new ArrayList<>();
 
     //ignore some URLs
-    private List<IgnoreSpec> ignoreSpecs = new ArrayList<IgnoreSpec>();
+    private List<IgnoreSpec> ignoreSpecs = new ArrayList<>();
 
 
 
@@ -26,7 +26,7 @@ public abstract class AbstractRouteConfig extends AppConfig{
     }
 
     protected void clear(){
-        routes = new ArrayList<RouteBuilder>();
+        routes = new ArrayList<>();
     }
 
 

@@ -31,8 +31,8 @@ class ControllerRegistry {
     /**
      * key - controller class name, value ControllerMetaData.
      */
-    private Map<String, ControllerMetaData> metaDataMap = new HashMap<String, ControllerMetaData>();
-    private List<FilterList> globalFilterLists = new ArrayList<FilterList>();
+    private Map<String, ControllerMetaData> metaDataMap = new HashMap<>();
+    private List<FilterList> globalFilterLists = new ArrayList<>();
     private Injector injector;
 
     // these are not full package names, just partial package names between "app.controllers"

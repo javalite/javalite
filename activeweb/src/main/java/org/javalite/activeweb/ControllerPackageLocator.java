@@ -42,7 +42,7 @@ class ControllerPackageLocator {
 
     public static List<String> locateControllerPackages(FilterConfig config) {
         String controllerPath = System.getProperty("file.separator") + Configuration.getRootPackage() + System.getProperty("file.separator") + "controllers";
-        List<String> controllerPackages = new ArrayList<String>();
+        List<String> controllerPackages = new ArrayList<>();
         List<URL> urls = getUrls(config);
         for (URL url : urls) {
             File f = new File(url.getFile());
@@ -106,7 +106,7 @@ class ControllerPackageLocator {
 
     //Maybe this is a hack for other containers too?? Maybe this is not a hack at all?
     private static List<URL> hackForWeblogic(FilterConfig config) {
-        List<URL> urls = new ArrayList<URL>();
+        List<URL> urls = new ArrayList<>();
         Set libJars = config.getServletContext().getResourcePaths("/WEB-INF/lib");
         for (Object jar : libJars) {
             try {

@@ -83,7 +83,7 @@ public class DBSpecHelper {
 
     private static List<ConnectionSpecWrapper> getTestConnectionWrappers() {
         List<ConnectionSpecWrapper> allConnections = Configuration.getConnectionSpecWrappers();
-        List<ConnectionSpecWrapper> result = new LinkedList<ConnectionSpecWrapper>();
+        List<ConnectionSpecWrapper> result = new LinkedList<>();
 
         for (ConnectionSpecWrapper connectionWrapper : allConnections) {
             if (connectionWrapper.isTesting())

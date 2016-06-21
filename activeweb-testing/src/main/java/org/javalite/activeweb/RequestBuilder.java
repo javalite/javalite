@@ -34,16 +34,16 @@ public class RequestBuilder {
     private static final String MULTIPART = "multipart/form-data";
 
     private boolean integrateViews;
-    private Map<String, Object> values = new HashMap<String, Object>();
-    private Map<String, String> headers = new HashMap<String, String>();
+    private Map<String, Object> values = new HashMap<>();
+    private Map<String, String> headers = new HashMap<>();
     private String contentType;
     private byte[] content;
     private String controllerPath;
     private SessionTestFacade sessionFacade;
-    private List<org.javalite.activeweb.Cookie> cookies = new ArrayList<org.javalite.activeweb.Cookie>();
+    private List<org.javalite.activeweb.Cookie> cookies = new ArrayList<>();
     private MockHttpServletRequest request;
     private String realAction;
-    private List<FormItem> formItems =  new ArrayList<FormItem>();
+    private List<FormItem> formItems = new ArrayList<>();
     private String id;
     private String queryString;
     private String format;
@@ -411,7 +411,7 @@ public class RequestBuilder {
     }
 
     private void addCookiesInternal(MockHttpServletRequest request) {
-        List<javax.servlet.http.Cookie> servletCookieList = new ArrayList<javax.servlet.http.Cookie>();
+        List<javax.servlet.http.Cookie> servletCookieList = new ArrayList<>();
         for(org.javalite.activeweb.Cookie cookie: cookies){
             servletCookieList.add(org.javalite.activeweb.Cookie.toServletCookie(cookie));
         }
@@ -423,7 +423,7 @@ public class RequestBuilder {
         for (String key : values.keySet()) {
             Object value = values.get(key);
             if(value instanceof List){
-                List<String> strings = new ArrayList<String>(((List)value).size());
+                List<String> strings = new ArrayList<>(((List) value).size());
                 for (Object v: ((List)value)) {
                     strings.add(v.toString());
                 }

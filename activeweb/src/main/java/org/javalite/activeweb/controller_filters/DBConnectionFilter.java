@@ -134,7 +134,7 @@ public class DBConnectionFilter extends ControllerFilterAdapter {
      */
     private List<ConnectionSpecWrapper> getConnectionWrappers() {
         List<ConnectionSpecWrapper> allConnections = Configuration.getConnectionSpecWrappers();
-        List<ConnectionSpecWrapper> result = new LinkedList<ConnectionSpecWrapper>();
+        List<ConnectionSpecWrapper> result = new LinkedList<>();
 
         for (ConnectionSpecWrapper connectionWrapper : allConnections) {
             if (!connectionWrapper.isTesting() && (dbName == null || dbName.equals(connectionWrapper.getDbName())))

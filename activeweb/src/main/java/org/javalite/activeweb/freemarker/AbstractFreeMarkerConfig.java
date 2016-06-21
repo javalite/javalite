@@ -29,7 +29,7 @@ public abstract class AbstractFreeMarkerConfig {
 
     private Configuration configuration;
 
-    private List<FreeMarkerTag> userTags = new ArrayList<FreeMarkerTag>();
+    private List<FreeMarkerTag> userTags = new ArrayList<>();
 
     public void setConfiguration(Configuration config){
         this.configuration = config;
