@@ -25,6 +25,8 @@ class FreeMarkerTL {
 
     private static ThreadLocal<Environment> environmentThreadLocal = new ThreadLocal<Environment>();
     
+    private FreeMarkerTL() {}
+    
     public static void setEnvironment(Environment environment){
         environmentThreadLocal.set(environment);
     }

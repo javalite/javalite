@@ -25,6 +25,9 @@ import java.util.Map;
  * @author Igor Polevoy
  */
 class SessionHelper {
+	
+	private SessionHelper() {}
+	
     /**
      * Returns all session attributes in a map.
      *

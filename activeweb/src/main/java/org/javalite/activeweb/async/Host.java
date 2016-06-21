@@ -7,6 +7,8 @@ import java.net.UnknownHostException;
  * @author Igor Polevoy on 3/4/15.
  */
 public class Host {
+	
+	private Host() {}
 
     public static String get() {
         String res = "127.0.0.1";

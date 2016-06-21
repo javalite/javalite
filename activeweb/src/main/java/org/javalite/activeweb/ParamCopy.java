@@ -32,6 +32,7 @@ import static org.javalite.common.Collections.map;
 class ParamCopy {
     private static final Logger LOGGER = LoggerFactory.getLogger(ParamCopy.class.getSimpleName());
 
+    private ParamCopy() {}
 
     static void copyInto(Map assigns){
         insertActiveWebParamsInto(assigns);

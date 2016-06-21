@@ -22,6 +22,7 @@ import org.javalite.common.Inflector;
  */
 public class ControllerFactory {
 
+	private ControllerFactory() {}
 
     protected static AppController createControllerInstance(String controllerClassName) throws ClassLoadException {
         return DynamicClassFactory.createInstance(controllerClassName, AppController.class);
