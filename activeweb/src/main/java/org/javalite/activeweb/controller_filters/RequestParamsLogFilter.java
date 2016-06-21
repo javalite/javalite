@@ -16,10 +16,6 @@ limitations under the License.
 
 package org.javalite.activeweb.controller_filters;
 
-import java.util.Map;
-
-import static org.javalite.common.Util.join;
-
 /**
  * Use this filter to log HTTP request parameters to a log system.
  *

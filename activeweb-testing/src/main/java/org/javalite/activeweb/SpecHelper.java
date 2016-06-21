@@ -21,7 +21,6 @@ import org.javalite.activeweb.freemarker.FreeMarkerTag;
 import org.javalite.activeweb.freemarker.FreeMarkerTemplateManager;
 import org.javalite.common.Convert;
 import org.javalite.test.jspec.JSpecSupport;
-import org.javalite.test.jspec.TestException;
 import org.junit.After;
 import org.junit.Before;
 import org.springframework.mock.web.MockFilterConfig;
@@ -29,11 +28,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-
-import static org.javalite.common.Util.blank;
 
 /**
  * This class is not used directly in applications.

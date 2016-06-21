@@ -16,10 +16,6 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import org.javalite.activeweb.annotations.RESTful;
-import org.javalite.common.Util;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
