@@ -15,7 +15,7 @@ class CDATAXppDriver extends XppDriver {
     @Override
     public HierarchicalStreamWriter createWriter(Writer out) {
         return new PrettyPrintWriter(out) {
-            boolean cdata = false;
+            boolean cdata;
             @Override
             public void startNode(String name, Class clazz) {
                 super.startNode(name, clazz);

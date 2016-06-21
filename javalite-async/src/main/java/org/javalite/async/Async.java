@@ -76,12 +76,12 @@ public class Async {
     private Connection consumerConnection;
     private Connection producerConnection;
     private EmbeddedJMS jmsServer;
-    private boolean binaryMode = false;
+    private boolean binaryMode;
 
     private List<MessageConsumer> messageConsumers = new ArrayList<>();
     private List<Session> sessions = new ArrayList<>();
     private List<QueueConfig> queueConfigsList = new ArrayList<>();
-    private boolean started = false;
+    private boolean started;
 
     /**
      * Creates and configures a new instance.

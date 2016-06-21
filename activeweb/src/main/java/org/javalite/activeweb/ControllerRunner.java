@@ -41,7 +41,7 @@ class ControllerRunner {
     private boolean injectTags = Configuration.getTemplateManager() instanceof FreeMarkerTemplateManager;
 
     private static Logger LOGGER = LoggerFactory.getLogger(ControllerRunner.class.getSimpleName());
-    private boolean tagsInjected = false;
+    private boolean tagsInjected;
 
     protected void run(Route route, boolean integrateViews) throws Exception {
         ControllerRegistry controllerRegistry = Context.getControllerRegistry();

@@ -10,7 +10,7 @@ public class ConnectionSpecWrapper {
 
     private String environment;
     private String dbName = "default";    
-    private boolean testing = false;    
+    private boolean testing;
     private ConnectionSpec connectionSpec;
 
     public ConnectionSpec getConnectionSpec() {

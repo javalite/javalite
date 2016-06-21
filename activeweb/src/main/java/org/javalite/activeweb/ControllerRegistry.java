@@ -41,7 +41,7 @@ class ControllerRegistry {
 
     private final Object token = new Object();
 
-    private boolean filtersInjected = false;
+    private boolean filtersInjected;
 
 
     protected ControllerRegistry(FilterConfig config) {
