@@ -18,6 +18,8 @@ import static org.javalite.common.Collections.list;
 public class RequestUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestUtils.class.getSimpleName());
+    
+    private RequestUtils() {}
 
     /**
      * Returns value of routing user segment, or route wild card value, or request parameter.

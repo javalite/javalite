@@ -38,6 +38,7 @@ class ControllerPackageLocator {
 
     private static Logger LOGGER = LoggerFactory.getLogger(ControllerPackageLocator.class.getSimpleName());
 
+    private ControllerPackageLocator() {}
 
     public static List<String> locateControllerPackages(FilterConfig config) {
         String controllerPath = System.getProperty("file.separator") + Configuration.getRootPackage() + System.getProperty("file.separator") + "controllers";

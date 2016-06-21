@@ -15,6 +15,8 @@ import java.util.ResourceBundle;
 public class Messages {
 
     private static final String BUNDLE = "activeweb_messages";
+    
+    private Messages() {}
 
     /**
      * Looks for a localized property/message in <code>activeweb_messages</code> bundle.

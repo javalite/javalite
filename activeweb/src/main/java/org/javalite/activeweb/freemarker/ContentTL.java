@@ -26,6 +26,8 @@ import java.util.Map;
 public class ContentTL {
     private static ThreadLocal<Map<String, List<String>>> contentTL = new ThreadLocal<Map<String, List<String>>>();
 
+    private ContentTL() {}
+    
     static void reset(){
         contentTL.set(new HashMap<String, List<String>>());
     }

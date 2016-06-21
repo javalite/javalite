@@ -39,6 +39,7 @@ class Context {
     private static ThreadLocal<Route> route = new ThreadLocal<Route>();
     private static ThreadLocal<Map<String, Object>> values =new ThreadLocal<Map<String, Object>>();
 
+    private Context() {}
 
     public static Map<String, Object> getValues() {
         return values.get();

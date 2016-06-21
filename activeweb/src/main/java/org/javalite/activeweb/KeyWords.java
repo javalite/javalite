@@ -23,7 +23,10 @@ import java.util.List;
  * @author Igor Polevoy
  */
 class KeyWords {
-    public static List<String> ACTIVEWEB_KEYWORDS = Arrays.asList("controller", "action", "request", "session");    
+    public static List<String> ACTIVEWEB_KEYWORDS = Arrays.asList("controller", "action", "request", "session");
+    
+    private KeyWords() {}
+    
     static void check(String name){
         if(ACTIVEWEB_KEYWORDS.contains(name))
             throw new IllegalArgumentException("'" + name  + "' is a reserved word");

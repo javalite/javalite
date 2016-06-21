@@ -23,6 +23,8 @@ import java.util.Map;
  */
 public class Util {
 
+	private Util() {}
+	
     /**
      * Will throw {@link IllegalArgumentException} if a key in the map is missing.
      * If a map does nto have all the passed in keys in it, this method will throw exception. 
