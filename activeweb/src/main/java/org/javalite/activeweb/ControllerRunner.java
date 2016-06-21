@@ -40,7 +40,7 @@ class ControllerRunner {
 
     private boolean injectTags = Configuration.getTemplateManager() instanceof FreeMarkerTemplateManager;
 
-    private static Logger logger = LoggerFactory.getLogger(ControllerRunner.class.getSimpleName());
+    private static Logger LOGGER = LoggerFactory.getLogger(ControllerRunner.class.getSimpleName());
     private boolean tagsInjected = false;
 
     protected void run(Route route, boolean integrateViews) throws Exception {
@@ -60,7 +60,7 @@ class ControllerRunner {
                     //Configuration.getTemplateManager().
                     injectController(route.getController());
                     if(Configuration.logRequestParams()){
-                        logger.info("Executing controller: " + route.getController().getClass().getName() + "." + actionMethod +
+                        LOGGER.info("Executing controller: " + route.getController().getClass().getName() + "." + actionMethod +
                                 ", session: " + new SessionFacade().id());
                     }
                     executeAction(route.getController(), actionMethod);
@@ -84,7 +84,7 @@ class ControllerRunner {
             Context.setControllerResponse(null);//must blow away, as this response is not valid anymore.
 
             if (exceptionHandled(e, route, globalFilterLists, controllerFilters)) {
-                logger.debug("A filter has called render(..) method, proceeding to render it...");
+                LOGGER.debug("A filter has called render(..) method, proceeding to render it...");
                 renderResponse(route, integrateViews);//a filter has created an instance of a controller response, need to render it.
             }else{
                 throw e;//if exception was not handled by filter, re-throw
@@ -201,7 +201,7 @@ class ControllerRunner {
             DirectResponse res = new DirectResponse("");
             //see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
             res.setStatus(405);
-            logger.warn("Requested action does not support HTTP method: " + method.name() + ", returning status code 405.");
+            LOGGER.warn("Requested action does not support HTTP method: " + method.name() + ", returning status code 405.");
             Context.setControllerResponse(res);
 
             //TODO: candidate for caching below, list of allowed HTTP methods
@@ -249,7 +249,7 @@ class ControllerRunner {
             for (List<ControllerFilter> filterGroup : filterGroups) {
                 for (ControllerFilter controllerFilter : filterGroup) {
                     if (Configuration.logRequestParams()) {
-                        logger.debug("Executing filter: " + controllerFilter.getClass().getName() + "#before");
+                        LOGGER.debug("Executing filter: " + controllerFilter.getClass().getName() + "#before");
                     }
                     controllerFilter.before();
                     if (Context.getControllerResponse() != null) return;//a filter responded!
@@ -278,7 +278,7 @@ class ControllerRunner {
             for (List<ControllerFilter> filterGroup : filterGroups) {
                 for (int i = filterGroup.size() - 1; i >= 0; i--) {
                     if(Configuration.logRequestParams()){
-                        logger.debug("Executing filter: " + filterGroup.get(i).getClass().getName() + "#after" );
+                        LOGGER.debug("Executing filter: " + filterGroup.get(i).getClass().getName() + "#after" );
                     }
                     filterGroup.get(i).after();
                 }

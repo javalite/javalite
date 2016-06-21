@@ -30,7 +30,7 @@ import static org.javalite.common.Util.bytes;
  */
 class DynamicClassLoader extends ClassLoader {
 
-    private static Logger logger = LoggerFactory.getLogger(DynamicClassLoader.class.getSimpleName());
+    private static Logger LOGGER = LoggerFactory.getLogger(DynamicClassLoader.class.getSimpleName());
 
     private String baseDir;
 
@@ -54,14 +54,14 @@ class DynamicClassLoader extends ClassLoader {
                 byte[] classBytes = bytes(getResourceAsStream(pathToClassFile));
                 Class<?> daClass = defineClass(name, classBytes, 0, classBytes.length);
 
-                logger.debug("Loaded class: " + name);
+                LOGGER.debug("Loaded class: " + name);
                 return daClass;
             }else{
                 return loadByParent(name);
             }
         }
         catch(Exception e){
-            logger.debug("Failed to dynamically load class: " + name + ". Loading by parent class loader.");
+            LOGGER.debug("Failed to dynamically load class: " + name + ". Loading by parent class loader.");
             return loadByParent(name);
         }
     }

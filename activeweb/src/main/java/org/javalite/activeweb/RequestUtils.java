@@ -17,7 +17,7 @@ import static org.javalite.common.Collections.list;
  */
 public class RequestUtils {
 
-    private static Logger logger = LoggerFactory.getLogger(RequestUtils.class.getSimpleName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(RequestUtils.class.getSimpleName());
 
     /**
      * Returns value of routing user segment, or route wild card value, or request parameter.
@@ -67,7 +67,7 @@ public class RequestUtils {
     public static String getId(){
         String paramId = Context.getHttpRequest().getParameter("id");
         if(paramId != null && Context.getHttpRequest().getAttribute("id") != null){
-            logger.warn("WARNING: probably you have 'id' supplied both as a HTTP parameter, as well as in the URI. Choosing parameter over URI value.");
+            LOGGER.warn("WARNING: probably you have 'id' supplied both as a HTTP parameter, as well as in the URI. Choosing parameter over URI value.");
         }
 
         String theId;

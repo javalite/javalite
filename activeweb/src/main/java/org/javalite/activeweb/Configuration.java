@@ -32,7 +32,7 @@ import static org.javalite.common.Util.blank;
  * @author Igor Polevoy
  */
 public class Configuration {
-    private static Logger LOGGER = LoggerFactory.getLogger(Configuration.class.getSimpleName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class.getSimpleName());
 
     enum Params {
         templateManager, bootstrap, defaultLayout, targetDir, rootPackage, dbconfig, controllerConfig, rollback,

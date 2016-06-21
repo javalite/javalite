@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class Bootstrap extends AppConfig{
 
-    private static final Logger  logger = LoggerFactory.getLogger(Bootstrap.class);
+    private static final Logger  LOGGER = LoggerFactory.getLogger(Bootstrap.class);
 
     @Deprecated
     protected void registerTag(String name, FreeMarkerTag tag){
@@ -71,7 +71,7 @@ public abstract class Bootstrap extends AppConfig{
      */
     public void setInjector(Injector injector){
         if(!Configuration.isTesting()){
-            logger.warn("WARNING!!! Method Bootstrap#setInjector(Injector) is deprecated and will be removed in future versions. Please switch to Bootstrap#getInjector() instead.");
+            LOGGER.warn("WARNING!!! Method Bootstrap#setInjector(Injector) is deprecated and will be removed in future versions. Please switch to Bootstrap#getInjector() instead.");
             Context.getControllerRegistry().setInjector(injector);
         }
     }

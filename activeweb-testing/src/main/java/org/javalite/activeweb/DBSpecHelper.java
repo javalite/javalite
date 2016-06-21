@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class DBSpecHelper {
 
-    private static Logger logger = LoggerFactory.getLogger(DBSpecHelper.class.getSimpleName());
+    private static Logger LOGGER = LoggerFactory.getLogger(DBSpecHelper.class.getSimpleName());
 
     public static void initDBConfig() {
 
@@ -38,7 +38,7 @@ public class DBSpecHelper {
             Object dbconfig = Class.forName(dbConfigClassName).newInstance();
             dbconfig.getClass().getMethod("init", AppContext.class).invoke(dbconfig, new AppContext());
         } catch (ClassNotFoundException e) {
-            logger.warn("Failed to locate class: " + dbConfigClassName + ", proceeding without it...");
+            LOGGER.warn("Failed to locate class: " + dbConfigClassName + ", proceeding without it...");
 
         } catch (Exception e) {
             throw new RuntimeException("failed to initialize class " + dbConfigClassName
@@ -54,7 +54,7 @@ public class DBSpecHelper {
     public static void openTestConnections(){
         List<ConnectionSpecWrapper> connectionWrappers = getTestConnectionWrappers();
         if(connectionWrappers.isEmpty()){
-            logger.warn("no DB connections are configured, none opened");
+            LOGGER.warn("no DB connections are configured, none opened");
             return;
         }
 
