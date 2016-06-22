@@ -23,9 +23,7 @@ abstract public class DynamicClassFactory {
             Object o = getCompiledClass(className).newInstance();
             T instance = expectedType.cast(o);
             return instance ;
-        } catch (CompilationException e) {
-            throw e;
-        } catch (ClassLoadException e) {
+        } catch (CompilationException | ClassLoadException e) {
             throw e;
         } catch (ClassCastException e) {
             throw new ClassLoadException("Class: " + className + " is not the expected type, are you sure it extends " + expectedType.getName() + "?");
