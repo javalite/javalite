@@ -23,7 +23,8 @@ import java.util.List;
  * @author Igor Polevoy
  */
 class KeyWords {
-    public static List<String> ACTIVEWEB_KEYWORDS = Arrays.asList("controller", "action", "request", "session");
+    
+    public static final List<String> ACTIVEWEB_KEYWORDS = Arrays.asList("controller", "action", "request", "session");
     
     private KeyWords() {}
     
