@@ -50,34 +50,42 @@ public class MockMultipartHttpServletRequestImpl extends MockHttpServletRequest 
     // Below are Servlet 3 methods
     //Note that the @Override annotations are removed for backwards compatibility
 
+    @Override
     public Collection<Part> getParts() throws IOException, ServletException {
         return null;
     }
 
+    @Override
     public Part getPart(String s) throws IOException, ServletException {
         return null;
     }
 
+    @Override
     public AsyncContext startAsync() throws IllegalStateException {
         return null;
     }
 
+    @Override
     public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) throws IllegalStateException {
         return null;
     }
 
+    @Override
     public boolean isAsyncStarted() {
         return false;
     }
 
+    @Override
     public boolean isAsyncSupported() {
         return false;
     }
 
+    @Override
     public AsyncContext getAsyncContext() {
         return null;
     }
 
+    @Override
     public DispatcherType getDispatcherType() {
         return null;
     }

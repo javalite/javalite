@@ -54,6 +54,7 @@ public class HeadersLogFilter extends AbstractLoggingFilter {
         super();    
     }
 
+    @Override
     protected String getMessage() {
         return "Request headers: " + format(headers());
     }

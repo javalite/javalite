@@ -55,6 +55,7 @@ public abstract class ViewSpec extends SpecHelper {
      * @param templateLocation location of your templates relative to the directory
      * where test is executed, usually a root of your Maven module
      */
+    @Override
     public void setTemplateLocation(String templateLocation){
         manager.setTemplateLocation(templateLocation);
     }
@@ -64,6 +65,7 @@ public abstract class ViewSpec extends SpecHelper {
      *
      * @param injector injector to source dependencies form.
      */
+    @Override
     protected void setInjector(Injector injector){
         Context.getControllerRegistry().setInjector(injector);
     }
@@ -74,6 +76,7 @@ public abstract class ViewSpec extends SpecHelper {
      * @param name name of tag as used in a template.
      * @param tag tag instance
      */
+    @Override
     protected void registerTag(String name, FreeMarkerTag tag) {
         manager.registerTag(name, tag);
         Injector injector = Context.getControllerRegistry().getInjector();

@@ -39,6 +39,7 @@ class DynamicClassLoader extends ClassLoader {
         this.baseDir = baseDir;
     }
 
+    @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
 
         try{

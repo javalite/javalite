@@ -44,6 +44,7 @@ public abstract class Bootstrap extends AppConfig{
      *
      * @param context app context instance
      */
+    @Override
     public abstract void init(AppContext context);
 
     /**
