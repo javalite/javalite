@@ -56,7 +56,7 @@ public class RowProcessor {
         }
 
         while (rs.next()) {
-            Map<String, Object> row = new CaseInsensitiveMap<Object>();
+            Map<String, Object> row = new CaseInsensitiveMap<>();
             i = 0;
             while (i < labels.length) {
                 row.put(labels[i++], rs.getObject(i));

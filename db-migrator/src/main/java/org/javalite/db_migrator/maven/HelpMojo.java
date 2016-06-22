@@ -34,6 +34,10 @@ public class HelpMojo extends AbstractMojo {
                 "effectively resetting database to pristine state");
         getLog().info("db-migrator:help");
         getLog().info("  prints this message");
+        getLog().info("========================================================");
+        getLog().info("Example: ");
+        getLog().info("db-migrator:reset -Denvironments=development.test,development");
+        getLog().info("========================================================");
 
 
     }

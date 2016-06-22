@@ -114,7 +114,7 @@ public abstract class AbstractLazyList<E> implements List<E>, RandomAccess {
         if (delegate != null) {
             delegate.clear();
         } else {
-            delegate = new ArrayList<E>();
+            delegate = new ArrayList<>();
         }
     }
 

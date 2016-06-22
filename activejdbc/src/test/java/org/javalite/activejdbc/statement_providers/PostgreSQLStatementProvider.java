@@ -12,7 +12,7 @@ import java.util.List;
 public class PostgreSQLStatementProvider implements StatementProvider {
     public List<String> getPopulateStatements(String table) {
 
-        List<String> statements = new ArrayList<String>();
+        List<String> statements = new ArrayList<>();
         if (table.equals("people")) {
             statements =  Arrays.asList(
                     "INSERT INTO people ( name, last_name, dob, graduation_date, created_at, updated_at) VALUES('John', 'Smith', '1934-12-01', '1954-12-01', now(), now());",
@@ -183,7 +183,7 @@ public class PostgreSQLStatementProvider implements StatementProvider {
             statements = Arrays.asList();
         }
 
-        ArrayList<String> all = new ArrayList<String>();
+        ArrayList<String> all = new ArrayList<>();
         all.add("DELETE FROM " + table + ";");
         if(table.equals("animals")){
             all.add("UPDATE dual SET next_val = SETVAL('animals_animal_id_seq', 1, FALSE);");
