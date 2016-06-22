@@ -36,7 +36,7 @@ import static org.javalite.test.SystemStreamUtil.*;
  */
 public class RequestDispatcherSpec extends RequestSpec {
 
-    private boolean fellThrough = false;
+    private boolean fellThrough;
 
     private FilterChain badFilterChain;
 

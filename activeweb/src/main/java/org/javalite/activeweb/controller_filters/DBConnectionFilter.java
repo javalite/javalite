@@ -32,7 +32,7 @@ import java.util.List;
 public class DBConnectionFilter extends ControllerFilterAdapter {
 
     private String dbName;
-    private boolean manageTransaction = false;
+    private boolean manageTransaction;
 
     /**
      * This constructor is used to open all configured connections for a current environment.

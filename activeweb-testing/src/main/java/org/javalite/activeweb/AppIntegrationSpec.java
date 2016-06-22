@@ -35,7 +35,7 @@ import javax.servlet.ServletException;
  */
 public abstract class AppIntegrationSpec extends IntegrationSpec{
 
-    private boolean suppressDb = false;
+    private boolean suppressDb;
     private AppContext context;
     private RequestDispatcher requestDispatcher = new RequestDispatcher();
 

@@ -29,8 +29,8 @@ abstract class ControllerResponse {
     private String contentType;
     private int status = 200;
 
-    private boolean statusSet = false;
-    private boolean contentTypeSet  = false;
+    private boolean statusSet;
+    private boolean contentTypeSet;
 
     int getStatus() {
         return status;

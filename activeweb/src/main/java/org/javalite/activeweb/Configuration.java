@@ -42,7 +42,7 @@ public class Configuration {
     private static Properties props = new Properties();
     private static TemplateManager templateManager;
     private static HashMap<String, List<ConnectionSpecWrapper>> connectionWrappers = new HashMap<>();
-    private static boolean testing = false;
+    private static boolean testing;
     private static String ENV;
     private static boolean activeReload = !blank(System.getProperty("active_reload")) && System.getProperty("active_reload").equals("true");
     private static AbstractFreeMarkerConfig freeMarkerConfig;

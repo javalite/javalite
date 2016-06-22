@@ -39,10 +39,10 @@ public class RouteBuilder {
     private List<Segment> segments = new ArrayList<Segment>();
     private List<HttpMethod> methods = new ArrayList<HttpMethod>();
 
-    private String wildcardName = null;
+    private String wildcardName;
     private String wildCardValue;
 
-    private int mandatorySegmentCount = 0;
+    private int mandatorySegmentCount;
 
     /**
      * Used for standard and restful routes.

@@ -13,7 +13,7 @@ class FileResponse extends ControllerResponse {
     private static final Logger LOGGER = LoggerFactory.getLogger(FileResponse.class);
 
     private File file;
-    private boolean delete = false;
+    private boolean delete;
 
     FileResponse(File file) {
         this.file = file;

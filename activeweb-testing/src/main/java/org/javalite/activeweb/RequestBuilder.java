@@ -33,7 +33,7 @@ import static org.javalite.test.jspec.JSpec.a;
 public class RequestBuilder {
     private static final String MULTIPART = "multipart/form-data";
 
-    private boolean integrateViews = false;
+    private boolean integrateViews;
     private Map<String, Object> values = new HashMap<String, Object>();
     private Map<String, String> headers = new HashMap<String, String>();
     private String contentType;

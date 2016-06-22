@@ -8,7 +8,7 @@ package org.javalite.activeweb.freemarker;
 public class SelectOption {
 
     private String value, label;
-    private boolean enabled = true, selected = false;
+    private boolean enabled = true, selected;
 
     /**
      * Value is used for both: value and label. Enabled, not selected by default

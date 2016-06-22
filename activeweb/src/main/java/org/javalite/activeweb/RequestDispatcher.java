@@ -80,7 +80,7 @@ public class RequestDispatcher implements Filter {
 
     //this exists for testing only
     private AbstractRouteConfig routeConfigTest;
-    private boolean testMode = false;
+    private boolean testMode;
     protected void setRouteConfig(AbstractRouteConfig routeConfig) {
         this.routeConfigTest = routeConfig;
         testMode = true;
