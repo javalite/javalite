@@ -175,8 +175,8 @@ public class Async {
     private void configurePaging() {
         AddressSettings addressSettings = new AddressSettings();
         addressSettings.setAddressFullMessagePolicy(AddressFullMessagePolicy.PAGE);
-        addressSettings.setMaxSizeBytes(30 * 1024 * 1024);
-        addressSettings.setPageSizeBytes(10 * 1024 * 1024);
+        addressSettings.setMaxSizeBytes(30 * 1024 * 1024L);
+        addressSettings.setPageSizeBytes(10 * 1024 * 1024L);
         addressSettings.setPageCacheMaxSize(20);
         config.getAddressesSettings().put("jms.queue.*", addressSettings);
     }

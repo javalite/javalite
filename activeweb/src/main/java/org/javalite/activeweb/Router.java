@@ -384,7 +384,7 @@ public class Router {
                 resultIndex = i;
             }
         }
-        return candidates.size() > 0 ? candidates.get(resultIndex) : null;
+        return !candidates.isEmpty() ? candidates.get(resultIndex) : null;
     }
 
     //todo: write a regexp one day
