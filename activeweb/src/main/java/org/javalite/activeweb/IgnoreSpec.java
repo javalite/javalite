@@ -23,10 +23,9 @@ public class IgnoreSpec {
         for (Pattern pattern : ignorePatterns) {
             Matcher m = pattern.matcher(path);
             matches = m.matches();
-            if (exceptEnvironment != null) {
-                if (matches && exceptEnvironment.equals(Configuration.getEnv())) {
-                    matches = false; //-- need to ignore
-                }
+            if (matches && exceptEnvironment != null
+                    && exceptEnvironment.equals(Configuration.getEnv())) {
+                matches = false; //-- need to ignore
             }
         }
         return matches;

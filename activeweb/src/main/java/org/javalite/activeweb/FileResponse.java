@@ -31,10 +31,8 @@ class FileResponse extends ControllerResponse {
     void doProcess() {
         try {
             stream(new FileInputStream(file), Context.getHttpResponse().getOutputStream());
-            if (delete) {
-                if (!file.delete()) {
-                    LOGGER.warn("failed to delete file: " + file + " after processing");
-                }
+            if (delete && !file.delete()) {
+                LOGGER.warn("failed to delete file: " + file + " after processing");
             }
         } catch (Exception e) {
             throw new ControllerException(e);

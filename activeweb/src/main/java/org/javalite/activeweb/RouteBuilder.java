@@ -332,11 +332,9 @@ public class RouteBuilder {
             }else if(id){
                 RouteBuilder.this.id = requestSegment;
                 return true;
-            }else if(user){
-                if(userSegmentName != null){
-                    Context.getRequestContext().getUserSegments().put(userSegmentName, requestSegment);
-                    return true;
-                }
+            }else if(user && userSegmentName != null){
+                Context.getRequestContext().getUserSegments().put(userSegmentName, requestSegment);
+                return true;
             }
 
             return false;
