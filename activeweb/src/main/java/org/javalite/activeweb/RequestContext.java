@@ -17,7 +17,8 @@ public class RequestContext {
      * They are available as regular parameters using param("name") inside controllers and filter.
      */
     private Map<String, String> userSegments = new HashMap<>();
-
+    
+    private String wildCardName, wildCardValue;
 
     protected Object get(String name){
         return values.get(name);
@@ -30,9 +31,6 @@ public class RequestContext {
     protected void set(String name, Object value){
         values.put(name, value);
     }
-
-
-    private String wildCardName, wildCardValue;
 
     public String getWildCardName() {
         return wildCardName;
