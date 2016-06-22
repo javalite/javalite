@@ -42,16 +42,16 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
     private static final Logger LOGGER = LoggerFactory.getLogger(LazyList.class);
     private final List<String> orderBys = new ArrayList<>();
     private final MetaModel metaModel;
-    private final String subQuery;
+    private String subQuery;
     private final String fullQuery;
-    private final Object[] params;
+    private Object[] params;
     private long limit = -1, offset = -1;
     private final List<Association> includes = new ArrayList<>();
     private final boolean forPaginator;
 
     protected LazyList(String subQuery, MetaModel metaModel, Object... params) {
         this.fullQuery = null;
-        this.subQuery = subQuery;
+        this.subQuery = subQuery == null ? null : "("+subQuery+")";
         this.params = params == null? new Object[]{}: params;
         this.metaModel = metaModel;
         this.forPaginator = false;
@@ -80,6 +80,42 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
         this.params = null;
         this.metaModel = null;
         this.forPaginator = false;
+    }
+
+    /**
+     * multiple where
+     * <code>List<Person> persons = Person.where("age > ?", 12).where("age < ?", 20);</code>
+     * @param subQuery
+     * @param params
+     * @return
+     */
+    public <E extends Model> LazyList<E> where(String subQuery, Object... params) {
+        // add subQuery
+        if(this.subQuery == null){
+            this.subQuery = "("+subQuery+")";
+        }else{
+            this.subQuery += " AND ("+subQuery+")";
+        }
+
+        // add params
+        if(params != null){
+            Object[] result = Arrays.copyOf(this.params, this.params.length + params.length);
+            System.arraycopy(params, 0, result, this.params.length, params.length);
+            this.params = result;
+        }
+
+        return (LazyList<E>) this;
+    }
+
+    /**
+     * first results in the resultSet. same as limit(1)
+     * <code>Person person = Person.where("age > 1").first</code>
+     * @param <T>
+     * @return
+     */
+    public <T extends Model> T first(){
+        LazyList<T> list = limit(1);
+        return list.isEmpty() ? null : list.get(0);
     }
 
     /**
