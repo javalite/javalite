@@ -1000,10 +1000,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 }
                 parent.toJsonP(sb, pretty, (pretty ? "      " + indent : ""));
 
-                if(i < (parentClasses.size() - 1)){
-                    sb.append(',');
-                }
-
                 if (pretty) {
                     sb.append("\n    ").append(indent);
                 }
