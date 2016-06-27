@@ -790,7 +790,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
           .append("', attributes: ").append(attributes);
 
         if (cachedParents.size() > 0) {
-            sb.append(", parents: ").append(cachedParents);
+            sb.append(", parent: ").append(cachedParents);
         }
 
         if (cachedChildren.size() > 0) {
@@ -1088,12 +1088,19 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * referential integrity is not enforced in DBMS with a foreign key constraint.
      *
      * @param parentClass   class of a parent model.
-     * @return instance of a parent of this instance in the "belongs to"  relationship.
+     * @return instance of a parent of this instance in the "belongs to"  relationship if found, ot null if not found.
      */
     public <P extends Model> P parent(Class<P> parentClass) {
         return parent(parentClass, false);
     }
 
+    /**
+     * Same as {@link #parent(Class)}, with additional argument.
+     *
+     * @param parentClass class of a parent model
+     * @param cache true to also cache a found instance for future reference.
+     * @return instance of a parent of this instance in the "belongs to"  relationship if found, ot null if not found.
+     */
     public <P extends Model> P parent(Class<P> parentClass, boolean cache) {
         P cachedParent = parentClass.cast(cachedParents.get(parentClass));
         if (cachedParent != null) {
