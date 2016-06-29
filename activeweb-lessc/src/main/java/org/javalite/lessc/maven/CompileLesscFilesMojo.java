@@ -60,10 +60,8 @@ public class CompileLesscFilesMojo extends AbstractMojo {
         try {
             String css = compile(new File(sourceFile), arguments);
             File dir = new File(targetDirectory);
-            if (!dir.exists()) {
-                if (!dir.mkdirs()) {
-                    throw new MojoExecutionException("Failed to create directory: " + targetDirectory);
-                }
+            if (!dir.exists() && !dir.mkdirs()) {
+                throw new MojoExecutionException("Failed to create directory: " + targetDirectory);
             }
 
             String path = targetDirectory + System.getProperty("file.separator") + targetFileName;
