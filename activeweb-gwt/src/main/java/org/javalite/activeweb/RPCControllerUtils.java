@@ -34,8 +34,6 @@ final class RPCControllerUtils {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(RPCControllerUtils.class.getSimpleName());
 
-    private RPCControllerUtils() {
-    }
     /**
      * Package protected for use in tests.
      */
@@ -56,6 +54,9 @@ final class RPCControllerUtils {
      * take place.
      */
     private static final int UNCOMPRESSED_BYTE_SIZE_LIMIT = 256;
+    
+    private RPCControllerUtils() {
+    }
 
     /**
      * Returns <code>true</code> if the {@link HttpServletRequest} accepts Gzip

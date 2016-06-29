@@ -43,6 +43,7 @@ import static org.javalite.common.Collections.map;
 public class HttpSupport {
     private Logger logger = LoggerFactory.getLogger(getClass().getSimpleName());
     private List<FormItem> formItems;
+    private static Pattern hashPattern = Pattern.compile("\\[.*\\]");
 
     protected void logInfo(String info){
         logger.info(info);
@@ -930,8 +931,6 @@ public class HttpSupport {
         }
         return hash;
     }
-
-    private static Pattern hashPattern = Pattern.compile("\\[.*\\]");
 
     /**
      * Parses name from hash syntax.
