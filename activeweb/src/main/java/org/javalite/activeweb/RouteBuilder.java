@@ -237,7 +237,7 @@ public class RouteBuilder {
             String[] tailArr = Arrays.copyOfRange(requestUriSegments, segments.size() - 1, requestUriSegments.length);
             wildCardValue = Util.join(tailArr, "/");
             match = true;
-        }else if(segments.size() == 0 && requestUri.equals("/")){
+        }else if(segments.isEmpty() && requestUri.equals("/")){
             //this is matching root path: "/"
             actionName = "index";
             match = true;
@@ -272,7 +272,7 @@ public class RouteBuilder {
     }
 
     private boolean methodMatches(HttpMethod httpMethod) {
-        return methods.size() == 0 && httpMethod.equals(HttpMethod.GET) || methods.contains(httpMethod);
+        return methods.isEmpty() && httpMethod.equals(HttpMethod.GET) || methods.contains(httpMethod);
     }
 
     private AppController reloadController() throws ClassLoadException {

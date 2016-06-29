@@ -230,7 +230,7 @@ public class RequestDispatcher implements Filter {
         }finally {
            Context.clear();
             List<String> connectionsRemaining = DB.getCurrrentConnectionNames();
-            if(connectionsRemaining.size() != 0){
+            if(!connectionsRemaining.isEmpty()){
                 logger.warn("CONNECTION LEAK DETECTED ... and AVERTED!!! You left connections opened:"
                         + connectionsRemaining + ". ActiveWeb is closing all active connections for you...");
                 DB.closeAllConnections();

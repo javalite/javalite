@@ -336,7 +336,7 @@ public class RequestBuilder {
         checkParamAndMultipart();
 
         //TODO: refactor this method, getting out of control        
-        if(contentType != null && contentType.equals(MULTIPART) && formItems.size() > 0){
+        if(contentType != null && contentType.equals(MULTIPART) && !formItems.isEmpty()){
             request = new MockMultipartHttpServletRequestImpl();
             for (FormItem item : formItems) {
                 ((AWMockMultipartHttpServletRequest) request).addFormItem(item);
