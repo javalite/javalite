@@ -38,7 +38,7 @@ class SessionHelper {
 
         HttpSession session = Context.getHttpRequest().getSession(true);
         Enumeration names = session.getAttributeNames();
-        Map<String, Object> values = new HashMap<String, Object>();
+        Map<String, Object> values = new HashMap<>();
         while (names.hasMoreElements()) {
             Object name = names.nextElement();
             values.put(name.toString(), session.getAttribute(name.toString()));

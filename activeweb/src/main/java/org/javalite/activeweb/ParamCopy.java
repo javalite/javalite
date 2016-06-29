@@ -74,7 +74,7 @@ class ParamCopy {
     private static void copyRequestParamsInto(Map assigns) {
         Enumeration names = Context.getHttpRequest().getParameterNames();
 
-        Map<String, String> requestParameterMap = new HashMap<String, String>();
+        Map<String, String> requestParameterMap = new HashMap<>();
         while (names.hasMoreElements()) {
             Object name = names.nextElement();
             String[] values = Context.getHttpRequest().getParameterValues(name.toString());

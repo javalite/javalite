@@ -202,7 +202,7 @@ public class GWTAppController extends AppController implements SerializationPoli
      * A cache of moduleBaseURL and serialization policy strong name to
      * {@link SerializationPolicy}.
      */
-    private final Map<String, SerializationPolicy> serializationPolicyCache = new HashMap<String, SerializationPolicy>();
+    private final Map<String, SerializationPolicy> serializationPolicyCache = new HashMap<>();
 
     public final SerializationPolicy getSerializationPolicy(String moduleBaseURL,
             String strongName) {

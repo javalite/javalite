@@ -43,7 +43,7 @@ public class UploadController extends AppController {
     @POST
     public void upload(){
         Iterator<FormItem> iterator =  uploadedFiles();
-        List<Map> items = new ArrayList<Map>();
+        List<Map> items = new ArrayList<>();
         while (iterator.hasNext()) {
             FormItem item = iterator.next();
             items.add(map("name", item.getFileName(), "content", new String(item.getBytes())));
@@ -55,7 +55,7 @@ public class UploadController extends AppController {
     @POST
     public void uploadMultipart(){
         List<FormItem> formItems = multipartFormItems();
-        List<Map> items = new ArrayList<Map>();
+        List<Map> items = new ArrayList<>();
         for (FormItem item : formItems) {
             items.add(map("name", item.getFileName(), "content", new String(item.getBytes())));
         }
@@ -66,7 +66,7 @@ public class UploadController extends AppController {
     public void withId(){
         view("id", getId());
         Iterator<FormItem> iterator =  uploadedFiles();
-        List<Map> items = new ArrayList<Map>();
+        List<Map> items = new ArrayList<>();
         while (iterator.hasNext()) {
             FormItem item = iterator.next();
             items.add(map("name", item.getFileName(), "content", new String(item.getBytes())));

@@ -114,7 +114,7 @@ public class SessionFacade implements Map {
      * @return names of current attributes as a list.
      */
     public String[] names(){
-        List<String> namesList = new ArrayList<String>();
+        List<String> namesList = new ArrayList<>();
         Enumeration names = Context.getHttpRequest().getSession(true).getAttributeNames();
         while (names.hasMoreElements()) {
             Object o = names.nextElement();
@@ -204,7 +204,7 @@ public class SessionFacade implements Map {
 
     @Override
     public Set<Object> keySet() {
-        Set<Object> keys = new HashSet<Object>();
+        Set<Object> keys = new HashSet<>();
         Enumeration names = Context.getHttpRequest().getSession(true).getAttributeNames();
         while (names.hasMoreElements()){
             Object name = names.nextElement();
@@ -215,7 +215,7 @@ public class SessionFacade implements Map {
 
     @Override
     public Collection values() {
-        Set<Object> values = new HashSet<Object>();
+        Set<Object> values = new HashSet<>();
         Enumeration names = Context.getHttpRequest().getSession(true).getAttributeNames();
         while (names.hasMoreElements()){
             Object name = names.nextElement();

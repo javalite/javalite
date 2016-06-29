@@ -41,7 +41,7 @@ public class Router {
     public static final String PACKAGE_SUFFIX = "package_suffix";
 
     private String rootControllerName;
-    private List<RouteBuilder> routes = new ArrayList<RouteBuilder>();
+    private List<RouteBuilder> routes = new ArrayList<>();
     private List<IgnoreSpec> ignoreSpecs;
 
     protected Router(String rootControllerName) {
@@ -245,7 +245,7 @@ public class Router {
             uri.append("?");
         }
 
-        List<String> pairs = new ArrayList<String>();
+        List<String> pairs = new ArrayList<>();
 
         for (Object key : params.keySet()) {
             try {
@@ -287,7 +287,7 @@ public class Router {
             return map(CONTROLLER_NAME, rootControllerName);
         } else if (rootControllerName == null && rootPath) {
             LOGGER.warn("URI is: '/', but root controller not set");
-            return new HashMap<String, String>();
+            return new HashMap<>();
         } else {
             String pack;
             if ((pack = findPackagePrefix(uri)) != null) {
@@ -365,7 +365,7 @@ public class Router {
         temp = temp.replace("/", ".");
 
         //find all matches
-        List<String> candidates = new ArrayList<String>();
+        List<String> candidates = new ArrayList<>();
         ControllerRegistry r = Context.getControllerRegistry();
 
 

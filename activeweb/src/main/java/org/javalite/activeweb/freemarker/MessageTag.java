@@ -127,7 +127,7 @@ public class MessageTag extends FreeMarkerTag {
     private String[] getParamsArray(Map params) {
 
         int index = 0;
-        List<String> paramList = new ArrayList<String>();
+        List<String> paramList = new ArrayList<>();
         for (String paramName = "param"; params.containsKey(paramName + index); index++){
             String param = ((SimpleScalar) params.get(paramName + index)).getAsString();
             paramList.add(param);

@@ -27,9 +27,9 @@ import java.util.*;
  */
 class ControllerMetaData {
 
-    private List<ControllerFilter> controllerFilters = new LinkedList<ControllerFilter>();
-    private HashMap<String, List<ControllerFilter>> actionFilterMap = new HashMap<String, List<ControllerFilter>>();
-    private HashMap<String, List<ControllerFilter>> excludedActionFilterMap = new HashMap<String, List<ControllerFilter>>();
+    private List<ControllerFilter> controllerFilters = new LinkedList<>();
+    private HashMap<String, List<ControllerFilter>> actionFilterMap = new HashMap<>();
+    private HashMap<String, List<ControllerFilter>> excludedActionFilterMap = new HashMap<>();
 
 
     void addFilters(ControllerFilter[] filters) {
@@ -90,7 +90,7 @@ class ControllerMetaData {
 
 
     protected List<ControllerFilter> getFilters(){
-        List<ControllerFilter> allFilters = new LinkedList<ControllerFilter>();
+        List<ControllerFilter> allFilters = new LinkedList<>();
         allFilters.addAll(controllerFilters);
         for(List<ControllerFilter> filters: actionFilterMap.values()){
             allFilters.addAll(filters);

@@ -27,17 +27,17 @@ import java.util.Map;
  */
 class Context {
 
-    private static ThreadLocal<ControllerRegistry> registry = new ThreadLocal<ControllerRegistry>();
-    private static ThreadLocal<HttpServletRequest> request = new ThreadLocal<HttpServletRequest>();
-    private static ThreadLocal<HttpServletResponse> response = new ThreadLocal<HttpServletResponse>();
-    private static ThreadLocal<FilterConfig> filterConfig = new ThreadLocal<FilterConfig>();
-    private static ThreadLocal<ControllerResponse> controllerResponse = new ThreadLocal<ControllerResponse>();
-    private static ThreadLocal<AppContext> appContext = new ThreadLocal<AppContext>();
-    private static ThreadLocal<RequestContext> requestContext = new ThreadLocal<RequestContext>();
-    private static ThreadLocal<String> format = new ThreadLocal<String>();
-    private static ThreadLocal<String> encoding = new ThreadLocal<String>();
-    private static ThreadLocal<Route> route = new ThreadLocal<Route>();
-    private static ThreadLocal<Map<String, Object>> values =new ThreadLocal<Map<String, Object>>();
+    private static ThreadLocal<ControllerRegistry> registry = new ThreadLocal<>();
+    private static ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
+    private static ThreadLocal<HttpServletResponse> response = new ThreadLocal<>();
+    private static ThreadLocal<FilterConfig> filterConfig = new ThreadLocal<>();
+    private static ThreadLocal<ControllerResponse> controllerResponse = new ThreadLocal<>();
+    private static ThreadLocal<AppContext> appContext = new ThreadLocal<>();
+    private static ThreadLocal<RequestContext> requestContext = new ThreadLocal<>();
+    private static ThreadLocal<String> format = new ThreadLocal<>();
+    private static ThreadLocal<String> encoding = new ThreadLocal<>();
+    private static ThreadLocal<Route> route = new ThreadLocal<>();
+    private static ThreadLocal<Map<String, Object>> values = new ThreadLocal<>();
 
     private Context() {}
 

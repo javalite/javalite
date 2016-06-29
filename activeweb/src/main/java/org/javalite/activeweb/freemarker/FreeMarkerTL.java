@@ -23,7 +23,7 @@ import freemarker.core.Environment;
  */
 class FreeMarkerTL {
 
-    private static ThreadLocal<Environment> environmentThreadLocal = new ThreadLocal<Environment>();
+    private static ThreadLocal<Environment> environmentThreadLocal = new ThreadLocal<>();
     
     private FreeMarkerTL() {}
     

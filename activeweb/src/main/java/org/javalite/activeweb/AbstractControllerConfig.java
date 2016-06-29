@@ -56,7 +56,7 @@ import java.util.List;
 public abstract class AbstractControllerConfig extends AppConfig {
 
     //exclude some controllers from filters
-    private List<ExcludeBuilder> excludeBuilders = new ArrayList<ExcludeBuilder>();
+    private List<ExcludeBuilder> excludeBuilders = new ArrayList<>();
 
     public class FilterBuilder {
         private ControllerFilter[] filters;
@@ -156,8 +156,8 @@ public abstract class AbstractControllerConfig extends AppConfig {
 
     public class ExcludeBuilder{
 
-        private List<Class<? extends AppController>> excludeControllerClasses = new ArrayList<Class<? extends AppController>>();
-        private List<ControllerFilter> filters = new ArrayList<ControllerFilter>();
+        private List<Class<? extends AppController>> excludeControllerClasses = new ArrayList<>();
+        private List<ControllerFilter> filters = new ArrayList<>();
 
         public ExcludeBuilder(ControllerFilter[] filters) {
             this.filters.addAll(Arrays.asList(filters));

@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class MockMultipartHttpServletRequestImpl extends MockHttpServletRequest implements AWMockMultipartHttpServletRequest{
 
-    private List<FormItem> formItems = new ArrayList<FormItem>();
+    private List<FormItem> formItems = new ArrayList<>();
 
     public void addFormItem(FormItem item) {
         formItems.add(item);

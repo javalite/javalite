@@ -39,7 +39,7 @@ import static org.javalite.common.Collections.map;
 public class RequestDispatcher implements Filter {
     private Logger logger = LoggerFactory.getLogger(getClass().getSimpleName());
     private FilterConfig filterConfig;
-    private List<String> exclusions = new ArrayList<String>();
+    private List<String> exclusions = new ArrayList<>();
     private ControllerRunner runner = new ControllerRunner();
     private AppContext appContext;
     private Bootstrap appBootstrap;
@@ -116,7 +116,7 @@ public class RequestDispatcher implements Filter {
 
     //TODO: refactor to some util class. This is stolen...ehrr... borrowed from Apache ExceptionUtils
     static String getCauseMessage(Throwable throwable) {
-        List<Throwable> list = new ArrayList<Throwable>();
+        List<Throwable> list = new ArrayList<>();
         while (throwable != null && list.contains(throwable) == false) {
             list.add(throwable);
             throwable = throwable.getCause();

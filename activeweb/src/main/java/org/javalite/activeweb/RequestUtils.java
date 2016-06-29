@@ -299,7 +299,7 @@ public class RequestUtils {
      * @return multiple request values for a name. Will ignore files, and only return form fields.
      */
     public static List<String> params(String name, List<FormItem> formItems) {
-        List<String> vals = new ArrayList<String>();
+        List<String> vals = new ArrayList<>();
         for (FormItem formItem : formItems) {
             if(formItem.isFormField() && formItem.getFieldName().equals(name)){
                 vals.add(formItem.getStreamAsString());
@@ -317,7 +317,7 @@ public class RequestUtils {
      */
     public static Map<String, String> params1st(){
         //TODO: candidate for performance optimization
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         Enumeration names = Context.getHttpRequest().getParameterNames();
         while (names.hasMoreElements()) {
             String name = names.nextElement().toString();
@@ -342,7 +342,7 @@ public class RequestUtils {
      * if such parameter has more than one value submitted.
      */
     public static Map<String, String> params1st(List<FormItem> formItems) {
-        Map<String, String> vals = new HashMap<String, String>();
+        Map<String, String> vals = new HashMap<>();
         for (FormItem formItem : formItems) {
             if(formItem.isFormField() && !vals.containsKey(formItem.getFieldName())){
                 vals.put(formItem.getFieldName(), formItem.getStreamAsString());
@@ -401,9 +401,9 @@ public class RequestUtils {
     public static List<Cookie> cookies(){
         javax.servlet.http.Cookie[] servletCookies = Context.getHttpRequest().getCookies();
         if(servletCookies == null)
-            return new ArrayList<Cookie>();
+            return new ArrayList<>();
 
-        List<Cookie> cookies = new ArrayList<Cookie>();
+        List<Cookie> cookies = new ArrayList<>();
         for (javax.servlet.http.Cookie servletCookie: servletCookies) {
             Cookie cookie = Cookie.fromServletCookie(servletCookie);
             cookies.add(cookie);
@@ -587,7 +587,7 @@ public class RequestUtils {
      * @return all headers from a request keyed by header name.
      */
     public static Map<String, String> headers(){
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         Enumeration<String> names = Context.getHttpRequest().getHeaderNames();
         while (names.hasMoreElements()) {
             String name = names.nextElement();

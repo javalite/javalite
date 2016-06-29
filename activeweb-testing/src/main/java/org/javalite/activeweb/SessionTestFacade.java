@@ -103,7 +103,7 @@ public class SessionTestFacade{
      * @return names of current attributes as a list.
      */
     public String[] names(){
-        List<String> namesList = new ArrayList<String>();
+        List<String> namesList = new ArrayList<>();
         Enumeration names = session.getAttributeNames();
         while (names.hasMoreElements()) {
             Object o = names.nextElement();

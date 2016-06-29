@@ -285,7 +285,7 @@ public class RequestSpecHelper extends SpecHelper{
     protected Cookie[] getCookies(){
         if(Context.getHttpResponse() == null) throw new IllegalStateException("response does not exist");
         javax.servlet.http.Cookie[] servletCookies = ((MockHttpServletResponse) Context.getHttpResponse()).getCookies();
-        List<Cookie> cookies = new ArrayList<Cookie>();
+        List<Cookie> cookies = new ArrayList<>();
         for(javax.servlet.http.Cookie cookie: servletCookies){
             cookies.add(Cookie.fromServletCookie(cookie));
         }

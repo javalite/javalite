@@ -48,7 +48,7 @@ public class ControllerPackageLocatorSpec {
 
         File jar = new File("src/test/resources/test.jar");
 
-        List<String> controllerPackages = new ArrayList<String>();
+        List<String> controllerPackages = new ArrayList<>();
 
         ControllerPackageLocator.discoverInJar(jar, controllerPackages);
 

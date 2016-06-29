@@ -813,7 +813,7 @@ public class HttpSupport {
             upload.setFileSizeMax(Configuration.getMaxUploadSize());
             try {
                 List<org.apache.commons.fileupload.FileItem> apacheFileItems = upload.parseRequest(Context.getHttpRequest());
-                formItems = new ArrayList<FormItem>();
+                formItems = new ArrayList<>();
                 for (FileItem apacheItem : apacheFileItems) {
                     ApacheFileItemFacade f = new ApacheFileItemFacade(apacheItem);
                     if(f.isFormField()){
@@ -884,7 +884,7 @@ public class HttpSupport {
      */
     public Map<String, String> getMap(String hashName) {
         Map<String, String[]>  params = params();
-        Map<String, String>  hash = new HashMap<String, String>();
+        Map<String, String>  hash = new HashMap<>();
         for(String key:params.keySet()){
             if(key.startsWith(hashName)){
                 String name = parseHashName(key);
@@ -919,7 +919,7 @@ public class HttpSupport {
      * @return map with name/value pairs parsed from request.
      */
     public Map<String, String> getMap(String hashName, List<FormItem> formItems) {
-        Map<String, String>  hash = new HashMap<String, String>();
+        Map<String, String>  hash = new HashMap<>();
         for(FormItem item:formItems){
             if(item.getFieldName().startsWith(hashName) && !item.isFile()){
                 String name = parseHashName(item.getFieldName());
@@ -1668,7 +1668,7 @@ public class HttpSupport {
      */
     public Map<String, String> getResponseHeaders(){
         Collection<String> names  = Context.getHttpResponse().getHeaderNames();
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         for (String name : names) {
             headers.put(name, Context.getHttpResponse().getHeader(name));
         }

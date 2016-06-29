@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 * Created by igor on 4/29/14.
 */
 public class IgnoreSpec {
-    private List<Pattern> ignorePatterns = new ArrayList<Pattern>();
+    private List<Pattern> ignorePatterns = new ArrayList<>();
     private String exceptEnvironment;
 
     IgnoreSpec(String[] ignores){
