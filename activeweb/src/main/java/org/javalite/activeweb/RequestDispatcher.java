@@ -219,13 +219,9 @@ public class RequestDispatcher implements Filter {
             }
         } catch (CompilationException e) {
             renderSystemError(e);
-        } catch (ClassLoadException e) {
+        } catch (ClassLoadException | ActionNotFoundException e) {
             renderSystemError("/system/404", useDefaultLayoutForErrors() ? getDefaultLayout():null, 404, e);
-        }catch (ActionNotFoundException e) {
-            renderSystemError("/system/404", useDefaultLayoutForErrors() ? getDefaultLayout():null, 404, e);
-        }catch(ViewMissingException e){
-            renderSystemError("/system/404", useDefaultLayoutForErrors() ? getDefaultLayout():null, 404, e);
-        }catch(RouteException e){
+        }catch(ViewMissingException | RouteException e){
             renderSystemError("/system/404", useDefaultLayoutForErrors() ? getDefaultLayout():null, 404, e);
         }catch(ViewException e){
             renderSystemError("/system/error", useDefaultLayoutForErrors() ? getDefaultLayout():null, 500, e);
