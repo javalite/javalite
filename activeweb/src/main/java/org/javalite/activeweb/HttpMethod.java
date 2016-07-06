@@ -24,7 +24,7 @@ import java.lang.annotation.Annotation;
  * @author Igor Polevoy
  */
 public enum HttpMethod {
-    GET, POST, PUT, DELETE, HEAD, OPTIONS;
+    GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS;
 
     /**
      * Detects a method from annotation
@@ -41,6 +41,8 @@ public enum HttpMethod {
             return PUT;
         }else if(annotation instanceof DELETE){
             return DELETE;
+        }else if(annotation instanceof PATCH){
+            return PATCH;
         }else if (annotation instanceof HEAD) {
             return HEAD;
         }else if (annotation instanceof OPTIONS) {
@@ -58,6 +60,7 @@ public enum HttpMethod {
         String requestMethod = request.getMethod();
         requestMethod = requestMethod.equalsIgnoreCase("POST") && methodParam != null && methodParam.equalsIgnoreCase("DELETE")? "DELETE" : requestMethod;
         requestMethod = requestMethod.equalsIgnoreCase("POST") && methodParam != null && methodParam.equalsIgnoreCase("PUT")? "PUT" : requestMethod;
+        requestMethod = requestMethod.equalsIgnoreCase("POST") && request.getHeader("X-HTTP-Method-Override") != null && request.getHeader("X-HTTP-Method-Override").equalsIgnoreCase("PATCH") ? "PATCH" : requestMethod;
         return HttpMethod.valueOf(requestMethod.toUpperCase());
     }
 }
