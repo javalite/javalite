@@ -236,6 +236,46 @@ public class Http {
     }
 
 
+    /**
+     * Executes a PATCH request.
+     *
+     * @param uri     url of resource.
+     * @param content content to be posted.
+     * @return {@link Patch} object.
+     */
+    public static Patch patch(String uri, String content) {
+        return patch(uri, content.getBytes(), CONNECTION_TIMEOUT, READ_TIMEOUT);
+    }
+
+    /**
+     * Executes a PATCH request.
+     *
+     * @param uri     url of resource.
+     * @param content content to be posted.
+     * @return {@link Patch} object.
+     */
+    public static Patch patch(String uri, byte[] content) {
+        return patch(uri, content, CONNECTION_TIMEOUT, READ_TIMEOUT);
+    }
+
+    /**
+     * Executes a PATCH request.
+     *
+     * @param url            url of resource.
+     * @param content        content to be posted.
+     * @param connectTimeout connection timeout in milliseconds.
+     * @param readTimeout    read timeout in milliseconds.
+     * @return {@link Patch} object.
+     */
+    public static Patch patch(String url, byte[] content, int connectTimeout, int readTimeout) {
+
+        try {
+            return new Patch(url, content, connectTimeout, readTimeout);
+        } catch (Exception e) {
+            throw new HttpException("Failed URL: " + url, e);
+        }
+    }
+
 
     /**
      * Converts a map to URL- encoded content. This is a convenience method which can be used in combination
