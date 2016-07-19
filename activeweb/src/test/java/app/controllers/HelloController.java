@@ -29,5 +29,9 @@ public class HelloController extends AppController{
     }
 
     public void badBadTemplate(){}
+
+    public void ids(){
+        respond(params("id").toString());
+    }
 }
 

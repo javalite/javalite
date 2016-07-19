@@ -275,18 +275,22 @@ public class RequestUtils {
      * @return multiple request values for a name.
      */
     public static List<String> params(String name){
+        String[] values = Context.getHttpRequest().getParameterValues(name);
+        List<String>valuesList = null;
         if (name.equals("id")) {
-            String id = getId();
-            return id != null ? asList(id) : Collections.<String>emptyList();
+            if(values.length == 1){
+                valuesList = Collections.singletonList(values[0]);
+            }else if(values.length > 1){
+                valuesList = asList(values);
+            }
         } else {
-            String[] values = Context.getHttpRequest().getParameterValues(name);
-            List<String>valuesList = values == null? new ArrayList<String>() : list(values);
+            valuesList = values == null? new ArrayList<String>() : list(values);
             String userSegment = Context.getRequestContext().getUserSegments().get(name);
             if(userSegment != null){
                 valuesList.add(userSegment);
             }
-            return valuesList;
         }
+        return valuesList;
     }
 
 
