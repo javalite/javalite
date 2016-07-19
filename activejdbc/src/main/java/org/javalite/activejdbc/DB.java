@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
+import java.io.Closeable;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,7 @@ import static org.javalite.common.Util.empty;
  * @author Igor Polevoy
  * @author Eric Nielsen
  */
-public class DB {
+public class DB implements Closeable{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DB.class);
     static final Pattern SELECT_PATTERN = Pattern.compile("^\\s*SELECT",
@@ -59,6 +60,15 @@ public class DB {
      */
     public DB(String name) {
         this.name = name;
+    }
+
+    /**
+     * Creates a new DB object representing a connection to a DB with default name.
+     *
+     * Calling this constructor is equivalent to <code>new DB(DB.DEFAULT_NAME)</code>.
+     */
+    public DB() {
+        this.name = DEFAULT_NAME;
     }
 
     /**
