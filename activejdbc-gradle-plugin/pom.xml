@@ -5,11 +5,11 @@
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>activejdbc-root</artifactId>
-        <version>1.4.13-SNAPSHOT</version>
+        <version>1.4.12-SNAPSHOT</version>
     </parent>
 
     <artifactId>activejdbc-gradle-plugin</artifactId>
-    <version>1.4.13-SNAPSHOT</version>
+    <version>1.4.12-SNAPSHOT</version>
     <name>JavaLite - Gradle Instrumentation Plugin</name>
 
     <!-- NOTE: These dependencies are duplicated by necessity in build.gradle -->
