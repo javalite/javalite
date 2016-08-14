@@ -36,7 +36,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
     @Test
     public void shouldGenerateSimpleJson() {
         deleteAndPopulateTable("people");
-        Person p = Person.findById(1);
+        Person p = Person.findFirst("name = ? and last_name = ? ", "John", "Smith");
         //test no indent
         String json = p.toJson(false, "name", "last_name", "dob");
         Map  map = JsonHelper.toMap(json);
