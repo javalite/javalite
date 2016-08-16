@@ -188,6 +188,8 @@ public abstract class AppController extends HttpSupport {
             return true;
         } else if (action.equals("destroy") && httpMethod.equals(HttpMethod.DELETE)) {
             return true;
+        } else if (action.equals("options") && httpMethod.equals(HttpMethod.OPTIONS)) {
+            return true;
         } else {
             logDebug("You might want to execute a non-restful action on a restful controller. It is recommended that you " +
                     "use the following methods on restful controllers: index, newForm, create, show, editForm, update, destroy");

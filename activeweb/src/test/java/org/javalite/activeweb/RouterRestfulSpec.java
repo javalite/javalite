@@ -183,4 +183,24 @@ public class RouterRestfulSpec {
         a(mr.getActionName()).shouldBeEqual("destroy");
         a(mr.getId()).shouldBeEqual("1");
     }
+
+
+    //OPTIONS 	/photos/
+    @Test
+    public void shouldRecognizeRestfulRouteOPTIONS() throws ClassLoadException {
+
+        Route mr = r.recognize("/photos", HttpMethod.OPTIONS);
+
+        a(mr.getControllerClassName()).shouldBeEqual("app.controllers.PhotosController");
+        a(mr.getActionName()).shouldBeEqual("options");
+    }
+
+    @Test
+    public void shouldRecognizeRestfulRouteOPTIONSForControllerInPackage() throws ClassLoadException {
+
+        Route mr = r.recognize("/admin/special2/special3/special3_rest/", HttpMethod.OPTIONS);
+
+        a(mr.getControllerClassName()).shouldBeEqual("app.controllers.admin.special2.special3.Special3RestController");
+        a(mr.getActionName()).shouldBeEqual("options");
+    }
 }

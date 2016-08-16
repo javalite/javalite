@@ -190,6 +190,16 @@ public class RequestSpecHelper extends SpecHelper{
     }
 
     /**
+     * Returns header set by controller or filter.
+     *
+     * @param headerName name of header
+     * @return header value (can be null).
+     */
+    protected String header(String headerName){
+        return Context.getHttpResponse().getHeader(headerName);
+    }
+
+    /**
      * String value assigned by controller.
      *
      * @param name name of a value assigned by controller.

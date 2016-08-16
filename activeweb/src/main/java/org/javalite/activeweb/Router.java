@@ -190,6 +190,12 @@ public class Router {
         if (parts.length == 1 && httpMethod.equals(HttpMethod.DELETE)) {
             return new Route(controller, "destroy", parts[0]);
         }
+
+        //OPTIONS 	/photos/            options
+        if (parts.length == 0 && httpMethod.equals(HttpMethod.OPTIONS)) {
+            return new Route(controller, "options");
+        }
+
         LOGGER.warn("Failed to find action for request: " + uri);
         return null;
     }

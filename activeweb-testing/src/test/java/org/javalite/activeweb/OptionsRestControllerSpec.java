@@ -16,17 +16,19 @@ limitations under the License.
 package org.javalite.activeweb;
 
 
+import org.javalite.activeweb.ControllerSpec;
 import org.junit.Test;
 
 
 /**
  * @author Igor Polevoy
  */
-public class OptionsMethodSpec extends IntegrationSpec{
-
+public class OptionsRestControllerSpec extends IntegrationSpec {
     @Test
     public void shouldRouteToOptionsMethod(){
-        controller("options").options("index");
+        controller("options_rest").options("options");
+
+        a(header("Access-Control-Allow-Origin")).shouldBeEqual("http://astalavista.baby");
         a(responseContent()).shouldBeEqual("ok");
     }
 }

@@ -37,5 +37,9 @@ public class RestfulController extends AppController {
     public void editForm() {}
 
     public void update() {}
+
     public void destroy() {}
+
+    public void options() {}
+
 }

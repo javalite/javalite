@@ -59,27 +59,24 @@ public class AppControllerSpec {
 
     /*
     Spec:
-GET 	/photos 	            index 	        display a list of all photos
-GET 	/photos/new_form 	    new_form        return an HTML form for creating a new photo
-POST 	/photos 	            create 	        create a new photo
-GET 	/photos/:id 	        show            display a specific photo
-GET 	/photos/:id/edit_form   edit_form 	    return an HTML form for editing a photo
-PUT 	/photos/:id 	        update          update a specific photo
-DELETE 	/photos/:id 	        destroy         delete a specific photo
-
-
+        GET 	/photos 	            index 	        display a list of all photos
+        GET 	/photos/new_form 	    new_form        return an HTML form for creating a new photo
+        POST 	/photos 	            create 	        create a new photo
+        GET 	/photos/:id 	        show            display a specific photo
+        GET 	/photos/:id/edit_form   edit_form 	    return an HTML form for editing a photo
+        PUT 	/photos/:id 	        update          update a specific photo
+        DELETE 	/photos/:id 	        destroy         delete a specific photo
 */
-    //http://guides.rubyonrails.org/routing.html
 
     @Test
-    public void shouldDetectRestfulControllersIndexGET(){
+    public void shouldDetectRestfulControllers(){
         a(restfulController.actionSupportsHttpMethod("index", HttpMethod.GET)).shouldBeTrue();
-
         a(restfulController.actionSupportsHttpMethod("newForm", HttpMethod.GET)).shouldBeTrue();
         a(restfulController.actionSupportsHttpMethod("create", HttpMethod.POST)).shouldBeTrue();
         a(restfulController.actionSupportsHttpMethod("show", HttpMethod.GET)).shouldBeTrue();
         a(restfulController.actionSupportsHttpMethod("editForm", HttpMethod.GET)).shouldBeTrue();
         a(restfulController.actionSupportsHttpMethod("update", HttpMethod.PUT)).shouldBeTrue();
         a(restfulController.actionSupportsHttpMethod("destroy", HttpMethod.DELETE)).shouldBeTrue();
+        a(restfulController.actionSupportsHttpMethod("options", HttpMethod.OPTIONS)).shouldBeTrue();
     }
 }
