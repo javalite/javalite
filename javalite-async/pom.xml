@@ -3,14 +3,14 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>javalite-async</artifactId>
-    <version>1.14-SNAPSHOT</version>
+    <version>1.14</version>
     <name>JavaLite - Async</name>
     <packaging>jar</packaging>
 
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>activeweb-root</artifactId>
-        <version>1.14-SNAPSHOT</version>
+        <version>1.14</version>
     </parent>
 
     <properties>
