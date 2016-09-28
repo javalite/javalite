@@ -38,6 +38,7 @@ public class ModelInstrumentation {
 
         try {
             doInstrument(target);
+            target.detach();
             return target.toBytecode();
         } catch (Exception e) {
             throw new InstrumentationException(e);
