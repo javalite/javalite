@@ -185,6 +185,10 @@ public enum Registry {
             throw new DBException("invalid table name: " + table);
         }
 
+        try {
+            schema = databaseMetaData.getConnection().getSchema();
+        } catch (AbstractMethodError ignore) {}
+
         if (tableName.startsWith("\"") && tableName.endsWith("\"")) {
             tableName = tableName.substring(1, tableName.length() - 1);
         }
