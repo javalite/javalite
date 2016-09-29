@@ -54,7 +54,11 @@
     </profiles>
 
     <build>
+
         <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
             <!-- Runs the gradle managed build which will produce all artifacts -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

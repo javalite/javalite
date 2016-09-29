@@ -3,7 +3,7 @@ version '1.4.12-SNAPSHOT'
 
 apply plugin: 'groovy'
 
-sourceCompatibility = 1.7
+sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
