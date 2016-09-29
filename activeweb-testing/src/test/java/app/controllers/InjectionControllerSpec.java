@@ -17,7 +17,11 @@ limitations under the License.
 package app.controllers;
 
 
+import app.services.Greeter;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
 import org.javalite.activeweb.ControllerSpec;
+import org.javalite.activeweb.mocks.GreeterMock;
 import org.javalite.activeweb.mocks.GreeterModuleMock;
 import app.services.GreeterModule;
 import com.google.inject.Guice;
@@ -29,10 +33,6 @@ import org.junit.Test;
  */
 public class InjectionControllerSpec extends ControllerSpec {
 
-    @Before
-    public void before(){
-        setInjector(Guice.createInjector(new GreeterModuleMock()));
-    }
 
     @Test
     public void shouldInjectRealService(){
@@ -44,6 +44,14 @@ public class InjectionControllerSpec extends ControllerSpec {
     @Test
     public void shouldInjectMockService(){
         setInjector(Guice.createInjector(new GreeterModuleMock()));
+        request().get("index");
+        a(responseContent()).shouldBeEqual("The greeting is: Hello from mock greeter");
+    }
+
+    @Test
+    public void shouldOverrideWithMock(){
+        Injector injector = createInjector(new GreeterModule()).override(Greeter.class).with(GreeterMock.class).create();
+        setInjector(injector);
         request().get("index");
         a(responseContent()).shouldBeEqual("The greeting is: Hello from mock greeter");
     }

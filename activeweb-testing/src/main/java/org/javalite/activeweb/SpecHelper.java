@@ -16,7 +16,11 @@ limitations under the License.
 package org.javalite.activeweb;
 
 
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Module;
+import com.google.inject.util.Modules;
 import org.javalite.activeweb.freemarker.FreeMarkerTag;
 import org.javalite.activeweb.freemarker.FreeMarkerTemplateManager;
 import org.javalite.common.Convert;
@@ -28,6 +32,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -64,12 +70,118 @@ public class SpecHelper extends JSpecSupport{
 
     /**
      * Use to set injector for current test.
+     * <p>
+     *     How to override some services for tests:
+     *
+     *     <pre>
+     *         Injector injector  = Guice.createInjector(Modules.override(new CommonModule()).with(new CommonModuleMock());
+     *         setInjector(injector);
+     *     </pre>
+     * </p>
      *
      * @param injector injector to source dependencies form.
      */
     protected void setInjector(Injector injector){
         Context.getControllerRegistry().setInjector(injector);
     }
+
+    /**
+     * This is a convenience  method for setting Guice modules and service mocks.
+     *
+     * <p>
+     *     For instance, consider this code:
+     *
+     *     <pre>
+     *         Injector injector  = Guice.createInjector(Modules.override(new CommonModule()).with(new CommonModuleMock());
+     *         setInjector(injector);
+     *     </pre>
+     *
+     *     The mock classes are specified  inside  the  class <code>CommonModuleMock</code>, which means that you
+     *     have to write the module class. This process is tedious and inflexible in a large project.
+     *</p>
+     * <p>
+     *     The <code>createInjector(..)</code> method allows for a more elegant way of overriding real services with mocks:
+     *     <pre>
+     *         Injector injector = createInjector(new CommonModule())
+     *                                          .override(EmailService.class).with(EmailServiceMock.class)
+     *                                          .override(SmsService.class).with(SmsServiceMock.class).
+     *                                          .create();
+     *         setInjector(injector);
+     *     </pre>
+     *
+     *      As you can see, the is no longer need for writing  a mock module.
+
+     * </p>
+     *
+     * @param module - main module you want to set on a spec. This module may include services you need to override.
+     *
+     * @return instance of Injector with services in the main module overridden by provided mocks.
+     */
+    protected <T extends AbstractModule> ModuleBuilder createInjector(T module){
+        return new ModuleBuilder(module);
+    }
+
+    public class ModuleBuilder{
+
+        private List<Class> interfaceClasses = new ArrayList<>();
+        private List<Class> mockClasses = new ArrayList<>();
+        private Module module;
+
+        protected ModuleBuilder(Module module) {
+            this.module = module;
+        }
+
+        /**
+         * Specifies what interface to override with a mock.
+         *
+         * @param interfaceClass class of an service interface  to override by a mock.
+         * @return instance of {@link ModuleBuilder}
+         */
+        public ModuleBuilder override(Class interfaceClass){
+            interfaceClasses.add(interfaceClass);
+            return this;
+        }
+
+        /**
+         * Specifies what mock to use to override a real service in a module.
+         *
+         * @param mockClass a mock service class to override a real service in the module as eager singletone.
+         * @return instance of {@link ModuleBuilder}
+         */
+        public ModuleBuilder with(Class mockClass){
+            mockClasses.add(mockClass);
+            return this;
+        }
+
+        private class MockModule extends AbstractModule {
+            private Class  interfaceClass, mockClass;
+
+            private MockModule(Class interfaceClass, Class mockClass) {
+                this.interfaceClass = interfaceClass;
+                this.mockClass = mockClass;
+            }
+
+            @Override @SuppressWarnings("unchecked")
+            protected void configure() {
+                bind(interfaceClass).to(mockClass).asEagerSingleton();
+            }
+        };
+
+        /**
+         * Terminal method of a builder. Use to generate an instance of  Injector.
+         *
+         * @return properly configured instance of injector, with all
+         */
+        public Injector create(){
+            List<Module> modules = new ArrayList<>();
+            for (int i = 0; i < interfaceClasses.size(); i++) {
+                modules.add(new MockModule(interfaceClasses.get(i), mockClasses.get(i) ));
+            }
+            return Guice.createInjector(Modules.override(module).with(modules));
+        }
+    }
+
+
 
     /**
      * Registers a single custom tag. You can call this method as many times as necessary to register multiple tags in tests.
