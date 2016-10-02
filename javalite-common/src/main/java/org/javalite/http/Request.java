@@ -65,7 +65,7 @@ public abstract class Request<T extends Request> {
     /**
      * Configures this request to follow redirects. Default is <code>false</code>.
      *
-     * @see https://docs.oracle.com/javase/7/docs/api/java/net/HttpURLConnection.html#instanceFollowRedirects
+     * @see <a href="https://docs.oracle.com/javase/7/docs/api/java/net/HttpURLConnection.html#instanceFollowRedirects">HttpURLConnection.html#instanceFollowRedirects</a>
      * @param redirect true to follow, false to not.
      * @return self
      */
@@ -193,11 +193,11 @@ public abstract class Request<T extends Request> {
     /**
      * This method is already called from {@link #text()} and {@link #bytes()}, you do not have to call it if you use
      * those methods.
-     * <p/> 
+     * <p></p>
      * However, if you use {@link #getInputStream()}, call this method in those cases when you think you did
      * not read entire content from the stream.
      *
-     * <p/>
+     * <p></p>
      * This method clears all remaining data in connections after reading a response.
      * This will help keep-alive work smoothly.
      */

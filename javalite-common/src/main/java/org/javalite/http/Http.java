@@ -283,7 +283,7 @@ public class Http {
      * to convert parameters to submit a string:
      *
      * <pre>
-     *     key=value&key1=value1
+     *     key=value&key1=value1;
      * </pre>
      *
      *

@@ -43,16 +43,16 @@ public final class JSpec{
     }
 
     /**
-     * Works the same way as methods {@link JSpec#the(Object)} or {@link JSpec#a(Object)}, but takes generalized instance as parameter. <br/>
-     * For example you can't use it(12345).shouldBeEqual("12345"); you will get compilation error. <br/>
-     * You can perform checking only for the same type instances. <br/>
+     * Works the same way as methods {@link JSpec#the(Object)} or {@link JSpec#a(Object)}, but takes generalized instance as parameter. <b></b>
+     * For example you can't use it(12345).shouldBeEqual("12345"); you will get compilation error. <b></b>
+     * You can perform checking only for the same type instances. <b></b>
      *
      * Valid examples:
      * <ul>
      *   <li><code>it(1).shouldNotBeEqual(2)</code></li>
      *   <li><code>it("a").shouldNotBeEqual("b")</code></li>
      * </ul>     
-     * <br/>
+     * <b></b>
      * 
      * Not valid examples:
      * <ul>

@@ -17,13 +17,13 @@
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>activejdbc</artifactId>
-            <version>1.4.11</version>
+            <version>1.4.12</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>activejdbc-instrumentation</artifactId>
-            <version>1.4.11</version>
+            <version>1.4.12</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

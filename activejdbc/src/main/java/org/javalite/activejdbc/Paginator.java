@@ -61,7 +61,7 @@ public class Paginator<T extends Model> implements Serializable {
     /**
      * Paginator is created with parameters to jump to chunks of result sets (pages). This class is useful "paging"
      * through result on a user interface (web page).
-     * <p/>
+     * <p></p>
      * <h4>Examples of a sub-query:</h4>
      * <ul>
      * <li><code>"last_name like '%John%'"</code> - this is a sub-query, and the rest of the information will be filled out
@@ -69,7 +69,7 @@ public class Paginator<T extends Model> implements Serializable {
      * <li> "*" - will search for all records, no filtering</li>
      * </ul>
      * Sub-query is used in simple cases, when filtering is done against one table.
-     * <p/>
+     * <p></p>
      * <h4>Full query example</h4>
      * <ul>
      * <li>"select * from people where last_name like '%John%'"</li>

@@ -25,7 +25,7 @@ import java.util.Date;
 /**
  * This is a helper class for converting distance bewteen two dates to a human format, like:
  * "two days", "three months", etc.
- * <p/>
+ * <p></p>
  * It was inspired by a Rails helper method:
  * <a href="http://api.rubyonrails.org/classes/ActionView/Helpers/DateHelper.html#M001006">distance_of_time_in_words</a>
  *

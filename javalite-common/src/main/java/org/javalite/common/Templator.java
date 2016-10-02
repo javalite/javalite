@@ -22,7 +22,7 @@ import java.util.Map;
 import static org.javalite.common.Util.readResource;
 
 /**
- * Simple implementation of small quick templates filled with dynamic data.<br/>
+ * Simple implementation of small quick templates filled with dynamic data.<b></b>
  * An example of a template:
  *
  *

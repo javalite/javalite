@@ -232,7 +232,7 @@ public class Expectation<T> {
      * <ul>
      *
      *     <li><code>java.util.List</code> - in this case, the tested list is expected to contain an expected object.
-     *     <br/>For example, this will pass: <pre><code>
+     *     <b></b>For example, this will pass: <pre><code>
      *         a(Arrays.asList(1, 2, 3)).shouldContain(3);
      *     </code></pre>
      *
@@ -240,7 +240,7 @@ public class Expectation<T> {
      *
      *     </li>
      *     <li><code>java.util.Map</code> - in this case, the tested map is expected to contain an object whose key is the expected object.
-     *     <br/>For example, this will pass: <pre><code>
+     *     <b></b>For example, this will pass: <pre><code>
      *         Map map = new HashMap();
      *         map.put("one", 1);
      *         map.put("two", 2);
@@ -250,7 +250,7 @@ public class Expectation<T> {
      *     </pre>
      *     </li>
      *     <li>Any object - in this case, the string representation of this object is tested to contain a string representation of
-     *     expected value as a substring.<br/>For example, this will pass:
+     *     expected value as a substring.<b></b>For example, this will pass:
      *     <pre><code>
      *         the("meaning of life is 42").shouldContain("meaning");
      *     </code>
