@@ -156,7 +156,7 @@ public class PolymorphicAssociationsTest extends ActiveJDBCTest {
 
         final LazyList<Comment> comments = Comment.findAll().orderBy("id").include(Article.class, Post.class);
 
-        final List<Map> commentMaps = comments.toMaps();
+        final List<Map<String, Object>> commentMaps = comments.toMaps();
 
         final Map post = (Map) commentMaps.get(0).get("post");
         the(post.get("id")).shouldBeEqual(1);

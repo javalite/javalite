@@ -135,7 +135,7 @@ public class ToFromXmlSpec extends ActiveJDBCTest {
     public void shouldConvertClobsToString(){
         deleteAndPopulateTable("articles");
 
-        List<Map> maps = Article.findAll().toMaps();
+        List<Map<String, Object>> maps = Article.findAll().toMaps();
         a(maps.get(0).get("content")).shouldBeA(String.class);
     }
 
