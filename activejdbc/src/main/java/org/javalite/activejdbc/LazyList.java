@@ -182,9 +182,9 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
      *
      * @return list of maps, where each map represents a row in the resultset keyed off column names.
      */
-    public List<Map> toMaps(){
+    public List<Map<String, Object>> toMaps() {
         hydrate();
-        List<Map> maps = new ArrayList<>(delegate.size());
+        List<Map<String, Object>> maps = new ArrayList<>(delegate.size());
         for (T t : delegate) {
             maps.add(t.toMap());
         }
