@@ -34,6 +34,8 @@ public class LifecycleCallbackSpec extends ActiveJDBCTest {
     public void after(){
         super.after();
         Person.callbackWith(new CallbackAdapter());
+        User.callbackWith(new CallbackAdapter());
+
     }
 
     @Test
