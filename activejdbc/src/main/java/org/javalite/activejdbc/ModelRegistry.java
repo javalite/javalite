@@ -44,6 +44,7 @@ class ModelRegistry {
     }
 
     void callbackWith(Collection<CallbackListener> callbacks) {
+        this.callbacks.clear();
         this.callbacks.addAll(callbacks);
     }
 

@@ -2096,6 +2096,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
          ModelDelegate.callbackWith(modelClass(), listeners);
     }
 
+    /**
+     * Sets  lifecycle listeners on current model. All previous listeners will be unregistered.
+     *
+     * @param listeners list of lifecycle listeners
+     */
     public static void callbackWith(CallbackListener... listeners) {
          ModelDelegate.callbackWith(modelClass(), listeners);
     }
