@@ -1,11 +1,13 @@
 package org.javalite.activejdbc.dialects;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.javalite.activejdbc.DBException;
 import org.javalite.activejdbc.MetaModel;
-import org.javalite.common.Util;
+
+import static org.javalite.common.Util.join;
 
 public class MSSQLDialect extends DefaultDialect {
     protected final Pattern selectPattern = Pattern.compile("^\\s*SELECT\\s*",
@@ -35,8 +37,8 @@ public class MSSQLDialect extends DefaultDialect {
         boolean keepSelect = false;
         StringBuilder fullQuery = new StringBuilder();
         if (needOffset) {
-            fullQuery.append("SELECT sq.* FROM (SELECT ROW_NUMBER() OVER (ORDER BY ");
-            Util.join(fullQuery, orderBys, ", ");
+            fullQuery.append("SELECT " + getSQColumns(columns) + " FROM (SELECT ROW_NUMBER() OVER (ORDER BY ");
+            join(fullQuery, orderBys, ", ");
             fullQuery.append(") AS rownumber,");
         } else if (needLimit) {
             fullQuery.append("SELECT TOP ").append(limit);
@@ -57,7 +59,7 @@ public class MSSQLDialect extends DefaultDialect {
             }
         } else {
             if (keepSelect) { fullQuery.append("SELECT"); }
-            fullQuery.append(" * FROM ").append(tableName);
+            fullQuery.append(getAllColumns(columns)).append(" FROM ").append(tableName);
             appendSubQuery(fullQuery, subQuery);
         }
 
@@ -74,6 +76,23 @@ public class MSSQLDialect extends DefaultDialect {
         }
 
         return fullQuery.toString();
+    }
+
+    private String getSQColumns(String[] columns){
+
+        if(columns == null){
+            return "sq.*";
+        }
+
+        List<String> names = new ArrayList<>();
+        for (String column : columns) {
+            names.add("sq." + column);
+        }
+        return join(names, ", ");
+    }
+
+    private String getAllColumns(String[] columns){
+        return columns == null ? " *" : " " + join(columns, ", ");
     }
 
     /**

@@ -45,6 +45,7 @@ public class RawPaginatorSpec extends ActiveJDBCTest {
     @Test
     public void testCurrentPage(){
         RawPaginator p = new RawPaginator("default", "items", null, 10, false, "item_number > ?", 20);
+        p.orderBy("item_number");
         a(p.getCurrentPage()).shouldBeEqual(0);
         p.getPage(1);
         a(p.getCurrentPage()).shouldBeEqual(1);
@@ -100,6 +101,7 @@ public class RawPaginatorSpec extends ActiveJDBCTest {
         //for this query we have only 28 pages
         RawPaginator p = new RawPaginator("items", null, 10, "item_description like ?", "%2%");
 
+        p.orderBy("item_number");
 
         p.getPage(27);
         a(p.hasNext()).shouldBeTrue();
