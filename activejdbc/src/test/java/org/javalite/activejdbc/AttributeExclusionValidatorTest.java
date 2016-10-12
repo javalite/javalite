@@ -1,59 +1,56 @@
 package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.test.ActiveJDBCTest;
-import org.javalite.activejdbc.test_models.Student;
+import org.javalite.activejdbc.test_models.Book;
 import org.javalite.activejdbc.validation.exclusion.AttributeExclusionValidator;
 import org.junit.Test;
 
-import java.util.Date;
 import java.util.Locale;
 
 public class AttributeExclusionValidatorTest extends ActiveJDBCTest {
 
     @Test
-    public void testWhenAttributeIsExcluded() {
-        AttributeExclusionValidator validator = AttributeExclusionValidator.on("first_name").with("Larry", "John");
+    public void shouldFailValidationWhenTitleIsInList() {
+        final AttributeExclusionValidator invalidScienceFictionTitles =
+                AttributeExclusionValidator.on("title").with("Dune", "Ender's Game");
 
-        Student s = new Student();
-        s.set("first_name", "John");
-        s.set("last_name", "Doe");
+        final Book book = new Book();
+        book.set("title", "Dune");
 
-        Student.addValidator(validator);
-        s.validate();
-        a(s.errors().size()).shouldBeEqual(1);
-        Student.removeValidator(validator);
+        Book.addValidator(invalidScienceFictionTitles);
+        book.validate();
+        a(book.errors().size()).shouldBeEqual(1);
+        Book.removeValidator(invalidScienceFictionTitles);
     }
 
     @Test
-    public void testWhenAttributeIsNotExcluded() {
-        AttributeExclusionValidator validator = AttributeExclusionValidator.on("dob").with(new Date(500), new Date(800));
+    public void shouldPassValidationWhenTitleIsNotInList() {
+        final AttributeExclusionValidator invalidScienceFictionTitles =
+                AttributeExclusionValidator.on("title").with("Dune", "Ender's Game");
 
-        Student s = new Student();
-        s.set("first_name", "John");
-        s.set("last_name", "Doe");
-        s.set("dob", new Date(550));
+        final Book book = new Book();
+        book.set("title", "1984");
 
-        Student.addValidator(validator);
-        s.validate();
-        a(s.errors().size()).shouldBeEqual(0);
-        Student.removeValidator(validator);
+        Book.addValidator(invalidScienceFictionTitles);
+        book.validate();
+        a(book.errors().size()).shouldBeEqual(0);
+        Book.removeValidator(invalidScienceFictionTitles);
     }
 
     @Test
-    public void testWithInternationalization() {
-        AttributeExclusionValidator validator = AttributeExclusionValidator.on("dob").with(new Date(500), new Date(800));
-        validator.setMessage("validation.exclusion");
+    public void shouldHaveLocaleSpecificErrorMessageWhenFailingValidation() {
+        final AttributeExclusionValidator invalidScienceFictionTitles =
+                AttributeExclusionValidator.on("title").with("Dune", "Ender's Game");
+        invalidScienceFictionTitles.setMessage("validation.inclusion");
 
-        Student s = new Student();
-        s.set("first_name", "John");
-        s.set("last_name", "Doe");
-        s.set("dob", new Date(800));
+        final Book book = new Book();
+        book.set("title", "Dune");
 
-        Student.addValidator(validator);
-        s.validate();
-        a(s.errors().size()).shouldBeEqual(1);
-        a(s.errors().get("dob")).shouldBeEqual("dob is reserved.");
-        a(s.errors(new Locale("de", "DE")).get("dob")).shouldBeEqual("dob ist reserviert.");
-        Student.removeValidator(validator);
+        Book.addValidator(invalidScienceFictionTitles);
+        book.validate();
+        a(book.errors().size()).shouldBeEqual(1);
+        a(book.errors().get("title")).shouldBeEqual("title is not included in the list.");
+        a(book.errors(new Locale("de", "DE")).get("title")).shouldBeEqual("title ist nicht in der Liste enthalten.");
+        Book.removeValidator(invalidScienceFictionTitles);
     }
 }
