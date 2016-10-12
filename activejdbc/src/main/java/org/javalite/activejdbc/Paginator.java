@@ -31,7 +31,7 @@ import static org.javalite.activejdbc.ModelDelegate.metaModelFor;
  * Model subclass is annotated with @{@link org.javalite.activejdbc.annotations.Cached}, then this class will
  * cache the total count of records returned by {@link #getCount()}, as LazyList will cache the result sets.
  * This class is thread safe and the same instance could be used across multiple web requests and even
- * across multiple users/sessions. It is lightweight class, you can generate an instance each time you need one,
+ * across multiple users/sessions. You can generate an instance each time you need one,
  * or you can cache an instance in a session or even servlet context.
  *
  * @author Igor Polevoy

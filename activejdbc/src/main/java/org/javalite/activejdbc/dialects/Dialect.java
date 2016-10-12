@@ -16,6 +16,7 @@ limitations under the License.
 
 package org.javalite.activejdbc.dialects;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import org.javalite.activejdbc.MetaModel;
@@ -24,9 +25,9 @@ import org.javalite.activejdbc.associations.Many2ManyAssociation;
 /**
  * @author Eric Nielsen
  */
-public interface Dialect {
+public interface Dialect extends Serializable{
 
-    String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset);
+    String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset);
 
     Object overrideDriverTypeConversion(MetaModel mm, String attributeName, Object value);
 

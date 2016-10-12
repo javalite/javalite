@@ -38,25 +38,23 @@ public class OracleDialectTest extends ActiveJDBCTest {
     @Test
     public void testFormSelectWithoutTableName() {
         final String fullQuery = "SELECT name FROM people";
-        a(dialect.formSelect(null, fullQuery, new ArrayList<String>(), -1, -1)).shouldBeEqual(fullQuery);
+        a(dialect.formSelect(null, new String[]{"name"}, fullQuery, new ArrayList<String>(), -1, -1)).shouldBeEqual(fullQuery);
     }
     
     @Test
     public void testFormSelectWithTableName() {
-        a(dialect.formSelect("people", null, new ArrayList<String>(), -1, -1)).shouldBeEqual("SELECT * FROM people");
-        a(dialect.formSelect("people", "name = ?", new ArrayList<String>(), -1, -1)).shouldBeEqual(
-                "SELECT * FROM people WHERE name = ?");
-        a(dialect.formSelect("people", null, Arrays.asList("last_name", "name"), -1, -1)).shouldBeEqual(
-                "SELECT * FROM people ORDER BY last_name, name");
+        a(dialect.formSelect("people", null, null, new ArrayList<String>(), -1, -1)).shouldBeEqual("SELECT * FROM people");
+        a(dialect.formSelect("people", null, "name = ?", new ArrayList<String>(), -1, -1)).shouldBeEqual("SELECT * FROM people WHERE name = ?");
+        a(dialect.formSelect("people", null, null, Arrays.asList("last_name", "name"), -1, -1)).shouldBeEqual("SELECT * FROM people ORDER BY last_name, name");
     }
 
     @Test
     public void testLimitOffsetNoOrderBy() {
-        a(dialect.formSelect("people", null, new ArrayList<String>(), 1, 1)).shouldBeEqual(
+        a(dialect.formSelect("people", null, null, new ArrayList<String>(), 1, 1)).shouldBeEqual(
                 "SELECT * FROM (SELECT t2.*, ROWNUM AS oracle_row_number FROM ("
                         + "SELECT t.* FROM people t"
                         + ") t2) WHERE oracle_row_number >= 2 AND ROWNUM <= 1");
-        a(dialect.formSelect("people", "last_name = ?", new ArrayList<String>(), 1, 10)).shouldBeEqual(
+        a(dialect.formSelect("people", null, "last_name = ?", new ArrayList<String>(), 1, 10)).shouldBeEqual(
                 "SELECT * FROM (SELECT t2.*, ROWNUM AS oracle_row_number FROM ("
                         + "SELECT t.* FROM people t WHERE last_name = ?"
                         + ") t2) WHERE oracle_row_number >= 11 AND ROWNUM <= 1");
@@ -64,7 +62,7 @@ public class OracleDialectTest extends ActiveJDBCTest {
     
     @Test
     public void testLimitOffset() {
-        a(dialect.formSelect("pages", "", Arrays.asList("page_id"), 10, 20)).shouldBeEqual(
+        a(dialect.formSelect("pages", null, "", Arrays.asList("page_id"), 10, 20)).shouldBeEqual(
                 "SELECT * FROM (SELECT t2.*, ROWNUM AS oracle_row_number FROM ("
                         + "SELECT t.* FROM pages t ORDER BY page_id"
                         + ") t2) WHERE oracle_row_number >= 21 AND ROWNUM <= 10");
@@ -72,13 +70,13 @@ public class OracleDialectTest extends ActiveJDBCTest {
     
     @Test
     public void testLimitOnlyNoOffset() {
-        a(dialect.formSelect("pages", "", Arrays.asList("page_id"), 10, -1)).shouldBeEqual(
+        a(dialect.formSelect("pages", null, "", Arrays.asList("page_id"), 10, -1)).shouldBeEqual(
                 "SELECT * FROM (SELECT t2.* FROM (SELECT t.* FROM pages t ORDER BY page_id) t2) WHERE ROWNUM <= 10");
     }
     
     @Test
     public void testOffsetOnlyNoLimit() {
-        a(dialect.formSelect("pages", "content LIKE '%test%'", Arrays.asList("page_id"), -1, 20)).shouldBeEqual(
+        a(dialect.formSelect("pages", null, "content LIKE '%test%'", Arrays.asList("page_id"), -1, 20)).shouldBeEqual(
                 "SELECT * FROM (SELECT t2.*, ROWNUM AS oracle_row_number FROM ("
                         + "SELECT t.* FROM pages t WHERE content LIKE '%test%' ORDER BY page_id"
                         + ") t2) WHERE oracle_row_number >= 21");
@@ -86,13 +84,13 @@ public class OracleDialectTest extends ActiveJDBCTest {
 
     @Test
     public void testNoOffsetAndNoLimit() {
-        a(dialect.formSelect("pages", "content LIKE '%test%'", Arrays.asList("page_id"), -1, -1)).shouldBeEqual(
+        a(dialect.formSelect("pages", null, "content LIKE '%test%'", Arrays.asList("page_id"), -1, -1)).shouldBeEqual(
                 "SELECT * FROM pages WHERE content LIKE '%test%' ORDER BY page_id");
     }
 
     @Test
     public void testSelectFirst() {
-        a(dialect.formSelect("member_goal_action", "", Arrays.asList("created_at DESC"), 1, -1)).shouldBeEqual(
+        a(dialect.formSelect("member_goal_action", null, "", Arrays.asList("created_at DESC"), 1, -1)).shouldBeEqual(
                 "SELECT * FROM (SELECT t2.* FROM (SELECT t.* FROM member_goal_action t ORDER BY created_at DESC) t2) WHERE ROWNUM <= 1");
     }
 

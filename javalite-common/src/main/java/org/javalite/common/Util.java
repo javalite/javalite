@@ -480,4 +480,26 @@ public final class Util {
     public static byte[] fromBase64(String input) {
         return Base64.getDecoder().decode(input);
     }
+
+    /**
+     * Convenience method to create literal String arrays.
+     * Helps to replace code like this:
+     * <p>
+     *     <code>
+     *         String[] t = new String[]{"one", "two"}
+     *     </code>
+     * </p>
+     * with:
+     * <p>
+     *      <code>
+     *         String[] t = arr("one", "two");
+     *     </code>
+     * </p>
+     *
+     * @param params strings to create array
+     * @return array of strings
+     */
+    public String[] arr(String ... params){
+        return params;
+    }
 }

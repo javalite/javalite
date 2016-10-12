@@ -127,14 +127,13 @@ public enum Registry {
                 throw new DBException("Failed to retrieve metadata from DB, connection: '" + dbName + "' is not available");
             }
             DatabaseMetaData databaseMetaData = c.getMetaData();
-            //TODO: this is called databaseProductName, dbType or dbProduct throughtout the code; use unique name?
-            String databaseProductName = c.getMetaData().getDatabaseProductName();
+            String dbType = c.getMetaData().getDatabaseProductName();
             List<Class<? extends Model>> modelClasses = ModelFinder.getModelsForDb(dbName);
-            registerModels(dbName, modelClasses, databaseProductName);
+            registerModels(dbName, modelClasses, dbType);
             String[] tables = metaModels.getTableNames(dbName);
 
             for (String table : tables) {
-                Map<String, ColumnMetadata> metaParams = fetchMetaParams(databaseMetaData, databaseProductName, table);
+                Map<String, ColumnMetadata> metaParams = fetchMetaParams(databaseMetaData, dbType, table);
                 registerColumnMetadata(table, metaParams);
             }
 
@@ -162,7 +161,7 @@ public enum Registry {
      * @return
      * @throws java.sql.SQLException
      */
-    private Map<String, ColumnMetadata> fetchMetaParams(DatabaseMetaData databaseMetaData, String databaseProductName, String table) throws SQLException {
+    private Map<String, ColumnMetadata> fetchMetaParams(DatabaseMetaData databaseMetaData, String dbType, String table) throws SQLException {
 
         /*
          * Valid table name format: tablename or schemaname.tablename
@@ -194,22 +193,22 @@ public enum Registry {
         }
 
         ResultSet rs = databaseMetaData.getColumns(null, schema, tableName, null);
-        String dbProduct = databaseMetaData.getDatabaseProductName().toLowerCase();
-        Map<String, ColumnMetadata> columns = getColumns(rs, dbProduct);
+
+        Map<String, ColumnMetadata> columns = getColumns(rs, dbType);
         rs.close();
 
         //try upper case table name - Oracle uses upper case
         if (columns.isEmpty()) {
             rs = databaseMetaData.getColumns(null, schema, tableName.toUpperCase(), null);
-            dbProduct = databaseProductName.toLowerCase();
-            columns = getColumns(rs, dbProduct);
+
+            columns = getColumns(rs, dbType);
             rs.close();
         }
 
         //if upper case not found, try lower case.
         if (columns.isEmpty()) {
             rs = databaseMetaData.getColumns(null, schema, tableName.toLowerCase(), null);
-            columns = getColumns(rs, dbProduct);
+            columns = getColumns(rs, dbType);
             rs.close();
         }
 
@@ -322,11 +321,11 @@ public enum Registry {
 	}
 
 
-    private Map<String, ColumnMetadata> getColumns(ResultSet rs, String dbProduct) throws SQLException {
+    private Map<String, ColumnMetadata> getColumns(ResultSet rs, String dbType) throws SQLException {
         Map<String, ColumnMetadata> columns = new CaseInsensitiveMap<>();
         while (rs.next()) {
             // skip h2 INFORMATION_SCHEMA table columns.
-            if (!"h2".equals(dbProduct) || !"INFORMATION_SCHEMA".equals(rs.getString("TABLE_SCHEM"))) {
+            if (!"h2".equals(dbType) || !"INFORMATION_SCHEMA".equals(rs.getString("TABLE_SCHEM"))) {
                 ColumnMetadata cm = new ColumnMetadata(rs.getString("COLUMN_NAME"), rs.getString("TYPE_NAME"), rs.getInt("COLUMN_SIZE"));
                 columns.put(cm.getColumnName(), cm);
             }

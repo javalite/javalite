@@ -38,31 +38,23 @@ public class PostgreSQLDialectTest extends ActiveJDBCTest {
     @Test
     public void testFormSelectWithoutTableName() {
         final String fullQuery = "SELECT name FROM people";
-        a(dialect.formSelect(null, fullQuery, new ArrayList<String>(), -1, -1)).shouldBeEqual(fullQuery);
+        a(dialect.formSelect(null, new String[]{"name"}, fullQuery, new ArrayList<String>(), -1, -1)).shouldBeEqual(fullQuery);
     }
     
     @Test
     public void testFormSelectWithTableName() {
-        a(dialect.formSelect("people", null, new ArrayList<String>(), -1, -1)).shouldBeEqual("SELECT * FROM people");
-        a(dialect.formSelect("people", "name = ?", new ArrayList<String>(), -1, -1)).shouldBeEqual(
-                "SELECT * FROM people WHERE name = ?");
-        a(dialect.formSelect("people", "name = ?", Arrays.asList("name"), -1, -1)).shouldBeEqual(
-                "SELECT * FROM people WHERE name = ? ORDER BY name");
-        a(dialect.formSelect("people", null, Arrays.asList("last_name", "name"), -1, -1)).shouldBeEqual(
-                "SELECT * FROM people ORDER BY last_name, name");
+        a(dialect.formSelect("people", null, null, new ArrayList<String>(), -1, -1)).shouldBeEqual("SELECT * FROM people");
+        a(dialect.formSelect("people", null, "name = ?", new ArrayList<String>(), -1, -1)).shouldBeEqual("SELECT * FROM people WHERE name = ?");
+        a(dialect.formSelect("people", null, "name = ?", Arrays.asList("name"), -1, -1)).shouldBeEqual("SELECT * FROM people WHERE name = ? ORDER BY name");
+        a(dialect.formSelect("people", null, null, Arrays.asList("last_name", "name"), -1, -1)).shouldBeEqual("SELECT * FROM people ORDER BY last_name, name");
     }
 
     @Test
     public void testFormSelectWithLimitOffset() {
-        a(dialect.formSelect("people", null, new ArrayList<String>(), 1, -1)).shouldBeEqual(
-                "SELECT * FROM people LIMIT 1");
-        a(dialect.formSelect("people", null, new ArrayList<String>(), -1, 1)).shouldBeEqual(
-                "SELECT * FROM people OFFSET 1");
-        a(dialect.formSelect("people", null, new ArrayList<String>(), 1, 1)).shouldBeEqual(
-                "SELECT * FROM people LIMIT 1 OFFSET 1");
-        a(dialect.formSelect("people", "last_name = ?", new ArrayList<String>(), 1, 10)).shouldBeEqual(
-                "SELECT * FROM people WHERE last_name = ? LIMIT 1 OFFSET 10");
-        a(dialect.formSelect("people", "name = ?", Arrays.asList("name"), 10, 10)).shouldBeEqual(
-                "SELECT * FROM people WHERE name = ? ORDER BY name LIMIT 10 OFFSET 10");
+        a(dialect.formSelect("people", null, null, new ArrayList<String>(), 1, -1)).shouldBeEqual("SELECT * FROM people LIMIT 1");
+        a(dialect.formSelect("people", null, null, new ArrayList<String>(), -1, 1)).shouldBeEqual("SELECT * FROM people OFFSET 1");
+        a(dialect.formSelect("people", null, null, new ArrayList<String>(), 1, 1)).shouldBeEqual("SELECT * FROM people LIMIT 1 OFFSET 1");
+        a(dialect.formSelect("people", null, "last_name = ?", new ArrayList<String>(), 1, 10)).shouldBeEqual("SELECT * FROM people WHERE last_name = ? LIMIT 1 OFFSET 10");
+        a(dialect.formSelect("people", null, "name = ?", Arrays.asList("name"), 10, 10)).shouldBeEqual("SELECT * FROM people WHERE name = ? ORDER BY name LIMIT 10 OFFSET 10");
     }
 }

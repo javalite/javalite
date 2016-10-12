@@ -17,13 +17,14 @@ public class MSSQLDialect extends DefaultDialect {
      * @param tableName name of table. If table name is null, then the subQuery parameter is considered to be a full query, and all that needs to be done is to
      * add limit, offset and order bys
      * @param subQuery sub-query or a full query
+     * @param columns - not implemented in this dialog
      * @param orderBys
      * @param limit
      * @param offset
      * @return query with
      */
     @Override
-    public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
+    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset) {
         boolean needLimit = limit != -1;
         boolean needOffset = offset != -1;
 

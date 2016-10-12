@@ -25,11 +25,11 @@ import org.javalite.common.Convert;
  */
 public class SQLiteDialect extends PostgreSQLDialect {
     @Override
-    public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
+    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset) {
         if (limit == -1L && offset != -1L) {
             throw new IllegalArgumentException("SQLite does not support OFFSET without LIMIT. OFFSET is a parameter of LIMIT function");
         }
-        return super.formSelect(tableName, subQuery, orderBys, limit, offset);
+        return super.formSelect(tableName, columns, subQuery, orderBys, limit, offset);
     }
 
     @Override
