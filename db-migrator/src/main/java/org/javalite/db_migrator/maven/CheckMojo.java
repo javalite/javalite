@@ -13,7 +13,7 @@ import static org.javalite.db_migrator.DbUtils.closeConnection;
 /**
  * Check current schema against available migrations to see if database is up to date,
  * causing the build to fail if the database is not up to date.
- * <p/>
+ * <p></p>
  *
  * @goal check
  * @phase process-test-resources

@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -135,7 +135,7 @@ public class ToFromXmlSpec extends ActiveJDBCTest {
     public void shouldConvertClobsToString(){
         deleteAndPopulateTable("articles");
 
-        List<Map> maps = Article.findAll().toMaps();
+        List<Map<String, Object>> maps = Article.findAll().toMaps();
         a(maps.get(0).get("content")).shouldBeA(String.class);
     }
 

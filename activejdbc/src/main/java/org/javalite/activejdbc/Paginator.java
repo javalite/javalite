@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import static org.javalite.activejdbc.ModelDelegate.metaModelFor;
  * Model subclass is annotated with @{@link org.javalite.activejdbc.annotations.Cached}, then this class will
  * cache the total count of records returned by {@link #getCount()}, as LazyList will cache the result sets.
  * This class is thread safe and the same instance could be used across multiple web requests and even
- * across multiple users/sessions. It is lightweight class, you can generate an instance each time you need one,
+ * across multiple users/sessions. You can generate an instance each time you need one,
  * or you can cache an instance in a session or even servlet context.
  *
  * @author Igor Polevoy
@@ -47,7 +47,7 @@ public class Paginator<T extends Model> implements Serializable {
     private int currentPage;
     private final boolean fullQuery;
     private final String countQuery;
-    private boolean suppressCounts = false;
+    private boolean suppressCounts;
     private Long count = 0L;
 
 
@@ -61,7 +61,7 @@ public class Paginator<T extends Model> implements Serializable {
     /**
      * Paginator is created with parameters to jump to chunks of result sets (pages). This class is useful "paging"
      * through result on a user interface (web page).
-     * <p/>
+     * <p></p>
      * <h4>Examples of a sub-query:</h4>
      * <ul>
      * <li><code>"last_name like '%John%'"</code> - this is a sub-query, and the rest of the information will be filled out
@@ -69,7 +69,7 @@ public class Paginator<T extends Model> implements Serializable {
      * <li> "*" - will search for all records, no filtering</li>
      * </ul>
      * Sub-query is used in simple cases, when filtering is done against one table.
-     * <p/>
+     * <p></p>
      * <h4>Full query example</h4>
      * <ul>
      * <li>"select * from people where last_name like '%John%'"</li>
@@ -212,7 +212,7 @@ public class Paginator<T extends Model> implements Serializable {
     }
 
     private LazyList<T> findAll() {
-        return new LazyList<T>(null, metaModel);
+        return new LazyList<>(null, metaModel);
     }
 
     /**

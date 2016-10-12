@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -37,22 +37,22 @@ public @interface Many2Many {
     /**
      * This is a type of a model that is the "other" end of the relationship.
      */
-    public Class<? extends Model> other();
+    Class<? extends Model> other();
 
     /**
      * Name of a table used for joining records from other tables.
      */
-    public String join() ;
+    String join() ;
 
     /**
      * Foreign key name of a source table in the join. A "source" table is a table that backs the model
      * on which this annotation is used.
      */
-    public String sourceFKName();
+    String sourceFKName();
 
     /**
      * Foreign key name of a target table in the join table. A "target" table is a table that backs the "other" model.
      */
-    public String targetFKName();
+    String targetFKName();
 }
 

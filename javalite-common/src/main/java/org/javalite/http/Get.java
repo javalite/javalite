@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -27,12 +27,12 @@ public class Get extends Request<Get> {
     /**
      * Constructor for making GET requests.
      *
-     * @param uri            URI of resource.
+     * @param url            URL of resource.
      * @param connectTimeout connection timeout.
      * @param readTimeout    read timeout.
      */
-    public Get(String uri, int connectTimeout, int readTimeout) {
-        super(uri, connectTimeout, readTimeout);
+    public Get(String url, int connectTimeout, int readTimeout) {
+        super(url, connectTimeout, readTimeout);
     }
 
     @Override
@@ -40,6 +40,7 @@ public class Get extends Request<Get> {
         try {
             connection.setDoInput(true);
             connection.setDoOutput(true);
+            connection.setInstanceFollowRedirects(redirect);
             connection.setUseCaches(false);
             connection.setRequestMethod("GET");
             return this;
@@ -49,8 +50,7 @@ public class Get extends Request<Get> {
     }
 
     public static void main(String[] args) {
-        
-        Get get = Http.get("http://localhost:8080/manager/html").basic("tomcat", "tomcat");
+        Get get = Http.get("https://www.yahoo.com");
         System.out.println(get.text());
         System.out.println(get.headers());
         System.out.println(get.responseCode());

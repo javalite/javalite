@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ limitations under the License.
 
 package org.javalite.maven;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
@@ -29,11 +28,6 @@ import static org.javalite.common.Util.read;
  * @author Igor Polevoy: 3/15/12 2:56 PM
  */
 public class GitInfo {
-
-    public static void main(String[] args) throws IOException {
-        System.out.println(genHtml());
-    }
-
 
     protected static String genHtml() {
         StringBuilder html = new StringBuilder();

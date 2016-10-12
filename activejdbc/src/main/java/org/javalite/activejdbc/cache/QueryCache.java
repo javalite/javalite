@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -37,7 +37,7 @@ import static org.javalite.common.Util.*;
 public enum QueryCache {
     INSTANCE;
 
-    private static final Logger logger = LoggerFactory.getLogger(QueryCache.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(QueryCache.class);
 
     private final boolean enabled = Registry.instance().getConfiguration().cacheEnabled();
 
@@ -97,14 +97,14 @@ public enum QueryCache {
     }
 
     static void logAccess(String query, Object[] params, String access) {
-        if (logger.isInfoEnabled()) {
+        if (LOGGER.isInfoEnabled()) {
             StringBuilder log = new StringBuilder().append(access).append(", ").append('"').append(query).append('"');
             if (!empty(params)) {
                 log.append(", with parameters: ").append('<');
                 join(log, params, ">, <");
                 log.append('>');
             }
-            LogFilter.log(logger, log.toString());
+            LogFilter.log(LOGGER, log.toString());
         }
     }
 

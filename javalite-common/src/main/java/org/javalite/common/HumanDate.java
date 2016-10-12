@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -25,7 +25,7 @@ import java.util.Date;
 /**
  * This is a helper class for converting distance bewteen two dates to a human format, like:
  * "two days", "three months", etc.
- * <p/>
+ * <p></p>
  * It was inspired by a Rails helper method:
  * <a href="http://api.rubyonrails.org/classes/ActionView/Helpers/DateHelper.html#M001006">distance_of_time_in_words</a>
  *
@@ -53,8 +53,8 @@ public final class HumanDate
             throw new IllegalArgumentException("toTime must be >= fromTime");
         }
 
-        long distanceInSeconds = Math.round((toTime - fromTime) / 1000);
-        long distanceInMinutes = Math.round(distanceInSeconds / 60);
+        long distanceInSeconds = (toTime - fromTime) / 1000;
+        long distanceInMinutes = distanceInSeconds / 60;
 
         if (distanceInMinutes == 0) { return "less than a minute"; }
         if (distanceInMinutes == 1) { return "a minute"; }

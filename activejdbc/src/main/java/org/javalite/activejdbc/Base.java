@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2015 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import java.util.Properties;
  * types of queries, and executing SQL statements. This class differs from {@link DB} such that
  * in this class you a logical name for a connection is hard-coded to be "default". Use this class when you have
  * only one database.
- * <p/>
+ * <p></p>
  * This class is a convenience wrapper of {@link DB}
  *
  * @author Igor Polevoy

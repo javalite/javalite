@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2015 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ public class ModelInstrumentation {
 
         try {
             doInstrument(target);
+            target.detach();
             return target.toBytecode();
         } catch (Exception e) {
             throw new InstrumentationException(e);

@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2015 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -91,37 +91,37 @@ public class DefaultDialect implements Dialect {
         }
     }
 
-    protected void appendSubQuery(StringBuilder query, String subQuery) {
+    protected void appendSubQuery(StringBuilder queryBuilder, String subQuery) {
         if (!blank(subQuery)) {
             // this is only to support findFirst("order by..."), might need to revisit later
             if (!GROUP_BY_PATTERN.matcher(subQuery).find() && !ORDER_BY_PATTERN.matcher(subQuery).find()) {
-                query.append(" WHERE");
+                queryBuilder.append(" WHERE");
             }
-            query.append(' ').append(subQuery);
+            queryBuilder.append(' ').append(subQuery);
         }
     }
 
-    protected void appendSelect(StringBuilder query, String tableName, String tableAlias, String subQuery,
-            List<String> orderBys) {
+    protected void appendSelect(StringBuilder queryBuilder, String tableName, String[] columns, String tableAlias, String subQuery, List<String> orderBys) {
         if (tableName == null) {
-            query.append(subQuery);
+            queryBuilder.append(subQuery);
         } else {
             if (tableAlias == null) {
-                query.append("SELECT * FROM ").append(tableName);
+                String cols = columns == null? "*" : join(columns, ",");
+                queryBuilder.append("SELECT ").append(cols).append(" FROM ").append(tableName);
             } else {
-                query.append("SELECT ").append(tableAlias).append(".* FROM ").append(tableName).append(' ')
+                queryBuilder.append("SELECT ").append(tableAlias).append(".* FROM ").append(tableName).append(' ')
                         .append(tableAlias);
             }
-            appendSubQuery(query, subQuery);
+            appendSubQuery(queryBuilder, subQuery);
         }
-        appendOrderBy(query, orderBys);
+        appendOrderBy(queryBuilder, orderBys);
     }
 
     @Override
-    public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
-        StringBuilder fullQuery = new StringBuilder();
-        appendSelect(fullQuery, tableName, null, subQuery, orderBys);
-        return fullQuery.toString();
+    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset) {
+        StringBuilder queryBuilder = new StringBuilder();
+        appendSelect(queryBuilder, tableName, columns, null, subQuery, orderBys);
+        return queryBuilder.toString();
     }
 
     @Override
@@ -258,7 +258,7 @@ public class DefaultDialect implements Dialect {
         String idName = metaModel.getIdName();
 
         // don't include the id name in the SET portion
-        Map<String, Object> attributesWithoutId = new CaseInsensitiveMap<Object>(attributes);
+        Map<String, Object> attributesWithoutId = new CaseInsensitiveMap<>(attributes);
         attributesWithoutId.remove(idName);
 
         Iterator<Entry<String, Object>> it = attributesWithoutId.entrySet().iterator();

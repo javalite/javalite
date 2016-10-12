@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2015 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.*;
+import java.util.Map.Entry;
 
 import static org.javalite.activejdbc.ModelDelegate.metaModelFor;
 import static org.javalite.activejdbc.ModelDelegate.metaModelOf;
@@ -57,17 +58,17 @@ import static org.javalite.common.Util.*;
  */
 public abstract class Model extends CallbackSupport implements Externalizable {
 
-    private static final Logger logger = LoggerFactory.getLogger(Model.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Model.class);
 
-    private Map<String, Object> attributes = new CaseInsensitiveMap<Object>();
+    private Map<String, Object> attributes = new CaseInsensitiveMap<>();
     private final Set<String> dirtyAttributeNames = new CaseInsensitiveSet();
-    private boolean frozen = false;
+    private boolean frozen;
     private MetaModel metaModelLocal;
     private ModelRegistry modelRegistryLocal;
-    private final Map<Class, Model> cachedParents = new HashMap<Class, Model>();
-    private final Map<Class, List<Model>> cachedChildren = new HashMap<Class, List<Model>>();
+    private final Map<Class, Model> cachedParents = new HashMap<>();
+    private final Map<Class, List<Model>> cachedChildren = new HashMap<>();
     private boolean manageTime = true;
-    private boolean compositeKeyPersisted = false;
+    private boolean compositeKeyPersisted;
     private Errors errors = new Errors();
 
     protected Model() {
@@ -458,13 +459,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * load every row into a model instance before deleting, effectively calling (N + 1) per table queries to the DB, one to select all
      * the associated records (per table), and one delete statement per record. Use it for small data sets.
      *
-     * <p/>
+     * <p></p>
      * In cases of simple one to many and polymorphic associations, things are as expected, a parent is deleted an all children are
      * deleted as well, but in more complicated cases, this method will walk entire three of associated tables, sometimes
      * coming back to the same one where it all started.
      * It will follow associations of children and their associations too; consider this a true cascade delete with all implications
      * (circular dependencies, referential integrity constraints, potential performance bottlenecks, etc.)
-     * <p/>
+     * <p></p>
      *
      * Imagine a situation where you have DOCTORS and PATIENTS in many to many relationship (with DOCTORS_PATIENTS table
      * as a join table), and in addition PATIENTS and PRESCRIPTIONS in one to many relationship, where a patient might
@@ -519,7 +520,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * , the result is as expected: the DOCTORS:ID=3 is deleted, DOCTORS_PATIENTS:ID=4 is deleted, PATIENTS:ID=3 is deleted
      * and PRESCRIPTIONS:ID=5 is deleted.
      *
-     * <p/>
+     * <p></p>
      * However, when doctor Kentor(#1) is deleted, the following records are also deleted:
      * <ul>
      *     <li>DOCTORS_PATIENTS:ID=1, 2 - these are links to patients</li>
@@ -539,7 +540,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * Had doctor Hellen Hunt(#2) had more patients, it would delete them too, and so on. This goes a long way to say that it
      * could be easy to be tangled up in web of associations, so be careful out there.
      *
-     * <p/>
+     * <p></p>
      * After deletion, this instance becomes {@link #frozen()} and cannot be used anymore until {@link #thaw()} is called.
      */
     public void deleteCascade(){
@@ -570,7 +571,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
 
     private void deleteMany2ManyDeep(List<Many2ManyAssociation> many2ManyAssociations){
-        List<Model>  allMany2ManyChildren = new ArrayList<Model>();
+        List<Model>  allMany2ManyChildren = new ArrayList<>();
         for (Association association : many2ManyAssociations) {
             Class<? extends Model> targetModelClass = association.getTargetClass();
             allMany2ManyChildren.addAll(getAll(targetModelClass));
@@ -591,7 +592,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * The current record is deleted, as well as immediate children.
      * <h4>Many to many associations</h4>
      * The current record is deleted, as well as links in a join table. Nothing else is deleted.
-     * <p/>
+     * <p></p>
      * After deletion, this instance becomes {@link #frozen()} and cannot be used anymore until {@link #thaw()} is called.
      */
     public void deleteCascadeShallow(){
@@ -634,7 +635,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             String targetTableName = metaModelOf(association.getTargetClass()).getTableName();
             Class c = Registry.instance().getModelClass(targetTableName, false);
             if(c == null){// this model is probably not defined as a class, but the table exists!
-                logger.error("ActiveJDBC WARNING: failed to find a model class for: {}, maybe model is not defined for this table?"
+                LOGGER.error("ActiveJDBC WARNING: failed to find a model class for: {}, maybe model is not defined for this table?"
                         + " There might be a risk of running into integrity constrain violation if this model is not defined.",
                         targetTableName);
             }
@@ -738,12 +739,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * regardless how these names came from DB. This method is a convenience
      * method for displaying values on web pages.
      *
-     * <p/>
+     * <p></p>
      * If {@link LazyList#include(Class[])} method was used, and this
      * model belongs to a parent (as in many to one relationship), then the parent
      * will be eagerly loaded and also converted to a map. Parents' maps are keyed in the
      * returned map by underscored name of a parent model class name.
-     * <p/>
+     * <p></p>
      * For example, if this model were <code>Address</code>
      * and a parent is <code>User</code> (and user has many addresses), then the resulting map would
      * have all the attributes of the current table and another map representing a parent user with a
@@ -752,7 +753,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return all values of the model with all attribute names converted to lower case.
      */
     public Map<String, Object> toMap(){
-        Map<String, Object> retVal = new TreeMap<String, Object>();
+        Map<String, Object> retVal = new TreeMap<>();
         for (Map.Entry<String, Object> entry : attributes.entrySet()) {
             Object v = entry.getValue();
             if (v != null) {
@@ -764,18 +765,18 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             }
 
         }
-        for(Class parentClass: cachedParents.keySet()){
-            retVal.put(underscore(parentClass.getSimpleName()), cachedParents.get(parentClass).toMap());
+        for(Entry<Class, Model> parent: cachedParents.entrySet()){
+            retVal.put(underscore(parent.getKey().getSimpleName()), parent.getValue().toMap());
         }
 
-        for(Class childClass: cachedChildren.keySet()){
-            List<Model> children = cachedChildren.get(childClass);
+        for(Entry<Class, List<Model>> cachedChild: cachedChildren.entrySet()){
+            List<Model> children = cachedChild.getValue();
 
-            List<Map> childMaps = new ArrayList<Map>(children.size());
+            List<Map> childMaps = new ArrayList<>(children.size());
             for(Model child:children){
                 childMaps.add(child.toMap());
             }
-            retVal.put(tableize(childClass.getSimpleName()), childMaps);
+            retVal.put(tableize(cachedChild.getKey().getSimpleName()), childMaps);
         }
         return retVal;
     }
@@ -789,7 +790,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
           .append("', attributes: ").append(attributes);
 
         if (cachedParents.size() > 0) {
-            sb.append(", parents: ").append(cachedParents);
+            sb.append(", parent: ").append(cachedParents);
         }
 
         if (cachedChildren.size() > 0) {
@@ -812,7 +813,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new ByteArrayInputStream(xml.getBytes()));
             String attr = null;
             String chars = null;
-            Map<Object, Object> res = new HashMap<Object, Object>();
+            Map<Object, Object> res = new HashMap<>();
             while (reader.hasNext()) {
                 int event = reader.next();
                 switch (event) {
@@ -873,12 +874,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             sb.append("</").append(name).append('>');
             if (pretty) { sb.append('\n'); }
         }
-        for (Class childClass : cachedChildren.keySet()) {
+        for (Entry<Class, List<Model>> cachedChild : cachedChildren.entrySet()) {
             if (pretty) { sb.append("  ").append(indent); }
-            String tag = pluralize(underscore(childClass.getSimpleName()));
+            String tag = pluralize(underscore(cachedChild.getKey().getSimpleName()));
             sb.append('<').append(tag).append('>');
             if (pretty) { sb.append('\n'); }
-            for (Model child : cachedChildren.get(childClass)) {
+            for (Model child : cachedChild.getValue()) {
                 child.toXmlP(sb, pretty, "    " + indent);
             }
             if (pretty) { sb.append("  ").append(indent); }
@@ -985,7 +986,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             if (pretty) { sb.append("\n  ").append(indent); }
             sb.append("\"parents\":{");
 
-            List<Class> parentClasses = new ArrayList<Class>();
+            List<Class> parentClasses = new ArrayList<>();
             parentClasses.addAll(cachedParents.keySet());
             for (int i = 0; i < parentClasses.size(); i++) {
                 if (i > 0) { sb.append(','); }
@@ -998,10 +999,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                     sb.append('\n');
                 }
                 parent.toJsonP(sb, pretty, (pretty ? "      " + indent : ""));
-
-                if(i < (parentClasses.size() - 1)){
-                    sb.append(',');
-                }
 
                 if (pretty) {
                     sb.append("\n    ").append(indent);
@@ -1018,7 +1015,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             if (pretty) { sb.append("\n  ").append(indent); }
             sb.append("\"children\":{");
 
-            List<Class> childClasses = new ArrayList<Class>();
+            List<Class> childClasses = new ArrayList<>();
             childClasses.addAll(cachedChildren.keySet());
             for (int i = 0; i < childClasses.size(); i++) {
                 if (i > 0) { sb.append(','); }
@@ -1091,12 +1088,19 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * referential integrity is not enforced in DBMS with a foreign key constraint.
      *
      * @param parentClass   class of a parent model.
-     * @return instance of a parent of this instance in the "belongs to"  relationship.
+     * @return instance of a parent of this instance in the "belongs to"  relationship if found, ot null if not found.
      */
     public <P extends Model> P parent(Class<P> parentClass) {
         return parent(parentClass, false);
     }
 
+    /**
+     * Same as {@link #parent(Class)}, with additional argument.
+     *
+     * @param parentClass class of a parent model
+     * @param cache true to also cache a found instance for future reference.
+     * @return instance of a parent of this instance in the "belongs to"  relationship if found, ot null if not found.
+     */
     public <P extends Model> P parent(Class<P> parentClass, boolean cache) {
         P cachedParent = parentClass.cast(cachedParents.get(parentClass));
         if (cachedParent != null) {
@@ -1123,7 +1127,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
 
         if (fkValue == null) {
-            logger.debug("Attribute: {} is null, cannot determine parent. Child record: {}", fkName, this);
+            LOGGER.debug("Attribute: {} is null, cannot determine parent. Child record: {}", fkName, this);
             return null;
         }
 
@@ -1738,13 +1742,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     /**
      * This methods supports one to many, many to many relationships as well as polymorphic associations.
-     * <p/>
+     * <p></p>
      * In case of one to many, the <code>clazz</code>  must be a class of a child model, and it will return a
      * collection of all children.
-     * <p/>
+     * <p></p>
      * In case of many to many, the <code>clazz</code>  must be a class of a another related model, and it will return a
      * collection of all related models.
-     * <p/>
+     * <p></p>
      * In case of polymorphic, the <code>clazz</code>  must be a class of a polymorphically related model, and it will return a
      * collection of all related models.
      *
@@ -1772,13 +1776,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * Provides a list of child models in one to many, many to many and polymorphic associations, but in addition also allows to filter this list
      * by criteria.
      *
-     * <p/>
+     * <p></p>
      * <strong>1.</strong> For one to many, the criteria is against the child table.
      *
-     * <p/>
+     * <p></p>
      * <strong>2.</strong> For polymorphic association, the criteria is against the child table.
      *
-     * <p/>
+     * <p></p>
      * <strong>3.</strong> For many to many, the criteria is against the join table.
      * For example, if you have table PROJECTS, ASSIGNMENTS and PROGRAMMERS, where a project has many programmers and a programmer
      * has many projects, and ASSIGNMENTS is a join table, you can write code like this, assuming that the ASSIGNMENTS table
@@ -1821,7 +1825,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             Object[] allParams = new Object[params.length + 1];
             allParams[0] = getId();
             System.arraycopy(params, 0, allParams, 1, params.length);
-            return new LazyList<C>(true, metaModelOf(manyToManyAssociation.getTargetClass()), query, allParams);
+            return new LazyList<>(true, metaModelOf(manyToManyAssociation.getTargetClass()), query, allParams);
         } else if (oneToManyPolymorphicAssociation != null) {
             subQuery = "parent_id = ? AND " + " parent_type = '" + oneToManyPolymorphicAssociation.getTypeLabel() + "'" + additionalCriteria;
         } else {
@@ -1831,7 +1835,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         Object[] allParams = new Object[params.length + 1];
         allParams[0] = getId();
         System.arraycopy(params, 0, allParams, 1, params.length);
-        return new LazyList<C>(subQuery, targetMM, allParams);
+        return new LazyList<>(subQuery, targetMM, allParams);
     }
 
     protected static NumericValidationBuilder validateNumericalityOf(String... attributeNames) {
@@ -2092,6 +2096,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
          ModelDelegate.callbackWith(modelClass(), listeners);
     }
 
+    /**
+     * Sets  lifecycle listeners on current model. All previous listeners will be unregistered.
+     *
+     * @param listeners list of lifecycle listeners
+     */
     public static void callbackWith(CallbackListener... listeners) {
          ModelDelegate.callbackWith(modelClass(), listeners);
     }
@@ -2463,7 +2472,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <h3>Many to many associations</h3>
      * This method will remove an associated record from the join table, and will do nothing to the child model or record.
      *
-     * <p/>
+     * <p></p>
      * This method will throw a {@link NotAssociatedException} in case a model that has no relationship is passed.
      *
      * @param child model representing a "child" as in one to many or many to many association with this model.
@@ -2517,7 +2526,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * After this method, this instance is equivalent to an empty, just created instance.
      */
     public void reset() {
-        attributes = new CaseInsensitiveMap<Object>();
+        attributes = new CaseInsensitiveMap<>();
     }
 
     /**
@@ -2527,7 +2536,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * If a record was deleted, it is frozen and cannot be saved. After it is thawed, it can be saved again, but it will
      * generate a new insert statement and create a new record in the table with all the same attribute values.
      *
-     * <p/><p/>
+     * <p><p/>
      * Synonym for {@link #defrost()}.
      */
     public void thaw(){
@@ -2620,8 +2629,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         doUpdatedAt();
 
         MetaModel metaModel = metaModelLocal;
-        List<String> columns = new ArrayList<String>();
-        List<Object> values = new ArrayList<Object>();
+        List<String> columns = new ArrayList<>();
+        List<Object> values = new ArrayList<>();
         for (Map.Entry<String, Object> entry : attributes.entrySet()) {
             if (entry.getValue() != null && !metaModel.getVersionColumn().equals(entry.getKey())) {
                 columns.add(entry.getKey());
@@ -2742,7 +2751,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     private List<Object> getAttributeValues(Set<String> attributeNames) {
-        List<Object> values = new ArrayList<Object>();
+        List<Object> values = new ArrayList<>();
         for (String attribute : attributeNames) {
             values.add(get(attribute));
         }
@@ -2897,7 +2906,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     @Deprecated
     public String toInsert(Formatter... formatters){
-        HashMap<Class, Formatter> formatterMap = new HashMap<Class, Formatter>();
+        HashMap<Class, Formatter> formatterMap = new HashMap<>();
 
         for(Formatter f: formatters){
             formatterMap.put(f.getValueClass(), f);
@@ -2957,7 +2966,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        attributes = new CaseInsensitiveMap<Object>();
+        attributes = new CaseInsensitiveMap<>();
         attributes.putAll((Map<String, Object>) in.readObject());
     }
 }

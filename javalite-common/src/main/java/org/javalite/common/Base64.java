@@ -176,13 +176,6 @@ public class Base64 {
         private final boolean isURL;
         private final boolean doPadding;
 
-        private Encoder(boolean isURL, byte[] newline, int linemax, boolean doPadding) {
-            this.isURL = isURL;
-            this.newline = newline;
-            this.linemax = linemax;
-            this.doPadding = doPadding;
-        }
-
         /**
          * This array is a lookup table that translates 6-bit positive integer
          * index values into their "Base64 Alphabet" equivalents as specified
@@ -215,6 +208,13 @@ public class Base64 {
         static final Encoder RFC4648 = new Encoder(false, null, -1, true);
         static final Encoder RFC4648_URLSAFE = new Encoder(true, null, -1, true);
         static final Encoder RFC2045 = new Encoder(false, CRLF, MIMELINEMAX, true);
+        
+        private Encoder(boolean isURL, byte[] newline, int linemax, boolean doPadding) {
+            this.isURL = isURL;
+            this.newline = newline;
+            this.linemax = linemax;
+            this.doPadding = doPadding;
+        }
 
         private final int outLength(int srclen) {
             int len = 0;
@@ -451,11 +451,6 @@ public class Base64 {
         private final boolean isURL;
         private final boolean isMIME;
 
-        private Decoder(boolean isURL, boolean isMIME) {
-            this.isURL = isURL;
-            this.isMIME = isMIME;
-        }
-
         /**
          * Lookup table for decoding unicode characters drawn from the
          * "Base64 Alphabet" (as specified in Table 1 of RFC 2045) into
@@ -488,6 +483,11 @@ public class Base64 {
         static final Decoder RFC4648         = new Decoder(false, false);
         static final Decoder RFC4648_URLSAFE = new Decoder(true, false);
         static final Decoder RFC2045         = new Decoder(false, true);
+        
+        private Decoder(boolean isURL, boolean isMIME) {
+            this.isURL = isURL;
+            this.isMIME = isMIME;
+        }
 
         /**
          * Decodes all bytes from the input byte array using the {@link Base64}
@@ -733,15 +733,15 @@ public class Base64 {
      */
     private static class EncOutputStream extends FilterOutputStream {
 
-        private int leftover = 0;
+        private int leftover;
         private int b0, b1, b2;
-        private boolean closed = false;
+        private boolean closed;
 
         private final char[] base64;    // byte->base64 mapping
         private final byte[] newline;   // line separator, if needed
         private final int linemax;
         private final boolean doPadding;// whether or not to pad
-        private int linepos = 0;
+        private int linepos;
 
         EncOutputStream(OutputStream os, char[] base64,
                         byte[] newline, int linemax, boolean doPadding) {
@@ -848,21 +848,21 @@ public class Base64 {
         private final InputStream is;
         private final boolean isMIME;
         private final int[] base64;      // base64 -> byte mapping
-        private int bits = 0;            // 24-bit buffer for decoding
+        private int bits;            // 24-bit buffer for decoding
         private int nextin = 18;         // next available "off" in "bits" for input;
         // -> 18, 12, 6, 0
         private int nextout = -8;        // next available "off" in "bits" for output;
         // -> 8, 0, -8 (no byte for output)
-        private boolean eof = false;
-        private boolean closed = false;
+        private boolean eof;
+        private boolean closed;
 
+        private byte[] sbBuf = new byte[1];
+        
         DecInputStream(InputStream is, int[] base64, boolean isMIME) {
             this.is = is;
             this.base64 = base64;
             this.isMIME = isMIME;
         }
-
-        private byte[] sbBuf = new byte[1];
 
         @Override
         public int read() throws IOException {

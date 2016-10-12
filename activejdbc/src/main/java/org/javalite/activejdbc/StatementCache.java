@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -32,11 +32,11 @@ import static org.javalite.common.Util.*;
 enum StatementCache {
     INSTANCE;
 
-    static StatementCache instance() { return INSTANCE; }
-
-    private final ConcurrentMap<Connection, Map<String, PreparedStatement>> statementCache = new ConcurrentHashMap<Connection, Map<String, PreparedStatement>>();
+    private final ConcurrentMap<Connection, Map<String, PreparedStatement>> statementCache = new ConcurrentHashMap<>();
 
     private StatementCache() { }
+    
+    static StatementCache instance() { return INSTANCE; }
 
     PreparedStatement getPreparedStatement(Connection connection, String query) {
         if (!statementCache.containsKey(connection)) {

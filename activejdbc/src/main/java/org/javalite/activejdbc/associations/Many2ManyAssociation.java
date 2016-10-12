@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -73,6 +73,7 @@ public class Many2ManyAssociation extends Association {
         return getSourceClass().getSimpleName() + "  >---------<  " + getTargetClass().getSimpleName() + ", type: " + "many-to-many" + ", join: " + join;
     }
 
+    @Override
     public boolean equals(Object other) {
 
         if(other == null || !other.getClass().equals(getClass())){

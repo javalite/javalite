@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2015 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -26,22 +26,22 @@ import java.util.*;
  */
 class MetaModels {
 
-    private static final Logger logger = LoggerFactory.getLogger(MetaModels.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MetaModels.class);
 
     private final Map<String, MetaModel> metaModelsByTableName = new CaseInsensitiveMap<>();
     private final Map<Class<? extends Model>, MetaModel> metaModelsByClass = new HashMap<>();
     //these are all many to many associations across all models.
-    private final List<Many2ManyAssociation> many2ManyAssociations = new ArrayList<Many2ManyAssociation>();
+    private final List<Many2ManyAssociation> many2ManyAssociations = new ArrayList<>();
 
     void addMetaModel(MetaModel mm, Class<? extends Model> modelClass) {
         Object o = metaModelsByClass.put(modelClass, mm);
         if (o != null) {
-            logger.warn("Double-register: {}: {}", modelClass, o);
+            LOGGER.warn("Double-register: {}: {}", modelClass, o);
         }
         o = metaModelsByTableName.put(mm.getTableName(), mm);
         many2ManyAssociations.addAll(mm.getManyToManyAssociations(Collections.<Association>emptyList()));
         if (o != null) {
-            logger.warn("Double-register: {}: {}", mm.getTableName(), o);
+            LOGGER.warn("Double-register: {}: {}", mm.getTableName(), o);
         }
     }
 
@@ -55,7 +55,7 @@ class MetaModels {
 
     String[] getTableNames(String dbName) {
 
-        ArrayList<String> tableNames = new ArrayList<String>();
+        ArrayList<String> tableNames = new ArrayList<>();
         for (MetaModel metaModel : metaModelsByTableName.values()) {
             if (metaModel.getDbName().equals(dbName))
                 tableNames.add(metaModel.getTableName());
@@ -85,7 +85,7 @@ class MetaModels {
      * @return edges for a join.
      */
     protected List<String> getEdges(String join) {
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
         for (Many2ManyAssociation a : many2ManyAssociations) {
             if (a.getJoin().equalsIgnoreCase(join)) {
                 results.add(getMetaModel(a.getSourceClass()).getTableName());

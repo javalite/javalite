@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ public class Errors implements Map<String, String> {
 
     private Locale locale;
 
-    private final Map<String, Validator> validators = new CaseInsensitiveMap<Validator>();
+    private final Map<String, Validator> validators = new CaseInsensitiveMap<>();
 
 
     /**
@@ -149,7 +149,7 @@ public class Errors implements Map<String, String> {
 
     @Override
     public Collection<String> values() {
-        List<String> messageList = new ArrayList<String>();
+        List<String> messageList = new ArrayList<>();
         for(java.util.Map.Entry<String, Validator> v: validators.entrySet()){
             messageList.add(((Validator)v.getValue()).formatMessage(locale));
         }
@@ -183,11 +183,11 @@ public class Errors implements Map<String, String> {
 
     @Override
     public Set<Entry<String, String>> entrySet() {
-        Set<Entry<String, String>> entries = new LinkedHashSet<Entry<String, String>>();
+        Set<Entry<String, String>> entries = new LinkedHashSet<>();
 
-        for(Object key: validators.keySet()){
-            String value = validators.get(key).formatMessage(locale);
-            entries.add(new ErrorEntry(key.toString(), value));
+        for(Entry<String, Validator> validator: validators.entrySet()){
+            String value = validator.getValue().formatMessage(locale);
+            entries.add(new ErrorEntry(validator.getKey(), value));
         }
         return entries;
     }

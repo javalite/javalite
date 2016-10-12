@@ -21,7 +21,7 @@ To configure this plugin, add this block to your pom:
     <plugin>
         <groupId>com.javalite</groupId>
         <artifactId>git-info-maven-plugin</artifactId>
-        <version>1.4.10-SNAPSHOT</version>
+        <version>1.4.12</version>
         <executions>
             <execution>
                 <phase>compile</phase>

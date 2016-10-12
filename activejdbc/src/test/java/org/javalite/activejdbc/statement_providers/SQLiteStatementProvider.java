@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import java.util.List;
 public class SQLiteStatementProvider implements org.javalite.activejdbc.StatementProvider {
     public List<String> getPopulateStatements(String table) {
 
-        List<String> statements = new ArrayList<String>();
+        List<String> statements = new ArrayList<>();
         if (table.equals("people")) {
             statements =  Arrays.asList(
                     "INSERT INTO people (id, name, last_name, dob, graduation_date, created_at, updated_at) VALUES(1, 'John', 'Smith', '1934-12-01', '1954-12-01', datetime('now'), datetime('now'));",
@@ -203,7 +203,7 @@ public class SQLiteStatementProvider implements org.javalite.activejdbc.Statemen
             statements = Arrays.asList();
         }
 
-        ArrayList<String> all = new ArrayList<String>();
+        ArrayList<String> all = new ArrayList<>();
 
 //        all.add("ALTER TABLE " + table + " AUTO_INCREMENT=1;");
         all.addAll(statements);

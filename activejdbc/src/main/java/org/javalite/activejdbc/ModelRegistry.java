@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -35,15 +35,16 @@ import org.javalite.activejdbc.validation.Validator;
  * @author ericbn
  */
 class ModelRegistry {
-    private final List<CallbackListener> callbacks = new ArrayList<CallbackListener>();
-    private final Map<String, List<Converter>> attributeConverters = new CaseInsensitiveMap<List<Converter>>();
-    private final List<Validator> validators = new ArrayList<Validator>();
+    private final List<CallbackListener> callbacks = new ArrayList<>();
+    private final Map<String, List<Converter>> attributeConverters = new CaseInsensitiveMap<>();
+    private final List<Validator> validators = new ArrayList<>();
 
     void callbackWith(CallbackListener... listeners) {
         callbackWith(Arrays.asList(listeners));
     }
 
     void callbackWith(Collection<CallbackListener> callbacks) {
+        this.callbacks.clear();
         this.callbacks.addAll(callbacks);
     }
 
@@ -96,7 +97,7 @@ class ModelRegistry {
     void convertWith(Converter converter, String attribute) {
         List<Converter> list = attributeConverters.get(attribute);
         if (list == null) {
-            list = new ArrayList<Converter>();
+            list = new ArrayList<>();
             attributeConverters.put(attribute, list);
         }
         list.add(converter);
@@ -138,7 +139,7 @@ class ModelRegistry {
     }
 
     NumericValidationBuilder validateNumericalityOf(String... attributes) {
-        List<NumericValidator> list = new ArrayList<NumericValidator>();
+        List<NumericValidator> list = new ArrayList<>();
         for (String attribute : attributes) {
             NumericValidator validator = new NumericValidator(attribute);
             list.add(validator);
@@ -148,7 +149,7 @@ class ModelRegistry {
     }
 
     ValidationBuilder validatePresenceOf(String... attributes) {
-        List<Validator> list = new ArrayList<Validator>();
+        List<Validator> list = new ArrayList<>();
         for (String attribute : attributes) {
             list.add(new AttributePresenceValidator(attribute));
         }

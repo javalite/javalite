@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2015 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
     @Test
     public void shouldGenerateSimpleJson() {
         deleteAndPopulateTable("people");
-        Person p = Person.findById(1);
+        Person p = Person.findFirst("name = ? and last_name = ? ", "John", "Smith");
         //test no indent
         String json = p.toJson(false, "name", "last_name", "dob");
         Map  map = JsonHelper.toMap(json);
@@ -184,7 +184,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void shouldIncludeParents() {
+    public void shouldIncludeParent() {
         deleteAndPopulateTables("libraries", "books", "readers");
         List<Book> books = Book.findAll().orderBy(Book.getMetaModel().getIdName()).include(Reader.class, Library.class);
 
@@ -198,5 +198,26 @@ public class ToJsonSpec extends ActiveJDBCTest {
         Map library = libraries.get(0);
         a(library.get("address")).shouldBeEqual("124 Pine Street");
     }
-}
 
+
+    @Test @SuppressWarnings("unchecked")
+    public void shouldIncludeParents() {
+
+        deleteFromTable("computers");
+        deleteFromTable("motherboards");
+        deleteFromTable("keyboards");
+
+        populateTable("motherboards");
+        populateTable("keyboards");
+        populateTable("computers");
+
+        String json = Computer.findAll().include(Motherboard.class, Keyboard.class).toJson(true);
+        List list = org.javalite.common.JsonHelper.toList(json);
+        Map m = (Map) list.get(0);
+        Map parents = (Map) m.get("parents");
+        List motherboards = (List) parents.get("motherboards");
+        List keyboards = (List) parents.get("keyboards");
+        the(motherboards.size()).shouldBeEqual(1);
+        the(keyboards.size()).shouldBeEqual(1);
+    }
+}

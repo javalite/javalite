@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2015 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -156,7 +156,7 @@ public class PolymorphicAssociationsTest extends ActiveJDBCTest {
 
         final LazyList<Comment> comments = Comment.findAll().orderBy("id").include(Article.class, Post.class);
 
-        final List<Map> commentMaps = comments.toMaps();
+        final List<Map<String, Object>> commentMaps = comments.toMaps();
 
         final Map post = (Map) commentMaps.get(0).get("post");
         the(post.get("id")).shouldBeEqual(1);

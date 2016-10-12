@@ -9,22 +9,22 @@ import java.util.*;
 
 /**
  * Allows configuration of applications that is specific for different deployment environments.
- * <p/>
+ * <p></p>
  * Applications could have environment-specific files, whose names follow this pattern:
  * <code>environment.properties</code>, where <code>environment</code> is a name of a deployment environment, such as "development",
  * "staging", "production", etc.
 
  * You can also provide a global file, properties from which will be loaded in all environments: <code>global.properties</code>.
- * <p/>
+ * <p></p>
  * In all cases the files need to be on the classpath under directory/package <code>/app_config</code>.
- * <p/>
+ * <p></p>
  * Environment-specific file will have an "environment" part of the file name match to an environment variable called "ACTIVE_ENV".
  * Such configuration is easy to achieve in Unix shell:
- * <p/>
+ * <p></p>
  * <code>
  * export ACTIVE_ENV=test
  * </code>
- * <p/>
+ * <p></p>
  * If environment variable <code>ACTIVE_ENV</code> is missing, it defaults to "development".
  *
  * <p>
@@ -39,6 +39,10 @@ public class AppConfig implements Map<String, String> {
     private static Logger LOGGER = LoggerFactory.getLogger(AppConfig.class);
     private static HashMap<String, Property> props = new HashMap<String, Property>();
     private static HashMap<String, String> plainProps = new HashMap<String, String>();
+    
+    public AppConfig() {
+        init();
+    }
 
     public static synchronized void init() {
         if (isInited()) return;
@@ -156,11 +160,6 @@ public class AppConfig implements Map<String, String> {
 
 
     /////////// Implementation of Map interface below ///////////////////
-
-
-    public AppConfig() {
-        init();
-    }
 
     @Override
     public int size() {

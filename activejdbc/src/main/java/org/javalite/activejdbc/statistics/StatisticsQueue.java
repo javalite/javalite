@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -44,7 +44,7 @@ import java.util.concurrent.*;
 public class StatisticsQueue {
 
     private final ExecutorService worker;
-    private final ConcurrentMap<String, QueryStats> statsByQuery = new ConcurrentHashMap<String, QueryStats>();
+    private final ConcurrentMap<String, QueryStats> statsByQuery = new ConcurrentHashMap<>();
 
     private volatile boolean paused;
 
@@ -127,7 +127,7 @@ public class StatisticsQueue {
             throw new IllegalArgumentException("allowed values are: " + Arrays.toString(SortBy.values()));
         }
 
-        List<QueryStats> res = new ArrayList<QueryStats>(statsByQuery.values());
+        List<QueryStats> res = new ArrayList<>(statsByQuery.values());
         Collections.sort(res, sortBy.getComparator());
         return res;
     }

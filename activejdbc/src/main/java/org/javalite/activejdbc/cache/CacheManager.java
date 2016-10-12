@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -34,9 +34,9 @@ import static org.javalite.activejdbc.ModelDelegate.metaModelFor;
  * @author Igor Polevoy
  */
 public abstract class CacheManager {
-    private static final Logger logger = LoggerFactory.getLogger(CacheManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CacheManager.class);
 
-    List<CacheEventListener> listeners = new ArrayList<CacheEventListener>();
+    List<CacheEventListener> listeners = new ArrayList<>();
 
     /**
      * Returns a cached item. Can return null if not found.
@@ -71,10 +71,10 @@ public abstract class CacheManager {
             propagate(event);
         }
 
-        if (logger.isInfoEnabled()) {
+        if (LOGGER.isInfoEnabled()) {
             String message = "Cache purged: " + (event.getType() == CacheEvent.CacheEventType.ALL
                     ? "all caches" : "table: " + event.getGroup());
-            LogFilter.log(logger, message);
+            LogFilter.log(LOGGER, message);
         }
     }
 
@@ -83,7 +83,7 @@ public abstract class CacheManager {
             try{
                 listener.onFlush(event);
             }catch(Exception e){
-                logger.warn("failed to propagate cache event: {} to listener: {}", event, listener, e);
+                LOGGER.warn("failed to propagate cache event: {} to listener: {}", event, listener, e);
             }
         }
     }

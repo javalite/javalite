@@ -9,7 +9,7 @@ import static org.javalite.db_migrator.DbUtils.closeConnection;
 
 /**
  * Migrate to latest schema version.
- * <p/>
+ * <p></p>
  *
  * @goal migrate
  */

@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -26,12 +26,12 @@ public class Delete extends Request<Delete> {
     /**
      * Constructor for making DELETE requests.
      *
-     * @param uri URI of resource.
+     * @param url URL of resource.
      * @param connectTimeout connection timeout.
      * @param readTimeout read timeout.
      */
-    public Delete(String uri, int connectTimeout, int readTimeout) {
-        super(uri, connectTimeout, readTimeout);
+    public Delete(String url, int connectTimeout, int readTimeout) {
+        super(url, connectTimeout, readTimeout);
     }
 
     @Override
@@ -39,6 +39,7 @@ public class Delete extends Request<Delete> {
         try {
             connection.setDoOutput(true);
             connection.setRequestMethod("DELETE");
+            connection.setInstanceFollowRedirects(redirect);
             connection.connect();
             return this;
         } catch (Exception e) {

@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -245,7 +245,7 @@ public class XmlEntities {
         // TODO this class is not thread-safe
         protected final int growBy;
 
-        protected int size = 0;
+        protected int size;
 
         protected String[] names;
 

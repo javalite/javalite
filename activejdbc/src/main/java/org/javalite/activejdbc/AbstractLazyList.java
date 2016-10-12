@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2015 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -114,7 +114,7 @@ public abstract class AbstractLazyList<E> implements List<E>, RandomAccess {
         if (delegate != null) {
             delegate.clear();
         } else {
-            delegate = new ArrayList<E>();
+            delegate = new ArrayList<>();
         }
     }
 

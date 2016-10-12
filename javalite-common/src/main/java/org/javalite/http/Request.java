@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -35,6 +35,7 @@ public abstract class Request<T extends Request> {
 
     protected final HttpURLConnection connection;
     private boolean connected;
+    protected boolean redirect;
     protected final String url;
 
     public Request(String url, int connectTimeout, int readTimeout) {
@@ -61,6 +62,17 @@ public abstract class Request<T extends Request> {
         return (T) this;
     }
 
+    /**
+     * Configures this request to follow redirects. Default is <code>false</code>.
+     *
+     * @see <a href="https://docs.oracle.com/javase/7/docs/api/java/net/HttpURLConnection.html#instanceFollowRedirects">HttpURLConnection.html#instanceFollowRedirects</a>
+     * @param redirect true to follow, false to not.
+     * @return self
+     */
+    public T redirect(boolean redirect) {
+        this.redirect = redirect;
+        return (T) this;
+    }
 
     /**
      * Returns input stream to read server response from.
@@ -181,11 +193,11 @@ public abstract class Request<T extends Request> {
     /**
      * This method is already called from {@link #text()} and {@link #bytes()}, you do not have to call it if you use
      * those methods.
-     * <p/> 
+     * <p></p>
      * However, if you use {@link #getInputStream()}, call this method in those cases when you think you did
      * not read entire content from the stream.
      *
-     * <p/>
+     * <p></p>
      * This method clears all remaining data in connections after reading a response.
      * This will help keep-alive work smoothly.
      */

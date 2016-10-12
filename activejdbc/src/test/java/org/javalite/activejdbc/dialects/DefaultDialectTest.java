@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -65,23 +65,19 @@ public class DefaultDialectTest extends ActiveJDBCTest {
     @Test
     public void testFormSelectWithoutTableName() {
         final String fullQuery = "SELECT name FROM people";
-        a(dialect.formSelect(null, fullQuery, new ArrayList<String>(), 1, 1)).shouldBeEqual(fullQuery);
+        a(dialect.formSelect(null, new String[]{"name"}, fullQuery, new ArrayList<String>(), 1, 1)).shouldBeEqual(fullQuery);
     }
 
     @Test
     public void testFormSelectWithTableName() {
-        a(dialect.formSelect("people", null, new ArrayList<String>(), 1, 1)).shouldBeEqual("SELECT * FROM people");
-        a(dialect.formSelect("people", "name = ?", new ArrayList<String>(), 1, 1)).shouldBeEqual(
-                "SELECT * FROM people WHERE name = ?");
-        a(dialect.formSelect("people", "name = ?", Arrays.asList("name"), 1, 1)).shouldBeEqual(
-                "SELECT * FROM people WHERE name = ? ORDER BY name");
-        a(dialect.formSelect("people", null, Arrays.asList("last_name", "name"), 1, 1)).shouldBeEqual(
-                "SELECT * FROM people ORDER BY last_name, name");
+        a(dialect.formSelect("people", null, null, new ArrayList<String>(), 1, 1)).shouldBeEqual("SELECT * FROM people");
+        a(dialect.formSelect("people", null, "name = ?", new ArrayList<String>(), 1, 1)).shouldBeEqual("SELECT * FROM people WHERE name = ?");
+        a(dialect.formSelect("people", null, "name = ?", Arrays.asList("name"), 1, 1)).shouldBeEqual("SELECT * FROM people WHERE name = ? ORDER BY name");
+        a(dialect.formSelect("people", null, null, Arrays.asList("last_name", "name"), 1, 1)).shouldBeEqual("SELECT * FROM people ORDER BY last_name, name");
     }
 
     @Test
     public void testFormSelectWithOrderBy() {
-        a(dialect.formSelect("people", " ORDER  by last_name", new ArrayList<String>(), 1, 1)).shouldBeEqual(
-                "SELECT * FROM people  ORDER  by last_name");
+        a(dialect.formSelect("people", null, " ORDER  by last_name", new ArrayList<String>(), 1, 1)).shouldBeEqual("SELECT * FROM people  ORDER  by last_name");
     }
 }

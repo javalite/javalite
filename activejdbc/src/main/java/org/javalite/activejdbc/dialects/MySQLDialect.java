@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -25,11 +25,11 @@ import org.javalite.activejdbc.MetaModel;
  */
 public class MySQLDialect extends PostgreSQLDialect {
     @Override
-    public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
+    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset) {
         if (limit == -1L && offset != -1L) {
             throw new IllegalArgumentException("MySQL does not support OFFSET without LIMIT. OFFSET is a parameter of LIMIT function");
         }
-        return super.formSelect(tableName, subQuery, orderBys, limit, offset);
+        return super.formSelect(tableName, columns, subQuery, orderBys, limit, offset);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2015 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -49,9 +49,9 @@ public class IncludesTest extends ActiveJDBCTest{
     public void shouldBeAbleToIncludeChildrenOne2Many() {
         deleteAndPopulateTables("users", "addresses");
         LazyList<User> users = User.findAll().orderBy("id").include(Address.class);
-        List<Map> maps = users.toMaps();
+        List<Map<String, Object>> maps = users.toMaps();
 
-        Map user = maps.get(0);
+        Map<String, Object> user = maps.get(0);
         a(user.get("first_name")).shouldBeEqual("Marilyn");
         List<Map> addresses = (List<Map>)user.get("addresses");
         a(addresses.size()).shouldBeEqual(3);
@@ -76,7 +76,7 @@ public class IncludesTest extends ActiveJDBCTest{
         the(patientList).shouldBeTheSameAs(patientList1);
         the(patientList.get(0)).shouldBeTheSameAs(patientList1.get(0));
 
-        List<Map> doctorsMaps = doctors.toMaps();
+        List<Map<String, Object>> doctorsMaps = doctors.toMaps();
 
         List<Map> patients = (List<Map>)doctorsMaps.get(0).get("patients");
         a(patients.size()).shouldBeEqual(2);

@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -44,7 +44,7 @@ import org.slf4j.Logger;
  */
 public class ActiveJdbcFilter implements Filter {
 
-    private static final Logger logger = LoggerFactory.getLogger(ActiveJdbcFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActiveJdbcFilter.class);
 
     private String jndiName;
 
@@ -77,7 +77,7 @@ public class ActiveJdbcFilter implements Filter {
 
             Base.close();
         }
-        logger.info("Processing took: {} milliseconds", System.currentTimeMillis() - before);
+        LOGGER.info("Processing took: {} milliseconds", System.currentTimeMillis() - before);
     }
 
     @Override

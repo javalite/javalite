@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -24,7 +24,7 @@ public final class JSpec{
     }
     
     public static Expectation<Object> a(Object o1){
-        return new Expectation<Object>(o1);
+        return new Expectation<>(o1);
     }
 
     /**
@@ -43,16 +43,16 @@ public final class JSpec{
     }
 
     /**
-     * Works the same way as methods {@link JSpec#the(Object)} or {@link JSpec#a(Object)}, but takes generalized instance as parameter. <br/>
-     * For example you can't use it(12345).shouldBeEqual("12345"); you will get compilation error. <br/>
-     * You can perform checking only for the same type instances. <br/>
+     * Works the same way as methods {@link JSpec#the(Object)} or {@link JSpec#a(Object)}, but takes generalized instance as parameter. <b></b>
+     * For example you can't use it(12345).shouldBeEqual("12345"); you will get compilation error. <b></b>
+     * You can perform checking only for the same type instances. <b></b>
      *
      * Valid examples:
      * <ul>
      *   <li><code>it(1).shouldNotBeEqual(2)</code></li>
      *   <li><code>it("a").shouldNotBeEqual("b")</code></li>
      * </ul>     
-     * <br/>
+     * <b></b>
      * 
      * Not valid examples:
      * <ul>

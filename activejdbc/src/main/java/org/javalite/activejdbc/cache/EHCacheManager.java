@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2014 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * @author Igor Polevoy
  */
 public class EHCacheManager extends CacheManager {
-    private static final Logger logger = LoggerFactory.getLogger(EHCacheManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EHCacheManager.class);
     private final net.sf.ehcache.CacheManager cacheManager = net.sf.ehcache.CacheManager.create();
 
     @Override
@@ -37,7 +37,7 @@ public class EHCacheManager extends CacheManager {
             Cache c = cacheManager.getCache(group);
             return c.get(key) == null ? null : c.get(key).getObjectValue();
         } catch (Exception e) {
-            logger.warn("{}", e, e);
+            LOGGER.warn("{}", e, e);
             return null;
         }
     }

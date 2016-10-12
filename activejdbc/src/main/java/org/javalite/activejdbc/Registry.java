@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2015 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -42,13 +42,13 @@ public enum Registry {
     //our singleton!
     INSTANCE;
 
-    private static final Logger logger = LoggerFactory.getLogger(Registry.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Registry.class);
 
     private final MetaModels metaModels = new MetaModels();
-    private final Map<Class, ModelRegistry> modelRegistries = new HashMap<Class, ModelRegistry>();
+    private final Map<Class, ModelRegistry> modelRegistries = new HashMap<>();
     private final Configuration configuration = new Configuration();
     private final StatisticsQueue statisticsQueue;
-    private final Set<String> initedDbs = new HashSet<String>();
+    private final Set<String> initedDbs = new HashSet<>();
 
     private Registry() {
         statisticsQueue = configuration.collectStatistics()
@@ -127,14 +127,13 @@ public enum Registry {
                 throw new DBException("Failed to retrieve metadata from DB, connection: '" + dbName + "' is not available");
             }
             DatabaseMetaData databaseMetaData = c.getMetaData();
-            //TODO: this is called databaseProductName, dbType or dbProduct throughtout the code; use unique name?
-            String databaseProductName = c.getMetaData().getDatabaseProductName();
+            String dbType = c.getMetaData().getDatabaseProductName();
             List<Class<? extends Model>> modelClasses = ModelFinder.getModelsForDb(dbName);
-            registerModels(dbName, modelClasses, databaseProductName);
+            registerModels(dbName, modelClasses, dbType);
             String[] tables = metaModels.getTableNames(dbName);
 
             for (String table : tables) {
-                Map<String, ColumnMetadata> metaParams = fetchMetaParams(databaseMetaData, databaseProductName, table);
+                Map<String, ColumnMetadata> metaParams = fetchMetaParams(databaseMetaData, dbType, table);
                 registerColumnMetadata(table, metaParams);
             }
 
@@ -162,7 +161,7 @@ public enum Registry {
      * @return
      * @throws java.sql.SQLException
      */
-    private Map<String, ColumnMetadata> fetchMetaParams(DatabaseMetaData databaseMetaData, String databaseProductName, String table) throws SQLException {
+    private Map<String, ColumnMetadata> fetchMetaParams(DatabaseMetaData databaseMetaData, String dbType, String table) throws SQLException {
 
         /*
          * Valid table name format: tablename or schemaname.tablename
@@ -185,35 +184,39 @@ public enum Registry {
             throw new DBException("invalid table name: " + table);
         }
 
+        try {
+            schema = databaseMetaData.getConnection().getSchema();
+        } catch (AbstractMethodError | Exception ignore) {}
+
         if (tableName.startsWith("\"") && tableName.endsWith("\"")) {
             tableName = tableName.substring(1, tableName.length() - 1);
         }
 
         ResultSet rs = databaseMetaData.getColumns(null, schema, tableName, null);
-        String dbProduct = databaseMetaData.getDatabaseProductName().toLowerCase();
-        Map<String, ColumnMetadata> columns = getColumns(rs, dbProduct);
+
+        Map<String, ColumnMetadata> columns = getColumns(rs, dbType);
         rs.close();
 
         //try upper case table name - Oracle uses upper case
         if (columns.isEmpty()) {
             rs = databaseMetaData.getColumns(null, schema, tableName.toUpperCase(), null);
-            dbProduct = databaseProductName.toLowerCase();
-            columns = getColumns(rs, dbProduct);
+
+            columns = getColumns(rs, dbType);
             rs.close();
         }
 
         //if upper case not found, try lower case.
         if (columns.isEmpty()) {
             rs = databaseMetaData.getColumns(null, schema, tableName.toLowerCase(), null);
-            columns = getColumns(rs, dbProduct);
+            columns = getColumns(rs, dbType);
             rs.close();
         }
 
         if(columns.size() > 0){
-            LogFilter.log(logger, "Fetched metadata for table: {}", table);
+            LogFilter.log(LOGGER, "Fetched metadata for table: {}", table);
         }
         else{
-            logger.warn("Failed to retrieve metadata for table: '{}'."
+            LOGGER.warn("Failed to retrieve metadata for table: '{}'."
                     + " Are you sure this table exists? For some databases table names are case sensitive.",
                     table);
         }
@@ -230,7 +233,7 @@ public enum Registry {
         for (Class<? extends Model> modelClass : modelClasses) {
             MetaModel mm = new MetaModel(dbName, modelClass, dbType);
             metaModels.addMetaModel(mm, modelClass);
-            LogFilter.log(logger, "Registered model: {}", modelClass);
+            LogFilter.log(LOGGER, "Registered model: {}", modelClass);
         }
     }
 
@@ -318,11 +321,11 @@ public enum Registry {
 	}
 
 
-    private Map<String, ColumnMetadata> getColumns(ResultSet rs, String dbProduct) throws SQLException {
-        Map<String, ColumnMetadata> columns = new CaseInsensitiveMap<ColumnMetadata>();
+    private Map<String, ColumnMetadata> getColumns(ResultSet rs, String dbType) throws SQLException {
+        Map<String, ColumnMetadata> columns = new CaseInsensitiveMap<>();
         while (rs.next()) {
             // skip h2 INFORMATION_SCHEMA table columns.
-            if (!"h2".equals(dbProduct) || !"INFORMATION_SCHEMA".equals(rs.getString("TABLE_SCHEM"))) {
+            if (!"h2".equals(dbType) || !"INFORMATION_SCHEMA".equals(rs.getString("TABLE_SCHEM"))) {
                 ColumnMetadata cm = new ColumnMetadata(rs.getString("COLUMN_NAME"), rs.getString("TYPE_NAME"), rs.getInt("COLUMN_SIZE"));
                 columns.put(cm.getColumnName(), cm);
             }

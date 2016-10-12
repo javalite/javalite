@@ -11,7 +11,7 @@ import static org.javalite.db_migrator.DbUtils.closeConnection;
 
 /**
  * Validate current schema against available migrations.
- * <p/>
+ * <p></p>
  *
  * @goal validate
  */

@@ -5,6 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +16,7 @@ import static org.javalite.db_migrator.DbUtils.exec;
 
 
 public class Migration implements Comparable {
-    private static final Logger logger = LoggerFactory.getLogger(Migration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Migration.class);
     private static final String DEFAULT_DELIMITER = ";";
     private static final String DELIMITER_KEYWORD = "DELIMITER";
     private static final String[] COMMENT_CHARS = new String[]{"--", "#", "//"};
@@ -35,8 +38,7 @@ public class Migration implements Comparable {
     }
 
     public void migrate(String encoding) throws Exception {
-        String file = Util.readFile(migrationFile.getCanonicalPath(), encoding == null ? "UTF-8" : encoding);
-        String[] lines = file.split(System.getProperty("line.separator"));
+        List<String> lines = Files.readAllLines(Paths.get(migrationFile.getCanonicalPath()), encoding != null ? Charset.forName(encoding) : Charset.defaultCharset());
         String delimiter = DEFAULT_DELIMITER;
         List<String> statements = new ArrayList<>();
         try {
@@ -65,7 +67,7 @@ public class Migration implements Comparable {
                 exec(statement);
             }
         } catch (Exception e) {
-            logger.error("Error executing migration file: {}", migrationFile.getCanonicalPath(), e);
+            LOGGER.error("Error executing migration file: {}", migrationFile.getCanonicalPath(), e);
             throw e;
         }
     }

@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2015 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
+import java.io.Closeable;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,9 +41,9 @@ import static org.javalite.common.Util.empty;
  * @author Igor Polevoy
  * @author Eric Nielsen
  */
-public class DB {
+public class DB implements Closeable{
 
-    private static final Logger logger = LoggerFactory.getLogger(DB.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DB.class);
     static final Pattern SELECT_PATTERN = Pattern.compile("^\\s*SELECT",
             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
     static final Pattern INSERT_PATTERN = Pattern.compile("^\\s*INSERT",
@@ -59,6 +60,15 @@ public class DB {
      */
     public DB(String name) {
         this.name = name;
+    }
+
+    /**
+     * Creates a new DB object representing a connection to a DB with default name.
+     *
+     * Calling this constructor is equivalent to <code>new DB(DB.DEFAULT_NAME)</code>.
+     */
+    public DB() {
+        this.name = DEFAULT_NAME;
     }
 
     /**
@@ -119,17 +129,18 @@ public class DB {
 
     /**
      * This method will open a connection defined in the file 'database.properties' located at
-     * root of classpath. The connection picked from the file is defined by <code>ACTIVE_ENV</code>
-     * environment variable. If this variable is not defined, it defaults to 'development' environment.
+     * root of classpath. The connection picked up from the file is defined by <code>ACTIVE_ENV</code>
+     * environment variable or <code>active_env</code> system property.
+     * If this variable is not defined, it defaults to 'development' environment.
      *
+     * <p></p>
      * If there is JUnit on classpath, this method assumes it is running under test, and defaults to 'test'.
      *
+     * @see Configuration#getEnvironment()
      */
     public void open(){
-
         Configuration config = Registry.instance().getConfiguration();
         ConnectionSpec spec = config.getCurrentConnectionSpec();
-        String conf = config.getEnvironment();
         if(spec == null){
             throw new DBException("Could not find configuration in a property file for environment: " + config.getEnvironment() +
                     ". Are you sure you have a database.properties file configured?");
@@ -161,7 +172,7 @@ public class DB {
             ConnectionsAccess.detach(name); // let's free the thread from connection
             StatementCache.instance().cleanStatementCache(connection);
         } catch (DBException e) {
-            logger.warn("Could not close connection! MUST INVESTIGATE POTENTIAL CONNECTION LEAK!", e);
+            LOGGER.warn("Could not close connection! MUST INVESTIGATE POTENTIAL CONNECTION LEAK!", e);
         }
         return connection;
     }
@@ -289,10 +300,10 @@ public class DB {
             }
             StatementCache.instance().cleanStatementCache(connection);
             connection.close();
-            LogFilter.log(logger, "Closed connection: {}", connection);
+            LogFilter.log(LOGGER, "Closed connection: {}", connection);
         } catch (Exception e) {
             if (!suppressWarning) {
-                logger.warn("Could not close connection! MUST INVESTIGATE POTENTIAL CONNECTION LEAK!", e);
+                LOGGER.warn("Could not close connection! MUST INVESTIGATE POTENTIAL CONNECTION LEAK!", e);
             }
         } finally {
             ConnectionsAccess.detach(name); // let's free the thread from connection
@@ -354,7 +365,7 @@ public class DB {
             if (rs.next()) {
                 result = rs.getObject(1);
             }
-            LogFilter.logQuery(logger, query, params, start);
+            LogFilter.logQuery(LOGGER, query, params, start);
             return result;
         } catch (SQLException e) {
             throw new DBException(query, params, e);
@@ -394,7 +405,7 @@ public class DB {
                 results.add(row);
             }
         });
-        LogFilter.logQuery(logger, query, params, start);
+        LogFilter.logQuery(LOGGER, query, params, start);
         return results;
     }
 
@@ -426,7 +437,7 @@ public class DB {
             while (rs.next()) {
                 results.add(rs.getObject(1));
             }
-            LogFilter.logQuery(logger, query, params, start);
+            LogFilter.logQuery(LOGGER, query, params, start);
             return results;
         } catch (SQLException e) {
             throw new DBException(query, params, e);
@@ -451,7 +462,7 @@ public class DB {
      */
     public List<Map> findAll(String query) {
 
-        final ArrayList<Map> results = new ArrayList<Map>();
+        final ArrayList<Map> results = new ArrayList<>();
         long start = System.currentTimeMillis();
         find(query).with(new RowListenerAdapter() {
             @Override public void onNext(Map<String, Object> row) {
@@ -459,7 +470,7 @@ public class DB {
             }
         });
 
-        LogFilter.logQuery(logger, query, null, start);
+        LogFilter.logQuery(LOGGER, query, null, start);
         return results;
     }
 
@@ -557,7 +568,7 @@ public class DB {
         try {
             s = connection().createStatement();
             int count = s.executeUpdate(query);
-            LogFilter.logQuery(logger, query, null, start);
+            LogFilter.logQuery(LOGGER, query, null, start);
             return count;
         } catch (SQLException e) {
             logException("Query failed: " + query, e);
@@ -585,7 +596,7 @@ public class DB {
             ps = connection().prepareStatement(query);
             setParameters(ps, params);
             int count = ps.executeUpdate();
-            LogFilter.logQuery(logger, query, params, start);
+            LogFilter.logQuery(LOGGER, query, params, start);
             return count;
         } catch (SQLException e) {
             logException("Failed query: " + query, e);
@@ -650,13 +661,13 @@ public class DB {
                 rs = ps.getGeneratedKeys();
                 if (rs.next()) {
                     Object id = rs.getObject(1);
-                    LogFilter.logQuery(logger, query, params, start);
+                    LogFilter.logQuery(LOGGER, query, params, start);
                     return id;
                 } else {
                     return -1;
                 }
             } catch (SQLException e) {
-                logger.error("Failed to find out the auto-incremented value, returning -1, query: {}", query, e);
+                LOGGER.error("Failed to find out the auto-incremented value, returning -1, query: {}", query, e);
                 return -1;
             } finally {
                 closeQuietly(rs);
@@ -670,8 +681,8 @@ public class DB {
     }
 
     private void logException(String message, Exception e) {
-        if (logger.isErrorEnabled() && Convert.toBoolean(System.getProperty("activejdbc.log_exception")))
-            logger.error(message, e);
+        if (LOGGER.isErrorEnabled() && Convert.toBoolean(System.getProperty("activejdbc.log_exception")))
+            LOGGER.error(message, e);
     }
 
     /**
@@ -684,7 +695,7 @@ public class DB {
                 throw new DBException("Cannot open transaction, connection '" + name + "' not available");
             }
             c.setAutoCommit(false);
-            LogFilter.log(logger, "Transaction opened");
+            LogFilter.log(LOGGER, "Transaction opened");
         } catch (SQLException ex) {
             throw new DBException(ex.getMessage(), ex);
         }
@@ -701,7 +712,7 @@ public class DB {
                 throw new DBException("Cannot commit transaction, connection '" + name + "' not available");
             }
             c.commit();
-            LogFilter.log(logger, "Transaction committed");
+            LogFilter.log(LOGGER, "Transaction committed");
         } catch (SQLException ex) {
             throw new DBException(ex.getMessage(), ex);
         }
@@ -717,7 +728,7 @@ public class DB {
                 throw new DBException("Cannot rollback transaction, connection '" + name + "' not available");
             }
             c.rollback();
-            LogFilter.log(logger, "Transaction rolled back");
+            LogFilter.log(LOGGER, "Transaction rolled back");
         } catch (SQLException ex) {
             throw new DBException(ex.getMessage(), ex);
         }
@@ -761,7 +772,7 @@ public class DB {
      * @return a names' list of current connections.
      */
     public static List<String> getCurrrentConnectionNames(){
-        return new ArrayList<String>(ConnectionsAccess.getConnectionMap().keySet());
+        return new ArrayList<>(ConnectionsAccess.getConnectionMap().keySet());
     }
 
     /**

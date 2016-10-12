@@ -36,7 +36,7 @@ import static org.javalite.common.Util.*;
  * @author Eric Nielsen
  */
 public final class ModelDelegate {
-    private static final Logger logger = LoggerFactory.getLogger(ModelDelegate.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelDelegate.class);
 
     private ModelDelegate() {
         // not instantiable
@@ -215,7 +215,7 @@ public final class ModelDelegate {
     }
     
     public static <T extends Model> LazyList<T> findBySql(Class<T> clazz, String fullQuery, Object... params) {
-        return new LazyList<T>(false, metaModelOf(clazz), fullQuery,  params);
+        return new LazyList<>(false, metaModelOf(clazz), fullQuery, params);
     }
 
     public static <T extends Model> T findFirst(Class<T> clazz, String subQuery, Object... params) {
@@ -234,7 +234,7 @@ public final class ModelDelegate {
                 listener.onModel(instance(row, metaModel, clazz));
             }
         });
-        LogFilter.logQuery(logger, sql, null, start);
+        LogFilter.logQuery(LOGGER, sql, null, start);
     }
 
     static <T extends Model> T instance(Map<String, Object> map, MetaModel metaModel) {
@@ -401,7 +401,7 @@ public final class ModelDelegate {
                         "cannot provide parameters with query: '*', use findAll() method instead");
             }
         }
-        return new LazyList<T>(subquery, metaModelOf(clazz), params);
+        return new LazyList<>(subquery, metaModelOf(clazz), params);
     }
 
     public static void zeroToNull(Class<? extends Model> clazz, String... attributeNames) {

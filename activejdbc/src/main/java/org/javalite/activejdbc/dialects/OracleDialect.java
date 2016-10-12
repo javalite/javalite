@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2015 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ public class OracleDialect extends DefaultDialect {
      *
      * @param tableName name of table. If table name is null, then the subQuery parameter is considered to be a full query, and all that needs to be done is to
      * add limit, offset and order bys
+     * @param columns not used in this implementation.
      * @param subQuery sub query, something like: "name = ? AND ssn = ?". It can be blank: "" or null;
      * @param orderBys collection of order by: "dob desc" - one example
      * @param limit limit value, -1 if not needed.
@@ -49,7 +50,7 @@ public class OracleDialect extends DefaultDialect {
      * Can't think of an uglier thing. Shame on you, Oracle.
      */
     @Override
-    public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
+    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset) {
 
         boolean needLimit = limit != -1L;
         boolean needOffset = offset != -1L;
@@ -61,7 +62,7 @@ public class OracleDialect extends DefaultDialect {
             fullQuery.append("SELECT * FROM (SELECT t2.* FROM (");
         }
         //TODO check if this can be simplified removing the alias t
-        appendSelect(fullQuery, tableName, (needLimit || needOffset) ? "t" : null, subQuery, orderBys);
+        appendSelect(fullQuery, tableName, null, (needLimit || needOffset) ? "t" : null, subQuery, orderBys);
 
         if (needOffset) {
             // Oracle offset starts with 1, not like MySQL with 0;

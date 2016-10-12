@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2015 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -25,9 +25,9 @@ import java.util.Map;
 public class ModelFinder {
 
     //this is a map of lists of model classes. Keys are names of databases as specified in the models' @DbName annotations.
-    private static final Map<String, List<Class<? extends Model>>> modelClasses = new HashMap<String, List<Class<? extends Model>>>();
+    private static final Map<String, List<Class<? extends Model>>> modelClasses = new HashMap<>();
 
-    private static final List<String> modelClassNames = new ArrayList<String>();
+    private static final List<String> modelClassNames = new ArrayList<>();
 
     private ModelFinder() {
         
