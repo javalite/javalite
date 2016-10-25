@@ -44,6 +44,9 @@ public class Configuration {
     private Map<String, ConnectionSpec> connectionSpecMap = new HashMap<>();
 
     protected Configuration(){
+
+        loadConnectionsSpecs();
+
         try {
             Enumeration<URL> resources = getClass().getClassLoader().getResources("activejdbc_models.properties");
             while (resources.hasMoreElements()) {
@@ -104,7 +107,6 @@ public class Configuration {
         }else{
             cacheManager = new NopeCacheManager();
         }
-        loadConnectionsSpecs();
     }
 
     private void loadConnectionsSpecs() {
