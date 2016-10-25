@@ -1,9 +1,10 @@
 package org.javalite.activejdbc.dialects;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.javalite.activejdbc.CaseInsensitiveMap;
 import org.javalite.activejdbc.DBException;
 import org.javalite.activejdbc.MetaModel;
 
@@ -124,5 +125,94 @@ public class MSSQLDialect extends DefaultDialect {
     @Override
     protected void appendTimestamp(StringBuilder query, java.sql.Timestamp value) {
         query.append("CONVERT(datetime2, '").append(value.toString()).append("')");
+    }
+
+    @Override
+    public String insertParametrized(MetaModel metaModel, List<String> columns, boolean containsId) {
+        StringBuilder query = new StringBuilder().append("INSERT INTO ").append(metaModel.getTableName()).append(' ');
+        if (columns.isEmpty()) {
+            appendEmptyRow(metaModel, query);
+        } else {
+            boolean addIdGeneratorCode = (!containsId && metaModel.getIdGeneratorCode() != null);
+            query.append('(');
+            if (addIdGeneratorCode) {
+                query.append(metaModel.getIdName()).append(", ");
+            }
+            query.append("[");
+            join(query, columns, "], [");
+            query.append("]) VALUES (");
+            query.append(") VALUES (");
+            if (addIdGeneratorCode) {
+                query.append(metaModel.getIdGeneratorCode()).append(", ");
+            }
+            appendQuestions(query, columns.size());
+            query.append(')');
+        }
+        return query.toString();
+    }
+
+    @Override
+    public String insert(MetaModel metaModel, Map<String, Object> attributes) {
+        StringBuilder query = new StringBuilder().append("INSERT INTO ").append(metaModel.getTableName()).append(' ');
+        if (attributes.isEmpty()) {
+            appendEmptyRow(metaModel, query);
+        } else {
+            boolean addIdGeneratorCode = (metaModel.getIdGeneratorCode() != null
+                    && attributes.get(metaModel.getIdName()) == null); // do not use containsKey
+            query.append('(');
+            if (addIdGeneratorCode) {
+                query.append(metaModel.getIdName()).append(", ");
+            }
+            query.append("[");
+            join(query, attributes.keySet(), "], [");
+            query.append("]) VALUES (");
+            if (addIdGeneratorCode) {
+                query.append(metaModel.getIdGeneratorCode()).append(", ");
+            }
+            Iterator<Object> it = attributes.values().iterator();
+            appendValue(query, it.next());
+            while (it.hasNext()) {
+                query.append(", ");
+                appendValue(query, it.next());
+            }
+            query.append(')');
+        }
+        return query.toString();
+    }
+
+    @Override
+    public String update(MetaModel metaModel, Map<String, Object> attributes) {
+        if (attributes.isEmpty()) {
+            throw new NoSuchElementException("No attributes set, can't create an update statement.");
+        }
+        StringBuilder query = new StringBuilder().append("UPDATE ").append(metaModel.getTableName()).append(" SET ");
+        String idName = metaModel.getIdName();
+
+        // don't include the id name in the SET portion
+        Map<String, Object> attributesWithoutId = new CaseInsensitiveMap<>(attributes);
+        attributesWithoutId.remove(idName);
+
+        Iterator<Map.Entry<String, Object>> it = attributesWithoutId.entrySet().iterator();
+        for (;;) {
+            Map.Entry<String, Object> attribute = it.next();
+            query.append("[").append(attribute.getKey()).append("] = ");
+            appendValue(query, attribute.getValue()); // Accommodates the different types
+            if (it.hasNext()) {
+                query.append(", ");
+            } else {
+                break;
+            }
+        }
+
+        if (metaModel.getCompositeKeys() == null){
+            query.append(" WHERE ").append(idName).append(" = ").append(attributes.get(idName));
+        } else {
+            String[] compositeKeys = metaModel.getCompositeKeys();
+            for (int i = 0; i < compositeKeys.length; i++) {
+                query.append(i == 0 ? " WHERE " : " AND ").append("[").append(compositeKeys[i]).append("]").append(" = ");
+                appendValue(query, attributes.get(compositeKeys[i]));
+            }
+        }
+        return query.toString();
     }
 }
