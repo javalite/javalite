@@ -287,7 +287,7 @@ public class HttpSupportSpec extends RequestSpec{
     public void shouldConvertJSONList() throws IOException, ServletException {
         request.setServletPath("/json/list");
         request.setMethod("POST");
-        request.setContentType("application/json");
+        request.setContentType("application/json; charset=UTF-8"); // additional  value of Content-type
 
         request.setContent("[1,2,3]".getBytes());
         dispatcher.doFilter(request, response, filterChain);

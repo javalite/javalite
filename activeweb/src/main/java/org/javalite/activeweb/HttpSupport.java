@@ -1752,7 +1752,7 @@ public class HttpSupport {
     }
 
     private void checkJsonContentType(){
-        if(!(header("Content-Type") != null && header("Content-Type").equals("application/json")) ){
+        if(!(header("Content-Type") != null && header("Content-Type").toLowerCase().contains("application/json")) ){
             throw new WebException("Trying to convert JSON to object, but Content-Type is " + header("Content-Type") + ", not 'application/json'");
         }
     }
