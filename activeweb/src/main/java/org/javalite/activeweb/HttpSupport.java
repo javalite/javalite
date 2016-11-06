@@ -634,7 +634,14 @@ public class HttpSupport {
         return RequestUtils.getRequestPort();
     }
 
-
+    /**
+     * Direct access to current <code>HttpServletRequest</code> for low level operations.
+     *
+     * @return instance of current <code>HttpServletRequest</code>.
+     */
+    protected HttpServletRequest getHttpServletRequest(){
+        return Context.getHttpRequest();
+    }
 
     /**
      * Returns port on which the of the server received current request.
