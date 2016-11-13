@@ -28,6 +28,7 @@ import org.javalite.activejdbc.validation.ValidationException;
 import org.javalite.activejdbc.validation.Validator;
 import org.javalite.common.Convert;
 import org.javalite.common.Escape;
+import org.javalite.common.Jsonizable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +57,7 @@ import static org.javalite.common.Util.*;
  * @author Igor Polevoy
  * @author Eric Nielsen
  */
-public abstract class Model extends CallbackSupport implements Externalizable {
+public abstract class Model extends CallbackSupport implements Externalizable, Jsonizable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Model.class);
 
@@ -195,14 +196,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
 
-
     /**
      * Hydrates a this instance of model from a map. Only picks values from a map that match
      * this instance's attribute names, while ignoring the others.
      *
      * @param attributesMap map containing values for this instance.
      */
-    protected void hydrate(Map<String, Object> attributesMap, boolean fireAfterLoad) {
+    public void hydrate(Map<String, Object> attributesMap) {
 
         Set<String> attributeNames = metaModelLocal.getAttributeNames();
         for (Map.Entry<String, Object> entry : attributesMap.entrySet()) {
@@ -215,13 +215,25 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 }
             }
         }
+    }
+
+    /**
+     * Hydrates a this instance of model from a map. Only picks values from a map that match
+     * this instance's attribute names, while ignoring the others.
+     *
+     * @param attributesMap map containing values for this instance.
+     * @param fireAfterLoad tru to  fire events after load.
+     */
+    protected void hydrate(Map<String, Object> attributesMap, boolean fireAfterLoad) {
+
+        hydrate(attributesMap);
+
         if (getCompositeKeys() != null){
         	compositeKeyPersisted = true;
         }
         if(fireAfterLoad){
             fireAfterLoad();
         }
-
     }
 
 
@@ -952,15 +964,28 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public String toJson(boolean pretty, String... attributeNames) {
         StringBuilder sb = new StringBuilder();
-        toJsonP(sb, pretty, "", attributeNames);
+        toJsonP(sb, pretty, false, "", attributeNames);
         return sb.toString();
     }
 
-    protected void toJsonP(StringBuilder sb, boolean pretty, String indent, String... attributeNames) {
+
+
+    @Override
+    public String toJSON() {
+        StringBuilder sb = new StringBuilder();
+        toJsonP(sb, false, true, "");
+        return sb.toString();
+    }
+
+    protected void toJsonP(StringBuilder sb, boolean pretty, boolean includeClass,  String indent, String... attributeNames) {
         if (pretty) { sb.append(indent); }
         sb.append('{');
 
         String[] names = !empty(attributeNames) ? attributeNames : attributeNamesLowerCased();
+
+        if(includeClass){
+            sb.append("\"_className\" : \"").append(getClass().getName()).append("\",");
+        }
         for (int i = 0; i < names.length; i++) {
             if (i > 0) { sb.append(','); }
             if (pretty) { sb.append("\n  ").append(indent); }
@@ -998,7 +1023,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 if (pretty) {
                     sb.append('\n');
                 }
-                parent.toJsonP(sb, pretty, (pretty ? "      " + indent : ""));
+                parent.toJsonP(sb, pretty, includeClass, (pretty ? "      " + indent : ""));
 
                 if (pretty) {
                     sb.append("\n    ").append(indent);
@@ -1028,7 +1053,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 for (int j = 0; j < child.size(); j++) {
                     if (j > 0) { sb.append(','); }
                     if (pretty) { sb.append('\n'); }
-                    child.get(j).toJsonP(sb, pretty, (pretty ? "      " + indent : ""));
+                    child.get(j).toJsonP(sb, pretty, includeClass, (pretty ? "      " + indent : ""));
                 }
 
                 if (pretty) { sb.append("\n    ").append(indent); }

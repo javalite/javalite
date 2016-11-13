@@ -17,10 +17,13 @@ limitations under the License.
 package org.javalite.activejdbc;
 
 
-import com.fasterxml.jackson.databind.JsonNode;
+
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+import org.codehaus.jackson.JsonNode;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.*;
+import org.javalite.common.JsonHelper;
+import org.javalite.common.Jsonizable;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -219,5 +222,23 @@ public class ToJsonSpec extends ActiveJDBCTest {
         List keyboards = (List) parents.get("keyboards");
         the(motherboards.size()).shouldBeEqual(1);
         the(keyboards.size()).shouldBeEqual(1);
+    }
+
+    @Test
+    public void shouldJsonizeAndDeJsonizeModel(){
+
+        Person p = Person.create("name", "Joe", "last_name", "Schmoe");
+        //Convert:
+        String json = JsonHelper.toJson(p);
+        //Test:
+        Map m = JsonHelper.toMap(json);
+        a(m.get("_className")).shouldBeEqual("org.javalite.activejdbc.test_models.Person");
+        a(m.get("name")).shouldBeEqual("Joe");
+        a(m.get("last_name")).shouldBeEqual("Schmoe");
+
+        Person person = JsonHelper.fromJson(json, Person.class);
+
+        a(person.get("name")).shouldBeEqual("Joe");
+        a(person.get("last_name")).shouldBeEqual("Schmoe");
     }
 }

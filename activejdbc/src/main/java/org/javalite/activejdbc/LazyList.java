@@ -252,7 +252,7 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
                 sb.append(',');
                 if (pretty) { sb.append('\n'); }
             }
-            delegate.get(i).toJsonP(sb, pretty, (pretty ? "  " : ""), attrs);
+            delegate.get(i).toJsonP(sb, pretty, false, (pretty ? "  " : ""), attrs);
         }
         if (pretty) { sb.append('\n'); }
         sb.append(']');

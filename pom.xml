@@ -90,7 +90,7 @@
                         </includes>
                         <systemPropertyVariables>
                             <oracle.jdbc.J2EE13Compliant>true</oracle.jdbc.J2EE13Compliant>
-                            <activejdbc.log />
+                            <!--<activejdbc.log />-->
                         </systemPropertyVariables>
                     </configuration>
                 </plugin>

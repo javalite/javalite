@@ -1,5 +1,7 @@
 package org.javalite.common;
 
+
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 
@@ -13,12 +15,10 @@ import java.util.Map;
  * @author Igor Polevoy on 5/26/16.
  */
 
-public class JsonHelper {
+public class JsonHelper<T> {
     private static final ObjectMapper mapper = new ObjectMapper();
     
-    private JsonHelper() {
-        
-    }
+    private JsonHelper() {}
     
     static {
         mapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
@@ -53,6 +53,14 @@ public class JsonHelper {
         }
     }
 
+    public static JsonNode readTree(String json) {
+        try {
+            return mapper.readTree(json);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * Convert Java object to a JSON string.
      *
@@ -68,7 +76,7 @@ public class JsonHelper {
     }
 
     /**
-     * Convert JSON array tp Java List
+     * Convert JSON array to Java List
      *
      * @param json JSON array string.
      * @return Java List instance.
@@ -78,6 +86,43 @@ public class JsonHelper {
             return mapper.readValue(json, List.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Converts instance  of {@link Jsonizable} to its JSON representation.
+     *
+     * @param jsonizable any object that implements a {@link Jsonizable} interface. Expected:
+     *                   <code>org.javalite.activejdbc.Model</code>, <code>org.javalite.activejdbc.LazyList</code>.
+     *                   In addition to that, you are free to to use {@link Jsonizable} for other objects.
+     *
+     * @return JSON representation of the argument.
+     */
+    public static String toJson(Jsonizable jsonizable){
+        return jsonizable.toJSON();
+    }
+
+    /**
+     * Converts JSON representation back to objecty form.
+     *
+     * @param jsonObject must have an attribute <code>_className</code> which must implement
+     *                   {@link Jsonizable} interface.
+     *
+     * @return instance  of {@link Jsonizable}.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T extends Jsonizable> T fromJson(String jsonObject, Class<T> type)  {
+        Map<String, Object> m = toMap(jsonObject);
+        if(!m.containsKey("_className")){
+            throw new IllegalArgumentException("Argument must have attribute _className");
+        }
+        try {
+            String className = (String) m.get("_className");
+            Jsonizable j =  (Jsonizable) Class.forName(className).newInstance();
+            j.hydrate(m);
+            return (T) j;
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
         }
     }
 }
