@@ -24,9 +24,7 @@ import org.jsoup.select.Elements;
 import org.junit.Before;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.javalite.common.Util.blank;
 
@@ -197,6 +195,31 @@ public class RequestSpecHelper extends SpecHelper{
      */
     protected String header(String headerName){
         return Context.getHttpResponse().getHeader(headerName);
+    }
+
+    /**
+     * Returns all headers set by controller or filter.
+     * If a header has more than  one value, only one value is returned.
+     *
+     * @return map of headers, where keys are names of headers, and values are header values.
+     */
+    protected Map<String, String> headers(){
+        Collection<String> headerNames =  Context.getHttpResponse().getHeaderNames();
+        Map<String, String> headers= new HashMap<>();
+        for(String name: headerNames){
+            headers.put(name, header(name));
+        }
+        return headers;
+    }
+
+    /**
+     * Returns all headers set by controller or filter.
+     * If a header has more than  one value, only one is returned.
+     *
+     * @return map of headers, where keys are names of headers, and values are header values.
+     */
+    protected List<String> headerNames(){
+        return new ArrayList<>(Context.getHttpResponse().getHeaderNames());
     }
 
     /**
