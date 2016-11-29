@@ -241,4 +241,8 @@ public class Paginator<T extends Model> implements Serializable {
     private Long doCount() {
         return Convert.toLong(new DB(metaModel.getDbName()).firstCell(countQuery, params));
     }
+
+    public int getPageSize() {
+        return pageSize;
+    }
 }
