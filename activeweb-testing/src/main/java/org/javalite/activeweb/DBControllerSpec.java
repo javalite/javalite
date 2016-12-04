@@ -28,15 +28,10 @@ import org.junit.BeforeClass;
  */
 public class DBControllerSpec extends ControllerSpec {
 
-    public DBControllerSpec(){
-        suppressDb(false);
-        setLoadConfigFile(false);
-    }
-
-
-    @Before
-    public final void openConnections(){
+    @BeforeClass
+    public static void initDBConfig() {
         DBSpecHelper.initDBConfig();
-        super.openTestConnections();
-    }
+    }    
+
+    
 }
