@@ -30,6 +30,7 @@ public class HeaderControllerSpec extends ControllerSpec {
         a(assigns().get("isAjax").toString()).shouldBeEqual("true");
     }
 
+
     @Test
     public void shouldPassMultipleHeadersFromTest(){
         request(false).headers("header1", "h1val", "header2", "h2val").get("test");

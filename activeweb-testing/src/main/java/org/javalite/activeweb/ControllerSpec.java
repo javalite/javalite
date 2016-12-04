@@ -62,10 +62,6 @@ public class ControllerSpec extends RequestSpecHelper {
 
     private String controllerPath;
 
-    public ControllerSpec(){
-        suppressDb(true);
-    }
-
     @Override
     public void atStart() {
         super.atStart();

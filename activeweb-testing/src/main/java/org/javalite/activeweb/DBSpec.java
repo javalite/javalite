@@ -13,20 +13,23 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and 
 limitations under the License. 
 */
+
 package org.javalite.activeweb;
 
+import org.javalite.test.jspec.JSpecSupport;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
 /**
- * Super class for controllers requiring a DB connection to the test DB.
- * Connection is opened before a test, closed after a test and a transaction is rolled back.
- *
+ * Super class of a general spec that requires a connection to a test DB.
+ * Before each test, a connection is opened to a test DB and transaction is started.
+ * After each test, a connection is closed and a transaction is rolled back.
+ * 
  * @author Igor Polevoy
  */
-public class DBControllerSpec extends ControllerSpec {
+public class DBSpec extends JSpecSupport {
 
     @BeforeClass
     public static void initDBConfig() {
@@ -39,7 +42,7 @@ public class DBControllerSpec extends ControllerSpec {
     }
 
     @After
-    public final void close(){
+    public final void after(){
         DBSpecHelper.closeTestConnections();
     }
 

@@ -41,7 +41,7 @@ public class Configuration {
 
     private static Properties props = new Properties();
     private static TemplateManager templateManager;
-
+    private static HashMap<String, List<ConnectionSpecWrapper>> connectionWrappers = new HashMap<>();
     private static boolean testing;
     private static String ENV;
     private static boolean activeReload = !blank(System.getProperty("active_reload")) && System.getProperty("active_reload").equals("true");
@@ -248,6 +248,50 @@ public class Configuration {
     public static boolean rollback() {
         return Boolean.parseBoolean(get(Params.rollback.toString().trim()));  
     }    
+
+    protected static void addConnectionWrapper(ConnectionSpecWrapper connectionWrapper, boolean override) {
+        String connectionWrapperEnv = connectionWrapper.getEnvironment();
+        List<ConnectionSpecWrapper> envConnectionWrappers = connectionWrappers.get(connectionWrapperEnv);
+        if(envConnectionWrappers == null || override) {
+            envConnectionWrappers = new ArrayList<>();
+            connectionWrappers.put(connectionWrapperEnv, envConnectionWrappers);
+        }
+        envConnectionWrappers.add(connectionWrapper);
+    }
+
+    /**
+     * Provides a list of all connection wrappers corresponding to a current environment.
+     *
+     * @return  a list of all connection wrappers corresponding to a current environment.
+     */
+    public static List<ConnectionSpecWrapper> getConnectionSpecWrappers() {
+        return getConnectionSpecWrappers(getEnv());
+    }
+
+    /**
+     * Provides a list of all connection wrappers corresponding to a given environment.
+     *
+     * @param env name of environment, such as "development", "production", etc.
+     * 
+     * @return  a list of all connection wrappers corresponding to a given environment.
+     */
+    public static List<ConnectionSpecWrapper> getConnectionSpecWrappers(String env) {
+        return connectionWrappers.get(env) == null? new ArrayList<ConnectionSpecWrapper>() :connectionWrappers.get(env);
+    }
+
+    protected static void clearConnectionWrappers() {
+        clearConnectionWrappers(getEnv());
+    }
+
+    //for tests only
+    protected static void resetConnectionWrappers() {
+        connectionWrappers = new HashMap<>();
+    }
+
+    protected static void clearConnectionWrappers(String env) {
+        if(connectionWrappers.get(env) != null)
+            connectionWrappers.get(env).clear();
+    }
 
     public static boolean activeReload(){
         return activeReload;

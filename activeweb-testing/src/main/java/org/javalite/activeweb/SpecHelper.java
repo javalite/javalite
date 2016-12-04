@@ -21,7 +21,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.util.Modules;
-import org.javalite.activejdbc.test.DBSpec;
 import org.javalite.activeweb.freemarker.FreeMarkerTag;
 import org.javalite.activeweb.freemarker.FreeMarkerTemplateManager;
 import org.javalite.common.Convert;
@@ -42,7 +41,7 @@ import java.util.Map;
  *
  * @author Igor Polevoy
  */
-public class SpecHelper extends DBSpec implements JSpecSupport{
+public class SpecHelper extends JSpecSupport{
 
     private SessionTestFacade sessionFacade;
 

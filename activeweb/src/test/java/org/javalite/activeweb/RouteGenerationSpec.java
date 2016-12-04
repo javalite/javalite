@@ -30,7 +30,7 @@ import static org.javalite.common.Collections.map;
 /**
  * @author Igor Polevoy
  */
-public class RouteGenerationSpec implements JSpecSupport {
+public class RouteGenerationSpec extends JSpecSupport {
 
     @Before
     public void before(){

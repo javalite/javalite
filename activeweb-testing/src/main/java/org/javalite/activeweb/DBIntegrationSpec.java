@@ -30,7 +30,12 @@ public class DBIntegrationSpec extends IntegrationSpec{
     @Before
     public final void before(){
         DBSpecHelper.initDBConfig();
-
+        DBSpecHelper.openTestConnections();
     }
 
+    @After
+    public void after() {
+        DBSpecHelper.closeTestConnections();
+        DBSpecHelper.clearConnectionWrappers();
+    }    
 }

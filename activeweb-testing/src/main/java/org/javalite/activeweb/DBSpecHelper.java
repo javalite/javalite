@@ -48,5 +48,48 @@ public class DBSpecHelper {
         }
     }
 
+    public static void clearConnectionWrappers() {
+        Configuration.clearConnectionWrappers();
+    }
 
+
+    public static void openTestConnections(){
+        List<ConnectionSpecWrapper> connectionWrappers = getTestConnectionWrappers();
+        if(connectionWrappers.isEmpty()){
+            LOGGER.warn("no DB connections are configured, none opened");
+            return;
+        }
+
+        for (ConnectionSpecWrapper connectionWrapper : connectionWrappers) {
+            DB db = new DB(connectionWrapper.getDbName());
+            db.open(connectionWrapper.getConnectionSpec());
+            if (Configuration.rollback())
+                db.openTransaction();            
+        }
+    }
+
+    public static void closeTestConnections() {
+        List<ConnectionSpecWrapper> connectionWrappers = getTestConnectionWrappers();
+        for (ConnectionSpecWrapper connectionWrapper : connectionWrappers) {
+            String dbName = connectionWrapper.getDbName();
+            DB db = new DB(dbName);
+            if (Configuration.rollback()) {
+                db.rollbackTransaction();
+            }
+            db.close();
+
+        }
+    }
+
+    private static List<ConnectionSpecWrapper> getTestConnectionWrappers() {
+        List<ConnectionSpecWrapper> allConnections = Configuration.getConnectionSpecWrappers();
+        List<ConnectionSpecWrapper> result = new LinkedList<>();
+
+        for (ConnectionSpecWrapper connectionWrapper : allConnections) {
+            if (connectionWrapper.isTesting())
+                result.add(connectionWrapper);
+        }
+
+        return result;
+    }
 }

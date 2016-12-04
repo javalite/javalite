@@ -16,10 +16,8 @@ limitations under the License.
 package org.javalite.activeweb.controller_filters;
 
 import org.javalite.activejdbc.DB;
-import org.javalite.activejdbc.connection_config.ConnectionSpecWrapper;
-import org.javalite.activejdbc.connection_config.DbConfiguration;
 import org.javalite.activeweb.Configuration;
-
+import org.javalite.activeweb.ConnectionSpecWrapper;
 import org.javalite.activeweb.InitException;
 
 import java.util.LinkedList;
@@ -135,7 +133,7 @@ public class DBConnectionFilter extends ControllerFilterAdapter {
      * @return all connections which correspond dbName  of this filter and not for testing.
      */
     private List<ConnectionSpecWrapper> getConnectionWrappers() {
-        List<ConnectionSpecWrapper> allConnections = DbConfiguration.getConnectionSpecWrappers();
+        List<ConnectionSpecWrapper> allConnections = Configuration.getConnectionSpecWrappers();
         List<ConnectionSpecWrapper> result = new LinkedList<>();
 
         for (ConnectionSpecWrapper connectionWrapper : allConnections) {
