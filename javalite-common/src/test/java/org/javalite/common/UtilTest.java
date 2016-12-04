@@ -31,7 +31,7 @@ import org.junit.Test;
  * @author Igor Polevoy
  * @author Eric Nielsen
  */
-public class UtilTest extends JSpecSupport {
+public class UtilTest implements JSpecSupport {
 
     @Test
     public void testJoin(){

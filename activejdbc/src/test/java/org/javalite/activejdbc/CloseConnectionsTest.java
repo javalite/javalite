@@ -11,7 +11,7 @@ import org.junit.Test;
 /**
  * @author Igor Polevoy
  */
-public class CloseConnectionsTest extends JSpecSupport {
+public class CloseConnectionsTest implements JSpecSupport {
 
     @Test
     public void shouldCloseAllConnections(){

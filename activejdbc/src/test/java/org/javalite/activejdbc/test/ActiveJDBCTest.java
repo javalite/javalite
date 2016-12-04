@@ -34,7 +34,7 @@ import org.junit.Before;
 import static org.javalite.activejdbc.test.JdbcProperties.*;
 import static org.javalite.common.Util.*;
 
-public abstract class ActiveJDBCTest extends JSpecSupport {
+public abstract class ActiveJDBCTest implements JSpecSupport {
 
     private static boolean schemaGenerated = false;
 
@@ -219,6 +219,7 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
             try {
                 st = Base.connection().createStatement();
                 st.executeUpdate(statement);
+                System.out.println("STATEMENT: " + statement);
             } catch (SQLException e) {
                 throw new RuntimeException(statement, e);
             } finally {

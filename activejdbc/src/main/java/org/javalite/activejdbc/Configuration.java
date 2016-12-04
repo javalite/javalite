@@ -17,7 +17,11 @@ package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.cache.CacheManager;
 import org.javalite.activejdbc.cache.NopeCacheManager;
+import org.javalite.activejdbc.connection_config.ConnectionJdbcSpec;
+import org.javalite.activejdbc.connection_config.ConnectionJndiSpec;
+import org.javalite.activejdbc.connection_config.ConnectionSpec;
 import org.javalite.activejdbc.dialects.*;
+import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +42,7 @@ public class Configuration {
     private Properties properties = new Properties();
     private static CacheManager cacheManager;
     private static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
+    private static String ENV;
 
     private Map<String, Dialect> dialects = new CaseInsensitiveMap<>();
 
@@ -223,18 +228,8 @@ public class Configuration {
 
     //read from classpath, if not found, read from file system. If not found there, throw exception
     private Properties readPropertyFile(String file) throws IOException {
-
         String fileName = file.startsWith("/") ? file : "/" + file;
-        InputStream in = getClass().getResourceAsStream(fileName);
-        Properties props = new Properties();
-        if (in != null) {
-            props.load(in);
-        } else {
-            FileInputStream fin = new FileInputStream(file);
-            props.load(fin);
-            fin.close();
-        }
-        return props;
+        return Util.readProperties(fileName);
     }
 
 
@@ -289,5 +284,42 @@ public class Configuration {
 
     public CacheManager getCacheManager(){
         return cacheManager;
+    }
+
+    /**
+     * Returns name of environment, such as "development", "production", etc.
+     * This is a value that is usually setup with an environment variable <code>ACTIVE_ENV</code>.
+     *
+     * @return name of environment
+     */
+    public static String getEnv(){
+        if(ENV == null){
+            if(!blank(System.getenv("ACTIVE_ENV"))) {
+                ENV = System.getenv("ACTIVE_ENV");
+            }
+
+            if(!blank(System.getProperty("ACTIVE_ENV"))) {
+                ENV = System.getProperty("ACTIVE_ENV");
+            }
+
+            if(!blank(System.getProperty("active_env"))) {
+                ENV = System.getProperty("active_env");
+            }
+
+            if(blank(ENV)){
+                ENV = "development";
+                LOGGER.warn("Environment variable ACTIVE_ENV not provided, defaulting to '" + ENV + "'");
+            }
+        }
+        return ENV;
+    }
+
+    /**
+     * This method must ony be used in tests. Use in other environments at your own peril.
+     *
+     * @param env name of environment (development, staging, production, etc.).
+     */
+    public static void setEnv(String env){
+        ENV = env;
     }
 }

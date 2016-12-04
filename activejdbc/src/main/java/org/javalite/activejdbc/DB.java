@@ -15,6 +15,9 @@ limitations under the License.
 */
 package org.javalite.activejdbc;
 
+import org.javalite.activejdbc.connection_config.ConnectionJdbcSpec;
+import org.javalite.activejdbc.connection_config.ConnectionJndiSpec;
+import org.javalite.activejdbc.connection_config.ConnectionSpec;
 import org.javalite.common.Convert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,6 +87,7 @@ public class DB implements Closeable{
         try {
             Class.forName(driver);
             Connection connection = DriverManager.getConnection(url, user, password);
+            LOGGER.info("Opened connection: " + connection);
             ConnectionsAccess.attach(name, connection, url);
         } catch (Exception e) {
             throw new InitException("Failed to connect to JDBC URL: " + url, e);
@@ -102,6 +106,7 @@ public class DB implements Closeable{
         try {
             Class.forName(driver);
             Connection connection = DriverManager.getConnection(url, props);
+            LOGGER.info("Opened connection: " + connection);
             ConnectionsAccess.attach(name, connection, url);
         } catch (Exception e) {
             throw new InitException("Failed to connect to JDBC URL: " + url, e);
@@ -120,6 +125,7 @@ public class DB implements Closeable{
             Context ctx = new InitialContext();
             DataSource ds = (DataSource) ctx.lookup(jndiName);
             Connection connection = ds.getConnection();
+            LOGGER.info("Opened connection: " + connection);
             ConnectionsAccess.attach(name, connection, jndiName);
         } catch (Exception e) {
             throw new InitException("Failed to connect to JNDI name: " + jndiName, e);
@@ -186,6 +192,7 @@ public class DB implements Closeable{
         checkExistingConnection(name);
         try {
             Connection connection = datasource.getConnection();
+            LOGGER.info("Opened connection: " + connection);
             ConnectionsAccess.attach(name, connection, datasource.toString());
         } catch (SQLException e) {
             throw new InitException(e);
@@ -206,6 +213,7 @@ public class DB implements Closeable{
             Context ctx = new InitialContext(jndiProperties);
             DataSource ds = (DataSource) ctx.lookup(jndiName);
             Connection connection = ds.getConnection();
+            LOGGER.info("Opened connection: " + connection);
             ConnectionsAccess.attach(name, connection,
                     jndiProperties.contains("url") ? jndiProperties.getProperty("url") : jndiName);
         } catch (Exception e) {
@@ -274,6 +282,7 @@ public class DB implements Closeable{
         try {
             DataSource ds = (DataSource) context.lookup(jndiName);
             Connection connection = ds.getConnection();
+            LOGGER.info("Opened connection: " + connection);
             ConnectionsAccess.attach(name, connection, jndiName);
         } catch (Exception e) {
             throw new InitException("Failed to connect to JNDI name: " + jndiName, e);

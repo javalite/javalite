@@ -6,7 +6,7 @@ import org.junit.Test;
 import static org.javalite.app_config.AppConfig.p;
 
 
-public class AppConfigTest extends JSpecSupport {
+public class AppConfigTest implements JSpecSupport {
 
     @Test
     public void shouldGetNameInDevelopmentEnv() {

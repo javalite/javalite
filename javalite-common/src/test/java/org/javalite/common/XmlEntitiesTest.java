@@ -24,7 +24,7 @@ import org.junit.Test;
 /**
  * @author Igor Polevoy
  */
-public class XmlEntitiesTest extends JSpecSupport {
+public class XmlEntitiesTest implements JSpecSupport {
 
     @Test
     public void testEscape() {
