@@ -46,14 +46,23 @@ import java.util.Map;
  *
  * @author igor on 12/2/16.
  */
+
+//TODO: create annotation: @ConfigFile("/database.properties") and only load this file if annota
+
 public class DBSpec extends DbConfiguration implements JSpecSupport {
 
     private static Logger LOGGER = LoggerFactory.getLogger(DBSpec.class.getSimpleName());
     private boolean rollback = true;
     private boolean suppressDb = false;
+    private boolean loadConfigFile = true;
+
 
     public boolean suppressedDb() {
         return suppressDb;
+    }
+
+    public void setLoadConfigFile(boolean loadConfigFile) {
+        this.loadConfigFile = loadConfigFile;
     }
 
     /**
@@ -101,23 +110,28 @@ public class DBSpec extends DbConfiguration implements JSpecSupport {
     }
 
     @Before
-    public final void openTestConnections() {
+    public final void loadConfigAndOpenConnections() {
 
         if(!suppressDb){
-            loadConfiguration("/database.properties");
-            List<ConnectionSpecWrapper> connectionWrappers = getTestConnectionWrappers();
-            if (connectionWrappers.isEmpty()) {
-                LOGGER.warn("no DB connections are configured, none opened");
-                return;
+            if(loadConfigFile){
+                loadConfiguration("/database.properties");
+                openTestConnections();
             }
+        }
+    }
 
+    protected void openTestConnections(){
+        List<ConnectionSpecWrapper> connectionWrappers = getTestConnectionWrappers();
+        if (!connectionWrappers.isEmpty()) {
             for (ConnectionSpecWrapper connectionWrapper : connectionWrappers) {
                 DB db = new DB(connectionWrapper.getDbName());
                 db.open(connectionWrapper.getConnectionSpec());
-                if (rollback()){
+                if (rollback()) {
                     db.openTransaction();
                 }
             }
+        }else {
+            LOGGER.warn("no DB connections are configured, none opened");
         }
     }
 
