@@ -38,10 +38,24 @@ public abstract class AppIntegrationSpec extends IntegrationSpec{
     private AppContext context;
     private RequestDispatcher requestDispatcher = new RequestDispatcher();
 
+
+    public AppIntegrationSpec(){
+        suppressDb(false);
+        setLoadConfigFile(false);
+    }
+
+
     @Before
-    public void beforeAppIntegrationSpec() throws ServletException {
+    public final void openConnections(){
+
+    }
+
+
+    @Before
+    public final void beforeAppIntegrationSpec() throws ServletException {
         requestDispatcher.init(new MockFilterConfig());
         context = requestDispatcher.getContext();
+        super.openTestConnections();
     }
 
     @After
@@ -79,6 +93,6 @@ public abstract class AppIntegrationSpec extends IntegrationSpec{
      * Calling from a "before" method will not work.
      */
     protected void suppressDb(){
-
+        suppressDb(true);
     }
 }

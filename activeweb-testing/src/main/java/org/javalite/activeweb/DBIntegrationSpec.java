@@ -27,10 +27,16 @@ import org.junit.Before;
  */
 public class DBIntegrationSpec extends IntegrationSpec{
 
-    @Before
-    public final void before(){
-        DBSpecHelper.initDBConfig();
+    public DBIntegrationSpec(){
+        suppressDb(false);
+        setLoadConfigFile(false);
+    }
 
+
+    @Before
+    public final void openConnections(){
+        DBSpecHelper.initDBConfig();
+        super.openTestConnections();
     }
 
 }
