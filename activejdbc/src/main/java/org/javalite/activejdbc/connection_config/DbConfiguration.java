@@ -32,7 +32,7 @@ public class DbConfiguration {
 
     private String configFile;
 
-    protected static void addConnectionWrapper(ConnectionSpecWrapper connectionWrapper, boolean override) {
+    public static void addConnectionWrapper(ConnectionSpecWrapper connectionWrapper, boolean override) {
         String connectionWrapperEnv = connectionWrapper.getEnvironment();
         List<ConnectionSpecWrapper> envConnectionWrappers = connectionWrappers.get(connectionWrapperEnv);
         if(envConnectionWrappers == null || override) {
@@ -47,7 +47,7 @@ public class DbConfiguration {
      *
      * @return  a list of all connection wrappers corresponding to a current environment.
      */
-    public List<ConnectionSpecWrapper> getConnectionSpecWrappers() {
+    public static List<ConnectionSpecWrapper> getConnectionSpecWrappers() {
         return getConnectionSpecWrappers(Configuration.getEnv());
     }
 
@@ -58,7 +58,7 @@ public class DbConfiguration {
      *
      * @return  a list of all connection wrappers corresponding to a given environment.
      */
-    public List<ConnectionSpecWrapper> getConnectionSpecWrappers(String env) {
+    public static List<ConnectionSpecWrapper> getConnectionSpecWrappers(String env) {
         return connectionWrappers.get(env) == null? new ArrayList<>() :connectionWrappers.get(env);
     }
 
@@ -68,7 +68,7 @@ public class DbConfiguration {
 
 
     //for tests only
-    public void resetConnectionWrappers() {
+    public static void resetConnectionWrappers() {
         connectionWrappers = new HashMap<>();
     }
 

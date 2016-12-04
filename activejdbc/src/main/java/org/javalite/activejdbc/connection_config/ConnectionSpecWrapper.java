@@ -33,7 +33,7 @@ public class ConnectionSpecWrapper {
         return connectionSpec;
     }
 
-    void setConnectionSpec(ConnectionSpec connectionSpec) {
+    public void setConnectionSpec(ConnectionSpec connectionSpec) {
         this.connectionSpec = connectionSpec;
     }
 
@@ -41,7 +41,7 @@ public class ConnectionSpecWrapper {
         return dbName;
     }
 
-    void setDbName(String dbName) {
+    public void setDbName(String dbName) {
         this.dbName = dbName;
     }
 
@@ -49,7 +49,7 @@ public class ConnectionSpecWrapper {
         return environment;
     }
 
-    void setEnvironment(String environment) {
+    public void setEnvironment(String environment) {
         this.environment = environment;
     }
 
@@ -57,7 +57,7 @@ public class ConnectionSpecWrapper {
         return testing;
     }
 
-    void setTesting(boolean testing) {
+    public void setTesting(boolean testing) {
         this.testing = testing;
     }
 
