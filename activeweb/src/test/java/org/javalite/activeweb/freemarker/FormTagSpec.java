@@ -30,7 +30,7 @@ import static org.javalite.common.Collections.map;
 /**
  * @author Igor Polevoy
  */
-public class FormTagSpec extends JSpecSupport {
+public class FormTagSpec implements JSpecSupport {
 
     private FreeMarkerTemplateManager manager = new FreeMarkerTemplateManager();
 

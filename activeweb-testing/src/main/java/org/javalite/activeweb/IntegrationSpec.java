@@ -26,6 +26,10 @@ import org.javalite.activeweb.controller_filters.ControllerFilter;
  */
 public class IntegrationSpec extends RequestSpecHelper {
 
+    public IntegrationSpec(){
+        suppressDb(true);
+    }
+
     protected RequestBuilder controller(String controllerName){
         return new RequestBuilder(controllerName, session(), true);
     }

@@ -30,6 +30,7 @@ public abstract class ViewSpec extends SpecHelper {
     public ViewSpec(){
         manager = new FreeMarkerTemplateManager();
         manager.setTemplateLocation("src/main/webapp/WEB-INF/views");
+        suppressDb(true);
     }
 
 

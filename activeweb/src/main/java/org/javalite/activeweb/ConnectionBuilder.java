@@ -15,8 +15,12 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
-import org.javalite.activejdbc.ConnectionJdbcSpec;
-import org.javalite.activejdbc.ConnectionJndiSpec;
+
+import org.javalite.activejdbc.connection_config.ConnectionJdbcSpec;
+import org.javalite.activejdbc.connection_config.ConnectionJndiSpec;
+import org.javalite.activejdbc.connection_config.ConnectionSpecWrapper;
+import org.javalite.activejdbc.connection_config.DbConfiguration;
+
 import java.util.Properties;
 
 
@@ -33,13 +37,13 @@ public class ConnectionBuilder {
     ConnectionBuilder(String environment) {
         connectionWrapper = new ConnectionSpecWrapper();
         connectionWrapper.setEnvironment(environment);
-        Configuration.addConnectionWrapper(connectionWrapper, false);
+        DbConfiguration.addConnectionWrapper(connectionWrapper, false);
     }
 
     ConnectionBuilder(String environment, boolean override) {
         connectionWrapper = new ConnectionSpecWrapper();
         connectionWrapper.setEnvironment(environment);
-        Configuration.addConnectionWrapper(connectionWrapper, override);
+        DbConfiguration.addConnectionWrapper(connectionWrapper, override);
     }
 
     /**

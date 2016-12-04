@@ -16,8 +16,10 @@ limitations under the License.
 package org.javalite.activeweb;
 
 
-import org.javalite.activejdbc.ConnectionJdbcSpec;
-import org.javalite.activejdbc.ConnectionJndiSpec;
+import org.javalite.activejdbc.connection_config.ConnectionJdbcSpec;
+import org.javalite.activejdbc.connection_config.ConnectionJndiSpec;
+import org.javalite.activejdbc.connection_config.ConnectionSpecWrapper;
+import org.javalite.activejdbc.connection_config.DbConfiguration;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -174,7 +176,7 @@ public abstract class AbstractDBConfig extends AppConfig {
         }
         ConnectionJdbcSpec connectionSpec = new ConnectionJdbcSpec(driver, url, userName, password);
         wrapper.setConnectionSpec(connectionSpec);
-        Configuration.addConnectionWrapper(wrapper, false);
+        DbConfiguration.addConnectionWrapper(wrapper, false);
     }
 
     private void createJndiWrapper(String env, String jndiName) {
@@ -182,7 +184,7 @@ public abstract class AbstractDBConfig extends AppConfig {
         wrapper.setEnvironment(env);
         ConnectionJndiSpec connectionSpec = new ConnectionJndiSpec(jndiName);
         wrapper.setConnectionSpec(connectionSpec);
-        Configuration.addConnectionWrapper(wrapper, false);
+        DbConfiguration.addConnectionWrapper(wrapper, false);
     }
 
 

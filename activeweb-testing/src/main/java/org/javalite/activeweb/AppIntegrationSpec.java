@@ -35,7 +35,6 @@ import javax.servlet.ServletException;
  */
 public abstract class AppIntegrationSpec extends IntegrationSpec{
 
-    private boolean suppressDb;
     private AppContext context;
     private RequestDispatcher requestDispatcher = new RequestDispatcher();
 
@@ -43,20 +42,10 @@ public abstract class AppIntegrationSpec extends IntegrationSpec{
     public void beforeAppIntegrationSpec() throws ServletException {
         requestDispatcher.init(new MockFilterConfig());
         context = requestDispatcher.getContext();
-
-        if(!suppressDb){
-            DBSpecHelper.openTestConnections();
-        }
     }
 
     @After
     public void afterAppIntegrationSpec() {
-
-        if(!suppressDb){
-            DBSpecHelper.closeTestConnections();
-            DBSpecHelper.clearConnectionWrappers();
-        }
-
         requestDispatcher.destroy();
     }
 
@@ -75,14 +64,13 @@ public abstract class AppIntegrationSpec extends IntegrationSpec{
      * <code>app.controllers.admin.PermissionsController</code>.
      * Controller path always starts with a slash: "/".
      *
-     * @param controllerPath
-     * @return
+     * @param controllerPath path to controller, such as <code>/user</code> or <code>/api/users</code> if the
+     *                       controller <code>Users</code> resides in teh <code>api</code> package.
+     * @return instance of <code>RequestBuilder</code> to complete the request.
      */
     @Override
     protected RequestBuilder controller(String controllerPath){
-        RequestBuilder requestBuilder = new RequestBuilder(controllerPath, session(), false);
-        requestBuilder.integrateViews();
-        return requestBuilder;
+        return new RequestBuilder(controllerPath, session(), true);
     }
 
 
@@ -91,6 +79,6 @@ public abstract class AppIntegrationSpec extends IntegrationSpec{
      * Calling from a "before" method will not work.
      */
     protected void suppressDb(){
-        suppressDb = true;
+
     }
 }

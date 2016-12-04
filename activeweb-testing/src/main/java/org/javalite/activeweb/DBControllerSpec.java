@@ -33,19 +33,5 @@ public class DBControllerSpec extends ControllerSpec {
         DBSpecHelper.initDBConfig();
     }    
 
-    @Before
-    public final void open(){
-        DBSpecHelper.openTestConnections();
-    }
-
-    @After
-    public final void close(){
-        DBSpecHelper.closeTestConnections();
-    }
-
-    @AfterClass
-    public static void tearDown() {
-        DBSpecHelper.clearConnectionWrappers();
-    }
     
 }
