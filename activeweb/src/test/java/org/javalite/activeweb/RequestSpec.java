@@ -36,7 +36,7 @@ import static org.javalite.test.SystemStreamUtil.restoreSystemErr;
 /**
  * @author Igor Polevoy
  */
-public abstract class RequestSpec extends JSpecSupport {
+public abstract class RequestSpec implements JSpecSupport {
 
     protected FilterChain filterChain = new FilterChain() {
         public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse) throws IOException, ServletException {

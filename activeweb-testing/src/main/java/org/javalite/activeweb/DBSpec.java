@@ -16,6 +16,7 @@ limitations under the License.
 
 package org.javalite.activeweb;
 
+
 import org.javalite.test.jspec.JSpecSupport;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -29,7 +30,7 @@ import org.junit.BeforeClass;
  * 
  * @author Igor Polevoy
  */
-public class DBSpec extends JSpecSupport {
+public class DBSpec implements JSpecSupport {
 
     @BeforeClass
     public static void initDBConfig() {

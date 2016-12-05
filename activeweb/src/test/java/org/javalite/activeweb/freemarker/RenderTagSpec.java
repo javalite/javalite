@@ -31,7 +31,7 @@ import static org.javalite.common.Collections.*;
 /**
  * @author Igor Polevoy
  */
-public class RenderTagSpec extends JSpecSupport {
+public class RenderTagSpec implements JSpecSupport {
 
     //private Configuration cfg;
     FreeMarkerTemplateManager manager = new FreeMarkerTemplateManager();

@@ -16,6 +16,7 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import org.javalite.activejdbc.DB;
+import org.javalite.activejdbc.connection_config.ConnectionSpecWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

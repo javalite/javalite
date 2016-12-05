@@ -32,7 +32,7 @@ import static org.javalite.common.Collections.map;
 /**
  * @author Igor Polevoy
  */
-public class FreeMarkerTagSpec extends JSpecSupport {
+public class FreeMarkerTagSpec implements JSpecSupport {
 
     private FreeMarkerTemplateManager manager = new FreeMarkerTemplateManager();
 

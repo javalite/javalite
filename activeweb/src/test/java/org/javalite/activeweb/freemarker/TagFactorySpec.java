@@ -27,7 +27,7 @@ import static org.javalite.common.Collections.*;
 /**
  * @author Igor Polevoy
  */
-public class TagFactorySpec extends JSpecSupport{
+public class TagFactorySpec implements JSpecSupport{
 
     @Test
     public void shouldGenerateImageTag(){

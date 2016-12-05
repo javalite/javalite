@@ -41,7 +41,7 @@ import java.util.Map;
  *
  * @author Igor Polevoy
  */
-public class SpecHelper extends JSpecSupport{
+public class SpecHelper implements JSpecSupport{
 
     private SessionTestFacade sessionFacade;
 
