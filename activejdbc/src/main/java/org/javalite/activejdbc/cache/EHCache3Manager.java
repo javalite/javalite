@@ -99,4 +99,9 @@ public class EHCache3Manager extends CacheManager {
         }
         return cache;
     }
+
+    @Override
+    public Object getImplementation() {
+        return this.cacheManager;
+    }
 }

@@ -63,4 +63,9 @@ public class OSCacheManager extends CacheManager{
             administrator.flushGroup(event.getGroup());
         }
     }
+
+    @Override
+    public Object getImplementation() {
+        return this.administrator;
+    }
 }

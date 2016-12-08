@@ -16,4 +16,9 @@ public class NopeCacheManager extends CacheManager {
 
     @Override
     public void doFlush(CacheEvent event) {}
+
+    @Override
+    public Object getImplementation() {
+        return null;
+    }
 }

@@ -87,4 +87,9 @@ public class RedisCacheManager extends CacheManager {
             jedis.del(event.getGroup().getBytes());
         }
     }
+
+    @Override
+    public Object getImplementation() {
+        return this.jedis;
+    }
 }

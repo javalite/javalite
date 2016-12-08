@@ -66,4 +66,9 @@ public class EHCacheManager extends CacheManager {
             cacheManager.removeCache(event.getGroup());
         }
     }
+
+    @Override
+    public Object getImplementation() {
+        return this.cacheManager;
+    }
 }

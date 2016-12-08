@@ -141,4 +141,14 @@ public abstract class CacheManager {
     public String getKey(String tableName, String query, Object[] params) {
         return tableName + query + (params == null ? null : Arrays.asList(params).toString());
     }
+
+
+    /**
+     * Returns underlying instance of implementation for specific configuration.
+     *
+     * @return actual underlying implementation of cache. The same as configured in <code>activejdbc.properties</code> file.
+     * For instance:
+     * <code>redis.clients.jedis.BinaryJedis</code>.
+     */
+    public abstract Object getImplementation();
 }
