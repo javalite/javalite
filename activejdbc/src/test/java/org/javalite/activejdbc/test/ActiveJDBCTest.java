@@ -219,7 +219,6 @@ public abstract class ActiveJDBCTest implements JSpecSupport {
             try {
                 st = Base.connection().createStatement();
                 st.executeUpdate(statement);
-                System.out.println("STATEMENT: " + statement);
             } catch (SQLException e) {
                 throw new RuntimeException(statement, e);
             } finally {
