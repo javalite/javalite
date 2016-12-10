@@ -263,8 +263,8 @@ public class Paginator<T extends Model> implements Serializable {
      * Use to create a paginator instance, and provide arguments as needed.
      * @return self.
      */
-    public static PaginatorBuilder instance(){
-        return new PaginatorBuilder();
+    public static <E extends Model> PaginatorBuilder<E> instance(){
+        return new PaginatorBuilder<>();
     }
 
 
@@ -285,7 +285,7 @@ public class Paginator<T extends Model> implements Serializable {
          * @param modelClass Model class mapped to a table.>
          * @return self
          */
-        public PaginatorBuilder modelClass(Class<T> modelClass){
+        public PaginatorBuilder<T> modelClass(Class<T> modelClass){
             this.modelClass = modelClass;
             return this;
         }
@@ -295,7 +295,7 @@ public class Paginator<T extends Model> implements Serializable {
          *
          * @param pageSize Page size  - number of items in a page
          */
-        public PaginatorBuilder pageSize(int pageSize){
+        public PaginatorBuilder<T> pageSize(int pageSize){
             this.pageSize = pageSize;
             return this;
         }
@@ -307,7 +307,7 @@ public class Paginator<T extends Model> implements Serializable {
          *
          * @param suppressCounts suppress counts every time.
          */
-        public PaginatorBuilder suppressCounts(boolean suppressCounts){
+        public PaginatorBuilder<T> suppressCounts(boolean suppressCounts){
             this.suppressCounts= suppressCounts;
             return this;
         }
@@ -318,7 +318,7 @@ public class Paginator<T extends Model> implements Serializable {
          *              query should not contain limit, offset or order by clauses of any kind, Paginator will do this automatically.
          *              This parameter can have two forms, a sub-query or a full query.
          */
-        public PaginatorBuilder query(String query) {
+        public PaginatorBuilder<T> query(String query) {
             this.query = query;
             return this;
         }
@@ -330,7 +330,7 @@ public class Paginator<T extends Model> implements Serializable {
          *
          * @param countQuery Part of the query that is responsible for "count. Example: <code>count(*)</code>" or <code>COUNT(DISTINCT(u.id)</code>.
          */
-        public PaginatorBuilder countQuery(String countQuery) {
+        public PaginatorBuilder<T> countQuery(String countQuery) {
             this.countQuery = countQuery;
             return this;
         }
@@ -339,7 +339,7 @@ public class Paginator<T extends Model> implements Serializable {
          * Array of parameters in case  a query is parametrized
          * @param params Array of parameters in case  a query is parametrized
          */
-        public PaginatorBuilder params(Object ... params){
+        public PaginatorBuilder<T> params(Object ... params){
             this.params = params;
             return this;
         }

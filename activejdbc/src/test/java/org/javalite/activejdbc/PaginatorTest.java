@@ -24,6 +24,7 @@ import org.javalite.activejdbc.test_models.User;
 import org.junit.Test;
 
 import java.io.*;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -167,7 +168,7 @@ public class PaginatorTest extends ActiveJDBCTest {
         u.add(Address.create("address1", "123 Pine St.", "address2", "apt 1", "city", "Springfield", "state", "IL", "zip", "60004"));
         u.add(Address.create("address1", "456 Pine St.", "address2", "apt 3", "city", "Springfield", "state", "IL", "zip", "60004"));
 
-        Paginator<User> paginator2 = Paginator.instance()
+        Paginator<User> paginator = Paginator.<User>instance()
                 .modelClass(User.class)
                 .query("select distinct u.* FROM users u left join addresses a on u.id=a.user_id where a.address1 like ?")
                 .pageSize(5)
@@ -175,9 +176,6 @@ public class PaginatorTest extends ActiveJDBCTest {
                 .countQuery("COUNT(DISTINCT u.id)")
                 .create();
 
-        a(paginator2.getCount()).shouldBeEqual(1);
-
+        a(paginator.getCount()).shouldBeEqual(1);
     }
-
-
 }
