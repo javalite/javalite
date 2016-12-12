@@ -4,6 +4,7 @@ package org.javalite.activejdbc.cache;
 import org.javalite.activejdbc.InitException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.io.*;
@@ -28,20 +29,20 @@ import static org.javalite.common.Convert.toInteger;
 public class RedisCacheManager extends CacheManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisCacheManager.class);
 
-    private JedisPool jedis;
+    private JedisPool jedisPool;
 
 
     public RedisCacheManager() {
         Properties props = new Properties();
         InputStream in = getClass().getResourceAsStream("/activejdbc-redis.properties");
         if (in == null) {
-            jedis = new JedisPool("localhost");
+            jedisPool = new JedisPool("localhost");
         } else {
             try {
                 props.load(in);
                 String host = props.getProperty("redis-host");
                 String port = props.getProperty("redis-port");
-                jedis = new JedisPool(host, toInteger(port));
+                jedisPool = new JedisPool(host, toInteger(port));
             } catch (Exception e) {
                 throw new InitException("Failed to configure connection to Redis server", e);
             }
@@ -50,8 +51,8 @@ public class RedisCacheManager extends CacheManager {
 
     @Override
     public Object getCache(String group, String key) {
-        try {
-            byte[] bytes = jedis.getResource().hget(group.getBytes(), key.getBytes());
+        try (Jedis jedis = jedisPool.getResource()){
+            byte[] bytes = jedis.hget(group.getBytes(), key.getBytes());
 
             if (bytes == null) {
                 return null;
@@ -67,13 +68,14 @@ public class RedisCacheManager extends CacheManager {
 
     @Override
     public void addCache(String group, String key, Object cache) {
-        try {
+        try (Jedis jedis = jedisPool.getResource()){
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
             ObjectOutput objectOutput = new ObjectOutputStream(bout);
             objectOutput.writeObject(cache);
             objectOutput.close();
             byte[] bytes = bout.toByteArray();
-            jedis.getResource().hset(group.getBytes(), key.getBytes(), bytes);
+            jedis.hset(group.getBytes(), key.getBytes(), bytes);
+
         } catch (Exception e) {
             LOGGER.error("Failed to add object to cache with group: " + group + " and key: " + key, e);
         }
@@ -84,12 +86,15 @@ public class RedisCacheManager extends CacheManager {
         if (event.getType().equals(CacheEvent.CacheEventType.ALL)) {
             throw new UnsupportedOperationException("Flushing all caches not supported");
         } else if (event.getType().equals(CacheEvent.CacheEventType.GROUP)) {
-            jedis.getResource().del(event.getGroup().getBytes());
+
+            try(Jedis jedis = jedisPool.getResource()){
+                jedis.del(event.getGroup().getBytes());
+            }
         }
     }
 
     @Override
     public Object getImplementation() {
-        return this.jedis;
+        return this.jedisPool;
     }
 }
