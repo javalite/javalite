@@ -148,7 +148,7 @@ public abstract class CacheManager {
      *
      * @return actual underlying implementation of cache. The same as configured in <code>activejdbc.properties</code> file.
      * For instance:
-     * <code>redis.clients.jedis.BinaryJedis</code>.
+     * <code>redis.clients.jedis.JedisPool</code>.
      */
     public abstract Object getImplementation();
 }
