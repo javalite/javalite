@@ -48,12 +48,9 @@ public class AppConfig implements Map<String, String> {
             env = "development";
         }
         activeEnv = env;
-    }
-
-    
-    public AppConfig() {
         init();
     }
+
 
     public static synchronized void init() {
         if (isInited()) return;
