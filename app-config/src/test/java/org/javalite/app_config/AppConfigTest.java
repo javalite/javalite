@@ -17,4 +17,21 @@ public class AppConfigTest implements JSpecSupport {
     public void shouldReadAsMapFromDevelopmentFile() {
         the(new AppConfig().get("first.name")).shouldBeEqual("John");
     }
+
+    @Test
+    public void shouldFindPropertiesWithPrefix(){
+
+        the(AppConfig.getProperties("prop")).shouldContain("one");
+        the(AppConfig.getProperties("prop")).shouldContain("two");
+        the(AppConfig.getProperties("prop")).shouldNotContain("John");
+    }
+
+    @Test
+    public void shouldFindKeysWithPrefix(){
+
+        the(AppConfig.getKeys("prop")).shouldContain("prop.1");
+        the(AppConfig.getKeys("prop")).shouldContain("prop.1");
+        the(AppConfig.getKeys("prop")).shouldNotContain("first.name");
+    }
+
 }

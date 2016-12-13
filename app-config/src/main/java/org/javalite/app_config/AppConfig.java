@@ -39,6 +39,17 @@ public class AppConfig implements Map<String, String> {
     private static Logger LOGGER = LoggerFactory.getLogger(AppConfig.class);
     private static HashMap<String, Property> props = new HashMap<String, Property>();
     private static HashMap<String, String> plainProps = new HashMap<String, String>();
+    private static final String activeEnv;
+
+    static {
+        String env = System.getenv("ACTIVE_ENV");
+        if (env == null) {
+            LOGGER.warn("Environment variable 'ACTIVE_ENV' not found, defaulting to 'development'");
+            env = "development";
+        }
+        activeEnv = env;
+    }
+
     
     public AppConfig() {
         init();
@@ -219,5 +230,87 @@ public class AppConfig implements Map<String, String> {
     @Override
     public Set<Entry<String, String>> entrySet() {
         throw new UnsupportedOperationException("Operation not supported, not a real map");
+    }
+
+
+    /**
+     * Returns current environment name as defined by environment variable <code>ACTIVE_ENV</code>.
+     *
+     * @return current environment name as defined by environment variable <code>ACTIVE_ENV</code>.
+     */
+    public static String activeEnv() {
+        return activeEnv;
+    }
+
+    /**
+     * @return true if environment name as defined by environment variable <code>ACTIVE_ENV</code> is "testenv".
+     */
+    public static boolean isInTestEnv() {
+        return "testenv".equals(activeEnv());
+    }
+
+    /**
+     * @return true if environment name as defined by environment variable <code>ACTIVE_ENV</code> is "production".
+     */
+    public static boolean isInProduction() {
+        return "production".equals(activeEnv());
+    }
+
+    /**
+     * @return true if environment name as defined by environment variable <code>ACTIVE_ENV</code> is "development".
+     */
+    public static boolean isInDevelopment() {
+        return "development".equals(activeEnv());
+    }
+
+    /**
+     * @return true if environment name as defined by environment variable <code>ACTIVE_ENV</code> is "staging".
+     */
+    public static boolean isInStaging() {
+        return "development".equals(activeEnv());
+    }
+
+    /**
+     * Returns all keys that start with a prefix
+     *
+     * @param prefix prefix for properties.
+     */
+    public static List<String> getKeys(String prefix) {
+        List<String> res = new ArrayList<>();
+        for(String key: props.keySet()){
+            if(key.startsWith(prefix)){
+                res.add(key);
+            }
+        }
+        return res;
+    }
+
+
+    /**
+     * Return all numbered properties with a prefix. For instance if there is a file:
+     * <pre>
+     *     prop.1=one
+     *     prop.2=two
+     * </pre>
+     *
+     * .. and this method is called:
+     * <pre>
+     *     List<String> props = AppConfig.getProperties("prop");
+     * </pre>
+     * then the resulting list will have all properties starting from <code>prop</code>.
+     * This method presumes consecutive numbers in the suffix.
+     *
+     * @param prefix    prefix of numbered properties.
+     * @return list  of property values.
+     */
+    public static List<String> getProperties(String prefix) {
+        List<String> res = new ArrayList<>();
+        prefix += ".";
+        for (int i = 1; ; i++) {
+            String prop = p(prefix + i);
+            if (prop == null)
+                return res;
+            res.add(prop);
+        }
     }
 }
