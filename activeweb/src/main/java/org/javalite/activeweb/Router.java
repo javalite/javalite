@@ -34,6 +34,7 @@ import static org.javalite.common.Collections.map;
  * @author Igor Polevoy
  */
 public class Router {
+    private static Logger logger = LoggerFactory.getLogger(Router.class);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Router.class.getSimpleName());
 
@@ -89,6 +90,7 @@ public class Router {
         if(route != null){
             route.setIgnoreSpecs(ignoreSpecs);
         }else{
+            logger.error("Failed to recognize URL: '" + uri + "'");
             throw new RouteException("Failed to map resource to URI: " + uri);
         }
 
