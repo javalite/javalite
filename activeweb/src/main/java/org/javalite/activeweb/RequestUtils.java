@@ -4,6 +4,7 @@ import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 import static java.util.Arrays.asList;
@@ -598,5 +599,17 @@ public class RequestUtils {
             headers.put(name, Context.getHttpRequest().getHeader(name));
         }
         return headers;
+    }
+
+    public static String getRequestProperties(){
+        StringBuilder sb = new StringBuilder();
+        HttpServletRequest request = Context.getHttpRequest();
+        sb.append("Request URL: ").append(request.getRequestURL()).append("\n");
+        sb.append("ContextPath: ").append(request.getContextPath()).append("\n");
+        sb.append("Query String: ").append(request.getQueryString()).append("\n");
+        sb.append("URI Full Path: ").append(request.getRequestURI()).append("\n");
+        sb.append("URI Path: ").append(request.getServletPath()).append("\n");
+        sb.append("Method: ").append(request.getMethod()).append("\n");
+        return sb.toString();
     }
 }

@@ -269,12 +269,16 @@ public class RequestDispatcher implements Filter {
 
     private void renderSystemError(String template, String layout, int status, Throwable e) {
         try{
-            if(status == 404){
-                logger.warn("ActiveWeb 404 WARNING: \n" + getRequestProperties() + e);
-            }else{
-                logger.error("ActiveWeb ERROR: \n" + getRequestProperties(), e);
-            }
 
+            String info = "Request properties: " + RequestUtils.getRequestProperties() + "\n" +
+                    "Request parameters: " + RequestUtils.params() + "\n" +
+                    "Request headers: " + RequestUtils.headers() + "\n";
+
+            if(status == 404){
+                logger.warn("ActiveWeb 404 WARNING: \n" + info + e);
+            }else{
+                logger.error("ActiveWeb ERROR: \n" + info, e);
+            }
             HttpServletRequest req = Context.getHttpRequest();
             String requestedWith = req.getHeader("x-requested-with") == null ?
                     req.getHeader("X-Requested-With") : req.getHeader("x-requested-with");
@@ -310,19 +314,6 @@ public class RequestDispatcher implements Filter {
         }
     }
 
-
-    private String getRequestProperties(){
-        StringBuilder sb = new StringBuilder();
-        HttpServletRequest request = Context.getHttpRequest();
-        sb.append("Request URL: ").append(request.getRequestURL()).append("\n");
-        sb.append("ContextPath: ").append(request.getContextPath()).append("\n");
-        sb.append("Query String: ").append(request.getQueryString()).append("\n");
-        sb.append("URI Full Path: ").append(request.getRequestURI()).append("\n");
-        sb.append("URI Path: ").append(request.getServletPath()).append("\n");
-        sb.append("Method: ").append(request.getMethod()).append("\n");
-        return sb.toString();
-    }
-    
     public void destroy() {
         if(appBootstrap != null){ // failed start?
             appBootstrap.destroy(appContext);
