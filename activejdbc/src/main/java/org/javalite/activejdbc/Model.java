@@ -604,31 +604,54 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
 
     private void deleteJoinsForManyToMany() {
-        List<? extends Association> associations = metaModelLocal.getManyToManyAssociations(Collections.<Association>emptyList());
-        for (Association association : associations) {
-            String join = ((Many2ManyAssociation)association).getJoin();
-            String sourceFK = ((Many2ManyAssociation)association).getSourceFkName();
-            new DB(metaModelLocal.getDbName()).exec("DELETE FROM " + join + " WHERE " + sourceFK + " = ?", getId());
+        List<? extends Many2ManyAssociation> associations = metaModelLocal.getManyToManyAssociations(Collections.<Association>emptyList());
+        for (Many2ManyAssociation association : associations) {
+            deleteManyToManyLinks(association);
         }
     }
+
+    /**
+     * Deletes all records from a join table related to this model.
+     *
+     * @param association association  to another table.
+     */
+    private void deleteManyToManyLinks(Many2ManyAssociation association){
+        String join = association.getJoin();
+        String sourceFK = association.getSourceFkName();
+        new DB(metaModelLocal.getDbName()).exec("DELETE FROM " + join + " WHERE " + sourceFK + " = ?", getId());
+    }
+
 
     private void deleteOne2ManyChildrenShallow() {
         List<OneToManyAssociation> childAssociations = metaModelLocal.getOneToManyAssociations(Collections.<Association>emptyList());
         for (OneToManyAssociation association : childAssociations) {
-            String targetTable = metaModelOf(association.getTargetClass()).getTableName();
-            new DB(metaModelLocal.getDbName()).exec("DELETE FROM " + targetTable + " WHERE " + association.getFkName() + " = ?", getId());
+            deleteOne2ManyChildrenShallow(association);
         }
+    }
+
+    /**
+     * Deletes immediate children.
+     */
+    private void deleteOne2ManyChildrenShallow(OneToManyAssociation association){
+        String targetTable = metaModelOf(association.getTargetClass()).getTableName();
+        new DB(metaModelLocal.getDbName()).exec("DELETE FROM " + targetTable + " WHERE " + association.getFkName() + " = ?", getId());
     }
 
     private void deletePolymorphicChildrenShallow() {
         List<OneToManyPolymorphicAssociation> polymorphics = metaModelLocal.getPolymorphicAssociations(new ArrayList<Association>());
         for (OneToManyPolymorphicAssociation association : polymorphics) {
-            String targetTable = metaModelOf(association.getTargetClass()).getTableName();
-            String parentType = association.getTypeLabel();
-            new DB(metaModelLocal.getDbName()).exec("DELETE FROM " + targetTable + " WHERE parent_id = ? AND parent_type = ?", getId(), parentType);
+            deletePolymorphicChildrenShallow(association);
         }
     }
 
+    /**
+     * Deletes immediate polymorphic children
+     */
+    private void deletePolymorphicChildrenShallow(OneToManyPolymorphicAssociation association){
+        String targetTable = metaModelOf(association.getTargetClass()).getTableName();
+        String parentType = association.getTypeLabel();
+        new DB(metaModelLocal.getDbName()).exec("DELETE FROM " + targetTable + " WHERE parent_id = ? AND parent_type = ?", getId(), parentType);
+    }
 
     private void deleteChildrenDeep(List<? extends Association> childAssociations){
         for (Association association : childAssociations) {
@@ -644,6 +667,32 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 for (Model model : dependencies) {
                     model.deleteCascade();
                 }
+            }
+        }
+    }
+
+    /**
+     * Deletes immediate children (does not walk the dependency tree).
+     * If you have integrity constraints in the DB that are not accounted
+     * by this call, you  will get DB exceptions.
+     * <p>
+     * <h4>One to many and polymorphic associations</h4>
+     * Deletes all child records.
+     * <h4>Many to many associations</h4>
+     * Deletes links in a join table. Nothing else is deleted.
+     * </p>
+     *
+     * @param clazz type of a child to delete
+     */
+    public <T extends Model> void deleteChildrenShallow(Class<T> clazz) {
+        List<Association> associations = metaModelLocal.getAssociationsForTarget(clazz);
+        for (Association association : associations) {
+            if (association instanceof OneToManyAssociation) {
+                deleteOne2ManyChildrenShallow((OneToManyAssociation) association);
+            }else if(association instanceof Many2ManyAssociation){
+                deleteManyToManyLinks((Many2ManyAssociation) association);
+            }else if(association instanceof OneToManyPolymorphicAssociation){
+                deletePolymorphicChildrenShallow((OneToManyPolymorphicAssociation) association);
             }
         }
     }
