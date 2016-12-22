@@ -2517,7 +2517,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param models lis of model instances to add to this one.
      * @param <T>
      */
-    public <T extends Model>  void add(List<T> models){
+    public <T extends Model>  void addModels(List<T> models){
         for (T model : models) {
             add(model);
         }
