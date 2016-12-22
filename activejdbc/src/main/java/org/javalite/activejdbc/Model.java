@@ -2510,6 +2510,18 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
     }
 
+    /**
+     * Convenience method. Calls {@link #add(Model)} one at the time for each member of the list.
+     * All rules of the {@link #add(Model)} method apply.
+     *
+     * @param models lis of model instances to add to this one.
+     * @param <T>
+     */
+    public <T extends Model>  void add(List<T> models){
+        for (T model : models) {
+            add(model);
+        }
+    }
 
     /**
      * Removes associated child from this instance. The child model should be either in belongs to association (including polymorphic) to this model
