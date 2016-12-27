@@ -1,44 +1,83 @@
 package org.javalite.app_config;
 
+import org.javalite.common.Convert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
 /**
- * Allows configuration of applications that is specific for different deployment environments.
- * <p></p>
+ * This class allows configuration of applications for different deployment environments, such as development, test, staging, production, etc.
+ * Configuration is done either with property files on the classpath, or on a file system.
+ *
+ * <h2>1. Classpath configuration</h2>
+ *
  * Applications could have environment-specific files, whose names follow this pattern:
- * <code>environment.properties</code>, where <code>environment</code> is a name of a deployment environment, such as "development",
+ * <code>name.properties</code>, where <code>name</code> is a name of a deployment environment, such as "development",
  * "staging", "production", etc.
 
  * You can also provide a global file, properties from which will be loaded in all environments: <code>global.properties</code>.
+ *
  * <p></p>
- * In all cases the files need to be on the classpath under directory/package <code>/app_config</code>.
+ *
+ * In all cases the files need to be on the classpath in package <code>/app_config</code>.
  * <p></p>
+ *
  * Environment-specific file will have an "environment" part of the file name match to an environment variable called "ACTIVE_ENV".
  * Such configuration is easy to achieve in Unix shell:
+ *
  * <p></p>
+ *
  * <code>
  * export ACTIVE_ENV=test
  * </code>
+ *
  * <p></p>
+ *
  * If environment variable <code>ACTIVE_ENV</code> is missing, it defaults to "development".
  *
  * <p>
  *     You can also provide an environment as a system property <code>active_env</code>. System property overrides environment
  *     variable <code>ACTIVE_ENV</code>
  * </p>
+ * <h3>Example:</h3>
+ * If there  are four files packed  into a <code>/app_config</code> package:
+ *
+ * <ul>
+ *     <li>global.properties</li>
+ *     <li>development.properties</li>
+ *     <li>staging.properties</li>
+ *     <li>production.properties</li>
+ * </ul>
+ * And the <code>ACTIVE_ENV=staging</code>, then properties will be loaded from the following files:
+ * <ul>
+ *     <li>global.properties</li>
+ *     <li>staging.properties</li>
+ * </ul>
+ *
+ * <h2>2. File configuration</h2>
+ *
+ * In addition to properties on classpath, you can also specify a single file for properties to loaded from a file system.
+ * Use a system property with a full path to a file like:
+ *
+ * <pre>
+ *     java -cp $CLASSPATH com.myproject.Main -Dapp_config.properties=/opt/directory1/myproject.properties
+ * </pre>
+ *
+ * <blockquote><strong>The file-based configuration  overrides classpath one. If you have a property defined in both,
+ * the classpath configuration will be completely ignored and the file property will be used.</strong></blockquote>
  *
  * @author Igor Polevoy
  */
 public class AppConfig implements Map<String, String> {
 
     private static Logger LOGGER = LoggerFactory.getLogger(AppConfig.class);
-    private static HashMap<String, Property> props = new HashMap<String, Property>();
-    private static HashMap<String, String> plainProps = new HashMap<String, String>();
+    private static HashMap<String, Property> props;
+    private static HashMap<String, String> plainProps;
     private static final String activeEnv;
 
     static {
@@ -51,44 +90,70 @@ public class AppConfig implements Map<String, String> {
         init();
     }
 
-
     public static synchronized void init() {
-        if (isInited()) return;
+        if (!isInited()){
+            reload();
+        }
+    }
 
+    public static void reload(){
         try {
-            URL globalUrl = AppConfig.class.getResource("/app_config/global.properties");
-            if (globalUrl != null) {
-                registerProperties(globalUrl);
-            }
 
-            //get env - specific file, first from a system property, than from env var.
-            String  activeEnv = System.getProperty("active_env");
-            if(activeEnv == null){
-                activeEnv = System.getenv("ACTIVE_ENV");
+            props = new HashMap<>();
+            plainProps = new HashMap<>();
+            loadFromClasspath();
+            String propName = "app_config.properties";
+            if(System.getProperties().containsKey(propName)){
+                loadFromFileSystem(System.getProperty(propName));
             }
-
-            if (activeEnv == null) {
-                LOGGER.warn("Environment variable 'ACTIVE_ENV' not found, defaulting to 'development'");
-                activeEnv = "development";
-            }
-
-            String file = "/app_config/" + activeEnv + ".properties";
-            URL url = AppConfig.class.getResource(file);
-            if (url == null) {
-                LOGGER.warn("Property file not found: '" + file + "'");
-            } else {
-                registerProperties(url);
-            }
-        } catch (RuntimeException e) {
+        } catch (ConfigInitException e) {
             throw e;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        }catch (Exception e){
+            throw new ConfigInitException(e);
+        }
+    }
+
+
+
+
+    private static void loadFromFileSystem(String filePath) throws MalformedURLException {
+        File f = new File(filePath);
+        if(!f.exists() || f.isDirectory()){
+            throw new ConfigInitException("failed to find file: " + filePath);
+        }
+        registerProperties(f.toURI().toURL());
+    }
+
+    private static void loadFromClasspath(){
+
+        URL globalUrl = AppConfig.class.getResource("/app_config/global.properties");
+        if (globalUrl != null) {
+            registerProperties(globalUrl);
+        }
+
+        //get env - specific file, first from a system property, than from env var.
+        String activeEnv = System.getProperty("active_env");
+        if (activeEnv == null) {
+            activeEnv = System.getenv("ACTIVE_ENV");
+        }
+
+        if (activeEnv == null) {
+            LOGGER.warn("Environment variable 'ACTIVE_ENV' not found, defaulting to 'development'");
+            activeEnv = "development";
+        }
+
+        String file = "/app_config/" + activeEnv + ".properties";
+        URL url = AppConfig.class.getResource(file);
+        if (url == null) {
+            LOGGER.warn("Property file not found: '" + file + "'");
+        } else {
+            registerProperties(url);
         }
 
     }
 
     private static boolean isInited() {
-        return !(props.isEmpty());
+        return props != null;
     }
 
     private static void registerProperties(URL url) {
@@ -309,5 +374,45 @@ public class AppConfig implements Map<String, String> {
                 return res;
             res.add(prop);
         }
+    }
+
+    /**
+     * Read property as <code>Integer</code>.
+     *
+     * @param propertyName name of property.
+     * @return property as <code>Integer</code>.
+     */
+    public static Integer pInteger(String propertyName){
+        return Convert.toInteger(p(propertyName));
+    }
+
+    /**
+     * Read property as <code>Double</code>.
+     *
+     * @param propertyName name of property.
+     * @return property as <code>Double</code>.
+     */
+    public static Double pDouble(String propertyName){
+        return Convert.toDouble(p(propertyName));
+    }
+
+    /**
+     * Read property as <code>Float</code>.
+     *
+     * @param propertyName name of property.
+     * @return property as <code>Float</code>.
+     */
+    public static Float pFloat(String propertyName){
+        return Convert.toFloat(p(propertyName));
+    }
+
+    /**
+     * Read property as <code>Boolean</code>.
+     *
+     * @param propertyName name of property.
+     * @return property as <code>Boolean</code>.
+     */
+    public static Boolean pBoolean(String propertyName){
+        return Convert.toBoolean(p(propertyName));
     }
 }

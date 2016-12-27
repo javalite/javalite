@@ -72,8 +72,6 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.19.1</version>
                     <configuration>
-                        <reportFormat>brief</reportFormat>
-                        <trimStackTrace>true</trimStackTrace>
                         <useFile>false</useFile>
                         <skipTests>${skipTests}</skipTests>
                         <includes>
@@ -82,12 +80,6 @@
                         </includes>
                         <!-- fails with DE Locale as system default -->
                         <argLine>-Duser.country=US -Duser.language=en</argLine>
-                        <trimStackTrace>false</trimStackTrace>
-                        <useFile>false</useFile>
-                        <includes>
-                            <include>**/*Spec*.java</include>
-                            <include>**/*Test*.java</include>
-                        </includes>
                         <systemPropertyVariables>
                             <oracle.jdbc.J2EE13Compliant>true</oracle.jdbc.J2EE13Compliant>
                             <activejdbc.log />
@@ -133,6 +125,7 @@
         <module>git-info-maven-plugin</module>
         <module>app-config</module>
         <module>activejdbc-gradle-plugin</module>
+
     </modules>
     <dependencyManagement>
         <dependencies>
