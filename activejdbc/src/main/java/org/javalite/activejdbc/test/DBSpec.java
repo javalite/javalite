@@ -1,19 +1,3 @@
-/*
-Copyright 2009-2016 Igor Polevoy
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-
 package org.javalite.activejdbc.test;
 
 import org.javalite.activejdbc.DB;
@@ -32,33 +16,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Super class for tests that need to use a DB connection. The connection is configured in
- *   <code>database.properties</code> file. Test connection transactions work in the following manner:
- *
- *   <ul>
- *       <li>A connection is opened, and the autocommit is se to <code>false</code></li>
- *       <li>The test method picks the connection from teh current thread, uses it to read/write data to the DB</li>
- *       <li>Once the test method exits, the framework rolls back transaction and closes the connection </li>
- *   </ul>
- *
- * Since the framework rolls back changes in each test method, the test database stays pretty much the same,
- * allowing each test method run in data isolation.
- *
  * @author igor on 12/2/16.
  */
 public class DBSpec extends DbConfiguration implements JSpecSupport {
 
     private static Logger LOGGER = LoggerFactory.getLogger(DBSpec.class.getSimpleName());
     private boolean rollback = true;
-    private boolean suppressDb = false;
 
-    public boolean suppressedDb() {
-        return suppressDb;
-    }
-
-    public void suppressDb(boolean suppressDb) {
-        this.suppressDb = suppressDb;
-    }
 
     /**
      * Current state of 'rollback' flag.
@@ -82,16 +46,16 @@ public class DBSpec extends DbConfiguration implements JSpecSupport {
      * @param rollback true to rollback transactions at the end of the test, false to not rollback.
      */
     public void setRollback(boolean rollback) {
-        if(!suppressDb){
-            this.rollback = rollback;
-            Map<String, Connection> connections = DB.connections();
-            for(String name: connections.keySet()){
-                try {
-                    boolean autocommit = !rollback;
-                    connections.get(name).setAutoCommit(autocommit);
-                } catch (SQLException e) {
-                    throw new InitException(e);
-                }
+        this.rollback = rollback;
+
+        Map<String, Connection> connections = DB.connections();
+
+        for(String name: connections.keySet()){
+            try {
+                boolean autocommit = !rollback;
+                connections.get(name).setAutoCommit(autocommit);
+            } catch (SQLException e) {
+                throw new InitException(e);
             }
         }
     }
@@ -99,37 +63,34 @@ public class DBSpec extends DbConfiguration implements JSpecSupport {
     @Before
     public final void openTestConnections() {
 
-        if(!suppressDb){
-            loadConfiguration("/database.properties");
-            List<ConnectionSpecWrapper> connectionWrappers = getTestConnectionWrappers();
-            if (connectionWrappers.isEmpty()) {
-                LOGGER.warn("no DB connections are configured, none opened");
-                return;
-            }
+        loadConfiguration("/database.properties");
 
-            for (ConnectionSpecWrapper connectionWrapper : connectionWrappers) {
-                DB db = new DB(connectionWrapper.getDbName());
-                db.open(connectionWrapper.getConnectionSpec());
-                if (rollback()){
-                    db.openTransaction();
-                }
+        List<ConnectionSpecWrapper> connectionWrappers = getTestConnectionWrappers();
+        if (connectionWrappers.isEmpty()) {
+            LOGGER.warn("no DB connections are configured, none opened");
+            return;
+        }
+
+        for (ConnectionSpecWrapper connectionWrapper : connectionWrappers) {
+            DB db = new DB(connectionWrapper.getDbName());
+            db.open(connectionWrapper.getConnectionSpec());
+            if (rollback()){
+                db.openTransaction();
             }
         }
     }
 
     @After
     public final void closeTestConnections() {
-        if(!suppressDb){
-            List<ConnectionSpecWrapper> connectionWrappers = getTestConnectionWrappers();
-            for (ConnectionSpecWrapper connectionWrapper : connectionWrappers) {
-                String dbName = connectionWrapper.getDbName();
-                DB db = new DB(dbName);
-                if (rollback()) {
-                    db.rollbackTransaction();
-                }
-                db.close();
+        List<ConnectionSpecWrapper> connectionWrappers = getTestConnectionWrappers();
+        for (ConnectionSpecWrapper connectionWrapper : connectionWrappers) {
+            String dbName = connectionWrapper.getDbName();
+            DB db = new DB(dbName);
+            if (rollback()) {
+                db.rollbackTransaction();
             }
-            clearConnectionWrappers();
+            db.close();
         }
+        clearConnectionWrappers();
     }
 }
