@@ -24,7 +24,7 @@ import org.junit.Test;
 /**
  * @author Igor Polevoy
  */
-public class DataSourceTest implements JSpecSupport {
+public class DataSourceTest extends JSpecSupport {
 
     @Test
     public void shouldOpenConnectionFromDataSource(){

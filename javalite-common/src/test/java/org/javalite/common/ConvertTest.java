@@ -33,7 +33,7 @@ import java.util.TimeZone;
  * @author Igor Polevoy
  * @author Eric Nielsen
  */
-public class ConvertTest implements JSpecSupport {
+public class ConvertTest extends JSpecSupport {
 
     @Test
     public void shouldCovertToSqlDate() throws ParseException {

@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 
-package org.javalite.activejdbc.connection_config;
+package org.javalite.activejdbc;
 
 import javax.naming.InitialContext;
 
@@ -24,7 +24,7 @@ import javax.naming.InitialContext;
  *
  * @author Igor Polevoy
  */
-public class ConnectionJndiSpec implements ConnectionSpec {
+public class ConnectionJndiSpec implements ConnectionSpec{
     private final InitialContext context;
     private final String dataSourceJndiName;
 

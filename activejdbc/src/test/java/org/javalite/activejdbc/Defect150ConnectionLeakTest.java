@@ -9,7 +9,7 @@ import static org.javalite.activejdbc.test.JdbcProperties.*;
 /**
  * @author Igor Polevoy
  */
-public class Defect150ConnectionLeakTest implements JSpecSupport {
+public class Defect150ConnectionLeakTest extends JSpecSupport {
 
     @After
     public void after(){

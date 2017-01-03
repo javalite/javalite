@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 
-package org.javalite.activejdbc.connection_config;
+package org.javalite.activejdbc;
 
 import java.util.Properties;
 
@@ -24,7 +24,7 @@ import java.util.Properties;
  *
  * @author Igor Polevoy
  */
-public class ConnectionJdbcSpec implements ConnectionSpec {
+public class ConnectionJdbcSpec implements ConnectionSpec{
     private final String driver;
     private final String url;
     private final String user;

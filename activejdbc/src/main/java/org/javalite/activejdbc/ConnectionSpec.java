@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 
-package org.javalite.activejdbc.connection_config;
+package org.javalite.activejdbc;
 
 /**
  * Tag interface.

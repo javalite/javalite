@@ -19,12 +19,10 @@ package org.javalite.activejdbc;
 
 import static org.javalite.activejdbc.test.JdbcProperties.*;
 
-import org.javalite.activejdbc.connection_config.ConnectionJdbcSpec;
-import org.javalite.activejdbc.connection_config.ConnectionJndiSpec;
-import org.javalite.activejdbc.connection_config.ConnectionSpec;
 import org.junit.Test;
 
 import javax.naming.NamingException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 import static org.javalite.test.jspec.JSpec.a;

@@ -502,24 +502,4 @@ public final class Util {
     public String[] arr(String ... params){
         return params;
     }
-
-    /**
-     * Reads  a property file from classpath to a properties object.
-     *
-     * @param file full path to a property file on  class path
-     * @return <code>java.util.Properties</code> object initialized from the file.
-     * @throws IOException
-     */
-    public static Properties readProperties(String file) throws IOException {
-        InputStream in = Util.class.getClass().getResourceAsStream(file);
-        Properties props = new Properties();
-        if (in != null) {
-            props.load(in);
-        } else {
-            FileInputStream fin = new FileInputStream(file);
-            props.load(fin);
-            fin.close();
-        }
-        return props;
-    }
 }

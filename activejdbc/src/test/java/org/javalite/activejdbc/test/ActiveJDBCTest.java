@@ -34,7 +34,7 @@ import org.junit.Before;
 import static org.javalite.activejdbc.test.JdbcProperties.*;
 import static org.javalite.common.Util.*;
 
-public abstract class ActiveJDBCTest implements JSpecSupport {
+public abstract class ActiveJDBCTest extends JSpecSupport {
 
     private static boolean schemaGenerated = false;
 

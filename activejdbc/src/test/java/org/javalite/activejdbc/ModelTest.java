@@ -202,8 +202,8 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void testCount() {
-        deleteAndPopulateTable("addresses");
-        a(Address.count()).shouldBeEqual(7);
+        deleteAndPopulateTable("people");
+        a(Person.count()).shouldBeEqual(4L);
     }
 
     @Test
