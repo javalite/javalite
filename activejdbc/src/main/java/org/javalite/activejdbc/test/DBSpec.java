@@ -56,10 +56,6 @@ public class DBSpec extends DbConfiguration implements JSpecSupport {
         return suppressDb;
     }
 
-    /**
-     * Call this method from a constructor of your spec in cases you do not need DB connections.
-     * Calling from a "@Before" method will not work.
-     */
     public void suppressDb(boolean suppressDb) {
         this.suppressDb = suppressDb;
     }
