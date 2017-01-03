@@ -30,6 +30,8 @@ public class DbConfiguration {
 
     private static HashMap<String, List<ConnectionSpecWrapper>> connectionWrappers = new HashMap<>();
 
+    private String configFile;
+
     public static void addConnectionWrapper(ConnectionSpecWrapper connectionWrapper, boolean override) {
         String connectionWrapperEnv = connectionWrapper.getEnvironment();
         List<ConnectionSpecWrapper> envConnectionWrappers = connectionWrappers.get(connectionWrapperEnv);
@@ -107,8 +109,9 @@ public class DbConfiguration {
      * @param file path to a file. Can be located on classpath, or on a file system. First searched on classpath,
      *             then on file system.
      */
-    public static void loadConfiguration(String file) {
+    public void loadConfiguration(String file) {
 
+        if(configFile == null)
 
         try {
             Properties props = Util.readProperties(file);
@@ -133,13 +136,13 @@ public class DbConfiguration {
         }
     }
 
-    private static void checkProps(String driver, String userName, String password, String url, String env){
+    private void checkProps(String driver, String userName, String password, String url, String env){
         if (driver == null || userName == null || password == null || url == null){
             throw new InitException("Four JDBC properties are expected: driver, username, password, url for environment: " + env);
         }
     }
 
-    private static void createJdbcWrapper(String env, String driver, String url, String userName, String password) {
+    private void createJdbcWrapper(String env, String driver, String url, String userName, String password) {
         ConnectionSpecWrapper wrapper = new ConnectionSpecWrapper();
         if(env.equals("test")){
             wrapper.setEnvironment("development");
@@ -155,7 +158,7 @@ public class DbConfiguration {
         addConnectionWrapper(wrapper, false);
     }
 
-    private static void createJndiWrapper(String env, String jndiName) {
+    private void createJndiWrapper(String env, String jndiName) {
         ConnectionSpecWrapper wrapper = new ConnectionSpecWrapper();
         wrapper.setEnvironment(env);
         ConnectionJndiSpec connectionSpec = new ConnectionJndiSpec(jndiName);
@@ -164,7 +167,7 @@ public class DbConfiguration {
     }
 
 
-    private static Set<String> getEnvironments(Properties props) {
+    private Set<String> getEnvironments(Properties props) {
         Set<String> environments = new HashSet<>();
         for (String prop : props.stringPropertyNames()) {
             String[] parts =  prop.split("\\.");
