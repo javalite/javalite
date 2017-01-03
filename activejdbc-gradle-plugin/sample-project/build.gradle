@@ -4,8 +4,8 @@ buildscript {
         maven { url 'http://repo.javalite.io' }
     }
     dependencies {
-        classpath 'org.javalite:activejdbc:2.0-SNAPSHOT'
-        classpath 'org.javalite:activejdbc-instrumentation:2.0-SNAPSHOT'
+        classpath 'org.javalite:activejdbc:1.4.13.j7-SNAPSHOT'
+        classpath 'org.javalite:activejdbc-instrumentation:1.4.13.j7-SNAPSHOT'
     }
 }
 
