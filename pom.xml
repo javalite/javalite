@@ -110,7 +110,6 @@
               <configuration>
                  <stylesheetfile>javadoc/stylesheet.css</stylesheetfile>
                  <javadocDirectory>javadoc</javadocDirectory>
-                 <additionalparam>-Xdoclint:none</additionalparam>
               </configuration>
             </plugin>
         </plugins>
