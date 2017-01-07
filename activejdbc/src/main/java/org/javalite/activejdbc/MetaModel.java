@@ -321,7 +321,7 @@ public class MetaModel implements Serializable {
 
     protected void addAssociation(Association association) {
         if (!associations.contains(association)) {
-            log(LOGGER, "Association found: {}", association);
+            log(LOGGER, false, "Association found: {}", association);
             associations.add(association);
         }
     }

@@ -651,9 +651,7 @@ public class DB implements Closeable{
                             blob.setBytes(1, bytes);
                             ps.setBlob(index, blob);
                         }
-                    } catch (AbstractMethodError e) {// net.sourceforge.jtds.jdbc.ConnectionJDBC2.createBlob is abstract :)
-                        ps.setObject(index, param);
-                    } catch (SQLException e) {
+                    } catch (AbstractMethodError | SQLException e) {// net.sourceforge.jtds.jdbc.ConnectionJDBC2.createBlob is abstract :)
                         ps.setObject(index, param);
                     }
                 } else {

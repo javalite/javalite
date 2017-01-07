@@ -18,6 +18,7 @@ package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.NoArg;
+import org.javalite.test.SystemStreamUtil;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -28,13 +29,13 @@ import java.io.IOException;
 public class Defect199Test extends ActiveJDBCTest {
     @Test
     public void shouldProvideGoodMessage() throws IOException {
-
-        replaceSystemError();
+        SystemStreamUtil.replaceError();;
         try{
             NoArg.create("name", "blah");
         }catch(Exception e){
             e.printStackTrace();
         }
-        a(getSystemError()).shouldContain("org.javalite.activejdbc.test_models.NoArg");
+        a(SystemStreamUtil.getSystemErr()).shouldContain("org.javalite.activejdbc.test_models.NoArg");
+        SystemStreamUtil.restoreSystemErr();
     }
 }

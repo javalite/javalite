@@ -213,7 +213,7 @@ public enum Registry {
         }
 
         if(columns.size() > 0){
-            LogFilter.log(LOGGER, "Fetched metadata for table: {}", table);
+            LogFilter.log(LOGGER, false, "Fetched metadata for table: {}", table);
         }
         else{
             LOGGER.warn("Failed to retrieve metadata for table: '{}'."
@@ -233,7 +233,7 @@ public enum Registry {
         for (Class<? extends Model> modelClass : modelClasses) {
             MetaModel mm = new MetaModel(dbName, modelClass, dbType);
             metaModels.addMetaModel(mm, modelClass);
-            LogFilter.log(LOGGER, "Registered model: {}", modelClass);
+            LogFilter.log(LOGGER, false, "Registered model: {}", modelClass);
         }
     }
 

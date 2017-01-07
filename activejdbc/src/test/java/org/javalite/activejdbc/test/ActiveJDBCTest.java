@@ -226,21 +226,4 @@ public abstract class ActiveJDBCTest implements JSpecSupport {
             }
         }
     }
-
-    PrintStream errOrig;
-    PrintStream err;
-    ByteArrayOutputStream bout;
-
-    protected void replaceSystemError() {
-        errOrig = System.err;
-        bout = new ByteArrayOutputStream();
-        err = new PrintStream(bout);
-        System.setErr(err);
-    }
-
-    protected String getSystemError() throws IOException {
-        err.flush();
-        bout.flush();
-        return bout.toString();
-    }
 }

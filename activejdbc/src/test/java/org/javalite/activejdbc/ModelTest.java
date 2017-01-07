@@ -313,7 +313,7 @@ public class ModelTest extends ActiveJDBCTest {
         deleteAndPopulateTables("libraries", "books");
         Library l = Library.findById(1);
         List<Book> books = l.getAll(Book.class);
-        Library lib = (Library)books.get(0).parent(Library.class);
+        Library lib = books.get(0).parent(Library.class);
         the(lib).shouldNotBeNull();
         the(l.getId()).shouldBeEqual(lib.getId());
 
