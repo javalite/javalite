@@ -34,6 +34,7 @@ public class LogValuesSpec extends ActiveJDBCTest {
         String log = SystemStreamUtil.getSystemErr();
         SystemStreamUtil.restoreSystemErr();
 
+        System.out.println(log);
         //Lets test what was logged.
         String[] parts = log.split("LazyList -");
         String json = parts[1];

@@ -69,7 +69,12 @@ class MetaModels {
     }
 
     String getTableName(Class<? extends Model> modelClass) {
-        MetaModel mm = metaModelsByClass.get(modelClass);
+        MetaModel mm = null;
+        for (Class<? extends Model> clazz: metaModelsByClass.keySet()){
+            if(modelClass.getName().equals(clazz.getName())){
+                mm = metaModelsByClass.get(clazz);
+            }
+        }
         return mm == null ? null : mm.getTableName();
     }
 
