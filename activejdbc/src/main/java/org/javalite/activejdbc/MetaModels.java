@@ -73,6 +73,7 @@ class MetaModels {
         for (Class<? extends Model> clazz: metaModelsByClass.keySet()){
             if(modelClass.getName().equals(clazz.getName())){
                 mm = metaModelsByClass.get(clazz);
+                break;
             }
         }
         return mm == null ? null : mm.getTableName();
