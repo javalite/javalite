@@ -29,12 +29,12 @@ class MetaModels {
     private static final Logger LOGGER = LoggerFactory.getLogger(MetaModels.class);
 
     private final Map<String, MetaModel> metaModelsByTableName = new CaseInsensitiveMap<>();
-    private final Map<Class<? extends Model>, MetaModel> metaModelsByClass = new HashMap<>();
+    private final Map<String, MetaModel> metaModelsByClassName = new HashMap<>();
     //these are all many to many associations across all models.
     private final List<Many2ManyAssociation> many2ManyAssociations = new ArrayList<>();
 
     void addMetaModel(MetaModel mm, Class<? extends Model> modelClass) {
-        Object o = metaModelsByClass.put(modelClass, mm);
+        Object o = metaModelsByClassName.put(modelClass.getName(), mm);
         if (o != null) {
             LOGGER.warn("Double-register: {}: {}", modelClass, o);
         }
@@ -46,7 +46,7 @@ class MetaModels {
     }
 
     MetaModel getMetaModel(Class<? extends Model> modelClass) {
-        return metaModelsByClass.get(modelClass);
+        return metaModelsByClassName.get(modelClass.getName());
     }
 
     MetaModel getMetaModel(String tableName) {
@@ -69,14 +69,8 @@ class MetaModels {
     }
 
     String getTableName(Class<? extends Model> modelClass) {
-        MetaModel mm = null;
-        for (Class<? extends Model> clazz: metaModelsByClass.keySet()){
-            if(modelClass.getName().equals(clazz.getName())){
-                mm = metaModelsByClass.get(clazz);
-                break;
-            }
-        }
-        return mm == null ? null : mm.getTableName();
+        return metaModelsByClassName.containsKey(modelClass.getName())?
+            metaModelsByClassName.get(modelClass.getName()).getTableName():null;
     }
 
     public void setColumnMetadata(String table, Map<String, ColumnMetadata> metaParams) {
