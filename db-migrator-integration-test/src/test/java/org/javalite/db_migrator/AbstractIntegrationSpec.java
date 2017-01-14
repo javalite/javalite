@@ -39,20 +39,20 @@ public abstract class AbstractIntegrationSpec {
             int code = cli.doMain(args, dir, outps, errps);
             String out = outos.toString();
             String err = erros.toString();
-            if (code != 0) {
-                System.out.println("TEST MAVEN EXECUTION START >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-                System.out.print("Executing: mvn");
-                for (String arg : args) {
-                    System.out.print(' ');
-                    System.out.print(arg);
-                }
-                System.out.println();
-                System.out.print("Exit code: ");
-                System.out.println(code);
-                System.out.print(out);
-                System.err.print(err);
-                System.out.println("TEST MAVEN EXECUTION END <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+
+            System.out.println("TEST MAVEN EXECUTION START >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            System.out.print("Executing: mvn");
+            for (String arg : args) {
+                System.out.print(' ');
+                System.out.print(arg);
             }
+            System.out.println();
+            System.out.print("Exit code: ");
+            System.out.println(code);
+            System.out.print(out);
+            System.err.print(err);
+            System.out.println("TEST MAVEN EXECUTION END <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+
             return out + err;
         } finally {
             closeQuietly(errps);

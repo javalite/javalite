@@ -103,7 +103,7 @@ public class UtilTest implements JSpecSupport {
 
     @Test
     public void shouldReadLargeUTF8() throws IOException {
-        System.out.println(Util.readResource("/large.txt"));
+        Util.readResource("/large.txt");
 
     }
 
