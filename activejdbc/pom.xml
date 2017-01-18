@@ -20,7 +20,6 @@
         <jdbc.user>sa</jdbc.user>
         <jdbc.password />
         <db>h2</db>
-        <slf4j.version>1.7.0</slf4j.version> <!--//TODO: replace with latest version when this is fixed: http://jira.qos.ch/browse/SLF4J-389-->
     </properties>
 
     <profiles>
@@ -223,12 +222,18 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
+            <version>1.7.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>1.7.5</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>${slf4j.version}</version>
+            <version>1.7.5</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
