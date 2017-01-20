@@ -146,7 +146,7 @@ public final class Convert {
             return new java.sql.Date(((Number) value).longValue());
         } else {
             try {
-                return java.sql.Date.valueOf(value.toString());
+                return java.sql.Date.valueOf(value.toString().trim());
             } catch (IllegalArgumentException e) {
                 throw new ConversionException("failed to convert: '" + value + "' to java.sql.Date", e);
             }
@@ -176,7 +176,7 @@ public final class Convert {
             return truncateToSqlDate(((Number) value).longValue());
         } else {
             try {
-                return java.sql.Date.valueOf(value.toString());
+                return java.sql.Date.valueOf(value.toString().trim());
             } catch (IllegalArgumentException e) {
                 throw new ConversionException("failed to convert: '" + value + "' to java.sql.Date", e);
             }
@@ -262,7 +262,7 @@ public final class Convert {
             return ((Number) value).doubleValue();
         } else {
             try {
-                return Double.valueOf(value.toString());
+                return Double.valueOf(value.toString().trim());
             } catch (NumberFormatException e) {
                 throw new ConversionException("failed to convert: '" + value + "' to Double", e);
             }
@@ -288,7 +288,7 @@ public final class Convert {
         } else if (value instanceof Number) { // SQLite returns TIME as Integer
            return new java.sql.Time(((Number) value).longValue());
         } else {
-           return java.sql.Time.valueOf(value.toString());
+           return java.sql.Time.valueOf(value.toString().trim());
         }
     }
 
@@ -311,7 +311,7 @@ public final class Convert {
         } else if (value instanceof Number) {
            return new java.sql.Timestamp(((Number) value).longValue());
        } else {
-           return java.sql.Timestamp.valueOf(value.toString());
+           return java.sql.Timestamp.valueOf(value.toString().trim());
         }
     }
 
@@ -331,7 +331,7 @@ public final class Convert {
         } else if (value instanceof Number) {
             return ((Number) value).floatValue();
         } else {
-            return Float.valueOf(value.toString());
+            return Float.valueOf(value.toString().trim());
         }
     }
 
@@ -355,7 +355,7 @@ public final class Convert {
             return ((java.util.Date) value).getTime();
         } else {
             try {
-                return Long.valueOf(value.toString());
+                return Long.valueOf(value.toString().trim());
             } catch (NumberFormatException e) {
                 throw new ConversionException("failed to convert: '" + value + "' to Long", e);
             }
@@ -379,7 +379,7 @@ public final class Convert {
             return ((Number) value).intValue();
         } else {
             try {
-                return Integer.valueOf(value.toString());
+                return Integer.valueOf(value.toString().trim());
             } catch (NumberFormatException e) {
                 throw new ConversionException("failed to convert: '" + value + "' to Integer", e);
             }
@@ -401,7 +401,7 @@ public final class Convert {
             return (BigDecimal) value;
         } else {
             try {
-                return new BigDecimal(value.toString());
+                return new BigDecimal(value.toString().trim());
             } catch (NumberFormatException e) {
                 throw new ConversionException("failed to convert: '" + value + "' to BigDecimal", e);
             }
@@ -463,7 +463,7 @@ public final class Convert {
             return ((Number) value).shortValue();
         } else {
             try {
-                return Short.valueOf(value.toString());
+                return Short.valueOf(value.toString().trim());
             } catch (NumberFormatException e) {
                 throw new ConversionException("failed to convert: '" + value + "' to Short", e);
             }
