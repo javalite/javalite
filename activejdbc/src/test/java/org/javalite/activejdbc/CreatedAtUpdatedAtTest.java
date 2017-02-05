@@ -19,6 +19,7 @@ package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Person;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Timestamp;
@@ -30,9 +31,8 @@ import java.util.List;
  */
 public class CreatedAtUpdatedAtTest extends ActiveJDBCTest {
 
-    @Override
-    public void before() throws Exception {
-        super.before();
+    @Before
+    public void setup() throws Exception {
         deleteAndPopulateTable("people");
     }
 

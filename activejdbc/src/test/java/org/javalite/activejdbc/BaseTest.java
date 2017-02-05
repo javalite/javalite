@@ -17,21 +17,19 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
-import org.javalite.activejdbc.Base;
-import org.javalite.activejdbc.RowListenerAdapter;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 
 public class BaseTest extends ActiveJDBCTest {
 
-    @Override
-    public void before() throws Exception {
-        super.before();
+    @Before
+    public void setup() throws Exception {
         deleteAndPopulateTable("people");
     }
 

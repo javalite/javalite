@@ -20,6 +20,7 @@ package org.javalite.activejdbc;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Account;
 import org.javalite.activejdbc.test_models.Page;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -27,9 +28,8 @@ import org.junit.Test;
  */
 public class NumericValidationBuilderTest extends ActiveJDBCTest {
 
-    @Override
-    public void before() throws Exception {
-        super.before();
+    @Before
+    public void setup() throws Exception {
         deleteAndPopulateTable("accounts");
     }
 

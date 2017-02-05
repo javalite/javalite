@@ -20,6 +20,7 @@ package org.javalite.activejdbc;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 
 import org.javalite.activejdbc.test_models.Person;
+import org.junit.Before;
 import org.junit.Test;
 import java.util.Date;
 
@@ -29,9 +30,8 @@ import java.util.Date;
 public class CreateModelTest extends ActiveJDBCTest {
 
 
-    @Override
-    public void before() throws Exception {
-        super.before();
+    @Before
+    public void setup() throws Exception {
         deleteAndPopulateTable("people");
     }
     

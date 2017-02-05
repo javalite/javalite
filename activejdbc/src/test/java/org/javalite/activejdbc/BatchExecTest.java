@@ -21,6 +21,7 @@ limitations under the License.
 package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.test.ActiveJDBCTest;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.PreparedStatement;
@@ -29,29 +30,29 @@ import java.util.List;
 import java.util.Map;
 
 public class BatchExecTest extends ActiveJDBCTest {
-        @Override
-        public void before() throws Exception {
-            super.before();
-            deleteFromTable("people");
-        }
 
-        @Test
-        public void shouldInsertAsBatch() {
+    @Before
+    public void setup() throws Exception {
+        deleteFromTable("people");
+    }
 
-            PreparedStatement ps = Base.startBatch("insert into people (NAME, LAST_NAME, DOB) values(?, ?, ?)");
+    @Test
+    public void shouldInsertAsBatch() {
 
-            Base.addBatch(ps, "Mic", "Jagger", getDate(1962, 1, 1));
-            Base.addBatch(ps, "Marilyn", "Monroe", getDate(1932, 1, 1));
-            int[] counts = Base.executeBatch(ps);
+        PreparedStatement ps = Base.startBatch("insert into people (NAME, LAST_NAME, DOB) values(?, ?, ?)");
 
-            the(counts.length).shouldBeEqual(2);
-            the(counts[0] == 1 || counts[0] == Statement.SUCCESS_NO_INFO).shouldBeTrue(); //Oracle!!
-            the(counts[1] == 1 || counts[1] == Statement.SUCCESS_NO_INFO).shouldBeTrue();
+        Base.addBatch(ps, "Mic", "Jagger", getDate(1962, 1, 1));
+        Base.addBatch(ps, "Marilyn", "Monroe", getDate(1932, 1, 1));
+        int[] counts = Base.executeBatch(ps);
 
-            List<Map> people = Base.findAll("select * from people order by name");
+        the(counts.length).shouldBeEqual(2);
+        the(counts[0] == 1 || counts[0] == Statement.SUCCESS_NO_INFO).shouldBeTrue(); //Oracle!!
+        the(counts[1] == 1 || counts[1] == Statement.SUCCESS_NO_INFO).shouldBeTrue();
 
-            the(people.size()).shouldBeEqual(2);
-            the(people.get(0).get("name")).shouldBeEqual("Marilyn");
-            the(people.get(1).get("name")).shouldBeEqual("Mic");
-        }
+        List<Map> people = Base.findAll("select * from people order by name");
+
+        the(people.size()).shouldBeEqual(2);
+        the(people.get(0).get("name")).shouldBeEqual("Marilyn");
+        the(people.get(1).get("name")).shouldBeEqual("Mic");
+    }
 }

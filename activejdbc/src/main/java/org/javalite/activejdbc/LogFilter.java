@@ -22,7 +22,8 @@ import org.slf4j.Logger;
 
 import java.util.regex.Pattern;
 
-import static org.javalite.common.Util.*;
+import static org.javalite.common.Util.empty;
+import static org.javalite.common.Util.join;
 
 /**
  * @author Igor Polevoy
@@ -59,14 +60,37 @@ public class LogFilter {
         }
 
         if (logger.isInfoEnabled()) {
-            StringBuilder log =  new StringBuilder().append("Query: \"").append(query).append('"');
-            if (!empty(params)) {
-                log.append(", with parameters: ").append('<');
-                join(log, params, ">, <");
-                log.append('>');
-            }
-            log(logger, log.append(", took: ").append(time).append(" milliseconds").toString());
+            log(logger, getJson(query, params, time));
         }
+    }
+
+    private static String getJson(String query, Object[] params, long time) {
+        StringBuilder paramsSB = new StringBuilder("");
+        if (params != null) {
+            for (int i = 0; i < params.length; i++) {
+                if(params[i] instanceof Number){
+                    paramsSB.append(params[i]);
+                }else if(params[i] instanceof byte[]){
+                    paramsSB.append("\"bytes[...]\"");
+                }else {
+                    paramsSB.append("\"").append(params[i]).append("\"");
+                }
+                if(i != (params.length - 1)){
+                    paramsSB.append(",");
+                }
+            }
+        }
+        return "{\"sql\":\"" + query.replace("\"", "'") + "\",\"params\":[" + paramsSB.toString() + "],\"duration_millis\":" + time + "}";
+    }
+
+    private static String getText(String query, Object[] params, long time) {
+        StringBuilder log =  new StringBuilder().append("Query: \\\"").append(query.replace("\"", "'")).append("\\\"");
+        if (!empty(params)) {
+            log.append(", with parameters: ").append('<');
+            join(log, params, ">, <");
+            log.append('>');
+        }
+        return log.append(", took: ").append(time).append(" milliseconds").toString();
     }
 
     public static void log(Logger logger, String log){

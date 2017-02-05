@@ -24,6 +24,7 @@ import org.javalite.activejdbc.cache.QueryCache;
 import org.javalite.activejdbc.statistics.QueryStats;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.*;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
@@ -36,9 +37,8 @@ import static org.javalite.test.jspec.JSpec.$;
  */
 public class CacheTest extends ActiveJDBCTest {
 
-    @Override
-    public void before() throws Exception {
-        super.before();
+    @Before
+    public void setup() throws Exception {
         deleteAndPopulateTable("people");
         for (int i = 0; i < 100; i++) {
             Person p = new Person();

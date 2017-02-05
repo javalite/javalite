@@ -29,11 +29,8 @@ import org.junit.Test;
  */
 public class SetParentTest extends ActiveJDBCTest {
 
-    @Override
     @Before
-    public void before() throws Exception {
-        super.before();
-        
+    public void setup() throws Exception {
         deleteFromTable("computers");
         deleteFromTable("motherboards");
         deleteFromTable("keyboards");

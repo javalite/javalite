@@ -13,10 +13,8 @@ import java.util.GregorianCalendar;
  */
 public class TimeManagementSpec extends ActiveJDBCTest {
 
-    @Override
     @Before
-    public void before() throws Exception {
-        super.before();
+    public void setup() throws Exception {
         deleteFromTable("people");
     }
 

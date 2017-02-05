@@ -29,10 +29,6 @@ import java.util.List;
  */
 public class PolymorphicAssociationsOverrideTest extends ActiveJDBCTest {
 
-    @Override
-    public void before() throws Exception {
-        super.before();
-    }
 
     @Test
     public void shouldAddPolymorphicChild() {

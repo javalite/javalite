@@ -30,11 +30,6 @@ import java.util.Map;
  */
 public class PolymorphicAssociationsTest extends ActiveJDBCTest {
 
-    @Override
-    public void before() throws Exception {
-        super.before();
-    }
-
     @Test
     public void shouldAddPolymorphicChild() {
         deleteAndPopulateTables("articles", "posts", "comments");
