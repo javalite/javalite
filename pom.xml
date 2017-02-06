@@ -29,7 +29,6 @@
     <modules>
         <module>activeweb</module>
         <module>activeweb-testing</module>
-        <module>activeweb-gwt</module>
         <module>activeweb-lessc</module>
         <module>activeweb-lessc-integration-test</module>
         <module>javalite-async</module>
@@ -167,11 +166,6 @@
                 <groupId>com.google.inject</groupId>
                 <artifactId>guice</artifactId>
                 <version>3.0</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.gwt</groupId>
-                <artifactId>gwt-user</artifactId>
-                <version>2.5.1</version>
             </dependency>
             <dependency>
                 <groupId>commons-fileupload</groupId>
