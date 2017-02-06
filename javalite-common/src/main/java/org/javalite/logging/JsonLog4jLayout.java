@@ -27,15 +27,6 @@ import java.util.Map;
  */
 public class JsonLog4jLayout extends Layout {
 
-    /**
-     * Contains values that need to be included in the log output as JSON
-     */
-    private static final ThreadLocal<Map<String, String>> logValuesTL = new ThreadLocal<>();
-
-    private static final ThreadLocal<String> logValuesJsonTL = new ThreadLocal<>();
-
-
-
     @Override
     public String format(LoggingEvent loggingEvent) {
         String loggerName = loggingEvent.getLoggerName();
