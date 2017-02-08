@@ -83,16 +83,6 @@ public class LogFilter {
         return "{\"sql\":\"" + query.replace("\"", "'") + "\",\"params\":[" + paramsSB.toString() + "],\"duration_millis\":" + time + "}";
     }
 
-    private static String getText(String query, Object[] params, long time) {
-        StringBuilder log =  new StringBuilder().append("Query: \\\"").append(query.replace("\"", "'")).append("\\\"");
-        if (!empty(params)) {
-            log.append(", with parameters: ").append('<');
-            join(log, params, ">, <");
-            log.append('>');
-        }
-        return log.append(", took: ").append(time).append(" milliseconds").toString();
-    }
-
     public static void log(Logger logger, String log){
         if (logger.isInfoEnabled() && pattern.matcher(log).matches()) {
            logger.info(log);
