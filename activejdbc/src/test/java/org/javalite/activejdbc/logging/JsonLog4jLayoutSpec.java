@@ -18,6 +18,7 @@ package org.javalite.activejdbc.logging;
 
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Animal;
+import org.javalite.common.JsonHelper;
 import org.javalite.common.Util;
 import org.javalite.logging.Context;
 import org.javalite.test.SystemStreamUtil;
@@ -160,5 +161,24 @@ public class JsonLog4jLayoutSpec  extends ActiveJDBCTest{
         Animal.findAll().size();
         log = getLastLine();
         a(log).shouldNotContain("joe@schmoe.me");
+    }
+
+    @Test
+    public void shouldLogException(){
+
+        Logger logger = LoggerFactory.getLogger(getClass());
+        logger.error("fire!", new RuntimeException("house on fire!"));
+
+        Map  log = JsonHelper.toMap(getLastLine());
+
+        the(log.get("level")).shouldBeEqual("ERROR");
+        the(log.get("thread")).shouldNotBeNull();
+        the(log.get("timestamp")).shouldNotBeNull();
+        the(log.get("logger")).shouldBeEqual("org.javalite.activejdbc.logging.JsonLog4jLayoutSpec");
+        the(log.get("message")).shouldBeEqual("fire!");
+        Map exception = (Map) log.get("exception");
+        the(exception.get("message")).shouldBeEqual("house on fire!");
+        the(exception.get("message")).shouldBeEqual("house on fire!");
+        the(exception.get("stacktrace")).shouldContain("java.lang.RuntimeException: house on fire!\n\tat org.javalite.activejdbc.logging.JsonLog4jLayoutSpec.shouldLogException");
     }
 }

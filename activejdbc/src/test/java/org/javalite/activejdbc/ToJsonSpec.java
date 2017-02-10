@@ -17,10 +17,11 @@ limitations under the License.
 package org.javalite.activejdbc;
 
 
-import com.fasterxml.jackson.databind.JsonNode;
+
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.*;
+import org.javalite.common.JsonHelper;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -89,7 +90,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
 
         User u = User.findById(1);
         String json = u.toJson(true, "email", "last_name");
-        JsonHelper.readTree(json); // validate
+        JsonHelper.toJsonString(json); // validate
         the(json).shouldBeEqual("{\n" +
                 "  \"email\":\"mmonroe@yahoo.com\",\n" +
                 "  \"last_name\":\"Monroe\"\n" +
@@ -102,15 +103,15 @@ public class ToJsonSpec extends ActiveJDBCTest {
         LazyList<User> personList = User.findAll().orderBy("id").include(Address.class);
 
         String json = personList.toJson(false);
-        JsonHelper.readTree(json); // validate
+        JsonHelper.toJsonString(json); // validate
     }
 
     @Test
     public void shouldEscapeDoubleQuote() {
         Page p = new Page();
         p.set("description", "bad \"/description\"");
-        JsonNode node = JsonHelper.readTree(p.toJson(true));
-        a(node.get("description").toString()).shouldBeEqual("\"bad \\\"/description\\\"\"");
+        Map map = JsonHelper.toMap(p.toJson(true));
+        a(map.get("description").toString()).shouldBeEqual("bad \"/description\"");
 
         //ensure no NPE:
         p = new Page();
