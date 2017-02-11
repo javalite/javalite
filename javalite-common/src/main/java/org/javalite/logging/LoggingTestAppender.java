@@ -1,4 +1,4 @@
-package org.javalite.activejdbc.logging;
+package org.javalite.logging;
 
 
 import org.apache.log4j.AppenderSkeleton;
