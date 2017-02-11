@@ -50,11 +50,11 @@ public class JsonLog4jLayout extends Layout {
         String exception = "";
         if(throwableInformation != null){
             exception = ",\"exception\":{\"message\":\"";
-            String exceptionMessage = throwableInformation.getThrowable().getMessage() != null?
-                    throwableInformation.getThrowable().getMessage(): "";
-            exception += exceptionMessage + "\",\"stacktrace\":\"" +
-                    sanitize(Util.join(throwableInformation.getThrowableStrRep(), "\n")) + "\"}";
+            Throwable throwable = throwableInformation.getThrowable();
+            String exceptionMessage = throwable.getMessage() != null? throwable.getMessage(): "";
+            exception += exceptionMessage + "\",\"stacktrace\":\"" + sanitize(Util.getStackTraceString(throwable)) + "\"}";
         }
+
         String contextJson  = context != null ? ",\"context\":" + context : "";
 
         return "{\"level\":\"" + level + "\",\"timestamp\":\"" + timeStamp +
