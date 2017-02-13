@@ -228,13 +228,10 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
-        System.out.println(getSystemErr());
-        a(getSystemErr().contains("Template \"/hello/no-view.ftl\" not found.")).shouldBeTrue();
-
+        a(getSystemErr().contains("Template not found for name \"/hello/no-view.ftl")).shouldBeTrue();
         String html = response.getContentAsString();
-
         a(XPathHelper.count("//div", html)).shouldBeEqual(3);
-        a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("Failed to render template: 'src/test/views/hello/no-view.ftl', with layout: 'src/test/views/layouts/default_layout'; Template \"/hello/no-view.ftl\" not found.");
+        a(XPathHelper.selectText("//div[@id='content']", html)).shouldContain("Failed to render template: 'src/test/views/hello/no-view.ftl', with layout: 'src/test/views/layouts/default_layout'; Template not found for name \"/hello/no-view.ftl\"");
     }
 
     @Test
