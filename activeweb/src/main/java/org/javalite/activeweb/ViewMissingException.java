@@ -21,15 +21,15 @@ package org.javalite.activeweb;
  */
 public class ViewMissingException extends ViewException{
 
-    public ViewMissingException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public ViewMissingException(Throwable cause) {
-        super(cause);
-    }
+    private String message;
 
     public ViewMissingException(String message) {
         super(message);
+        this.message = message;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
     }
 }

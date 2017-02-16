@@ -38,7 +38,6 @@ public class Defect99Spec extends RequestSpec {
 
     @Before
     public void before() throws IOException, ServletException, IllegalAccessException, InstantiationException {
-        super.before();
         manager.setTemplateLocation("src/test/views");
 
     }

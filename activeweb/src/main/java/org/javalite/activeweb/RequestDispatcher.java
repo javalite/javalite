@@ -1,22 +1,24 @@
 /*
 Copyright 2009-2016 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
 package org.javalite.activeweb;
 
 import com.google.inject.Injector;
 import org.javalite.activejdbc.DB;
+
+import org.javalite.common.JsonHelper;
 import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +39,7 @@ import static org.javalite.common.Collections.map;
  * @author Igor Polevoy
  */
 public class RequestDispatcher implements Filter {
-    private Logger logger = LoggerFactory.getLogger(getClass().getSimpleName());
+    private Logger logger = LoggerFactory.getLogger(getClass());
     private FilterConfig filterConfig;
     private List<String> exclusions = new ArrayList<>();
     private ControllerRunner runner = new ControllerRunner();
@@ -45,11 +47,13 @@ public class RequestDispatcher implements Filter {
     private Bootstrap appBootstrap;
     private String encoding;
 
+    private static ThreadLocal<Long> time = new ThreadLocal<>();
+
     public void init(FilterConfig filterConfig) throws ServletException {
-        this.filterConfig = filterConfig;        
+        this.filterConfig = filterConfig;
         ControllerRegistry registry = new ControllerRegistry(filterConfig);
         filterConfig.getServletContext().setAttribute("controllerRegistry", registry);
-        
+
         Configuration.getTemplateManager().setServletContext(filterConfig.getServletContext());
         Context.setControllerRegistry(registry);//bootstrap below requires it
         appContext = new AppContext();
@@ -160,8 +164,11 @@ public class RequestDispatcher implements Filter {
         return (ControllerRegistry) filterConfig.getServletContext().getAttribute("controllerRegistry");
     }
 
+
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
         try {
+
+            time.set(System.currentTimeMillis());
 
             HttpServletRequest request = (HttpServletRequest) req;
             HttpServletResponse response = (HttpServletResponse) resp;
@@ -180,8 +187,6 @@ public class RequestDispatcher implements Filter {
                 return;
             }
 
-
-
             String format = null;
             String uri;
             if(path.contains(".")){
@@ -199,7 +204,7 @@ public class RequestDispatcher implements Filter {
             Router router = getRouter(appContext);
             Route route = router.recognize(uri, HttpMethod.getMethod(request));
 
-            if(route.ignores(path)){
+            if(route != null && route.ignores(path)){
                 chain.doFilter(req, resp);
                 logger.debug("URI ignored: " + path);
                 return;
@@ -208,9 +213,13 @@ public class RequestDispatcher implements Filter {
             if (route != null) {
                 Context.setRoute(route);
                 if (Configuration.logRequestParams()) {
-                    logger.info("================ New request: " + new Date() + " ================");
+                    logger.info("{\"info\":\"executing controller\",\"controller\":\"" + route.getController().getClass().getName()
+                            + "\",\"action\":\""     + route.getActionName()
+                            + "\",\"method\":\""     + route.getMethod()
+                            + "\"}");
                 }
                 runner.run(route, true);
+                logDone(null);
             } else {
                 //TODO: theoretically this will never happen, because if the route was not excluded, the router.recognize() would throw some kind
                 // of exception, leading to the a system error page.
@@ -219,16 +228,12 @@ public class RequestDispatcher implements Filter {
             }
         } catch (CompilationException e) {
             renderSystemError(e);
-        } catch (ClassLoadException | ActionNotFoundException e) {
+        } catch (ClassLoadException | ActionNotFoundException | ViewMissingException | RouteException e) {
             renderSystemError("/system/404", useDefaultLayoutForErrors() ? getDefaultLayout():null, 404, e);
-        }catch(ViewMissingException | RouteException e){
-            renderSystemError("/system/404", useDefaultLayoutForErrors() ? getDefaultLayout():null, 404, e);
-        }catch(ViewException e){
-            renderSystemError("/system/error", useDefaultLayoutForErrors() ? getDefaultLayout():null, 500, e);
-        }catch (Throwable e) {
+        } catch (Throwable e) {
             renderSystemError("/system/error", useDefaultLayoutForErrors() ? getDefaultLayout():null, 500, e);
         }finally {
-           Context.clear();
+            Context.clear();
             List<String> connectionsRemaining = DB.getCurrrentConnectionNames();
             if(!connectionsRemaining.isEmpty()){
                 logger.warn("CONNECTION LEAK DETECTED ... and AVERTED!!! You left connections opened:"
@@ -240,8 +245,8 @@ public class RequestDispatcher implements Filter {
 
     private Map getMapWithExceptionDataAndSession(Throwable e) {
         return map("message", e.getMessage() == null ? e.toString() : e.getMessage(),
-                   "stack_trace", getStackTraceString(e),
-                   "session", SessionHelper.getSessionAttributes());
+                "stack_trace", getStackTraceString(e),
+                "session", SessionHelper.getSessionAttributes());
     }
 
 
@@ -270,22 +275,25 @@ public class RequestDispatcher implements Filter {
     private void renderSystemError(String template, String layout, int status, Throwable e) {
         try{
 
-            String info = "Request properties: " + RequestUtils.getRequestProperties() + "\n" +
-                    "Request parameters: " + RequestUtils.params() + "\n" +
-                    "Request headers: " + RequestUtils.headers() + "\n";
+//            Map info = map("request_properties", JsonHelper.toJsonString(RequestUtils.getRequestProperties()),
+//                            "request_headers" , JsonHelper.toJsonString(RequestUtils.headers()));
 
-            if(status == 404){
-                logger.warn("ActiveWeb 404 WARNING: \n" + info + e);
-            }else{
-                logger.error("ActiveWeb ERROR: \n" + info, e);
+            Context.getHttpResponse().setStatus(status);
+
+            logDone(e);
+
+            if(status >= 500){
+                logger.error("ERROR!", e);
             }
+
+
             HttpServletRequest req = Context.getHttpRequest();
             String requestedWith = req.getHeader("x-requested-with") == null ?
                     req.getHeader("X-Requested-With") : req.getHeader("x-requested-with");
 
             if (requestedWith != null && requestedWith.equalsIgnoreCase("XMLHttpRequest")) {
                 try {
-                    Context.getHttpResponse().setStatus(status);
+
                     Context.getHttpResponse().getWriter().write(getStackTraceString(e));
                 } catch (Exception ex) {
                     logger.error("Failed to send error response to client", ex);
@@ -307,10 +315,33 @@ public class RequestDispatcher implements Filter {
                 logger.error("ActiveWeb internal error: ", t);
             }
             try{
-                Context.getHttpResponse().getOutputStream().print("<div style='background-color:pink;'>internal error</div>");
+                Context.getHttpResponse().getOutputStream().print("<div style='color:red'>internal error</div>");
             }catch(Exception ex){
                 logger.error(ex.toString(), ex);
             }
+        }
+    }
+
+    private void logDone(Throwable throwable){
+        long millis = System.currentTimeMillis() - time.get();
+        int status = Context.getHttpResponse().getStatus();
+        Route route = Context.getRoute();
+        String controller = route == null ? "" : route.getControllerClassName();
+        String action = route == null ? "" : route.getActionName();
+        String method = Context.getHttpRequest().getMethod();
+        boolean success = status < 300;
+        String log = "{\"success\": " + success
+                + ",\"controller\":\"" + controller
+                + "\",\"action\":\"" + action
+                + "\",\"duration_millis\":" + millis
+                + ",\"method\":\"" + method
+                + (throwable != null ? "\",\"error\":\"" + JsonHelper.sanitize(throwable.getMessage() != null? throwable.getMessage() : throwable.toString()) : "")
+                + "\",\"status\":" + status + "}";
+
+        if (success) {
+            logger.info(log);
+        } else {
+            logger.error(log);
         }
     }
 

@@ -40,7 +40,7 @@ class ControllerRunner {
 
     private boolean injectTags = Configuration.getTemplateManager() instanceof FreeMarkerTemplateManager;
 
-    private static Logger LOGGER = LoggerFactory.getLogger(ControllerRunner.class.getSimpleName());
+    private static Logger LOGGER = LoggerFactory.getLogger(ControllerRunner.class);
     private boolean tagsInjected;
 
     protected void run(Route route, boolean integrateViews) throws Exception {
@@ -59,10 +59,6 @@ class ControllerRunner {
                 if (checkActionMethod(route.getController(), actionMethod)) {
                     //Configuration.getTemplateManager().
                     injectController(route.getController());
-                    if(Configuration.logRequestParams()){
-                        LOGGER.info("Executing controller: " + route.getController().getClass().getName() + "." + actionMethod +
-                                ", session: " + new SessionFacade().id());
-                    }
                     executeAction(route.getController(), actionMethod);
                 }
             }
@@ -212,7 +208,7 @@ class ControllerRunner {
         return true;
     }
 
-    private boolean exceptionHandled(Exception e, Route route, List<ControllerRegistry.FilterList> globalFilterLists, List<ControllerFilter> ... filterGroups) throws Exception{
+    private boolean exceptionHandled(Exception e, Route route, List<ControllerRegistry.FilterList> globalFilterLists, List<ControllerFilter> controllerFilters) throws Exception{
 
         //first, process global filters and account for exceptions
         for (ControllerRegistry.FilterList filterList : globalFilterLists) {
@@ -224,15 +220,13 @@ class ControllerRunner {
             }
         }
 
-        for(List<ControllerFilter> filterGroup: filterGroups){
-            for (ControllerFilter controllerFilter : filterGroup) {
-                controllerFilter.onException(e);
-            }
+        for (ControllerFilter controllerFilter : controllerFilters) {
+            controllerFilter.onException(e);
         }
         return Context.getControllerResponse() != null;
     }
 
-    private void filterBefore(Route route, List<ControllerRegistry.FilterList> globalFilterLists, List<ControllerFilter>... filterGroups) {
+    private void filterBefore(Route route, List<ControllerRegistry.FilterList> globalFilterLists, List<ControllerFilter> controllerFilters) {
         try {
 
             //first, process global filters and account for exceptions
@@ -240,21 +234,22 @@ class ControllerRunner {
                 if(!filterList.excludesController(route.getController())){
                     List<ControllerFilter> filters = filterList.getFilters();
                     for (ControllerFilter controllerFilter : filters) {
+                        if (Configuration.logRequestParams()) {
+                            LOGGER.debug("Executing filter: " + controllerFilter.getClass().getName() + "#before");
+                        }
                         controllerFilter.before();
                     }
                 }
             }
 
-            //then process all other filters
-            for (List<ControllerFilter> filterGroup : filterGroups) {
-                for (ControllerFilter controllerFilter : filterGroup) {
-                    if (Configuration.logRequestParams()) {
-                        LOGGER.debug("Executing filter: " + controllerFilter.getClass().getName() + "#before");
-                    }
-                    controllerFilter.before();
-                    if (Context.getControllerResponse() != null) return;//a filter responded!
+            for (ControllerFilter controllerFilter : controllerFilters) {
+                if (Configuration.logRequestParams()) {
+                    LOGGER.debug("Executing filter: " + controllerFilter.getClass().getName() + "#before");
                 }
+                controllerFilter.before();
+                if (Context.getControllerResponse() != null) return;//a filter responded!
             }
+
         }catch(RuntimeException e){
             throw e;
         }catch(Exception e){
@@ -262,7 +257,7 @@ class ControllerRunner {
         }
     }
 
-    private void filterAfter(Route route, List<ControllerRegistry.FilterList> globalFilterLists, List<ControllerFilter>... filterGroups) {
+    private void filterAfter(Route route, List<ControllerRegistry.FilterList> globalFilterLists, List<ControllerFilter> controllerFilters) {
         try {
 
             //first, process global filters and account for exceptions
@@ -270,19 +265,21 @@ class ControllerRunner {
                 if(!filterList.excludesController(route.getController())){
                     List<ControllerFilter> filters = filterList.getFilters();
                     for (ControllerFilter controllerFilter : filters) {
+                        if (Configuration.logRequestParams()) {
+                            LOGGER.debug("Executing filter: " + controllerFilter.getClass().getName() + "#after");
+                        }
                         controllerFilter.after();
                     }
                 }
             }
 
-            for (List<ControllerFilter> filterGroup : filterGroups) {
-                for (int i = filterGroup.size() - 1; i >= 0; i--) {
-                    if(Configuration.logRequestParams()){
-                        LOGGER.debug("Executing filter: " + filterGroup.get(i).getClass().getName() + "#after" );
-                    }
-                    filterGroup.get(i).after();
+            for (int i = controllerFilters.size() - 1; i >= 0; i--) {
+                if (Configuration.logRequestParams()) {
+                    LOGGER.debug("Executing filter: " + controllerFilters.get(i).getClass().getName() + "#after");
                 }
+                controllerFilters.get(i).after();
             }
+
         } catch (Exception e) {
             throw  new FilterException(e);
         }

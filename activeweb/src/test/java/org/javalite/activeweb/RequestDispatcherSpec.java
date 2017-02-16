@@ -16,7 +16,11 @@ limitations under the License.
 
 package org.javalite.activeweb;
 
+import org.javalite.common.JsonHelper;
+import org.javalite.common.Util;
+import org.javalite.test.SystemStreamUtil;
 import org.javalite.test.XPathHelper;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -27,6 +31,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import java.io.IOException;
+import java.util.Map;
 
 import static org.javalite.test.SystemStreamUtil.*;
 
@@ -55,6 +60,12 @@ public class RequestDispatcherSpec extends RequestSpec {
             }
         };
         Configuration.setUseDefaultLayoutForErrors(true);
+        SystemStreamUtil.replaceOut();
+    }
+
+    @After
+    public void after(){
+        SystemStreamUtil.restoreSystemOut();
     }
 
 
@@ -65,7 +76,7 @@ public class RequestDispatcherSpec extends RequestSpec {
         request.setMethod("GET");
 
         dispatcher.doFilter(request, response, filterChain);
-        a(getSystemErr().contains("URI is: '/', but root controller not set")).shouldBeTrue();
+        a(getSystemOut().contains("URI is: '/', but root controller not set")).shouldBeTrue();
     }
 
     @Test
@@ -143,7 +154,7 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
-        a(getSystemErr().contains("java.lang.ArithmeticException")).shouldBeTrue();
+        a(getSystemOut().contains("java.lang.ArithmeticException")).shouldBeTrue();
 
         a(response.getContentType()).shouldBeEqual("text/html");
 
@@ -159,7 +170,7 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
-        a(getSystemErr().contains("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController")).shouldBeTrue();
+        a(getSystemOut().contains("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController")).shouldBeTrue();
 
 
         String html = response.getContentAsString();
@@ -178,7 +189,7 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
-        a(getSystemErr().contains("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController")).shouldBeTrue();
+        a(getSystemOut().contains("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController")).shouldBeTrue();
 
         String html = response.getContentAsString();
         System.out.println(html);
@@ -195,7 +206,7 @@ public class RequestDispatcherSpec extends RequestSpec {
         request.setMethod("GET");
         dispatcher.doFilter(request, response, filterChain);
 
-        a(getSystemErr().contains("are you sure it extends " + AppController.class.getName())).shouldBeTrue();
+        a(getSystemOut().contains("are you sure it extends " + AppController.class.getName())).shouldBeTrue();
 
         String html = response.getContentAsString();
 
@@ -212,7 +223,7 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
-        a(getSystemErr().contains("java.lang.NoSuchMethodException: app.controllers.HelloController.hello(")).shouldBeTrue();
+        a(getSystemOut().contains("java.lang.NoSuchMethodException: app.controllers.HelloController.hello(")).shouldBeTrue();
 
         String html = response.getContentAsString();
 
@@ -228,10 +239,14 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
-        a(getSystemErr().contains("Template not found for name \"/hello/no-view.ftl")).shouldBeTrue();
+        String[] lines = Util.split(getSystemOut(), System.getProperty("line.separator"));
+
+        Map log = JsonHelper.toMap(lines[1]);
+        Map message = (Map) log.get("message");
+        the(message.get("error")).shouldBeEqual("Failed to find template: 'src/test/views/hello/no-view.ftl', with layout: 'src/test/views/layouts/default_layout'");
         String html = response.getContentAsString();
         a(XPathHelper.count("//div", html)).shouldBeEqual(3);
-        a(XPathHelper.selectText("//div[@id='content']", html)).shouldContain("Failed to render template: 'src/test/views/hello/no-view.ftl', with layout: 'src/test/views/layouts/default_layout'; Template not found for name \"/hello/no-view.ftl\"");
+        a(XPathHelper.selectText("//div[@id='content']", html)).shouldContain("Failed to find template: 'src/test/views/hello/no-view.ftl', with layout: 'src/test/views/layouts/default_layout'");
     }
 
     @Test
@@ -313,6 +328,7 @@ public class RequestDispatcherSpec extends RequestSpec {
         replaceError();
         dispatcher.destroy();
         a(getSystemErr()).shouldBeEqual("ahrrr! destroyed!");
+        SystemStreamUtil.replaceError();
     }
 
     @Test

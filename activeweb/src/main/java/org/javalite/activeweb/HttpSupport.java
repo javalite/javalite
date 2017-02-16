@@ -41,7 +41,7 @@ import static org.javalite.common.Collections.map;
  * @author Igor Polevoy
  */
 public class HttpSupport {
-    private Logger logger = LoggerFactory.getLogger(getClass().getSimpleName());
+    private Logger logger = LoggerFactory.getLogger(getClass());
     private List<FormItem> formItems;
     private static Pattern hashPattern = Pattern.compile("\\[.*\\]");
 
@@ -96,6 +96,15 @@ public class HttpSupport {
     }
 
 
+    /**
+     * Returns status code from current response.
+     *
+     * @return status code  or -1 if controller response was not generated (error)
+     */
+    protected int status() {
+        ControllerResponse response = Context.getControllerResponse();
+        return response != null ? response.getStatus() : -1;
+    }
     /**
      * Convenience method, calls {@link #assign(String, Object)} internally.
      * The keys in teh map are converted to String values.
@@ -229,6 +238,15 @@ public class HttpSupport {
          */
         public void status(int status){
             controllerResponse.setStatus(status);
+        }
+
+        /**
+         * Alias to {@link #status(int)}.
+         *
+         * @param status response code.
+         */
+        public void statusCode(int status){
+            status(status);
         }
     }
 

@@ -21,5 +21,5 @@ package org.javalite.activeweb;
  */
 public abstract class AppConfig {
     public abstract void init(AppContext appContext);
-    public void completeInit(){}
+    protected void completeInit(){}
 }

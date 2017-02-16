@@ -18,7 +18,7 @@ import static org.javalite.common.Collections.list;
  */
 public class RequestUtils {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RequestUtils.class.getSimpleName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(RequestUtils.class);
     
     private RequestUtils() {}
 

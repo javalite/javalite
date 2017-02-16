@@ -36,6 +36,7 @@
 
     <properties>
         <activejdbc.version>${project.version}</activejdbc.version>
+        <slf4j.version>1.7.0</slf4j.version> <!--//TODO: replace with latest version when this is fixed: http://jira.qos.ch/browse/SLF4J-389-->
     </properties>
 
     <build>
@@ -113,15 +114,30 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.10</version>
+                <version>${slf4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j.version}</version>
+                <scope>test</scope>
             </dependency>
 
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
-                <version>1.6.4</version>
+                <version>${slf4j.version}</version>
                 <scope>test</scope>
             </dependency>
+
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>1.2.17</version>
+                <scope>test</scope>
+            </dependency>
+
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-core</artifactId>

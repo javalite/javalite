@@ -146,8 +146,7 @@ public abstract class AbstractControllerConfig extends AppConfig {
     }
 
     @Override
-    public void completeInit() {
-
+    protected void completeInit() {
         for (ExcludeBuilder excludeBuilder : excludeBuilders) {
             Context.getControllerRegistry().addGlobalFilters(excludeBuilder.getFilters(), excludeBuilder.getExcludeControllerClasses());
         }

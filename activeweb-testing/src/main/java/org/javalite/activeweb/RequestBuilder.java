@@ -331,7 +331,7 @@ public class RequestBuilder {
     }
 
 
-    private void submitRequest(String actionName, HttpMethod method) {
+    private void submitRequest(String actionName, HttpMethod method) throws RuntimeException {
 
         checkParamAndMultipart();
 
@@ -382,7 +382,7 @@ public class RequestBuilder {
         addParameterValues(request);
         try{
             AppController controller = createControllerInstance(getControllerClassName(controllerPath));
-            Context.setRoute(new Route(controller, realAction, id));
+            Context.setRoute(new Route(controller, realAction, id, method));
             Injector injector = Context.getControllerRegistry().getInjector();
 
             if(injector != null){
@@ -394,7 +394,7 @@ public class RequestBuilder {
             Context.setControllerResponse(null);
             Context.setHttpResponse(new MockHttpServletResponse());
 
-            runner.run(new Route(controller, actionName),  integrateViews);
+            runner.run(new Route(controller, actionName, method),  integrateViews);
         }catch(WebException e){
             throw e;
         }catch(RuntimeException e){

@@ -30,7 +30,6 @@ import static org.javalite.common.Collections.map;
  */
 @SuppressWarnings("unchecked")
 class ParamCopy {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ParamCopy.class.getSimpleName());
 
     private ParamCopy() {}
 
@@ -61,9 +60,6 @@ class ParamCopy {
     private static void copySessionAttrsInto(Map assigns) {
 
         Map<String, Object> sessionAttrs = SessionHelper.getSessionAttributes();
-        if (assigns.get("session") != null) {
-            LOGGER.warn("found 'session' value set by controller. It is reserved by ActiveWeb and will be overwritten.");
-        }
         if (sessionAttrs.containsKey("flasher")){ //flasher is special
             assigns.put("flasher", sessionAttrs.get("flasher"));
         }

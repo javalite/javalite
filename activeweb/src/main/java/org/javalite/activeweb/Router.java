@@ -36,7 +36,7 @@ import static org.javalite.common.Collections.map;
 public class Router {
     private static Logger logger = LoggerFactory.getLogger(Router.class);
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Router.class.getSimpleName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(Router.class);
 
     public static final String CONTROLLER_NAME = "controller_name";
     public static final String PACKAGE_SUFFIX = "package_suffix";
@@ -80,10 +80,10 @@ public class Router {
             AppController controller = createControllerInstance(controllerClassName);
 
             if (uri.equals("/") && rootControllerName != null && httpMethod.equals(HttpMethod.GET)) {
-                route = new Route(controller, "index");
+                route = new Route(controller, "index", httpMethod);
             }else{
                 route = controller.restful() ? matchRestful(uri, controllerName, packageSuffix, httpMethod, controller) :
-                        matchStandard(uri, controllerName, packageSuffix, controller);
+                        matchStandard(uri, controllerName, packageSuffix, controller, httpMethod);
             }
         }
 
@@ -100,7 +100,7 @@ public class Router {
     private Route matchCustom(String uri, HttpMethod httpMethod) throws ClassLoadException {
         for (RouteBuilder builder : routes) {
             if (builder.matches(uri, httpMethod)) {
-                return new Route(builder);
+                return new Route(builder, httpMethod);
             }
         }
         return null;
@@ -115,14 +115,14 @@ public class Router {
      * @param packageSuffix  package suffix or null if none. .
      * @return instance of a <code>Route</code> if one is found, null if not.
      */
-    private Route matchStandard(String uri, String controllerName, String packageSuffix, AppController controller) {
+    private Route matchStandard(String uri, String controllerName, String packageSuffix, AppController controller, HttpMethod method) {
 
         String controllerPath = (packageSuffix != null ? "/" + packageSuffix.replace(".", "/") : "") + "/" + controllerName;
         String theUri = uri.endsWith("/") ? uri.substring(0, uri.length() - 1) : uri;
 
         //ANY    /package_suffix/controller
         if (controllerPath.length() == theUri.length()) {
-            return new Route(controller, "index");
+            return new Route(controller, "index", method);
         }
 
         String tail = theUri.substring(controllerPath.length() + 1);
@@ -130,12 +130,12 @@ public class Router {
 
         //ANY    /package_suffix/controller/action
         if (parts.length == 1) {
-            return new Route(controller, parts[0]);
+            return new Route(controller, parts[0], method);
         }
 
         //ANY    /package_suffix/controller/action/id/
         if (parts.length == 2) {
-            return new Route(controller, parts[0], parts[1]);
+            return new Route(controller, parts[0], parts[1], method);
         }
         LOGGER.warn("Failed to find action for request: " + uri);
         return null;
@@ -148,10 +148,10 @@ public class Router {
      * @param uri            request URI
      * @param controllerName name of controller
      * @param packageSuffix  package suffix or null if none. .
-     * @param httpMethod     http method of a request.
+     * @param method     http method of a request.
      * @return instance of a <code>Route</code> if one is found, null if not.
      */
-    private Route matchRestful(String uri, String controllerName, String packageSuffix, HttpMethod httpMethod, AppController controller) {
+    private Route matchRestful(String uri, String controllerName, String packageSuffix, HttpMethod method, AppController controller) {
 
         String theUri = uri.endsWith("/") ? uri.substring(0, uri.length() - 1) : uri;
         String controllerPath = (packageSuffix != null ? "/" + packageSuffix.replace(".", "/") : "") + "/" + controllerName;
@@ -159,43 +159,43 @@ public class Router {
         String[] parts = split(tail, "/");
 
         //GET 	/photos 	            index 	display a list of all photos
-        if (controllerPath.equals(theUri) && httpMethod.equals(HttpMethod.GET)) {
-            return new Route(controller, "index");
+        if (controllerPath.equals(theUri) && method.equals(HttpMethod.GET)) {
+            return new Route(controller, "index", method);
         }
 
         //GET 	/photos/new_form 	    new_form        return an HTML form for creating a new photo
-        if (parts.length == 1 && httpMethod.equals(HttpMethod.GET) && parts[0].equalsIgnoreCase("new_form")) {
-            return new Route(controller, "new_form");
+        if (parts.length == 1 && method.equals(HttpMethod.GET) && parts[0].equalsIgnoreCase("new_form")) {
+            return new Route(controller, "new_form", method);
         }
 
         //POST 	/photos 	            create 	        create a new photo
-        if (parts.length == 0 && httpMethod.equals(HttpMethod.POST)) {
-            return new Route(controller, "create");
+        if (parts.length == 0 && method.equals(HttpMethod.POST)) {
+            return new Route(controller, "create", method);
         }
 
         //GET 	/photos/id 	        show            display a specific photo
-        if (parts.length == 1 && httpMethod.equals(HttpMethod.GET)) {
-            return new Route(controller, "show", parts[0]);
+        if (parts.length == 1 && method.equals(HttpMethod.GET)) {
+            return new Route(controller, "show", parts[0], method);
         }
 
         //GET 	/photos/id/edit_form   edit_form 	    return an HTML form for editing a photo
-        if (parts.length == 2 && httpMethod.equals(HttpMethod.GET) && parts[1].equalsIgnoreCase("edit_form")) {
-            return new Route(controller, "edit_form", parts[0]);
+        if (parts.length == 2 && method.equals(HttpMethod.GET) && parts[1].equalsIgnoreCase("edit_form")) {
+            return new Route(controller, "edit_form", parts[0], method);
         }
 
         //PUT 	/photos/id 	        update          update a specific photo
-        if (parts.length == 1 && httpMethod.equals(HttpMethod.PUT)) {
-            return new Route(controller, "update", parts[0]);
+        if (parts.length == 1 && method.equals(HttpMethod.PUT)) {
+            return new Route(controller, "update", parts[0], method);
         }
 
         //DELETE 	/photos/id 	        destroy         delete a specific photo
-        if (parts.length == 1 && httpMethod.equals(HttpMethod.DELETE)) {
-            return new Route(controller, "destroy", parts[0]);
+        if (parts.length == 1 && method.equals(HttpMethod.DELETE)) {
+            return new Route(controller, "destroy", parts[0], method);
         }
 
         //OPTIONS 	/photos/            options
-        if (parts.length == 0 && httpMethod.equals(HttpMethod.OPTIONS)) {
-            return new Route(controller, "options");
+        if (parts.length == 0 && method.equals(HttpMethod.OPTIONS)) {
+            return new Route(controller, "options", method);
         }
 
         LOGGER.warn("Failed to find action for request: " + uri);

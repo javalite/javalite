@@ -30,7 +30,7 @@ import java.util.List;
  */
 public class DBSpecHelper {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(DBSpecHelper.class.getSimpleName());
+    private static Logger LOGGER = LoggerFactory.getLogger(DBSpecHelper.class);
     
     private DBSpecHelper() {}
 

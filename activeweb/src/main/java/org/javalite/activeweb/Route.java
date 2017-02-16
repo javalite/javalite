@@ -12,24 +12,28 @@ public class Route {
     private AppController controller;
     private String actionName, id, wildCardName, wildCardValue;
     private List<IgnoreSpec> ignoreSpecs;
+    private HttpMethod method;
 
-    public Route(AppController controller, String actionName) {
+    public Route(AppController controller, String actionName, HttpMethod method) {
         this.controller = controller;
         this.actionName = actionName;
+        this.method = method;
     }
 
-    public Route(AppController controller, String actionName, String id) {
+    public Route(AppController controller, String actionName, String id, HttpMethod method) {
         this.controller = controller;
         this.actionName = actionName;
         this.id = id;
+        this.method = method;
     }
 
-    public Route(RouteBuilder builder) {
-        controller = builder.getController();
-        actionName = builder.getActionName();
-        id = builder.getId();
+    public Route(RouteBuilder builder, HttpMethod method) {
+        this.controller = builder.getController();
+        this.actionName = builder.getActionName();
+        this.id = builder.getId();
         this.wildCardName = builder.getWildcardName();
         this.wildCardValue = builder.getWildCardValue();
+        this.method = method;
     }
 
     public Route(AppController controller) {
@@ -58,6 +62,10 @@ public class Route {
 
     public String getId() {
         return id;
+    }
+
+    public HttpMethod getMethod() {
+        return method;
     }
 
     protected String getControllerPath(){

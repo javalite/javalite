@@ -14,7 +14,6 @@ public class RouterIgnoreSpec extends RequestSpec  {
 
     @Before
     public void before() throws InstantiationException, IllegalAccessException, ServletException, IOException {
-        super.before();
         RouteConfig rc = new RouteConfig();
         rc.init(new AppContext());
         rc.completeInit();

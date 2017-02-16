@@ -38,7 +38,6 @@ public class LinkToTagSpec extends RequestSpec {
 
     @Before
     public void before() throws IOException, ServletException, IllegalAccessException, InstantiationException {
-        super.before();
         manager.setTemplateLocation("src/test/views");
     }
   

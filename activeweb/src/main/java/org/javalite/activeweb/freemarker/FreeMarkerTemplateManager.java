@@ -45,7 +45,7 @@ public class FreeMarkerTemplateManager extends TemplateManager {
 
     private String location;
 
-    private Logger logger = LoggerFactory.getLogger(getClass().getSimpleName());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     public FreeMarkerTemplateManager() {
         config = new Configuration();
@@ -80,7 +80,7 @@ public class FreeMarkerTemplateManager extends TemplateManager {
 
         try {
 
-            logger.info("rendering template: '" + template + "' with layout: '" + layout + "', session: " + sessionId());
+            logger.info("rendering template: '" + template + "' with layout: '" + layout);
 
             if(org.javalite.activeweb.Configuration.getEnv().equals("development")){
                 config.clearTemplateCache();
@@ -91,9 +91,8 @@ public class FreeMarkerTemplateManager extends TemplateManager {
             try{
                 String templateName = blank(format)? template + ".ftl" : template + "." + format + ".ftl";
                 pageTemplate = config.getTemplate(templateName);
-            }catch(FileNotFoundException e){
-                logger.warn("Current location: " + new File(".").getCanonicalPath());
-                throw e;
+            }catch(FileNotFoundException ex){
+                throw ex;
             }
 
             if(layout == null){//no layout
@@ -119,18 +118,18 @@ public class FreeMarkerTemplateManager extends TemplateManager {
             }
         }
         catch(FileNotFoundException e){
-            throw new ViewMissingException(errorMessage(layout, template), e);
+            throw new ViewMissingException(errorMessage("Failed to find template", layout, template));
         }
         catch(ViewException e){
-            logger.error(errorMessage(layout, template));
             throw e;
         }
         catch (Exception e) {
-            throw new ViewException(errorMessage(layout, template), e);
+            throw new ViewException(errorMessage("Failed to render template", layout, template), e);
         }
     }
-    private String errorMessage(String layout, String template){
-        return "Failed to render template: '" +(location != null? location:"") +  template + ".ftl" +
+
+    private String errorMessage(String message, String layout, String template){
+        return message + ": '" +(location != null? location:"") +  template + ".ftl" +
                 (layout == null? "', without layout" : "', with layout: '" +(location != null? location:"") + layout + "'");
 
     }

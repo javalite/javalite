@@ -17,6 +17,8 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import app.controllers.*;
+import org.javalite.common.JsonHelper;
+import org.javalite.common.Util;
 import org.javalite.test.SystemStreamUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +26,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
 /**
  * @author Igor Polevoy
@@ -235,7 +238,7 @@ public class RouterCustomSpec extends RequestSpec {
     @Test
     public void shouldNotMatchWithPost(){
 
-        SystemStreamUtil.replaceError();
+        SystemStreamUtil.replaceOut();
         routeConfig = new AbstractRouteConfig() {
             public void init(AppContext appContext) {
                 route("/greeting").to(Route2Controller.class).post().action("hi");
@@ -245,8 +248,12 @@ public class RouterCustomSpec extends RequestSpec {
         execDispatcher();
         a(responseContent()).shouldContain("java.lang.ClassNotFoundException: app.controllers.GreetingController");
 
-        a(SystemStreamUtil.getSystemErr()).shouldContain(" java.lang.ClassNotFoundException: app.controllers.GreetingController");
-        SystemStreamUtil.restoreSystemErr();
+        String[] lines = Util.split(SystemStreamUtil.getSystemOut(), System.getProperty("line.separator"));
+        Map log = JsonHelper.toMap(lines[2]);
+        Map message = (Map) log.get("message");
+
+        a(message.get("error")).shouldContain("java.lang.ClassNotFoundException: app.controllers.GreetingController");
+        SystemStreamUtil.restoreSystemOut();
     }
 
 
