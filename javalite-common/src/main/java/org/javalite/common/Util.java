@@ -504,14 +504,16 @@ public final class Util {
     }
 
     /**
-     * Reads  a property file from classpath to a properties object.
+     * Reads  a property file from classpath or from a file system to a properties object.
+     * The path can look like: <code>/opt/database.properties</code>. If this is found on classath, it is loaded first.
+     * If not found on classpath,  it will look for the file on te file system using the same path.
      *
-     * @param file full path to a property file on  class path
+     * @param file full path to a property file on class path
      * @return <code>java.util.Properties</code> object initialized from the file.
      * @throws IOException
      */
     public static Properties readProperties(String file) throws IOException {
-        InputStream in = Util.class.getClass().getResourceAsStream(file);
+        InputStream in = Util.class.getResourceAsStream(file);
         Properties props = new Properties();
         if (in != null) {
             props.load(in);
