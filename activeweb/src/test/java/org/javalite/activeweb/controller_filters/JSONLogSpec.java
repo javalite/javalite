@@ -56,7 +56,6 @@ public class JSONLogSpec extends RequestSpec {
         the(log1.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
 
         message = (Map) log1.get("message");
-        the(message.get("success")).shouldBeTrue();
         the(message.get("controller")).shouldBeEqual("app.controllers.LoggingController");
         the(message.get("action")).shouldBeEqual("index");
         the(message.get("duration_millis")).shouldNotBeNull();
@@ -88,12 +87,11 @@ public class JSONLogSpec extends RequestSpec {
 
         //Line 1
         Map log1 = JsonHelper.toMap(logs[1]);
-        the(log1.get("level")).shouldBeEqual("ERROR");
+        the(log1.get("level")).shouldBeEqual("INFO");
         the(log1.get("timestamp")).shouldNotBeNull();
         the(log1.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
-        //{"success": false,"controller":"app.controllers.LoggingController","action":"error","duration_millis":9,"method":"GET","status":500}}
+
         message = (Map) log1.get("message");
-        the(message.get("success")).shouldBeFalse();
         the(message.get("controller")).shouldBeEqual("app.controllers.LoggingController");
         the(message.get("duration_millis")).shouldNotBeNull();
         the(message.get("method")).shouldBeEqual("GET");
@@ -141,11 +139,10 @@ public class JSONLogSpec extends RequestSpec {
 
         //Line 1
         Map log1 = JsonHelper.toMap(logs[1]);
-        the(log1.get("level")).shouldBeEqual("ERROR");
+        the(log1.get("level")).shouldBeEqual("INFO");
         the(log1.get("timestamp")).shouldNotBeNull();
         the(log1.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
         message = (Map) log1.get("message");
-        the(message.get("success")).shouldBeFalse();
         the(message.get("controller")).shouldBeEqual("app.controllers.LoggingController");
         the(message.get("action")).shouldBeEqual("notfound");
         the(message.get("duration_millis")).shouldNotBeNull();
@@ -173,12 +170,10 @@ public class JSONLogSpec extends RequestSpec {
 
         //Line0
         Map log1 = JsonHelper.toMap(logs[0]);
-        the(log1.get("level")).shouldBeEqual("ERROR");
+        the(log1.get("level")).shouldBeEqual("INFO");
         the(log1.get("timestamp")).shouldNotBeNull();
         the(log1.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
         Map message = (Map) log1.get("message");
-        the(message.get("success")).shouldBeFalse();
-        //"message":{"success": true,"controller":"","action":"","duration_millis":8,"method":"GET","info":"org.javalite.activeweb.ClassLoadException: java.lang.ClassNotFoundException: app.controllers.Fake11Controller","status":404}}
         the(message.get("controller")).shouldBeEqual("");
         the(message.get("action")).shouldBeEqual("");
         the(message.get("duration_millis")).shouldNotBeNull();
@@ -204,16 +199,6 @@ public class JSONLogSpec extends RequestSpec {
         String out = SystemStreamUtil.getSystemOut();
         String[] logs = Util.split(out, System.getProperty("line.separator"));
 
-
-
-
-
-
-//
-//
-//        {"level":"INFO","timestamp":"Wed Feb 15 19:04:23 CST 2017","thread":"main","logger":"org.javalite.activeweb.freemarker.FreeMarkerTemplateManager","message":"rendering template: '/system/404' with layout: '/layouts/default_layout"}
-
-
         //Line 0
         Map log0 = JsonHelper.toMap(logs[0]);
         the(log0.get("level")).shouldBeEqual("INFO");
@@ -237,12 +222,11 @@ public class JSONLogSpec extends RequestSpec {
 
         //Line 2
         Map log2 = JsonHelper.toMap(logs[2]);
-        the(log2.get("level")).shouldBeEqual("ERROR");
+        the(log2.get("level")).shouldBeEqual("INFO");
         the(log2.get("timestamp")).shouldNotBeNull();
         the(log2.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
         message = (Map) log2.get("message");
 
-        the(message.get("success")).shouldBeEqual(false);
         the(message.get("controller")).shouldBeEqual("app.controllers.LoggingController");
         the(message.get("action")).shouldBeEqual("no-view");
         the(message.get("error")).shouldBeEqual("Failed to find template: 'src/test/views/logging/no-view.ftl', with layout: 'src/test/views/layouts/default_layout'");

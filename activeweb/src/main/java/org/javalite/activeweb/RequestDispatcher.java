@@ -322,27 +322,21 @@ public class RequestDispatcher implements Filter {
         }
     }
 
-    private void logDone(Throwable throwable){
+    private void logDone(Throwable throwable) {
         long millis = System.currentTimeMillis() - time.get();
         int status = Context.getHttpResponse().getStatus();
         Route route = Context.getRoute();
         String controller = route == null ? "" : route.getControllerClassName();
         String action = route == null ? "" : route.getActionName();
         String method = Context.getHttpRequest().getMethod();
-        boolean success = status < 300;
-        String log = "{\"success\": " + success
-                + ",\"controller\":\"" + controller
+
+        String log = "{\"controller\":\"" + controller
                 + "\",\"action\":\"" + action
                 + "\",\"duration_millis\":" + millis
                 + ",\"method\":\"" + method
-                + (throwable != null ? "\",\"error\":\"" + JsonHelper.sanitize(throwable.getMessage() != null? throwable.getMessage() : throwable.toString()) : "")
+                + (throwable != null ? "\",\"error\":\"" + JsonHelper.sanitize(throwable.getMessage() != null ? throwable.getMessage() : throwable.toString()) : "")
                 + "\",\"status\":" + status + "}";
-
-        if (success) {
-            logger.info(log);
-        } else {
-            logger.error(log);
-        }
+        logger.info(log);
     }
 
     public void destroy() {
