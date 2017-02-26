@@ -1,9 +1,12 @@
 package org.javalite.http;
 
+import org.javalite.common.Inflector;
+
 import java.io.*;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Sets up a Multipart request to send multiple text fields as well as upload files.
@@ -11,6 +14,8 @@ import java.util.List;
  * @author Igor Polevoy on 5/1/16.
  */
 public class Multipart extends Request<Multipart> {
+
+    private static final String DASH = "------";
     private static final String LINE_FEED = "\r\n";
 
     private PrintWriter writer;
@@ -18,8 +23,11 @@ public class Multipart extends Request<Multipart> {
     private OutputStream outputStream;
     private List<FormField> formFields = new ArrayList<>();
 
+
+
     /**
-     * Contructor to make multipart requests
+     * Constructor to make multipart requests
+     *
      * @param url URL to send request to
      * @param connectTimeout connection timeout
      * @param readTimeout read timeout
@@ -32,7 +40,7 @@ public class Multipart extends Request<Multipart> {
     protected Multipart doConnect() {
 
         try {
-            boundary = "===" + System.currentTimeMillis() + "===";
+            boundary = "JavaLite-HTTP-"+ UUID.randomUUID() ;
             connection.setUseCaches(false);
             connection.setDoOutput(true); // indicates POST method
             connection.setDoInput(true);
@@ -159,9 +167,12 @@ public class Multipart extends Request<Multipart> {
     }
 
     public static void main(String[] args){
+
+        //use kitchensink
         Multipart mp = Http.multipart("http://localhost:8080/upload/save")
                 .field("name1", "val1")
                 .file("file1", "/home/igor/tmp/test.txt");
-        System.out.println(mp.text());
+
+        System.out.println(mp.headers());
     }
 }
