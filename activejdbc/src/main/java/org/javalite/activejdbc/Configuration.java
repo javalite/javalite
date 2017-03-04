@@ -251,38 +251,6 @@ public class Configuration {
     public boolean cacheEnabled(){
         return cacheManager != null;
     }
-
-    public boolean newMethodTest1(){
-        return cacheManager != null;
-    }
-	
-	public boolean newMethodTest2(){
-        return cacheManager != null;
-    }
-	
-	public boolean newMethodTest3(){
-        return cacheManager != null;
-    }
-	
-	public boolean newMethodTest4(){
-        return cacheManager != null;
-    }
-	
-	public boolean newMethodTest5(){
-        return cacheManager != null;
-    }
-	
-	public boolean newMethodTest6(){
-        return cacheManager != null;
-    }
-	
-	public boolean newMethodTest7(){
-        return cacheManager != null;
-    }
-	
-	public boolean newMethodTest8(){
-        return cacheManager != null;
-    }
 	
     Dialect getDialect(MetaModel mm){
         Dialect dialect = dialects.get(mm.getDbType());
