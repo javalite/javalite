@@ -407,4 +407,100 @@ public final class ModelDelegate {
     public static void zeroToNull(Class<? extends Model> clazz, String... attributeNames) {
         modelRegistryOf(clazz).convertWith(ZeroToNullConverter.instance(), attributeNames);
     }
+	
+	public static <T extends Model> LazyList<T> where2(Class<T> clazz, String subquery, Object... params) {
+        if (subquery.trim().equals("*")) {
+            if (empty(params)) {
+                return findAll(clazz);
+            } else {
+                throw new IllegalArgumentException(
+                        "cannot provide parameters with query: '*', use findAll() method instead");
+            }
+        }
+        return new LazyList<>(subquery, metaModelOf(clazz), params);
+    }
+	
+	public static <T extends Model> LazyList<T> where3(Class<T> clazz, String subquery, Object... params) {
+        if (subquery.trim().equals("*")) {
+            if (empty(params)) {
+                return findAll(clazz);
+            } else {
+                throw new IllegalArgumentException(
+                        "cannot provide parameters with query: '*', use findAll() method instead");
+            }
+        }
+        return new LazyList<>(subquery, metaModelOf(clazz), params);
+    }
+	
+	public static <T extends Model> LazyList<T> where4(Class<T> clazz, String subquery, Object... params) {
+        if (subquery.trim().equals("*")) {
+            if (empty(params)) {
+                return findAll(clazz);
+            } else {
+                throw new IllegalArgumentException(
+                        "cannot provide parameters with query: '*', use findAll() method instead");
+            }
+        }
+        return new LazyList<>(subquery, metaModelOf(clazz), params);
+    }
+	
+	public static <T extends Model> LazyList<T> where5(Class<T> clazz, String subquery, Object... params) {
+        if (subquery.trim().equals("*")) {
+            if (empty(params)) {
+                return findAll(clazz);
+            } else {
+                throw new IllegalArgumentException(
+                        "cannot provide parameters with query: '*', use findAll() method instead");
+            }
+        }
+        return new LazyList<>(subquery, metaModelOf(clazz), params);
+    }
+	
+	public static <T extends Model> LazyList<T> where6(Class<T> clazz, String subquery, Object... params) {
+        if (subquery.trim().equals("*")) {
+            if (empty(params)) {
+                return findAll(clazz);
+            } else {
+                throw new IllegalArgumentException(
+                        "cannot provide parameters with query: '*', use findAll() method instead");
+            }
+        }
+        return new LazyList<>(subquery, metaModelOf(clazz), params);
+    }
+	
+	public static <T extends Model> LazyList<T> where7(Class<T> clazz, String subquery, Object... params) {
+        if (subquery.trim().equals("*")) {
+            if (empty(params)) {
+                return findAll(clazz);
+            } else {
+                throw new IllegalArgumentException(
+                        "cannot provide parameters with query: '*', use findAll() method instead");
+            }
+        }
+        return new LazyList<>(subquery, metaModelOf(clazz), params);
+    }
+	
+	public static <T extends Model> LazyList<T> where8(Class<T> clazz, String subquery, Object... params) {
+        if (subquery.trim().equals("*")) {
+            if (empty(params)) {
+                return findAll(clazz);
+            } else {
+                throw new IllegalArgumentException(
+                        "cannot provide parameters with query: '*', use findAll() method instead");
+            }
+        }
+        return new LazyList<>(subquery, metaModelOf(clazz), params);
+    }
+	
+	public static <T extends Model> LazyList<T> where9(Class<T> clazz, String subquery, Object... params) {
+        if (subquery.trim().equals("*")) {
+            if (empty(params)) {
+                return findAll(clazz);
+            } else {
+                throw new IllegalArgumentException(
+                        "cannot provide parameters with query: '*', use findAll() method instead");
+            }
+        }
+        return new LazyList<>(subquery, metaModelOf(clazz), params);
+    }
 }
