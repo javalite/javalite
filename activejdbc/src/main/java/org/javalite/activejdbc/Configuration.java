@@ -252,6 +252,22 @@ public class Configuration {
         return cacheManager != null;
     }
 
+	public boolean newMethodTest1(){
+        return cacheManager != null;
+    }
+	
+	public boolean newMethodTest2(){
+        return cacheManager != null;
+    }
+	
+	public boolean newMethodTest3(){
+        return cacheManager != null;
+    }
+	
+	public boolean newMethodTest4(){
+        return cacheManager != null;
+    }
+	
     Dialect getDialect(MetaModel mm){
         Dialect dialect = dialects.get(mm.getDbType());
         if (dialect == null) {
