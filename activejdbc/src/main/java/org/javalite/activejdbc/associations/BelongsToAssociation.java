@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -18,6 +18,7 @@ limitations under the License.
 package org.javalite.activejdbc.associations;
 
 import org.javalite.activejdbc.Association;
+import org.javalite.activejdbc.Model;
 
 /**
  * This association indicates that a source table belongs to the target table.
@@ -27,9 +28,9 @@ import org.javalite.activejdbc.Association;
  */
 public class BelongsToAssociation extends Association {
 
-    private String  fkName;
+    private final String fkName;
 
-    public BelongsToAssociation(String source, String target, String fkName) {
+    public BelongsToAssociation(Class<? extends Model> source, Class<? extends Model> target, String fkName) {
         super(source, target);
         this.fkName = fkName;
     }
@@ -40,8 +41,7 @@ public class BelongsToAssociation extends Association {
     
     @Override
     public String toString() {
-        return new StringBuffer().append(getSource()).append("  >----------  ").append(getTarget())
-                .append(", type: ").append("belongs-to").toString();
+        return getSourceClass().getSimpleName() + "  >----------  " + getTargetClass().getSimpleName() + ", type: " + "belongs-to";
     }
 
     @Override
@@ -54,7 +54,7 @@ public class BelongsToAssociation extends Association {
         BelongsToAssociation otherAss =(BelongsToAssociation )other;
 
         return otherAss.fkName.equals(fkName)
-                && otherAss.getSource().equals(getSource())
-                && otherAss.getTarget().equals(getTarget());
+                && otherAss.getSourceClass().equals(getSourceClass())
+                && otherAss.getTargetClass().equals(getTargetClass());
     }
 }

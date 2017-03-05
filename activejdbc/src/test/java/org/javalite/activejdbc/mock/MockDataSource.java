@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -24,6 +24,8 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.logging.Logger;
 
 /**
  * @author Igor Polevoy
@@ -60,10 +62,14 @@ public class MockDataSource implements DataSource {
     }
 
     public void setLoginTimeout(int seconds) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public int getLoginTimeout() throws SQLException {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return 0;
+    }
+
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        return null;
     }
 }

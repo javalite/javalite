@@ -1,14 +1,15 @@
 package org.javalite.activejdbc.dialects;
 
 import java.util.List;
-import java.util.Map;
-
-import org.javalite.activejdbc.ColumnMetadata;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.javalite.activejdbc.DBException;
 import org.javalite.activejdbc.MetaModel;
 import org.javalite.common.Util;
 
 public class MSSQLDialect extends DefaultDialect {
+    protected final Pattern selectPattern = Pattern.compile("^\\s*SELECT\\s*",
+            Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
     /**
      * Generates adds limit, offset and order bys to a sub-query
@@ -25,86 +26,83 @@ public class MSSQLDialect extends DefaultDialect {
     public String formSelect(String tableName, String subQuery, List<String> orderBys, long limit, long offset) {
         boolean needLimit = limit != -1;
         boolean needOffset = offset != -1;
-        
+
         if(needOffset && (orderBys == null || orderBys.isEmpty())) {
         	throw new DBException("MSSQL offset queries require an order by column.");
         }
 
-        limit = (offset == -1 ? limit : offset + limit);
-        offset += 1; //T-SQL offset starts with 1, not like MySQL with 0;
+        boolean keepSelect = false;
+        StringBuilder fullQuery = new StringBuilder();
+        if (needOffset) {
+            fullQuery.append("SELECT sq.* FROM (SELECT ROW_NUMBER() OVER (ORDER BY ");
+            Util.join(fullQuery, orderBys, ", ");
+            fullQuery.append(") AS rownumber,");
+        } else if (needLimit) {
+            fullQuery.append("SELECT TOP ").append(limit);
+        } else {
+            keepSelect = true;
+        }
 
-        String fullQuery = createBaseQuery(tableName, subQuery, needOffset);
+		if (tableName == null) { //table is in the sub-query already
+            if (keepSelect) {
+                fullQuery.append(subQuery);
+            } else {
+                Matcher m = selectPattern.matcher(subQuery);
+                if (m.find()) {
+                    fullQuery.append(' ').append(subQuery.substring(m.end()));
+                } else {
+                    fullQuery.append(subQuery);
+                }
+            }
+        } else {
+            if (keepSelect) { fullQuery.append("SELECT"); }
+            fullQuery.append(" * FROM ").append(tableName);
+            appendSubQuery(fullQuery, subQuery);
+        }
 
-        fullQuery = addOderBys(orderBys, needOffset, fullQuery);
+        if (needOffset) {
+            // T-SQL offset starts with 1, not like MySQL with 0;
+            if (needLimit) {
+                fullQuery.append(") AS sq WHERE rownumber BETWEEN ").append(offset + 1)
+                        .append(" AND ").append(limit + offset);
+            } else {
+                fullQuery.append(") AS sq WHERE rownumber >= ").append(offset + 1);
+            }
+        } else {
+            appendOrderBy(fullQuery, orderBys);
+        }
 
-        fullQuery = addOffsetAndLimit(orderBys, limit, offset, needLimit, needOffset, fullQuery);
-
-        return fullQuery;
+        return fullQuery.toString();
     }
-    
+
     /**
      * TDS converts a number of important data types to String. This isn't what we want, nor helpful. Here, we change them back.
      */
     @Override
     public Object overrideDriverTypeConversion(MetaModel mm, String attributeName, Object value) {
-        Map<String, ColumnMetadata> types = mm.getColumnMetadata();
-    	if(value != null && value instanceof java.lang.String && types.get(attributeName.toLowerCase()).getTypeName().equalsIgnoreCase("date") && mm.getDialect() instanceof MSSQLDialect) {
-    		return java.sql.Date.valueOf((String)value);
-    	} else if(value != null && value instanceof java.lang.String && types.get(attributeName.toLowerCase()).getTypeName().equalsIgnoreCase("datetime2") && mm.getDialect() instanceof MSSQLDialect) {
-    		return java.sql.Timestamp.valueOf((String)value);
-    	} else {
-    		return value;
-    	}
+        if (value instanceof String) {
+            String typeName = mm.getColumnMetadata().get(attributeName).getTypeName();
+            if ("date".equalsIgnoreCase(typeName)) {
+                return java.sql.Date.valueOf((String) value);
+            } else if ("datetime2".equalsIgnoreCase(typeName)) {
+                return java.sql.Timestamp.valueOf((String) value);
+            }
+        }
+        return value;
     }
 
-    private String createBaseQuery(String tableName, String subQuery,
-			boolean needOffset) {
-		String fullQuery;
-		if (tableName == null) {//table is in the sub-query already
-            fullQuery = subQuery;
-        } else {
-            fullQuery = needOffset ? " * FROM " + tableName + " " : "SELECT {LIMIT} * FROM " + tableName;
-            fullQuery = addSubQuery(subQuery, fullQuery);
-        }
-		return fullQuery;
-	}
+    @Override
+    protected void appendDate(StringBuilder query, java.sql.Date value) {
+        query.append("CONVERT(date, '").append(value.toString()).append("')");
+    }
 
-	private String addOderBys(List<String> orderBys, boolean needOffset,
-			String fullQuery) {
-		if(orderBys.size() != 0 && !needOffset){
-            fullQuery += " ORDER BY " + Util.join(orderBys, ", ");
-        }
-		return fullQuery;
-	}
+    @Override
+    protected void appendTime(StringBuilder query, java.sql.Time value) {
+        query.append("CONVERT(time, '").append(value.toString()).append("')");
+    }
 
-	private String addOffsetAndLimit(List<String> orderBys, long limit,
-			long offset, boolean needLimit, boolean needOffset, String fullQuery) {
-		String limitString = "";
-		String fullQueryWithoutSelect = fullQuery.replaceFirst("^\\s*[Ss][Ee][Ll][Ee][Cc][Tt]", "");
-        if(needLimit && needOffset){
-            fullQuery = "SELECT sq.* FROM ( SELECT ROW_NUMBER() OVER (ORDER BY " + Util.join(orderBys, ", ") + ") AS rownumber, " + fullQueryWithoutSelect + " ) AS sq WHERE rownumber BETWEEN " + offset + " AND " + limit + " ";
-        }
-        else if(needLimit && !needOffset){
-            limitString = " TOP " + limit + " ";
-        }else if(needOffset){
-            fullQuery = "SELECT sq.* FROM ( SELECT ROW_NUMBER() OVER (ORDER BY " + Util.join(orderBys, ", ") + ") AS rownumber, " + fullQueryWithoutSelect + " ) AS sq WHERE rownumber >= " + offset + " ";
-        }
-        fullQuery = fullQuery.replace("{LIMIT}", limitString);
-		return fullQuery;
-	}
-
-	private String addSubQuery(String subQuery, String fullQuery) {
-		if (!Util.blank(subQuery)) {
-		    String where = " WHERE ";
-		    //this is only to support findFirst("order by..."), might need to revisit later
-
-		    if (!groupByPattern.matcher(subQuery.toLowerCase().trim()).find() &&
-		            !orderByPattern.matcher(subQuery.toLowerCase().trim()).find()) {
-		        fullQuery += where;
-		    }
-		    fullQuery += subQuery;
-		}
-		return fullQuery;
-	}
-
+    @Override
+    protected void appendTimestamp(StringBuilder query, java.sql.Timestamp value) {
+        query.append("CONVERT(datetime2, '").append(value.toString()).append("')");
+    }
 }

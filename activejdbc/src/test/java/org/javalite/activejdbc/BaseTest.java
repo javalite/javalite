@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -21,6 +21,8 @@ import org.javalite.activejdbc.Base;
 import org.javalite.activejdbc.RowListenerAdapter;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.junit.Test;
+
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
 
@@ -35,12 +37,17 @@ public class BaseTest extends ActiveJDBCTest {
 
     @Test
     public void testBaseFinder() {
+        final List<Map> records = new ArrayList<>();
 
-        Base.find("select * from people", new RowListenerAdapter() {
+        Base.find("select * from people order by id", new RowListenerAdapter() {
+            @Override
             public void onNext(Map record) {
-                System.out.println(record);
+                records.add(record);
             }
         });
+
+        the(records.get(0).get("name")).shouldBeEqual("John");
+        the(records.get(3).get("name")).shouldBeEqual("Joe");
     }
 
     @Test
@@ -84,7 +91,7 @@ public class BaseTest extends ActiveJDBCTest {
     public void testFindParametrized(){
 
         Base.find("select * from people where id > ? and dob > ?", 1, getTimestamp(1935, 1, 1)).with(new RowListenerAdapter() {
-            public void onNext(Map<String, Object> row) {
+            @Override public void onNext(Map<String, Object> row) {
                 System.out.println(row);
             }
         });

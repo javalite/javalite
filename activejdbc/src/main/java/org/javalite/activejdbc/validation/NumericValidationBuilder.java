@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -83,14 +83,15 @@ public class NumericValidationBuilder extends ValidationBuilder<NumericValidator
      * Converts an empty string to null before validation.
      * This method is useful in web applications when an HTTP requests
      * sends in a form with inputs that are not filled because they are optional.
-     * 
+     *
      * @return NumericValidationBuilder.
+     * @deprecated use {@link org.javalite.activejdbc.Model#blankToNull(java.lang.String...)} instead
      */
+    @Deprecated
     public NumericValidationBuilder convertNullIfEmpty(){
         for(NumericValidator validator:validators){
             validator.convertNullIfEmpty(true);
         }
         return this;
     }
-
 }

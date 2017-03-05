@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -19,9 +19,24 @@ package org.javalite.test.jspec;
 
 public final class JSpec{
     
-    public static Expectation<Object> a(Object o1){
-        return new Expectation<Object>(o1);
+    private JSpec() {
+        
     }
+    
+    public static Expectation<Object> a(Object o1){
+        return new Expectation<>(o1);
+    }
+
+    /**
+     * Synonym of methods {@link JSpec#the(Object)} or {@link JSpec#a(Object)}.
+     *
+     * @param o1 instance for checking
+     * @return generalized expectation
+     */
+    public static Expectation<Object> $(Object o1){
+        return a(o1);
+    }
+
 
     public static Expectation<Object> the(Object o1){
         return a(o1);

@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -18,14 +18,18 @@ limitations under the License.
 package org.javalite.activejdbc.associations;
 
 import org.javalite.activejdbc.Association;
+import org.javalite.activejdbc.Model;
 
 /**
  * @author Igor Polevoy
  */
+//TODO: rename to ManyToManyAssociation, using "To" instead of "2" as the other class names?
 public class Many2ManyAssociation extends Association {
 
-    private String sourceFkName, targetFkName;
-    private String join, targetPk;
+    private final String sourceFkName;
+    private final String targetFkName;
+    private final String join;
+    private final String targetPk;
 
     /**
      *
@@ -36,7 +40,7 @@ public class Many2ManyAssociation extends Association {
      * @param targetFkName  name of a foreign key in the join table pointing to the target table PK.
      * @param targetPk name of a PK of a target table
      */
-    public Many2ManyAssociation(String source, String target, String join, String sourceFkName, String targetFkName, String targetPk) {
+    public Many2ManyAssociation(Class<? extends Model> source, Class<? extends Model> target, String join, String sourceFkName, String targetFkName, String targetPk) {
         super(source, target);
         this.targetFkName = targetFkName;
         this.sourceFkName = sourceFkName;
@@ -44,8 +48,8 @@ public class Many2ManyAssociation extends Association {
         this.targetPk = targetPk;
     }
 
-    public Many2ManyAssociation(String source, String target, String join, String sourceFkName, String targetFkName) {
-        this(source, target, join, sourceFkName, targetFkName, "id");
+    public Many2ManyAssociation(Class<? extends Model> sourceModelClass, Class<? extends Model> targetModelClass, String join, String sourceFkName, String targetFkName) {
+        this(sourceModelClass, targetModelClass, join, sourceFkName, targetFkName, "id");
     }
 
     public String getSourceFkName() {
@@ -66,10 +70,10 @@ public class Many2ManyAssociation extends Association {
 
     @Override
     public String toString() {
-        return new StringBuffer().append(getSource()).append("  >---------<  ").append(getTarget())
-                .append(", type: ").append("many-to-many").append(", join: ").append(join).toString();
+        return getSourceClass().getSimpleName() + "  >---------<  " + getTargetClass().getSimpleName() + ", type: " + "many-to-many" + ", join: " + join;
     }
 
+    @Override
     public boolean equals(Object other) {
 
         if(other == null || !other.getClass().equals(getClass())){
@@ -78,8 +82,8 @@ public class Many2ManyAssociation extends Association {
 
         Many2ManyAssociation otherAss =(Many2ManyAssociation)other;
 
-        return otherAss.getSource().equalsIgnoreCase(getSource())
-                && otherAss.getTarget().equalsIgnoreCase(getTarget())
+        return otherAss.getSourceClass().equals(getSourceClass())
+                && otherAss.getTargetClass().equals(getTargetClass())
                 && otherAss.getSourceFkName().equalsIgnoreCase(getSourceFkName())
                 && otherAss.getTargetFkName().equalsIgnoreCase(getTargetFkName())
                 && otherAss.getJoin().equalsIgnoreCase(getJoin());

@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,7 +18,10 @@ package org.javalite.activejdbc;
 
 import java.text.MessageFormat;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+
+import static org.javalite.common.Util.*;
 
 /**
  * This class is used to pull messages from a resource bundle called <code>activejdbc_messages</code>.
@@ -31,18 +34,28 @@ public class Messages {
 
     private static final String BUNDLE = "activejdbc_messages";
 
+    private Messages() {
+        
+    }
+    
     /**
      * Looks for a localized property/message in <code>activejdbc_messages</code> bundle.
      *
      * @param key key of the property.
-     * @param locale locale of a bundle. 
+     * @param locale locale of a bundle, or null for default locale
      * @param params list of parameters for a message. The order of parameters in this list will correspond to the
      * numeric order in the parameters listed in the message and has nothing to do with a physical order. This means
-     * that the 0th parameter in the list will correspond to <code>{0}</code>, 1st to <code>{1}</code> and so on.
+     * that the first parameter in the list will correspond to <code>{0}</code>, second to <code>{1}</code> and so on.
      * @return localized  message merged with parameters (if provided), or key if message not found.
      */
     public static String message(String key, Locale locale, Object... params) {
-        return getMessage(key, locale, params);
+        String pattern;
+        try {
+            pattern = ResourceBundle.getBundle(BUNDLE, locale == null ? Locale.getDefault() : locale).getString(key);
+        } catch (MissingResourceException e) {
+            pattern = key;
+        }
+        return empty(params) ? pattern : new MessageFormat(pattern).format(params);
     }
 
     /**
@@ -53,20 +66,6 @@ public class Messages {
      * @return message merged with parameters (if provided), or key if message not found.
      */
     public static String message(String key, Object... params) {
-        return getMessage(key, null, params);
-    }
-
-    private static String getMessage(String key, Locale locale, Object... params){
-        MessageFormat mf = new MessageFormat("");
-        try{
-            if(locale == null){
-                mf.applyPattern(ResourceBundle.getBundle(BUNDLE).getString(key));
-            }else{
-                mf.applyPattern(ResourceBundle.getBundle(BUNDLE, locale).getString(key));
-            }
-        }catch(Exception e){
-            mf.applyPattern(key);
-        }
-        return mf.format(params);
+        return message(key, null, params);
     }
 }

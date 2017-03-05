@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -58,12 +58,15 @@ public class CreatedAtUpdatedAtTest extends ActiveJDBCTest {
         Timestamp updatedAt = p.getTimestamp("updated_at");
 
         a(updatedAt).shouldNotBeNull();
-        a(createdAt).shouldBeEqual(p.get("created_at"));
+        a(createdAt).shouldBeEqual(p.getTimestamp("created_at"));
         a(createdAt.before(updatedAt)).shouldBeTrue();
     }
 
     @Test
     public void shouldResetUpdatedAtByBatchClassMethods(){
+        //this is to set the system time from program env rather than DB
+        Person.update("last_name = ?", "name like '%%'", "Smith");
+
         List<Person> people = Person.findAll();
         Timestamp updated_at = people.get(0).getTimestamp("updated_at");
 

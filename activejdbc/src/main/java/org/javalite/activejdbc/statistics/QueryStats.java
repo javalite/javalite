@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -24,9 +24,8 @@ package org.javalite.activejdbc.statistics;
  */
 public class QueryStats {
 
-    private String query;//this is needed for report.
-    private long min, max, count, total;
-    private long avg;
+    private final String query;//this is needed for report.
+    private long total, avg, min, max, count;
 
     public QueryStats(String query) {
         this.query = query;
@@ -38,34 +37,32 @@ public class QueryStats {
      * @param time time in milliseconds it took to execute the query
      */
     public void addQueryTime(long time){
+        if (time < min || min == 0) min = time;
 
-        if(time < min || min == 0) min = time;
+        if (time > max || max == 0) max = time;
 
-        if(time > max || max == 0) max = time;
-
-
-        avg = Math.round((avg + (time - avg)/(double)(++count)));
+        avg = Math.round((avg + (time - avg) / (double) (++count)));
 
         total += time;
     }
 
-    public Long getAvg() {
+    public long getAvg() {
         return avg;
     }
 
-    public Long getMin() {
+    public long getMin() {
         return min;
     }
 
-    public Long getMax() {
+    public long getMax() {
         return max;
     }
 
-    public Long getCount() {
+    public long getCount() {
         return count;
     }
 
-    public Long getTotal() {
+    public long getTotal() {
         return total;
     }
 
@@ -76,12 +73,12 @@ public class QueryStats {
     @Override
     public String toString() {
         return "QueryStats{" +
-                "query='" + query + '\'' +
-                ", min=" + min +
-                ", max=" + max +
-                ", count=" + count +
-                ", total=" + total +
-                ", avg=" + avg +
-                '}';
+            "query='" + query + '\'' +
+            ", min=" + min +
+            ", max=" + max +
+            ", count=" + count +
+            ", total=" + total +
+            ", avg=" + avg +
+            '}';
     }
 }

@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -17,14 +17,14 @@ limitations under the License.
 
 package org.javalite.activejdbc.validation;
 
-import org.javalite.activejdbc.Messages;
 import org.javalite.activejdbc.Model;
 
-import java.util.Locale;
+import static org.javalite.common.Util.*;
+
 
 public class AttributePresenceValidator extends ValidatorAdapter {
 
-    private String attribute;
+    private final String attribute;
 
     public AttributePresenceValidator(String attribute) {
         this.attribute = attribute;
@@ -32,8 +32,9 @@ public class AttributePresenceValidator extends ValidatorAdapter {
     }
 
 
+    @Override
     public void validate(Model m) {
-        if (m.get(attribute) == null || m.get(attribute).equals("")) {
+        if (blank(m.get(attribute))) {
             //TODO: use resource bundles for messages
             m.addValidator(this, attribute);
         }
@@ -49,9 +50,5 @@ public class AttributePresenceValidator extends ValidatorAdapter {
         if(!this.getClass().equals(other.getClass())) return false;
 
         return this.attribute.equals(((AttributePresenceValidator)other).attribute);
-    }
-
-    public String formatMessage(Locale locale) {
-        return locale != null ? Messages.message(getMessage(), locale) : Messages.message(getMessage());
     }
 }

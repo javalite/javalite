@@ -8,12 +8,12 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
+import static org.javalite.common.Util.*;
+
 /**
  * @author Igor Polevoy
  */
 public class OracleDBReset {
-
-    private static boolean done = false;
 
     static void resetOracle(String[] statements) throws SQLException {
             dropTriggers();
@@ -21,23 +21,18 @@ public class OracleDBReset {
             dropTables();
 
             for (String statement : statements) {
-                if(Util.blank(statement)) continue;
-                Statement st = null;
-                st = Base.connection().createStatement();
-                try{
-                    st.executeUpdate(statement);
-
-                    if(statement.contains("ingredients_trigger")){
-                        System.out.println("STATEMENT:");
-                        System.out.println(statement);
+                if (!Util.blank(statement)) {
+                    Statement st = null;
+                    try {
+                        st = Base.connection().createStatement();
+                        st.executeUpdate(statement);
+                    } catch(SQLException e) {
+                        System.out.println("Problem statement: " + statement);
+                        throw e;
+                    } finally {
+                        closeQuietly(st);
                     }
-
-                }catch(SQLException e){
-                    System.out.println("Problem statement: " + statement);
-                    throw e;
                 }
-
-                st.close();
             }
     }
 
@@ -51,6 +46,7 @@ public class OracleDBReset {
             }
             Statement s = Base.connection().createStatement();
             String sql = "drop trigger " + trigger.get("trigger_name");
+            System.out.println("Dropping trigger: " + trigger.get("trigger_name"));
             s.execute(sql);
             s.close();
         }
@@ -62,6 +58,7 @@ public class OracleDBReset {
         for (Map sequence : sequences) {
             Statement s = Base.connection().createStatement();
             s.execute("drop sequence " + sequence.get("sequence_name"));
+            System.out.println("Dropping sequence: " + sequence.get("sequence_name"));
             s.close();
         }
     }
@@ -71,6 +68,7 @@ public class OracleDBReset {
         for (Map table : tables) {
             Statement s = Base.connection().createStatement();
             s.execute("drop table " + table.get("table_name") + " cascade constraints");
+            System.out.println("Dropping table: " + table.get("table_name"));
             s.close();
         }
     }

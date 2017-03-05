@@ -1,3 +1,4 @@
+-- noinspection SqlNoDataSourceInspectionForFile
 
 CREATE TABLE people (id  NUMBER NOT NULL, name VARCHAR(56) NOT NULL, last_name VARCHAR(56), dob DATE, graduation_date DATE, created_at TIMESTAMP, updated_at TIMESTAMP)
 -- BREAK
@@ -48,6 +49,40 @@ end;
 
 
 -- BREAK
+CREATE TABLE shard1_temperatures (id  NUMBER NOT NULL, temp NUMBER)
+-- BREAK
+ALTER TABLE shard1_temperatures ADD CONSTRAINT shard1_temperatures_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE shard1_temperatures_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER shard1_temperatures_trigger
+BEFORE INSERT ON shard1_temperatures REFERENCING
+    NEW AS new
+    OLD AS old
+FOR EACH ROW
+    begin
+        select coalesce(:new.id, shard1_temperatures_seq.nextval) into :new.id from dual;
+    end;
+
+
+-- BREAK
+CREATE TABLE shard2_temperatures (id  NUMBER NOT NULL, temp NUMBER)
+-- BREAK
+ALTER TABLE shard2_temperatures ADD CONSTRAINT shard2_temperatures_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE shard2_temperatures_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER shard2_temperatures_trigger
+BEFORE INSERT ON shard2_temperatures REFERENCING
+    NEW AS new
+    OLD AS old
+FOR EACH ROW
+    begin
+        select coalesce(:new.id, shard2_temperatures_seq.nextval) into :new.id from dual;
+    end;
+
+
+-- BREAK
 CREATE TABLE salaries (id  NUMBER NOT NULL, salary NUMBER(7, 2))
 -- BREAK
 ALTER TABLE salaries ADD CONSTRAINT salaries_pk PRIMARY KEY ( id )
@@ -84,6 +119,25 @@ end;
 
 
 -- BREAK
+CREATE TABLE shard1_users (id  NUMBER NOT NULL, first_name VARCHAR(56), last_name VARCHAR(56), email VARCHAR(56))
+-- BREAK
+ALTER TABLE shard1_users ADD CONSTRAINT shard1_users_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE shard1_users_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER shard1_users_trigger
+BEFORE INSERT ON shard1_users REFERENCING
+    NEW AS new
+    OLD AS old
+FOR EACH ROW
+    begin
+        select coalesce(:new.id, shard1_users_seq.nextval) into :new.id from dual;
+    end;
+
+
+
+
+-- BREAK
 CREATE TABLE addresses (id  NUMBER NOT NULL, address1 VARCHAR(56), address2 VARCHAR(56), city VARCHAR(56), state VARCHAR(56), zip VARCHAR(56), user_id NUMBER)
 -- BREAK
 ALTER TABLE addresses ADD CONSTRAINT addresses_pk PRIMARY KEY ( id )
@@ -98,6 +152,25 @@ CREATE OR REPLACE TRIGGER addresses_trigger
     begin
 select coalesce(:new.id, addresses_seq.nextval) into :new.id from dual;
 end;
+
+
+
+
+-- BREAK
+CREATE TABLE shard1_addresses (id  NUMBER NOT NULL, address1 VARCHAR(56), address2 VARCHAR(56), city VARCHAR(56), state VARCHAR(56), zip VARCHAR(56), user_id NUMBER)
+-- BREAK
+ALTER TABLE shard1_addresses ADD CONSTRAINT shard1_addresses_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE shard1_addresses_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER shard1_addresses_trigger
+BEFORE INSERT ON shard1_addresses REFERENCING
+    NEW AS new
+    OLD AS old
+FOR EACH ROW
+    begin
+        select coalesce(:new.id, shard1_addresses_seq.nextval) into :new.id from dual;
+    end;
 
 
 -- BREAK
@@ -224,6 +297,24 @@ select coalesce(:new.id, patients_seq.nextval) into :new.id from dual;
 end;
 
 
+
+-- BREAK
+CREATE TABLE shard1_patients (id  NUMBER NOT NULL, first_name VARCHAR(56), last_name VARCHAR(56))
+-- BREAK
+ALTER TABLE shard1_patients ADD CONSTRAINT shard1_patients_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE shard1_patients_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER shard1_patients_trigger
+BEFORE INSERT ON shard1_patients REFERENCING
+    NEW AS new
+    OLD AS old
+FOR EACH ROW
+    begin
+        select coalesce(:new.id, shard1_patients_seq.nextval) into :new.id from dual;
+    end;
+
+
 -- BREAK
 CREATE TABLE prescriptions (id  NUMBER NOT NULL, name VARCHAR(56), patient_id NUMBER)
 -- BREAK
@@ -261,6 +352,24 @@ end;
 
 
 
+
+-- BREAK
+CREATE TABLE shard1_doctors (id  NUMBER NOT NULL, first_name VARCHAR(56), last_name VARCHAR(56), discipline varchar(56))
+-- BREAK
+ALTER TABLE shard1_doctors ADD CONSTRAINT shard1_doctors_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE shard1_doctors_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER shard1_doctors_trigger
+BEFORE INSERT ON shard1_doctors REFERENCING
+    NEW AS new
+    OLD AS old
+FOR EACH ROW
+    begin
+        select coalesce(:new.id, shard1_doctors_seq.nextval) into :new.id from dual;
+    end;
+
+
 -- BREAK
 CREATE TABLE doctors_patients (id  NUMBER NOT NULL, doctor_id NUMBER(11), patient_id NUMBER(11))
 -- BREAK
@@ -281,7 +390,7 @@ end;
 
 
 -- BREAK
-CREATE TABLE students (id  NUMBER NOT NULL, first_name VARCHAR(56), last_name VARCHAR(56), dob DATE)
+CREATE TABLE students (id NUMBER NOT NULL, first_name VARCHAR(56), last_name VARCHAR(56), dob DATE, enrollment_date TIMESTAMP)
 -- BREAK
 ALTER TABLE students ADD CONSTRAINT students_pk PRIMARY KEY ( id )
 -- BREAK
@@ -333,7 +442,7 @@ end;
 
 
 -- BREAK
-CREATE TABLE items (id  NUMBER NOT NULL , item_number NUMBER(11), item_description VARCHAR(56))
+CREATE TABLE items (id  NUMBER NOT NULL , item_number NUMBER(11), item_description VARCHAR(56), lock_version NUMBER(11))
 -- BREAK
 ALTER TABLE items ADD CONSTRAINT items_pk PRIMARY KEY ( id )
 -- BREAK
@@ -370,6 +479,23 @@ select coalesce(:new.id, articles_seq.nextval) into :new.id from dual;
 end;
 
 
+
+-- BREAK
+CREATE TABLE shard1_articles (id  NUMBER NOT NULL, title VARCHAR(56), content CLOB)
+-- BREAK
+ALTER TABLE shard1_articles ADD CONSTRAINT shard1_articles_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE shard1_articles_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER shard1_articles_trigger
+BEFORE INSERT ON shard1_articles REFERENCING
+    NEW AS new
+    OLD AS old
+FOR EACH ROW
+    begin
+        select coalesce(:new.id, shard1_articles_seq.nextval) into :new.id from dual;
+    end;
+
 -- BREAK
 CREATE TABLE posts (id  NUMBER NOT NULL, title VARCHAR(56), post VARCHAR(1024))
 -- BREAK
@@ -388,6 +514,22 @@ end;
 
 
 -- BREAK
+CREATE TABLE shard1_posts (id  NUMBER NOT NULL, title VARCHAR(56), post VARCHAR(1024))
+-- BREAK
+ALTER TABLE shard1_posts ADD CONSTRAINT shard1_posts_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE shard1_posts_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER shard1_posts_trigger
+BEFORE INSERT ON shard1_posts REFERENCING
+    NEW AS new
+    OLD AS old
+FOR EACH ROW
+    begin
+        select coalesce(:new.id, shard1_posts_seq.nextval) into :new.id from dual;
+    end;
+
+-- BREAK
 CREATE TABLE comments (id  NUMBER NOT NULL, author VARCHAR(56), content VARCHAR(128), parent_id NUMBER(11), parent_type VARCHAR(256))
 -- BREAK
 ALTER TABLE comments ADD CONSTRAINT comments_pk PRIMARY KEY ( id )
@@ -403,6 +545,37 @@ CREATE OR REPLACE TRIGGER comments_trigger
 select coalesce(:new.id, comments_seq.nextval) into :new.id from dual;
 end;
 
+-- BREAK
+CREATE TABLE shard1_comments (id  NUMBER NOT NULL, author VARCHAR(56), content VARCHAR(128), parent_id NUMBER(11), parent_type VARCHAR(256))
+-- BREAK
+ALTER TABLE shard1_comments ADD CONSTRAINT shard1_comments_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE shard1_comments_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER shard1_comments_trigger
+BEFORE INSERT ON shard1_comments REFERENCING
+    NEW AS new
+    OLD AS old
+FOR EACH ROW
+    begin
+        select coalesce(:new.id, shard1_comments_seq.nextval) into :new.id from dual;
+    end;
+
+-- BREAK
+CREATE TABLE tags (id  NUMBER NOT NULL, content VARCHAR(128), parent_id NUMBER(11), parent_type VARCHAR(256))
+-- BREAK
+ALTER TABLE tags ADD CONSTRAINT tags_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE tags_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER tags_trigger
+    BEFORE INSERT ON comments REFERENCING
+    NEW AS new
+    OLD AS old
+    FOR EACH ROW
+    begin
+select coalesce(:new.id, tags_seq.nextval) into :new.id from dual;
+end;
 
 
 -- BREAK
@@ -846,3 +1019,52 @@ CREATE OR REPLACE TRIGGER nodes_trigger
         begin
 select coalesce(:new.id, nodes_seq.nextval) into :new.id from dual;
 end;
+
+
+-- BREAK
+CREATE TABLE apples (id NUMBER NOT NULL, apple_type VARCHAR(56) NOT NULL)
+-- BREAK
+ALTER TABLE apples ADD CONSTRAINT apples_pk PRIMARY KEY ( id )
+-- BREAK
+
+
+CREATE TABLE images (id NUMBER  NOT NULL , name VARCHAR(56) NOT NULL, content BLOB)
+-- BREAK
+ALTER TABLE images ADD CONSTRAINT images_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE images_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER images_trigger
+        BEFORE INSERT ON images REFERENCING
+        NEW AS new
+        OLD AS old
+        FOR EACH ROW
+        begin
+select coalesce(:new.id, images_seq.nextval) into :new.id from dual;
+end;
+-- BREAK
+
+
+CREATE TABLE alarms (id NUMBER NOT NULL, alarm_time TIMESTAMP NOT NULL)
+-- BREAK
+ALTER TABLE alarms ADD CONSTRAINT alarms_pk PRIMARY KEY (id)
+-- BREAK
+CREATE SEQUENCE alarms_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER alarms_trigger
+        BEFORE INSERT ON alarms REFERENCING
+        NEW AS new
+        OLD AS old
+        FOR EACH ROW
+        begin
+select coalesce(:new.id, alarms_seq.nextval) into :new.id from dual;
+end;
+-- BREAK
+
+
+CREATE TABLE developers (first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL, email VARCHAR(56) NOT NULL,address VARCHAR(56) NOT NULL)
+-- BREAK
+CREATE UNIQUE INDEX developers_uq ON developers (first_name, last_name, email)
+-- BREAK
+
+

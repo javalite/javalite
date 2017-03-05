@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -17,6 +17,7 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
+import java.text.DecimalFormatSymbols;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.validation.ValidationException;
 import org.javalite.test.jspec.ExceptionExpectation;
@@ -41,7 +42,7 @@ public class ValidatorsTest extends ActiveJDBCTest {
 
         p.set("last_name", "polevoy");
         p.validate();
-        a(p.errors().size()).shouldBeEqual(0);        
+        a(p.errors().size()).shouldBeEqual(0);
     }
 
     @Test
@@ -64,6 +65,10 @@ public class ValidatorsTest extends ActiveJDBCTest {
         a.validate();
         a(a.errors().size()).shouldBeEqual(0);
 
+        //try numeric string with decimal separator specific to actual Locale
+        a.set("amount", "123" + DecimalFormatSymbols.getInstance().getDecimalSeparator() + "11");
+        a.validate();
+        a(a.errors().size()).shouldBeEqual(0);
 
         //try bad string with a number in it
         a.set("amount", "111 aaa");
@@ -113,12 +118,21 @@ public class ValidatorsTest extends ActiveJDBCTest {
     }
 
     @Test
+    public void shouldGetErrorsCaseInsensitive() {
+        deleteAndPopulateTable("salaries");
+        Salary s = new Salary();
+        s.validate();
+        a(s.errors().get("Salary")).shouldBeEqual(s.errors().get("salary"));
+        a(s.errors().get("SALARY")).shouldBeEqual(s.errors().get("salary"));
+    }
+
+    @Test
     public void testRegexpValidator(){
         deleteAndPopulateTables("users", "addresses");
         User u = new User();
 
         //test good value
-        u.set("email", "igor@polevoy.org");
+        u.set("email", "john@doe.com");
         u.validate();
         a(u.errors().size()).shouldBeEqual(0);
 
@@ -129,6 +143,7 @@ public class ValidatorsTest extends ActiveJDBCTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testSaveItMethod(){
         deleteAndPopulateTables("users", "addresses");
         final User u = new User();
@@ -136,29 +151,43 @@ public class ValidatorsTest extends ActiveJDBCTest {
         //cause exception
         u.set("email", "this is not email value");
         expect(new ExceptionExpectation(ValidationException.class) {
+            @Override
             public void exec() {
-                u.saveIt();          
+                u.saveIt();
             }
         });
+    }
+    
+    @Test
+    public void testUniquenessValidator(){
+        deleteAndPopulateTables("users", "addresses");
+        // create a new user
+        new User().set("email", "john@doe.com").saveIt();
+        
+        // attempt creating another user with the same email
+        User u = new User();
+        u.set("email", "john@doe.com").saveIt();
+        a(u).shouldNotBe("valid");
+        a(u.errors().get("email")).shouldBeEqual("This email is already taken.");
     }
 
     @Test
     public void shouldConvertEmptyStringToNull(){
-        deleteAndPopulateTable("items");
+        deleteAndPopulateTable("accounts");
 
-        Item it = new Item();
-        it.set("item_number", "");
-        it.validate();
-        a(it.get("item_number")).shouldBeNull();
+        Account account = new Account();
+        account.set("amount", "");
+        account.validate();
+        a(account.get("amount")).shouldBeNull();
     }
 
 
     @Test
     public void shouldReturnNullIfRequestedErrorForAttributeWhichDidNotProduceOne(){
-        deleteAndPopulateTable("items");
+        deleteAndPopulateTable("accounts");
 
-        Item it = new Item();
-        a(it.errors().get("blah")).shouldBeNull();
+        Account amount = new Account();
+        a(amount.errors().get("blah")).shouldBeNull();
     }
 
     @Test

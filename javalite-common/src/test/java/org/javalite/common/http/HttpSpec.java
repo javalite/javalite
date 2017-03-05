@@ -14,6 +14,9 @@ public class HttpSpec {
     @Test
     public void shouldGenerateContentFromMap(){
         String content = Http.map2Content(map("first_name", "John", "last_name", "Doe", "ssn", "123-45-6789"));
-        the(content).shouldEqual("first_name=John&ssn=123-45-6789&last_name=Doe");
+
+        the(content).shouldContain("first_name=John");
+        the(content).shouldContain("ssn=123-45-6789");
+        the(content).shouldContain("last_name=Doe");
     }
 }

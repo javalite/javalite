@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -16,7 +16,6 @@ limitations under the License.
 
 package org.javalite.http;
 
-import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,14 +31,16 @@ public class Http {
     /**
      * Connection timeout in milliseconds. Set this value to what you like to override default.
      */
-    public static int CONNECTION_TIMEOUT = 5000;
+    public static final int CONNECTION_TIMEOUT = 5000;
 
     /**
      * Read timeout in milliseconds. Set this value to what you like to override default.
      */
-    public static int READ_TIMEOUT = 5000;
-
-
+    public static final int READ_TIMEOUT = 5000;
+    
+    private Http() {
+        
+    }
 
     /**
      * Executes a POST request.
@@ -50,6 +51,21 @@ public class Http {
      */
     public static Post post(String uri, String content) {
         return post(uri, content.getBytes(), CONNECTION_TIMEOUT, READ_TIMEOUT);
+    }
+
+    /**
+     * Executes a POST request.
+     *  Often used to post form parameters:
+     *
+     * <pre>
+     *     Http.post("http://example.com/create").param("name1", "val1");
+     * </pre>
+     *
+     * @param uri     url of resource.
+     * @return {@link Post} object.
+     */
+    public static Post post(String uri) {
+        return post(uri, null, CONNECTION_TIMEOUT, READ_TIMEOUT);
     }
 
     /**
@@ -76,6 +92,27 @@ public class Http {
 
         try {
             return new Post(url, content, connectTimeout, readTimeout);
+        } catch (Exception e) {
+            throw new HttpException("Failed URL: " + url, e);
+        }
+    }
+
+    /**
+     * Executes a POST request. Often used to post form parameters:
+     *
+     * <pre>
+     *     Http.post("http://example.com/create").param("name1", "val1");
+     * </pre>
+     *
+     * @param url            url of resource.
+     * @param connectTimeout connection timeout in milliseconds.
+     * @param readTimeout    read timeout in milliseconds.
+     * @return {@link Post} object.
+     */
+    public static Post post(String url, int connectTimeout, int readTimeout) {
+
+        try {
+            return new Post(url, null, connectTimeout, readTimeout);
         } catch (Exception e) {
             throw new HttpException("Failed URL: " + url, e);
         }
@@ -150,6 +187,27 @@ public class Http {
         }
     }
 
+    /**
+     * Create multipart request
+     *
+     * @param url URL to send to
+     * @return new Multipart request
+     */
+    public static Multipart multipart(String url) {
+        return new Multipart(url, CONNECTION_TIMEOUT, READ_TIMEOUT);
+    }
+
+    /**
+     * Create multipart request
+     *
+     * @param url URL to send to
+     * @param connectTimeout connect timeout
+     * @param readTimeout read timeout
+     * @return new Multipart request
+     */
+    public static Multipart multipart(String url, int connectTimeout, int readTimeout) {
+        return new Multipart(url, connectTimeout, connectTimeout);
+    }
 
     /**
      * Executes a DELETE request.
@@ -177,6 +235,46 @@ public class Http {
         }
     }
 
+
+    /**
+     * Executes a PATCH request.
+     *
+     * @param uri     url of resource.
+     * @param content content to be posted.
+     * @return {@link Patch} object.
+     */
+    public static Patch patch(String uri, String content) {
+        return patch(uri, content.getBytes(), CONNECTION_TIMEOUT, READ_TIMEOUT);
+    }
+
+    /**
+     * Executes a PATCH request.
+     *
+     * @param uri     url of resource.
+     * @param content content to be posted.
+     * @return {@link Patch} object.
+     */
+    public static Patch patch(String uri, byte[] content) {
+        return patch(uri, content, CONNECTION_TIMEOUT, READ_TIMEOUT);
+    }
+
+    /**
+     * Executes a PATCH request.
+     *
+     * @param url            url of resource.
+     * @param content        content to be posted.
+     * @param connectTimeout connection timeout in milliseconds.
+     * @param readTimeout    read timeout in milliseconds.
+     * @return {@link Patch} object.
+     */
+    public static Patch patch(String url, byte[] content, int connectTimeout, int readTimeout) {
+
+        try {
+            return new Patch(url, content, connectTimeout, readTimeout);
+        } catch (Exception e) {
+            throw new HttpException("Failed URL: " + url, e);
+        }
+    }
 
 
     /**

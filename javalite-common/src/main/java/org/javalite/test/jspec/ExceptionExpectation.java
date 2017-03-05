@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -19,7 +19,7 @@ package org.javalite.test.jspec;
 
 
 public abstract class ExceptionExpectation<T> {
-    private Class<T>  clazz;
+    private final Class<T> clazz;
 
     public ExceptionExpectation(Class<T> clazz){
         this.clazz = clazz;

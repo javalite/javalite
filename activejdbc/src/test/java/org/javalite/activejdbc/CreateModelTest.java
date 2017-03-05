@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -59,7 +59,7 @@ public class CreateModelTest extends ActiveJDBCTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfNullPassedForNameOfAttribute() {
 
-        Person.create(null, "John", "last_name", "Margulis", "2001-01-07");
+        Person.create((String) null, "John", "last_name", "Margulis", "2001-01-07");
     }
 
     @Test

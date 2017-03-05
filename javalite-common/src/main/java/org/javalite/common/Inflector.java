@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -26,14 +26,15 @@ import java.util.Arrays;
 
 public class Inflector {
 
-    private static List<String[]> singulars, plurals, irregulars;
-    private static List<String> uncountables;
+    private static final List<String[]> singulars;
+    private static final List<String[]> plurals;
+    private static final List<String[]> irregulars;
+    private static final List<String> uncountables;
 
     static {
         singulars = new ArrayList<String[]>();
         plurals = new ArrayList<String[]>();
         irregulars = new ArrayList<String[]>();
-        uncountables = new ArrayList<String>();
 
         addPlural("$", "s");
         addPlural("s$", "s");
@@ -47,7 +48,7 @@ public class Inflector {
         addPlural("(?:([^f])fe|([lr])f)$", "$1$2ves");
         addPlural("(hive)$", "$1s");
         addPlural("([^aeiouy]|qu)y$", "$1ies");
-        addPlural("(x|ch|ss|sh)$", "$1es"); 
+        addPlural("(x|ch|ss|sh)$", "$1es");
         addPlural("(matr|vert|ind)(?:ix|ex)$", "$1ices");
         addPlural("([m|l])ouse$", "$1ice");
         addPlural("^(ox)$", "$1en");
@@ -88,6 +89,10 @@ public class Inflector {
 
         uncountables = Arrays.asList("equipment", "information", "rice", "money", "species", "series", "fish", "sheep");
     }
+    
+    private Inflector() {
+        
+    }
 
     public static void addPlural(String rule, String replacement){
         plurals.add(0, new String[]{rule, replacement});
@@ -116,7 +121,7 @@ public class Inflector {
         Matcher matcher = pattern.matcher(word);
         return matcher.find() ? matcher.replaceFirst(replacement) : null;
     }
-    
+
     public static String pluralize(String word) {
 
         if(uncountables.contains(word)) return word;
@@ -126,13 +131,13 @@ public class Inflector {
                 return irregular[1];
             }
         }
-        
+
         for (String[] pair: plurals) {
             String plural = gsub(word, pair[0], pair[1]);
             if (plural != null)
                 return plural;
         }
-        
+
         return word;
     }
 
@@ -186,7 +191,7 @@ public class Inflector {
             }
         }
 
-        StringBuffer b = new StringBuffer(camel);
+        StringBuilder b = new StringBuilder(camel);
         for (int i = upper.size() - 1; i >= 0; i--) {
             Integer index = upper.get(i);
             if (index != 0)
@@ -216,17 +221,17 @@ public class Inflector {
      * @return camel case version of underscore.
      */
     public static String camelize(String underscore, boolean capitalizeFirstChar){
-        String result = "";
+        StringBuilder result = new StringBuilder();
         StringTokenizer st = new StringTokenizer(underscore, "_");
-        while(st.hasMoreTokens()){
-            result += capitalize(st.nextToken());
-        }        
-        return capitalizeFirstChar? result :result.substring(0, 1).toLowerCase() + result.substring(1);            
+        while (st.hasMoreTokens()) {
+            result.append(capitalize(st.nextToken()));
+        }
+        return capitalizeFirstChar ? result.toString() : result.substring(0, 1).toLowerCase() + result.substring(1);
     }
 
     /**
      * Capitalizes a word  - only a first character is converted to upper case.
-     * 
+     *
      * @param word word/phrase to capitalize.
      * @return same as input argument, but the first character is capitalized.
      */
@@ -235,14 +240,16 @@ public class Inflector {
     }
 
 
-
+    /**
+     * @deprecated Use <tt>clazz.getSimpleName()</tt> instead of <tt>Inflector.shortName(clazz.getName())</tt>.
+     */
+    @Deprecated
     public static String shortName(String className) {
         return className.substring(className.lastIndexOf('.') + 1);
     }
 
     public static String getIdName(String tableName) {
-        String idName = Inflector.singularize(tableName) + "_id";
-        return idName.toLowerCase();
+        return Inflector.singularize(tableName).toLowerCase() + "_id";
     }
 
     /**

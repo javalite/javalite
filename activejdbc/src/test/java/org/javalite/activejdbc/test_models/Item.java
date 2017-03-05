@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -18,12 +18,11 @@ limitations under the License.
 package org.javalite.activejdbc.test_models;
 
 import org.javalite.activejdbc.Model;
+import org.javalite.activejdbc.annotations.VersionColumn;
 
 /**
  * @author Igor Polevoy
  */
+@VersionColumn("lock_version")
 public class Item extends Model {
-    static {
-        validateNumericalityOf("item_number").convertNullIfEmpty();
-    }
 }

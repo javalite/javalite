@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -20,35 +20,45 @@ package org.javalite.activejdbc;
 import javax.naming.InitialContext;
 
 /**
+ * Specification for a JNDI connection.
+ *
  * @author Igor Polevoy
  */
 public class ConnectionJndiSpec implements ConnectionSpec{
-    private InitialContext context;
-    private String dataSourceJndiName;
-    private String user, password;
+    private final InitialContext context;
+    private final String dataSourceJndiName;
 
     public ConnectionJndiSpec(String dataSourceJndiName) {
+        this.context = null;
         this.dataSourceJndiName = dataSourceJndiName;
     }
 
     public ConnectionJndiSpec(InitialContext context) {
         this.context = context;
+        this.dataSourceJndiName = null;
     }
 
     public String getDataSourceJndiName() {
         return dataSourceJndiName;
     }
 
+    /**
+     * @deprecated unused method, returns null
+     */
+    @Deprecated
     public String getUser() {
-        return user;
+        return null;
     }
 
+    /**
+     * @deprecated unused method, returns null
+     */
+    @Deprecated
     public String getPassword() {
-        return password;
+        return null;
     }
 
     public InitialContext getContext() {
-
         return context;
     }
 }

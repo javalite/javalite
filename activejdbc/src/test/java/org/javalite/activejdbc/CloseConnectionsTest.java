@@ -25,6 +25,14 @@ public class CloseConnectionsTest extends JSpecSupport {
         DB.closeAllConnections();
 
         a(DB.getCurrrentConnectionNames().size()).shouldBeEqual(0);
+    }
 
+    @Test
+    public void shouldTryWithResources(){
+        try(DB db = new DB()){
+            db.open();
+            a(DB.getCurrrentConnectionNames().size()).shouldBeEqual(1);
+        }
+        a(DB.getCurrrentConnectionNames().size()).shouldBeEqual(0);
     }
 }

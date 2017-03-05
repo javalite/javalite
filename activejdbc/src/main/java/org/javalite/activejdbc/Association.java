@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -18,7 +18,6 @@ limitations under the License.
 package org.javalite.activejdbc;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 /**
  * Associations are synonymous with relationships. However, in some cases, the
@@ -27,39 +26,42 @@ import java.util.Arrays;
  *
  * @author Igor Polevoy
  */
+//TODO: move this class to associations package, but also see InstrumentationModelFinder:51
 public class Association implements Serializable {
 
-    private String source, target;
-
+    private final Class<? extends Model> source;
+    private final Class<? extends Model> target;
 
     /**
-     * @param source source table name of this association.
-     * @param target target table name of this association.
+     * @param source source class of this association.
+     * @param target target class of this association.
      */
-    protected Association(String source, String target) {
+    protected Association(Class<? extends Model> source, Class<? extends Model> target) {
         this.source = source;
         this.target = target;
     }
 
     /**
-     * Returns source table name of this association.
-     * @return source table name of this association.
+     * Returns source class of this association.
+     * @return source class of this association.
      */
-    public String getSource() {
+    public Class<? extends Model> getSourceClass() {
         return source;
     }
 
     /**
-     * Returns target table name of this association.
-     * @return target table name of this association.
+     * Returns target class of this association.
+     * @return target class of this association.
      */
-    public String getTarget() {
+    public Class<? extends Model> getTargetClass() {
         return target;
     }
 
 
     @Override
     public int hashCode() {
-        return toString().hashCode();    
+        //TODO: improve hashCode() implementation in the subclasses instead of using this?
+        // The toString() is already unique across every subclass, so should be OK
+        return toString().hashCode();
     }
 }

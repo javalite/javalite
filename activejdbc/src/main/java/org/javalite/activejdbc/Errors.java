@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -31,9 +31,9 @@ public class Errors implements Map<String, String> {
 
     private Locale locale;
 
-    private Map<String, Validator> validators = new HashMap<String, Validator>();
+    private final Map<String, Validator> validators = new CaseInsensitiveMap<>();
 
-    
+
     /**
      * Adds a validator whose validation failed.
      *  
@@ -62,8 +62,9 @@ public class Errors implements Map<String, String> {
      * @return a message from a resource bundle <code>activejdbc_messages</code>  as configured in a corresponding
      * validator. If an there was no validation error generated for the requested attribute, returns null.
      */
+    @Override
     public String get(Object attributeName) {
-        if(attributeName == null) throw new NullPointerException("attributeName cannot be null");        
+        if(attributeName == null) throw new NullPointerException("attributeName cannot be null");
         Validator v = validators.get(attributeName);
         return v == null? null:v.formatMessage(locale);
     }
@@ -87,58 +88,68 @@ public class Errors implements Map<String, String> {
      * @return a message from the resource bundle <code>activejdbc_messages</code> with default locale, which is merged
      *         with parameters.
      */
-    public String get(Object attributeName, Object... params) {
+    public String get(String attributeName, Object... params) {
         if (attributeName == null) throw new NullPointerException("attributeName cannot be null");
 
         return validators.get(attributeName).formatMessage(locale, params);
     }
 
+    @Override
     public int size() {
-        return validators.size();  
+        return validators.size();
     }
 
+    @Override
     public boolean isEmpty() {
-        return validators.isEmpty();  
+        return validators.isEmpty();
     }
 
+    @Override
     public boolean containsKey(Object key) {
-        return validators.containsKey(key);  
+        return validators.containsKey(key);
     }
 
+    @Override
     public boolean containsValue(Object value) {
-        return validators.containsValue(value);  
+        return validators.containsValue(value);
     }
 
     class NopValidator extends ValidatorAdapter {
         @Override
         public void validate(Model m) {}
     }
-    
+
+    @Override
     public String put(String key, String value) {
         NopValidator nv = new NopValidator();
         nv.setMessage(value);
         Validator v = validators.put(key, nv);
-        return v == null? null:v.formatMessage(null);          
+        return v == null? null:v.formatMessage(null);
     }
 
+    @Override
     public String remove(Object key) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void putAll(Map<? extends String, ? extends String> m) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void clear() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Set<String> keySet() {
         return validators.keySet();
     }
 
+    @Override
     public Collection<String> values() {
-        List<String> messageList = new ArrayList<String>();
+        List<String> messageList = new ArrayList<>();
         for(java.util.Map.Entry<String, Validator> v: validators.entrySet()){
             messageList.add(((Validator)v.getValue()).formatMessage(locale));
         }
@@ -146,43 +157,48 @@ public class Errors implements Map<String, String> {
     }
 
     class ErrorEntry implements Entry{
-        private String  key, value;
+        private final String key;
+        private final String value;
 
         ErrorEntry(String key, String value) {
             this.key = key;
             this.value = value;
         }
 
+        @Override
         public Object getKey() {
             return key;
         }
 
+        @Override
         public Object getValue() {
             return value;
         }
 
+        @Override
         public Object setValue(Object value) {
-            throw new UnsupportedOperationException();  
+            throw new UnsupportedOperationException();
         }
     }
 
+    @Override
     public Set<Entry<String, String>> entrySet() {
-        Set<Entry<String, String>> entries = new LinkedHashSet<Entry<String, String>>();
+        Set<Entry<String, String>> entries = new LinkedHashSet<>();
 
-        for(Object key: validators.keySet()){
-            String value = validators.get(key).formatMessage(locale);
-            entries.add(new ErrorEntry(key.toString(), value));
+        for(Entry<String, Validator> validator: validators.entrySet()){
+            String value = validator.getValue().formatMessage(locale);
+            entries.add(new ErrorEntry(validator.getKey(), value));
         }
         return entries;
     }
 
     @Override
     public String toString() {
-        String res = "{ ";
-        for(Object key: validators.keySet()){
-            res += key + "=<" +validators.get(key).formatMessage(null) + "> ";
+        StringBuilder res = new StringBuilder().append("{ ");
+        for (Map.Entry<String, Validator> entry : validators.entrySet()) {
+            res.append(entry.getKey()).append("=<").append(entry.getValue().formatMessage(null)).append("> ");
         }
-        res += "}";
-        return res;
+        res.append('}');
+        return res.toString();
     }
 }

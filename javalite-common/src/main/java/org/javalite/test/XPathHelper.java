@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -37,7 +37,7 @@ import java.util.List;
  */
 public class XPathHelper {
 
-    private Document doc;
+    private final Document doc;
 
     /**
      * Use constructor and instance methods to only parse once and reuse a parsed tree. Use this

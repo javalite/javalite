@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -22,15 +22,15 @@ import org.javalite.activejdbc.Model;
 
 
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.text.ParsePosition;
+import java.util.Locale;
 
 public class NumericValidator extends ValidatorAdapter {
-    private String attribute;
+    private final String attribute;
 
-    private Double min = null;
-    private Double max = null;
-    private boolean allowNull = false, onlyInteger = false, convertNullIfEmpty = false;
+    private Double min;
+    private Double max;
+    private boolean allowNull, onlyInteger, convertNullIfEmpty;
 
 
     public NumericValidator(String attribute) {
@@ -38,7 +38,7 @@ public class NumericValidator extends ValidatorAdapter {
         setMessage("value is not a number");
     }
 
-
+    @Override
     public void validate(Model m) {
         Object value = m.get(attribute);
 
@@ -46,6 +46,7 @@ public class NumericValidator extends ValidatorAdapter {
             return;
         }
 
+        // validators should not also do conversion
         if(convertNullIfEmpty && "".equals(value)){
             m.set(attribute, null);
             value = null;
@@ -56,18 +57,21 @@ public class NumericValidator extends ValidatorAdapter {
         }
 
         //this is to check just numericality
-        if (value != null) {
-            try {
+        if(!(value instanceof Number)) {
+            if (value != null) {
                 ParsePosition pp = new ParsePosition(0);
                 String input = value.toString();
-                NumberFormat.getInstance().parse(input, pp);
-                if(pp.getIndex() != (input.length()))
-                    throw new RuntimeException("");
-            } catch (Exception e) {
-                m.addValidator(this, attribute);
+                // toString() is not Locale dependant...
+                // ... but NumberFormat is. For Polish locale where decimal separator is "," instead of ".". Might fail some tests...
+                NumberFormat nf = NumberFormat.getInstance();
+                nf.setParseIntegerOnly(onlyInteger);
+                nf.parse(input, pp);
+                if (pp.getIndex() != (input.length())) {
+                    m.addValidator(this, attribute);
+                }
+            } else {
+                    m.addValidator(this, attribute);
             }
-        } else {
-                m.addValidator(this, attribute);
         }
 
         if(min != null){
@@ -105,11 +109,10 @@ public class NumericValidator extends ValidatorAdapter {
         }
     }
 
-    private void validateIntegerOnly(Object value, Model m){        
+    private void validateIntegerOnly(Object value, Model m){
         try{
             Integer.valueOf(value.toString());
-        }
-        catch(Exception e){
+        } catch(NumberFormatException e) {
             m.addValidator(this, attribute);
         }
     }
@@ -138,21 +141,11 @@ public class NumericValidator extends ValidatorAdapter {
         this.onlyInteger = onlyInteger;
     }
 
+    /**
+     * @deprecated use {@link org.javalite.activejdbc.conversion.BlankToNullConverter} instead
+     */
+    @Deprecated
     public void convertNullIfEmpty(boolean convertNullIfEmpty) {
         this.convertNullIfEmpty = convertNullIfEmpty;
     }
-
-
-
-    public static void main(String[] av) throws ParseException {
-
-        String input = "11 ss";
-        ParsePosition pp = new ParsePosition(0);
-        NumberFormat.getInstance().parse(input, pp);
-        
-        if(pp.getIndex() != (input.length() - 1))
-            throw new RuntimeException("failed to parse");
-
-    }
-
 }

@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -22,19 +22,25 @@ package org.javalite.activejdbc;
  */
 public class CallbackAdapter<T extends Model> implements CallbackListener<T>{
 
-    public void beforeSave(T m) {}
+    @Override public void beforeSave(T m) {}
 
-    public void afterSave(T m) {}
+    @Override public void afterLoad(T m) {}
 
-    public void beforeCreate(T m) {}
+    @Override public void afterSave(T m) {}
 
-    public void afterCreate(T m) {}
+    @Override public void beforeCreate(T m) {}
 
-    public void beforeDelete(T m) {}
+    @Override public void afterCreate(T m) {}
 
-    public void afterDelete(T m) {}
+    @Override public void beforeDelete(T m) {}
 
-    public void beforeValidation(T m) {}
+    @Override public void afterDelete(T m) {}
 
-    public void afterValidation(T m) {}
+    @Override public void beforeValidation(T m) {}
+
+    @Override public void afterValidation(T m) {}
+
+    @Override public void beforeUpdate(T m) {}
+
+    @Override public void afterUpdate(T m) {}
 }

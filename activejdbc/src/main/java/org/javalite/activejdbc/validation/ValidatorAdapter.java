@@ -1,7 +1,6 @@
 package org.javalite.activejdbc.validation;
 
 import org.javalite.activejdbc.Messages;
-import org.javalite.activejdbc.Model;
 
 import java.util.Locale;
 
@@ -10,11 +9,10 @@ import java.util.Locale;
  *
  * @author Igor Polevoy
  */
-public abstract class ValidatorAdapter<T extends Model> implements Validator<T>{
-    private String message;
+public abstract class ValidatorAdapter implements Validator {
+    String message;
 
-    public abstract void validate(T m);
-
+    @Override
     public final void setMessage(String message) {
         this.message = message;
     }
@@ -23,15 +21,16 @@ public abstract class ValidatorAdapter<T extends Model> implements Validator<T>{
      * Provides default implementation, will look for a property in resource bundle, using set message as key.
      * If property in resource bundle not found, treats message verbatim.
      *
-     * @param locale locale to use.
+     * @param locale locale to use, or null for default locale.
      * @param params parameters in case a message is parametrized.
-     * @return formatted message. 
+     * @return formatted message.
      */
+    @Override
     public String formatMessage(Locale locale, Object ... params) {
-        return locale != null ? Messages.message(message, locale, params) : Messages.message(message, params);
+        return Messages.message(message, locale, params);
     }
 
-    public String getMessage() {
+    public final String getMessage() {
         return message;
     }
 }

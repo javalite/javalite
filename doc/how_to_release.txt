@@ -1,11 +1,17 @@
-Entire library is released with three commands:
-mvn release:clean
-mvn release:prepare
-mvn release:perform
 
+Release steps:
 
-After that, follow steps to release:
-https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide#SonatypeOSSMavenRepositoryUsageGuide-8.ReleaseIt
+1. Test all examples to the latest released version
+2. mvn release:clean
+3. mvn release:prepare
+4. mvn release:perform
+5. Follow steps to release:
+	Navigate to Staging repositories: https://oss.sonatype.org/index.html#stagingRepositories , close and release artifacts
+6. Update and test all examples to the latest released version
 
-After that, update and test all examples to the latest released version
+generate release notes:
+   git log --format=format:"* %ci %an [%s](https://github.com/javalite/activejdbc/commit/%h)" --since "2015-01-30" > release_notes-June-17-2015.txt
+
+Add release notes to the site 
+
 

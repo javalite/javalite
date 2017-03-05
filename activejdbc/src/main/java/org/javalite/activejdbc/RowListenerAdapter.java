@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -24,7 +24,8 @@ import java.util.Map;
  * Use this class in cases where you need to process an entire result set. It returns true from "next()" method.
  */
 public abstract class RowListenerAdapter implements RowListener{
-    
+
+    @Override
     public final boolean next(Map<String, Object> row) {
         onNext(row);
         return true;

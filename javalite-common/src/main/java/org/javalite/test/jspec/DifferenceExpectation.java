@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -22,7 +22,7 @@ package org.javalite.test.jspec;
  */
 public abstract class DifferenceExpectation<T> {
 
-    private T expected;
+    private final T expected;
 
     public DifferenceExpectation(T expected){
         this.expected = expected;

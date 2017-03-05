@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -21,11 +21,17 @@ package org.javalite.activejdbc;
  * @author Igor Polevoy
  */
 public interface  CallbackListener<T extends Model> {
+
+    void afterLoad(T m);
+
     void beforeSave(T m);
     void afterSave(T m);
 
     void beforeCreate(T m);
     void afterCreate(T m);
+    
+    void beforeUpdate(T m);
+    void afterUpdate(T m);
 
     void beforeDelete(T m);
     void afterDelete(T m);

@@ -1,22 +1,21 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
 
 package org.javalite.activejdbc;
 
-import org.javalite.activejdbc.LazyList;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.*;
 import org.junit.Test;
@@ -32,15 +31,19 @@ public class IncludesTest extends ActiveJDBCTest{
     @Test
     public void shouldBeAbleToIncludeParentOne2Many() {
         deleteAndPopulateTables("users", "addresses");
-        List<Address> addresses = Address.findAll().orderBy("id").include(User.class);
-        a(addresses.get(0).toMap().get("user")).shouldNotBeNull();
-        Map user = (Map)addresses.get(0).toMap().get("user");
+        List<Address> addresses = Address.where("city = ?", "Springfield").orderBy("id").include(User.class);
+        //ensure that the parent is actually cached
+        User u1 = addresses.get(0).parent(User.class);
+        User u2 = addresses.get(0).parent(User.class);
+        a(u1).shouldBeTheSameAs(u2);
+
+        a(addresses.get(0).get("user")).shouldNotBeNull();
+        User user = (User) addresses.get(0).get("user");
         a(user.get("first_name")).shouldBeEqual("Marilyn");
 
-        user = (Map)addresses.get(6).toMap().get("user");
+        user = (User)addresses.get(6).get("user");
         a(user.get("first_name")).shouldBeEqual("John");
     }
-    
 
     @Test
     public void shouldBeAbleToIncludeChildrenOne2Many() {
@@ -62,8 +65,18 @@ public class IncludesTest extends ActiveJDBCTest{
     public void shouldBeAbleToIncludeOtherInManyToMany() {
         deleteAndPopulateTables("doctors", "patients", "doctors_patients");
         LazyList<Doctor> doctors = Doctor.findAll().orderBy("id").include(Patient.class);
-        List<Map> doctorsMaps = doctors.toMaps();
 
+        Doctor doctor0 = doctors.get(0);
+        List<Patient> patientList = doctor0.getAll(Patient.class);
+        List<Patient> patientList1 = doctor0.getAll(Patient.class);
+
+        the(patientList.size()).shouldBeEqual(2);
+
+        //ensure cached:
+        the(patientList).shouldBeTheSameAs(patientList1);
+        the(patientList.get(0)).shouldBeTheSameAs(patientList1.get(0));
+
+        List<Map> doctorsMaps = doctors.toMaps();
 
         List<Map> patients = (List<Map>)doctorsMaps.get(0).get("patients");
         a(patients.size()).shouldBeEqual(2);
@@ -80,7 +93,6 @@ public class IncludesTest extends ActiveJDBCTest{
         LazyList<Patient> patients = Doctor.find("last_name = ?", " does not exist").include(Patient.class);
 
         a(patients.size()).shouldEqual(0);
-        
     }
 
     @Test
@@ -154,5 +166,34 @@ public class IncludesTest extends ActiveJDBCTest{
 
         //should return cached parent in both cases
         a(parent1).shouldBeTheSameAs(parent2);
+
+        the(parent1.get("name")).shouldBeEqual("Car");
+
+        List<Node> children = sedan1.getAll(Node.class);
+        the(children.size()).shouldBeEqual(1);
+        the(children.get(0).get("name")).shouldBeEqual("Sports sedan");
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldRejectClassWithNoAssociation(){
+        Ingredient.findAll().include(Article.class);
+    }
+
+
+    @Test
+    public void shouldNotIncludeParentIfParentIdIsNull() {
+        deleteAndPopulateTable("nodes");
+
+        Node node = (Node) Node.find("name = ?", "Parent").include(Node.class).get(0);
+        // see log
+    }
+
+    @Test
+    public void shouldIncludeParentAndChildren() {
+        deleteAndPopulateTable("nodes");
+
+        Node node = (Node) Node.find("name = ?", "Self").include(Node.class).get(0);
+        // see log
+    }
+
 }

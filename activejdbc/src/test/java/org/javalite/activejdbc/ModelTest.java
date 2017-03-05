@@ -1,35 +1,38 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
-
-
 package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.associations.NotAssociatedException;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
+import org.javalite.activejdbc.test_models.*;
 import org.javalite.common.Convert;
 import org.javalite.test.jspec.DifferenceExpectation;
 import org.javalite.test.jspec.ExceptionExpectation;
-import org.javalite.activejdbc.test_models.*;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.*;
-import java.util.*;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
-import static org.javalite.common.Collections.map;
+import static org.javalite.activejdbc.test.JdbcProperties.driver;
+import static org.javalite.common.Collections.*;
 
 
 public class ModelTest extends ActiveJDBCTest {
@@ -37,7 +40,9 @@ public class ModelTest extends ActiveJDBCTest {
     @Test
     public void testModelFinder() {
         deleteAndPopulateTable("people");
-
+        Person p = new Person();
+        p.set("name", "igor", "last_name", "polevoy").saveIt();
+        p.refresh();
         List<Person> list = Person.where("name = 'John'").orderBy("dob desc");
         a(1).shouldBeEqual(list.size());
     }
@@ -109,7 +114,7 @@ public class ModelTest extends ActiveJDBCTest {
         p.set("last_name", "Monroe");
         p.set("dob", getDate(1935, 12, 6));
         p.saveIt();
-        
+
         a(p.getId()).shouldNotBeNull();
         //verify save:
 
@@ -138,6 +143,7 @@ public class ModelTest extends ActiveJDBCTest {
         deleteAndPopulateTable("people");
         final Person p = new Person();
         expect(new ExceptionExpectation(IllegalArgumentException.class) {
+            @Override
             public void exec() {
                 p.set("NAME1", "Igor");
             }
@@ -150,6 +156,7 @@ public class ModelTest extends ActiveJDBCTest {
         final Person p = new Person();
 
         expect(new ExceptionExpectation(IllegalArgumentException.class) {
+            @Override
             public void exec() {
                 p.set("person_id", "hehe");
             }
@@ -183,6 +190,14 @@ public class ModelTest extends ActiveJDBCTest {
         deleteAndPopulateTable("people");
         Person p = Person.findById(1);
         a(p).shouldNotBeNull();
+    }
+
+    @Test
+    public void shouldGetAttributeCaseInsensitive() {
+        deleteAndPopulateTable("people");
+        Person p = Person.findById(1);
+        the(p.get("Last_Name")).shouldBeEqual(p.get("last_name"));
+        the(p.get("LAST_NAME")).shouldBeEqual(p.get("last_name"));
     }
 
     @Test
@@ -224,6 +239,7 @@ public class ModelTest extends ActiveJDBCTest {
     public void testBatchUpdateAll() {
         deleteAndPopulateTable("people");
         expect(new DifferenceExpectation(Person.find("last_name like ?", "Smith").size()) {
+            @Override
             public Object exec() {
                 Person.updateAll("last_name = ?", "Smith");
                 return Person.find("last_name like ?", "Smith").size();
@@ -263,17 +279,19 @@ public class ModelTest extends ActiveJDBCTest {
         deleteAndPopulateTables("users", "addresses");
         final User user = User.findById(1);
         expect(new ExceptionExpectation(NotAssociatedException.class){
+            @Override
             public void exec() {
                 user.getAll(Book.class);//wrong table
             }
         });
 
         expect(new ExceptionExpectation(NotAssociatedException.class){
+            @Override
             public void exec() {
                 user.getAll(Book.class);//non-existent table
             }
         });
-        
+
     }
 
     @Test
@@ -285,7 +303,7 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void testCustomIdName(){
-        deleteAndPopulateTable("animals");
+       deleteAndPopulateTable("animals");
        Animal a = Animal.findById(1);
        a(a).shouldNotBeNull();
     }
@@ -337,25 +355,40 @@ public class ModelTest extends ActiveJDBCTest {
                 .set("state", "IL").set("zip", "60090");
         u.add(a);
         a(9).shouldBeEqual(Address.count());
+    }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAddNull(){
+        deleteAndPopulateTables("users", "addresses");
+        User u = User.findById(1);
+        u.add(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotRemoveNull(){
+        deleteAndPopulateTables("users", "addresses");
+        User u = User.findById(1);
+        u.remove(null);
     }
 
     @Test
     public void testCopyTo(){
-        deleteAndPopulateTables("users", "addresses");
+        deleteAndPopulateTables("users");
         User u = User.findById(1);
         User u1 = new User();
         u.copyTo(u1);
         a(u1.get("first_name")).shouldBeEqual("Marilyn");
+        a(u1.getId()).shouldBeNull();
     }
 
     @Test
     public void testCopyFrom(){
-        deleteAndPopulateTables("users", "addresses");
+        deleteAndPopulateTables("users");
         User u = User.findById(1);
         User u1 = new User();
         u1.copyFrom(u);
         a(u1.get("first_name")).shouldBeEqual("Marilyn");
+        a(u1.getId()).shouldBeNull();
     }
 
     @Test
@@ -366,7 +399,7 @@ public class ModelTest extends ActiveJDBCTest {
     }
 
     @Test
-    public void testFrosen(){
+    public void testFrozen(){
         deleteAndPopulateTables("users", "addresses");
         final User u = User.findById(1);
         final Address a = new Address();
@@ -381,12 +414,14 @@ public class ModelTest extends ActiveJDBCTest {
         a.delete();
 
         expect(new ExceptionExpectation(FrozenException.class) {
+            @Override
             public void exec() {
                 a.saveIt();
             }
         });
 
         expect(new ExceptionExpectation(FrozenException.class) {
+            @Override
             public void exec() {
                 u.add(a);
             }
@@ -438,21 +473,108 @@ public class ModelTest extends ActiveJDBCTest {
 
     }
 
-
     @Test
-    public void shouldGenerateCorrectInsertSQL(){
-        deleteAndPopulateTables("students", "courses", "registrations");
-        Student s = Student.findById(1);
+    public void shouldGenerateCorrectInsertSQL() {
+        Student s = new Student();
+        s.set("first_name", "Jim");
+        s.set("last_name", "Cary");
+        s.set("id", 1);
         String insertSQL = s.toInsert();
+        // date literals formatting is not the same for every DBMS, so not testing this here
+        the(insertSQL).shouldBeEqual("INSERT INTO students (first_name, id, last_name) VALUES ('Jim', 1, 'Cary')");
 
-        the(insertSQL).shouldBeEqual("INSERT INTO students (dob, first_name, id, last_name) VALUES ('1965-12-01', 'Jim', 1, 'Cary')");
+        s.set("dob", getDate(1965, 12, 1));
 
         insertSQL = s.toInsert("q'{", "}'");
-
         the(insertSQL).shouldBeEqual("INSERT INTO students (dob, first_name, id, last_name) VALUES ('1965-12-01', q'{Jim}', 1, q'{Cary}')");
 
         insertSQL = s.toInsert(new SimpleFormatter(java.sql.Date.class, "to_date('", "')"));
         the(insertSQL).shouldBeEqual("INSERT INTO students (dob, first_name, id, last_name) VALUES (to_date('1965-12-01'), 'Jim', 1, 'Cary')");
+    }
+
+    @Test
+    public void shouldGenerateValidUpdateSQL() {
+        deleteAndPopulateTable("students");
+        Student s = Student.findById(1);
+        s.set("first_name", "James", "last_name", "Meredith");
+        java.sql.Date dob = getDate(1933, 6, 25);
+        java.sql.Timestamp enrollmentDate = getTimestamp(1962, 10, 1, 12, 0, 0, 0);
+        s.setDate("dob", dob);
+        s.setTimestamp("enrollment_date", enrollmentDate);
+        // don't save it!
+
+        String updateSql = s.toUpdate();
+        the(Base.exec(updateSql)).shouldBeEqual(1);
+
+        s = Student.findById(1);
+        the(s.get("first_name")).shouldBeEqual("James");
+        the(s.get("last_name")).shouldBeEqual("Meredith");
+        the(s.get("dob")).shouldBeEqual(dob);
+        the(s.get("enrollment_date")).shouldBeEqual(enrollmentDate);
+    }
+
+    @Test
+    public void shouldGenerateValidUpdateSQLWithTime() {
+        Alarm alarm = new Alarm();
+        alarm.setTime("alarm_time", java.sql.Time.valueOf("12:34:56"));
+        alarm.save();
+
+        String t = "01:23:45";
+        alarm.setTime("alarm_time", java.sql.Time.valueOf(t));
+        String updateSql = alarm.toUpdate();
+        the(Base.exec(updateSql)).shouldBeEqual(1);
+
+        alarm = Alarm.findById(alarm.getId());
+
+        if(driver().contains("jtds")){
+            the(alarm.getString("alarm_time").startsWith(t)).shouldBeTrue();
+        }else {
+            the(alarm.getTime("alarm_time").toString()).shouldBeEqual(t);
+        }
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldGenerateNoSuchElementFromBlankUpdate() {
+    	// Verify that a model with no attributes throws an error
+    	Student s = new Student();
+    	s.toUpdate();
+    }
+
+    @Test
+    public void shouldGenerateValidInsertSQL() {
+        Student s = new Student();
+        s.set("first_name", "Jim", "last_name", "Cary");
+        java.sql.Date dob = getDate(1965, 12, 1);
+        java.sql.Timestamp enrollmentDate = getTimestamp(1973, 1, 20, 11, 0, 0, 0);
+        s.setDate("dob", dob);
+        s.setTimestamp("enrollment_date", enrollmentDate);
+
+        String insertSql = s.toInsert();
+        Object id = Base.execInsert(insertSql, s.getIdName());
+
+        s = Student.findById(id);
+        the(s.get("first_name")).shouldBeEqual("Jim");
+        the(s.get("last_name")).shouldBeEqual("Cary");
+        the(s.get("dob")).shouldBeEqual(dob);
+        the(s.get("enrollment_date")).shouldBeEqual(enrollmentDate);
+    }
+
+    @Test
+    public void shouldGenerateValidInsertSQLWithTime() {
+        Alarm alarm = new Alarm();
+        String t = "12:34:56";
+        alarm.setTime("alarm_time", java.sql.Time.valueOf(t));
+
+        String insertSql = alarm.toInsert();
+        Object id = Base.execInsert(insertSql, alarm.getIdName());
+
+        alarm = Alarm.findById(id);
+
+        if(driver().contains("jtds")){
+            the(alarm.getString("alarm_time").startsWith(t)).shouldBeTrue();
+        }else {
+            the(alarm.getTime("alarm_time").toString()).shouldBeEqual(t);
+        }
     }
 
     @Test
@@ -475,18 +597,28 @@ public class ModelTest extends ActiveJDBCTest {
     public void shouldCreateModelWithSingleSetter(){
         deleteAndPopulateTable("people");
         expect(new DifferenceExpectation(Person.count()) {
+            @Override
             public Object exec() {
                 new Person().set("name", "Marilyn", "last_name", "Monroe", "dob", "1935-12-06").saveIt();
-                return (Person.count()); 
+                return (Person.count());
             }
         });
     }
 
     @Test
-    public void shouldCollectLastNames(){
+    public void shouldCollectLastNames() {
         deleteAndPopulateTable("people");
-        List expected= org.javalite.common.Collections.li("Pesci", "Smith", "Jonston", "Ali");
-        a(Person.findAll().orderBy("name").collect("last_name")).shouldBeEqual(expected);
+        List<String> lastNames = Person.findAll().orderBy("name").collect("last_name");
+        the(lastNames).shouldBeEqual(list("Pesci", "Smith", "Jonston", "Ali"));
+    }
+
+    @Test
+    public void shouldCollectDistictFirstNames() {
+        deleteAndPopulateTable("patients");
+        Set<String> firstNames = Patient.findAll().collectDistinct("first_name");
+        the(firstNames.size()).shouldBeEqual(2);
+        the(firstNames.contains("Jim")).shouldBeTrue();
+        the(firstNames.contains("John")).shouldBeTrue();
     }
 
     @Test
@@ -501,7 +633,7 @@ public class ModelTest extends ActiveJDBCTest {
     public void shouldAcceptUpperCaseAttributeName(){
 
         Person.deleteAll();
-        
+
         Person p = new Person();
         p.set("NAME", "John");//before the upper case caused exception
         p.set("last_name", "Deer");
@@ -518,14 +650,18 @@ public class ModelTest extends ActiveJDBCTest {
         Person p = new Person();
         p.set("name", "John");//before the upper case caused exception
         p.set("last_name", "Deer");
+        p.set("dob", "2014-11-07");
         p.saveIt();
+        a(p.get("name")).shouldBeEqual("John");
+        a(p.get("last_name")).shouldBeEqual("Deer");
+        a(p.get("dob")).shouldNotBeNull();
         Object id  = p.getId();
-        System.out.println(p);
 
-        p.fromMap(map("name", "Jack"));
-        
+        p.fromMap(map("name", "Jack", "dob", null));
+
         a(p.get("name")).shouldBeEqual("Jack");
         a(p.get("last_name")).shouldBeEqual("Deer");
+        a(p.get("dob")).shouldBeNull();
         a(p.getId()).shouldBeEqual(id);
     }
 
@@ -544,7 +680,7 @@ public class ModelTest extends ActiveJDBCTest {
         //read model
         ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bout.toByteArray()));
         Person p1 = (Person) in.readObject();
-        
+
         //validate models
         a(p1.get("name")).shouldBeEqual(p.get("name"));
         a(p1.get("last_name")).shouldBeEqual(p.get("last_name"));
@@ -561,14 +697,45 @@ public class ModelTest extends ActiveJDBCTest {
         java.sql.Date date = p.getDate("dob");
         Calendar c = new GregorianCalendar();
         c.setTime(date);
-        
+
         a(date.toString()).shouldBeEqual(new java.sql.Date(System.currentTimeMillis()).toString());
         a(c.get(Calendar.HOUR_OF_DAY)).shouldBeEqual(0);
         a(c.get(Calendar.MINUTE)).shouldBeEqual(0);
         a(c.get(Calendar.SECOND)).shouldBeEqual(0);
         a(c.get(Calendar.MILLISECOND)).shouldBeEqual(0);
-        
+    }
+
+    @Test
+    public void testNewFromMap() {
+        Person p = new Person().fromMap(map("id", null, "name", "Joe", "last_name", "Schmoe"));
+
+        a(p.getId()).shouldBeNull();
+        a(p.isNew()).shouldBeTrue();
+        a(p.isValid()).shouldBeTrue();
+    }
+
+    @Test
+    public void testNewFromMapCaseInsensitive() {
+        Person p = new Person().fromMap(map("NAME", "Joe", "Last_Name", "Schmoe", "dob", "2003-06-15"));
+
+        a(p.get("name")).shouldNotBeNull();
+        a(p.get("last_name")).shouldNotBeNull();
+        a(p.get("dob")).shouldNotBeNull();
+    }
+
+    @Test
+    public void shouldConvertTime() {
+        String t = "10:30:00";
+        Alarm alarm = new Alarm().setTime("alarm_time", t);
+        the(alarm.get("alarm_time")).shouldBeA(java.sql.Time.class);
+        alarm.save();
+
+        alarm = Alarm.findById(alarm.getId());
+
+        if(driver().contains("jtds")){
+            the(alarm.getString("alarm_time").startsWith(t)).shouldBeTrue();
+        }else {
+            the(alarm.getTime("alarm_time").toString()).shouldBeEqual(t);
+        }
     }
 }
-
-

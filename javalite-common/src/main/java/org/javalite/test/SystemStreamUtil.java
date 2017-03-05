@@ -15,6 +15,10 @@ public class SystemStreamUtil {
     private static ByteArrayOutputStream outStream;
     private static ByteArrayOutputStream errorStream;
 
+    private SystemStreamUtil() {
+        
+    }
+    
     /**
      * Replaces <code>System.out</code> with internal buffer. All calls such as <code>System.out.print...</code>
      * will go to this buffer and not to STDIO
@@ -38,7 +42,7 @@ public class SystemStreamUtil {
      * Restores <code>System.out</code> to former glory.
      */
     public static void restoreSystemOut() {
-        if (out == null) throw new NullPointerException("err cannot be null");
+        if (out == null) throw new NullPointerException("out cannot be null");
         System.setOut(out);
     }
 

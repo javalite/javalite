@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -17,9 +17,9 @@ limitations under the License.
 
 package org.javalite.activejdbc.test_models;
 
+import java.io.StringWriter;
 import org.javalite.activejdbc.Model;
 
-import java.io.StringWriter;
 
 /**
  * @author Igor Polevoy
@@ -28,6 +28,8 @@ public class Post extends Model {
 
     @Override
     public void beforeClosingBrace(boolean pretty, String indent, StringWriter writer) {
-        writer.append((pretty?",\n" + indent:",") + "\"injected\": {\"secret_name\":\"Secret Name\"}");
+        writer.write(',');
+        if (pretty) { writer.write('\n'); writer.write(indent); }
+        writer.write("\"injected\":{\"secret_name\":\"Secret Name\"}");
     }
 }

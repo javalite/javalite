@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -25,4 +25,9 @@ import org.javalite.activejdbc.annotations.Many2Many;
  */
 @Many2Many(other = Course.class, join = "registrations", sourceFKName = "astudent_id", targetFKName = "acourse_id")
 public class Student extends Model {
+    static {
+        dateFormat("MM/dd/yyyy", "dob");
+        timestampFormat("MM/dd/yyyy h a", "enrollment_date");
+        blankToNull("first_name", "last_name");
+    }
 }

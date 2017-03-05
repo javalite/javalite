@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.List;
 
 
@@ -61,7 +60,7 @@ public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
     /**
      * The enclosing project.
      *
-     * @parameter expression="${project}"
+     * @parameter property="project"
      * @required
      * @readonly
      */
@@ -80,11 +79,9 @@ public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
             } else if( outputDirectory != null ){
                 instrument(outputDirectory);
             } else{
-                String instrumentationDirectory =  project.getBuild().getOutputDirectory();
-                instrument(instrumentationDirectory);
+                instrument(project.getBuild().getOutputDirectory());
                 //Kadvin enhance: instruct test-classes also
-                instrumentationDirectory =  project.getBuild().getTestOutputDirectory() ;
-                instrument(instrumentationDirectory);
+                instrument(project.getBuild().getTestOutputDirectory());
             }
         }
         catch (Exception e) {

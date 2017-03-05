@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -23,7 +23,7 @@ public class Account extends Model {
 
     static{
         validatePresenceOf("amount");
-        validateNumericalityOf("amount");
+        validateNumericalityOf("amount").convertNullIfEmpty();
         validateNumericalityOf("total")
                 .allowNull(true).greaterThan(0)
                 .lessThan(100).onlyInteger()

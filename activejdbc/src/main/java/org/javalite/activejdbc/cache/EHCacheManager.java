@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -22,11 +22,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Cache implementation based on EHCache 2.
+ *
  * @author Igor Polevoy
  */
 public class EHCacheManager extends CacheManager {
-    private Logger logger = LoggerFactory.getLogger(getClass());
-    private net.sf.ehcache.CacheManager cacheManager = net.sf.ehcache.CacheManager.create();
+    private static final Logger LOGGER = LoggerFactory.getLogger(EHCacheManager.class);
+    private final net.sf.ehcache.CacheManager cacheManager = net.sf.ehcache.CacheManager.create();
 
     @Override
     public Object getCache(String group, String key) {
@@ -34,8 +36,8 @@ public class EHCacheManager extends CacheManager {
             createIfMissing(group);
             Cache c = cacheManager.getCache(group);
             return c.get(key) == null ? null : c.get(key).getObjectValue();
-        } catch (Throwable e) {
-            logger.warn(e.toString(), e);
+        } catch (Exception e) {
+            LOGGER.warn("{}", e, e);
             return null;
         }
     }

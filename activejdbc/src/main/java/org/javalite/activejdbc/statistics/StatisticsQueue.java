@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -19,126 +19,116 @@ package org.javalite.activejdbc.statistics;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.*;
 
 /**
+ * This class will collect statistics on executed queries and then can produce reports sorted by
+ * various parameters. Configuration is simple, add this line:
+ * <pre>
+ *     collectStatistics=true
+ * </pre>
+ * to the file<code>activejdbc.properties</code> on the command line.
+ * <p></p>
+ * After that, simply collect reports like this:
+ * <pre>
+ *     List<QueryStats>  totals = Registry.getStatisticsQueue().getReportSortedBy("total") {
+ * </pre>
+ *
+ *
  * @author Igor Polevoy
  */
-public class StatisticsQueue implements Runnable {
-    final static Logger logger = LoggerFactory.getLogger(StatisticsQueue.class);
-    private ConcurrentLinkedQueue<QueryExecutionEvent> queue;
-    private boolean run = false;
-    private Map<String, QueryStats> queryStatsMap = new HashMap<String, QueryStats>();
+public class StatisticsQueue {
 
-    public StatisticsQueue() {
-        this.queue = new ConcurrentLinkedQueue<QueryExecutionEvent>();
+    private final ExecutorService worker;
+    private final ConcurrentMap<String, QueryStats> statsByQuery = new ConcurrentHashMap<>();
+
+    private volatile boolean paused;
+
+    private static final Logger logger = LoggerFactory.getLogger(StatisticsQueue.class);
+
+    public StatisticsQueue(boolean paused) {
+        this.paused = paused;
+        worker = Executors.newFixedThreadPool(1, new ThreadFactory() {
+            @Override public Thread newThread(Runnable runnable) {
+                Thread res = new Thread(runnable);
+                res.setDaemon(true);
+                res.setName("Statistics queue thread");
+                return res;
+            }
+        });
     }
 
-    public void enqueue(QueryExecutionEvent event) {
-        if (!run) return;
-
-        queue.add(event);
+    public boolean isPaused() {
+        return paused;
     }
 
     /**
-     * Stops the thread that picks events from the queue.
-     * In a web container, there needs to be a lifecycle listener that should call this method to stop the
-     * queue thread.
+     * Shutdowns StatisticsQueue completely, new StatisticsQueue should be created to start gathering statistics again
      */
     public void stop() {
-        run = false;
-    }
-
-    public void start() {
-        run = true;
-        new Thread(this).start();// this is anathema of J2EE development, but should just work.
-    }
-
-    public void reset(){
-        queryStatsMap = new HashMap<String, QueryStats>();
-    }
-
-    public void run() {
-        while (run) {
-            QueryExecutionEvent event = queue.poll();
-            if (event == null) {
-                try {Thread.sleep(500);} catch (Exception e) {}
-                continue;
-            }
-            process(event);
+        int notProcessed = worker.shutdownNow().size();
+        if (logger.isInfoEnabled() && notProcessed != 0) {
+            logger.info("Worker exiting, {} execution events remaining, time: {}", notProcessed, System.currentTimeMillis());
         }
-        logger.info("Worker exiting, " + queue.size() + " objects remaining, time:" + System.currentTimeMillis());
-    }
-
-    private void process(QueryExecutionEvent event) {
-
-        QueryStats queryStats = queryStatsMap.get(event.getQuery());
-
-        if (queryStats == null) {
-            queryStats = new QueryStats(event.getQuery());
-            queryStatsMap.put(event.getQuery(), queryStats);
-        }
-        queryStats.addQueryTime(event.getTime());
-    }
-
-    public String[] getAllowedSortBys(){
-        return new String[]{"total", "avg", "min", "max", "count"};
     }
 
     /**
-     *
-     * @param sortBy - allowed values: "total", "avg", "min", "max", "count"
-     * @return
+     * @deprecated this method is deprecated and blank - does nothing. It will be removed in future versions
      */
-    public List<QueryStats> getReportSortedBy(String sortBy) {
+    public void run() {}
 
-        ArrayList<String> allowed = new ArrayList<String>(Arrays.asList(getAllowedSortBys()));
-        if (!allowed.contains(sortBy))
-            throw new IllegalArgumentException("allowed values are: " + allowed);
-
-        Comparator comparator;
-
-        if (sortBy.equals("min")) {
-            comparator = new Comparator<QueryStats>() {
-                public int compare(QueryStats o1, QueryStats o2) {
-                    return o2.getMin().compareTo(o1.getMin());
-                }
-            };
-        }else if (sortBy.equals("max")) {
-                comparator = new Comparator<QueryStats>() {
-                public int compare(QueryStats o1, QueryStats o2) {
-                    return o2.getMax().compareTo(o1.getMax());
-                }
-            };
-        }else if (sortBy.equals("total")) {
-                comparator = new Comparator<QueryStats>() {
-                public int compare(QueryStats o1, QueryStats o2) {
-                    return o2.getTotal().compareTo(o1.getTotal());
-                }
-            };
-        }else if (sortBy.equals("count")) {
-                comparator = new Comparator<QueryStats>() {
-                public int compare(QueryStats o1, QueryStats o2) {
-                    return o2.getCount().compareTo(o1.getCount());
-                }
-            };
-        }else if (sortBy.equals("avg")) {
-                comparator = new Comparator<QueryStats>() {
-                public int compare(QueryStats o1, QueryStats o2) {
-                    return o2.getAvg().compareTo(o1.getAvg());
-                }
-            };
-        }else throw new RuntimeException("this should never happen...");
-
-        return report(comparator);
+    public void pause(boolean val) {
+        paused = val;
     }
 
-    private List<QueryStats> report(Comparator comparator){
-        List<QueryStats> queryStatsList = Collections.list(Collections.enumeration(queryStatsMap.values()));
-        Collections.sort(queryStatsList, comparator);
+    /**
+     * Enqueues a query execution event for processing.
+     *
+     * @param event instance of event.
+     * @return instance of Future associated with processing of event. You can examine that object
+     * to see if this event was processed.  In case the queue is paused, an event is not processed,
+     * and return value is <code>null</code>.
+     */
+    public Future enqueue(final QueryExecutionEvent event) {
+        if (!paused) {
+            return worker.submit(new Runnable() {
+                @Override public void run() {
+                    QueryStats queryStats = statsByQuery.get(event.getQuery());
+                    if (queryStats == null) {
+                        statsByQuery.put(event.getQuery(), queryStats = new QueryStats(event.getQuery()));
+                    }
+                    queryStats.addQueryTime(event.getTime());
+                }
+            });
+        }else{
+            return null;
+        }
+    }
 
-        return queryStatsList;
+    public void reset() {
+        statsByQuery.clear();
+    }
+
+    /**
+     * Produces a report sorted by one of the accepted value.
+     *
+     * @param sortByVal - allowed values: "total", "avg", "min", "max", "count"
+     * @return  sorted list of query stats
+     */
+    public List<QueryStats> getReportSortedBy(String sortByVal) {
+        SortBy sortBy;
+        try {
+            sortBy = SortBy.valueOf(sortByVal);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("allowed values are: " + Arrays.toString(SortBy.values()));
+        }
+
+        List<QueryStats> res = new ArrayList<>(statsByQuery.values());
+        Collections.sort(res, sortBy.getComparator());
+        return res;
     }
 }

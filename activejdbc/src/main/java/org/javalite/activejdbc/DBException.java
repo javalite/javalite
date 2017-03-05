@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -17,6 +17,8 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
+import static org.javalite.common.Util.*;
+
 /**
  * Generic exception wrapper for all things DB.
  *
@@ -24,20 +26,28 @@ package org.javalite.activejdbc;
  */
 public class DBException extends RuntimeException{
 
-    String message;
+    final String message;
+    
+    public DBException() {
+        super();
+        this.message = null;
+    }
 
     public DBException(Throwable cause) {
         super(cause);
         this.setStackTrace(cause.getStackTrace());
+        this.message = null;
     }
 
     public DBException(String message) {
         super(message);
+        this.message = null;
     }
 
     public DBException(String message, Throwable cause) {
         super(message, cause);
         this.setStackTrace(cause.getStackTrace());
+        this.message = null;
     }
 
 
@@ -48,19 +58,12 @@ public class DBException extends RuntimeException{
      * @param cause real cause.
      */
     public DBException(String query, Object[] params, Throwable cause) {
-
-        message = cause.toString()+ ", Query: " + query;
-
-        if(params != null && params.length > 0){
-            message += ", params: ";
-            for (int i = 0; i < params.length; i++) {
-                Object param = params[i];
-                message += param;
-                if (i < params.length - 1)
-                    message += ",";
+        StringBuilder sb = new StringBuilder(cause.toString()).append(", query: ").append(query);
+        if (params != null && params.length > 0) {
+            sb.append(", params: ");
+            join(sb, params, ", ");
         }
-        }
-
+        message = sb.toString();
         setStackTrace(cause.getStackTrace());
         initCause(cause);
     }
@@ -69,8 +72,5 @@ public class DBException extends RuntimeException{
     public String getMessage() {
         return message == null ? super.getMessage() : message;
     }
-
-    public DBException() {
-        super();    
-    }    
+    
 }

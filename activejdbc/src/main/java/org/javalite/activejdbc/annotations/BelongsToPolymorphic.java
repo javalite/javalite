@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -36,7 +36,7 @@ public @interface BelongsToPolymorphic {
      * List of parent classes.
      * @return list of parent classes.
      */
-    public abstract Class<? extends Model>[] parents();
+    Class<? extends Model>[] parents();
 
     /**
      * List of type labels corresponding to parent classes. This is a value to be stored in the
@@ -44,5 +44,5 @@ public @interface BelongsToPolymorphic {
      *
      * @return list of type labels corresponding to parent classes. 
      */
-    public String[] typeLabels() default {}; 
+    String[] typeLabels() default {}; 
 }

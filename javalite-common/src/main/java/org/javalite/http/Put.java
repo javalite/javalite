@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -25,18 +25,18 @@ import java.io.OutputStream;
  */
 public class Put extends Request<Put> {
 
-    private byte[] content;
+    private final byte[] content;
 
     /**
      * Constructor for making PUT requests.
      *
-     * @param uri URI of resource.
+     * @param url URL of resource.
      * @param content content to be "put" into a resource.
      * @param connectTimeout connection timeout.
      * @param readTimeout read timeout.
      */
-    public Put(String uri, byte[] content, int connectTimeout, int readTimeout) {
-        super(uri, connectTimeout, readTimeout);
+    public Put(String url, byte[] content, int connectTimeout, int readTimeout) {
+        super(url, connectTimeout, readTimeout);
         this.content = content;
     }
     
@@ -46,6 +46,7 @@ public class Put extends Request<Put> {
             connection.setDoOutput(true);
             connection.setDoInput(true);
             connection.setRequestMethod("PUT");
+            connection.setInstanceFollowRedirects(redirect);
             OutputStream os = connection.getOutputStream();
             os.write(content);
             os.flush();
