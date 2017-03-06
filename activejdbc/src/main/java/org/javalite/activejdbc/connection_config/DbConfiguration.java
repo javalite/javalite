@@ -23,6 +23,8 @@ import org.javalite.common.Util;
 
 import java.util.*;
 
+import static java.util.stream.Collectors.toSet;
+
 /**
  * @author igor on 12/2/16.
  */
@@ -93,6 +95,13 @@ public class DbConfiguration {
      test.url=jdbc:mysql://localhost/test
 
      production.jndi=java:comp/env/jdbc/prod
+
+     # this one is to run migrations in production remotely
+     production.remote.driver=com.mysql.jdbc.Driver
+     production.remote.username=root
+     production.remote.password=xxx
+     production.remote.url=jdbc:mysql://127.0.0.1:3307/poj1_production
+
      * </pre>
      *
      * Rules and limitations of using a file-based configuration:
@@ -115,7 +124,7 @@ public class DbConfiguration {
 
         try {
             Properties props = Util.readProperties(file);
-            Set<String> environments = getEnvironments(props);
+            Set<String> environments = props.stringPropertyNames().stream().map(n -> n.substring(0, n.lastIndexOf("."))).collect(toSet());
             for (String env : environments) {
                 String jndiName = env + "." + "jndi";
                 if (props.containsKey(jndiName)) {
@@ -164,22 +173,6 @@ public class DbConfiguration {
         ConnectionJndiSpec connectionSpec = new ConnectionJndiSpec(jndiName);
         wrapper.setConnectionSpec(connectionSpec);
         addConnectionWrapper(wrapper, false);
-    }
-
-
-    private Set<String> getEnvironments(Properties props) {
-        Set<String> environments = new HashSet<>();
-        for (String prop : props.stringPropertyNames()) {
-            String[] parts =  prop.split("\\.");
-            if(parts.length == 2){
-                environments.add(parts[0]);
-            }else if(parts.length == 3 && parts[1].equals("test")){
-                environments.add(parts[0] + ".test");
-            }else {
-                throw new InitException("Incorrect property: " + prop);
-            }
-        }
-        return environments;
     }
 
     public List<ConnectionSpecWrapper> getTestConnectionWrappers() {
