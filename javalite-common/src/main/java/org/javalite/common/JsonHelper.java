@@ -98,7 +98,7 @@ public class JsonHelper {
     /**
      * Removes control characters from a string when you need to
      * generate JSON. This method was stolen...ehhr.. borrowed from
-     * <a href="https://github.com/google/gson/blob/master/gson/src/main/java/com/google/gson/stream/JsonWriter.java">Gson JsonWriter</a>.
+     * <a href="https://github.com/google/gson/blob/master/gson/src/main/java/com/google/gson/stream/JsonWriter.java#L564">Gson JsonWriter</a>.
      *
      * @param value input string
      * @return input string with control characters removed.

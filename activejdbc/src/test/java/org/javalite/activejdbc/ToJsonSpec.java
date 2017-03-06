@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.*;
 import org.javalite.common.JsonHelper;
+import org.javalite.common.Util;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -220,5 +221,14 @@ public class ToJsonSpec extends ActiveJDBCTest {
         List keyboards = (List) parents.get("keyboards");
         the(motherboards.size()).shouldBeEqual(1);
         the(keyboards.size()).shouldBeEqual(1);
+    }
+
+    @Test
+    public void shouldSanitizeJson() {
+
+        Person p = new Person();
+        p.set("name", Util.readResource("/bad.txt"));
+        Map m = JsonHelper.toMap(p.toJson(true));
+        a(m.get("name")).shouldBeEqual("bad\n\tfor\n\t\tJson");
     }
 }

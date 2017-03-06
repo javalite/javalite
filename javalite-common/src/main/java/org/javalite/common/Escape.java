@@ -57,56 +57,6 @@ public final class Escape {
     }
 
     /**
-     * Escapes JSON appending to StringBuilder.
-     *
-     * @param sb StringBuilder to append to
-     * @param json input
-     */
-    public static void json(StringBuilder sb, String json) {
-        for (int i = 0; i < json.length(); i++) {
-            char c = json.charAt(i);
-            switch (c) {
-            case '\\':
-                sb.append("\\\\");
-                break;
-            case '"':
-                sb.append("\\\"");
-                break;
-            case '\b':
-                sb.append("\\\b");
-                break;
-            case '\f':
-                sb.append("\\\f");
-                break;
-            case '\n':
-                sb.append("\\\n");
-                break;
-            case '\r':
-                sb.append("\\\r");
-                break;
-            case '\t':
-                sb.append("\\\t");
-                break;
-            default:
-                sb.append(c);
-            }
-        }
-    }
-
-    /**
-     * Escapes JSON.
-     *
-     * @param json input
-     * @return escaped JSON
-     */
-    public static String json(String json) {
-        StringBuilder sb = createStringBuilder(json.length());
-        json(sb, json);
-        return sb.toString();
-    }
-
-
-    /**
      * Escapes XML appending to StringBuilder.
      *
      * @param sb StringBuilder to append to

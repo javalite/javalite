@@ -28,6 +28,7 @@ import org.javalite.activejdbc.validation.ValidationException;
 import org.javalite.activejdbc.validation.Validator;
 import org.javalite.common.Convert;
 import org.javalite.common.Escape;
+import org.javalite.common.JsonHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1015,16 +1016,16 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             if (pretty) { sb.append("\n  ").append(indent); }
             String name = names[i];
             sb.append('"').append(name).append("\":");
-            Object v = attributes.get(name);
-            if (v == null) {
+            Object attribute = attributes.get(name);
+            if (attribute == null) {
                 sb.append("null");
-            } else if (v instanceof Number || v instanceof Boolean) {
-                sb.append(v);
-            } else if (v instanceof Date) {
-                sb.append('"').append(Convert.toIsoString((Date) v)).append('"');
+            } else if (attribute instanceof Number || attribute instanceof Boolean) {
+                sb.append(attribute);
+            } else if (attribute instanceof Date) {
+                sb.append('"').append(Convert.toIsoString((Date) attribute)).append('"');
             } else {
                 sb.append('"');
-                Escape.json(sb, Convert.toString(v));
+                sb.append(JsonHelper.sanitize(Convert.toString(attribute)));
                 sb.append('"');
             }
         }
