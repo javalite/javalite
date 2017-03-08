@@ -30,7 +30,7 @@ class FileResponse extends ControllerResponse {
     @Override
     void doProcess() {
         try {
-            stream(new FileInputStream(file), Context.getHttpResponse().getOutputStream());
+            stream(new FileInputStream(file), RequestContext.getHttpResponse().getOutputStream());
             if (delete && !file.delete()) {
                 LOGGER.warn("failed to delete file: " + file + " after processing");
             }

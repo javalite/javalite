@@ -36,6 +36,6 @@ public class IntegrationSpec extends RequestSpecHelper {
     }
 
     protected void addFilter(Class<? extends AppController> controllerType, ControllerFilter filter){
-        Context.getControllerRegistry().getMetaData(controllerType).addFilter(filter);
+        RequestContext.getControllerRegistry().getMetaData(controllerType).addFilter(filter);
     }
 }

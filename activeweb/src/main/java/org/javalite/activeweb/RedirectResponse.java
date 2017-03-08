@@ -38,9 +38,9 @@ class RedirectResponse extends ControllerResponse {
     void doProcess() {
         try{
             if(url != null){
-                Context.getHttpResponse().sendRedirect(url.toString());
+                RequestContext.getHttpResponse().sendRedirect(url.toString());
             }else if(path != null){
-                Context.getHttpResponse().sendRedirect(path);
+                RequestContext.getHttpResponse().sendRedirect(path);
             }
         }
         catch(Exception e){

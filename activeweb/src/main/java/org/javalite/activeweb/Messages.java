@@ -41,7 +41,7 @@ public class Messages {
      * @return message merged with parameters (if provided), or key if message not found.
      */
     public static String message(String key, Object... params) {
-        return getMessage(key, Context.getHttpRequest().getLocale(), params);
+        return getMessage(key, RequestContext.getHttpRequest().getLocale(), params);
     }
 
     private static String getMessage(String key, Locale locale, Object... params){

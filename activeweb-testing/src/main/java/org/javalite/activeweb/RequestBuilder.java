@@ -346,8 +346,8 @@ public class RequestBuilder {
         }
 
         request.setContextPath("/test_context");
-        Context.setHttpRequest(request);
-        Context.setFormat(format);
+        RequestContext.setHttpRequest(request);
+        RequestContext.setFormat(format);
 
 
         if(sessionFacade != null)
@@ -377,13 +377,13 @@ public class RequestBuilder {
         }else{
             request.setMethod(method.toString());
         }
-        Context.getRequestContext().set("integrateViews", integrateViews);
+        RequestContext.getRequestVo().set("integrateViews", integrateViews);
         addHeaders(request);
         addParameterValues(request);
         try{
             AppController controller = createControllerInstance(getControllerClassName(controllerPath));
-            Context.setRoute(new Route(controller, realAction, id, method));
-            Injector injector = Context.getControllerRegistry().getInjector();
+            RequestContext.setRoute(new Route(controller, realAction, id, method));
+            Injector injector = RequestContext.getControllerRegistry().getInjector();
 
             if(injector != null){
                  injector.injectMembers(controller);
@@ -391,8 +391,8 @@ public class RequestBuilder {
             ControllerRunner runner = new ControllerRunner();
 
             //must reset these two because in tests, we can execute multiple controllers in the same test method.
-            Context.setControllerResponse(null);
-            Context.setHttpResponse(new MockHttpServletResponse());
+            RequestContext.setControllerResponse(null);
+            RequestContext.setHttpResponse(new MockHttpServletResponse());
 
             runner.run(new Route(controller, actionName, method),  integrateViews);
         }catch(WebException e){

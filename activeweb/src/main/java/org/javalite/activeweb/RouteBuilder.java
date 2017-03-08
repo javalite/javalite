@@ -333,7 +333,7 @@ public class RouteBuilder {
                 RouteBuilder.this.id = requestSegment;
                 return true;
             }else if(user && userSegmentName != null){
-                Context.getRequestContext().getUserSegments().put(userSegmentName, requestSegment);
+                RequestContext.getRequestVo().getUserSegments().put(userSegmentName, requestSegment);
                 return true;
             }
 

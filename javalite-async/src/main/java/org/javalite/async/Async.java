@@ -441,7 +441,7 @@ public class Async {
      * an admin tool to peek inside the queue.
      *
      * @param count number of commands to lookup.
-     * @return top commands in queue.
+     * @return top commands in queue or empty list is nothing is found in queue.
      */
     public List<Command> getTopCommands(int count, String queueName)  {
         checkStarted();

@@ -20,6 +20,7 @@ import org.javalite.activejdbc.DB;
 
 import org.javalite.common.JsonHelper;
 import org.javalite.common.Util;
+import org.javalite.logging.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +56,7 @@ public class RequestDispatcher implements Filter {
         filterConfig.getServletContext().setAttribute("controllerRegistry", registry);
 
         Configuration.getTemplateManager().setServletContext(filterConfig.getServletContext());
-        Context.setControllerRegistry(registry);//bootstrap below requires it
+        RequestContext.setControllerRegistry(registry);//bootstrap below requires it
         appContext = new AppContext();
         filterConfig.getServletContext().setAttribute("appContext", appContext);
 
@@ -138,11 +139,11 @@ public class RequestDispatcher implements Filter {
                 appBootstrap = (Bootstrap) appConfig;
                 if(!Configuration.isTesting() ){
                     Injector injector = appBootstrap.getInjector();
-                    if(injector != null && Context.getControllerRegistry() != null){
+                    if(injector != null && RequestContext.getControllerRegistry() != null){
                         logger.warn("OVERWRITING CURRENT INJECTOR...");
                     }
                     if(injector != null){
-                        Context.getControllerRegistry().setInjector(injector);
+                        RequestContext.getControllerRegistry().setInjector(injector);
                     }
                 }
             }
@@ -196,7 +197,7 @@ public class RequestDispatcher implements Filter {
                 uri = path;
             }
 
-            Context.setTLs(request, response, filterConfig, getControllerRegistry(), appContext, new RequestContext(), format);
+            RequestContext.setTLs(request, response, filterConfig, getControllerRegistry(), appContext, new RequestVo(), format);
             if (Util.blank(uri)) {
                 uri = "/";//different servlet implementations, damn.
             }
@@ -211,7 +212,7 @@ public class RequestDispatcher implements Filter {
             }
 
             if (route != null) {
-                Context.setRoute(route);
+                RequestContext.setRoute(route);
                 if (Configuration.logRequestParams()) {
                     logger.info("{\"info\":\"executing controller\",\"controller\":\"" + route.getController().getClass().getName()
                             + "\",\"action\":\""     + route.getActionName()
@@ -233,6 +234,7 @@ public class RequestDispatcher implements Filter {
         } catch (Throwable e) {
             renderSystemError("/system/error", useDefaultLayoutForErrors() ? getDefaultLayout():null, 500, e);
         }finally {
+            RequestContext.clear();
             Context.clear();
             List<String> connectionsRemaining = DB.getCurrrentConnectionNames();
             if(!connectionsRemaining.isEmpty()){
@@ -278,7 +280,7 @@ public class RequestDispatcher implements Filter {
 //            Map info = map("request_properties", JsonHelper.toJsonString(RequestUtils.getRequestProperties()),
 //                            "request_headers" , JsonHelper.toJsonString(RequestUtils.headers()));
 
-            Context.getHttpResponse().setStatus(status);
+            RequestContext.getHttpResponse().setStatus(status);
 
             logDone(e);
 
@@ -287,14 +289,14 @@ public class RequestDispatcher implements Filter {
             }
 
 
-            HttpServletRequest req = Context.getHttpRequest();
+            HttpServletRequest req = RequestContext.getHttpRequest();
             String requestedWith = req.getHeader("x-requested-with") == null ?
                     req.getHeader("X-Requested-With") : req.getHeader("x-requested-with");
 
             if (requestedWith != null && requestedWith.equalsIgnoreCase("XMLHttpRequest")) {
                 try {
 
-                    Context.getHttpResponse().getWriter().write(getStackTraceString(e));
+                    RequestContext.getHttpResponse().getWriter().write(getStackTraceString(e));
                 } catch (Exception ex) {
                     logger.error("Failed to send error response to client", ex);
                 }
@@ -315,7 +317,7 @@ public class RequestDispatcher implements Filter {
                 logger.error("ActiveWeb internal error: ", t);
             }
             try{
-                Context.getHttpResponse().getOutputStream().print("<div style='color:red'>internal error</div>");
+                RequestContext.getHttpResponse().getOutputStream().print("<div style='color:red'>internal error</div>");
             }catch(Exception ex){
                 logger.error(ex.toString(), ex);
             }
@@ -324,11 +326,11 @@ public class RequestDispatcher implements Filter {
 
     private void logDone(Throwable throwable) {
         long millis = System.currentTimeMillis() - time.get();
-        int status = Context.getHttpResponse().getStatus();
-        Route route = Context.getRoute();
+        int status = RequestContext.getHttpResponse().getStatus();
+        Route route = RequestContext.getRoute();
         String controller = route == null ? "" : route.getControllerClassName();
         String action = route == null ? "" : route.getActionName();
-        String method = Context.getHttpRequest().getMethod();
+        String method = RequestContext.getHttpRequest().getMethod();
 
         String log = "{\"controller\":\"" + controller
                 + "\",\"action\":\"" + action

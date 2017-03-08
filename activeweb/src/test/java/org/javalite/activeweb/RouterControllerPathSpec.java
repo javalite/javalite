@@ -32,7 +32,7 @@ public class RouterControllerPathSpec {
     Router router = new Router("home");
       @Before
     public void before(){
-        Context.setControllerRegistry(new ControllerRegistry(new MockFilterConfig()));
+        RequestContext.setControllerRegistry(new ControllerRegistry(new MockFilterConfig()));
     }
 
     @Test

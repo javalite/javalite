@@ -45,7 +45,7 @@ public class RequestSpecHelper extends SpecHelper{
      * @return  status code set on response by controller
      */
     protected int statusCode(){
-        return Context.getControllerResponse().getStatus();
+        return RequestContext.getControllerResponse().getStatus();
     }
 
     /**
@@ -54,7 +54,7 @@ public class RequestSpecHelper extends SpecHelper{
      * @return  content type set on response by controller
      */
     protected String contentType(){
-        return Context.getControllerResponse().getContentType();
+        return RequestContext.getControllerResponse().getContentType();
     }
 
     /**
@@ -64,10 +64,10 @@ public class RequestSpecHelper extends SpecHelper{
      */
     protected String responseContent(){
         try{
-            Boolean integrateViews = (Boolean) Context.getRequestContext().get("integrateViews");
+            Boolean integrateViews = (Boolean) RequestContext.getRequestVo().get("integrateViews");
 
             //content can be provided simply by respond() method
-            String content = ((MockHttpServletResponse) Context.getHttpResponse()).getContentAsString();
+            String content = ((MockHttpServletResponse) RequestContext.getHttpResponse()).getContentAsString();
 
             if(integrateViews == null){
                 throw new RuntimeException("Are you sure you terminated the request() with post(), get(), etc. method?");
@@ -93,7 +93,7 @@ public class RequestSpecHelper extends SpecHelper{
      */
     protected byte[] bytesContent(){
         try{
-            return ((MockHttpServletResponse) Context.getHttpResponse()).getContentAsByteArray();
+            return ((MockHttpServletResponse) RequestContext.getHttpResponse()).getContentAsByteArray();
         }
         catch(Exception e){
             throw new RuntimeException(e);
@@ -106,7 +106,7 @@ public class RequestSpecHelper extends SpecHelper{
      * @return  layout set after executing an action of a controller.
      */
     protected String layout(){
-        ControllerResponse resp = Context.getControllerResponse();
+        ControllerResponse resp = RequestContext.getControllerResponse();
         try{
             if(!(resp instanceof RenderTemplateResponse))
                 throw new SpecException("failed to get layout, did you perform a render operation? I found a different " +
@@ -119,7 +119,7 @@ public class RequestSpecHelper extends SpecHelper{
 
 
     protected String template(){
-        ControllerResponse resp = Context.getControllerResponse();
+        ControllerResponse resp = RequestContext.getControllerResponse();
         try{
             if(!(resp instanceof RenderTemplateResponse))
                 throw new SpecException("failed to get layout, did you perform a render operation? I found a different " +
@@ -138,10 +138,10 @@ public class RequestSpecHelper extends SpecHelper{
      * @return values assigned by controller during execution
      */
     protected Map assigns(){
-        if(Context.getControllerResponse() == null){
+        if(RequestContext.getControllerResponse() == null){
             throw new TestException("There is no controller response, did you actually invoke a controller/action?");
         }
-        return Context.getControllerResponse().values();
+        return RequestContext.getControllerResponse().values();
     }
 
     /**
@@ -150,10 +150,10 @@ public class RequestSpecHelper extends SpecHelper{
      * @return values assigned by controller during execution
      */
     protected Map vals(){
-        if(Context.getControllerResponse() == null){
+        if(RequestContext.getControllerResponse() == null){
             throw new TestException("There is no controller response, did you actually invoke a controller/action?");
         }
-        return Context.getControllerResponse().values();
+        return RequestContext.getControllerResponse().values();
     }
 
     /**
@@ -164,11 +164,11 @@ public class RequestSpecHelper extends SpecHelper{
      * @return a single value assigned by controller.
      */
     protected Object val(String name){
-        if(Context.getControllerResponse() == null){
+        if(RequestContext.getControllerResponse() == null){
             throw new TestException("There is no controller response, did you actually invoke a controller/action?");
         }
-        Object val = Context.getControllerResponse().values().get(name);
-        return val == null? Context.getHttpRequest().getAttribute(name): val;
+        Object val = RequestContext.getControllerResponse().values().get(name);
+        return val == null? RequestContext.getHttpRequest().getAttribute(name): val;
     }
 
     /**
@@ -181,10 +181,10 @@ public class RequestSpecHelper extends SpecHelper{
      * @return a single value assigned by controller.
      */
     protected  <T>  T val(String name, Class<T> type){
-        if(Context.getControllerResponse() == null){
+        if(RequestContext.getControllerResponse() == null){
             throw new TestException("There is no controller response, did you actually invoke a controller/action?");
         }
-        return (T) Context.getControllerResponse().values().get(name);
+        return (T) RequestContext.getControllerResponse().values().get(name);
     }
 
     /**
@@ -194,7 +194,7 @@ public class RequestSpecHelper extends SpecHelper{
      * @return header value (can be null).
      */
     protected String header(String headerName){
-        return Context.getHttpResponse().getHeader(headerName);
+        return RequestContext.getHttpResponse().getHeader(headerName);
     }
 
     /**
@@ -204,7 +204,7 @@ public class RequestSpecHelper extends SpecHelper{
      * @return map of headers, where keys are names of headers, and values are header values.
      */
     protected Map<String, String> headers(){
-        Collection<String> headerNames =  Context.getHttpResponse().getHeaderNames();
+        Collection<String> headerNames =  RequestContext.getHttpResponse().getHeaderNames();
         Map<String, String> headers= new HashMap<>();
         for(String name: headerNames){
             headers.put(name, header(name));
@@ -219,7 +219,7 @@ public class RequestSpecHelper extends SpecHelper{
      * @return map of headers, where keys are names of headers, and values are header values.
      */
     protected List<String> headerNames(){
-        return new ArrayList<>(Context.getHttpResponse().getHeaderNames());
+        return new ArrayList<>(RequestContext.getHttpResponse().getHeaderNames());
     }
 
     /**
@@ -293,7 +293,7 @@ public class RequestSpecHelper extends SpecHelper{
      * @return true after execution of an action that sent a redirect, false otherwise.
      */
     protected boolean redirected(){
-        return Context.getControllerResponse() instanceof RedirectResponse;
+        return RequestContext.getControllerResponse() instanceof RedirectResponse;
     }
 
     /**
@@ -302,7 +302,7 @@ public class RequestSpecHelper extends SpecHelper{
      * @return a redirect value if one was produced by a controller or filter, null if not.
      */
     protected String redirectValue(){
-        ControllerResponse resp = Context.getControllerResponse();
+        ControllerResponse resp = RequestContext.getControllerResponse();
         if(resp != null && resp instanceof RedirectResponse){
             RedirectResponse redirectResponse = (RedirectResponse)resp;
             return redirectResponse.redirectValue();
@@ -316,8 +316,8 @@ public class RequestSpecHelper extends SpecHelper{
      * @return all cookies from last response.
      */
     protected Cookie[] getCookies(){
-        if(Context.getHttpResponse() == null) throw new IllegalStateException("response does not exist");
-        javax.servlet.http.Cookie[] servletCookies = ((MockHttpServletResponse) Context.getHttpResponse()).getCookies();
+        if(RequestContext.getHttpResponse() == null) throw new IllegalStateException("response does not exist");
+        javax.servlet.http.Cookie[] servletCookies = ((MockHttpServletResponse) RequestContext.getHttpResponse()).getCookies();
         List<Cookie> cookies = new ArrayList<>();
         for(javax.servlet.http.Cookie cookie: servletCookies){
             cookies.add(Cookie.fromServletCookie(cookie));

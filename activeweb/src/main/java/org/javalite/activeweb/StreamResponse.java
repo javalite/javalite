@@ -31,7 +31,7 @@ class StreamResponse extends ControllerResponse{
     @Override
     void doProcess() {
         try{
-            stream(in, Context.getHttpResponse().getOutputStream());
+            stream(in, RequestContext.getHttpResponse().getOutputStream());
         }
         catch(Exception e){
             throw new ControllerException(e);

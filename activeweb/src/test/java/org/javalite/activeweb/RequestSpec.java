@@ -18,7 +18,6 @@ package org.javalite.activeweb;
 
 
 import org.javalite.test.jspec.JSpecSupport;
-import org.junit.After;
 import org.junit.Before;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -31,7 +30,6 @@ import javax.servlet.ServletResponse;
 import java.io.IOException;
 
 import static org.javalite.test.SystemStreamUtil.replaceError;
-import static org.javalite.test.SystemStreamUtil.restoreSystemErr;
 
 /**
  * @author Igor Polevoy
@@ -58,9 +56,9 @@ public abstract class RequestSpec implements JSpecSupport {
         dispatcher.init(new MockFilterConfig());
         response = new MockHttpServletResponse();
         config = new MockFilterConfig();
-        Context.clear();
-        Context.setTLs(request, response, config, new ControllerRegistry(new MockFilterConfig()),
-                new AppContext(), new RequestContext(), null);
+        RequestContext.clear();
+        RequestContext.setTLs(request, response, config, new ControllerRegistry(new MockFilterConfig()),
+                new AppContext(), new RequestVo(), null);
         Configuration.getTemplateManager().setTemplateLocation("src/test/views");
     }
 

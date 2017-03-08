@@ -44,16 +44,16 @@ class ControllerRunner {
     private boolean tagsInjected;
 
     protected void run(Route route, boolean integrateViews) throws Exception {
-        ControllerRegistry controllerRegistry = Context.getControllerRegistry();
+        ControllerRegistry controllerRegistry = RequestContext.getControllerRegistry();
         List<ControllerRegistry.FilterList> globalFilterLists = controllerRegistry.getGlobalFilterLists();
         List<ControllerFilter> controllerFilters = controllerRegistry.getMetaData(route.getController().getClass()).getFilters(route.getActionName());
 
-        Context.getControllerRegistry().injectFilters(); //will execute once, really filters are persistent
+        RequestContext.getControllerRegistry().injectFilters(); //will execute once, really filters are persistent
 
         try {
             filterBefore(route, globalFilterLists, controllerFilters);
 
-            if (Context.getControllerResponse() == null) {//execute controller... only if a filter did not respond
+            if (RequestContext.getControllerResponse() == null) {//execute controller... only if a filter did not respond
 
                 String actionMethod = Inflector.camelize(route.getActionName().replace('-', '_'), false);
                 if (checkActionMethod(route.getController(), actionMethod)) {
@@ -77,7 +77,7 @@ class ControllerRunner {
             throw e;
         }
         catch (RuntimeException e) {
-            Context.setControllerResponse(null);//must blow away, as this response is not valid anymore.
+            RequestContext.setControllerResponse(null);//must blow away, as this response is not valid anymore.
 
             if (exceptionHandled(e, route, globalFilterLists, controllerFilters)) {
                 LOGGER.debug("A filter has called render(..) method, proceeding to render it...");
@@ -95,7 +95,7 @@ class ControllerRunner {
         if(!tagsInjected){
             AbstractFreeMarkerConfig freeMarkerConfig = Configuration.getFreeMarkerConfig();
 
-            Injector injector = Context.getControllerRegistry().getInjector();
+            Injector injector = RequestContext.getControllerRegistry().getInjector();
             tagsInjected = true;
             if(injector == null || freeMarkerConfig == null){
                 return;
@@ -108,7 +108,7 @@ class ControllerRunner {
      * Injects controller with dependencies from Guice module.
      */
     private void injectController(AppController controller) {
-        Injector injector = Context.getControllerRegistry().getInjector();
+        Injector injector = RequestContext.getControllerRegistry().getInjector();
         if (injector != null) {
             injector.injectMembers(controller);
         }
@@ -118,13 +118,13 @@ class ControllerRunner {
     private void renderResponse(Route route,  boolean integrateViews) throws InstantiationException, IllegalAccessException {
 
         //set encoding. Priority: action, then controller
-        if (Context.getEncoding() != null) {
-            Context.getHttpResponse().setCharacterEncoding(Context.getEncoding());
+        if (RequestContext.getEncoding() != null) {
+            RequestContext.getHttpResponse().setCharacterEncoding(RequestContext.getEncoding());
         } else if (route.getController().getEncoding() != null) {
-            Context.getHttpResponse().setCharacterEncoding(route.getController().getEncoding());
+            RequestContext.getHttpResponse().setCharacterEncoding(route.getController().getEncoding());
         }
 
-        ControllerResponse controllerResponse = Context.getControllerResponse();
+        ControllerResponse controllerResponse = RequestContext.getControllerResponse();
         String controllerLayout = route.getController().getLayout();
         if (controllerResponse == null) {
             createDefaultResponse(route, controllerLayout);
@@ -132,7 +132,7 @@ class ControllerRunner {
             configureExplicitResponse(route, controllerLayout, (RenderTemplateResponse) controllerResponse);
         }
 
-        controllerResponse = Context.getControllerResponse();
+        controllerResponse = RequestContext.getControllerResponse();
         if (integrateViews && controllerResponse instanceof RenderTemplateResponse) {
             ParamCopy.copyInto((controllerResponse.values()));
             controllerResponse.process();
@@ -160,20 +160,20 @@ class ControllerRunner {
     private void createDefaultResponse(Route route, String controllerLayout) throws InstantiationException, IllegalAccessException {
            String controllerPath = Router.getControllerPath(route.getController().getClass());
             String template =  controllerPath + "/" + route.getActionName();
-            RenderTemplateResponse resp = new RenderTemplateResponse(route.getController().values(), template, Context.getFormat());
+            RenderTemplateResponse resp = new RenderTemplateResponse(route.getController().values(), template, RequestContext.getFormat());
             if(!Configuration.getDefaultLayout().equals(controllerLayout)){
                 resp.setLayout(controllerLayout);//could be a real layout ot null for no layout
             }
             if(resp.getContentType() == null){
                 resp.setContentType(route.getController().getContentType());
             }
-            Context.setControllerResponse(resp);
+            RequestContext.setControllerResponse(resp);
             resp.setTemplateManager(Configuration.getTemplateManager());
     }
 
 
     private void processFlash() {
-        HttpSession session = Context.getHttpRequest().getSession(false);
+        HttpSession session = RequestContext.getHttpRequest().getSession(false);
         if (session != null) {
             Object flashObj = session.getAttribute("flasher");
             if (flashObj != null && flashObj instanceof Map) {
@@ -192,17 +192,17 @@ class ControllerRunner {
      * Checks if the action method supports requested HTTP method
      */
     private boolean checkActionMethod(AppController controller, String actionMethod) {
-        HttpMethod method = HttpMethod.getMethod(Context.getHttpRequest());
+        HttpMethod method = HttpMethod.getMethod(RequestContext.getHttpRequest());
         if (!controller.actionSupportsHttpMethod(actionMethod, method)) {
             DirectResponse res = new DirectResponse("");
             //see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
             res.setStatus(405);
             LOGGER.warn("Requested action does not support HTTP method: " + method.name() + ", returning status code 405.");
-            Context.setControllerResponse(res);
+            RequestContext.setControllerResponse(res);
 
             //TODO: candidate for caching below, list of allowed HTTP methods
             //see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
-            Context.getHttpResponse().setHeader("Allow", join(controller.allowedActions(actionMethod), ", "));
+            RequestContext.getHttpResponse().setHeader("Allow", join(controller.allowedActions(actionMethod), ", "));
             return false;
         }
         return true;
@@ -223,7 +223,7 @@ class ControllerRunner {
         for (ControllerFilter controllerFilter : controllerFilters) {
             controllerFilter.onException(e);
         }
-        return Context.getControllerResponse() != null;
+        return RequestContext.getControllerResponse() != null;
     }
 
     private void filterBefore(Route route, List<ControllerRegistry.FilterList> globalFilterLists, List<ControllerFilter> controllerFilters) {
@@ -247,7 +247,7 @@ class ControllerRunner {
                     LOGGER.debug("Executing filter: " + controllerFilter.getClass().getName() + "#before");
                 }
                 controllerFilter.before();
-                if (Context.getControllerResponse() != null) return;//a filter responded!
+                if (RequestContext.getControllerResponse() != null) return;//a filter responded!
             }
 
         }catch(RuntimeException e){

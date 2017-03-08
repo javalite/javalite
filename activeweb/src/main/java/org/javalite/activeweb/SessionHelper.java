@@ -36,7 +36,7 @@ class SessionHelper {
      protected static Map<String, Object> getSessionAttributes(){
         //TODO: cache session attributes map since this method can be called multiple times during a request.
 
-        HttpSession session = Context.getHttpRequest().getSession(true);
+        HttpSession session = RequestContext.getHttpRequest().getSession(true);
         Enumeration names = session.getAttributeNames();
         Map<String, Object> values = new HashMap<>();
         while (names.hasMoreElements()) {

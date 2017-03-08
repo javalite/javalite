@@ -33,7 +33,7 @@ public class SessionFacade implements Map {
      * @return a session ID from underlying session, or null if session does not exist.
      */
     public String id(){
-        HttpServletRequest r = Context.getHttpRequest();
+        HttpServletRequest r = RequestContext.getHttpRequest();
         if(r == null){
             return null;
         }
@@ -49,7 +49,7 @@ public class SessionFacade implements Map {
      * @return named object. 
      */
     public Object get(String name){
-        return Context.getHttpRequest().getSession(true).getAttribute(name);
+        return RequestContext.getHttpRequest().getSession(true).getAttribute(name);
     }
 
     /**
@@ -70,7 +70,7 @@ public class SessionFacade implements Map {
      * @param name name of object
      */
     public void remove(String name){
-        Context.getHttpRequest().getSession(true).removeAttribute(name);
+        RequestContext.getHttpRequest().getSession(true).removeAttribute(name);
     }
 
     /**
@@ -79,8 +79,8 @@ public class SessionFacade implements Map {
      * @param value object reference.
      */
     public Object put(String name, Serializable value){
-        Object val = Context.getHttpRequest().getSession(true).getAttribute(name);
-        Context.getHttpRequest().getSession(true).setAttribute(name, value);
+        Object val = RequestContext.getHttpRequest().getSession(true).getAttribute(name);
+        RequestContext.getHttpRequest().getSession(true).setAttribute(name, value);
         return val;
     }
 
@@ -90,14 +90,14 @@ public class SessionFacade implements Map {
      * @return time when session was created.
      */
     public long getCreationTime(){
-        return Context.getHttpRequest().getSession(true).getCreationTime();
+        return RequestContext.getHttpRequest().getSession(true).getCreationTime();
     }
 
     /**
      * Invalidates current session. All attributes are discarded.
      */
     public void invalidate(){
-        Context.getHttpRequest().getSession(true).invalidate();
+        RequestContext.getHttpRequest().getSession(true).invalidate();
     }
 
     /**
@@ -105,7 +105,7 @@ public class SessionFacade implements Map {
      * @param seconds time to live.
      */
     public void setTimeToLive(int seconds){
-        Context.getHttpRequest().getSession(true).setMaxInactiveInterval(seconds);
+        RequestContext.getHttpRequest().getSession(true).setMaxInactiveInterval(seconds);
     }
 
     /**
@@ -115,7 +115,7 @@ public class SessionFacade implements Map {
      */
     public String[] names(){
         List<String> namesList = new ArrayList<>();
-        Enumeration names = Context.getHttpRequest().getSession(true).getAttributeNames();
+        Enumeration names = RequestContext.getHttpRequest().getSession(true).getAttributeNames();
         while (names.hasMoreElements()) {
             Object o = names.nextElement();
             namesList.add(o.toString());
@@ -130,7 +130,7 @@ public class SessionFacade implements Map {
      * @return ID of the underlying session
      */
     public String getId(){
-        return Context.getHttpRequest().getSession(true).getId();
+        return RequestContext.getHttpRequest().getSession(true).getId();
     }
 
 
@@ -138,7 +138,7 @@ public class SessionFacade implements Map {
      * Destroys current session
      */
     public void destroy(){
-        Context.getHttpRequest().getSession(true).invalidate();
+        RequestContext.getHttpRequest().getSession(true).invalidate();
     }
 
 
@@ -150,17 +150,17 @@ public class SessionFacade implements Map {
 
     @Override
     public boolean isEmpty() {
-        return !Context.getHttpRequest().getSession(true).getAttributeNames().hasMoreElements();
+        return !RequestContext.getHttpRequest().getSession(true).getAttributeNames().hasMoreElements();
     }
 
     @Override
     public boolean containsKey(Object key) {
-        return Context.getHttpRequest().getSession(true).getAttribute(key.toString()) != null;
+        return RequestContext.getHttpRequest().getSession(true).getAttribute(key.toString()) != null;
     }
 
     @Override
     public boolean containsValue(Object value) {
-        Enumeration names = Context.getHttpRequest().getSession(true).getAttributeNames();
+        Enumeration names = RequestContext.getHttpRequest().getSession(true).getAttributeNames();
         while (names.hasMoreElements()){
             String name = names.nextElement().toString();
             if(name.equals(value)){
@@ -185,7 +185,7 @@ public class SessionFacade implements Map {
     @Override
     public Object remove(Object key) {
         Object val = get(key.toString());
-        Context.getHttpRequest().getSession(true).removeAttribute(key.toString());
+        RequestContext.getHttpRequest().getSession(true).removeAttribute(key.toString());
         return val;
     }
 
@@ -205,7 +205,7 @@ public class SessionFacade implements Map {
     @Override
     public Set<Object> keySet() {
         Set<Object> keys = new HashSet<>();
-        Enumeration names = Context.getHttpRequest().getSession(true).getAttributeNames();
+        Enumeration names = RequestContext.getHttpRequest().getSession(true).getAttributeNames();
         while (names.hasMoreElements()){
             Object name = names.nextElement();
             keys.add(name);
@@ -216,7 +216,7 @@ public class SessionFacade implements Map {
     @Override
     public Collection values() {
         Set<Object> values = new HashSet<>();
-        Enumeration names = Context.getHttpRequest().getSession(true).getAttributeNames();
+        Enumeration names = RequestContext.getHttpRequest().getSession(true).getAttributeNames();
         while (names.hasMoreElements()){
             Object name = names.nextElement();
             values.add(get(name));

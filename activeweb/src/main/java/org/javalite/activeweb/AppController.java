@@ -41,7 +41,7 @@ public abstract class AppController extends HttpSupport {
     @Override
     protected void assign(String name, Object value) {
         KeyWords.check(name);
-        Context.getValues().put(name, value);
+        RequestContext.getValues().put(name, value);
     }
 
     /**
@@ -57,7 +57,7 @@ public abstract class AppController extends HttpSupport {
     
 
     protected Map values() {
-        return Context.getValues();
+        return RequestContext.getValues();
     }
 
     /**
@@ -89,18 +89,18 @@ public abstract class AppController extends HttpSupport {
      */
     protected RenderBuilder render(){
 
-        String template = Router.getControllerPath(getClass()) + "/" + Context.getRoute().getActionName();
+        String template = Router.getControllerPath(getClass()) + "/" + RequestContext.getRoute().getActionName();
         return super.render(template, values());
     }
 
 
     protected String servletPath() {
-        return Context.getHttpRequest().getServletPath();
+        return RequestContext.getHttpRequest().getServletPath();
     }
 
     @Override
     protected String queryString() {
-        return Context.getHttpRequest().getQueryString();
+        return RequestContext.getHttpRequest().getQueryString();
     }
 
 

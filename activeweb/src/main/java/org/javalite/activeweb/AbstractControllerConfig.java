@@ -75,7 +75,7 @@ public abstract class AbstractControllerConfig extends AppConfig {
         public FilterBuilder to(Class<? extends AppController>... controllerClasses) {
             this.controllerClasses = controllerClasses;
             for (Class<? extends AppController> controllerClass : controllerClasses) {
-                Context.getControllerRegistry().getMetaData(controllerClass).addFilters(filters);
+                RequestContext.getControllerRegistry().getMetaData(controllerClass).addFilters(filters);
             }
             return this;
         }
@@ -96,7 +96,7 @@ public abstract class AbstractControllerConfig extends AppConfig {
                 throw new IllegalArgumentException("controller classes not provided. Please call 'to(controllers)' before 'forActions(actions)'");
 
             for (Class<? extends AppController> controllerClass : controllerClasses) {
-                Context.getControllerRegistry().getMetaData(controllerClass).addFilters(filters, actionNames);
+                RequestContext.getControllerRegistry().getMetaData(controllerClass).addFilters(filters, actionNames);
             }
         }
 
@@ -110,7 +110,7 @@ public abstract class AbstractControllerConfig extends AppConfig {
                 throw new IllegalArgumentException("controller classes not provided. Please call 'to(controllers)' before 'exceptAction(actions)'");
 
             for (Class<? extends AppController> controllerClass : controllerClasses) {
-                Context.getControllerRegistry().getMetaData(controllerClass).addFiltersWithExcludedActions(filters, excludedActions);
+                RequestContext.getControllerRegistry().getMetaData(controllerClass).addFiltersWithExcludedActions(filters, excludedActions);
             }
 
         }
@@ -148,7 +148,7 @@ public abstract class AbstractControllerConfig extends AppConfig {
     @Override
     protected void completeInit() {
         for (ExcludeBuilder excludeBuilder : excludeBuilders) {
-            Context.getControllerRegistry().addGlobalFilters(excludeBuilder.getFilters(), excludeBuilder.getExcludeControllerClasses());
+            RequestContext.getControllerRegistry().addGlobalFilters(excludeBuilder.getFilters(), excludeBuilder.getExcludeControllerClasses());
         }
     }
 

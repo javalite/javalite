@@ -32,7 +32,7 @@ public class RouterStandardSpec {
 
     @Before
     public void before() {
-        Context.setControllerRegistry(new ControllerRegistry(new MockFilterConfig()));
+        RequestContext.setControllerRegistry(new ControllerRegistry(new MockFilterConfig()));
     }
 
     @Test

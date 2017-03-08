@@ -16,9 +16,6 @@ limitations under the License.
 
 package org.javalite.activeweb;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,16 +39,16 @@ class ParamCopy {
     }
 
     private static void insertActiveWebParamsInto(Map assigns) {
-        assigns.put("context_path", Context.getHttpRequest().getContextPath());
+        assigns.put("context_path", RequestContext.getHttpRequest().getContextPath());
         //in some cases the Route is missing - for example, when exception happened before Router was invoked.
-        Route route = Context.getRoute();
+        Route route = RequestContext.getRoute();
 
         Map params = map("environment", Configuration.getEnv());
 
         if(route != null){
-            params.put("controller", Context.getRoute().getControllerPath());
-            params.put("action", Context.getRoute().getActionName());
-            params.put("restful", Context.getRoute().getController().restful());
+            params.put("controller", RequestContext.getRoute().getControllerPath());
+            params.put("action", RequestContext.getRoute().getActionName());
+            params.put("restful", RequestContext.getRoute().getController().restful());
         }
         assigns.put("activeweb", params);
     }
@@ -68,12 +65,12 @@ class ParamCopy {
 
 
     private static void copyRequestParamsInto(Map assigns) {
-        Enumeration names = Context.getHttpRequest().getParameterNames();
+        Enumeration names = RequestContext.getHttpRequest().getParameterNames();
 
         Map<String, String> requestParameterMap = new HashMap<>();
         while (names.hasMoreElements()) {
             Object name = names.nextElement();
-            String[] values = Context.getHttpRequest().getParameterValues(name.toString());
+            String[] values = RequestContext.getHttpRequest().getParameterValues(name.toString());
             Object value = values != null && values.length == 1 ? values[0] : values;
             if(value != null)
                 requestParameterMap.put(name.toString(), value.toString());
@@ -83,15 +80,15 @@ class ParamCopy {
 
 
     private static void copyRequestAttributesInto(Map assigns){
-        Enumeration names = Context.getHttpRequest().getAttributeNames();
+        Enumeration names = RequestContext.getHttpRequest().getAttributeNames();
         while (names.hasMoreElements()) {
             Object name = names.nextElement();
-            Object value = Context.getHttpRequest().getAttribute(name.toString());
+            Object value = RequestContext.getHttpRequest().getAttribute(name.toString());
             assigns.put(name, value);
         }
     }
 
     private static void copyRequestProperties(Map assigns) {
-        assigns.put("request_props", map("url", Context.getHttpRequest().getRequestURL().toString()));
+        assigns.put("request_props", map("url", RequestContext.getHttpRequest().getRequestURL().toString()));
     }
 }

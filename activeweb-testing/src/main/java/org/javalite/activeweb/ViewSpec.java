@@ -37,13 +37,13 @@ public abstract class ViewSpec extends SpecHelper {
     public final void beforeTest(){
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setContextPath("/test_context");
-        Context.setTLs(request, new MockHttpServletResponse(), new MockFilterConfig(),
-                new ControllerRegistry(new MockFilterConfig()), new AppContext(), new RequestContext(), null);
+        RequestContext.setTLs(request, new MockHttpServletResponse(), new MockFilterConfig(),
+                new ControllerRegistry(new MockFilterConfig()), new AppContext(), new RequestVo(), null);
     }
 
     @After
     public final void afterTest(){
-        Context.clear();
+        RequestContext.clear();
     }
 
     /**
@@ -67,7 +67,7 @@ public abstract class ViewSpec extends SpecHelper {
      */
     @Override
     protected void setInjector(Injector injector){
-        Context.getControllerRegistry().setInjector(injector);
+        RequestContext.getControllerRegistry().setInjector(injector);
     }
 
     /**
@@ -79,7 +79,7 @@ public abstract class ViewSpec extends SpecHelper {
     @Override
     protected void registerTag(String name, FreeMarkerTag tag) {
         manager.registerTag(name, tag);
-        Injector injector = Context.getControllerRegistry().getInjector();
+        Injector injector = RequestContext.getControllerRegistry().getInjector();
         if(injector != null)
             injector.injectMembers(tag);
     }
@@ -138,7 +138,7 @@ public abstract class ViewSpec extends SpecHelper {
     protected <T extends AppController> void setCurrentController(Class<T> controllerClass){
         try{
             AppController instance = controllerClass.newInstance();
-            Context.setRoute(new Route(instance));
+            RequestContext.setRoute(new Route(instance));
 
         }catch(Exception e){
             throw new ViewException(e);

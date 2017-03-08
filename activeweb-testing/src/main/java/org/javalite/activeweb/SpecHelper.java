@@ -51,14 +51,14 @@ public class SpecHelper implements JSpecSupport{
         sessionFacade = new SessionTestFacade(new MockHttpSession());
         setTemplateLocation("src/main/webapp/WEB-INF/views");//default location of all views
 
-        Context.setTLs(null, new MockHttpServletResponse(), new MockFilterConfig(),
-                new ControllerRegistry(new MockFilterConfig()), new AppContext(), new RequestContext(), null);
+        RequestContext.setTLs(null, new MockHttpServletResponse(), new MockFilterConfig(),
+                new ControllerRegistry(new MockFilterConfig()), new AppContext(), new RequestVo(), null);
 
     }
 
     @After
     public void afterEnd(){
-        Context.clear();
+        RequestContext.clear();
     }
 
     /**
@@ -82,7 +82,7 @@ public class SpecHelper implements JSpecSupport{
      * @param injector injector to source dependencies form.
      */
     protected void setInjector(Injector injector){
-        Context.getControllerRegistry().setInjector(injector);
+        RequestContext.getControllerRegistry().setInjector(injector);
     }
 
     /**
