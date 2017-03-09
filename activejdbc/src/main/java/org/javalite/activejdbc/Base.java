@@ -36,9 +36,7 @@ import java.util.Properties;
  */
 public class Base {
 
-    private Base() {
-        
-    }
+    private Base() {}
     
     /**
      * This method will open a connection defined in the file 'database.properties' located at
@@ -48,8 +46,8 @@ public class Base {
      * If there is JUnit on classpath, this method assumes it is running under test, and defaults to 'test'.
      *
      */
-    public static void open(){
-        new DB(DB.DEFAULT_NAME).open();
+    public static DB open(){
+        return new DB(DB.DEFAULT_NAME).open();
     }
 
     /**
@@ -60,8 +58,8 @@ public class Base {
      * @param user user name.
      * @param password password.
      */
-    public static void open(String driver, String url, String user, String password) {
-       new DB(DB.DEFAULT_NAME).open(driver, url, user, password);
+    public static DB open(String driver, String url, String user, String password) {
+       return new DB(DB.DEFAULT_NAME).open(driver, url, user, password);
     }
 
 
@@ -72,8 +70,8 @@ public class Base {
      * @param url JDBC URL
      * @param props connection properties
      */
-    public static void open(String driver, String url, Properties props) {
-        new DB(DB.DEFAULT_NAME).open(driver, url, props);
+    public static DB open(String driver, String url, Properties props) {
+        return new DB(DB.DEFAULT_NAME).open(driver, url, props);
     }
 
     /**
@@ -82,8 +80,8 @@ public class Base {
      *
      * @param jndiName name of a configured data source.
      */
-    public static void open(String jndiName) {
-        new DB(DB.DEFAULT_NAME).open(jndiName);
+    public static DB open(String jndiName) {
+        return new DB(DB.DEFAULT_NAME).open(jndiName);
     }
 
     /**
@@ -93,8 +91,8 @@ public class Base {
      * @param jndiName name of JNDI data source.
      * @param jndiProperties JNDI properties
      */
-    public static void open(String jndiName, Properties jndiProperties) {
-        new DB(DB.DEFAULT_NAME).open(jndiName, jndiProperties);
+    public static DB open(String jndiName, Properties jndiProperties) {
+        return new DB(DB.DEFAULT_NAME).open(jndiName, jndiProperties);
     }
 
     /**
@@ -102,8 +100,8 @@ public class Base {
      *
      * @param dataSource datasource will be used to acquire a connection.
      */
-    public static void open(DataSource dataSource) {
-        new DB(DB.DEFAULT_NAME).open(dataSource);
+    public static DB open(DataSource dataSource) {
+        return new DB(DB.DEFAULT_NAME).open(dataSource);
     }
 
 

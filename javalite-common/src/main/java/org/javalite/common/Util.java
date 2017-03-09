@@ -508,17 +508,18 @@ public final class Util {
      * The path can look like: <code>/opt/database.properties</code>. If this is found on classath, it is loaded first.
      * If not found on classpath,  it will look for the file on te file system using the same path.
      *
-     * @param file full path to a property file on class path
+     * @param fileOrResource full path to a property file on classpath or a path  to a file on file system. Classpath
+     *                       is searched first.
      * @return <code>java.util.Properties</code> object initialized from the file.
      * @throws IOException
      */
-    public static Properties readProperties(String file) throws IOException {
-        InputStream in = Util.class.getResourceAsStream(file);
+    public static Properties readProperties(String fileOrResource) throws IOException {
+        InputStream in = Util.class.getResourceAsStream(fileOrResource);
         Properties props = new Properties();
         if (in != null) {
             props.load(in);
         } else {
-            FileInputStream fin = new FileInputStream(file);
+            FileInputStream fin = new FileInputStream(fileOrResource);
             props.load(fin);
             fin.close();
         }
