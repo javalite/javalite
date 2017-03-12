@@ -3,6 +3,7 @@ package org.javalite.activeweb;
 import org.javalite.activejdbc.connection_config.ConnectionJdbcSpec;
 import org.javalite.activejdbc.connection_config.ConnectionJndiSpec;
 import org.javalite.activejdbc.connection_config.ConnectionSpecWrapper;
+import org.javalite.activejdbc.connection_config.DbConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,7 +19,7 @@ public class AbstractConnectionBuilderSpec  {
 
     @Before
     public void before(){
-        Configuration.resetConnectionWrappers();
+        DbConfiguration.resetConnectionWrappers();
     }
 
     @Test
@@ -32,7 +33,7 @@ public class AbstractConnectionBuilderSpec  {
         DBConfig config = new DBConfig();
         config.init(null);
 
-        ConnectionSpecWrapper wrapper = Configuration.getConnectionSpecWrappers().get(0);
+        ConnectionSpecWrapper wrapper = DbConfiguration.getConnectionSpecWrappers().get(0);
 
         a(wrapper.getDbName()).shouldBeEqual("default");
         a(wrapper.isTesting()).shouldBeTrue();
@@ -58,7 +59,7 @@ public class AbstractConnectionBuilderSpec  {
         DBConfig config = new DBConfig();
         config.init(null);
 
-        ConnectionSpecWrapper wrapper = Configuration.getConnectionSpecWrappers("prod").get(0);
+        ConnectionSpecWrapper wrapper = DbConfiguration.getConnectionSpecWrappers("prod").get(0);
 
         a(wrapper.getDbName()).shouldBeEqual("second");
         a(wrapper.isTesting()).shouldBeFalse();
@@ -80,7 +81,7 @@ public class AbstractConnectionBuilderSpec  {
         DBConfig config = new DBConfig();
         config.init(null);
 
-        ConnectionSpecWrapper wrapper = Configuration.getConnectionSpecWrappers("production").get(0);
+        ConnectionSpecWrapper wrapper = DbConfiguration.getConnectionSpecWrappers("production").get(0);
 
         a(wrapper.getDbName()).shouldBeEqual("default");
         a(wrapper.isTesting()).shouldBeFalse();
@@ -103,7 +104,7 @@ public class AbstractConnectionBuilderSpec  {
         config.init(null);
 
         //test first connection spec
-        ConnectionSpecWrapper wrapper = Configuration.getConnectionSpecWrappers("development").get(0);
+        ConnectionSpecWrapper wrapper = DbConfiguration.getConnectionSpecWrappers("development").get(0);
         a(wrapper.getDbName()).shouldBeEqual("default");
         a(wrapper.getEnvironment()).shouldBeEqual("development");
         a(wrapper.isTesting()).shouldBeFalse();
@@ -116,7 +117,7 @@ public class AbstractConnectionBuilderSpec  {
         a(connectionSpec.getPassword()).shouldBeEqual("pwd");
 
         //test second connection spec
-        wrapper = Configuration.getConnectionSpecWrappers("development").get(1);
+        wrapper = DbConfiguration.getConnectionSpecWrappers("development").get(1);
         a(wrapper.getDbName()).shouldBeEqual("default");
         a(wrapper.getEnvironment()).shouldBeEqual("development");
         a(wrapper.isTesting()).shouldBeTrue();
@@ -144,7 +145,7 @@ public class AbstractConnectionBuilderSpec  {
         DBConfig config = new DBConfig();
         config.init(null);
 
-        List<ConnectionSpecWrapper> wrappers = Configuration.getConnectionSpecWrappers("production");
+        List<ConnectionSpecWrapper> wrappers = DbConfiguration.getConnectionSpecWrappers("production");
 
         //we configured two for production, one in file, one in class. But the class config overrides one in file.
         the(wrappers.size()).shouldBeEqual(1);
@@ -174,7 +175,7 @@ public class AbstractConnectionBuilderSpec  {
         DBConfig config = new DBConfig();
         config.init(null);
 
-        List<ConnectionSpecWrapper> wrappers = Configuration.getConnectionSpecWrappers("development");
+        List<ConnectionSpecWrapper> wrappers = DbConfiguration.getConnectionSpecWrappers("development");
 
         the(wrappers.size()).shouldBeEqual(2);
 

@@ -17,6 +17,7 @@ package org.javalite.activeweb;
 
 import org.javalite.activejdbc.DB;
 import org.javalite.activejdbc.connection_config.ConnectionSpecWrapper;
+import org.javalite.activejdbc.connection_config.DbConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +51,7 @@ public class DBSpecHelper {
     }
 
     public static void clearConnectionWrappers() {
-        Configuration.clearConnectionWrappers();
+        DbConfiguration.clearConnectionWrappers();
     }
 
 
@@ -83,7 +84,7 @@ public class DBSpecHelper {
     }
 
     private static List<ConnectionSpecWrapper> getTestConnectionWrappers() {
-        List<ConnectionSpecWrapper> allConnections = Configuration.getConnectionSpecWrappers();
+        List<ConnectionSpecWrapper> allConnections = DbConfiguration.getConnectionSpecWrappers();
         List<ConnectionSpecWrapper> result = new LinkedList<>();
 
         for (ConnectionSpecWrapper connectionWrapper : allConnections) {

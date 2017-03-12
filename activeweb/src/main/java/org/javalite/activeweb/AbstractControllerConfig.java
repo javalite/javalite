@@ -53,7 +53,7 @@ import java.util.List;
  *
  * @author Igor Polevoy
  */
-public abstract class AbstractControllerConfig extends AppConfig {
+public abstract class AbstractControllerConfig implements AppConfig {
 
     //exclude some controllers from filters
     private List<ExcludeBuilder> excludeBuilders = new ArrayList<>();
@@ -146,7 +146,7 @@ public abstract class AbstractControllerConfig extends AppConfig {
     }
 
     @Override
-    protected void completeInit() {
+    public void completeInit() {
         for (ExcludeBuilder excludeBuilder : excludeBuilders) {
             RequestContext.getControllerRegistry().addGlobalFilters(excludeBuilder.getFilters(), excludeBuilder.getExcludeControllerClasses());
         }

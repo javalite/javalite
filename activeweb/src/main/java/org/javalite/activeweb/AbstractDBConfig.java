@@ -16,17 +16,7 @@ limitations under the License.
 package org.javalite.activeweb;
 
 
-
-import org.javalite.activejdbc.connection_config.ConnectionJdbcSpec;
-import org.javalite.activejdbc.connection_config.ConnectionJndiSpec;
-import org.javalite.activejdbc.connection_config.ConnectionSpecWrapper;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
+import org.javalite.activejdbc.connection_config.DbConfiguration;
 
 /**
  * This class is designed to be sub-classed by an application level class called <code>app.config.DbConfig</code>.
@@ -79,7 +69,7 @@ import java.util.Set;
  *
  * @author Igor Polevoy
  */
-public abstract class AbstractDBConfig extends AppConfig {
+public abstract class AbstractDBConfig extends DbConfiguration implements AppConfig {
 
     /**
      * @param environment name of environment (corresponds to env var ACTIVE_ENV)
@@ -133,86 +123,6 @@ public abstract class AbstractDBConfig extends AppConfig {
      *             then on file system.
      */
     public void configFile(String file) {
-
-        try {
-            Properties props = readPropertyFile(file);
-            Set<String> environments = getEnvironments(props);
-            for (String env : environments) {
-                String jndiName = env + "." + "jndi";
-                if (props.containsKey(jndiName)) {
-                    createJndiWrapper(env, props.getProperty(jndiName));
-                } else {
-                    String driver = props.getProperty(env + ".driver");
-                    String userName = props.getProperty(env + ".username");
-                    String password = props.getProperty(env + ".password");
-                    String url = props.getProperty(env + ".url");
-                    checkProps(driver, userName, password, url, env);
-                    createJdbcWrapper(env, driver, url, userName, password);
-                }
-            }
-        } catch (InitException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new InitException(e);
-        }
-    }
-
-    private void checkProps(String driver, String userName, String password, String url, String env){
-        if (driver == null || userName == null || password == null || url == null){
-            throw new InitException("Four JDBC properties are expected: driver, username, password, url for environment: " + env);
-        }
-    }
-
-    private void createJdbcWrapper(String env, String driver, String url, String userName, String password) {
-        ConnectionSpecWrapper wrapper = new ConnectionSpecWrapper();
-        if(env.equals("test")){
-            wrapper.setEnvironment("development");
-            wrapper.setTesting(true);
-        } else if(env.endsWith(".test")) {
-            wrapper.setEnvironment(env.split("\\.")[0]);
-            wrapper.setTesting(true);
-        }else{
-            wrapper.setEnvironment(env);
-        }
-        ConnectionJdbcSpec connectionSpec = new ConnectionJdbcSpec(driver, url, userName, password);
-        wrapper.setConnectionSpec(connectionSpec);
-        Configuration.addConnectionWrapper(wrapper, false);
-    }
-
-    private void createJndiWrapper(String env, String jndiName) {
-        ConnectionSpecWrapper wrapper = new ConnectionSpecWrapper();
-        wrapper.setEnvironment(env);
-        ConnectionJndiSpec connectionSpec = new ConnectionJndiSpec(jndiName);
-        wrapper.setConnectionSpec(connectionSpec);
-        Configuration.addConnectionWrapper(wrapper, false);
-    }
-
-
-    private Set<String> getEnvironments(Properties props) {
-        Set<String> environments = new HashSet<>();
-        for (String prop : props.stringPropertyNames()) {
-            String[] parts =  prop.split("\\.");
-            if(parts.length == 2){
-                environments.add(parts[0]);
-            }else if(parts.length == 3 && parts[1].equals("test")){
-                environments.add(parts[0] + ".test");
-            }else {
-                throw new ConfigurationException("Incorrect property: " + prop);
-            }
-        }
-        return environments;
-    }
-
-    private Properties readPropertyFile(String file) throws IOException {
-        InputStream in = getClass().getResourceAsStream(file);
-        Properties props = new Properties();
-        if (in != null) {
-            props.load(in);
-        } else {
-            FileInputStream fin = new FileInputStream(file);
-            props.load(fin);
-            fin.close();
-        }
-        return props;
+      loadConfiguration(file);
     }
 }

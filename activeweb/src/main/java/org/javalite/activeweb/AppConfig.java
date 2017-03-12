@@ -19,7 +19,7 @@ package org.javalite.activeweb;
 /**
  * @author Igor Polevoy
  */
-public abstract class AppConfig {
-    public abstract void init(AppContext appContext);
-    protected void completeInit(){}
+public interface AppConfig {
+    void init(AppContext appContext);
+    default void completeInit(){}
 }

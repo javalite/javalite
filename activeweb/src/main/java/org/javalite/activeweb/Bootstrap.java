@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Igor Polevoy
  */
-public abstract class Bootstrap extends AppConfig{
+public abstract class Bootstrap implements AppConfig{
 
     private static final Logger  LOGGER = LoggerFactory.getLogger(Bootstrap.class);
 
