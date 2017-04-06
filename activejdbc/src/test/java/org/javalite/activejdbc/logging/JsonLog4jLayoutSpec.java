@@ -178,7 +178,6 @@ public class JsonLog4jLayoutSpec  extends ActiveJDBCTest{
         the(log.get("message")).shouldBeEqual("fire!");
         Map exception = (Map) log.get("exception");
         the(exception.get("message")).shouldBeEqual("house on fire!");
-        the(exception.get("message")).shouldBeEqual("house on fire!");
         the(exception.get("stacktrace")).shouldContain("java.lang.RuntimeException: house on fire!\n\tat org.javalite.activejdbc.logging.JsonLog4jLayoutSpec.shouldLogException");
     }
 }

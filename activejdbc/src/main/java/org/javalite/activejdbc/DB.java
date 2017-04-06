@@ -15,6 +15,7 @@ limitations under the License.
 */
 package org.javalite.activejdbc;
 
+import org.javalite.activejdbc.connection_config.ConnectionDataSourceSpec;
 import org.javalite.activejdbc.connection_config.ConnectionJdbcSpec;
 import org.javalite.activejdbc.connection_config.ConnectionJndiSpec;
 import org.javalite.activejdbc.connection_config.ConnectionSpec;
@@ -233,8 +234,10 @@ public class DB implements Closeable{
         checkExistingConnection(name);
         if (spec instanceof ConnectionJdbcSpec) {
             return openJdbc((ConnectionJdbcSpec) spec);
-        } else if(spec instanceof ConnectionJndiSpec) {
+        } else if (spec instanceof ConnectionJndiSpec) {
             return openJndi((ConnectionJndiSpec) spec);
+        } else if (spec instanceof ConnectionDataSourceSpec) {
+            return openDataSource((ConnectionDataSourceSpec) spec);
         } else {
             throw new IllegalArgumentException("this spec not supported: " + spec.getClass());
         }
@@ -272,6 +275,10 @@ public class DB implements Closeable{
         }else{
             return open(spec.getDataSourceJndiName());
         }
+    }
+
+    private DB openDataSource(ConnectionDataSourceSpec spec) {
+        return open(spec.getDataSource());
     }
 
     /**
