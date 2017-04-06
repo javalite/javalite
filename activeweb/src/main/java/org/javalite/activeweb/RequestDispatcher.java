@@ -284,11 +284,6 @@ public class RequestDispatcher implements Filter {
 
             logDone(e);
 
-            if(status >= 500){
-                logger.error("ERROR!", e);
-            }
-
-
             HttpServletRequest req = RequestContext.getHttpRequest();
             String requestedWith = req.getHeader("x-requested-with") == null ?
                     req.getHeader("X-Requested-With") : req.getHeader("x-requested-with");
@@ -337,10 +332,15 @@ public class RequestDispatcher implements Filter {
                 + "\",\"action\":\"" + action
                 + "\",\"duration_millis\":" + millis
                 + ",\"method\":\"" + method
-                + ",\"url\":\"" + url
+                + "\",\"url\":\"" + url
                 + (throwable != null ? "\",\"error\":\"" + JsonHelper.sanitize(throwable.getMessage() != null ? throwable.getMessage() : throwable.toString()) : "")
                 + "\",\"status\":" + status + "}";
-        logger.info(log);
+
+        if(throwable != null && status >= 500){
+            logger.error(log, throwable);
+        }else {
+            logger.info(log);
+        }
     }
 
     public void destroy() {

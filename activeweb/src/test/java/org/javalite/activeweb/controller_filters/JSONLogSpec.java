@@ -78,7 +78,6 @@ public class JSONLogSpec extends RequestSpec {
         Map log0 = JsonHelper.toMap(logs[0]);
         the(log0.get("level")).shouldBeEqual("INFO");
         the(log0.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
-
         Map message = (Map) log0.get("message");
         the(message.get("info")).shouldBeEqual("executing controller");
         the(message.get("controller")).shouldBeEqual("app.controllers.LoggingController");
@@ -87,33 +86,24 @@ public class JSONLogSpec extends RequestSpec {
 
         //Line 1
         Map log1 = JsonHelper.toMap(logs[1]);
-        the(log1.get("level")).shouldBeEqual("INFO");
+        the(log1.get("level")).shouldBeEqual("ERROR");
         the(log1.get("timestamp")).shouldNotBeNull();
         the(log1.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
-
         message = (Map) log1.get("message");
         the(message.get("controller")).shouldBeEqual("app.controllers.LoggingController");
         the(message.get("duration_millis")).shouldNotBeNull();
         the(message.get("method")).shouldBeEqual("GET");
         the(message.get("status")).shouldBeEqual(500);
-
-        //Line 2
-        Map log2 = JsonHelper.toMap(logs[2]);
-        the(log2.get("level")).shouldBeEqual("ERROR");
-        the(log2.get("timestamp")).shouldNotBeNull();
-        the(log2.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
-        the(log2.get("message")).shouldBeEqual("ERROR!");
-
-        Map exception = (Map) log2.get("exception");
+        Map exception = (Map) log1.get("exception");
         the(exception.get("message")).shouldBeEqual("blah!");
         the(exception.get("stacktrace")).shouldContain("java.lang.RuntimeException: blah!\njava.lang.RuntimeException: blah!\n\tat app.controllers.LoggingController.error");
 
-        //Line 3
-        Map log3 = JsonHelper.toMap(logs[3]);
-        the(log3.get("level")).shouldBeEqual("INFO");
-        the(log3.get("timestamp")).shouldNotBeNull();
-        the(log3.get("logger")).shouldBeEqual("org.javalite.activeweb.freemarker.FreeMarkerTemplateManager");
-        the(log3.get("message")).shouldBeEqual("rendering template: '/system/error' with layout: '/layouts/default_layout");
+        //Line 2
+        Map log2 = JsonHelper.toMap(logs[2]);
+        the(log2.get("level")).shouldBeEqual("INFO");
+        the(log2.get("timestamp")).shouldNotBeNull();
+        the(log2.get("logger")).shouldBeEqual("org.javalite.activeweb.freemarker.FreeMarkerTemplateManager");
+        the(log2.get("message")).shouldBeEqual("rendering template: '/system/error' with layout: '/layouts/default_layout");
     }
 
     @Test
