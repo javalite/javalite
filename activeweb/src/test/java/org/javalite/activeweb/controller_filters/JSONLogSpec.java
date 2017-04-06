@@ -222,4 +222,27 @@ public class JSONLogSpec extends RequestSpec {
         the(message.get("error")).shouldBeEqual("Failed to find template: 'src/test/views/logging/no-view.ftl', with layout: 'src/test/views/layouts/default_layout'");
 
     }
+
+    @Test
+    public void shouldPrintRedirectTarget() throws IOException, ServletException {
+
+        request.setServletPath("/logging/redirect1");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+
+        String out = SystemStreamUtil.getSystemOut();
+        String[] logs = Util.split(out, System.getProperty("line.separator"));
+
+        Map log0 = JsonHelper.toMap(logs[1]);
+        the(log0.get("level")).shouldBeEqual("INFO");
+        the(log0.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
+
+        Map message = (Map) log0.get("message");
+        the(message.get("controller")).shouldBeEqual("app.controllers.LoggingController");
+        the(message.get("action")).shouldBeEqual("redirect1");
+        the(message.get("method")).shouldBeEqual("GET");
+        the(message.get("url")).shouldBeEqual("http://localhost");
+        the(message.get("redirect_target")).shouldBeEqual("http://javalite.io");
+        the(message.get("status")).shouldBeEqual(302);
+    }
 }

@@ -328,11 +328,20 @@ public class RequestDispatcher implements Filter {
         String method = RequestContext.getHttpRequest().getMethod();
         String url = RequestContext.getHttpRequest().getRequestURL().toString();
 
+        ControllerResponse cr = RequestContext.getControllerResponse();
+
+        String redirectTarget = null;
+        if(cr instanceof RedirectResponse){
+            RedirectResponse rr = (RedirectResponse) cr;
+            redirectTarget = rr.redirectValue();
+        }
+
         String log = "{\"controller\":\"" + controller
                 + "\",\"action\":\"" + action
                 + "\",\"duration_millis\":" + millis
                 + ",\"method\":\"" + method
                 + "\",\"url\":\"" + url
+                + (redirectTarget != null ? "\",\"redirect_target\":\"" + redirectTarget: "")
                 + (throwable != null ? "\",\"error\":\"" + JsonHelper.sanitize(throwable.getMessage() != null ? throwable.getMessage() : throwable.toString()) : "")
                 + "\",\"status\":" + status + "}";
 

@@ -16,4 +16,8 @@ public class LoggingController extends AppController {
     }
 
     public void noView(){}
+
+    public void redirect1(){
+        redirect("http://javalite.io");
+    }
 }
