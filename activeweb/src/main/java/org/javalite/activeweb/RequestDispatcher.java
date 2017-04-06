@@ -331,11 +331,13 @@ public class RequestDispatcher implements Filter {
         String controller = route == null ? "" : route.getControllerClassName();
         String action = route == null ? "" : route.getActionName();
         String method = RequestContext.getHttpRequest().getMethod();
+        String url = RequestContext.getHttpRequest().getRequestURL().toString();
 
         String log = "{\"controller\":\"" + controller
                 + "\",\"action\":\"" + action
                 + "\",\"duration_millis\":" + millis
                 + ",\"method\":\"" + method
+                + ",\"url\":\"" + url
                 + (throwable != null ? "\",\"error\":\"" + JsonHelper.sanitize(throwable.getMessage() != null ? throwable.getMessage() : throwable.toString()) : "")
                 + "\",\"status\":" + status + "}";
         logger.info(log);
