@@ -23,6 +23,19 @@ import org.javalite.activejdbc.Model;
 import static org.javalite.activejdbc.ModelDelegate.metaModelOf;
 
 
+/**
+ * Naive uniqueness validator. If enabled, prevents adding a new record that has the same attribute
+ * if one already exists in the corresponding table.
+ *
+ * <p></p>
+ * <strong>Critique</strong>:  in a high-load system, it might be possible to create duplicate records due to bad timing
+ * (another thread inserted a record after you tested for uniqueness, but before you inserted).
+ * <p></p>
+ *
+ * <strong>Suggestion</strong>: Use for small non-critical project. For real world projects it is recommended to
+ * maintain uniqueness with database indexes and  <a href="https://en.wikipedia.org/wiki/Unique_key">unique keys</a>.
+ *
+ */
 public class UniquenessValidator extends ValidatorAdapter {
     private final String attribute;
 
@@ -34,9 +47,7 @@ public class UniquenessValidator extends ValidatorAdapter {
     @Override
     public void validate(Model model) {
         MetaModel metaModel = metaModelOf(model.getClass());
-        if (new DB(metaModel.getDbName()).count(metaModel.getTableName(),
-                attribute + " = ? AND " + metaModel.getIdName() + " != ?",
-                model.get(attribute), model.get(metaModel.getIdName())) > 0) {
+        if (new DB(metaModel.getDbName()).count(metaModel.getTableName(), attribute + " = ?", model.get(attribute)) > 0) {
             model.addValidator(this, attribute);
         }
     }

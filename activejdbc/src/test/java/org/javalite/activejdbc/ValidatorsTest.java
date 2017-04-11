@@ -166,7 +166,7 @@ public class ValidatorsTest extends ActiveJDBCTest {
         
         // attempt creating another user with the same email
         User u = new User();
-        u.set("email", "john@doe.com").saveIt();
+        u.set("email", "john@doe.com").save();
         a(u).shouldNotBe("valid");
         a(u.errors().get("email")).shouldBeEqual("This email is already taken.");
     }
