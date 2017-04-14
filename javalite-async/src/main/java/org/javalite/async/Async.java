@@ -78,8 +78,6 @@ public class Async {
     private EmbeddedJMS jmsServer;
     private boolean binaryMode;
 
-    private List<MessageConsumer> messageConsumers = new ArrayList<>();
-    private List<Session> sessions = new ArrayList<>();
     private List<QueueConfig> queueConfigsList = new ArrayList<>();
     private boolean started;
 
@@ -214,8 +212,6 @@ public class Async {
                 Session session = consumerConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
                 MessageConsumer consumer = session.createConsumer(queue);
                 consumer.setMessageListener(listener);
-                sessions.add(session);
-                messageConsumers.add(consumer);
             }
         }
         consumerConnection.start();
@@ -337,25 +333,16 @@ public class Async {
      * Stops this JMS server.
      */
     public void stop() {
+        started = false;
 
-        for (MessageConsumer consumer : messageConsumers) {
-            closeQuietly(consumer);
-        }
-
-        for (Session session : sessions) {
-            closeQuietly(session);
-        }
-
-        closeQuietly(consumerConnection);
         closeQuietly(producerConnection);
+        closeQuietly(consumerConnection);
 
         try {
             jmsServer.stop();
         } catch (Exception e) {
             LOGGER.warn("exception trying to stop broker.", e);
         }
-
-        started = false;
     }
 
     /**
