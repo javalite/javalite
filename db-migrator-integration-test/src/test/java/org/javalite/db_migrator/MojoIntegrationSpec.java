@@ -25,6 +25,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 
+import static org.javalite.db_migrator.JdbcPropertiesOverride.*;
 import static org.junit.Assert.*;
 import static org.javalite.db_migrator.DbUtils.*;
 import static org.javalite.db_migrator.SpecBuilder.the;
@@ -54,7 +55,7 @@ public class MojoIntegrationSpec extends AbstractIntegrationSpec {
         output = execute(dir, "db-migrator:migrate", "-o");
         the(output).shouldContain("BUILD SUCCESS");
 
-        openConnection("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/test_project", "root", "p@ssw0rd");
+        openConnection(driver(), "jdbc:mysql://localhost/test_project", user(), password());
         assertEquals(countRows("books"), 9);
         assertEquals(countRows("authors"), 2);
         closeConnection();

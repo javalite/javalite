@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.javalite.db_migrator.JdbcPropertiesOverride.*;
 import static org.junit.Assert.*;
 import static org.javalite.db_migrator.DbUtils.*;
 
@@ -15,14 +16,13 @@ public class MySQLMigrationSpec {
     @Before
     public void setup() throws Exception {
 
-        openConnection("com.mysql.jdbc.Driver", "jdbc:mysql://localhost", "root", "p@ssw0rd");
+        openConnection(driver(), url(), user(), password());
         try {
             exec("drop database mysql_migration_test");
         } catch (Exception e) {/*ignore*/}
         exec("create database mysql_migration_test");
         closeConnection();
-
-        openConnection("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/mysql_migration_test", "root", "p@ssw0rd");
+        openConnection(driver(), "jdbc:mysql://localhost/mysql_migration_test", user(), password());
         migrationManager = new MigrationManager("src/test/resources/test_migrations/mysql/");
     }
 
