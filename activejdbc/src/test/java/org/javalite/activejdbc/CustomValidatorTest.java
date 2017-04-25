@@ -27,12 +27,12 @@ public class CustomValidatorTest extends ActiveJDBCTest {
                 Date dob = m.getDate("dob");
                 Date now = new java.sql.Date(System.currentTimeMillis());
                 if(dob.after(now)){
-                 m.addValidator(this, "invalid.dob");//add validator to errors with a key
+                    m.addValidator(this, "invalid.dob");//add validator to errors with a key
                 }
             }
         }
 
-        FutureBirthValidator validator = new FutureBirthValidator(); 
+        FutureBirthValidator validator = new FutureBirthValidator();
 
         Person.addValidator(validator);
 

@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -19,6 +19,7 @@ package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Person;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Timestamp;
@@ -30,9 +31,8 @@ import java.util.List;
  */
 public class CreatedAtUpdatedAtTest extends ActiveJDBCTest {
 
-    @Override
-    public void before() throws Exception {
-        super.before();
+    @Before
+    public void setup() throws Exception {
         deleteAndPopulateTable("people");
     }
 
@@ -58,7 +58,7 @@ public class CreatedAtUpdatedAtTest extends ActiveJDBCTest {
         Timestamp updatedAt = p.getTimestamp("updated_at");
 
         a(updatedAt).shouldNotBeNull();
-        a(createdAt).shouldBeEqual(p.get("created_at"));
+        a(createdAt).shouldBeEqual(p.getTimestamp("created_at"));
         a(createdAt.before(updatedAt)).shouldBeTrue();
     }
 

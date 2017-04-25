@@ -1,0 +1,82 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url 'http://repo.javalite.io' }
+    }
+    dependencies {
+        classpath 'org.javalite:activejdbc:2.0-SNAPSHOT'
+        classpath 'org.javalite:activejdbc-instrumentation:2.0-SNAPSHOT'
+    }
+}
+
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+    maven { url 'http://repo.javalite.io' }
+}
+
+dependencies {
+    compile 'org.javalite:activejdbc:1.4.12-SNAPSHOT'
+}
+
+import org.javalite.instrumentation.Instrumentation
+import javassist.ClassPool
+import javassist.CtClass
+
+// Task implementation has been extracted and for the sake of brevity
+// simplified from ActiveJDBC Gradle plugin.
+task(instrumentModels) << {
+
+    println("Thread name: " + Thread.currentThread().getName())
+    // Let's first rename "Daemon worker" thread name. If you run this task for
+    // the second time with daemon enabled you'll see that renamed thread still
+    // lives.
+    Thread.currentThread().setName("Renamed daemon thread")
+
+    // For the first time ClassPool is not initialised so call of it's get
+    // method throws an exception. When instrumentation is processed a class
+    // loader is inserted in ClassPool and the it will start return some
+    // results.
+    //
+    // Following snippet demonstrates that ClassPool keeps returning same
+    // CtClass instance that was initialised during first run of this task.
+    // This instance is marked as a frozen which causes "model is frozen"
+    // problems.
+    ClassPool classPool = ClassPool.getDefault()
+    try {
+        CtClass ctClass = classPool.get("frozen_model.SomeModel")
+        println("Hash code of CtClass: " + System.identityHashCode(ctClass))
+    } catch (Exception e) {
+        println("Task has been executed for the first time so ClassPool is not yet initialised!")
+    }
+
+    // Instrumentation.
+    File classesDir = sourceSets.main.output.classesDir
+    Instrumentation instrumentation = new Instrumentation()
+    instrumentation.outputDirectory = classesDir.getPath()
+    Instrumentation.class.classLoader.addURL(classesDir.toURI().toURL())
+    instrumentation.instrument()
+
+    // Don't forget to remember CtClass hash code on the first run. So you can
+    // compare it to the hash code on the second run and so on.
+    CtClass ctClass = classPool.get("frozen_model.SomeModel")
+    println("Hash code of CtClass: " + System.identityHashCode(ctClass))
+
+    // Solution #1 is to detach frozen class off the ClassPool. Detached
+    // CtClass is then handled by garbage collector and on next run a new
+    // instance of CtClass is created.
+// ctClass.detach()
+
+    // Or as a solution #2 we can just defrost the CtClass. It's instance will
+    // remain in memory (referenced from the ClassPool) and can be reused.
+    // However this can bring some side effects.
+// ctClass.defrost()
+
+    // There is a bit dirty solution #3 to create new thread and run the
+    // instrumentation in it. When its done thread can be dropped and all
+    // resources freed. I tried this as a hotfix. It works but I can't
+    // recommend this as a production ready.
+}
+
+instrumentModels.dependsOn classes

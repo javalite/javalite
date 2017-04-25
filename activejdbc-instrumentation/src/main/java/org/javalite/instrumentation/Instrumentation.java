@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,16 +18,18 @@ limitations under the License.
 package org.javalite.instrumentation;
 
 import javassist.CtClass;
+import javassist.NotFoundException;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URISyntaxException;
 import java.util.List;
 
 /**
+ * This class is for static instrumentation
  * @author Igor Polevoy
  */
 public class Instrumentation {
@@ -52,8 +54,15 @@ public class Instrumentation {
             ModelInstrumentation mi = new ModelInstrumentation();
 
             for (CtClass clazz : mf.getModels()) {
-                mi.instrument(clazz);
+                byte[] bytecode = mi.instrument(clazz);
+                String fileName = getFullFilePath(clazz);
+                FileOutputStream fout = new FileOutputStream(fileName);
+                fout.write(bytecode);
+                fout.flush();
+                fout.close();
+                System.out.println("Instrumented class: " + fileName );
             }
+
             generateModelsFile(mf.getModels(), target);
             System.out.println("**************************** END INSTRUMENTATION ****************************");
         }
@@ -62,9 +71,13 @@ public class Instrumentation {
         }
     }
 
+    private String getFullFilePath(CtClass modelClass) throws NotFoundException, URISyntaxException {
+        return modelClass.getURL().toURI().getPath();
+
+    }
+
     private static void generateModelsFile(List<CtClass> models, File target) throws IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        String modelsFileName = target.getAbsolutePath() + System.getProperty("file.separator") + "activejdbc_models.properties";
-        FileOutputStream fout = new FileOutputStream(modelsFileName);
+        FileOutputStream fout = new FileOutputStream(new File(target.getAbsolutePath(), "activejdbc_models.properties"));
 
         for (CtClass model : models) {
             fout.write((model.getName() + ":" + getDatabaseName(model) + "\n").getBytes());
@@ -72,16 +85,22 @@ public class Instrumentation {
         fout.close();
     }
 
-     static String getDatabaseName(CtClass model) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+     protected static String getDatabaseName(CtClass model) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Object[] annotations =  model.getAnnotations();
 
         for (Object annotation : annotations) {
-            Class dbNameClass = Class.forName("org.javalite.activejdbc.annotations.DbName");
+            Class<?> dbNameClass = Class.forName("org.javalite.activejdbc.annotations.DbName");
             if(dbNameClass.isAssignableFrom(annotation.getClass())){
                 Method valueMethod = annotation.getClass().getMethod("value");
                 return valueMethod.invoke(annotation).toString();
             }
         }
         return "default";
+    }
+
+    public static void log(String message) {
+        if(System.getProperty("activejdbc-instrumentation.log") != null){
+            System.out.println("ActiveJDBC Instrumentation - " + message);
+        }
     }
 }

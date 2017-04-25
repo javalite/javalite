@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -25,12 +25,13 @@ import com.opensymphony.oscache.general.GeneralCacheAdministrator;
  */
 public class OSCacheManager extends CacheManager{
 
-    private GeneralCacheAdministrator administrator;
+    private final GeneralCacheAdministrator administrator;
 
     public OSCacheManager(){
         administrator = new GeneralCacheAdministrator();
     }
 
+    @Override
     public Object getCache(String group, String key) {
         try {
             return administrator.getFromCache(key);
@@ -42,9 +43,10 @@ public class OSCacheManager extends CacheManager{
             }
 
         }
-        return null; 
+        return null;
     }
 
+    @Override
     public void addCache(String group, String key, Object cache) {
         try{
             administrator.putInCache(key, cache, new String[]{group});
@@ -60,5 +62,10 @@ public class OSCacheManager extends CacheManager{
         }else if(event.getType().equals(CacheEvent.CacheEventType.GROUP)){
             administrator.flushGroup(event.getGroup());
         }
+    }
+
+    @Override
+    public Object getImplementation() {
+        return this.administrator;
     }
 }

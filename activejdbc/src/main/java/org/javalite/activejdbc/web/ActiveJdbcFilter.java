@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -33,28 +33,30 @@ import org.slf4j.Logger;
 
      &lt;filter&gt;
         &lt;filter-name&gt;activeJdbcFilter&lt;/filter-name&gt;
-        &lt;filter-class&gt;activejdbc.web.ActiveJdbcFilter&lt;/filter-class&gt;
+        &lt;filter-class&gt;org.javalite.activejdbc.web.ActiveJdbcFilter&lt;/filter-class&gt;
         &lt;init-param&gt;
             &lt;param-name&gt;jndiName&lt;/param-name&gt;
             &lt;param-value&gt;jdbc/test_jndi&lt;/param-value&gt;
-        &lt;/init-param&gt;        
+        &lt;/init-param&gt;
     &lt;/filter&gt;
  * </pre>
  * @author Igor Polevoy
  */
 public class ActiveJdbcFilter implements Filter {
 
-    final Logger logger = LoggerFactory.getLogger(ActiveJdbcFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActiveJdbcFilter.class);
 
-    private static String jndiName;
+    private String jndiName;
 
+    @Override
     public void init(FilterConfig config) throws ServletException {
 
-    	jndiName = config.getInitParameter("jndiName");
+        jndiName = config.getInitParameter("jndiName");
         if(jndiName == null)
             throw new IllegalArgumentException("must provide jndiName parameter for this filter");
     }
 
+    @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
         long before = System.currentTimeMillis();
         try{
@@ -75,8 +77,9 @@ public class ActiveJdbcFilter implements Filter {
 
             Base.close();
         }
-        logger.info("Processing took: " + (System.currentTimeMillis() - before) + " milliseconds");
+        LOGGER.info("Processing took: {} milliseconds", System.currentTimeMillis() - before);
     }
 
+    @Override
     public void destroy() {}
 }

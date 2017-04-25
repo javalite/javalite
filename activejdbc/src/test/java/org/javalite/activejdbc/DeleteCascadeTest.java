@@ -120,16 +120,21 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
     public void shouldDeleteMany2ManyDeepSkippingAssociation() {
 
         deleteAndPopulateTables("doctors", "patients", "doctors_patients", "prescriptions");
-        Registry.cacheManager().flush(CacheEvent.ALL);
+        Registry.cacheManager().flush(new CacheEvent("doctors", ""));
+        Registry.cacheManager().flush(new CacheEvent("patients", ""));
+        Registry.cacheManager().flush(new CacheEvent("prescriptions", ""));
 
 
-        Registry.cacheManager().flush(CacheEvent.ALL);
+
+        Doctor.findAll().dump();
+        Patient.findAll().dump();
+        Prescription.findAll().dump();
 
         a(Doctor.count()).shouldBeEqual(3);
         a(Patient.count()).shouldBeEqual(3);
         a(Prescription.count()).shouldBeEqual(5);
 
-        Patient.findById(3).deleteCascadeExcept(Patient.getMetaModel().getAssociationForTarget("prescriptions"));
+        Patient.findById(3).deleteCascadeExcept(Patient.getMetaModel().getAssociationForTarget(Prescription.class));
 
         a(Doctor.count()).shouldBeEqual(2);
         a(Patient.count()).shouldBeEqual(2);

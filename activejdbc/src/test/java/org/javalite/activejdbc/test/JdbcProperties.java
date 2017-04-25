@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -17,6 +17,7 @@ limitations under the License.
 
 package org.javalite.activejdbc.test;
 
+import java.io.IOException;
 import java.util.Properties;
 
 /**
@@ -30,8 +31,8 @@ public class JdbcProperties {
     private static String driver, url, user, password, db;
 
 
-    private JdbcProperties(){
-        try{
+    private JdbcProperties() {
+        try {
             Properties jdbcProperties = new Properties();
             jdbcProperties.load(getClass().getResourceAsStream("/jdbc.properties"));
             driver = jdbcProperties.getProperty("jdbc.driver");
@@ -39,8 +40,7 @@ public class JdbcProperties {
             user = jdbcProperties.getProperty("jdbc.user");
             password = jdbcProperties.getProperty("jdbc.password");
             db = jdbcProperties.getProperty("db");
-        }
-        catch(Exception e){
+        } catch(IOException e) {
             throw new RuntimeException(e);
         }
     }

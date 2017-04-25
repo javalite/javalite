@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -21,11 +21,14 @@ import org.javalite.activejdbc.Model;
 
 /**
  * @author Igor Polevoy
+ * @deprecated use {@link org.javalite.activejdbc.conversion.Converter} instead
  */
-public abstract class Converter implements Validator{
+@Deprecated
+public abstract class Converter extends ValidatorAdapter {
 
-    abstract void  convert(Model m);
-    
+    public abstract void convert(Model m);
+
+    @Override
     public void validate(Model m) {
         convert(m);
     }

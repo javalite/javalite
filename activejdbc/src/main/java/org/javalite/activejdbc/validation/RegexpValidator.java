@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -25,25 +25,26 @@ import java.util.regex.Matcher;
 
 public class RegexpValidator extends ValidatorAdapter{
 
-    private String rule;
-    private String attribute;
+    private final Pattern pattern;
+    private final String attribute;
 
     public RegexpValidator(String attribute, String rule){
-        this.rule = rule;
+        this.pattern = Pattern.compile(rule, Pattern.CASE_INSENSITIVE);
         this.attribute = attribute;
         setMessage("value does not match given format");
     }
+
+    @Override
     public void validate(Model m) {
         if(m.get(attribute) == null){
             m.addValidator(this, attribute);
             return;
         }
         Object value = m.get(attribute);
-        if(!value.getClass().equals(String.class))
+        if (!(value instanceof String)) {
             throw new IllegalArgumentException("attribute " + attribute + " is not String");
-
-        Pattern pattern = Pattern.compile(rule, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(value.toString());
+        }
+        Matcher matcher = pattern.matcher((String) value);
         if(!matcher.matches()){
            m.addValidator(this, attribute);
         }

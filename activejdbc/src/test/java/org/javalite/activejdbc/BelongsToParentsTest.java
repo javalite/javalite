@@ -1,5 +1,6 @@
 package org.javalite.activejdbc;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import org.javalite.activejdbc.test.ActiveJDBCTest;
@@ -9,9 +10,8 @@ import org.javalite.activejdbc.test_models.Motherboard;
 
 public class BelongsToParentsTest extends ActiveJDBCTest {
 
-	public void before() throws Exception { 
-		super.before();
-
+	@Before
+    public void setup() throws Exception {
         deleteFromTable("computers");
         deleteFromTable("motherboards");
         deleteFromTable("keyboards");

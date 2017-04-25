@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -27,6 +27,8 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -36,20 +38,31 @@ import java.util.zip.ZipFile;
 /**
  * @author Igor Polevoy
  */
-public class InstrumentationModelFinder{
+public class InstrumentationModelFinder {
 
-    private CtClass modelClass;
-    private List<CtClass> models = new ArrayList<CtClass>();
+    private final CtClass modelClass;
+    private final List<CtClass> models = new ArrayList<CtClass>();
+    private final ClassPool cp;
+    private String currentDirectoryPath;
 
 
-    InstrumentationModelFinder() throws NotFoundException, ClassNotFoundException {
-        ClassPool pool = ClassPool.getDefault();
+    protected InstrumentationModelFinder() throws NotFoundException, ClassNotFoundException {
+        cp = ClassPool.getDefault();
         //any simple class will do here, but Model - it causes slf4j to be loaded during instrumentation.
-        pool.insertClassPath(new ClassClassPath(Class.forName("org.javalite.activejdbc.Association")));
-
-        modelClass = pool.get("org.javalite.activejdbc.Model");
-
+        cp.insertClassPath(new ClassClassPath(Class.forName("org.javalite.activejdbc.Association")));
+        modelClass = cp.get("org.javalite.activejdbc.Model");
     }
+
+    protected void processURL(URL url) throws URISyntaxException, IOException, ClassNotFoundException {
+        Instrumentation.log("Processing: " + url);
+        File f = new File(url.toURI());
+        if(f.isFile()){
+            processFilePath(f);
+        }else{
+            processDirectoryPath(f);
+        }
+    }
+
 
     /**
      * Finds and processes property files inside zip or jar files.
@@ -69,7 +82,7 @@ public class InstrumentationModelFinder{
 
                     if (entry.getName().endsWith("class")) {
                         InputStream zin = zip.getInputStream(entry);
-                        classFound(entry.getName().replace(File.separatorChar, '.').substring(0, entry.getName().length() - 6));
+                        tryClass(entry.getName().replace(File.separatorChar, '.').substring(0, entry.getName().length() - 6));
                         zin.close();
                     }
                 }
@@ -80,9 +93,7 @@ public class InstrumentationModelFinder{
         }
     }
 
-    private String currentDirectoryPath;
-
-    public void processDirectoryPath(File directory) throws IOException, ClassNotFoundException {
+    protected void processDirectoryPath(File directory) throws IOException, ClassNotFoundException {
         currentDirectoryPath = directory.getCanonicalPath();
         processDirectory(directory);
     }
@@ -106,14 +117,14 @@ public class InstrumentationModelFinder{
     }
 
     /**
-     * This will scan directory for class files, non-recurive.
+     * This will scan directory for class files, non-recursive.
      *
      * @param directory directory to scan.
      * @throws IOException, NotFoundException
      */
     private void findFiles(File directory) throws IOException, ClassNotFoundException {
 
-        File files[] = directory.listFiles(new FilenameFilter() {
+        File[] files = directory.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 return name.endsWith(".class");
             }
@@ -124,27 +135,40 @@ public class InstrumentationModelFinder{
                 int current = currentDirectoryPath.length();
                 String fileName = file.getCanonicalPath().substring(++current);
                 String className = fileName.replace(File.separatorChar, '.').substring(0, fileName.length() - 6);
-                classFound(className);
+                tryClass(className);
             }
         }
     }
 
-
-    protected void classFound(String className) throws IOException, ClassNotFoundException {
+    protected void tryClass(String className) throws IOException, ClassNotFoundException {
         try {
-            ClassPool cp = ClassPool.getDefault();
-            CtClass clazz = cp.get(className);
+            CtClass clazz = getClazz(className);
+                if (isModel(clazz)) {
+                    if(!models.contains(clazz)){
+                        models.add(clazz);
+                        Instrumentation.log("Found model: " + className);
 
-            if (clazz.subclassOf(modelClass) && clazz != null && !clazz.equals(modelClass)) {
-                models.add(clazz);
-                System.out.println("Found model: " + clazz.getName());
-            }
+                    }
+                }
         } catch (Exception e) {
             throw new InstrumentationException(e);
         }
     }
 
-    public List<CtClass> getModels(){
+    protected CtClass getClazz(String className) throws NotFoundException {
+        return cp.get(className);
+    }
+
+    protected boolean isModel(CtClass clazz) throws NotFoundException {
+        return clazz != null && notAbstract(clazz) && clazz.subclassOf(modelClass) && !clazz.equals(modelClass);
+    }
+
+    private boolean notAbstract(CtClass clazz) {
+        int modifiers = clazz.getModifiers();
+        return !(Modifier.isAbstract(modifiers) || Modifier.isInterface(modifiers));
+    }
+
+    protected List<CtClass> getModels() {
         return models;
     }
 }

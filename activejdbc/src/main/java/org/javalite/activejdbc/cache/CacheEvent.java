@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -53,7 +53,7 @@ public class CacheEvent {
      */
     public CacheEvent( String group, String source){
         if(group == null)
-            throw new IllegalArgumentException("group canot be null");
+            throw new IllegalArgumentException("group cannot be null");
         
         this.type = CacheEventType.GROUP;
         this.source = source;

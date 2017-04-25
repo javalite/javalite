@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -19,14 +19,12 @@ package org.javalite.http;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.Authenticator;
-import java.net.HttpURLConnection;
-import java.net.PasswordAuthentication;
-import java.net.URL;
+import java.net.*;
 import java.util.List;
 import java.util.Map;
 
 import static org.javalite.common.Util.read;
+import static org.javalite.common.Util.toBase64;
 
 /**
  * This class provides static convenience methods for simple HTTP requests.
@@ -35,11 +33,10 @@ import static org.javalite.common.Util.read;
  */
 public abstract class Request<T extends Request> {
 
-    protected HttpURLConnection connection;
+    protected final HttpURLConnection connection;
     private boolean connected;
-    protected String url;
-
-
+    protected boolean redirect;
+    protected final String url;
 
     public Request(String url, int connectTimeout, int readTimeout) {
         try {
@@ -65,6 +62,17 @@ public abstract class Request<T extends Request> {
         return (T) this;
     }
 
+    /**
+     * Configures this request to follow redirects. Default is <code>false</code>.
+     *
+     * @see <a href="https://docs.oracle.com/javase/7/docs/api/java/net/HttpURLConnection.html#instanceFollowRedirects">HttpURLConnection.html#instanceFollowRedirects</a>
+     * @param redirect true to follow, false to not.
+     * @return self
+     */
+    public T redirect(boolean redirect) {
+        this.redirect = redirect;
+        return (T) this;
+    }
 
     /**
      * Returns input stream to read server response from.
@@ -74,7 +82,10 @@ public abstract class Request<T extends Request> {
     public InputStream getInputStream() {
         try {
             return connection.getInputStream();
-        } catch (Exception e) {
+        }catch(SocketTimeoutException e){
+            throw new HttpException("Failed URL: " + url +
+                    ", waited for: " + connection.getConnectTimeout() + " milliseconds", e);
+        }catch (Exception e) {
             throw new HttpException("Failed URL: " + url, e);
         }
     }
@@ -122,7 +133,7 @@ public abstract class Request<T extends Request> {
      *
      * @return response content from server as bytes.
      */
-    public byte[] bytes() {
+    public byte[]  bytes() {
 
         connect();
 
@@ -137,8 +148,10 @@ public abstract class Request<T extends Request> {
             }
         } catch (Exception e) {
             throw new HttpException("Failed URL: " + url, e);
+        }finally {
+            dispose();
         }
-        dispose();
+
         return bout.toByteArray();
     }
 
@@ -150,11 +163,11 @@ public abstract class Request<T extends Request> {
     public String text() {
         try {
             connect();
-            String result = responseCode() >= 400 ? read(connection.getErrorStream()) : read(connection.getInputStream());
-            dispose();
-            return result;
+            return responseCode() >= 400 ? read(connection.getErrorStream()) : read(connection.getInputStream());
         } catch (IOException e) {
             throw new HttpException("Failed URL: " + url, e);
+        }finally {
+            dispose();
         }
     }
 
@@ -168,11 +181,11 @@ public abstract class Request<T extends Request> {
     public String text(String encoding) {
         try {
             connect();
-            String result = responseCode() >= 400 ? read(connection.getErrorStream()) : read(connection.getInputStream(), encoding);
-            dispose();
-            return result;
+            return responseCode() >= 400 ? read(connection.getErrorStream()) : read(connection.getInputStream(), encoding);
         } catch (IOException e) {
             throw new HttpException("Failed URL: " + url, e);
+        }finally {
+            dispose();
         }
     }
 
@@ -180,41 +193,30 @@ public abstract class Request<T extends Request> {
     /**
      * This method is already called from {@link #text()} and {@link #bytes()}, you do not have to call it if you use
      * those methods.
-     * <p/> 
+     * <p></p>
      * However, if you use {@link #getInputStream()}, call this method in those cases when you think you did
      * not read entire content from the stream.
      *
-     * <p/>
+     * <p></p>
      * This method clears all remaining data in connections after reading a response.
      * This will help keep-alive work smoothly.
      */
     public void dispose() {
-
         //according to this: http://download.oracle.com/javase/1.5.0/docs/guide/net/http-keepalive.html
         //should read all data from connection to make it happy.
-
         byte[] bytes = new byte[1024];
-        try {
-            int count = 0;
-            InputStream in = connection.getInputStream();
-            while ((count = in.read(bytes)) > 0) {
-            }//nothing
-
-            in.close();
-        } catch (Exception ignore) {
-            try {
-                InputStream errorStream = connection.getErrorStream();
-                int ret = 0;
-
-                while ((ret = errorStream.read(bytes)) > 0) {
-                }//nothing
-
-                errorStream.close();
-            } catch (IOException ignoreToo) {
+        try (InputStream in = connection.getInputStream()){
+            if(in != null){
+                while ((in.read(bytes)) > 0) {}//do nothing
             }
+        } catch (Exception ignore) {
+            try(InputStream errorStream = connection.getErrorStream()) {
+                if(errorStream != null){
+                    while ((errorStream.read(bytes)) > 0) {}//do nothing
+                }
+            } catch (IOException ignoreToo) {}
         }
     }
-
 
     protected T connect() {
         if (!connected) {
@@ -243,18 +245,7 @@ public abstract class Request<T extends Request> {
      * @return self.
      */
     public T basic(String user, String password){
-        Authenticator.setDefault(new BasicAuthenticator(user, password));
+        connection.setRequestProperty("Authorization", "Basic " + toBase64((user + ":" + password).getBytes()));
         return (T) this;
     }
-
-    class BasicAuthenticator extends Authenticator {
-        private String user, password;
-        BasicAuthenticator(String user, String password) {
-            this.user = user;
-            this.password = password;
-        }        
-        public PasswordAuthentication getPasswordAuthentication() {
-                return (new PasswordAuthentication(user, password.toCharArray()));
-            }
-        }
 }

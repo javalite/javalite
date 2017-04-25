@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -27,9 +27,14 @@ import java.util.*;
  * @author Igor Polevoy
  */
 public class ConnectionsAccess {
-    private final static Logger logger = LoggerFactory.getLogger(ConnectionsAccess.class);
-    private static ThreadLocal<HashMap<String, Connection>> connectionsTL = new ThreadLocal<HashMap<String, Connection>>();
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConnectionsAccess.class);
+    private static final ThreadLocal<HashMap<String, Connection>> connectionsTL = new ThreadLocal<>();
+
+    private ConnectionsAccess() {
+        
+    }
+    
     static Map<String, Connection> getConnectionMap(){
         if (connectionsTL.get() == null)
             connectionsTL.set(new HashMap<String, Connection>());
@@ -53,22 +58,21 @@ public class ConnectionsAccess {
      * @param dbName
      * @param connection
      */
-    static void attach(String dbName, Connection connection) {
+    static void attach(String dbName, Connection connection, String extraInfo) {
         if(ConnectionsAccess.getConnectionMap().get(dbName) != null){
-            throw  new InternalException("You are opening a connection " + dbName + " without closing a previous one. Check your logic. Connection still remains on thread: " + ConnectionsAccess.getConnectionMap().get(dbName));
+            throw new InternalException("You are opening a connection " + dbName + " without closing a previous one. Check your logic. Connection still remains on thread: " + ConnectionsAccess.getConnectionMap().get(dbName));
         }
-        LogFilter.log(logger, "Attaching connection: " + connection);
         ConnectionsAccess.getConnectionMap().put(dbName, connection);
-        LogFilter.log(logger, "Opened connection:" + connection + " named: " +  dbName + " on thread: " + Thread.currentThread());
+        LogFilter.log(LOGGER, "Attached connection named: {}: to current thread: {}. Extra info: {}", dbName, connection, extraInfo);
     }
 
     static void detach(String dbName){
-        LogFilter.log(logger, "Detached connection: " + dbName);
+        LogFilter.log(LOGGER, "Detached connection named: {} from current thread: {}", dbName, getConnectionMap().get(dbName));
         getConnectionMap().remove(dbName);
     }
 
 
     static List<Connection> getAllConnections(){
-        return new ArrayList<Connection>(getConnectionMap().values());
+        return new ArrayList<>(getConnectionMap().values());
     }
 }

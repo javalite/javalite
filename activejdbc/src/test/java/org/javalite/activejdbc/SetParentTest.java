@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -30,9 +30,7 @@ import org.junit.Test;
 public class SetParentTest extends ActiveJDBCTest {
 
     @Before
-    public void before() throws Exception {
-        super.before();
-        
+    public void setup() throws Exception {
         deleteFromTable("computers");
         deleteFromTable("motherboards");
         deleteFromTable("keyboards");

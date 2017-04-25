@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -21,8 +21,9 @@ import java.io.Serializable;
 
 public class ColumnMetadata implements Serializable {
 
-    private String columnName, typeName;
-    private int columnSize;
+    private final String columnName;
+    private final String typeName;
+    private final int columnSize;
 
     public ColumnMetadata(String columnName, String  typeName, int columnSize) {
         this.columnName = columnName;
@@ -49,13 +50,14 @@ public class ColumnMetadata implements Serializable {
 
     /**
      * Column type name as reported by DBMS driver.
-     * 
+     *
      * @return column type name as reported by DBMS driver.
      */
     public String getTypeName() {
         return typeName;
     }
 
+    @Override
     public String toString() {
         return "[ columnName=" + columnName
                 + ", typeName=" + typeName

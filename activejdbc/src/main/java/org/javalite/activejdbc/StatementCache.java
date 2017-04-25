@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -24,19 +24,23 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import static org.javalite.common.Util.*;
+
 /**
  * @author Igor Polevoy
  */
-class StatementCache {
+enum StatementCache {
+    INSTANCE;
 
-    private static final StatementCache instance = new StatementCache();
-    static StatementCache instance() { return instance; }
+    private final ConcurrentMap<Connection, Map<String, PreparedStatement>> statementCache = new ConcurrentHashMap<>();
 
-    private ConcurrentMap<Connection, Map<String, PreparedStatement>> statementCache = new ConcurrentHashMap<Connection, Map<String, PreparedStatement>>();
+    private StatementCache() { }
+    
+    static StatementCache instance() { return INSTANCE; }
 
     PreparedStatement getPreparedStatement(Connection connection, String query) {
         if (!statementCache.containsKey(connection)) {
-            statementCache.putIfAbsent(connection, new HashMap<String, PreparedStatement>());
+            statementCache.put(connection, new HashMap<String, PreparedStatement>());
         }
         return statementCache.get(connection).get(query);
     }
@@ -46,6 +50,11 @@ class StatementCache {
     }
 
     void cleanStatementCache(Connection connection) {
-        statementCache.remove(connection);
+       Map<String, PreparedStatement> stmsMap = statementCache.remove(connection);
+	   if(stmsMap != null) { //Close prepared statements to release cursors on connection pools
+			for(PreparedStatement stmt : stmsMap.values()) {
+                closeQuietly(stmt);
+			}
+	   }
     }
 }

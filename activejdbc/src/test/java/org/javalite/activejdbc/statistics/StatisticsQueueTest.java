@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -17,29 +17,57 @@ limitations under the License.
 
 package org.javalite.activejdbc.statistics;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import static org.javalite.test.jspec.JSpec.a;
+import static org.javalite.test.jspec.JSpec.the;
 
 /**
  * @author Igor Polevoy
  */
 public class StatisticsQueueTest {
 
-    private static StatisticsQueue queue = new StatisticsQueue(false);
+    private StatisticsQueue queue;
+
+    private void wait(Future future) throws ExecutionException, InterruptedException {
+        if (future != null) {
+            future.get();// this will wait till completion
+            if (!future.isDone()) {
+                throw new RuntimeException("Job not done!");
+            }
+        }
+    }
+
+    @Before
+    public void setUp() throws ExecutionException, InterruptedException {
+        queue = new StatisticsQueue(false);
+        List<Future> futures = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            futures.add(queue.enqueue(new QueryExecutionEvent("test", 10 + i)));
+            futures.add(queue.enqueue(new QueryExecutionEvent("test1", 20 + i)));
+            futures.add(queue.enqueue(new QueryExecutionEvent("test2", 30 + i)));
+        }
+        //TODO: Shouldn't the StatisticsQueue have a isDone() or done() method?
+        //lets wait till all jobs are complete
+        for (Future future : futures) {
+            wait(future);
+        }
+    }
+    @After
+    public void tearDown() {
+        queue = null;
+    }
+
 
     @Test
-    public void shouldCollectAndSortStatistics() {
-        for (int i = 0; i < 10; i++) {
-            queue.enqueue(new QueryExecutionEvent("test", 10 + i));
-            queue.enqueue(new QueryExecutionEvent("test1", 20 + i));
-            queue.enqueue(new QueryExecutionEvent("test2", 30 + i));
-        }
-
-        //could be a race condition, lets wait till all messages are processed
-        try { Thread.sleep(1000); } catch (Exception ignored) {}
-
+    public void shouldCollectAndSortStatistics() throws ExecutionException, InterruptedException {
         List<QueryStats> report = queue.getReportSortedBy("avg");
 
         a(report.get(0).getQuery()).shouldBeEqual("test2");
@@ -66,12 +94,26 @@ public class StatisticsQueueTest {
     }
 
     @Test
-    public void shouldPause() {
+    public void shouldPause() throws ExecutionException, InterruptedException {
         int reportSize = queue.getReportSortedBy("avg").size();
         queue.pause(true);
-        queue.enqueue(new QueryExecutionEvent("QUERY", 1));
+        Future future = queue.enqueue(new QueryExecutionEvent("QUERY", 1));
         //could be a race condition, lets wait till all messages are processed
-        try { Thread.sleep(100); } catch (Exception ignored) {}
+        wait(future);
         a(queue.getReportSortedBy("avg").size()).shouldBeEqual(reportSize);
+    }
+
+
+    @Test // related to: https://github.com/javalite/activejdbc/issues/451
+    public void shouldNormalizeInSelects(){
+        QueryExecutionEvent event = new QueryExecutionEvent("select * from people where id IN (1,2,3,4)", 1);
+        the(event.getQuery()).shouldBeEqual("select * from people where id IN (...)");
+    }
+
+
+    @Test // related to: https://github.com/javalite/activejdbc/issues/452
+    public void shouldNormalizeOffset(){
+        QueryExecutionEvent event = new QueryExecutionEvent("select * from pages where lesson_id=? order by the_index limit 1 offset 0", 1);
+        the(event.getQuery()).shouldBeEqual("select * from pages where lesson_id=? order by the_index limit 1 offset ...");
     }
 }

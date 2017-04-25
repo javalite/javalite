@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -20,6 +20,7 @@ package org.javalite.activejdbc;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 
 import org.javalite.activejdbc.test_models.Person;
+import org.junit.Before;
 import org.junit.Test;
 import java.util.Date;
 
@@ -29,9 +30,8 @@ import java.util.Date;
 public class CreateModelTest extends ActiveJDBCTest {
 
 
-    @Override
-    public void before() throws Exception {
-        super.before();
+    @Before
+    public void setup() throws Exception {
         deleteAndPopulateTable("people");
     }
     
@@ -59,7 +59,7 @@ public class CreateModelTest extends ActiveJDBCTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfNullPassedForNameOfAttribute() {
 
-        Person.create(null, "John", "last_name", "Margulis", "2001-01-07");
+        Person.create((String) null, "John", "last_name", "Margulis", "2001-01-07");
     }
 
     @Test

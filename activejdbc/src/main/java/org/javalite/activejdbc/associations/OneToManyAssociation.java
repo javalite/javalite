@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -18,21 +18,22 @@ limitations under the License.
 package org.javalite.activejdbc.associations;
 
 import org.javalite.activejdbc.Association;
+import org.javalite.activejdbc.Model;
 
 /**
  * @author Igor Polevoy
  */
 public class OneToManyAssociation extends Association {
 
-    private String  fkName;
+    private final String fkName;
 
     /**
-     * @param source source table, the one that has many targets
-     * @param target target table - many targets belong to source.
+     * @param sourceModelClass source class, the one that has many targets
+     * @param targetModelClass target class - many targets belong to source.
      * @param fkName name of a foreign key in teh target table.
      */
-    public OneToManyAssociation(String source, String target, String fkName) {
-        super(source, target);
+    public OneToManyAssociation(Class<? extends Model> sourceModelClass, Class<? extends Model> targetModelClass, String fkName) {
+        super(sourceModelClass, targetModelClass);
         this.fkName = fkName;
     }
 
@@ -42,21 +43,19 @@ public class OneToManyAssociation extends Association {
 
     @Override
     public String toString() {
-        return new StringBuffer().append(getSource()).append("  ----------<  ").append(getTarget())
-                .append(", type: ").append("has-many").toString();
+        return getSourceClass().getSimpleName() + "  ----------<  " + getTargetClass().getSimpleName() + ", type: " + "has-many";
     }
 
     @Override
     public boolean equals(Object other) {
 
-        if(other == null || !other.getClass().equals(getClass())){
+        if (other == null || !other.getClass().equals(getClass())) {
             return false;
+        } else {
+            OneToManyAssociation otherAss = (OneToManyAssociation) other;
+            return otherAss.fkName.equals(fkName)
+                    && otherAss.getSourceClass().equals(getSourceClass())
+                    && otherAss.getTargetClass().equals(getTargetClass());
         }
-
-        OneToManyAssociation otherAss =(OneToManyAssociation)other;
-
-        return otherAss.fkName.equals(fkName)
-                && otherAss.getSource().equals(getSource())
-                && otherAss.getTarget().equals(getTarget());
     }
 }

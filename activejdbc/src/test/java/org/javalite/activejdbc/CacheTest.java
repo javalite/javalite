@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -24,9 +24,12 @@ import org.javalite.activejdbc.cache.QueryCache;
 import org.javalite.activejdbc.statistics.QueryStats;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.*;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
+
+import static org.javalite.test.jspec.JSpec.$;
 
 
 /**
@@ -34,9 +37,8 @@ import java.util.List;
  */
 public class CacheTest extends ActiveJDBCTest {
 
-    @Override
-    public void before() throws Exception {
-        super.before();
+    @Before
+    public void setup() throws Exception {
         deleteAndPopulateTable("people");
         for (int i = 0; i < 100; i++) {
             Person p = new Person();
@@ -156,22 +158,28 @@ public class CacheTest extends ActiveJDBCTest {
     int count = 0;
     @Test
     public void shouldNotPropagateCacheEventForNonCachedModels(){
-
         CacheEventListener cl = new CacheEventListener() {
             public void onFlush(CacheEvent event) {
                 count++;
             }
         };
-
-        QueryCache.instance().getCacheManager().addCacheEventListener(cl);
+        Registry.cacheManager().addCacheEventListener(cl);
         Person.deleteAll();
         a(count).shouldBeEqual(1);
-
-
         Account.deleteAll();
-
         a(count).shouldBeEqual(1);
-
     }
 
+    int count1 = 0;
+    @Test
+    public void shouldNotPropagateCacheEventOnFlush(){
+        CacheEventListener cl = new CacheEventListener() {
+            public void onFlush(CacheEvent event) {
+                count1++;
+            }
+        };
+        Registry.cacheManager().addCacheEventListener(cl);
+        Registry.cacheManager().flush(new CacheEvent("people", "blah"), false);
+        $(count1).shouldBeEqual(0);
+    }
 }

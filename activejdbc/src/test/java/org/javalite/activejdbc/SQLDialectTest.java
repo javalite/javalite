@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -17,7 +17,7 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
-import org.javalite.activejdbc.dialects.DefaultDialect;
+import org.javalite.activejdbc.dialects.Dialect;
 import org.javalite.activejdbc.dialects.OracleDialect;
 import static org.javalite.test.jspec.JSpec.a;
 import org.junit.Test;
@@ -31,7 +31,7 @@ public class SQLDialectTest {
 
     @Test
     public void testSelectStarParametrized(){
-        DefaultDialect dialect = new OracleDialect();
+        Dialect dialect = new OracleDialect();
         a("SELECT * FROM people WHERE name = ? AND ssn = ? AND dob = ?").shouldBeEqual(
                 dialect.selectStarParametrized("people", "name", "ssn", "dob"));
     }

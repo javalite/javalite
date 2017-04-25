@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -32,7 +32,7 @@ public class Defect122Test extends ActiveJDBCTest {
         Person p = new Person();
         a(p).shouldBe("new");
 
-        p = Person.findById(1);
+        p = Person.findFirst("last_name = ?", "Pesci");
         a(p).shouldNotBe("new");
     }
 }

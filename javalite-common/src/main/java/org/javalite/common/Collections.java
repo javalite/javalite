@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,14 +19,17 @@ import java.util.*;
 
 /**
  * @author Igor Polevoy
+ * @author Eric Nielsen
  */
-public class Collections {
-
+public final class Collections {
+    private Collections() {
+        // not instantiable
+    }
 
     /**
      * Create array from values.
      * @param values values to create array from.
-     * @return array filled with values from arguments. 
+     * @return array filled with values from arguments.
      */
     public static <T> T[] arr(T... values) {
         return values;
@@ -44,11 +47,11 @@ public class Collections {
     /**
      * Creates a set from values.
      *
-     * @param ts values for a set.
+     * @param values values for a set.
      * @return set filled with values.
      */
-    public static <T> Set<T> set(T... ts) {
-        return new HashSet<T>(Arrays.asList(ts));
+    public static <T> Set<T> set(T... values) {
+        return new HashSet<T>(Arrays.asList(values));
     }
 
     /**
@@ -56,17 +59,16 @@ public class Collections {
      *
      * @param keysAndValues list of key value pairs. The number of items must be even.
      * The argument at index 0 is a key of the value at index 1, argument at index 2 is key of value at index 3, and so on.
-     * @return Map filled with keys and values.  
+     * @return Map filled with keys and values.
      */
-    @SuppressWarnings("unchecked")
-    public static <T, K> Map<T, K> map(Object... keysAndValues) {
-        if (keysAndValues.length % 2 != 0) throw new IllegalArgumentException("number of arguments must be even");
+    public static <K, V> Map<K, V> map(Object... keysAndValues) {
+        if (keysAndValues.length % 2 != 0) { throw new IllegalArgumentException("number of arguments must be even"); }
 
-        Map<T, K> result = new HashMap<T, K>();
-        for (int i = 0; i < keysAndValues.length; i += 2) {
-            result.put((T) keysAndValues[i], (K) keysAndValues[i + 1]);
+        Map<K, V> map = new HashMap<K, V>(Math.max(keysAndValues.length, 16));
+        for (int i = 0; i < keysAndValues.length;) {
+            map.put((K) keysAndValues[i++], (V) keysAndValues[i++]);
         }
-        return result;
+        return map;
     }
 
     /**
@@ -86,10 +88,6 @@ public class Collections {
      * @return list with values.
      */
     public static <T> List<T> list(T... values) {
-        List result = new ArrayList<T>();
-        for (T value : values) {
-            result.add(value);
-        }
-        return result;
+        return new ArrayList<T>(Arrays.asList(values));
     }
 }

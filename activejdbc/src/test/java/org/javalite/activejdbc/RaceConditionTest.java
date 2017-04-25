@@ -1,42 +1,44 @@
 package org.javalite.activejdbc;
 
+import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Person;
 import org.junit.Test;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.Collections;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
-import static org.javalite.test.jspec.JSpec.a;
+import static org.javalite.activejdbc.test.JdbcProperties.*;
 
 /**
  * @author Igor Polevoy: 4/4/12 2:40 PM
+ * @author Eric Nielsen
  */
-public class RaceConditionTest {
+public class RaceConditionTest extends ActiveJDBCTest{
 
     @Test
-    public void shouldNotGetRaceCondition() throws InterruptedException {
-
-        final ConcurrentLinkedQueue<Integer> queue = new ConcurrentLinkedQueue<Integer>();
-
-        Runnable r = new Runnable() {
-            public void run() {
-
-                Base.open("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/activejdbc", "root", "p@ssw0rd");
+    //TODO: what is test testing?
+    public void shouldNotGetRaceCondition() throws ExecutionException, InterruptedException {
+        Callable<Person> task = new Callable<Person>() {
+            @Override
+            public Person call() throws Exception {
+                Base.open(driver(), url(), user(), password());
                 Person p = new Person();
                 p.set("name", "Igor");
                 Base.close();
-                queue.add(1);
+                return p;
             }
         };
-
-        for (int i = 0; i < 10; i++) {
-            new Thread(r).start();
+        ExecutorService executor = Executors.newFixedThreadPool(10);
+        try {
+            for (Future<Person> future : executor.invokeAll(Collections.nCopies(10, task))) {
+                future.get();
+            }
+        } finally {
+            executor.shutdownNow();
         }
-
-
-        Thread.sleep(2000);
-
-
-        a(queue.size()).shouldEqual(10);
     }
-
 }

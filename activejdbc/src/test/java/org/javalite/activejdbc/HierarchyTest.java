@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -53,6 +53,7 @@ public class HierarchyTest extends ActiveJDBCTest {
 	 */
 	@Test
 	public void shouldAcceptMultipleLevelsInheritance() {
-		Cake.count();
+        Cake.createIt("name", "Cheese");
+		a(Cake.count()).shouldBeEqual(1);
 	}
 }

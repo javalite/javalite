@@ -1,20 +1,18 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
-
-
 package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
@@ -26,91 +24,74 @@ import java.util.*;
 /**
  * @author Igor Polevoy
  */
-public class MetaModels {
+class MetaModels {
 
-    private final static Logger logger = LoggerFactory.getLogger(MetaModels.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MetaModels.class);
 
-    Map<String, MetaModel> metaModelsByTableName = new HashMap<String, MetaModel>();
-    Map<Class<? extends Model>, MetaModel> metaModelsByClass = new HashMap<Class<? extends Model>, MetaModel>();
-    Map<String, MetaModel> metaModelsByClassName = new HashMap<String, MetaModel>();
+    private final Map<String, MetaModel> metaModelsByTableName = new CaseInsensitiveMap<>();
+    private final Map<String, MetaModel> metaModelsByClassName = new HashMap<>();
+    //these are all many to many associations across all models.
+    private final List<Many2ManyAssociation> many2ManyAssociations = new ArrayList<>();
 
-    void addMetaModel(MetaModel mm, String tableName, Class<? extends Model> modelClass) {
-        Object o = metaModelsByClass.put(modelClass, mm);
+    void addMetaModel(MetaModel mm, Class<? extends Model> modelClass) {
+        Object o = metaModelsByClassName.put(modelClass.getName(), mm);
         if (o != null) {
-            logger.warn("Double-register: " + modelClass + ": " + o);
+            LOGGER.warn("Double-register: {}: {}", modelClass, o);
         }
-        o = metaModelsByTableName.put(tableName, mm);
+        o = metaModelsByTableName.put(mm.getTableName(), mm);
+        many2ManyAssociations.addAll(mm.getManyToManyAssociations(Collections.<Association>emptyList()));
         if (o != null) {
-            logger.warn("Double-register: " + tableName + ": " + o);
+            LOGGER.warn("Double-register: {}: {}", mm.getTableName(), o);
         }
-
-        metaModelsByClassName.put(modelClass.getName(), mm);
-    }
-
-    MetaModel getMetaModelByClassName(String className) {
-        return metaModelsByClassName.get(className);
     }
 
     MetaModel getMetaModel(Class<? extends Model> modelClass) {
-        return metaModelsByClass.get(modelClass);
+        return metaModelsByClassName.get(modelClass.getName());
     }
 
     MetaModel getMetaModel(String tableName) {
-        MetaModel mm = metaModelsByTableName.get(tableName);
-        if(mm != null){
-            return mm;
-        }
-        mm = metaModelsByTableName.get(tableName.toLowerCase());
-        if(mm != null){
-            return mm;
-        }
-        return metaModelsByTableName.get(tableName.toUpperCase());
+        return metaModelsByTableName.get(tableName);
     }
 
     String[] getTableNames(String dbName) {
 
-        ArrayList<String> tableNames = new ArrayList<String>();
+        ArrayList<String> tableNames = new ArrayList<>();
         for (MetaModel metaModel : metaModelsByTableName.values()) {
             if (metaModel.getDbName().equals(dbName))
                 tableNames.add(metaModel.getTableName());
         }
-        return tableNames.toArray(new String[]{});
+        return tableNames.toArray(new String[tableNames.size()]);
     }
 
-
-    Class getModelClass(String tableName) {
-        return  metaModelsByTableName.containsKey(tableName) ? metaModelsByTableName.get(tableName).getModelClass() : null;
+    Class<? extends Model> getModelClass(String tableName) {
+        MetaModel mm = metaModelsByTableName.get(tableName);
+        return mm == null ? null : mm.getModelClass();
     }
 
     String getTableName(Class<? extends Model> modelClass) {
-        MetaModel mm = metaModelsByClass.get(modelClass);
-        return mm == null ? null : mm.getTableName();
+        return metaModelsByClassName.containsKey(modelClass.getName())?
+            metaModelsByClassName.get(modelClass.getName()).getTableName():null;
     }
 
     public void setColumnMetadata(String table, Map<String, ColumnMetadata> metaParams) {
         metaModelsByTableName.get(table).setColumnMetadata(metaParams);
     }
 
-    //these are all many to many associations across all models.
-    private List<Many2ManyAssociation> many2ManyAssociations = new ArrayList<Many2ManyAssociation>();
-
+    /**
+     * An edge is a table in a many to many relationship that is not a join.
+     *
+     * @param join join table
+     *
+     * @return edges for a join.
+     */
     protected List<String> getEdges(String join) {
-
-        List<String> results = new ArrayList<String>();
-        if (many2ManyAssociations.size() == 0) {
-            for (String table : metaModelsByTableName.keySet()) {
-                MetaModel mm = metaModelsByTableName.get(table);
-                many2ManyAssociations.addAll(mm.getManyToManyAssociations(new ArrayList<Association>()));
+        List<String> results = new ArrayList<>();
+        for (Many2ManyAssociation a : many2ManyAssociations) {
+            if (a.getJoin().equalsIgnoreCase(join)) {
+                results.add(getMetaModel(a.getSourceClass()).getTableName());
+                results.add(getMetaModel(a.getTargetClass()).getTableName());
             }
         }
-
-        for(Many2ManyAssociation ass: many2ManyAssociations){
-            if(ass.getJoin().equalsIgnoreCase(join)){
-                results.add(ass.getSource());
-                results.add(ass.getTarget());
-            }
-        }
-
         return results;
     }
 }

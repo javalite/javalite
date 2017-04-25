@@ -1,37 +1,37 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
-
-
 package org.javalite.test.jspec;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import static org.javalite.common.Inflector.capitalize;
 
+/**
+ * @author Igor Polevoy
+ * @author Eric Nielsen
+ */
 public class Expectation<T> {
 
-    private T actual;
+    private final T actual;
 
     public Expectation(T actual) {
         this.actual = actual;
     }
-
-    public Expectation() {}
-
 
     /**
      * Alias to {@link #shouldBeEqual(Object)}.
@@ -43,30 +43,42 @@ public class Expectation<T> {
     }
 
     /**
-     * Tested value is  equal expected.
+     * Tested value is equal expected.
      *
      * @param expected expected value.
      */
     public void shouldBeEqual(T expected) {
         checkNull();
-        String expectedName = expected == null? "null":expected.getClass().getName();
-        String actualName = actual == null? "null":actual.getClass().getName();
+        if (actual == null) {
+            if (expected != null) { throw newShouldBeEqualException(expected); }
+        } else {
+            if (expected == null) { throw newShouldBeEqualException(expected); }
+            //TODO: improve Number comparison, see http://stackoverflow.com/questions/2683202/comparing-the-values-of-two-generic-numbers
+            if (actual instanceof Number && expected instanceof Number) {
+                if (((Number) actual).doubleValue() != ((Number) expected).doubleValue()) {
+                    throw newShouldBeEqualException(expected);
+                }
+            } else if (!actual.equals(expected)) {
+                throw newShouldBeEqualException(expected);
+            }
+        }
+    }
 
-        TestException te = new TestException("\nTest object: \n" +
-                actualName +  " == <" + actual + "> \n" +
-                "and expected\n" +
-                expectedName + " == <" + expected + "> \nare not equal, but they should be.");
-
-
-        if(actual == null && expected != null || actual != null && expected == null)
-            throw te;
-
-        if (actual instanceof Number && expected instanceof Number) {
-            Double t1 = ((Number) actual).doubleValue();
-            Double t2 = ((Number) expected).doubleValue();
-            if (!t1.equals(t2))
-                throw te;
-        } else if (!actual.equals(expected)) throw te;
+    private TestException newShouldBeEqualException(T expected) {
+        StringBuilder sb = new StringBuilder().append("Test object:\n");
+        if (actual == null) {
+            sb.append("null");
+        } else {
+            sb.append(actual.getClass().getName()).append(" == <").append(actual).append(">\n");
+        }
+        sb.append("and expected\n");
+        if (expected == null) {
+            sb.append("null");
+        } else {
+            sb.append(expected.getClass().getName()).append(" == <").append(expected).append(">\n");
+        }
+        sb.append("are not equal, but they should be.");
+        return new TestException(sb.toString());
     }
 
     /**
@@ -100,7 +112,7 @@ public class Expectation<T> {
 
     /**
      * Invokes a boolean method and uses return value in comparison.
-     * 
+     *
      * @param booleanMethod name of boolean method as specified in Java Beans specification. Example: if method name
      * is <code>isValid()</code>, then the string "valid" needs to be passed. This results in readable  code
      * such as:
@@ -109,7 +121,7 @@ public class Expectation<T> {
      * </pre>
      */
     public void shouldBe(String booleanMethod) {
-        invokeBoolean(booleanMethod, true);
+        invokeBoolean(booleanMethod, Boolean.TRUE);
     }
 
     /**
@@ -123,7 +135,7 @@ public class Expectation<T> {
      * </pre>
      */
     public void shouldNotBe(String booleanMethod) {
-        invokeBoolean(booleanMethod, false);
+        invokeBoolean(booleanMethod, Boolean.FALSE);
     }
 
     /**
@@ -218,14 +230,9 @@ public class Expectation<T> {
     /**
      * Tests that an expected value is contained in the tested object. The tested object can be of the following types:
      * <ul>
-     *     <li>Any object - in this case, the string representation of this object is tested to contain a string representation of
-     *     expected value as a substring.<br/>For example, this will pass:
-     *     <pre><code>
-     *         the("meaning of life is 42").shouldContain("meaning");
-     *     </code>
-     *     </pre></li>
+     *
      *     <li><code>java.util.List</code> - in this case, the tested list is expected to contain an expected object.
-     *     <br/>For example, this will pass: <pre><code>
+     *     <b></b>For example, this will pass: <pre><code>
      *         a(Arrays.asList(1, 2, 3)).shouldContain(3);
      *     </code></pre>
      *
@@ -233,7 +240,7 @@ public class Expectation<T> {
      *
      *     </li>
      *     <li><code>java.util.Map</code> - in this case, the tested map is expected to contain an object whose key is the expected object.
-     *     <br/>For example, this will pass: <pre><code>
+     *     <b></b>For example, this will pass: <pre><code>
      *         Map map = new HashMap();
      *         map.put("one", 1);
      *         map.put("two", 2);
@@ -242,6 +249,12 @@ public class Expectation<T> {
      *     </code>
      *     </pre>
      *     </li>
+     *     <li>Any object - in this case, the string representation of this object is tested to contain a string representation of
+     *     expected value as a substring.<b></b>For example, this will pass:
+     *     <pre><code>
+     *         the("meaning of life is 42").shouldContain("meaning");
+     *     </code>
+     *     </pre></li>
      * </ul>
      *
      * @param expected value that is expected to be contained in a tested object.
@@ -258,26 +271,18 @@ public class Expectation<T> {
      */
     public void shouldNotContain(Object expected) {
         if(contains(expected))
-            throw new TestException("tested value contain expected value: " + expected + ", but it should not");
+            throw new TestException("tested object contains the value: " + expected + ", but it should not");
     }
 
-    private boolean contains(Object expected){
+    private boolean contains(Object expected) {
         checkNull();
-        if(actual instanceof List){
-            List actualList = (List) actual;
-            if(actualList.contains(expected)){
-                return true;
-            }
+        if (actual instanceof Collection) {
+            return ((Collection) actual).contains(expected);
+        } else if (actual instanceof Map) {
+            return ((Map) actual).containsKey(expected);
+        } else {
+            return actual.toString().contains(expected.toString());
         }
-
-        if(actual instanceof Map){
-            Map actualMap = (Map) actual;
-            if(actualMap.containsKey(expected)){
-                return true;
-            }
-        }
-
-        return actual.toString().contains(expected.toString());
     }
 
     /**
@@ -290,7 +295,14 @@ public class Expectation<T> {
         if (actual == expected) throw new TestException("references are the same, but they should not be");
     }
 
-
+    private Method booleanMethodNamed(String name) {
+        try {
+            Method m = actual.getClass().getMethod(name);
+            return (boolean.class.equals(m.getReturnType()) || Boolean.class.equals(m.getReturnType())) ? m : null;
+        } catch (NoSuchMethodException ignore) {
+            return null;
+        }
+    }
 
     /**
      * Invokes a boolean method.
@@ -298,30 +310,30 @@ public class Expectation<T> {
      * @param booleanMethod name of method.
      * @param returnValue - if execution of boolean method should return true or false to pass the test.
      */
-    private void invokeBoolean(String booleanMethod, boolean returnValue) {
+    private void invokeBoolean(String booleanMethod, Boolean returnValue) {
         checkNull();
-        Method m = null;
-        try {
-
-            String methodName1 = "is" + capitalize(booleanMethod);
-            String methodName2 = "has" + capitalize(booleanMethod);
-
-            if (m == null)
-                try {m = actual.getClass().getMethod(methodName1);} catch (NoSuchMethodException ignore) {}
-            if (m == null)
-                try {m = actual.getClass().getMethod(methodName2);} catch (NoSuchMethodException ignore) {}
-
-            if (m == null)
-                throw new IllegalArgumentException("failed to find a matching method for class: "
-                        + actual.getClass() + ", named: " + methodName1 + " or " + methodName2);
-
-            boolean result = (Boolean)m.invoke(actual);
-
-            if(returnValue != result)
-                throw new TestException("Method: " + m.getName() + " should return " + returnValue + ", but returned " + result);
+        String methodName1 = "is" + capitalize(booleanMethod);
+        String methodName2 = "has" + capitalize(booleanMethod);
+        Method m = booleanMethodNamed(booleanMethod);
+        if (m == null) {
+            m = booleanMethodNamed(methodName1);
         }
-        catch (TestException e) {throw e;}
-        catch (Exception e) {throw new RuntimeException(e);}
+        if (m == null) {
+            m = booleanMethodNamed(methodName2);
+        }
+        if (m == null) {
+            throw new IllegalArgumentException("failed to find a matching method for class: "
+                    + actual.getClass() + ", named: " + booleanMethod + ", " + methodName1 + " or " + methodName2);
+        }
+        Object result;
+        try {
+           result = m.invoke(actual);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        if (!returnValue.equals(result)) {
+            throw new TestException("Method: " + m.getName() + " should return " + returnValue + ", but returned " + result);
+        }
     }
 
     private void checkNull(){

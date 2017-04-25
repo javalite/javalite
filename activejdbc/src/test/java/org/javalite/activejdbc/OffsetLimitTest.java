@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -20,6 +20,7 @@ package org.javalite.activejdbc;
 import org.javalite.activejdbc.Model;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Page;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
@@ -30,9 +31,8 @@ import java.util.List;
  */
 public class OffsetLimitTest extends ActiveJDBCTest {
 
-    @Override
-    public void before() throws Exception {
-        super.before();
+    @Before
+    public void setup() throws Exception {
         deleteAndPopulateTable("pages");
         for (int i = 1; i <= 1000; i++) {
             Page.create("description", "description: " + i, "word_count", 11).saveIt();

@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -17,15 +17,22 @@ limitations under the License.
 
 package org.javalite.activejdbc.statistics;
 
+import java.util.regex.Pattern;
+
 /**
  * @author Igor Polevoy
  */
 public class QueryExecutionEvent {
-    private final String query;
+
+    private static final Pattern IN_PATTERN = Pattern.compile("(IN|in)\\s*\\(.*\\)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern OFFSET_PATTERN = Pattern.compile("(offset|OFFSET|Offset)\\s*\\d*", Pattern.CASE_INSENSITIVE);
+
+    private String query;
     private final long time;
 
     public QueryExecutionEvent(String query, long time) {
-        this.query = query;
+        this.query = IN_PATTERN.matcher(query).replaceAll("IN (...)");
+        this.query = OFFSET_PATTERN.matcher(this.query).replaceAll("offset ...");
         this.time = time;
     }
 

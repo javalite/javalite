@@ -11,6 +11,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface BelongsToParents {
-    public BelongsTo[] value();
+    BelongsTo[] value();
 }
 

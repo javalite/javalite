@@ -1,0 +1,62 @@
+group 'org.javalite'
+version '2.0-SNAPSHOT'
+
+apply plugin: 'groovy'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven {
+        url "http://repo.javalite.io/"
+    }
+}
+
+configurations {
+    deployerJars
+}
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+    compile group: 'org.javalite', name: 'activejdbc', version: '2.0-SNAPSHOT'
+    compile group: 'org.javalite', name: 'activejdbc-instrumentation', version: '2.0-SNAPSHOT'
+
+    deployerJars group: 'org.apache.maven.wagon', name: 'wagon-http', version: '2.2'
+}
+
+task docJar(type: Jar, dependsOn: groovydoc) {
+    classifier = 'javadoc'
+    from 'build/docs/groovydoc'
+}
+
+task sourceJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+// copy the compiled classes into the maven output dir so it can assemble the jar
+task moveClasses(type: Copy, dependsOn: 'compileGroovy') {
+    from sourceSets.main.output
+    into 'target/classes'
+}
+
+task moveJars(type: Copy, dependsOn: ['docJar', 'sourceJar']) {
+    from "$buildDir/libs"
+    into 'target'
+
+    // exclude the main jar, we need to let maven assemble it in order for the pom to be included
+    exclude jar.archivePath.name
+}
+
+build.dependsOn << [moveJars, moveClasses]
+
+clean {
+    delete 'target'
+}
+
+artifacts {
+    archives jar
+    archives docJar
+    archives sourceJar
+}

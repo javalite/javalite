@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -17,6 +17,7 @@ limitations under the License.
 
 package org.javalite.activejdbc.validation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ValidationBuilder<T extends Validator> {
@@ -25,6 +26,11 @@ public class ValidationBuilder<T extends Validator> {
 
     public ValidationBuilder(List<T> validators){
         this.validators = validators;
+    }
+
+    public ValidationBuilder(T validator) {
+        validators = new ArrayList<>(1);
+        validators.add(validator);
     }
 
     //TODO implement resource bundles here so that the argument cam be either literal string or key to the message

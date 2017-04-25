@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -74,7 +74,7 @@ public class Many2ManyRelationshipTest extends ActiveJDBCTest {
         doctor.add(jimThePatient);
         a(DoctorsPatients.count()).shouldBeEqual(5);
 
-        List<Patient> patients = doctor.getAll(Patient.class).orderBy("id");
+        List<Patient> patients = doctor.getAll(Patient.class).orderBy("patients.id");
         a(patients.size()).shouldBeEqual(3);
         a(patients.get(2).get("last_name")).shouldBeEqual("Smith");
     }
@@ -102,26 +102,5 @@ public class Many2ManyRelationshipTest extends ActiveJDBCTest {
 
         List<Project> projects = programmer.get(Project.class, "duration_weeks = ?", 3);
         a(projects.size()).shouldBeEqual(1);
-    }
-
-
-    @Test
-    public void shouldSelectManyToManyWithGet(){
-        deleteAndPopulateTables("doctors", "patients", "doctors_patients");
-        Doctor doctor = Doctor.findById(1);
-        List<Patient> patients = doctor.getAll(Patient.class);
-        a(2).shouldBeEqual(patients.size());
-
-        doctor = Doctor.findById(2);
-        patients = doctor.getAll(Patient.class);
-        a(1).shouldBeEqual(patients.size());
-
-        Patient p = Patient.findById(1);
-        List<Doctor> doctors = p.getAll(Doctor.class);
-        a(2).shouldBeEqual(doctors.size());
-
-        p = Patient.findById(2);
-        doctors = p.getAll(Doctor.class);
-        a(1).shouldBeEqual(doctors.size());
     }
 }

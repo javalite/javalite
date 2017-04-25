@@ -1,20 +1,18 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
-
-
 package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.test.ActiveJDBCTest;
@@ -31,10 +29,6 @@ import java.util.List;
  */
 public class PolymorphicAssociationsOverrideTest extends ActiveJDBCTest {
 
-    @Override
-    public void before() throws Exception {
-        super.before();
-    }
 
     @Test
     public void shouldAddPolymorphicChild() {
@@ -52,7 +46,6 @@ public class PolymorphicAssociationsOverrideTest extends ActiveJDBCTest {
         Vehicle car = Vehicle.createIt("name", "car");
         car.add(Classification.create("name", "four wheeled"));
         car.add(Classification.create("name", "sedan"));
-        
 
         List<Classification> classifications = car.getAll(Classification.class).orderBy("id");
 
@@ -91,14 +84,14 @@ public class PolymorphicAssociationsOverrideTest extends ActiveJDBCTest {
     @Test
     public void shouldRemovePolymorphicChildren() {
         deleteAndPopulateTables("vehicles", "mammals", "classifications");
-        
+
         Vehicle car = Vehicle.createIt("name", "car");
         Classification fourWheels = (Classification)Classification.create("name", "four wheeled");
         car.add(fourWheels);
         car.add(Classification.create("name", "sedan"));
 
         a(Classification.count()).shouldBeEqual(2);
-        car.remove(fourWheels);
+        a(car.remove(fourWheels)).shouldBeEqual(1);
         a(Classification.count()).shouldBeEqual(1);
         a(car.getAll(Classification.class).get(0).get("name")).shouldBeEqual("sedan");
     }

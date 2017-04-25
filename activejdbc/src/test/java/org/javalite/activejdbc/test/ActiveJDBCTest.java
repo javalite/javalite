@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -23,58 +23,65 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import static org.javalite.common.Collections.list;
-
+import org.javalite.activejdbc.statement_providers.*;
+import org.javalite.common.Collections;
 import org.javalite.activejdbc.*;
-import org.javalite.activejdbc.test_models.Person;
 import org.javalite.test.jspec.JSpecSupport;
 
 import org.junit.After;
 import org.junit.Before;
 
 import static org.javalite.activejdbc.test.JdbcProperties.*;
+import static org.javalite.common.Util.*;
 
+public abstract class ActiveJDBCTest implements JSpecSupport {
 
-public abstract class ActiveJDBCTest extends JSpecSupport {
-
-    static boolean schemaGenerated = false;
+    private static boolean schemaGenerated = false;
 
     @Before
-    public void before() throws Exception {
+    public final void before() throws Exception {
         Base.open(driver(), url(), user(), password());
-
-        if(!schemaGenerated){
-            generateSchema();
-            schemaGenerated = true;
-            System.out.println("DB: " + db() + ", Driver:" + driver());
+        synchronized(this) {
+            if (!schemaGenerated) {
+                generateSchema();
+                schemaGenerated = true;
+                System.out.println("DB: " + db() + ", Driver: " + driver());
+            }
         }
-
         Base.connection().setAutoCommit(false);
-
     }
 
     @After
-    public void after() {
+    public final void after() {
 
         try {
             Base.connection().rollback();
         } catch (SQLException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
         Base.close();
     }
 
     protected void generateSchema() throws SQLException, ClassNotFoundException {
-        if (db().equals("mysql")) {
-            DefaultDBReset.resetSchema(getStatements(";", "mysql_schema.sql"));
-        }else if (db().equals("postgresql")) {
-            DefaultDBReset.resetSchema(getStatements(";", "postgres_schema.sql"));
-        } else if (db().equals("h2")) {
-            DefaultDBReset.resetSchema(getStatements(";", "h2_schema.sql"));
-        } else if (db().equals("oracle")) {
-            OracleDBReset.resetOracle(getStatements("-- BREAK", "oracle_schema.sql"));
-        } else if (db().equals("mssql")) {
-        	DefaultDBReset.resetSchema(getStatements("; ", "mssql_schema.sql"));
+        switch (db()) {
+            case "mysql":
+                DefaultDBReset.resetSchema(getStatements(";", "mysql_schema.sql"));
+                break;
+            case "postgresql":
+                DefaultDBReset.resetSchema(getStatements(";", "postgres_schema.sql"));
+                break;
+            case "h2":
+                DefaultDBReset.resetSchema(getStatements(";", "h2_schema.sql"));
+                break;
+            case "oracle":
+                OracleDBReset.resetOracle(getStatements("-- BREAK", "oracle_schema.sql"));
+                break;
+            case "mssql":
+                DefaultDBReset.resetSchema(getStatements("; ", "mssql_schema.sql"));
+                break;
+            case "sqlite":
+                DefaultDBReset.resetSchema(getStatements("; ", "sqlite_schema.sql"));
+                break;
         }
     }
 
@@ -89,14 +96,14 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
             System.out.println("Getting statements from file: " + file);
             InputStreamReader isr = new InputStreamReader(ActiveJDBCTest.class.getClassLoader().getResourceAsStream(file));
             BufferedReader reader = new BufferedReader(isr);
-            StringBuffer text = new StringBuffer();
+            StringBuilder text = new StringBuilder();
             String t;
             while ((t = reader.readLine()) != null) {
-                text.append(t + '\n');
+                text.append(t);
+                text.append('\n');
             }
             return text.toString().split(delimiter);
-        }
-        catch (Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -104,7 +111,7 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
     /**
      * Convenience method for testing.
      *
-     * @param year
+     * @param year year
      * @param month - 1 through 12
      * @param day   - day of month
      * @return Timestamp instance
@@ -113,32 +120,53 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
         return new Timestamp(getTime(year, month, day));
     }
 
+    /**
+     * Convenience method for testing.
+     *
+     * @param year year
+     * @param month 1 through 12
+     * @param day day of month
+     * @param hour 0 through 23
+     * @param minute minute
+     * @param second second
+     * @param millisecond millisecond
+     * @return Timestamp instance
+     */
+    public Timestamp getTimestamp(int year, int month, int day,
+            int hour, int minute, int second, int millisecond) {
+        return new Timestamp(getTime(year, month, day, hour, minute, second, millisecond));
+    }
 
     public java.sql.Date getDate(int year, int month, int day) {
         return new java.sql.Date(getTime(year, month, day));
     }
 
     /**
-     * there is nothing more annoying than Java date/time APIs!
+     * Convenience method for testing.
      *
-     * @param year
-     * @param month
-     * @param day
-     * @return
+     * @param year year
+     * @param month 1 through 12
+     * @param day day of month
+     * @return time value
      */
     public long getTime(int year, int month, int day) {
+        return getTime(year, month, day, 0, 0, 0, 0);
+    }
+
+    /**
+     * there is nothing more annoying than Java date/time APIs!
+     */
+    public long getTime(int year, int month, int day, int hour, int minute, int second, int millisecond) {
         GregorianCalendar calendar = new GregorianCalendar();
         calendar.set(Calendar.YEAR, year);
         calendar.set(Calendar.MONTH, month - 1);
         calendar.set(Calendar.DATE, day);
-        calendar.set(Calendar.HOUR, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, second);
+        calendar.set(Calendar.MILLISECOND, millisecond);
         return calendar.getTime().getTime();
     }
-
 
     protected void deleteAndPopulateTables(String... tables)  {
         for (String table : tables)
@@ -150,72 +178,52 @@ public abstract class ActiveJDBCTest extends JSpecSupport {
         populateTable(table);
     }
 
-    
     protected void deleteFromTable(String table){
-        executeStatements(list(getStatementProvider().getDeleteStatement(table)));
+        executeStatements(Collections.list(getStatementProvider().getDeleteStatement(table)));
     }
 
-    protected void populateTable(String table) {        
+    protected void populateTable(String table) {
         executeStatements(getStatementProvider().getPopulateStatements(table));
     }
 
     private StatementProvider getStatementProvider(){
-        StatementProvider statementProvider = null;
-        if (db().equals("mysql")) {
-            statementProvider = new MySQLStatementProvider();
-        } else if (db().equals("oracle")) {
-            statementProvider = new OracleStatementProvider();
-        } else if (db().equals("postgresql")) {
-            statementProvider = new PostgreSQLStatementProvider();
-        } else if (db().equals("h2")) {
-            statementProvider = new H2StatementProvider();
-        } else if (db().equals("mssql")) {
-            statementProvider = new MSSQLStatementProvider();
-        } else {
-        	throw new RuntimeException("Unknown db:" + db());
+        StatementProvider statementProvider;
+        switch (db()) {
+            case "mysql":
+                statementProvider = new MySQLStatementProvider();
+                break;
+            case "oracle":
+                statementProvider = new OracleStatementProvider();
+                break;
+            case "postgresql":
+                statementProvider = new PostgreSQLStatementProvider();
+                break;
+            case "h2":
+                statementProvider = new H2StatementProvider();
+                break;
+            case "mssql":
+                statementProvider = new MSSQLStatementProvider();
+                break;
+            case "sqlite":
+                statementProvider = new SQLiteStatementProvider();
+                break;
+            default:
+                throw new RuntimeException("Unknown db:" + db());
         }
         return statementProvider;
     }
 
-
-
     private void executeStatements(List<String> statements) {
-    	String curStmt = "";
-        try {
-            for (String statement : statements) {
-            	curStmt = statement;
-                Statement st;
+        for (String statement : statements) {
+            Statement st = null;
+            try {
                 st = Base.connection().createStatement();
-                try{
-                    st.executeUpdate(statement);
-                }
-                catch(Exception e){
-                    throw e;
-                }
-
-                st.close();
-            }            
+                st.executeUpdate(statement);
+            } catch (SQLException e) {
+                throw new RuntimeException(statement, e);
+            } finally {
+                closeQuietly(st);
+            }
         }
-        catch (Exception e) {
-            throw new RuntimeException(curStmt, e);
-        }
-    }
-
-
-    PrintStream errOrig;
-    PrintStream err;
-    ByteArrayOutputStream bout;
-
-    protected void replaceSystemError() {
-        errOrig = System.err;
-        bout = new ByteArrayOutputStream();
-        err = new PrintStream(bout);
-        System.setErr(err);
-    }
-
-    protected String getSystemError() throws IOException {
-        err.flush();
-        bout.flush();
-        return bout.toString();
     }
 }

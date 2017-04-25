@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2010 Igor Polevoy 
+Copyright 2009-2016 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License"); 
 you may not use this file except in compliance with the License. 
@@ -23,11 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.*;
 
 /**
  * This class will collect statistics on executed queries and then can produce reports sorted by
@@ -48,7 +44,7 @@ import java.util.concurrent.ThreadFactory;
 public class StatisticsQueue {
 
     private final ExecutorService worker;
-    private final ConcurrentMap<String, QueryStats> statsByQuery = new ConcurrentHashMap<String, QueryStats>();
+    private final ConcurrentMap<String, QueryStats> statsByQuery = new ConcurrentHashMap<>();
 
     private volatile boolean paused;
 
@@ -57,7 +53,7 @@ public class StatisticsQueue {
     public StatisticsQueue(boolean paused) {
         this.paused = paused;
         worker = Executors.newFixedThreadPool(1, new ThreadFactory() {
-            public Thread newThread(Runnable runnable) {
+            @Override public Thread newThread(Runnable runnable) {
                 Thread res = new Thread(runnable);
                 res.setDaemon(true);
                 res.setName("Statistics queue thread");
@@ -75,8 +71,8 @@ public class StatisticsQueue {
      */
     public void stop() {
         int notProcessed = worker.shutdownNow().size();
-        if (notProcessed != 0) {
-            logger.info("Worker exiting, " + notProcessed + " execution events remaining, time:" + System.currentTimeMillis());
+        if (logger.isInfoEnabled() && notProcessed != 0) {
+            logger.info("Worker exiting, {} execution events remaining, time: {}", notProcessed, System.currentTimeMillis());
         }
     }
 
@@ -89,10 +85,18 @@ public class StatisticsQueue {
         paused = val;
     }
 
-    public void enqueue(final QueryExecutionEvent event) {
+    /**
+     * Enqueues a query execution event for processing.
+     *
+     * @param event instance of event.
+     * @return instance of Future associated with processing of event. You can examine that object
+     * to see if this event was processed.  In case the queue is paused, an event is not processed,
+     * and return value is <code>null</code>.
+     */
+    public Future enqueue(final QueryExecutionEvent event) {
         if (!paused) {
-            worker.submit(new Runnable() {
-                public void run() {
+            return worker.submit(new Runnable() {
+                @Override public void run() {
                     QueryStats queryStats = statsByQuery.get(event.getQuery());
                     if (queryStats == null) {
                         statsByQuery.put(event.getQuery(), queryStats = new QueryStats(event.getQuery()));
@@ -100,6 +104,8 @@ public class StatisticsQueue {
                     queryStats.addQueryTime(event.getTime());
                 }
             });
+        }else{
+            return null;
         }
     }
 
@@ -121,7 +127,7 @@ public class StatisticsQueue {
             throw new IllegalArgumentException("allowed values are: " + Arrays.toString(SortBy.values()));
         }
 
-        List<QueryStats> res = new ArrayList<QueryStats>(statsByQuery.values());
+        List<QueryStats> res = new ArrayList<>(statsByQuery.values());
         Collections.sort(res, sortBy.getComparator());
         return res;
     }

@@ -1,3 +1,4 @@
+-- noinspection SqlNoDataSourceInspectionForFile
 DROP TABLE IF EXISTS people;
 CREATE TABLE people (id  int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR(56) NOT NULL, last_name VARCHAR(56), dob DATE, graduation_date DATE, created_at DATETIME, updated_at DATETIME);
 
@@ -7,14 +8,28 @@ CREATE TABLE accounts (id  int(11) NOT NULL auto_increment PRIMARY KEY, account 
 DROP TABLE IF EXISTS temperatures;
 CREATE TABLE temperatures (id  int(11) NOT NULL  auto_increment PRIMARY KEY, temp SMALLINT);
 
+DROP TABLE IF EXISTS shard1_temperatures;
+CREATE TABLE shard1_temperatures (id  int(11) NOT NULL  auto_increment PRIMARY KEY, temp SMALLINT);
+
+DROP TABLE IF EXISTS shard2_temperatures;
+CREATE TABLE shard2_temperatures (id  int(11) NOT NULL  auto_increment PRIMARY KEY, temp SMALLINT);
+
 DROP TABLE IF EXISTS salaries;
 CREATE TABLE salaries (id  int(11) NOT NULL  auto_increment PRIMARY KEY, salary DECIMAL(7, 2));
 
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (id  int(11) NOT NULL  auto_increment PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), email VARCHAR(56));
 
+DROP TABLE IF EXISTS shard1_users;
+CREATE TABLE shard1_users (id  int(11) NOT NULL  auto_increment PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), email VARCHAR(56));
+
 DROP TABLE IF EXISTS addresses;
 CREATE TABLE addresses (id  int(11) NOT NULL  auto_increment PRIMARY KEY, address1 VARCHAR(56), address2 VARCHAR(56), city VARCHAR(56), state VARCHAR(56), zip VARCHAR(56), user_id int(11));
+
+DROP TABLE IF EXISTS shard1_addresses;
+CREATE TABLE shard1_addresses (id  int(11) NOT NULL  auto_increment PRIMARY KEY, address1 VARCHAR(56), address2 VARCHAR(56), city VARCHAR(56), state VARCHAR(56), zip VARCHAR(56), user_id int(11));
+
+
 
 DROP TABLE IF EXISTS rooms;
 CREATE TABLE rooms (id  int(11) NOT NULL  auto_increment PRIMARY KEY, name VARCHAR(56), address_id int(11));
@@ -37,17 +52,23 @@ CREATE TABLE animals (animal_id  int(11) NOT NULL  auto_increment PRIMARY KEY, a
 DROP TABLE IF EXISTS patients;
 CREATE TABLE patients (id  int(11) NOT NULL  auto_increment PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56));
 
+DROP TABLE IF EXISTS shard1_patients;
+CREATE TABLE shard1_patients (id  int(11) NOT NULL  auto_increment PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56));
+
 DROP TABLE IF EXISTS prescriptions;
 CREATE TABLE prescriptions (id  int(11) NOT NULL  auto_increment PRIMARY KEY, name VARCHAR(56), patient_id int(11));
 
 DROP TABLE IF EXISTS doctors;
 CREATE TABLE doctors (id  int(11) NOT NULL  auto_increment PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), discipline varchar(56));
 
+DROP TABLE IF EXISTS shard1_doctors;
+CREATE TABLE shard1_doctors (id  int(11) NOT NULL  auto_increment PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), discipline varchar(56));
+
 DROP TABLE IF EXISTS doctors_patients;
 CREATE TABLE doctors_patients (id  int(11) NOT NULL  auto_increment PRIMARY KEY, doctor_id int(11), patient_id int(11));
 
 DROP TABLE IF EXISTS students;
-CREATE TABLE students (id  int(11) NOT NULL  auto_increment PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), dob DATE);
+CREATE TABLE students (id  int(11) NOT NULL auto_increment PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), dob DATE, enrollment_date DATETIME);
 
 DROP TABLE IF EXISTS courses;
 CREATE TABLE courses (id  int(11) NOT NULL  auto_increment PRIMARY KEY, course_name VARCHAR(56));
@@ -57,16 +78,28 @@ CREATE TABLE registrations (id  int(11) NOT NULL  auto_increment PRIMARY KEY, as
 
 
 DROP TABLE IF EXISTS items;
-CREATE TABLE items (id  int(11) NOT NULL  auto_increment PRIMARY KEY, item_number int(11), item_description VARCHAR(56));
+CREATE TABLE items (id  int(11) NOT NULL  auto_increment PRIMARY KEY, item_number int(11), item_description VARCHAR(56), lock_version int(11));
 
 DROP TABLE IF EXISTS articles;
 CREATE TABLE articles (id  int(11) NOT NULL  auto_increment PRIMARY KEY, title VARCHAR(56), content TEXT);
 
+DROP TABLE IF EXISTS shard1_articles;
+CREATE TABLE shard1_articles (id  int(11) NOT NULL  auto_increment PRIMARY KEY, title VARCHAR(56), content TEXT);
+
 DROP TABLE IF EXISTS posts;
 CREATE TABLE posts (id  int(11) NOT NULL  auto_increment PRIMARY KEY, title VARCHAR(56), post TEXT);
 
+DROP TABLE IF EXISTS shard1_posts;
+CREATE TABLE shard1_posts (id  int(11) NOT NULL  auto_increment PRIMARY KEY, title VARCHAR(56), post TEXT);
+
 DROP TABLE IF EXISTS comments;
 CREATE TABLE comments (id  int(11) NOT NULL  auto_increment PRIMARY KEY, author VARCHAR(56), content TEXT, parent_id int(11), parent_type VARCHAR(256));
+
+DROP TABLE IF EXISTS shard1_comments;
+CREATE TABLE shard1_comments (id  int(11) NOT NULL  auto_increment PRIMARY KEY, author VARCHAR(56), content TEXT, parent_id int(11), parent_type VARCHAR(256));
+
+DROP TABLE IF EXISTS tags;
+CREATE TABLE tags (id  int(11) NOT NULL  auto_increment PRIMARY KEY, content TEXT, parent_id int(11), parent_type VARCHAR(256));
 
 DROP TABLE IF EXISTS fruits;
 CREATE TABLE fruits (id  int(11) NOT NULL  auto_increment PRIMARY KEY, fruit_name VARCHAR(56), category VARCHAR(56), created_at DATETIME, updated_at DATETIME);
@@ -154,3 +187,13 @@ CREATE TABLE images (id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHA
 
 DROP TABLE IF EXISTS apples;
 CREATE TABLE apples (id int(11) NOT NULL PRIMARY KEY, apple_type VARCHAR(56) NOT NULL );
+
+DROP TABLE IF EXISTS alarms;
+CREATE TABLE alarms (id int(11) NOT NULL auto_increment PRIMARY KEY, alarm_time TIME NOT NULL);
+
+DROP TABLE IF EXISTS developers;
+CREATE TABLE developers (first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL, email VARCHAR(56) NOT NULL, address VARCHAR(56), CONSTRAINT developers_uq PRIMARY KEY (first_name, last_name, email));
+
+
+DROP TABLE IF EXISTS "Wild Animals";
+CREATE TABLE "Wild Animals" (id int(11) auto_increment PRIMARY KEY, "Name" VARCHAR(56) NOT NULL);

@@ -15,7 +15,7 @@ public class Defect153Test {
     @Test
     public void shouldGenerateCorrectDatabaseForDbNameAnnotation() throws IOException {
         for (String line : getResourceLines("/activejdbc_models.properties")) {
-            if(line.contains("OtherDBModel")){
+            if(line.contains("OtherDbModel")){
                 the(line.endsWith("test"));
                 return;
             }
