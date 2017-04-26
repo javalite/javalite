@@ -1,11 +1,13 @@
 package org.javalite.async;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * @author Igor Polevoy on 4/5/15.
  */
 public class HelloCommand extends Command {
 
-    private static Integer counter = 0;
+    private static AtomicInteger counter = new AtomicInteger(0);
     private String message;
 
 
@@ -16,11 +18,11 @@ public class HelloCommand extends Command {
     public HelloCommand() {} //necessary to provide
 
     public static void reset() {
-        counter = 0;
+        counter = new AtomicInteger(0);
     }
 
     public static int counter() {
-        return counter;
+        return counter.get();
     }
 
     @Override
@@ -30,7 +32,7 @@ public class HelloCommand extends Command {
         } catch (InterruptedException ignore) {}
 
         synchronized (counter){
-            counter++;
+            counter.incrementAndGet();
         }
     }
 

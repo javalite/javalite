@@ -1,17 +1,17 @@
 /*
 Copyright 2009-2016 Igor Polevoy
 
-Licensed under the Apache License, Version 2.0 (the "License"); 
-you may not use this file except in compliance with the License. 
-You may obtain a copy of the License at 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0 
+http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software 
-distributed under the License is distributed on an "AS IS" BASIS, 
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-See the License for the specific language governing permissions and 
-limitations under the License. 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
 
 package org.javalite.activeweb;
@@ -117,7 +117,7 @@ public class RequestDispatcherSpec extends RequestSpec {
 
     /**
      * If there is exception in the FilterChain below RequestDispatcher, it should not
-     * attempt to do anything to it. 
+     * attempt to do anything to it.
      *
      * @throws IOException
      * @throws ServletException
@@ -238,11 +238,19 @@ public class RequestDispatcherSpec extends RequestSpec {
         request.setMethod("GET");
 
         dispatcher.doFilter(request, response, filterChain);
-
         String[] lines = Util.split(getSystemOut(), System.getProperty("line.separator"));
+        // we need this because on different OSes log lines may come out or order!
+        Map message = null;
+        for (String line : lines) {
+            Map log = JsonHelper.toMap(line);
+            try {
+                message = (Map) log.get("message");
+            }catch(ClassCastException ignore){}
+        }
 
-        Map log = JsonHelper.toMap(lines[1]);
-        Map message = (Map) log.get("message");
+        if(message == null){
+            throw new RuntimeException("Failed to find a message in log!");
+        }
         the(message.get("error")).shouldBeEqual("Failed to find template: 'src/test/views/hello/no-view.ftl', with layout: 'src/test/views/layouts/default_layout'");
         String html = response.getContentAsString();
         a(XPathHelper.count("//div", html)).shouldBeEqual(3);
@@ -325,10 +333,8 @@ public class RequestDispatcherSpec extends RequestSpec {
 
     @Test
     public void shouldCallDestroyOnAppBootstrap() throws ServletException, IOException {
-        replaceError();
         dispatcher.destroy();
         a(getSystemErr()).shouldBeEqual("ahrrr! destroyed!");
-        SystemStreamUtil.replaceError();
     }
 
     @Test

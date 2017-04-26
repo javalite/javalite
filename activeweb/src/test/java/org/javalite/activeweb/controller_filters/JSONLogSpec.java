@@ -96,7 +96,7 @@ public class JSONLogSpec extends RequestSpec {
         the(message.get("status")).shouldBeEqual(500);
         Map exception = (Map) log1.get("exception");
         the(exception.get("message")).shouldBeEqual("blah!");
-        the(exception.get("stacktrace")).shouldContain("java.lang.RuntimeException: blah!\njava.lang.RuntimeException: blah!\n\tat app.controllers.LoggingController.error");
+        the(exception.get("stacktrace")).shouldContain("java.lang.RuntimeException: blah!");
 
         //Line 2
         Map log2 = JsonHelper.toMap(logs[2]);
