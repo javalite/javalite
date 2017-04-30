@@ -15,11 +15,9 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
-import org.javalite.activejdbc.connection_config.ConnectionJdbcSpec;
-import org.javalite.activejdbc.connection_config.ConnectionJndiSpec;
-import org.javalite.activejdbc.connection_config.ConnectionSpecWrapper;
-import org.javalite.activejdbc.connection_config.DbConfiguration;
+import org.javalite.activejdbc.connection_config.*;
 
+import javax.sql.DataSource;
 import java.util.Properties;
 
 
@@ -96,5 +94,14 @@ public class ConnectionBuilder {
     public ConnectionBuilder testing() {
         connectionWrapper.setTesting(true);
         return this;
-    }    
+    }
+
+    /**
+     * Sets a <code>DataSource</code> to be used by this configuration.
+     *
+     * @param dataSource instance of a datadource
+     */
+    public void dataSource(DataSource dataSource) {
+        connectionWrapper.setConnectionSpec(new ConnectionDataSourceSpec(dataSource));
+    }
 }
