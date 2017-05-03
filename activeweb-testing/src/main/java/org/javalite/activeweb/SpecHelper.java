@@ -36,6 +36,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.javalite.common.Collections.list;
+
 /**
  * This class is not used directly in applications.
  *
@@ -66,6 +68,94 @@ public class SpecHelper implements JSpecSupport{
      */
     protected void setTemplateLocation(String location){
         Configuration.getTemplateManager().setTemplateLocation(location);
+    }
+
+
+    /**
+     * Convenience method: allows to set services without explicitly configuring a new module for mocking.
+     * All services are set as "eagerSingleton".
+     *
+     * <p>Example:</p>
+     *
+     * <pre>
+     * public void before(){
+     *    injector().bind(Greeter.class).to(GreeterMock.class)
+     *              .bind(Redirector.class).to(RedirectorImpl.class).create();
+     * }
+     * </pre>
+     *
+     * <p>
+     *An example where the first class is also an implementation:
+     * </p>
+     *
+     * <pre>
+     * public void before(){
+     *    injector().bind(Greeter.class).create();
+     * }
+     * </pre>
+
+     *
+     * The instance of a new injector will also be added to the current context and used to inject
+     * services into filters and controllers executing by this test.
+     * <p>
+     *     Each test method can potentially setup its own injector like this, and not interfere with previous settings.
+     * </p>
+     *
+     * If you need more advanced settings, use {@link #createInjector(AbstractModule)} or {@link #setInjector(Injector)} methods.
+     *
+     * @return instance of dynamically created injector with interfaces and services already set.
+     */
+    protected DynamicBuilder injector(){
+        return new DynamicBuilder();
+    }
+
+    protected class DynamicBuilder{
+        List<List<Class>> pairs = new ArrayList<>();
+
+        /**
+         * @param interfaceClass class of an interface for Guice injector
+         */
+        public DynamicBuilder bind(Class interfaceClass){
+            pairs.add(list(interfaceClass));
+            return this;
+        }
+
+        /**
+         * This method is optional. If omitted, the  class provided for the interface to {@link #bind(Class)}
+         * method will be used as implementation as well.
+         *
+         * @param implementationClass implementation of an interface for Guice injector
+         */
+        public DynamicBuilder to(Class implementationClass){
+            pairs.get(pairs.size() - 1).add(implementationClass);
+            return this;
+        }
+
+        public Injector create(){
+            DynamicModule dynamicModule = new DynamicModule(pairs);
+            Injector injector = Guice.createInjector(dynamicModule);
+            SpecHelper.this.setInjector(injector);
+            return injector;
+        }
+    }
+
+    private class DynamicModule extends AbstractModule{
+        private List<List<Class>> pairs = new ArrayList<>();
+
+        public DynamicModule(List<List<Class>> pairs) {
+            this.pairs = pairs;
+        }
+
+        @Override
+        protected void configure() {
+            for (List<Class> pair : pairs) {
+                if(pair.size() == 1){
+                    bind(pair.get(0)).asEagerSingleton();
+                }else {
+                    bind(pair.get(0)).to(pair.get(1)).asEagerSingleton();
+                }
+            }
+        }
     }
 
     /**
