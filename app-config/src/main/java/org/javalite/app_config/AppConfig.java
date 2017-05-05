@@ -329,7 +329,7 @@ public class AppConfig implements Map<String, String> {
      * @return true if environment name as defined by environment variable <code>ACTIVE_ENV</code> is "staging".
      */
     public static boolean isInStaging() {
-        return "development".equals(activeEnv());
+        return "staging".equals(activeEnv());
     }
 
     /**
