@@ -96,14 +96,25 @@ public class JsonHelper {
     }
 
     /**
-     * Removes control characters from a string when you need to
-     * generate JSON. This method was stolen...ehhr.. borrowed from
+     * Escapes control characters in a string when you need to
+     * generate JSON.
+     *
+     * @param value string to escape
+     * @return escaped version
+     */
+    public static String sanitize(String value) {
+        return sanitize(value, false);
+    }
+    /**
+     * Escapes control characters in a string when you need to
+     * generate JSON. This method is based on:
      * <a href="https://github.com/google/gson/blob/master/gson/src/main/java/com/google/gson/stream/JsonWriter.java#L564">Gson JsonWriter</a>.
      *
      * @param value input string
-     * @return input string with control characters removed.
+     * @param  clean if true will remove characters that match, if false will escape
+     * @return input string with control characters escaped or removed, depending on the <code>clean</code> flag.
      */
-    public static String sanitize(String value) {
+    public static String sanitize(String value, boolean clean) {
 
         StringWriter out = new StringWriter();
 
@@ -117,6 +128,11 @@ public class JsonHelper {
             if (c < 128) {
                 replacement = replacements[c];
                 if (replacement == null) {
+                    continue;
+                }
+
+                if (clean) {
+                    last = i + 1;
                     continue;
                 }
             } else if (c == '\u2028') {

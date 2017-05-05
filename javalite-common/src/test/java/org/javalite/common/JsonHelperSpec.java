@@ -7,6 +7,7 @@ import java.util.Map;
 
 import static org.javalite.test.jspec.JSpec.$;
 import static org.javalite.test.jspec.JSpec.a;
+import static org.javalite.test.jspec.JSpec.the;
 
 /**
  * @author Igor Polevoy on 5/26/16.
@@ -65,5 +66,17 @@ public class JsonHelperSpec {
         $(maps[0].get("age")).shouldBeEqual(22);
         $(maps[1].get("name")).shouldBeEqual("Samantha");
         $(maps[1].get("age")).shouldBeEqual(21);
+    }
+
+    @Test
+    public void shouldSanitizeString(){
+        String result = JsonHelper.sanitize("\thello");
+        the(result).shouldBeEqual("\\thello");
+    }
+
+    @Test
+    public void shouldCleanString(){
+        String result = JsonHelper.sanitize("\thello", true);
+        the(result).shouldBeEqual("hello");
     }
 }
