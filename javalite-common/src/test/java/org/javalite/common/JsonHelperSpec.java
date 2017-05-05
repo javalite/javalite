@@ -76,7 +76,8 @@ public class JsonHelperSpec {
 
     @Test
     public void shouldCleanString(){
-        String result = JsonHelper.sanitize("\thello", true);
-        the(result).shouldBeEqual("hello");
+        String result = JsonHelper.sanitize("{\"reply_to\":\"test_scope_main_user@example.com \",\"subject\":\"\tThomas Jefferson University - Employer Match Processing - Action Required\",\"merge_fields\":{\"name\":\"NAME\"},\"template_id\":300,\"from\":\"Test User\",\"to\":\"e@e.e \"}", true);
+        Map resultMap = JsonHelper.toMap(result);
+        the(resultMap.get("subject")).shouldBeEqual("Thomas Jefferson University - Employer Match Processing - Action Required");
     }
 }

@@ -118,7 +118,7 @@ public class JsonHelper {
 
         StringWriter out = new StringWriter();
 
-        String[] replacements = REPLACEMENT_CHARS;
+        String[] replacements = clean? CLEAN_CHARS : REPLACEMENT_CHARS;
 
         int last = 0;
         int length = value.length();
@@ -128,11 +128,6 @@ public class JsonHelper {
             if (c < 128) {
                 replacement = replacements[c];
                 if (replacement == null) {
-                    continue;
-                }
-
-                if (clean) {
-                    last = i + 1;
                     continue;
                 }
             } else if (c == '\u2028') {
@@ -155,6 +150,7 @@ public class JsonHelper {
         return out.toString();
     }
     private static final String[] REPLACEMENT_CHARS;
+    private static final String[] CLEAN_CHARS;
 
     static {
         REPLACEMENT_CHARS = new String[128];
@@ -168,5 +164,17 @@ public class JsonHelper {
         REPLACEMENT_CHARS['\n'] = "\\n";
         REPLACEMENT_CHARS['\r'] = "\\r";
         REPLACEMENT_CHARS['\f'] = "\\f";
+
+        CLEAN_CHARS = new String[128];
+        for (int i = 0; i <= 0x1f; i++) {
+            CLEAN_CHARS[i] = String.format("\\u%04x", (int) i);
+        }
+
+        CLEAN_CHARS['\\'] = "\\\\";
+        CLEAN_CHARS['\t'] = "";
+        CLEAN_CHARS['\b'] = "";
+        CLEAN_CHARS['\n'] = "";
+        CLEAN_CHARS['\r'] = "";
+        CLEAN_CHARS['\f'] = "";
     }
 }
