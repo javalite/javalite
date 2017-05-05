@@ -77,7 +77,7 @@ public class AppConfig implements Map<String, String> {
 
     private static Logger LOGGER = LoggerFactory.getLogger(AppConfig.class);
     private static HashMap<String, Property> props;
-    private static HashMap<String, String> plainProps;
+
     private static final String activeEnv;
 
     static {
@@ -100,7 +100,6 @@ public class AppConfig implements Map<String, String> {
         try {
 
             props = new HashMap<>();
-            plainProps = new HashMap<>();
             loadFromClasspath();
             String propName = "app_config.properties";
             if(System.getProperties().containsKey(propName)){
@@ -173,7 +172,7 @@ public class AppConfig implements Map<String, String> {
             Property property = new Property(key, value, url.getPath());
 
             Property previous = props.put(key, property);
-            plainProps.put(key, value);
+
             if (previous != null) {
                 LOGGER.warn("\n************************************************************\n"
                         + "Duplicate property defined. Property: '" + key + "' found in files: \n"
@@ -183,6 +182,24 @@ public class AppConfig implements Map<String, String> {
                         + "\n************************************************************");
             }
         }
+    }
+
+
+    /**
+     * Sets a property in memory. If property exists, it will be overwritten, if not, a  new one will be created.
+     *
+     * @param name  - name of property
+     * @param value - value of property
+     * @return old value
+     */
+    public static String setProperty(String name, String value) {
+        String val = null;
+        if(props.containsKey(name)){
+            val = props.get(name).getValue();
+        }
+        props.put(name, new Property(name, value, "dynamically added"));
+        LOGGER.warn("Temporary overriding property: " + name + ". Old value: " + val + ". New value: "  + value);
+        return val;
     }
 
     /**
@@ -227,6 +244,10 @@ public class AppConfig implements Map<String, String> {
     public static Map<String, String> getAllProperties() {
         if (!isInited()) {
             init();
+        }
+        HashMap<String, String> plainProps = new HashMap<>();
+        for (String name: props.keySet()) {
+            plainProps.put(name, props.get(name).getValue());
         }
         return plainProps;
     }
