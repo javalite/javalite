@@ -95,7 +95,7 @@ public class JsonHelperSpec {
         ));
         String result = JsonHelper.sanitize(json, true);
         Map resultMap = JsonHelper.toMap(result);
-        //somehow toJsonString() adds a new backslash, so we are onloy removing two backslashes, and leaving the 't' in place - weird!
+        //somehow toJsonString() adds a new backslash, so we are only removing two backslashes, and leaving the 't' in place - weird!
         a(resultMap.get("subject")).shouldBeEqual("tThomas Jefferson University - Employer Match Processing - Action Required");
     }
 }
