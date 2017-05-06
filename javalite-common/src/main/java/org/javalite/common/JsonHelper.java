@@ -170,7 +170,7 @@ public class JsonHelper {
             CLEAN_CHARS[i] = String.format("\\u%04x", (int) i);
         }
 
-        CLEAN_CHARS['\\'] = "\\\\";
+        CLEAN_CHARS['\\'] = "";
         CLEAN_CHARS['\t'] = "";
         CLEAN_CHARS['\b'] = "";
         CLEAN_CHARS['\n'] = "";

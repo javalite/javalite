@@ -5,6 +5,8 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Map;
 
+import static org.javalite.common.Collections.map;
+import static org.javalite.common.JsonHelper.toJsonString;
 import static org.javalite.test.jspec.JSpec.$;
 import static org.javalite.test.jspec.JSpec.a;
 import static org.javalite.test.jspec.JSpec.the;
@@ -39,7 +41,7 @@ public class JsonHelperSpec {
                 this.lastName = lastName;
             }
         }
-        a(JsonHelper.toJsonString(new Person("John", "Smith"))).shouldBeEqual("{\"firstName\":\"John\",\"lastName\":\"Smith\"}");
+        a(toJsonString(new Person("John", "Smith"))).shouldBeEqual("{\"firstName\":\"John\",\"lastName\":\"Smith\"}");
     }
 
     @Test
@@ -80,4 +82,22 @@ public class JsonHelperSpec {
         Map resultMap = JsonHelper.toMap(result);
         the(resultMap.get("subject")).shouldBeEqual("Thomas Jefferson University - Employer Match Processing - Action Required");
     }
+
+    @Test
+    public void shouldCleanString2(){
+        String json = toJsonString(map(
+                "template_id", 123,
+                "reply_to", "john@doe.com",
+                "from", "Test User",
+                "to", "e@e.e ",
+                "subject", "\tThomas Jefferson University - Employer Match Processing - Action Required",
+                "merge_fields", map("name", "NAME")
+        ));
+        String result = JsonHelper.sanitize(json, true);
+        Map resultMap = JsonHelper.toMap(result);
+        //somehow toJsonString() adds a new backslash, so we are onloy removing two backslashes, and leaving the 't' in place - weird!
+        a(resultMap.get("subject")).shouldBeEqual("tThomas Jefferson University - Employer Match Processing - Action Required");
+    }
 }
+
+
