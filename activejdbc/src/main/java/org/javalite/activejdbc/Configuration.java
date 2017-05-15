@@ -56,7 +56,7 @@ public class Configuration {
             Enumeration<URL> resources = getClass().getClassLoader().getResources("activejdbc_models.properties");
             while (resources.hasMoreElements()) {
                 URL url = resources.nextElement();
-                LogFilter.log(LOGGER, "Load models from: {}", url.toExternalForm());
+                LogFilter.info(LOGGER, "Load models from: {}", url.toExternalForm());
                 InputStream inputStream = null;
                 InputStreamReader isreader = null;
                 BufferedReader reader = null;
@@ -88,7 +88,7 @@ public class Configuration {
             throw new InitException(e);
         }
         if(modelsMap.isEmpty()){
-            LogFilter.log(LOGGER, "ActiveJDBC Warning: Cannot locate any models, assuming project without models.");
+            LogFilter.info(LOGGER, "ActiveJDBC Warning: Cannot locate any models, assuming project without models.");
             return;
         }
         try {

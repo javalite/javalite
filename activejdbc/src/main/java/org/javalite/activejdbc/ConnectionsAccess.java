@@ -63,11 +63,11 @@ public class ConnectionsAccess {
             throw new InternalException("You are opening a connection " + dbName + " without closing a previous one. Check your logic. Connection still remains on thread: " + ConnectionsAccess.getConnectionMap().get(dbName));
         }
         ConnectionsAccess.getConnectionMap().put(dbName, connection);
-        LogFilter.log(LOGGER, "Attached connection named: {}: to current thread: {}. Extra info: {}", dbName, connection, extraInfo);
+        LogFilter.info(LOGGER, "Attached connection named: {}: to current thread: {}. Extra info: {}", dbName, connection, extraInfo);
     }
 
     static void detach(String dbName){
-        LogFilter.log(LOGGER, "Detached connection named: {} from current thread: {}", dbName, getConnectionMap().get(dbName));
+        LogFilter.info(LOGGER, "Detached connection named: {} from current thread: {}", dbName, getConnectionMap().get(dbName));
         getConnectionMap().remove(dbName);
     }
 

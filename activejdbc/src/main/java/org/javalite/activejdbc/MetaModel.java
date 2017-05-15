@@ -25,7 +25,6 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.Map.Entry;
 
-import static org.javalite.activejdbc.LogFilter.*;
 import static org.javalite.common.Inflector.*;
 
 
@@ -321,7 +320,7 @@ public class MetaModel implements Serializable {
 
     protected void addAssociation(Association association) {
         if (!associations.contains(association)) {
-            log(LOGGER, "Association found: {}", association);
+            LogFilter.info(LOGGER, "Association found: {}", association);
             associations.add(association);
         }
     }
