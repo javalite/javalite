@@ -166,7 +166,14 @@ public class Configuration {
     protected static void setEnv(String env){
         ENV = env;
     }
-    
+
+    /**
+     * This method is used internally by ActiveWeb tests. Do not use in  your projects.
+     * If you need this feature, use:
+     * <a href="http://javalite.github.io/activejdbc/snapshot/org/javalite/app_config/AppConfig.html#isInTestMode--">AppConfig#isInTestMode</a>
+     *
+     * @return true  if running in tests.
+     */
     public static boolean isTesting() {
         return testing;
     }
