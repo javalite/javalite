@@ -325,6 +325,16 @@ public class AppConfig implements Map<String, String> {
         return activeEnv;
     }
 
+
+    /**
+     * Checks if running in a context of a test by checking of a presence of a  class <code>org.junit.Test</code> on classpath.
+     *
+     * @return true if class <code>org.junit.Test</code> is on classpath, otherwise returns <code>false</code>
+     */
+    public static boolean isInTestMode(){
+        return AppConfig.class.getResource("/org/junit/Test.class") != null;
+    }
+
     /**
      * @return true if environment name as defined by environment variable <code>ACTIVE_ENV</code> is "testenv".
      */
