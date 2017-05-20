@@ -104,7 +104,7 @@ public enum QueryCache {
                 join(log, params, ">, <");
                 log.append('>');
             }
-            LogFilter.info(LOGGER, log.toString());
+            LogFilter.log(LOGGER, log.toString());
         }
     }
 

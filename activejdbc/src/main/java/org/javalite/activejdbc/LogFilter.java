@@ -17,15 +17,10 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
-import org.javalite.activejdbc.cache.CacheEvent;
-import org.javalite.activejdbc.cache.CacheEventListener;
 import org.javalite.activejdbc.statistics.QueryExecutionEvent;
 import org.slf4j.Logger;
 
 import java.util.regex.Pattern;
-
-import static org.javalite.common.Util.empty;
-import static org.javalite.common.Util.join;
 
 /**
  * @author Igor Polevoy
@@ -62,7 +57,7 @@ public class LogFilter {
         }
 
         if (logger.isInfoEnabled()) {
-            info(logger, getJson(query, params, time));
+            log(logger, getJson(query, params, time));
         }
     }
 
@@ -85,28 +80,46 @@ public class LogFilter {
         return "{\"sql\":\"" + query.replace("\"", "'") + "\",\"params\":[" + paramsSB.toString() + "],\"duration_millis\":" + time + "}";
     }
 
-    public static void info(Logger logger, String log){
-        if (logger.isInfoEnabled() && pattern.matcher(log).matches()) {
-           logger.info(log);
+    public static void log(Logger logger, String log){
+
+        if(Configuration.hasActiveLogger()){
+            Configuration.getActiveLogger().log(logger, log);
+        }else {
+            if (logger.isInfoEnabled() && pattern.matcher(log).matches()) {
+                logger.info(log);
+            }
         }
     }
 
-    public static void info(Logger logger, String log, Object param) {
-        if (logger.isInfoEnabled() && pattern.matcher(log).matches()) {
-           logger.info(log, param);
+    public static void log(Logger logger, String log, Object param) {
+        if(Configuration.hasActiveLogger()) {
+            Configuration.getActiveLogger().log(logger, log, param);
+        }else {
+            if (logger.isInfoEnabled() && pattern.matcher(log).matches()) {
+                logger.info(log, param);
+            }
         }
     }
 
-    public static void info(Logger logger, String log, Object param1, Object param2) {
-        if (logger.isInfoEnabled() && pattern.matcher(log).matches()) {
-           logger.info(log, param1, param2);
+    public static void log(Logger logger, String log, Object param1, Object param2) {
+
+        if(Configuration.hasActiveLogger()) {
+            Configuration.getActiveLogger().log(logger, log, param1, param2);
+        }else {
+            if (logger.isInfoEnabled() && pattern.matcher(log).matches()) {
+                logger.info(log, param1, param2);
+            }
         }
     }
 
-    public static void info(Logger logger, String log, Object... params) {
-        if (logger.isInfoEnabled() && pattern.matcher(log).matches()) {
-           logger.info(log, params);
+    public static void log(Logger logger, String log, Object... params) {
+
+        if(Configuration.hasActiveLogger()) {
+            Configuration.getActiveLogger().log(logger, log, params);
+        }else {
+            if (logger.isInfoEnabled() && pattern.matcher(log).matches()) {
+                logger.info(log, params);
+            }
         }
     }
-
 }

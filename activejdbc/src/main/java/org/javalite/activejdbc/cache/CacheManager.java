@@ -71,7 +71,7 @@ public abstract class CacheManager {
 
             String message = "Cache purged: " + (event.getType() == CacheEvent.CacheEventType.ALL
                     ? "all caches" : "table: " + event.getGroup());
-            LogFilter.info(LOGGER, message);
+            LogFilter.log(LOGGER, message);
     }
 
     private void propagate(CacheEvent event){

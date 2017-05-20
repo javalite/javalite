@@ -105,7 +105,7 @@ public class DB implements Closeable{
             Connection connection;
             connection = properties == null ?  DriverManager.getConnection(url, user, password)
                     : DriverManager.getConnection(url, properties);
-            LogFilter.info(LOGGER, "Opened connection: " + connection);
+            LogFilter.log(LOGGER, "Opened connection: " + connection);
             ConnectionsAccess.attach(name, connection, url);
             return this;
         } catch (Exception e) {
@@ -125,7 +125,7 @@ public class DB implements Closeable{
             Context ctx = new InitialContext();
             DataSource ds = (DataSource) ctx.lookup(jndiName);
             Connection connection = ds.getConnection();
-            LogFilter.info(LOGGER, "Opened connection: " + connection);
+            LogFilter.log(LOGGER, "Opened connection: " + connection);
             ConnectionsAccess.attach(name, connection, jndiName);
             return this;
         } catch (Exception e) {
@@ -193,7 +193,7 @@ public class DB implements Closeable{
         checkExistingConnection(name);
         try {
             Connection connection = datasource.getConnection();
-            LogFilter.info(LOGGER, "Opened connection: " + connection);
+            LogFilter.log(LOGGER, "Opened connection: " + connection);
             ConnectionsAccess.attach(name, connection, datasource.toString());
             return this;
         } catch (SQLException e) {
@@ -215,7 +215,7 @@ public class DB implements Closeable{
             Context ctx = new InitialContext(jndiProperties);
             DataSource ds = (DataSource) ctx.lookup(jndiName);
             Connection connection = ds.getConnection();
-            LogFilter.info(LOGGER, "Opened connection: " + connection);
+            LogFilter.log(LOGGER, "Opened connection: " + connection);
             ConnectionsAccess.attach(name, connection,
                     jndiProperties.contains("url") ? jndiProperties.getProperty("url") : jndiName);
             return this;
@@ -291,7 +291,7 @@ public class DB implements Closeable{
         try {
             DataSource ds = (DataSource) context.lookup(jndiName);
             Connection connection = ds.getConnection();
-            LogFilter.info(LOGGER, "Opened connection: " + connection);
+            LogFilter.log(LOGGER, "Opened connection: " + connection);
             ConnectionsAccess.attach(name, connection, jndiName);
             return this;
         } catch (Exception e) {
@@ -319,7 +319,7 @@ public class DB implements Closeable{
             }
             StatementCache.instance().cleanStatementCache(connection);
             connection.close();
-            LogFilter.info(LOGGER, "Closed connection: {}", connection);
+            LogFilter.log(LOGGER, "Closed connection: {}", connection);
         } catch (Exception e) {
             if (!suppressWarning) {
                 LOGGER.warn("Could not close connection! MUST INVESTIGATE POTENTIAL CONNECTION LEAK!", e);
@@ -712,7 +712,7 @@ public class DB implements Closeable{
                 throw new DBException("Cannot open transaction, connection '" + name + "' not available");
             }
             c.setAutoCommit(false);
-            LogFilter.info(LOGGER, "Transaction opened");
+            LogFilter.log(LOGGER, "Transaction opened");
         } catch (SQLException ex) {
             throw new DBException(ex.getMessage(), ex);
         }
@@ -729,7 +729,7 @@ public class DB implements Closeable{
                 throw new DBException("Cannot commit transaction, connection '" + name + "' not available");
             }
             c.commit();
-            LogFilter.info(LOGGER, "Transaction committed");
+            LogFilter.log(LOGGER, "Transaction committed");
         } catch (SQLException ex) {
             throw new DBException(ex.getMessage(), ex);
         }
@@ -745,7 +745,7 @@ public class DB implements Closeable{
                 throw new DBException("Cannot rollback transaction, connection '" + name + "' not available");
             }
             c.rollback();
-            LogFilter.info(LOGGER, "Transaction rolled back");
+            LogFilter.log(LOGGER, "Transaction rolled back");
         } catch (SQLException ex) {
             throw new DBException(ex.getMessage(), ex);
         }
