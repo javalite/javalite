@@ -165,19 +165,16 @@ public class JsonLog4jLayoutSpec  extends ActiveJDBCTest{
 
     @Test
     public void shouldLogException(){
-
         Logger logger = LoggerFactory.getLogger(getClass());
-        logger.error("fire!", new RuntimeException("house on fire!"));
+        logger.error("fire!", new RuntimeException("house on \n fire!"));
+        String logLine = getLastLine();
+        the(logLine).shouldContain("house on \\n fire!");
+    }
 
-        Map  log = JsonHelper.toMap(getLastLine());
-
-        the(log.get("level")).shouldBeEqual("ERROR");
-        the(log.get("thread")).shouldNotBeNull();
-        the(log.get("timestamp")).shouldNotBeNull();
-        the(log.get("logger")).shouldBeEqual("org.javalite.activejdbc.logging.JsonLog4jLayoutSpec");
-        the(log.get("message")).shouldBeEqual("fire!");
-        Map exception = (Map) log.get("exception");
-        the(exception.get("message")).shouldBeEqual("house on fire!");
-        the(exception.get("stacktrace")).shouldContain("java.lang.RuntimeException: house on fire!\n\tat org.javalite.activejdbc.logging.JsonLog4jLayoutSpec.shouldLogException");
+    @Test
+    public void shouldLogExceptionWithNewLineInMessage(){
+        Logger logger = LoggerFactory.getLogger(getClass());
+        logger.error("fire!", new RuntimeException("I'm really confused by this!\nWhat do you mean?" ));
+        the(getLastLine()).shouldContain("I'm really confused by this!\\nWhat do you mean?");
     }
 }

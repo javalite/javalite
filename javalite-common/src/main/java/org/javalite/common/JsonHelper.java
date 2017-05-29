@@ -96,14 +96,41 @@ public class JsonHelper {
     }
 
     /**
-     * Escapes control characters in a string when you need to
-     * generate JSON.
+     * Clean control characters in a string.
+     *
+     * @param value string to escape
+     * @return escaped version
+     */
+    public static String cleanControlChars(String value) {
+        return sanitize(value, true);
+    }
+
+    /**
+     * Escapes control characters in a string.
+     *
+     * @see {@link #sanitize(String)} - synonym
+     * @param value string to escape
+     * @return escaped version
+     */
+    public static String escapeControlChars(String value) {
+        return sanitize(value, false);
+    }
+
+    /**
+     * Escapes control characters in a string.
+     *
+     * @see {@link #escapeControlChars(String)} - synonym
+     *
      *
      * @param value string to escape
      * @return escaped version
      */
     public static String sanitize(String value) {
         return sanitize(value, false);
+    }
+
+    public static String sanitize(String value, boolean clean) {
+        return sanitize(value, clean, null);
     }
     /**
      * Escapes control characters in a string when you need to
@@ -112,9 +139,12 @@ public class JsonHelper {
      *
      * @param value input string
      * @param  clean if true will remove characters that match, if false will escape
+     * @param  toEscape array of characters to escape. If not provided, it will escape or clean <code>'"','\\', '\t', '\b', '\n', '\r' '\f'</code>.
+     *                  This paramers will only escape or clean if provided chars are from this list.
+     *
      * @return input string with control characters escaped or removed, depending on the <code>clean</code> flag.
      */
-    public static String sanitize(String value, boolean clean) {
+    public static String sanitize(String value, boolean clean, char ... toEscape) {
 
         StringWriter out = new StringWriter();
 
@@ -126,7 +156,13 @@ public class JsonHelper {
             char c = value.charAt(i);
             String replacement;
             if (c < 128) {
-                replacement = replacements[c];
+                if(toEscape == null){
+                    replacement = replacements[c];
+                }else if (contains(toEscape, c)){
+                    replacement = replacements[c];
+                }else {
+                    replacement = null;
+                }
                 if (replacement == null) {
                     continue;
                 }
@@ -149,6 +185,14 @@ public class JsonHelper {
 
         return out.toString();
     }
+
+    private static boolean contains(char[] toEscape, char c) {
+        for (char c1 : toEscape) {
+            return c1 == c;
+        }
+        return false;
+    }
+
     private static final String[] REPLACEMENT_CHARS;
     private static final String[] CLEAN_CHARS;
 

@@ -17,7 +17,7 @@ import static org.javalite.test.jspec.JSpec.the;
 public class JsonHelperSpec {
 
     @Test
-    public void shouldConvertObject2JSON(){
+    public void shouldConvertObject2JSON() {
         class Person {
             String firstName, lastName;
             public Person(String firstName, String lastName) {
@@ -45,7 +45,7 @@ public class JsonHelperSpec {
     }
 
     @Test
-    public void shouldConvertArray2List(){
+    public void shouldConvertArray2List() {
         List l = JsonHelper.toList("[1, 2]");
         $(l.size()).shouldBeEqual(2);
         $(l.get(0)).shouldBeEqual(1);
@@ -53,7 +53,7 @@ public class JsonHelperSpec {
     }
 
     @Test
-    public void shouldConvertMap2Map(){
+    public void shouldConvertMap2Map() {
         Map m = JsonHelper.toMap("{ \"name\" : \"John\", \"age\": 22 }");
         $(m.size()).shouldBeEqual(2);
         $(m.get("name")).shouldBeEqual("John");
@@ -61,7 +61,7 @@ public class JsonHelperSpec {
     }
 
     @Test
-    public void shouldConvertMaps2Maps(){
+    public void shouldConvertMaps2Maps() {
         Map[] maps = JsonHelper.toMaps("[{ \"name\" : \"John\", \"age\": 22 },{ \"name\" : \"Samantha\", \"age\": 21 }]");
         $(maps.length).shouldBeEqual(2);
         $(maps[0].get("name")).shouldBeEqual("John");
@@ -71,32 +71,39 @@ public class JsonHelperSpec {
     }
 
     @Test
-    public void shouldSanitizeString(){
+    public void shouldSanitizeString() {
         String result = JsonHelper.sanitize("\thello");
         the(result).shouldBeEqual("\\thello");
     }
 
     @Test
-    public void shouldCleanString(){
-        String result = JsonHelper.sanitize("{\"reply_to\":\"test_scope_main_user@example.com \",\"subject\":\"\tThomas Jefferson University - Employer Match Processing - Action Required\",\"merge_fields\":{\"name\":\"NAME\"},\"template_id\":300,\"from\":\"Test User\",\"to\":\"e@e.e \"}", true);
-        Map resultMap = JsonHelper.toMap(result);
-        the(resultMap.get("subject")).shouldBeEqual("Thomas Jefferson University - Employer Match Processing - Action Required");
+    public void shouldEscapeTab() {
+        String result = JsonHelper.escapeControlChars("\tThomas Jefferson University");
+        the(result).shouldBeEqual("\\tThomas Jefferson University");
     }
 
     @Test
-    public void shouldCleanString2(){
-        String json = toJsonString(map(
-                "template_id", 123,
-                "reply_to", "john@doe.com",
-                "from", "Test User",
-                "to", "e@e.e ",
-                "subject", "\tThomas Jefferson University - Employer Match Processing - Action Required",
-                "merge_fields", map("name", "NAME")
-        ));
-        String result = JsonHelper.sanitize(json, true);
-        Map resultMap = JsonHelper.toMap(result);
-        //somehow toJsonString() adds a new backslash, so we are only removing two backslashes, and leaving the 't' in place - weird!
-        a(resultMap.get("subject")).shouldBeEqual("tThomas Jefferson University - Employer Match Processing - Action Required");
+    public void shouldCleanTab() {
+        String result = JsonHelper.sanitize("\tThomas Jefferson University - Employer Match Processing - Action Required", true);
+        a(result).shouldBeEqual("Thomas Jefferson University - Employer Match Processing - Action Required");
+    }
+
+    @Test
+    public void shouldEscapeNewLine() {
+        String result = JsonHelper.escapeControlChars("line 1" + System.getProperty("line.separator") + "line 2");
+        the(result).shouldBeEqual("line 1\\nline 2");
+    }
+
+    @Test
+    public void shouldCleanNewLine() {
+        String result = JsonHelper.cleanControlChars("line 1" + System.getProperty("line.separator") + "line 2");
+        the(result).shouldBeEqual("line 1line 2");
+    }
+
+    @Test
+    public void shouldCleanSelectedChars() {
+        String result = JsonHelper.sanitize("line 1" + System.getProperty("line.separator") + "\tline 2", true, '\n');
+        the(result).shouldBeEqual("line 1\tline 2");
     }
 }
 

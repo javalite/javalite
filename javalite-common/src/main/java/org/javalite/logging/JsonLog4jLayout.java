@@ -23,6 +23,7 @@ import org.javalite.common.Util;
 
 import java.util.Date;
 
+import static org.javalite.common.JsonHelper.escapeControlChars;
 import static org.javalite.common.JsonHelper.sanitize;
 
 /**
@@ -52,7 +53,8 @@ public class JsonLog4jLayout extends Layout {
             exception = ",\"exception\":{\"message\":\"";
             Throwable throwable = throwableInformation.getThrowable();
             String exceptionMessage = throwable.getMessage() != null? throwable.getMessage(): "";
-            exception += exceptionMessage + "\",\"stacktrace\":\"" + sanitize(Util.getStackTraceString(throwable)) + "\"}";
+            //need to be careful here, sanitizing, since the message may already contain a chunk of JSON, so escaping or cleaning double quotes is not prudent:)
+            exception += sanitize(exceptionMessage, false, '\n', '\t', '\r') + "\",\"stacktrace\":\"" + escapeControlChars(Util.getStackTraceString(throwable)) + "\"}";
         }
 
         String contextJson  = context != null ? ",\"context\":" + context : "";
