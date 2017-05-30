@@ -1,16 +1,15 @@
 package org.javalite.activejdbc.cache;
 
 
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.javalite.activejdbc.InitException;
+import org.javalite.activejdbc.logging.LogFilter;
+import org.javalite.activejdbc.logging.LogLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
 
 import java.io.*;
-import java.util.Properties;
 
 import static org.javalite.app_config.AppConfig.p;
 import static org.javalite.common.Convert.toInteger;
@@ -90,7 +89,7 @@ public class RedisCacheManager extends CacheManager {
             jedis.hset(group.getBytes(), key.getBytes(), bytes);
 
         } catch (Exception e) {
-            LOGGER.error("Failed to add object to cache with group: " + group + " and key: " + key, e);
+            LogFilter.log(LOGGER, LogLevel.ERROR, "Failed to add object to cache with group: " + group + " and key: " + key, e);
         }
     }
 

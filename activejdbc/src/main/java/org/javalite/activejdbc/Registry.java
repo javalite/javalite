@@ -19,6 +19,8 @@ import org.javalite.activejdbc.annotations.*;
 import org.javalite.activejdbc.associations.*;
 import org.javalite.activejdbc.cache.CacheManager;
 import org.javalite.activejdbc.cache.QueryCache;
+import org.javalite.activejdbc.logging.LogFilter;
+import org.javalite.activejdbc.logging.LogLevel;
 import org.javalite.activejdbc.statistics.StatisticsQueue;
 
 import java.lang.reflect.Method;
@@ -213,10 +215,10 @@ public enum Registry {
         }
 
         if(columns.size() > 0){
-            LogFilter.log(LOGGER, "Fetched metadata for table: {}", table);
+            LogFilter.log(LOGGER, LogLevel.INFO, "Fetched metadata for table: {}", table);
         }
         else{
-            LOGGER.warn("Failed to retrieve metadata for table: '{}'."
+            LogFilter.log(LOGGER, LogLevel.WARNING, "Failed to retrieve metadata for table: '{}'."
                     + " Are you sure this table exists? For some databases table names are case sensitive.",
                     table);
         }
@@ -233,7 +235,7 @@ public enum Registry {
         for (Class<? extends Model> modelClass : modelClasses) {
             MetaModel mm = new MetaModel(dbName, modelClass, dbType);
             metaModels.addMetaModel(mm, modelClass);
-            LogFilter.log(LOGGER, "Registered model: {}", modelClass);
+            LogFilter.log(LOGGER, LogLevel.INFO, "Registered model: {}", modelClass);
         }
     }
 

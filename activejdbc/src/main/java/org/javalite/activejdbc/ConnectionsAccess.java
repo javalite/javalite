@@ -17,6 +17,8 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
+import org.javalite.activejdbc.logging.LogFilter;
+import org.javalite.activejdbc.logging.LogLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,11 +65,11 @@ public class ConnectionsAccess {
             throw new InternalException("You are opening a connection " + dbName + " without closing a previous one. Check your logic. Connection still remains on thread: " + ConnectionsAccess.getConnectionMap().get(dbName));
         }
         ConnectionsAccess.getConnectionMap().put(dbName, connection);
-        LogFilter.log(LOGGER, "Attached connection named: {}: to current thread: {}. Extra info: {}", dbName, connection, extraInfo);
+        LogFilter.log(LOGGER, LogLevel.DEBUG, "Attached connection named: {}: to current thread: {}. Extra info: {}", dbName, connection, extraInfo);
     }
 
     static void detach(String dbName){
-        LogFilter.log(LOGGER, "Detached connection named: {} from current thread: {}", dbName, getConnectionMap().get(dbName));
+        LogFilter.log(LOGGER, LogLevel.DEBUG, "Detached connection named: {} from current thread: {}", dbName, getConnectionMap().get(dbName));
         getConnectionMap().remove(dbName);
     }
 

@@ -18,6 +18,8 @@ package org.javalite.activejdbc;
 import org.javalite.activejdbc.annotations.*;
 import org.javalite.activejdbc.associations.*;
 import org.javalite.activejdbc.dialects.Dialect;
+import org.javalite.activejdbc.logging.LogFilter;
+import org.javalite.activejdbc.logging.LogLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -320,7 +322,7 @@ public class MetaModel implements Serializable {
 
     protected void addAssociation(Association association) {
         if (!associations.contains(association)) {
-            LogFilter.log(LOGGER, "Association found: {}", association);
+            LogFilter.log(LOGGER, LogLevel.INFO, "Association found: {}", association);
             associations.add(association);
         }
     }

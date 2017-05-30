@@ -21,6 +21,9 @@ import org.javalite.activejdbc.connection_config.ConnectionJdbcSpec;
 import org.javalite.activejdbc.connection_config.ConnectionJndiSpec;
 import org.javalite.activejdbc.connection_config.ConnectionSpec;
 import org.javalite.activejdbc.dialects.*;
+import org.javalite.activejdbc.logging.ActiveJDBCLogger;
+import org.javalite.activejdbc.logging.LogFilter;
+import org.javalite.activejdbc.logging.LogLevel;
 import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +60,7 @@ public class Configuration {
             Enumeration<URL> resources = getClass().getClassLoader().getResources("activejdbc_models.properties");
             while (resources.hasMoreElements()) {
                 URL url = resources.nextElement();
-                LogFilter.log(LOGGER, "Load models from: {}", url.toExternalForm());
+                LogFilter.log(LOGGER, LogLevel.INFO, "Load models from: {}", url.toExternalForm());
                 InputStream inputStream = null;
                 InputStreamReader isreader = null;
                 BufferedReader reader = null;
@@ -89,7 +92,7 @@ public class Configuration {
             throw new InitException(e);
         }
         if(modelsMap.isEmpty()){
-            LogFilter.log(LOGGER, "ActiveJDBC Warning: Cannot locate any models, assuming project without models.");
+            LogFilter.log(LOGGER, LogLevel.INFO, "ActiveJDBC Warning: Cannot locate any models, assuming project without models.");
             return;
         }
         try {
@@ -320,7 +323,7 @@ public class Configuration {
 
             if(blank(ENV)){
                 ENV = "development";
-                LOGGER.warn("Environment variable ACTIVE_ENV not provided, defaulting to '" + ENV + "'");
+                LogFilter.log(LOGGER, LogLevel.INFO, "Environment variable ACTIVE_ENV not provided, defaulting to '" + ENV + "'");
             }
         }
         return ENV;
