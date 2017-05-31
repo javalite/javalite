@@ -394,3 +394,9 @@ BEGIN
 END
 CREATE TABLE developers (first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL, email VARCHAR(56) NOT NULL, address VARCHAR(56), CONSTRAINT developers_uq UNIQUE (first_name, last_name, email));
 
+
+IF object_id('dbo.boxes') IS NOT NULL
+BEGIN
+    DROP TABLE [dbo].[boxes]
+END
+CREATE TABLE boxes (id INT IDENTITY PRIMARY KEY, color VARCHAR(56) NOT NULL, fruit_id INT);

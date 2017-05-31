@@ -469,4 +469,11 @@ public class MetaModel implements Serializable {
         }
         return false;
     }
+
+    public void removeAssociationForTarget(Class<? extends Model> modelClass) {
+        Association association = getAssociationForTarget(modelClass);
+        if(association != null){
+            associations.remove(association);
+        }
+    }
 }
