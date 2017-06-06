@@ -18,13 +18,17 @@ limitations under the License.
 package org.javalite.async;
 
 import com.thoughtworks.xstream.XStream;
+import org.javalite.common.JsonHelper;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+
+import static org.javalite.common.Collections.map;
 
 /**
  * Super class of all commands. Only the method {@link #execute()} is to be provided by subclasses to
@@ -35,6 +39,8 @@ import java.util.zip.ZipOutputStream;
 public abstract class Command {
 
     private String jmsMessageId;
+
+    private Map params = map("class", getClass().getSimpleName());
 
     private static final XStream X_STREAM = new XStream(new CDATAXppDriver());
 
@@ -105,5 +111,24 @@ public abstract class Command {
 
     public void setJMSMessageID(String jmsMessageId) {
         this.jmsMessageId = jmsMessageId;
+    }
+
+    /**
+     * Sets parameters and their values to reflect by the {@link #toJson()} method.
+     *
+     * @param params important parameters of this command - tings you want to see in a log file.
+     */
+    public void setJsonParams(Map params){
+        this.params = params;
+        this.params.put("class", getClass().getSimpleName());
+    }
+
+    /**
+     * Used by writing returned value to the log.
+     *
+     * @return JSON representation  of this command.
+     */
+    public String toJson(){
+        return JsonHelper.toJsonString(params);
     }
 }
