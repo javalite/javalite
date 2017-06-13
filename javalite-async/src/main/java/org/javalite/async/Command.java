@@ -114,13 +114,12 @@ public abstract class Command {
     }
 
     /**
-     * Sets parameters and their values to reflect by the {@link #toJson()} method.
+     * Adds parameters and their values to reflect by the {@link #toJson()} method.
      *
      * @param params important parameters of this command - tings you want to see in a log file.
      */
-    public void setJsonParams(Map params){
-        this.params = params;
-        this.params.put("class", getClass().getSimpleName());
+    public void addJsonParams(Map params){
+        this.params.putAll(params);
     }
 
     /**
