@@ -82,6 +82,42 @@ public class JsonHelper {
     }
 
     /**
+     * Converts input into a JSON object.
+     *
+     * @param namesAndValues - expected sequence of corresponding name and value pairs (number of parameters must be even   ).
+     * @return new string {name:value,name1:value1, etc.}
+     */
+    public static String toJsonObject(Object ... namesAndValues) {
+
+        if(namesAndValues.length %2 != 0){
+            throw new IllegalArgumentException("number or arguments must be even");
+        }
+        StringBuilder sb = new StringBuilder("{");
+
+        int count = 0;
+
+        while (true) {
+            Object name = namesAndValues[count];
+            sb.append("\"").append(name).append("\":");
+            if (!(namesAndValues[count + 1] instanceof Number)) {
+                sb.append("\"").append(namesAndValues[count + 1].toString()).append("\"");
+            } else {
+                sb.append(namesAndValues[count + 1].toString());
+            }
+
+            if(count < (namesAndValues.length - 2)){
+                sb.append(",");
+                count += 2;
+            }else {
+                sb.append("}");
+                break;
+            }
+        }
+        return sb.toString();
+    }
+
+
+    /**
      * Convert JSON array tp Java List
      *
      * @param json JSON array string.

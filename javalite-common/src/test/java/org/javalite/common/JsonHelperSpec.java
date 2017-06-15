@@ -2,6 +2,7 @@ package org.javalite.common;
 
 import org.junit.Test;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -104,6 +105,22 @@ public class JsonHelperSpec {
     public void shouldCleanSelectedChars() {
         String result = JsonHelper.sanitize("line 1" + System.getProperty("line.separator") + "\tline 2", true, '\n');
         the(result).shouldBeEqual("line 1\tline 2");
+    }
+
+    @Test
+    public void shouldConvertToJsonObject() {
+
+        try {
+            JsonHelper.toJsonObject("name");
+        } catch (Exception exception) {
+            the(exception).shouldBeType(IllegalArgumentException.class);
+        }
+
+        String result = JsonHelper.toJsonObject("name", "Joe", "age", 23, "dob", new Date());
+        Map mapResult = JsonHelper.toMap(result);
+        the(mapResult.get("name")).shouldBeEqual("Joe");
+        the(mapResult.get("age")).shouldBeEqual(23);
+        the(mapResult.get("dob")).shouldNotBeNull();
     }
 }
 
