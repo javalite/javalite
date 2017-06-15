@@ -22,6 +22,8 @@ import org.javalite.activejdbc.conversion.BlankToNullConverter;
 import org.javalite.activejdbc.conversion.Converter;
 import org.javalite.activejdbc.conversion.ZeroToNullConverter;
 import org.javalite.activejdbc.dialects.Dialect;
+import org.javalite.activejdbc.logging.LogFilter;
+import org.javalite.activejdbc.logging.LogLevel;
 import org.javalite.activejdbc.validation.NumericValidationBuilder;
 import org.javalite.activejdbc.validation.ValidationBuilder;
 import org.javalite.activejdbc.validation.ValidationException;
@@ -659,7 +661,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             String targetTableName = metaModelOf(association.getTargetClass()).getTableName();
             Class c = Registry.instance().getModelClass(targetTableName, false);
             if(c == null){// this model is probably not defined as a class, but the table exists!
-                LOGGER.error("ActiveJDBC WARNING: failed to find a model class for: {}, maybe model is not defined for this table?"
+                LogFilter.log(LOGGER, LogLevel.ERROR, "ActiveJDBC WARNING: failed to find a model class for: {}, maybe model is not defined for this table?"
                         + " There might be a risk of running into integrity constrain violation if this model is not defined.",
                         targetTableName);
             }
@@ -1217,7 +1219,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
 
         if (fkValue == null) {
-            LOGGER.debug("Attribute: {} is null, cannot determine parent. Child record: {}", fkName, this);
+            LogFilter.log(LOGGER, LogLevel.DEBUG, "Attribute: {} is null, cannot determine parent. Child record: {}", fkName, this);
             return null;
         }
 

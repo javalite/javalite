@@ -17,16 +17,15 @@ limitations under the License.
 
 package org.javalite.activejdbc.cache;
 
-import org.javalite.activejdbc.LogFilter;
+import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.activejdbc.MetaModel;
+import org.javalite.activejdbc.logging.LogLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static org.javalite.activejdbc.ModelDelegate.metaModelFor;
 
 /**
  * Abstract method to be sub-classed by various caching technologies.
@@ -71,11 +70,9 @@ public abstract class CacheManager {
             propagate(event);
         }
 
-        if (LOGGER.isInfoEnabled()) {
             String message = "Cache purged: " + (event.getType() == CacheEvent.CacheEventType.ALL
                     ? "all caches" : "table: " + event.getGroup());
-            LogFilter.log(LOGGER, message);
-        }
+            LogFilter.log(LOGGER, LogLevel.DEBUG, message);
     }
 
     private void propagate(CacheEvent event){

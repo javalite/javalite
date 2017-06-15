@@ -18,9 +18,10 @@ limitations under the License.
 package org.javalite.activejdbc.cache;
 
 
-import org.javalite.activejdbc.LogFilter;
+import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.activejdbc.MetaModel;
 import org.javalite.activejdbc.Registry;
+import org.javalite.activejdbc.logging.LogLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,9 +87,9 @@ public enum QueryCache {
             String key = getKey(tableName, query, params);
             Object item = cacheManager.getCache(tableName, key);
             if (item == null) {
-                logAccess(query, params, "MISS");
+                logCacheAccess(query, params, "MISS");
             } else {
-                logAccess(query, params, "HIT");
+                logCacheAccess(query, params, "HIT");
             }
             return item;
         } else {
@@ -96,16 +97,15 @@ public enum QueryCache {
         }
     }
 
-    static void logAccess(String query, Object[] params, String access) {
-        if (LOGGER.isInfoEnabled()) {
-            StringBuilder log = new StringBuilder().append(access).append(", ").append('"').append(query).append('"');
-            if (!empty(params)) {
-                log.append(", with parameters: ").append('<');
-                join(log, params, ">, <");
-                log.append('>');
-            }
-            LogFilter.log(LOGGER, log.toString());
+    static void logCacheAccess(String query, Object[] params, String access) {
+
+        StringBuilder log = new StringBuilder().append(access).append(", ").append('"').append(query).append('"');
+        if (!empty(params)) {
+            log.append(", with parameters: ").append('<');
+            join(log, params, ">, <");
+            log.append('>');
         }
+        LogFilter.log(LOGGER, LogLevel.DEBUG, log.toString());
     }
 
 

@@ -200,3 +200,6 @@ CREATE TABLE developers (first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) 
 # interval is a reserved word in MySQL
 DROP TABLE IF EXISTS `interval`;
 CREATE TABLE `interval` (id int(11) NOT NULL auto_increment PRIMARY KEY, `begin` INT, `end` INT);
+
+DROP TABLE IF EXISTS boxes;
+CREATE TABLE boxes (id  int(11) NOT NULL auto_increment PRIMARY KEY, color VARCHAR(56) NOT NULL, fruit_id int(11), created_at DATETIME, updated_at DATETIME) ENGINE=InnoDB DEFAULT CHARSET=utf8;

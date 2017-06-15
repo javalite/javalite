@@ -21,6 +21,9 @@ import org.javalite.activejdbc.connection_config.ConnectionJdbcSpec;
 import org.javalite.activejdbc.connection_config.ConnectionJndiSpec;
 import org.javalite.activejdbc.connection_config.ConnectionSpec;
 import org.javalite.activejdbc.dialects.*;
+import org.javalite.activejdbc.logging.ActiveJDBCLogger;
+import org.javalite.activejdbc.logging.LogFilter;
+import org.javalite.activejdbc.logging.LogLevel;
 import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +46,7 @@ public class Configuration {
     private static CacheManager cacheManager;
     private static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
     private static String ENV;
+    private static ActiveJDBCLogger activeLogger;
 
     private Map<String, Dialect> dialects = new CaseInsensitiveMap<>();
 
@@ -56,7 +60,7 @@ public class Configuration {
             Enumeration<URL> resources = getClass().getClassLoader().getResources("activejdbc_models.properties");
             while (resources.hasMoreElements()) {
                 URL url = resources.nextElement();
-                LogFilter.log(LOGGER, "Load models from: {}", url.toExternalForm());
+                LogFilter.log(LOGGER, LogLevel.INFO, "Load models from: {}", url.toExternalForm());
                 InputStream inputStream = null;
                 InputStreamReader isreader = null;
                 BufferedReader reader = null;
@@ -88,7 +92,7 @@ public class Configuration {
             throw new InitException(e);
         }
         if(modelsMap.isEmpty()){
-            LogFilter.log(LOGGER, "ActiveJDBC Warning: Cannot locate any models, assuming project without models.");
+            LogFilter.log(LOGGER, LogLevel.INFO, "ActiveJDBC Warning: Cannot locate any models, assuming project without models.");
             return;
         }
         try {
@@ -106,17 +110,28 @@ public class Configuration {
             }catch(InitException e){
                 throw e;
             }catch(Exception e){
-                throw new InitException("failed to initialize a CacheManager. Please, ensure that the property " +
-                        "'cache.manager' points to correct class which extends '" + CacheManager.class.getName() + "' and provides a default constructor.", e);
+                throw new InitException("Failed to initialize a CacheManager. Please, ensure that the property " +
+                        "'cache.manager' points to correct class which extends '" + CacheManager.class.getName()
+                        + "' and provides a default constructor.", e);
             }
         }else{
             cacheManager = new NopeCacheManager();
+        }
+
+        String loggerClass = properties.getProperty("activejdbc.logger");
+        if(loggerClass != null){
+            try {
+                activeLogger = (ActiveJDBCLogger) Class.forName(loggerClass).newInstance();
+            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+                throw new InitException("Failed to initialize a ActiveJDBCLogger. Please, ensure that the property " +
+                        "'activejdbc.logger' points to correct class which extends '" + ActiveJDBCLogger.class.getName()
+                        + "' and provides a default constructor.", e);
+            }
         }
     }
 
     private void loadConnectionsSpecs() {
         try{
-
             String propertyFileName = properties == null ? "database.properties"
                     : properties.getProperty("env.connections.file", "database.properties");
 
@@ -308,7 +323,7 @@ public class Configuration {
 
             if(blank(ENV)){
                 ENV = "development";
-                LOGGER.warn("Environment variable ACTIVE_ENV not provided, defaulting to '" + ENV + "'");
+                LogFilter.log(LOGGER, LogLevel.INFO, "Environment variable ACTIVE_ENV not provided, defaulting to '" + ENV + "'");
             }
         }
         return ENV;
@@ -321,5 +336,13 @@ public class Configuration {
      */
     public static void setEnv(String env){
         ENV = env;
+    }
+
+    public static boolean hasActiveLogger() {
+        return activeLogger != null;
+    }
+
+    public static ActiveJDBCLogger getActiveLogger() {
+        return activeLogger;
     }
 }

@@ -14,6 +14,7 @@ import org.javalite.activejdbc.associations.Many2ManyAssociation;
 import org.javalite.activejdbc.conversion.BlankToNullConverter;
 import org.javalite.activejdbc.conversion.Converter;
 import org.javalite.activejdbc.conversion.ZeroToNullConverter;
+import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.activejdbc.validation.DateConverter;
 import org.javalite.activejdbc.validation.EmailValidator;
 import org.javalite.activejdbc.validation.NumericValidationBuilder;

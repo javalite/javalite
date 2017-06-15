@@ -16,6 +16,8 @@ limitations under the License.
 package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
+import org.javalite.activejdbc.logging.LogFilter;
+import org.javalite.activejdbc.logging.LogLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,12 +38,12 @@ class MetaModels {
     void addMetaModel(MetaModel mm, Class<? extends Model> modelClass) {
         Object o = metaModelsByClassName.put(modelClass.getName(), mm);
         if (o != null) {
-            LOGGER.warn("Double-register: {}: {}", modelClass, o);
+            LogFilter.log(LOGGER, LogLevel.WARNING, "Double-register: {}: {}", modelClass, o);
         }
         o = metaModelsByTableName.put(mm.getTableName(), mm);
         many2ManyAssociations.addAll(mm.getManyToManyAssociations(Collections.<Association>emptyList()));
         if (o != null) {
-            LOGGER.warn("Double-register: {}: {}", mm.getTableName(), o);
+            LogFilter.log(LOGGER, LogLevel.WARNING, "Double-register: {}: {}", mm.getTableName(), o);
         }
     }
 

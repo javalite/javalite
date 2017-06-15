@@ -17,6 +17,8 @@ limitations under the License.
 
 package org.javalite.activejdbc.statistics;
 
+import org.javalite.activejdbc.logging.LogFilter;
+import org.javalite.activejdbc.logging.LogLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
@@ -48,7 +50,7 @@ public class StatisticsQueue {
 
     private volatile boolean paused;
 
-    private static final Logger logger = LoggerFactory.getLogger(StatisticsQueue.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsQueue.class);
 
     public StatisticsQueue(boolean paused) {
         this.paused = paused;
@@ -71,8 +73,8 @@ public class StatisticsQueue {
      */
     public void stop() {
         int notProcessed = worker.shutdownNow().size();
-        if (logger.isInfoEnabled() && notProcessed != 0) {
-            logger.info("Worker exiting, {} execution events remaining, time: {}", notProcessed, System.currentTimeMillis());
+        if (notProcessed != 0) {
+            LogFilter.log(LOGGER, LogLevel.INFO, "Worker exiting, {} execution events remaining, time: {}", notProcessed, System.currentTimeMillis());
         }
     }
 

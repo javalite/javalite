@@ -18,6 +18,8 @@ package org.javalite.activejdbc.cache;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
+import org.javalite.activejdbc.logging.LogFilter;
+import org.javalite.activejdbc.logging.LogLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +39,7 @@ public class EHCacheManager extends CacheManager {
             Cache c = cacheManager.getCache(group);
             return c.get(key) == null ? null : c.get(key).getObjectValue();
         } catch (Exception e) {
-            LOGGER.warn("{}", e, e);
+            LogFilter.log(LOGGER, LogLevel.WARNING, "{}", e, e);
             return null;
         }
     }

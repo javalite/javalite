@@ -50,4 +50,14 @@ public class AppConfigTest implements JSpecSupport {
         AppConfig.reload();
         the(p("first.name")).shouldBeEqual("Larry");
     }
+
+    @Test
+    public void shouldOverrideFromCode(){
+        AppConfig.reload();
+        AppConfig.setProperty("first.name", "Mike");
+        a(p("first.name")).shouldBeEqual("Mike");
+
+        AppConfig.reload();
+        a(p("first.name")).shouldBeEqual("John");
+    }
 }

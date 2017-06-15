@@ -197,3 +197,6 @@ CREATE TABLE developers (first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) 
 
 DROP TABLE IF EXISTS "Wild Animals";
 CREATE TABLE "Wild Animals" (id int(11) auto_increment PRIMARY KEY, "Name" VARCHAR(56) NOT NULL);
+
+DROP TABLE IF EXISTS boxes;
+CREATE TABLE boxes (id  int(11) NOT NULL auto_increment PRIMARY KEY, color VARCHAR(56) NOT NULL, fruit_id int(11), created_at DATETIME, updated_at DATETIME);

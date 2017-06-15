@@ -196,3 +196,6 @@ CREATE TABLE alarms (id INTEGER PRIMARY KEY AUTOINCREMENT, alarm_time TIME NOT N
 
 DROP TABLE IF EXISTS developers;
 CREATE TABLE developers (first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL, email VARCHAR(56) NOT NULL, address VARCHAR(56), CONSTRAINT developers_uq UNIQUE (first_name, last_name, email));
+
+DROP TABLE IF EXISTS boxes;
+CREATE TABLE boxes (id  INTEGER PRIMARY KEY AUTOINCREMENT, color VARCHAR(56) NOT NULL, fruit_id INT(11));

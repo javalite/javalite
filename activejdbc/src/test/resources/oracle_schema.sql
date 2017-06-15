@@ -1068,3 +1068,19 @@ CREATE UNIQUE INDEX developers_uq ON developers (first_name, last_name, email)
 -- BREAK
 
 
+
+CREATE TABLE boxes (id NUMBER NOT NULL, color VARCHAR(56), fruit_id NUMBER)
+-- BREAK
+ALTER TABLE boxes ADD CONSTRAINT boxes_pk PRIMARY KEY (id)
+-- BREAK
+CREATE SEQUENCE boxes_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER boxes_trigger
+        BEFORE INSERT ON alarms REFERENCING
+        NEW AS new
+        OLD AS old
+        FOR EACH ROW
+        begin
+select coalesce(:new.id, boxes_seq.nextval) into :new.id from dual;
+end;
+-- BREAK

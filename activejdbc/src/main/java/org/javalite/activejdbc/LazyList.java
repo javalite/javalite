@@ -19,6 +19,7 @@ package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.associations.*;
 import org.javalite.activejdbc.cache.QueryCache;
+import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.common.Inflector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

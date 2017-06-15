@@ -19,6 +19,8 @@ import org.javalite.activejdbc.connection_config.ConnectionDataSourceSpec;
 import org.javalite.activejdbc.connection_config.ConnectionJdbcSpec;
 import org.javalite.activejdbc.connection_config.ConnectionJndiSpec;
 import org.javalite.activejdbc.connection_config.ConnectionSpec;
+import org.javalite.activejdbc.logging.LogFilter;
+import org.javalite.activejdbc.logging.LogLevel;
 import org.javalite.common.Convert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,7 +107,7 @@ public class DB implements Closeable{
             Connection connection;
             connection = properties == null ?  DriverManager.getConnection(url, user, password)
                     : DriverManager.getConnection(url, properties);
-            LOGGER.info("Opened connection: " + connection);
+            LogFilter.log(LOGGER, LogLevel.DEBUG, "Opened connection: " + connection);
             ConnectionsAccess.attach(name, connection, url);
             return this;
         } catch (Exception e) {
@@ -125,7 +127,7 @@ public class DB implements Closeable{
             Context ctx = new InitialContext();
             DataSource ds = (DataSource) ctx.lookup(jndiName);
             Connection connection = ds.getConnection();
-            LOGGER.info("Opened connection: " + connection);
+            LogFilter.log(LOGGER, LogLevel.DEBUG, "Opened connection: " + connection);
             ConnectionsAccess.attach(name, connection, jndiName);
             return this;
         } catch (Exception e) {
@@ -179,7 +181,7 @@ public class DB implements Closeable{
             ConnectionsAccess.detach(name); // let's free the thread from connection
             StatementCache.instance().cleanStatementCache(connection);
         } catch (DBException e) {
-            LOGGER.warn("Could not close connection! MUST INVESTIGATE POTENTIAL CONNECTION LEAK!", e);
+            LogFilter.log(LOGGER, LogLevel.ERROR, "Could not close connection! MUST INVESTIGATE POTENTIAL CONNECTION LEAK!", e);
         }
         return connection;
     }
@@ -193,7 +195,7 @@ public class DB implements Closeable{
         checkExistingConnection(name);
         try {
             Connection connection = datasource.getConnection();
-            LOGGER.info("Opened connection: " + connection);
+            LogFilter.log(LOGGER, LogLevel.DEBUG, "Opened connection: " + connection);
             ConnectionsAccess.attach(name, connection, datasource.toString());
             return this;
         } catch (SQLException e) {
@@ -215,7 +217,7 @@ public class DB implements Closeable{
             Context ctx = new InitialContext(jndiProperties);
             DataSource ds = (DataSource) ctx.lookup(jndiName);
             Connection connection = ds.getConnection();
-            LOGGER.info("Opened connection: " + connection);
+            LogFilter.log(LOGGER, LogLevel.DEBUG, "Opened connection: " + connection);
             ConnectionsAccess.attach(name, connection,
                     jndiProperties.contains("url") ? jndiProperties.getProperty("url") : jndiName);
             return this;
@@ -291,7 +293,7 @@ public class DB implements Closeable{
         try {
             DataSource ds = (DataSource) context.lookup(jndiName);
             Connection connection = ds.getConnection();
-            LOGGER.info("Opened connection: " + connection);
+            LogFilter.log(LOGGER, LogLevel.DEBUG, "Opened connection: " + connection);
             ConnectionsAccess.attach(name, connection, jndiName);
             return this;
         } catch (Exception e) {
@@ -319,7 +321,7 @@ public class DB implements Closeable{
             }
             StatementCache.instance().cleanStatementCache(connection);
             connection.close();
-            LogFilter.log(LOGGER, "Closed connection: {}", connection);
+            LogFilter.log(LOGGER, LogLevel.DEBUG, "Closed connection: {}", connection);
         } catch (Exception e) {
             if (!suppressWarning) {
                 LOGGER.warn("Could not close connection! MUST INVESTIGATE POTENTIAL CONNECTION LEAK!", e);
@@ -712,7 +714,7 @@ public class DB implements Closeable{
                 throw new DBException("Cannot open transaction, connection '" + name + "' not available");
             }
             c.setAutoCommit(false);
-            LogFilter.log(LOGGER, "Transaction opened");
+            LogFilter.log(LOGGER, LogLevel.DEBUG, "Transaction opened");
         } catch (SQLException ex) {
             throw new DBException(ex.getMessage(), ex);
         }
@@ -729,7 +731,7 @@ public class DB implements Closeable{
                 throw new DBException("Cannot commit transaction, connection '" + name + "' not available");
             }
             c.commit();
-            LogFilter.log(LOGGER, "Transaction committed");
+            LogFilter.log(LOGGER, LogLevel.DEBUG, "Transaction committed");
         } catch (SQLException ex) {
             throw new DBException(ex.getMessage(), ex);
         }
@@ -745,7 +747,7 @@ public class DB implements Closeable{
                 throw new DBException("Cannot rollback transaction, connection '" + name + "' not available");
             }
             c.rollback();
-            LogFilter.log(LOGGER, "Transaction rolled back");
+            LogFilter.log(LOGGER, LogLevel.DEBUG, "Transaction rolled back");
         } catch (SQLException ex) {
             throw new DBException(ex.getMessage(), ex);
         }

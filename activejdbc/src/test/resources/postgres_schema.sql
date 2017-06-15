@@ -198,3 +198,6 @@ CREATE TABLE developers (first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) 
 
 DROP TABLE IF EXISTS "Wild Animals";
 CREATE TABLE "Wild Animals" (id serial PRIMARY KEY, "Name" VARCHAR(56) NOT NULL);
+
+DROP TABLE IF EXISTS boxes;
+CREATE TABLE boxes (id serial PRIMARY KEY, "color" VARCHAR(56) NOT NULL, fruit_id INT);

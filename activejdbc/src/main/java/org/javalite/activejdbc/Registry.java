@@ -19,6 +19,8 @@ import org.javalite.activejdbc.annotations.*;
 import org.javalite.activejdbc.associations.*;
 import org.javalite.activejdbc.cache.CacheManager;
 import org.javalite.activejdbc.cache.QueryCache;
+import org.javalite.activejdbc.logging.LogFilter;
+import org.javalite.activejdbc.logging.LogLevel;
 import org.javalite.activejdbc.statistics.StatisticsQueue;
 
 import java.lang.reflect.Method;
@@ -137,11 +139,10 @@ public enum Registry {
                 registerColumnMetadata(table, metaParams);
             }
 
-            processOverrides(modelClasses);
-
             for (String table : tables) {
                 discoverAssociationsFor(table, dbName);
             }
+            processOverrides(modelClasses);
         } catch (Exception e) {
             initedDbs.remove(dbName);
             if (e instanceof InitException) {
@@ -213,10 +214,10 @@ public enum Registry {
         }
 
         if(columns.size() > 0){
-            LogFilter.log(LOGGER, "Fetched metadata for table: {}", table);
+            LogFilter.log(LOGGER, LogLevel.INFO, "Fetched metadata for table: {}", table);
         }
         else{
-            LOGGER.warn("Failed to retrieve metadata for table: '{}'."
+            LogFilter.log(LOGGER, LogLevel.WARNING, "Failed to retrieve metadata for table: '{}'."
                     + " Are you sure this table exists? For some databases table names are case sensitive.",
                     table);
         }
@@ -233,7 +234,7 @@ public enum Registry {
         for (Class<? extends Model> modelClass : modelClasses) {
             MetaModel mm = new MetaModel(dbName, modelClass, dbType);
             metaModels.addMetaModel(mm, modelClass);
-            LogFilter.log(LOGGER, "Registered model: {}", modelClass);
+            LogFilter.log(LOGGER, LogLevel.INFO, "Registered model: {}", modelClass);
         }
     }
 
@@ -245,67 +246,101 @@ public enum Registry {
             processOverridesBelongsTo(modelClass, belongsToAnnotation);
 
             BelongsToParents belongsToParentAnnotation = modelClass.getAnnotation(BelongsToParents.class);
-            if (belongsToParentAnnotation != null)
-            	for (BelongsTo belongsTo : belongsToParentAnnotation.value())
-            		processOverridesBelongsTo(modelClass, belongsTo);
+            if (belongsToParentAnnotation != null){
+                for (BelongsTo belongsTo : belongsToParentAnnotation.value()){
+                    processOverridesBelongsTo(modelClass, belongsTo);
+                }
+            }
 
             Many2Many many2manyAnnotation = modelClass.getAnnotation(Many2Many.class);
-
             if(many2manyAnnotation != null){
-
-                Class<? extends Model> otherClass = many2manyAnnotation.other();
-
-                String source = getTableName(modelClass);
-                String target = getTableName(otherClass);
-                String join = many2manyAnnotation.join();
-                String sourceFKName = many2manyAnnotation.sourceFKName();
-                String targetFKName = many2manyAnnotation.targetFKName();
-                String otherPk;
-                String thisPk;
-                try {
-                    Method m = modelClass.getMethod("getMetaModel");
-                    MetaModel mm = (MetaModel) m.invoke(modelClass);
-                    thisPk = mm.getIdName();
-                    m = otherClass.getMethod("getMetaModel");
-                    mm = (MetaModel) m.invoke(otherClass);
-                    otherPk = mm.getIdName();
-                } catch (Exception e) {
-                    throw new InitException("failed to determine PK name in many to many relationship", e);
-                }
-
-                Association many2many1 = new Many2ManyAssociation(modelClass, otherClass, join, sourceFKName, targetFKName, otherPk);
-                metaModels.getMetaModel(source).addAssociation(many2many1);
-
-                Association many2many2 = new Many2ManyAssociation(otherClass, modelClass, join, targetFKName, sourceFKName, thisPk);
-                metaModels.getMetaModel(target).addAssociation(many2many2);
+                processManyToManyOverrides(many2manyAnnotation, modelClass);
             }
 
             BelongsToPolymorphic belongsToPolymorphic = modelClass.getAnnotation(BelongsToPolymorphic.class);
             if(belongsToPolymorphic != null){
+                processPolymorphic(belongsToPolymorphic, modelClass);
+            }
 
-                Class<? extends Model>[] parentClasses = belongsToPolymorphic.parents();
-                String[] typeLabels = belongsToPolymorphic.typeLabels();
+            UnrelatedTo unrelatedTo = modelClass.getAnnotation(UnrelatedTo .class);
+            if(unrelatedTo != null){
+                processUnrelatedTo(unrelatedTo, modelClass);
+            }
 
-                if(typeLabels.length > 0 && typeLabels.length != parentClasses.length){
-                    throw new InitException("must provide all type labels for polymorphic associations");
-                }
+        }
+    }
 
-                for (int i = 0, parentClassesLength = parentClasses.length; i < parentClassesLength; i++) {
-                    Class<? extends Model> parentClass = parentClasses[i];
-
-                    String typeLabel = typeLabels.length > 0? typeLabels[i]: parentClass.getName();
-
-                    BelongsToPolymorphicAssociation belongsToPolymorphicAssociation =
-                            new BelongsToPolymorphicAssociation(modelClass, parentClass, typeLabel, parentClass.getName());
-                    metaModels.getMetaModel(modelClass).addAssociation(belongsToPolymorphicAssociation);
-
-
-                    OneToManyPolymorphicAssociation oneToManyPolymorphicAssociation =
-                            new OneToManyPolymorphicAssociation(parentClass, modelClass, typeLabel);
-                    metaModels.getMetaModel(parentClass).addAssociation(oneToManyPolymorphicAssociation);
+    private void processUnrelatedTo(UnrelatedTo unrelatedTo, Class<? extends Model> modelClass) {
+        Class<? extends Model>[] related = unrelatedTo.value();
+        for (Class<? extends Model> relatedClass : related) {
+            MetaModel relatedMM = metaModels.getMetaModel(relatedClass);
+            MetaModel thisMM = metaModels.getMetaModel(modelClass);
+            if(relatedMM != null){
+                Association association = relatedMM.getAssociationForTarget(modelClass);
+                relatedMM.removeAssociationForTarget(modelClass);
+                if(association != null){
+                    LogFilter.log(LOGGER, LogLevel.INFO, "Removed association: " + association);
                 }
             }
+            Association association = thisMM.getAssociationForTarget(relatedClass);
+            thisMM.removeAssociationForTarget(relatedClass);
+            if(association != null){
+                LogFilter.log(LOGGER, LogLevel.INFO, "Removed association: " + association);
+            }
         }
+    }
+
+    private void processPolymorphic(BelongsToPolymorphic belongsToPolymorphic, Class<? extends Model> modelClass ) {
+        Class<? extends Model>[] parentClasses = belongsToPolymorphic.parents();
+        String[] typeLabels = belongsToPolymorphic.typeLabels();
+
+        if (typeLabels.length > 0 && typeLabels.length != parentClasses.length) {
+            throw new InitException("must provide all type labels for polymorphic associations");
+        }
+
+        for (int i = 0, parentClassesLength = parentClasses.length; i < parentClassesLength; i++) {
+            Class<? extends Model> parentClass = parentClasses[i];
+
+            String typeLabel = typeLabels.length > 0 ? typeLabels[i] : parentClass.getName();
+
+            BelongsToPolymorphicAssociation belongsToPolymorphicAssociation =
+                    new BelongsToPolymorphicAssociation(modelClass, parentClass, typeLabel, parentClass.getName());
+            metaModels.getMetaModel(modelClass).addAssociation(belongsToPolymorphicAssociation);
+
+
+            OneToManyPolymorphicAssociation oneToManyPolymorphicAssociation =
+                    new OneToManyPolymorphicAssociation(parentClass, modelClass, typeLabel);
+            metaModels.getMetaModel(parentClass).addAssociation(oneToManyPolymorphicAssociation);
+        }
+    }
+
+    private void processManyToManyOverrides(Many2Many many2manyAnnotation, Class<? extends Model> modelClass){
+
+        Class<? extends Model> otherClass = many2manyAnnotation.other();
+
+        String source = getTableName(modelClass);
+        String target = getTableName(otherClass);
+        String join = many2manyAnnotation.join();
+        String sourceFKName = many2manyAnnotation.sourceFKName();
+        String targetFKName = many2manyAnnotation.targetFKName();
+        String otherPk;
+        String thisPk;
+        try {
+            Method m = modelClass.getMethod("getMetaModel");
+            MetaModel mm = (MetaModel) m.invoke(modelClass);
+            thisPk = mm.getIdName();
+            m = otherClass.getMethod("getMetaModel");
+            mm = (MetaModel) m.invoke(otherClass);
+            otherPk = mm.getIdName();
+        } catch (Exception e) {
+            throw new InitException("failed to determine PK name in many to many relationship", e);
+        }
+
+        Association many2many1 = new Many2ManyAssociation(modelClass, otherClass, join, sourceFKName, targetFKName, otherPk);
+        metaModels.getMetaModel(source).addAssociation(many2many1);
+
+        Association many2many2 = new Many2ManyAssociation(otherClass, modelClass, join, targetFKName, sourceFKName, thisPk);
+        metaModels.getMetaModel(target).addAssociation(many2many2);
     }
 
     private void processOverridesBelongsTo(Class<? extends Model> modelClass, BelongsTo belongsToAnnotation) {
