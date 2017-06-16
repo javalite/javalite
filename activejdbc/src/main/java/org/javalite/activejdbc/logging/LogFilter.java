@@ -137,12 +137,16 @@ public class LogFilter {
                 switch (logLevel){
                     case DEBUG:
                         logger.debug(log, param1, param2);
+                        break;
                     case INFO:
                         logger.info(log, param1, param2);
+                        break;
                     case WARNING:
                         logger.warn(log, param1, param2);
+                        break;
                     case ERROR:
                         logger.error(log, param1, param2);
+                        break;
                     default:
                 }
             }
@@ -158,12 +162,16 @@ public class LogFilter {
                 switch (logLevel){
                     case DEBUG:
                         logger.debug(log, params);
+                        break;
                     case INFO:
                         logger.info(log, params);
+                        break;
                     case WARNING:
                         logger.warn(log, params);
+                        break;
                     case ERROR:
                         logger.error(log, params);
+                        break;
                     default:
                 }
             }
