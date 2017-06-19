@@ -80,7 +80,7 @@ public abstract class CacheManager {
             try{
                 listener.onFlush(event);
             }catch(Exception e){
-                LOGGER.warn("failed to propagate cache event: {} to listener: {}", event, listener, e);
+                LOGGER.debug("failed to propagate cache event: {} to listener: {}", event, listener, e);
             }
         }
     }
