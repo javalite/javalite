@@ -114,7 +114,7 @@ public abstract class Command {
     }
 
     /**
-     * Adds parameters and their values to reflect by the {@link #toJson()} method.
+     * Adds parameters and their values to reflect by the {@link #toJsonLog()} method.
      *
      * @param params important parameters of this command - tings you want to see in a log file.
      */
@@ -127,7 +127,7 @@ public abstract class Command {
      *
      * @return JSON representation  of this command.
      */
-    public String toJson(){
+    public String toJsonLog(){
         return JsonHelper.toJsonString(params);
     }
 }
