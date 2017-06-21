@@ -40,7 +40,7 @@ public abstract class Command {
 
     private String jmsMessageId;
 
-    private Map params = map("class", getClass().getSimpleName());
+    private Map<String, String> params = map("class", getClass().getSimpleName());
 
     private static final XStream X_STREAM = new XStream(new CDATAXppDriver());
 
@@ -114,20 +114,21 @@ public abstract class Command {
     }
 
     /**
-     * Adds parameters and their values to reflect by the {@link #toJsonLog()} method.
+     * Adds parameters and their values to reflect by the {@link #getParams()} method.
      *
-     * @param params important parameters of this command - tings you want to see in a log file.
+     * @param namesAndValues important parameters of this command - tings you want to see in a log file.
      */
-    public void addJsonParams(Map params){
-        this.params.putAll(params);
+    @SuppressWarnings("unchecked")
+    public void addParams(String ... namesAndValues){
+        this.params.putAll(map(namesAndValues));
     }
 
     /**
-     * Used by writing returned value to the log.
+     * Used to understand important values related to this command (in log files).
      *
-     * @return JSON representation  of this command.
+     * @return important values related to processing of this command.
      */
-    public String toJsonLog(){
-        return JsonHelper.toJsonString(params);
+    public Map<String, String> getParams(){
+        return params;
     }
 }

@@ -13,6 +13,7 @@ public class HelloCommand extends Command {
 
     public HelloCommand(String message) {
         this.message = message;
+        addParams("message", message);
     }
 
     public HelloCommand() {} //necessary to provide
