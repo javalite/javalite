@@ -100,7 +100,11 @@ public class JsonHelper {
             Object name = namesAndValues[count];
             sb.append("\"").append(name).append("\":");
             if (!(namesAndValues[count + 1] instanceof Number)) {
-                sb.append("\"").append(namesAndValues[count + 1].toString()).append("\"");
+                if(namesAndValues[count + 1] == null) {
+                    sb.append("null");
+                }else {
+                    sb.append("\"").append(namesAndValues[count + 1].toString()).append("\"");
+                }
             } else {
                 sb.append(namesAndValues[count + 1].toString());
             }

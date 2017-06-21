@@ -122,6 +122,12 @@ public class JsonHelperSpec {
         the(mapResult.get("age")).shouldBeEqual(23);
         the(mapResult.get("dob")).shouldNotBeNull();
     }
+
+    @Test
+    public void shouldConvertNull() {
+        String json = JsonHelper.toJsonObject("null", null);
+        the(JsonHelper.toMap(json).get("null")).shouldBeNull();
+    }
 }
 
 
