@@ -37,8 +37,7 @@ public abstract class ViewSpec extends SpecHelper {
     public final void beforeTest(){
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setContextPath("/test_context");
-        RequestContext.setTLs(request, new MockHttpServletResponse(), new MockFilterConfig(),
-                new ControllerRegistry(new MockFilterConfig()), new AppContext(), new RequestVo(), null);
+        RequestContext.setTLs(request, new MockHttpServletResponse(), new MockFilterConfig(), new AppContext(), new RequestVo(), null);
     }
 
     @After
@@ -67,7 +66,7 @@ public abstract class ViewSpec extends SpecHelper {
      */
     @Override
     protected void setInjector(Injector injector){
-        RequestContext.getControllerRegistry().setInjector(injector);
+        Configuration.setInjector(injector);
     }
 
     /**
@@ -79,7 +78,7 @@ public abstract class ViewSpec extends SpecHelper {
     @Override
     protected void registerTag(String name, FreeMarkerTag tag) {
         manager.registerTag(name, tag);
-        Injector injector = RequestContext.getControllerRegistry().getInjector();
+        Injector injector = Configuration.getInjector();
         if(injector != null)
             injector.injectMembers(tag);
     }

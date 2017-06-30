@@ -59,8 +59,8 @@ public abstract class RequestSpec implements JSpecSupport {
         response = new MockHttpServletResponse();
         config = new MockFilterConfig();
         RequestContext.clear();
-        RequestContext.setTLs(request, response, config, new ControllerRegistry(new MockFilterConfig()),
-                new AppContext(), new RequestVo(), null);
+        Configuration.setFilterConfig(new MockFilterConfig());
+        RequestContext.setTLs(request, response, config, new AppContext(), new RequestVo(), null);
         Configuration.getTemplateManager().setTemplateLocation("src/test/views");
     }
 

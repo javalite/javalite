@@ -383,7 +383,7 @@ public class RequestBuilder {
         try{
             AppController controller = createControllerInstance(getControllerClassName(controllerPath));
             RequestContext.setRoute(new Route(controller, realAction, id, method));
-            Injector injector = RequestContext.getControllerRegistry().getInjector();
+            Injector injector = Configuration.getInjector();
 
             if(injector != null){
                  injector.injectMembers(controller);

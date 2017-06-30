@@ -17,15 +17,9 @@ limitations under the License.
 package app.controllers;
 
 
-import app.services.Greeter;
-import com.google.inject.Inject;
-import com.google.inject.Injector;
+import app.services.*;
 import org.javalite.activeweb.ControllerSpec;
 import org.javalite.activeweb.mocks.GreeterMock;
-import org.javalite.activeweb.mocks.GreeterModuleMock;
-import app.services.GreeterModule;
-import com.google.inject.Guice;
-import org.junit.Before;
 import org.junit.Test;
 
 /** 
@@ -36,22 +30,28 @@ public class InjectionControllerSpec extends ControllerSpec {
 
     @Test
     public void shouldInjectRealService(){
-        setInjector(Guice.createInjector(new GreeterModule()));
+
+        injector().bind(Greeter.class).to(GreeterImpl.class)
+                .bind(Redirector.class).to(RedirectorImpl.class).create();
+
         request().get("index");
         a(responseContent()).shouldBeEqual("The greeting is: Hello from real greeter");
     }
 
     @Test
     public void shouldInjectMockService(){
-        setInjector(Guice.createInjector(new GreeterModuleMock()));
+        injector().bind(Greeter.class).to(GreeterMock.class)
+                .bind(Redirector.class).to(RedirectorImpl.class).create();
+
+
         request().get("index");
         a(responseContent()).shouldBeEqual("The greeting is: Hello from mock greeter");
     }
 
     @Test
     public void shouldOverrideWithMock(){
-        Injector injector = createInjector(new GreeterModule()).override(Greeter.class).with(GreeterMock.class).create();
-        setInjector(injector);
+        setInjector(createInjector(new GreeterModule()).override(Greeter.class).with(GreeterMock.class).create());
+
         request().get("index");
         a(responseContent()).shouldBeEqual("The greeting is: Hello from mock greeter");
     }

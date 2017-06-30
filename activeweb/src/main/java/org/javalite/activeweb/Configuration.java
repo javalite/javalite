@@ -15,13 +15,16 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
+import com.google.inject.Injector;
+import org.javalite.activeweb.controller_filters.HttpSupportFilter;
 import org.javalite.activeweb.freemarker.AbstractFreeMarkerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.FilterConfig;
 import java.io.File;
 import java.io.InputStream;
-import java.util.Properties;
+import java.util.*;
 
 import static org.javalite.common.Util.blank;
 
@@ -30,6 +33,11 @@ import static org.javalite.common.Util.blank;
  */
 public class Configuration {
     private static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
+    private static Injector injector;
+
+    static List<String> getControllerPackages() {
+        return controllerPackages;
+    }
 
     enum Params {
         templateManager, bootstrap, defaultLayout, targetDir, rootPackage, dbconfig, controllerConfig, rollback,
@@ -44,6 +52,15 @@ public class Configuration {
     private static boolean activeReload = !blank(System.getProperty("active_reload")) && System.getProperty("active_reload").equals("true");
     private static AbstractFreeMarkerConfig freeMarkerConfig;
     private static boolean useDefaultLayoutForErrors = true;
+
+    // these are not full package names, just parti al package names between "app.controllers"
+    // and simple name of controller class
+    private static List<String> controllerPackages;
+    private static List<HttpSupportFilter> filters  = new ArrayList<>();
+
+    private static boolean filtersInjected = false;
+
+    private static Map<Class, FilterMetadata> filterMetadataMap = new HashMap<>();
 
     static{
         try {
@@ -251,9 +268,7 @@ public class Configuration {
 
     public static boolean rollback() {
         return Boolean.parseBoolean(get(Params.rollback.toString().trim()));  
-    }    
-
-
+    }
 
     public static boolean activeReload(){
         return activeReload;
@@ -265,6 +280,63 @@ public class Configuration {
 
     public static File getTmpDir() {
         return new File(System.getProperty("java.io.tmpdir"));
+    }
+
+    protected static void setFilters(List<HttpSupportFilter> allFilters) {
+        filters = allFilters;
+    }
+
+    protected static void setFilterConfig(FilterConfig config) {
+        controllerPackages = ControllerPackageLocator.locateControllerPackages(config);
+    }
+
+    protected static List<HttpSupportFilter> getFilters() {
+        return filters;
+    }
+
+    //does not have to be synchronized. In the worst case, filters will be injected
+    // the same stuff a few times.
+    protected static void injectFilters() {
+        if(injector != null ){
+            if(Configuration.isTesting()){
+                for (HttpSupportFilter filter : filters) {
+                    injector.injectMembers(filter);
+                }
+            } else if (!filtersInjected) {
+                for (HttpSupportFilter filter : filters) {
+                    injector.injectMembers(filter);
+                }
+                filtersInjected = true;
+            }
+        }
+    }
+
+    //no need to synchronize here, since FilterConfig objects will be created
+    //by a single thread when the app is bootstrapped.
+    static FilterMetadata getFilterMetadata(HttpSupportFilter filter){
+        FilterMetadata config = filterMetadataMap.get(filter.getClass());
+        if(config == null){
+            config = new FilterMetadata();
+            filterMetadataMap.put(filter.getClass(), config);
+        }
+        return config;
+    }
+
+    static void setInjector(Injector injector) {
+        Configuration.injector = injector;
+    }
+
+    static Injector getInjector() {
+        return injector;
+    }
+
+    static void addFilter(HttpSupportFilter filter) {
+        filters.add(filter);
+    }
+
+    static void resetFilters() {
+        filters = new ArrayList<>();
+        filterMetadataMap = new HashMap<>();
     }
 
 }

@@ -15,8 +15,8 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
-import org.javalite.activeweb.controller_filters.ControllerFilter;
 import com.google.inject.Injector;
+import org.javalite.activeweb.controller_filters.HttpSupportFilter;
 import org.javalite.activeweb.freemarker.AbstractFreeMarkerConfig;
 import org.javalite.activeweb.freemarker.FreeMarkerTemplateManager;
 import org.javalite.common.Inflector;
@@ -44,15 +44,11 @@ class ControllerRunner {
     private boolean tagsInjected;
 
     protected void run(Route route, boolean integrateViews) throws Exception {
-        ControllerRegistry controllerRegistry = RequestContext.getControllerRegistry();
-        List<ControllerRegistry.FilterList> globalFilterLists = controllerRegistry.getGlobalFilterLists();
-        List<ControllerFilter> controllerFilters = controllerRegistry.getMetaData(route.getController().getClass()).getFilters(route.getActionName());
 
-        RequestContext.getControllerRegistry().injectFilters(); //will execute once, really filters are persistent
+        Configuration.injectFilters(); //no worries, will execute once, as filters have a life span of the app
 
         try {
-            filterBefore(route, globalFilterLists, controllerFilters);
-
+            filterBefore(route);
             if (RequestContext.getControllerResponse() == null) {//execute controller... only if a filter did not respond
 
                 String actionMethod = Inflector.camelize(route.getActionName().replace('-', '_'), false);
@@ -71,7 +67,7 @@ class ControllerRunner {
             processFlash();
 
             //run filters in opposite order
-            filterAfter(route, globalFilterLists, controllerFilters);
+            filterAfter(route);
         }
         catch(ActionNotFoundException e){
             throw e;
@@ -79,7 +75,7 @@ class ControllerRunner {
         catch (RuntimeException e) {
             RequestContext.setControllerResponse(null);//must blow away, as this response is not valid anymore.
 
-            if (exceptionHandled(e, route, globalFilterLists, controllerFilters)) {
+            if (exceptionHandled(e, route)) {
                 LOGGER.debug("A filter has called render(..) method, proceeding to render it...");
                 renderResponse(route, integrateViews);//a filter has created an instance of a controller response, need to render it.
             }else{
@@ -95,7 +91,7 @@ class ControllerRunner {
         if(!tagsInjected){
             AbstractFreeMarkerConfig freeMarkerConfig = Configuration.getFreeMarkerConfig();
 
-            Injector injector = RequestContext.getControllerRegistry().getInjector();
+            Injector injector = Configuration.getInjector();
             tagsInjected = true;
             if(injector == null || freeMarkerConfig == null){
                 return;
@@ -108,7 +104,7 @@ class ControllerRunner {
      * Injects controller with dependencies from Guice module.
      */
     private void injectController(AppController controller) {
-        Injector injector = RequestContext.getControllerRegistry().getInjector();
+        Injector injector = Configuration.getInjector();
         if (injector != null) {
             injector.injectMembers(controller);
         }
@@ -208,48 +204,45 @@ class ControllerRunner {
         return true;
     }
 
-    private boolean exceptionHandled(Exception e, Route route, List<ControllerRegistry.FilterList> globalFilterLists, List<ControllerFilter> controllerFilters) throws Exception{
-
-        //first, process global filters and account for exceptions
-        for (ControllerRegistry.FilterList filterList : globalFilterLists) {
-            if (!filterList.excludesController(route.getController())) {
-                List<ControllerFilter> filters = filterList.getFilters();
-                for (ControllerFilter controllerFilter : filters) {
-                    controllerFilter.onException(e);
+    private boolean exceptionHandled(Exception e, Route route) throws Exception{
+        for(HttpSupportFilter filter: Configuration.getFilters()){
+            if(Configuration.getFilterMetadata(filter).matches(route)){
+                if (Configuration.logRequestParams()) {
+                    LOGGER.debug("Executing filter: " + filter.getClass().getName() + "#before");
+                }
+                filter.onException(e);
+                if(RequestContext.getControllerResponse() != null){ // this filter sent a response, breaking the loop
+                    break;
                 }
             }
-        }
-
-        for (ControllerFilter controllerFilter : controllerFilters) {
-            controllerFilter.onException(e);
         }
         return RequestContext.getControllerResponse() != null;
     }
 
-    private void filterBefore(Route route, List<ControllerRegistry.FilterList> globalFilterLists, List<ControllerFilter> controllerFilters) {
+    /**
+     * Will execute <code>before()</code> method of every filter in order of definition.
+     * Will break the cycle if a filter produced a controller response.
+     *
+     * @param route current route
+     */
+    private void filterBefore(Route route) {
         try {
+            List<HttpSupportFilter> filters = Configuration.getFilters();
 
-            //first, process global filters and account for exceptions
-            for (ControllerRegistry.FilterList filterList : globalFilterLists) {
-                if(!filterList.excludesController(route.getController())){
-                    List<ControllerFilter> filters = filterList.getFilters();
-                    for (ControllerFilter controllerFilter : filters) {
-                        if (Configuration.logRequestParams()) {
-                            LOGGER.debug("Executing filter: " + controllerFilter.getClass().getName() + "#before");
-                        }
-                        controllerFilter.before();
-                    }
-                }
-            }
-
-            for (ControllerFilter controllerFilter : controllerFilters) {
+            for(HttpSupportFilter filter: Configuration.getFilters()){
                 if (Configuration.logRequestParams()) {
-                    LOGGER.debug("Executing filter: " + controllerFilter.getClass().getName() + "#before");
+                    LOGGER.debug("Executing filter: " + filter.getClass().getName() + "#before");
                 }
-                controllerFilter.before();
-                if (RequestContext.getControllerResponse() != null) return;//a filter responded!
+                if(Configuration.getFilterMetadata(filter).matches(route)){
+                    if (Configuration.logRequestParams()) {
+                        LOGGER.debug("Executing filter: " + filter.getClass().getName() + "#after");
+                    }
+                    filter.before();
+                }
+                if (RequestContext.getControllerResponse() != null){
+                    return;//a filter responded, no need to run other filters!
+                }
             }
-
         }catch(RuntimeException e){
             throw e;
         }catch(Exception e){
@@ -257,38 +250,26 @@ class ControllerRunner {
         }
     }
 
-    private void filterAfter(Route route, List<ControllerRegistry.FilterList> globalFilterLists, List<ControllerFilter> controllerFilters) {
+    private void filterAfter(Route route) {
         try {
-
-            //first, process global filters and account for exceptions
-            for (ControllerRegistry.FilterList filterList : globalFilterLists) {
-                if(!filterList.excludesController(route.getController())){
-                    List<ControllerFilter> filters = filterList.getFilters();
-                    for (ControllerFilter controllerFilter : filters) {
-                        if (Configuration.logRequestParams()) {
-                            LOGGER.debug("Executing filter: " + controllerFilter.getClass().getName() + "#after");
-                        }
-                        controllerFilter.after();
+            List<HttpSupportFilter> filters = Configuration.getFilters();
+            for (int i = filters.size() - 1; i >= 0; i--) {
+                HttpSupportFilter filter = filters.get(i);
+                if(Configuration.getFilterMetadata(filter).matches(route)){
+                    if (Configuration.logRequestParams()) {
+                        LOGGER.debug("Executing filter: " + filter.getClass().getName() + "#after");
                     }
+                    filters.get(i).after();
                 }
             }
-
-            for (int i = controllerFilters.size() - 1; i >= 0; i--) {
-                if (Configuration.logRequestParams()) {
-                    LOGGER.debug("Executing filter: " + controllerFilters.get(i).getClass().getName() + "#after");
-                }
-                controllerFilters.get(i).after();
-            }
-
         } catch (Exception e) {
-            throw  new FilterException(e);
+            throw new FilterException(e);
         }
     }
 
     private void executeAction(Object controller, String actionName) {
         try{
             Method m = controller.getClass().getMethod(actionName);
-            Class c = m.getDeclaringClass();
             if(!AppController.class.isAssignableFrom(m.getDeclaringClass())){ // see https://github.com/javalite/activeweb/issues/272
                 throw new ActionNotFoundException("Cannot execute action '" + actionName + "' on controller: " + controller);
             }

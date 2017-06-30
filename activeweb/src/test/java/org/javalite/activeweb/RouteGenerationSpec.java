@@ -34,10 +34,8 @@ public class RouteGenerationSpec implements JSpecSupport {
 
     @Before
     public void before(){
-        RequestContext.setControllerRegistry(new ControllerRegistry(new MockFilterConfig()));
+        Configuration.setFilterConfig(new MockFilterConfig());
     }
-    
-
 
     @Test
     public void shouldGenerateSimpleStandardRoutes(){

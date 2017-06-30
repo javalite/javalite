@@ -31,10 +31,10 @@ import app.filters.InjectionRedirectFilter;
 public class AppControllerConfig extends AbstractControllerConfig {
 
     public void init(AppContext appContext) {
-        addGlobalFilters(new TimingFilter(), new InjectionRedirectFilter());
+        add(new TimingFilter(), new InjectionRedirectFilter());
 
         //this filter will apply to the IncludeController
-        addGlobalFilters(new IncludeExcludeFilter()).exceptFor(ExcludeController.class);
+        add(new IncludeExcludeFilter()).exceptFor(ExcludeController.class);
 
 
         add(new IncludeExcludeActionFilter()).to(ExcludeActionController.class).excludeActions("exclude");

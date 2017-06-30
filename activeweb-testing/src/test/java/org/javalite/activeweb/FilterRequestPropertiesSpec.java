@@ -20,7 +20,7 @@ package org.javalite.activeweb;
 
 import app.controllers.StudentController;
 import app.controllers.level1.level2.RegistrationController;
-import org.javalite.activeweb.controller_filters.HttpSupportFilter;
+import org.javalite.activeweb.controller_filters.AppControllerFilter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,7 +31,7 @@ public class FilterRequestPropertiesSpec extends IntegrationSpec {
 
     MockFilter filter;
 
-    class MockFilter extends HttpSupportFilter {
+    class MockFilter extends AppControllerFilter {
         String path, method, uri, url;
 
         public void before() {

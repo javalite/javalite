@@ -15,12 +15,17 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
-import org.javalite.activeweb.controller_filters.ControllerFilter;
+import org.javalite.activeweb.controller_filters.HttpSupportFilter;
 import org.javalite.activeweb.mock.*;
+import org.javalite.common.Util;
+import org.javalite.test.SystemStreamUtil;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockFilterConfig;
 
+import javax.servlet.ServletException;
+import java.io.IOException;
 import java.util.List;
 
 import static org.javalite.test.jspec.JSpec.a;
@@ -30,24 +35,28 @@ import static org.javalite.test.jspec.JSpec.the;
 /**
  * @author Igor Polevoy
  */
-public class AbstractControllerConfigSpec {
+public class AbstractControllerConfigSpec  extends RequestSpec{
 
-    AbstractControllerConfig config;
-
-
+    private AbstractControllerConfig config;
 
     @Before
     public void setUp() throws Exception {
-        RequestContext.setControllerRegistry(new ControllerRegistry(new MockFilterConfig()));
+        Configuration.setFilterConfig(new MockFilterConfig());
     }
 
+    @After
+    public void tearDown(){
+        Configuration.resetFilters();
+    }
+
+
     @Test
-    public void testAddingGlobalFilters() {
+    public void shouldAddGlobalFilters() {
 
         //create mock config
         config = new AbstractControllerConfig() {
             public void init(AppContext config) {
-                addGlobalFilters(new AbcFilter());
+                add(new AbcFilter());
             }
 
         };
@@ -56,51 +65,62 @@ public class AbstractControllerConfigSpec {
         config.init(new AppContext());
         config.completeInit();
 
-        List<ControllerRegistry.FilterList> filterLists = RequestContext.getControllerRegistry().getGlobalFilterLists();
+        List<HttpSupportFilter> filter = Configuration.getFilters();
 
-        a(filterLists.size()).shouldBeEqual(1);
-        a(filterLists.get(0).getFilters().size()).shouldBeEqual(1);
-        a(filterLists.get(0).getFilters().get(0).getClass()).shouldBeTheSameAs(AbcFilter.class);
+        a(filter.size()).shouldBeEqual(1);
+        a(filter.get(0).getClass()).shouldBeTheSameAs(AbcFilter.class);
     }
 
     @Test
-    public void testAddingControllerFilters() {
+    public void shouldAddControllerFilters() {
         final AbcFilter filter1 = new AbcFilter();
         final XyzFilter filter2 = new XyzFilter();
-        final LogFilter logFilter = new LogFilter();
+        final LogFilter filter3 = new LogFilter();
 
         //create mock config
         config = new AbstractControllerConfig() {
             public void init(AppContext context) {
                 add(filter1, filter2).to(PersonController.class, BookController.class);
-                add(logFilter).to(LibraryController.class);
+                add(filter3).to(LibraryController.class);
             }
         };
 
         //init config.
         config.init(new AppContext());
-        
+        config.completeInit();
 
-        List<ControllerFilter> filters;
-        //PersonController filters
-        filters= RequestContext.getControllerRegistry().getMetaData(PersonController.class).getFilters();
+
+        List<HttpSupportFilter> filters= Configuration.getFilters();
+        //assert order:
+        the(filters.size()).shouldBeEqual(3);
         the(filters.get(0)).shouldBeTheSameAs(filter1);
         the(filters.get(1)).shouldBeTheSameAs(filter2);
+        the(filters.get(2)).shouldBeTheSameAs(filter3);
 
-        //BookController filters
-        filters = RequestContext.getControllerRegistry().getMetaData(BookController.class).getFilters();
-        the(filters.get(0)).shouldBeTheSameAs(filter1);
-        the(filters.get(1)).shouldBeTheSameAs(filter2);
+        //lets check the matches:
+        the(matches(filters.get(0), new PersonController(), "")).shouldBeTrue();
+        the(matches(filters.get(0), new BookController(), "")).shouldBeTrue();
 
-        //LibraryController filter
-        filters = RequestContext.getControllerRegistry().getMetaData(LibraryController.class).getFilters();
-        the(filters.size()).shouldBeEqual(1);
-        the(filters.get(0)).shouldBeTheSameAs(logFilter);
+        the(matches(filters.get(1), new PersonController(), "")).shouldBeTrue();
+        the(matches(filters.get(1), new BookController(), "")).shouldBeTrue();
+
+        the(matches(filters.get(2), new LibraryController(), "")).shouldBeTrue();
+
+        //lets check the non-matches:
+        the(matches(filters.get(0), new LibraryController(), "")).shouldBeFalse();
+        the(matches(filters.get(1), new LibraryController(), "")).shouldBeFalse();
+        the(matches(filters.get(2), new PersonController(), "")).shouldBeFalse();
+        the(matches(filters.get(2), new BookController(), "")).shouldBeFalse();
+    }
+
+    private boolean matches(HttpSupportFilter filter, AppController controller, String action){
+        return Configuration.getFilterMetadata(filter).matches(new Route(controller, action, HttpMethod.GET));
     }
 
 
+
     @Test
-    public void testAddingActionFilters(){
+    public void shouldAddActionFilters(){
 
         final LogFilter logFilter = new LogFilter();
 
@@ -113,17 +133,20 @@ public class AbstractControllerConfigSpec {
 
         //init config.
         config.init(new AppContext());
+        config.completeInit();
 
-        List<ControllerFilter> filters = RequestContext.getControllerRegistry().getMetaData(LibraryController.class).getFilters("show");
-        a(filters.size()).shouldBeEqual(0);
-        filters = RequestContext.getControllerRegistry().getMetaData(LibraryController.class).getFilters("index");
+        List<HttpSupportFilter> filters = Configuration.getFilters();
         a(filters.size()).shouldBeEqual(1);
+
+        the(matches(filters.get(0), new LibraryController(), "index")).shouldBeTrue();
+        the(matches(filters.get(0), new LibraryController(), "blah")).shouldBeFalse();
         a(filters.get(0)).shouldBeTheSameAs(logFilter);
     }
 
 
+    //more importantly we are adding the same filter twice!
     @Test
-    public void testAddingMultipleActionFiltersToMultipleControllers(){
+    public void shouldmatchMultipleActionFiltersAndMultipleControllers(){
 
         final LogFilter logFilter = new LogFilter();
 
@@ -137,25 +160,71 @@ public class AbstractControllerConfigSpec {
 
         //init config.
         config.init(new AppContext());
+        config.completeInit();
 
-        List<ControllerFilter> filters;
-        //LibraryController
-        filters = RequestContext.getControllerRegistry().getMetaData(LibraryController.class).getFilters("show");
-        a(filters.size()).shouldBeEqual(2);
-        filters = RequestContext.getControllerRegistry().getMetaData(LibraryController.class).getFilters("index");
-        a(filters.size()).shouldBeEqual(2);
+        List<HttpSupportFilter> filters = Configuration.getFilters();
+        a(filters.size()).shouldBeEqual(3); // we added the same filter twice!
 
-        //BookController
-        filters = RequestContext.getControllerRegistry().getMetaData(BookController.class).getFilters("show");
-        a(filters.size()).shouldBeEqual(2);
-        filters = RequestContext.getControllerRegistry().getMetaData(BookController.class).getFilters("index");
-        a(filters.size()).shouldBeEqual(2);
-        filters = RequestContext.getControllerRegistry().getMetaData(BookController.class).getFilters("list");
-        a(filters.size()).shouldBeEqual(1);
+        the(matches(filters.get(0), new LibraryController(), "index")).shouldBeTrue();
+        the(matches(filters.get(0), new BookController(), "index")).shouldBeTrue();
+        the(matches(filters.get(0), new LibraryController(), "show")).shouldBeTrue();
+        the(matches(filters.get(0), new BookController(), "show")).shouldBeTrue();
 
-        //BookController non-existent filter
-        filters = RequestContext.getControllerRegistry().getMetaData(BookController.class).getFilters("foo");
-        a(filters.size()).shouldBeEqual(0);
+        the(matches(filters.get(1), new LibraryController(), "index")).shouldBeTrue();
+        the(matches(filters.get(1), new BookController(), "index")).shouldBeTrue();
+        the(matches(filters.get(1), new LibraryController(), "show")).shouldBeTrue();
+        the(matches(filters.get(1), new BookController(), "show")).shouldBeTrue();
+        the(matches(filters.get(2), new BookController(), "list")).shouldBeTrue();
+        the(matches(filters.get(1), new BookController(), "list")).shouldBeFalse();
+    }
+
+    @Test
+    public void shouldExcludeController() {
+
+        final LogFilter logFilter = new LogFilter();
+
+        //create mock config
+        config = new AbstractControllerConfig() {
+            public void init(AppContext context) {
+                add(logFilter, new XyzFilter()).exceptFor(BookController.class);
+
+            }
+        };
+
+        //init config.
+        config.init(new AppContext());
+        config.completeInit();
+
+        List<HttpSupportFilter> filters = Configuration.getFilters();
+        a(filters.size()).shouldBeEqual(2); // we added the same filter twice!
+
+        the(matches(filters.get(0), new LibraryController(), "index")).shouldBeTrue();
+        the(matches(filters.get(0), new BookController(), "index")).shouldBeFalse();
+    }
+
+    @Test
+    public void shouldTriggerFiltersInOrderOfDefinition() throws IOException, ServletException {
+
+        SystemStreamUtil.replaceOut();
+        request.setServletPath("/do-filters");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+
+        a(response.getContentAsString()).shouldBeEqual("ok");
+
+        String out = SystemStreamUtil.getSystemOut();
+        SystemStreamUtil.restoreSystemOut();
+
+        String[] lines = Util.split(out, System.getProperty("line.separator"));
+        the(lines[0]).shouldBeEqual("GlobalFilter1 before");
+        the(lines[1]).shouldBeEqual("GlobalFilter2 before");
+        the(lines[2]).shouldBeEqual("->ControllerFilter1 before");
+        the(lines[3]).shouldBeEqual("->ControllerFilter2 before");
+        the(lines[4]).shouldBeEqual("-->DoFiltersController");     //<<< Controller executed
+        the(lines[5]).shouldBeEqual("->ControllerFilter2 after");
+        the(lines[6]).shouldBeEqual("->ControllerFilter1 after");
+        the(lines[7]).shouldBeEqual("GlobalFilter2 after");
+        the(lines[8]).shouldBeEqual("GlobalFilter1 after");
     }
 }
 

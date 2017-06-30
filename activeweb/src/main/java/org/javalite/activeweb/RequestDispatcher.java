@@ -15,7 +15,6 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
-import com.google.inject.Injector;
 import org.javalite.activejdbc.DB;
 
 import org.javalite.common.JsonHelper;
@@ -52,11 +51,9 @@ public class RequestDispatcher implements Filter {
 
     public void init(FilterConfig filterConfig) throws ServletException {
         this.filterConfig = filterConfig;
-        ControllerRegistry registry = new ControllerRegistry(filterConfig);
-        filterConfig.getServletContext().setAttribute("controllerRegistry", registry);
+        Configuration.setFilterConfig(filterConfig);
 
         Configuration.getTemplateManager().setServletContext(filterConfig.getServletContext());
-        RequestContext.setControllerRegistry(registry);//bootstrap below requires it
         appContext = new AppContext();
         filterConfig.getServletContext().setAttribute("appContext", appContext);
 
@@ -137,14 +134,8 @@ public class RequestDispatcher implements Filter {
             appConfig.init(context);
             if(appConfig instanceof  Bootstrap){
                 appBootstrap = (Bootstrap) appConfig;
-                if(!Configuration.isTesting() ){
-                    Injector injector = appBootstrap.getInjector();
-                    if(injector != null && RequestContext.getControllerRegistry() != null){
-                        logger.warn("OVERWRITING CURRENT INJECTOR...");
-                    }
-                    if(injector != null){
-                        RequestContext.getControllerRegistry().setInjector(injector);
-                    }
+                if (!Configuration.isTesting()) {
+                    Configuration.setInjector(appBootstrap.getInjector());
                 }
             }
             appConfig.completeInit();
@@ -160,10 +151,6 @@ public class RequestDispatcher implements Filter {
         }
     }
 
-
-    protected ControllerRegistry getControllerRegistry() {
-        return (ControllerRegistry) filterConfig.getServletContext().getAttribute("controllerRegistry");
-    }
 
 
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
@@ -197,7 +184,7 @@ public class RequestDispatcher implements Filter {
                 uri = path;
             }
 
-            RequestContext.setTLs(request, response, filterConfig, getControllerRegistry(), appContext, new RequestVo(), format);
+            RequestContext.setTLs(request, response, filterConfig, appContext, new RequestVo(), format);
             if (Util.blank(uri)) {
                 uri = "/";//different servlet implementations, damn.
             }

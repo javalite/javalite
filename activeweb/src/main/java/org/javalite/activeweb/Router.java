@@ -374,10 +374,8 @@ public class Router {
 
         //find all matches
         List<String> candidates = new ArrayList<>();
-        ControllerRegistry r = RequestContext.getControllerRegistry();
 
-
-        for (String pack : RequestContext.getControllerRegistry().getControllerPackages()) {
+        for (String pack : Configuration.getControllerPackages()) {
             if (temp.startsWith(pack)) {
                 candidates.add(pack);
             }

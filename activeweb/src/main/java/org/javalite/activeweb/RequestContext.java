@@ -27,7 +27,7 @@ import java.util.Map;
  */
 class RequestContext {
 
-    private static ThreadLocal<ControllerRegistry> registry = new ThreadLocal<>();
+
     private static ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
     private static ThreadLocal<HttpServletResponse> response = new ThreadLocal<>();
     private static ThreadLocal<FilterConfig> filterConfig = new ThreadLocal<>();
@@ -77,13 +77,6 @@ class RequestContext {
         RequestContext.appContext.set(appContext);
     }
 
-    static void setControllerRegistry(ControllerRegistry controllerRegistry){
-        registry.set(controllerRegistry);
-    }
-
-    static ControllerRegistry getControllerRegistry(){
-        return registry.get();
-    }
 
     static void setHttpRequest(HttpServletRequest req){
         request.set(req);
@@ -122,11 +115,10 @@ class RequestContext {
         filterConfig.set(config);
     }
 
-    static void setTLs(HttpServletRequest req, HttpServletResponse resp, FilterConfig conf,
-                       ControllerRegistry reg, AppContext context, RequestVo requestVo, String format) {
+    static void setTLs(HttpServletRequest req, HttpServletResponse resp, FilterConfig conf, AppContext context,
+                       RequestVo requestVo, String format) {
         setHttpRequest(req);
         setHttpResponse(resp);
-        setControllerRegistry(reg);
         setFilterConfig(conf);
         setAppContext(context);
         setRequestVo(requestVo);
@@ -150,7 +142,6 @@ class RequestContext {
     }
 
     static void clear() {
-        registry.set(null);
         request.set(null);
         response.set(null);
         controllerResponse.set(null);

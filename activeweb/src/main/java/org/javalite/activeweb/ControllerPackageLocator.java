@@ -61,10 +61,9 @@ class ControllerPackageLocator {
     private static void discoverInDirectory(String directoryPath, List<String> controllerPackages, String parent) {
         try {
             File directory = new File(directoryPath);
-            if (!directory.exists()) {
-                //nothing
-            } else {
+            if (directory.exists()) {
                 File[] files = directory.listFiles();
+                assert files != null;
                 for (File file : files) {
                     if (file.isDirectory()) {
                         controllerPackages.add(parent + (parent.equals("") ? "" : ".") + file.getName());
@@ -72,8 +71,7 @@ class ControllerPackageLocator {
                     }
                 }
             }
-        } catch (Exception ignore) {
-        }
+        } catch (Exception ignore) {}
     }
 
     protected static void discoverInJar(File file, List<String> controllerPackages) {

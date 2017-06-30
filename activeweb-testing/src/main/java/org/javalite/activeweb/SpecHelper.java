@@ -54,7 +54,7 @@ public class SpecHelper implements JSpecSupport{
         setTemplateLocation("src/main/webapp/WEB-INF/views");//default location of all views
 
         RequestContext.setTLs(null, new MockHttpServletResponse(), new MockFilterConfig(),
-                new ControllerRegistry(new MockFilterConfig()), new AppContext(), new RequestVo(), null);
+                new AppContext(), new RequestVo(), null);
 
     }
 
@@ -172,7 +172,7 @@ public class SpecHelper implements JSpecSupport{
      * @param injector injector to source dependencies form.
      */
     protected void setInjector(Injector injector){
-        RequestContext.getControllerRegistry().setInjector(injector);
+        Configuration.setInjector(injector);
     }
 
     /**

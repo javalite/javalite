@@ -73,7 +73,7 @@ public abstract class Bootstrap implements AppConfig{
     public void setInjector(Injector injector){
         if(!Configuration.isTesting()){
             LOGGER.warn("WARNING!!! Method Bootstrap#setInjector(Injector) is deprecated and will be removed in future versions. Please switch to Bootstrap#getInjector() instead.");
-            RequestContext.getControllerRegistry().setInjector(injector);
+            Configuration.setInjector(injector);
         }
     }
 

@@ -26,5 +26,6 @@ public class GreeterModule extends AbstractModule {
     protected void configure() {
 
         bind(Greeter.class).to(GreeterImpl.class).asEagerSingleton();
+        bind(Redirector.class).to(RedirectorImpl.class).asEagerSingleton();
     }
 }

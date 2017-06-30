@@ -16,9 +16,9 @@ limitations under the License.
 package org.javalite.activeweb.mock;
 
 
-import org.javalite.activeweb.controller_filters.ControllerFilterAdapter;
+import org.javalite.activeweb.controller_filters.AppControllerFilter;
 
 /**
 * @author Igor Polevoy
 */
-public class XyzFilter extends ControllerFilterAdapter {}
+public class XyzFilter extends AppControllerFilter {}

@@ -241,8 +241,8 @@ public class RequestDispatcherSpec extends RequestSpec {
         String[] lines = Util.split(getSystemOut(), System.getProperty("line.separator"));
         // we need this because on different OSes log lines may come out or order!
         Map message = null;
-        for (String line : lines) {
-            Map log = JsonHelper.toMap(line);
+        for (int i = 2; i < lines.length; i++) {
+            Map log = JsonHelper.toMap(lines[i]);
             try {
                 message = (Map) log.get("message");
             }catch(ClassCastException ignore){}

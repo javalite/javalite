@@ -1,6 +1,5 @@
 package app.controllers.filters;
 
-import org.javalite.activeweb.controller_filters.ControllerFilterAdapter;
 import org.javalite.activeweb.controller_filters.HttpSupportFilter;
 
 import static org.javalite.common.Collections.map;

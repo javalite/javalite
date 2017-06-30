@@ -30,7 +30,7 @@ import java.util.List;
  *
  * @author Igor Polevoy
  */
-public class DBConnectionFilter extends ControllerFilterAdapter {
+public class DBConnectionFilter extends AppControllerFilter {
 
     private String dbName;
     private boolean manageTransaction;

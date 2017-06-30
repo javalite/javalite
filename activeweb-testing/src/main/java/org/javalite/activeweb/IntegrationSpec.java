@@ -16,7 +16,7 @@ limitations under the License.
 package org.javalite.activeweb;
 
 
-import org.javalite.activeweb.controller_filters.ControllerFilter;
+import org.javalite.activeweb.controller_filters.HttpSupportFilter;
 
 /**
  * Use this as a super class for integration tests that do not require a DB connection.
@@ -25,6 +25,10 @@ import org.javalite.activeweb.controller_filters.ControllerFilter;
  * @author Igor Polevoy
  */
 public class IntegrationSpec extends RequestSpecHelper {
+
+    public IntegrationSpec() {
+        Configuration.resetFilters();
+    }
 
     protected RequestBuilder controller(String controllerName){
         return new RequestBuilder(controllerName, session(), true);
@@ -35,7 +39,8 @@ public class IntegrationSpec extends RequestSpecHelper {
         Configuration.getTemplateManager().setTemplateLocation(templateLocation);
     }
 
-    protected void addFilter(Class<? extends AppController> controllerType, ControllerFilter filter){
-        RequestContext.getControllerRegistry().getMetaData(controllerType).addFilter(filter);
+    protected void addFilter(Class<? extends AppController> controllerClass, HttpSupportFilter filter){
+        Configuration.getFilterMetadata(filter).addController(controllerClass);
+        Configuration.addFilter(filter);
     }
 }

@@ -247,13 +247,11 @@ public class RouterCustomSpec extends RequestSpec {
         request.setServletPath("/greeting");
         execDispatcher();
         a(responseContent()).shouldContain("java.lang.ClassNotFoundException: app.controllers.GreetingController");
-
         String[] lines = Util.split(SystemStreamUtil.getSystemOut(), System.getProperty("line.separator"));
+        SystemStreamUtil.restoreSystemOut();
         Map log = JsonHelper.toMap(lines[2]);
         Map message = (Map) log.get("message");
-
         a(message.get("error")).shouldContain("java.lang.ClassNotFoundException: app.controllers.GreetingController");
-        SystemStreamUtil.restoreSystemOut();
     }
 
 

@@ -15,55 +15,43 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
-import org.javalite.activeweb.controller_filters.ControllerFilter;
+import org.javalite.activeweb.controller_filters.HttpSupportFilter;
+import org.javalite.common.Collections;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
  * This class is to be sub-classed by the application level class called <code>app.config.AppControllerConfig</code>.
- * This class provides ways to bind filters to controllers. It has coarse grain methods for binding as well as
- * fine grained.
- *
- * <p/><p/>
- * See {@link org.javalite.activeweb.controller_filters.ControllerFilter}.
- *
- * <p/><p/>
+ * This class provides ways to bind filters to controllers.
+ * <p>
+ * See {@link org.javalite.activeweb.controller_filters.HttpSupportFilter}.
+ * <p></p>
  * <strong>Filters before() methods are executed in the same order as filters are registered.</strong>
- *
- * <ul>
- *      <li> Adding global filters:{@link #addGlobalFilters(org.javalite.activeweb.controller_filters.ControllerFilter...)}
- *      <li> Adding controller filters:{@link #add(org.javalite.activeweb.controller_filters.ControllerFilter...)} )}
- * </ul>
- * Adding a global filter adds it to all controllers. It makes sense to use this to add timing filters, logging filters,
- * etc.
- *
- * <p/><p/>
+ * <p></p>
+ * <code> Adding controller filters:{@link #add(org.javalite.activeweb.controller_filters.HttpSupportFilter...)} )}</code>
+ * <p></p>
+ * Not specifying controllers in the <code>to(...)</code> method adds filters to all controllers.
+ * <p></p>
  * <strong>Filters' after() methods are executed in the opposite order as filters are registered.</strong>
- *
- *
- * <p/><p/>
+ * <p></p>
  * Here is an example of adding a filter to specific actions:
- *
  * <pre>
  * add(mew TimingFilter(), new DBConnectionFilter()).to(PostsController.class).forActions("index", "show");
  * </pre>
  *
- *
  * @author Igor Polevoy
  */
-public abstract class AbstractControllerConfig implements AppConfig {
+public abstract class AbstractControllerConfig<T extends AppController> implements AppConfig {
 
-    //exclude some controllers from filters
-    private List<ExcludeBuilder> excludeBuilders = new ArrayList<>();
+    private List<HttpSupportFilter> allFilters = new ArrayList<>();
 
     public class FilterBuilder {
-        private ControllerFilter[] filters;
-        private Class<? extends AppController>[] controllerClasses;
+        private List<HttpSupportFilter> filters = new ArrayList<>();
 
-        protected FilterBuilder(ControllerFilter[] filters) {
-            this.filters = filters;
+
+        protected FilterBuilder(HttpSupportFilter[] filters) {
+            this.filters.addAll(Collections.list(filters));
         }
 
         /**
@@ -73,30 +61,30 @@ public abstract class AbstractControllerConfig implements AppConfig {
          * @return self, usually to run a method {@link #forActions(String...)}.
          */
         public FilterBuilder to(Class<? extends AppController>... controllerClasses) {
-            this.controllerClasses = controllerClasses;
-            for (Class<? extends AppController> controllerClass : controllerClasses) {
-                RequestContext.getControllerRegistry().getMetaData(controllerClass).addFilters(filters);
+            for (HttpSupportFilter filter : filters) {
+                for (Class<? extends AppController> controllerClass : controllerClasses) {
+                    Configuration.getFilterMetadata(filter).addController(controllerClass);
+                }
             }
             return this;
         }
 
         /**
          * Adds a list of actions for which filters are configured.
-         * <p/>
+         * <p>
          * Example:
          * <pre>
          * add(mew TimingFilter(), new DBConnectionFilter()).to(PostsController.class).forActions("index", "show");
          * </pre>
          *
-         *
          * @param actionNames list of action names for which filters are configured.
          */
         public void forActions(String... actionNames) {
-            if (controllerClasses == null)
+            if (!hasControllers())
                 throw new IllegalArgumentException("controller classes not provided. Please call 'to(controllers)' before 'forActions(actions)'");
 
-            for (Class<? extends AppController> controllerClass : controllerClasses) {
-                RequestContext.getControllerRegistry().getMetaData(controllerClass).addFilters(filters, actionNames);
+            for (HttpSupportFilter filter : filters) {
+                Configuration.getFilterMetadata(filter).setIncludedActions(actionNames);
             }
         }
 
@@ -106,13 +94,34 @@ public abstract class AbstractControllerConfig implements AppConfig {
          * @param excludedActions list of actions for which this filter will not apply.
          */
         public void excludeActions(String... excludedActions) {
-            if (controllerClasses == null)
+            if (!hasControllers())
                 throw new IllegalArgumentException("controller classes not provided. Please call 'to(controllers)' before 'exceptAction(actions)'");
 
-            for (Class<? extends AppController> controllerClass : controllerClasses) {
-                RequestContext.getControllerRegistry().getMetaData(controllerClass).addFiltersWithExcludedActions(filters, excludedActions);
+            for (HttpSupportFilter filter : filters) {
+                Configuration.getFilterMetadata(filter).setExcludedActions(excludedActions);
             }
+        }
 
+        private boolean hasControllers() {
+            boolean hasControllers = false;
+            for (HttpSupportFilter filter : filters) {
+                if (Configuration.getFilterMetadata(filter).hasControllers()) {
+                    hasControllers = true; // at least one is OK
+                }
+            }
+            return hasControllers;
+        }
+
+        /**
+         * Pass controllers to this method if you want to exclude supplied filters to be applied to them.
+         *
+         * @param excludeControllerClasses list of controllers to which these filters do not apply.
+         */
+        @SafeVarargs
+        public final void exceptFor(Class<T>... excludeControllerClasses) {
+            for (HttpSupportFilter filter : filters) {
+                Configuration.getFilterMetadata(filter).setExcludedControllers(excludeControllerClasses);
+            }
         }
     }
 
@@ -124,7 +133,8 @@ public abstract class AbstractControllerConfig implements AppConfig {
      * @param filters filters to be added.
      * @return object with <code>to()</code> method which accepts a controller class. The return type is not important and not used by itself.
      */
-    protected FilterBuilder add(ControllerFilter... filters) {
+    protected FilterBuilder add(HttpSupportFilter... filters) {
+        allFilters.addAll(Collections.list(filters));
         return new FilterBuilder(filters);
     }
 
@@ -138,47 +148,16 @@ public abstract class AbstractControllerConfig implements AppConfig {
      * </pre>
      *
      * @param filters filters to be added.
+     * @deprecated use {@link #add(HttpSupportFilter[])}.
      */
-    protected ExcludeBuilder addGlobalFilters(ControllerFilter... filters) {
-        ExcludeBuilder excludeBuilder = new ExcludeBuilder(filters);
-        excludeBuilders.add(excludeBuilder);
-        return excludeBuilder;
+    protected FilterBuilder addGlobalFilters(HttpSupportFilter... filters) {
+        return add(filters);
     }
 
     @Override
     public void completeInit() {
-        for (ExcludeBuilder excludeBuilder : excludeBuilders) {
-            RequestContext.getControllerRegistry().addGlobalFilters(excludeBuilder.getFilters(), excludeBuilder.getExcludeControllerClasses());
-        }
+        Configuration.setFilters(allFilters);
     }
 
-
-    public class ExcludeBuilder{
-
-        private List<Class<? extends AppController>> excludeControllerClasses = new ArrayList<>();
-        private List<ControllerFilter> filters = new ArrayList<>();
-
-        public ExcludeBuilder(ControllerFilter[] filters) {
-            this.filters.addAll(Arrays.asList(filters));
-        }
-
-        /**
-         * Pass controllers to this method if you want to exclude supplied filters to be applied to them.
-         *
-         * @param excludeControllerClasses list of controllers to which these filters do not apply.
-         */
-        public void exceptFor(Class<? extends AppController>... excludeControllerClasses) {
-            this.excludeControllerClasses.addAll(Arrays.asList(excludeControllerClasses));
-        }
-
-        public List<Class<? extends AppController>> getExcludeControllerClasses() {
-            return excludeControllerClasses;
-        }
-
-        public List<ControllerFilter> getFilters() {
-            return filters;
-        }
-
-    }
 
 }
