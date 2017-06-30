@@ -1,6 +1,7 @@
 package app.controllers.filters;
 
 import org.javalite.activeweb.controller_filters.HttpSupportFilter;
+import org.javalite.activeweb.mock.OutputCollector;
 
 /**
  * @author igor on 6/23/17.
@@ -8,12 +9,12 @@ import org.javalite.activeweb.controller_filters.HttpSupportFilter;
 public class GlobalFilter2 extends HttpSupportFilter {
     @Override
     public void before() {
-        System.out.println(getClass().getSimpleName() + " before");
+        OutputCollector.addLine(getClass().getSimpleName() + " before");
     }
 
     @Override
     public void after() {
-        System.out.println(getClass().getSimpleName() + " after");
+        OutputCollector.addLine(getClass().getSimpleName() + " after");
     }
 
 }

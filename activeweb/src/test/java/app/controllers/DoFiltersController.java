@@ -1,6 +1,7 @@
 package app.controllers;
 
 import org.javalite.activeweb.AppController;
+import org.javalite.activeweb.mock.OutputCollector;
 
 /**
  * @author igor on 6/23/17.
@@ -8,7 +9,7 @@ import org.javalite.activeweb.AppController;
 public class DoFiltersController extends AppController {
     public void index(){
 
-        System.out.println("-->" + getClass().getSimpleName());
+        OutputCollector.addLine("-->" + getClass().getSimpleName());
         respond("ok");
     }
 }

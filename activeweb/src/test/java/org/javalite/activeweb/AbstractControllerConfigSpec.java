@@ -28,8 +28,7 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.List;
 
-import static org.javalite.test.jspec.JSpec.a;
-import static org.javalite.test.jspec.JSpec.the;
+import static org.javalite.activeweb.mock.OutputCollector.getLine;
 
 
 /**
@@ -205,26 +204,21 @@ public class AbstractControllerConfigSpec  extends RequestSpec{
     @Test
     public void shouldTriggerFiltersInOrderOfDefinition() throws IOException, ServletException {
 
-        SystemStreamUtil.replaceOut();
         request.setServletPath("/do-filters");
         request.setMethod("GET");
         dispatcher.doFilter(request, response, filterChain);
 
         a(response.getContentAsString()).shouldBeEqual("ok");
 
-        String out = SystemStreamUtil.getSystemOut();
-        SystemStreamUtil.restoreSystemOut();
-
-        String[] lines = Util.split(out, System.getProperty("line.separator"));
-        the(lines[0]).shouldBeEqual("GlobalFilter1 before");
-        the(lines[1]).shouldBeEqual("GlobalFilter2 before");
-        the(lines[2]).shouldBeEqual("->ControllerFilter1 before");
-        the(lines[3]).shouldBeEqual("->ControllerFilter2 before");
-        the(lines[4]).shouldBeEqual("-->DoFiltersController");     //<<< Controller executed
-        the(lines[5]).shouldBeEqual("->ControllerFilter2 after");
-        the(lines[6]).shouldBeEqual("->ControllerFilter1 after");
-        the(lines[7]).shouldBeEqual("GlobalFilter2 after");
-        the(lines[8]).shouldBeEqual("GlobalFilter1 after");
+        the(getLine(0)).shouldBeEqual("GlobalFilter1 before");
+        the(getLine(1)).shouldBeEqual("GlobalFilter2 before");
+        the(getLine(2)).shouldBeEqual("->ControllerFilter1 before");
+        the(getLine(3)).shouldBeEqual("->ControllerFilter2 before");
+        the(getLine(4)).shouldBeEqual("-->DoFiltersController");     //<<< Controller executed
+        the(getLine(5)).shouldBeEqual("->ControllerFilter2 after");
+        the(getLine(6)).shouldBeEqual("->ControllerFilter1 after");
+        the(getLine(7)).shouldBeEqual("GlobalFilter2 after");
+        the(getLine(8)).shouldBeEqual("GlobalFilter1 after");
     }
 }
 
