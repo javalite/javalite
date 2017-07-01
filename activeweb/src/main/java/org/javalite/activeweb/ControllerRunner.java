@@ -53,8 +53,8 @@ class ControllerRunner {
 
                 String actionMethod = Inflector.camelize(route.getActionName().replace('-', '_'), false);
                 if (checkActionMethod(route.getController(), actionMethod)) {
-                    //Configuration.getTemplateManager().
                     injectController(route.getController());
+                    LOGGER.debug("Executing: " + route.getController() + "#" + actionMethod);
                     executeAction(route.getController(), actionMethod);
                 }
             }
@@ -207,11 +207,9 @@ class ControllerRunner {
     private boolean exceptionHandled(Exception e, Route route) throws Exception{
         for(HttpSupportFilter filter: Configuration.getFilters()){
             if(Configuration.getFilterMetadata(filter).matches(route)){
-                if (Configuration.logRequestParams()) {
-                    LOGGER.debug("Executing filter: " + filter.getClass().getName() + "#before");
-                }
+                LOGGER.debug("Executing filter: " + filter.getClass().getName() + "#exceptionHandled");
                 filter.onException(e);
-                if(RequestContext.getControllerResponse() != null){ // this filter sent a response, breaking the loop
+                if (RequestContext.getControllerResponse() != null){ // this filter sent a response, breaking the loop
                     break;
                 }
             }
@@ -227,16 +225,10 @@ class ControllerRunner {
      */
     private void filterBefore(Route route) {
         try {
-            List<HttpSupportFilter> filters = Configuration.getFilters();
 
             for(HttpSupportFilter filter: Configuration.getFilters()){
-                if (Configuration.logRequestParams()) {
-                    LOGGER.debug("Executing filter: " + filter.getClass().getName() + "#before");
-                }
                 if(Configuration.getFilterMetadata(filter).matches(route)){
-                    if (Configuration.logRequestParams()) {
-                        LOGGER.debug("Executing filter: " + filter.getClass().getName() + "#after");
-                    }
+                    LOGGER.debug("Executing filter: " + filter.getClass().getName() + "#before");
                     filter.before();
                 }
                 if (RequestContext.getControllerResponse() != null){
@@ -256,9 +248,7 @@ class ControllerRunner {
             for (int i = filters.size() - 1; i >= 0; i--) {
                 HttpSupportFilter filter = filters.get(i);
                 if(Configuration.getFilterMetadata(filter).matches(route)){
-                    if (Configuration.logRequestParams()) {
-                        LOGGER.debug("Executing filter: " + filter.getClass().getName() + "#after");
-                    }
+                    LOGGER.debug("Executing filter: " + filter.getClass().getName() + "#after");
                     filters.get(i).after();
                 }
             }

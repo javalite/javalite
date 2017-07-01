@@ -60,7 +60,7 @@ public class Configuration {
 
     private static boolean filtersInjected = false;
 
-    private static Map<Class, FilterMetadata> filterMetadataMap = new HashMap<>();
+    private static Map<HttpSupport, FilterMetadata> filterMetadataMap = new HashMap<>();
 
     static{
         try {
@@ -314,10 +314,10 @@ public class Configuration {
     //no need to synchronize here, since FilterConfig objects will be created
     //by a single thread when the app is bootstrapped.
     static FilterMetadata getFilterMetadata(HttpSupportFilter filter){
-        FilterMetadata config = filterMetadataMap.get(filter.getClass());
+        FilterMetadata config = filterMetadataMap.get(filter);
         if(config == null){
             config = new FilterMetadata();
-            filterMetadataMap.put(filter.getClass(), config);
+            filterMetadataMap.put(filter, config);
         }
         return config;
     }

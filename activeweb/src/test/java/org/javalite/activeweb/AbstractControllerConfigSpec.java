@@ -15,6 +15,7 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
+import org.javalite.activeweb.controller_filters.DBConnectionFilter;
 import org.javalite.activeweb.controller_filters.HttpSupportFilter;
 import org.javalite.activeweb.mock.*;
 import org.javalite.common.Util;
@@ -220,6 +221,22 @@ public class AbstractControllerConfigSpec  extends RequestSpec{
         the(getLine(6)).shouldBeEqual("->ControllerFilter1 after");
         the(getLine(7)).shouldBeEqual("GlobalFilter2 after");
         the(getLine(8)).shouldBeEqual("GlobalFilter1 after");
+    }
+
+    @Test
+    public void shouldAllowMultipleInstancesOfFilterRegistered() {
+        config = new AbstractControllerConfig() {
+            public void init(AppContext context) {
+                add(new DBConnectionFilter());
+                add(new DBConnectionFilter("another")).to(LibraryController.class);
+            }
+        };
+        config.init(new AppContext());
+        config.completeInit();
+        List<HttpSupportFilter> filters = Configuration.getFilters();
+        FilterMetadata filter1Metadata = Configuration.getFilterMetadata(filters.get(0));
+        FilterMetadata filter2Metadata = Configuration.getFilterMetadata(filters.get(1));
+        the(filter1Metadata).shouldNotBeTheSameAs(filter2Metadata);
     }
 }
 
