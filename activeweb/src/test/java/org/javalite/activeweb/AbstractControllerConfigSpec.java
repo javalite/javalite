@@ -41,6 +41,7 @@ public class AbstractControllerConfigSpec  extends RequestSpec{
     @Before
     public void setUp() throws Exception {
         Configuration.setFilterConfig(new MockFilterConfig());
+        OutputCollector.reset();
     }
 
     @After
