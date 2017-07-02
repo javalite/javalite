@@ -230,6 +230,8 @@ class ControllerRunner {
                 if(Configuration.getFilterMetadata(filter).matches(route)){
                     LOGGER.debug("Executing filter: " + filter.getClass().getName() + "#before");
                     filter.before();
+                }else{
+                    LOGGER.debug("Filter: " + filter.getClass().getName() + "#before  does not match route: " + route );
                 }
                 if (RequestContext.getControllerResponse() != null){
                     return;//a filter responded, no need to run other filters!
@@ -250,6 +252,8 @@ class ControllerRunner {
                 if(Configuration.getFilterMetadata(filter).matches(route)){
                     LOGGER.debug("Executing filter: " + filter.getClass().getName() + "#after");
                     filters.get(i).after();
+                }else {
+                    LOGGER.debug("Filter: " + filter.getClass().getName() + "#after does not match route: " + route );
                 }
             }
         } catch (Exception e) {
