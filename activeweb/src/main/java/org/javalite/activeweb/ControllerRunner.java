@@ -234,6 +234,7 @@ class ControllerRunner {
                     LOGGER.debug("Filter: " + filter.getClass().getName() + "#before  does not match route: " + route );
                 }
                 if (RequestContext.getControllerResponse() != null){
+                    LOGGER.debug("Filter: " + filter.getClass().getName() + "#before  responded to client. Breaking filter chain for route:  " + route );
                     return;//a filter responded, no need to run other filters!
                 }
             }
