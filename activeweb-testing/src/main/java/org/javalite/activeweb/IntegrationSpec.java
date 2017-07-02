@@ -50,7 +50,7 @@ public class IntegrationSpec extends RequestSpecHelper {
     }
 
     /**
-     * Adds a filter to a specific controller for the duration of teh current spec.
+     * Adds a filter to a specific controller for the duration of the current spec.
      * If you want a clean  execution (just the filters you added), do not forget to run {@link #resetFilters()} method
      * before this one.
      *
@@ -61,4 +61,17 @@ public class IntegrationSpec extends RequestSpecHelper {
         Configuration.getFilterMetadata(filter).addController(controllerClass);
         Configuration.addFilter(filter);
     }
+
+    /**
+     * Adds a global filter for the duration of the current spec.
+     * If you want a clean  execution (just the filters you added), do not forget to run {@link #resetFilters()} method
+     * before this one.
+     *
+     * @param filter instance of a filter to add
+     */
+    protected void addFilter(HttpSupportFilter filter){
+        Configuration.getFilterMetadata(filter);
+        Configuration.addFilter(filter);
+    }
+
 }
