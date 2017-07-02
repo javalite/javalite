@@ -31,6 +31,15 @@ public class IntegrationSpec extends RequestSpecHelper {
         Configuration.setInjector(null);
     }
 
+    /**
+     * Clears all filters from context even if they are defined in the <code>AppControllerConfig</code> class.
+     * This method allows to run  integration specs cleanly, with filters specifically set by {@link #addFilter(Class, HttpSupportFilter)}
+     * method.
+     */
+    protected void resetFilters(){
+        Configuration.resetFilters();
+    }
+
     protected RequestBuilder controller(String controllerName){
         return new RequestBuilder(controllerName, session(), true);
     }
@@ -40,6 +49,14 @@ public class IntegrationSpec extends RequestSpecHelper {
         Configuration.getTemplateManager().setTemplateLocation(templateLocation);
     }
 
+    /**
+     * Adds a filter to a specific controller for the duration of teh current spec.
+     * If you want a clean  execution (just the filters you added), do not forget to run {@link #resetFilters()} method
+     * before this one.
+     *
+     * @param controllerClass class of controller
+     * @param filter instance of a filter to add
+     */
     protected void addFilter(Class<? extends AppController> controllerClass, HttpSupportFilter filter){
         Configuration.getFilterMetadata(filter).addController(controllerClass);
         Configuration.addFilter(filter);

@@ -142,11 +142,11 @@ public class RequestDispatcher implements Filter {
         }
         catch (Throwable e) {
             if(fail){
-                logger.error("Failed to create and init a new instance of class: " + configClassName, e);
+                logger.warn("Failed to create and init a new instance of class: " + configClassName);
                 throw new InitException(e);
             }else{
-                logger.info("Failed to create and init a new instance of class: " + configClassName
-                        + ", proceeding without it.", e);
+                logger.warn("Failed to create and init a new instance of class: " + configClassName
+                        + ", proceeding without it.");
             }
         }
     }

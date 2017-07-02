@@ -59,7 +59,6 @@ public class AbstractControllerConfigSpec  extends RequestSpec{
             public void init(AppContext config) {
                 add(new AbcFilter());
             }
-
         };
 
         //init config.
