@@ -28,6 +28,7 @@ public class IntegrationSpec extends RequestSpecHelper {
 
     public IntegrationSpec() {
         Configuration.resetFilters();
+        Configuration.setInjector(null);
     }
 
     protected RequestBuilder controller(String controllerName){

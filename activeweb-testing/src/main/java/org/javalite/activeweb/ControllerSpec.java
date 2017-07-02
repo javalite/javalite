@@ -64,6 +64,7 @@ public class ControllerSpec extends RequestSpecHelper {
 
     public ControllerSpec() {
         Configuration.resetFilters();
+        Configuration.setInjector(null);
     }
 
     @Override
