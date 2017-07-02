@@ -62,6 +62,10 @@ public class ControllerSpec extends RequestSpecHelper {
 
     private String controllerPath;
 
+    public ControllerSpec() {
+        Configuration.resetFilters();
+    }
+
     @Override
     public void atStart() {
         super.atStart();
