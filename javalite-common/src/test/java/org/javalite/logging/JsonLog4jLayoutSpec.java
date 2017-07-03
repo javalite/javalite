@@ -76,7 +76,7 @@ public class JsonLog4jLayoutSpec {
 
     private void shouldParseTimestamp(String timestamp){
         try {
-            SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+            SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
             sf.parse(timestamp); // should not  generate exception
         } catch (ParseException e) {throw new RuntimeException(); }
     }
