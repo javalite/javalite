@@ -16,7 +16,9 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import org.javalite.activeweb.controller_filters.DBConnectionFilter;
+import org.javalite.activeweb.controller_filters.HeadersLogFilter;
 import org.javalite.activeweb.controller_filters.HttpSupportFilter;
+import org.javalite.activeweb.controller_filters.TimingFilter;
 import org.javalite.activeweb.mock.*;
 import org.javalite.common.Util;
 import org.javalite.test.SystemStreamUtil;
@@ -146,7 +148,7 @@ public class AbstractControllerConfigSpec  extends RequestSpec{
 
     //more importantly we are adding the same filter twice!
     @Test
-    public void shouldmatchMultipleActionFiltersAndMultipleControllers(){
+    public void shouldMatchMultipleActionFiltersAndMultipleControllers(){
 
         final LogFilter logFilter = new LogFilter();
 
@@ -236,6 +238,34 @@ public class AbstractControllerConfigSpec  extends RequestSpec{
         FilterMetadata filter1Metadata = Configuration.getFilterMetadata(filters.get(0));
         FilterMetadata filter2Metadata = Configuration.getFilterMetadata(filters.get(1));
         the(filter1Metadata).shouldNotBeTheSameAs(filter2Metadata);
+    }
+
+    @Test
+    public void shouldDefineFIltersAsAnonymousClasses() {
+        //create mock config
+        config = new AbstractControllerConfig() {
+            public void init(AppContext context) {
+                add(new HeadersLogFilter(){
+                    @Override
+                    public void after() {
+                        super.after();
+                    }
+                });
+
+                add(new TimingFilter(){
+                    @Override
+                    public void before() {
+                        super.before();
+                    }
+                });
+            }
+        };
+
+        //init config.
+        config.init(new AppContext());
+        config.completeInit();
+
+        a(Configuration.getFilters().size()).shouldBeEqual(2); // we added the same filter twice!
     }
 }
 

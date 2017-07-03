@@ -18,26 +18,26 @@ class FilterMetadata<T extends AppController> {
     private Set<String> includedActions = new HashSet<>();
 
     final void addController(Class<T> controllerClass) {
-        controllers.add(controllerClass.getCanonicalName());
+        controllers.add(controllerClass.getName());
         wildcard = false;
     }
 
     @SafeVarargs
     final void setExcludedControllers(Class<T>... controllerClasses) {
         for (Class<T> controllerClazz : controllerClasses) {
-            excludedControllers.add(controllerClazz.getCanonicalName());
+            excludedControllers.add(controllerClazz.getName());
         }
     }
 
     final boolean matches(Route route) {
 
-        if(excludedControllers.contains(route.getController().getClass().getCanonicalName())){
+        if(excludedControllers.contains(route.getController().getClass().getName())){
             return false;
         }
 
         if (wildcard) {
             return true;
-        } else if (controllers.contains(route.getController().getClass().getCanonicalName()) && !excludedActions.contains(route.getActionName())
+        } else if (controllers.contains(route.getController().getClass().getName()) && !excludedActions.contains(route.getActionName())
                 && (includedActions.contains(route.getActionName()) || includedActions.isEmpty())) {
             return true;
         }else if(!wildcard && includedActions.contains(route.getActionName()) && !excludedActions.contains(route.getActionName())){
