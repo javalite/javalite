@@ -15,11 +15,13 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
+import app.controllers.*;
 import org.javalite.activeweb.controller_filters.DBConnectionFilter;
 import org.javalite.activeweb.controller_filters.HeadersLogFilter;
 import org.javalite.activeweb.controller_filters.HttpSupportFilter;
 import org.javalite.activeweb.controller_filters.TimingFilter;
 import org.javalite.activeweb.mock.*;
+import org.javalite.activeweb.mock.BookController;
 import org.javalite.common.Util;
 import org.javalite.test.SystemStreamUtil;
 import org.junit.After;
@@ -183,13 +185,11 @@ public class AbstractControllerConfigSpec  extends RequestSpec{
     @Test
     public void shouldExcludeController() {
 
-        final LogFilter logFilter = new LogFilter();
-
         //create mock config
         config = new AbstractControllerConfig() {
             public void init(AppContext context) {
-                add(logFilter, new XyzFilter()).exceptFor(BookController.class);
-
+                add(new LogFilter(), new XyzFilter()).exceptFor(BookController.class);
+                add(new DefFilter(), new AbcFilter()).to(DoFiltersController.class);
             }
         };
 
@@ -198,15 +198,32 @@ public class AbstractControllerConfigSpec  extends RequestSpec{
         config.completeInit();
 
         List<HttpSupportFilter> filters = Configuration.getFilters();
-        a(filters.size()).shouldBeEqual(2); // we added the same filter twice!
+        a(filters.size()).shouldBeEqual(4);
 
+        the(filters.get(0)).shouldBeA(LogFilter.class);
+        the(filters.get(1)).shouldBeA(XyzFilter.class);
+        the(filters.get(2)).shouldBeA(DefFilter.class);
+        the(filters.get(3)).shouldBeA(AbcFilter.class);
+
+        //should match some random controllers
         the(matches(filters.get(0), new LibraryController(), "index")).shouldBeTrue();
+        the(matches(filters.get(1), new CustomController(), "index")).shouldBeTrue();
+
+        //should not match BookController
         the(matches(filters.get(0), new BookController(), "index")).shouldBeFalse();
+        the(matches(filters.get(1), new BookController(), "index")).shouldBeFalse();
+
+        //should match a specific controller
+        the(matches(filters.get(2), new DoFiltersController(), "index")).shouldBeTrue();
+        the(matches(filters.get(3), new DoFiltersController(), "index")).shouldBeTrue();
+
+        //should not match a other controllers
+        the(matches(filters.get(2), new BookController(), "index")).shouldBeFalse();
+        the(matches(filters.get(3), new BookController(), "index")).shouldBeFalse();
     }
 
     @Test
     public void shouldTriggerFiltersInOrderOfDefinition() throws IOException, ServletException {
-
         request.setServletPath("/do-filters");
         request.setMethod("GET");
         dispatcher.doFilter(request, response, filterChain);
@@ -241,7 +258,7 @@ public class AbstractControllerConfigSpec  extends RequestSpec{
     }
 
     @Test
-    public void shouldDefineFIltersAsAnonymousClasses() {
+    public void shouldDefineFiltersAsAnonymousClasses() {
         //create mock config
         config = new AbstractControllerConfig() {
             public void init(AppContext context) {

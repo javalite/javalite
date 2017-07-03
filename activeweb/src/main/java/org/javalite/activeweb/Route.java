@@ -96,4 +96,13 @@ public class Route {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        return "Route{" +
+                "controller=" + controller.getClass().getName() +
+                ", actionName=" + actionName +
+                ", id=" + id +
+                ", method=" + method + "}";
+    }
 }
