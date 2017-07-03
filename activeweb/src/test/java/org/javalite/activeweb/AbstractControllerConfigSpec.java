@@ -117,6 +117,51 @@ public class AbstractControllerConfigSpec  extends RequestSpec{
         the(matches(filters.get(2), new BookController(), "")).shouldBeFalse();
     }
 
+    @Test
+    public void shouldMatchGlobalFiltersToSpecializedControllers() {
+        final AbcFilter filter1 = new AbcFilter();
+        final XyzFilter filter2 = new XyzFilter();
+        final LogFilter filter3 = new LogFilter();
+
+        //create mock config
+        config = new AbstractControllerConfig() {
+            public void init(AppContext context) {
+                add(filter1, filter2);
+                add(filter3).to(LibraryController.class);
+            }
+        };
+
+        //init config.
+        config.init(new AppContext());
+        config.completeInit();
+
+
+        List<HttpSupportFilter> filters= Configuration.getFilters();
+        //assert order:
+        the(filters.size()).shouldBeEqual(3);
+        the(filters.get(0)).shouldBeTheSameAs(filter1);
+        the(filters.get(1)).shouldBeTheSameAs(filter2);
+        the(filters.get(2)).shouldBeTheSameAs(filter3);
+
+        //lets check the wildcard matches (some random controller):
+        the(matches(filters.get(0), new PersonController(), "")).shouldBeTrue();
+        the(matches(filters.get(0), new BookController(), "")).shouldBeTrue();
+
+        the(matches(filters.get(1), new PersonController(), "")).shouldBeTrue();
+        the(matches(filters.get(1), new BookController(), "")).shouldBeTrue();
+
+        //filter 3
+        the(matches(filters.get(2), new BookController(), "")).shouldBeFalse();
+        the(matches(filters.get(2), new PersonController(), "")).shouldBeFalse();
+        the(matches(filters.get(2), new LibraryController(), "")).shouldBeTrue();
+
+        //lets check the matches to specialized :
+        the(matches(filters.get(0), new LibraryController(), "")).shouldBeTrue();// global
+        the(matches(filters.get(1), new LibraryController(), "")).shouldBeTrue();// global
+        the(matches(filters.get(2), new LibraryController(), "")).shouldBeTrue();//special
+
+    }
+
     private boolean matches(HttpSupportFilter filter, AppController controller, String action){
         return Configuration.getFilterMetadata(filter).matches(new Route(controller, action, HttpMethod.GET));
     }
