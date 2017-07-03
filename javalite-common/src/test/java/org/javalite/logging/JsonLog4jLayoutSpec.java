@@ -27,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Map;
 
 import static org.javalite.test.jspec.JSpec.a;
@@ -56,7 +58,6 @@ public class JsonLog4jLayoutSpec {
         logger.info("hello");
         logger.info("world");
         String out = SystemStreamUtil.getSystemOut();
-
         String[] lines = Util.split(out, System.getProperty("line.separator"));
         the(lines.length).shouldBeEqual(2);
         String logLine1 = lines[0];
@@ -68,5 +69,15 @@ public class JsonLog4jLayoutSpec {
         String logLine2 = lines[1];
         Map log2 = JsonHelper.toMap(logLine2);
         a(log2.get("message")).shouldBeEqual("world");
+
+        String timestamp = (String) log1.get("timestamp");
+        shouldParseTimestamp(timestamp);
+    }
+
+    private void shouldParseTimestamp(String timestamp){
+        try {
+            SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+            sf.parse(timestamp); // should not  generate exception
+        } catch (ParseException e) {throw new RuntimeException(); }
     }
 }

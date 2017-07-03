@@ -21,6 +21,7 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
 import org.javalite.common.Util;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static org.javalite.common.JsonHelper.escapeControlChars;
@@ -33,6 +34,23 @@ import static org.javalite.common.JsonHelper.sanitize;
  * @author igor on 1/12/17.
  */
 public class JsonLog4jLayout extends Layout {
+
+    private SimpleDateFormat simpleDateFormat;
+
+    /**
+     * Property for specifying date format.
+     * See <a href="https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html">SimpleDateFormat</a> for details.
+     *
+     * @param dateFormatPattern
+     */
+    public void setDateFormatPattern(String dateFormatPattern) {
+        try {
+            simpleDateFormat = new SimpleDateFormat(dateFormatPattern);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Incorrect date pattern. " +
+                    "Ensure to use formats provided in https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html", e);
+        }
+    }
 
     @Override
     public String format(LoggingEvent loggingEvent) {
@@ -59,7 +77,9 @@ public class JsonLog4jLayout extends Layout {
 
         String contextJson  = context != null ? ",\"context\":" + context : "";
 
-        return "{\"level\":\"" + level + "\",\"timestamp\":\"" + timeStamp +
+        String timestampString = this.simpleDateFormat == null ? timeStamp.toString() : simpleDateFormat.format(timeStamp);
+
+        return "{\"level\":\"" + level + "\",\"timestamp\":\"" + timestampString +
                 "\",\"thread\":\"" + threadName + "\",\"logger\":\"" + loggerName + "\",\"message\":" +
                 message + contextJson + exception + "}" + System.getProperty("line.separator");
     }
