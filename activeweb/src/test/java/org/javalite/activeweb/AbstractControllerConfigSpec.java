@@ -197,13 +197,12 @@ public class AbstractControllerConfigSpec  extends RequestSpec{
     @Test
     public void shouldMatchMultipleActionFiltersAndMultipleControllers(){
 
-        final LogFilter logFilter = new LogFilter();
 
         //create mock config
         config = new AbstractControllerConfig() {
             public void init(AppContext context) {
-                add(logFilter, new XyzFilter()).to(LibraryController.class, BookController.class).forActions("index", "show");
-                add(logFilter).to(BookController.class).forActions("list");
+                add(new LogFilter(), new XyzFilter()).to(LibraryController.class, BookController.class).forActions("index", "show");
+                add(new LogFilter()).to(BookController.class).forActions("list");
             }
         };
 
@@ -328,6 +327,22 @@ public class AbstractControllerConfigSpec  extends RequestSpec{
         config.completeInit();
 
         a(Configuration.getFilters().size()).shouldBeEqual(2); // we added the same filter twice!
+    }
+
+    @Test(expected =IllegalArgumentException.class)
+    public void shouldPreventRegisteringTheSameFilterMoreThanOnce() {
+        //create mock config
+        config = new AbstractControllerConfig() {
+            public void init(AppContext context) {
+                HeadersLogFilter filter = new HeadersLogFilter();
+                add(filter);
+                add(filter);
+            }
+        };
+
+        //init config.
+        config.init(new AppContext());
+        config.completeInit();
     }
 }
 

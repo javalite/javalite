@@ -19,6 +19,7 @@ import org.javalite.activeweb.controller_filters.HttpSupportFilter;
 import org.javalite.common.Collections;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -128,12 +129,17 @@ public abstract class AbstractControllerConfig<T extends AppController> implemen
 
     /**
      * Adds a set of filters to a set of controllers.
-     * The filters are invoked in the order specified.
+     * The filters are invoked in the order specified. Will reject adding the same instance of a filter more than once.
      *
      * @param filters filters to be added.
-     * @return object with <code>to()</code> method which accepts a controller class. The return type is not important and not used by itself.
+     * @return object with <code>to()</code> method which accepts a controller class.
      */
     protected FilterBuilder add(HttpSupportFilter... filters) {
+        for (HttpSupportFilter filter : filters) {
+            if(allFilters.contains(filter)){
+                throw new IllegalArgumentException("Cannot register the same filter instance more than once.");
+            }
+        }
         allFilters.addAll(Collections.list(filters));
         return new FilterBuilder(filters);
     }
