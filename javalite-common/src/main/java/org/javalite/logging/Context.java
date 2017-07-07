@@ -18,15 +18,13 @@ limitations under the License.
 package org.javalite.logging;
 
 import org.javalite.common.JsonHelper;
-import org.slf4j.MDC;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.javalite.common.Collections.map;
 
 /**
- * Convenience wrapper over <a href="https://www.slf4j.org/api/org/slf4j/MDC.html">org.slf4j.MDC</code>.
- * <p></p>
  * Serves mostly to pass name and values from any code down to the logging system to be included on
  * every log line by a current thread.. till cleared.
  *
@@ -34,23 +32,28 @@ import static org.javalite.common.Collections.map;
  */
 public class Context {
 
+    private static final ThreadLocal<Map<String, Object>> contextTL = new ThreadLocal<Map<String, Object>>(){
+        @Override
+        protected Map<String, Object> initialValue() {
+            return new HashMap<>();
+        }
+    };
+
     /**
      * Add multiple values in a classical JavaLite style.
      *
      * @param namesAndValues names and values (must pass even number).
      */
     public static void put(String... namesAndValues) {
-        Map<String, String> context = map(namesAndValues);
-        for (String key : context.keySet()) {
-            MDC.put(key, context.get(key));
-        }
+        contextTL.get().putAll(map(namesAndValues));
     }
 
     /**
-     * Clears current context of any values. Usually this is called at the end of a web request.
+     * Clears current context of any values. Usually this is called at the end of a web request
+     * or the end of some processing unit.
      */
     public static void clear() {
-        MDC.clear();
+        contextTL.get().clear();
     }
 
     /**
@@ -58,7 +61,7 @@ public class Context {
      * or <code>null</code> if no values were set.
      */
     public static String toJSON(){
-        Map context = MDC.getCopyOfContextMap();
-        return context == null || context.isEmpty() ? null : JsonHelper.toJsonString(MDC.getCopyOfContextMap());
+        Map context = contextTL.get();
+        return context == null || context.isEmpty() ? null : JsonHelper.toJsonString(context);
     }
 }
