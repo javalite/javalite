@@ -195,7 +195,7 @@ public enum Registry {
             tableName = tableName.substring(1, tableName.length() - 1);
         }
 
-        ResultSet rs = databaseMetaData.getColumns(null, schema, tableName, null);
+        ResultSet rs = databaseMetaData.getColumns(dbType.equalsIgnoreCase("mysql") ? schema : null, schema, tableName, null);
 
         Map<String, ColumnMetadata> columns = getColumns(rs, dbType);
         rs.close();
