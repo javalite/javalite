@@ -27,6 +27,7 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashSet;
 
 /**
  * Cache implementation based on EHCache 3.
@@ -38,6 +39,7 @@ public class EHCache3Manager extends CacheManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(EHCacheManager.class);
     private final CacheConfigurationBuilder<String, Object> cacheTemplate;
     private final Object lock = new Object();
+    private HashSet<String> groups = new HashSet<>();
 
     private org.ehcache.CacheManager cacheManager;
 
@@ -78,12 +80,22 @@ public class EHCache3Manager extends CacheManager {
     @Override
     public void doFlush(CacheEvent event) {
         if (event.getType().equals(CacheEvent.CacheEventType.ALL)) {
-            LOGGER.warn(getClass() + " does not support flushing all caches. Flush one group at the time.");
+            purgeAllGroups();
         } else if (event.getType().equals(CacheEvent.CacheEventType.GROUP)) {
-            final Cache<String, Object> cache = cacheManager.getCache(event.getGroup(), String.class, Object.class);
-            if (cache != null) {
-                cache.clear();
-            }
+            purgeGroup(event.getGroup());
+        }
+    }
+
+    private void purgeGroup(String group) {
+        final Cache<String, Object> cache = cacheManager.getCache(group, String.class, Object.class);
+        if (cache != null) {
+            cache.clear();
+        }
+    }
+
+    private void purgeAllGroups() {
+        for (String group : groups) {
+            purgeGroup(group);
         }
     }
 
@@ -94,6 +106,7 @@ public class EHCache3Manager extends CacheManager {
                 cache = cacheManager.getCache(group, String.class, Object.class);
                 if (cache == null) {
                     cache = cacheManager.createCache(group, cacheTemplate.buildConfig(String.class, Object.class));
+                    groups.add(group);
                 }
             }
         }
