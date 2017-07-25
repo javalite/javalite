@@ -15,6 +15,7 @@ limitations under the License.
 */
 package org.javalite.activejdbc;
 
+import org.javalite.activejdbc.annotations.Cached;
 import org.javalite.activejdbc.annotations.CompositePK;
 import org.javalite.activejdbc.associations.*;
 import org.javalite.activejdbc.cache.QueryCache;
@@ -1302,10 +1303,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Re-reads all attribute values from DB.
+     * Re-reads all attribute values from DB. Will invalidate cache and will force a trip to the database.
      *
      */
     public void refresh() {
+        QueryCache.instance().purgeTableCache(metaModelLocal);
         Model fresh = ModelDelegate.findById(this.getClass(), getId());
         if (fresh == null) {
             throw new StaleModelException("Failed to refresh self because probably record with " +
@@ -2960,6 +2962,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return toInsert(new SimpleFormatter(java.sql.Date.class, "'", "'"),
                         new SimpleFormatter(Timestamp.class, "'", "'"),
                         new SimpleFormatter(String.class, leftStringQuote, rightStringQuote));
+    }
+
+
+    /**
+     * @return true if this models has a {@link Cached} annotation.
+     */
+    public static boolean isCached(){
+        return modelClass().getAnnotation(Cached.class) != null;
     }
 
     /**

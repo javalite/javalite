@@ -17,13 +17,12 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
-import org.javalite.activejdbc.Registry;
 import org.javalite.activejdbc.cache.CacheEvent;
 import org.javalite.activejdbc.cache.CacheEventListener;
-import org.javalite.activejdbc.cache.QueryCache;
 import org.javalite.activejdbc.statistics.QueryStats;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.*;
+import org.javalite.test.SystemStreamUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -181,5 +180,23 @@ public class CacheTest extends ActiveJDBCTest {
         Registry.cacheManager().addCacheEventListener(cl);
         Registry.cacheManager().flush(new CacheEvent("people", "blah"), false);
         $(count1).shouldBeEqual(0);
+    }
+
+
+    @Test
+    public void shouldDropCacheOnRefresh(){
+        SystemStreamUtil.replaceOut();
+        Person p = Person.create("name", "Sam", "last_name", "Margulis", "dob", "2001-01-07");
+        p.saveIt();
+        Person.findAll().size();
+        p.refresh();
+        Person.findAll().size();
+        SystemStreamUtil.restoreSystemOut();
+        the(SystemStreamUtil.getSystemOut()).shouldNotContain("HIT");
+    }
+
+    @Test
+    public void shouldIndicateCachedAnnotation(){
+        the(Person.isCached()).shouldBeTrue();
     }
 }
