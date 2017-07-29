@@ -44,30 +44,14 @@ class ControllerRunner {
     private boolean tagsInjected;
 
     protected void run(Route route, boolean integrateViews) throws Exception {
-
         Configuration.injectFilters(); //no worries, will execute once, as filters have a life span of the app
-
         try {
-            filterBefore(route);
-            if (RequestContext.getControllerResponse() == null) {//execute controller... only if a filter did not respond
-
-                String actionMethod = Inflector.camelize(route.getActionName().replace('-', '_'), false);
-                if (checkActionMethod(route.getController(), actionMethod)) {
-                    injectController(route.getController());
-                    LOGGER.debug("Executing: " + route.getController() + "#" + actionMethod);
-                    executeAction(route.getController(), actionMethod);
-                }
+            try { //nested try , a bit ugly, but we need to ensure filter.after() methods are executed.
+                filterBefore(route);
+                executeController(route, integrateViews);
+            } finally {
+                filterAfter(route);
             }
-
-            if(injectTags){
-                injectFreemarkerTags();
-            }
-
-            renderResponse(route, integrateViews);
-            processFlash();
-
-            //run filters in opposite order
-            filterAfter(route);
         }
         catch(ActionNotFoundException e){
             throw e;
@@ -81,6 +65,47 @@ class ControllerRunner {
             }else{
                 throw e;//if exception was not handled by filter, re-throw
             }
+        }
+    }
+
+    private void executeController(Route route, boolean integrateViews) throws IllegalAccessException, InstantiationException {
+        if (RequestContext.getControllerResponse() == null) {//execute controller... only if a filter did not respond
+
+            String actionMethod = Inflector.camelize(route.getActionName().replace('-', '_'), false);
+            if (checkActionMethod(route.getController(), actionMethod)) {
+                injectController(route.getController());
+                LOGGER.debug("Executing: " + route.getController() + "#" + actionMethod);
+                executeAction(route.getController(), actionMethod);
+            }
+        }
+
+        if(injectTags){
+            injectFreemarkerTags();
+        }
+
+        renderResponse(route, integrateViews);
+        processFlash();
+    }
+
+    private void executeAction(Object controller, String actionName) {
+        try{
+            Method m = controller.getClass().getMethod(actionName);
+            if(!AppController.class.isAssignableFrom(m.getDeclaringClass())){ // see https://github.com/javalite/activeweb/issues/272
+                throw new ActionNotFoundException("Cannot execute action '" + actionName + "' on controller: " + controller);
+            }
+            m.invoke(controller);
+        }catch(InvocationTargetException e){
+            if(e.getCause() != null && e.getCause() instanceof  WebException){
+                throw (WebException)e.getCause();
+            }else if(e.getCause() != null && e.getCause() instanceof RuntimeException){
+                throw (RuntimeException)e.getCause();
+            }else if(e.getCause() != null){
+                throw new ControllerException(e.getCause());
+            }
+        }catch(WebException e){
+            throw e;
+        }catch(Exception e){
+            throw new ControllerException(e);
         }
     }
 
@@ -245,6 +270,9 @@ class ControllerRunner {
         }
     }
 
+    /**
+     * Run filters in opposite order
+     */
     private void filterAfter(Route route) {
         try {
             List<HttpSupportFilter> filters = Configuration.getFilters();
@@ -259,28 +287,6 @@ class ControllerRunner {
             }
         } catch (Exception e) {
             throw new FilterException(e);
-        }
-    }
-
-    private void executeAction(Object controller, String actionName) {
-        try{
-            Method m = controller.getClass().getMethod(actionName);
-            if(!AppController.class.isAssignableFrom(m.getDeclaringClass())){ // see https://github.com/javalite/activeweb/issues/272
-                throw new ActionNotFoundException("Cannot execute action '" + actionName + "' on controller: " + controller);
-            }
-            m.invoke(controller);
-        }catch(InvocationTargetException e){
-            if(e.getCause() != null && e.getCause() instanceof  WebException){
-                throw (WebException)e.getCause();
-            }else if(e.getCause() != null && e.getCause() instanceof RuntimeException){
-                throw (RuntimeException)e.getCause();
-            }else if(e.getCause() != null){
-                throw new ControllerException(e.getCause());
-            }
-        }catch(WebException e){
-            throw e;
-        }catch(Exception e){
-            throw new ControllerException(e);
         }
     }
 }

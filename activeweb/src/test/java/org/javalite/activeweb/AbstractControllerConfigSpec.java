@@ -15,15 +15,13 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
-import app.controllers.*;
+import app.controllers.CustomController;
+import app.controllers.DoFiltersController;
 import org.javalite.activeweb.controller_filters.DBConnectionFilter;
 import org.javalite.activeweb.controller_filters.HeadersLogFilter;
 import org.javalite.activeweb.controller_filters.HttpSupportFilter;
 import org.javalite.activeweb.controller_filters.TimingFilter;
 import org.javalite.activeweb.mock.*;
-import org.javalite.activeweb.mock.BookController;
-import org.javalite.common.Util;
-import org.javalite.test.SystemStreamUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -284,6 +282,27 @@ public class AbstractControllerConfigSpec  extends RequestSpec{
         the(getLine(7)).shouldBeEqual("GlobalFilter2 after");
         the(getLine(8)).shouldBeEqual("GlobalFilter1 after");
     }
+
+
+    @Test
+    public void shouldExecuteAfterEvenIfException() throws IOException, ServletException {
+        request.setServletPath("/do-filters/does-not-exist");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+
+        a(response.getContentAsString()).shouldContain("java.lang.NoSuchMethodException: app.controllers.DoFiltersController.doesNotExist(); app.controllers.DoFiltersController.doesNotExist()");
+
+        the(getLine(0)).shouldBeEqual("GlobalFilter1 before");
+        the(getLine(1)).shouldBeEqual("GlobalFilter2 before");
+        the(getLine(2)).shouldBeEqual("->ControllerFilter1 before");
+        the(getLine(3)).shouldBeEqual("->ControllerFilter2 before");
+        //the(getLine(4)).shouldBeEqual("-->DoFiltersController");     //<<< generates exception
+        the(getLine(4)).shouldBeEqual("->ControllerFilter2 after");
+        the(getLine(5)).shouldBeEqual("->ControllerFilter1 after");
+        the(getLine(6)).shouldBeEqual("GlobalFilter2 after");
+        the(getLine(7)).shouldBeEqual("GlobalFilter1 after");
+    }
+
 
     @Test
     public void shouldAllowMultipleInstancesOfFilterRegistered() {

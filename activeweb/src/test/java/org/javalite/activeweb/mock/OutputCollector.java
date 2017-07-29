@@ -17,6 +17,10 @@ public class OutputCollector {
         return lines.get(index);
     }
 
+    public static List<String> getLines(){
+        return lines;
+    }
+
     public static void reset(){
         lines  = new ArrayList<>();
     }
