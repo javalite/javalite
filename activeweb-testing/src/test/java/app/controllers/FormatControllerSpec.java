@@ -17,17 +17,16 @@ limitations under the License.
 
 package app.controllers;
 
-import org.javalite.activeweb.ControllerSpec;
 import org.junit.Test;
 
 /**
  * Created by igor on 10/09/14
  */
-public class FormatControllerSpec extends ControllerSpec {
+public class FormatControllerSpec extends TemplateControllerSpec {
 
     @Test
     public void shouldNotFail() {
-        request(false).format("xml").get("index");
+        request().format("xml").get("index");
         a(val("format")).shouldBeEqual("xml");
     }
 }

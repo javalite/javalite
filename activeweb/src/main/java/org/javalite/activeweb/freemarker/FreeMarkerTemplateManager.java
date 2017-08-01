@@ -71,29 +71,23 @@ public class FreeMarkerTemplateManager extends TemplateManager {
     }
 
     @Override
-    public void merge(Map values, String template, Writer writer) {
+    public void merge(Map<String, Object> values, String template, Writer writer) {
         merge(values, template, defaultLayout, null, writer);
     }
 
     @Override
-    public void merge(Map input, String template, String layout, String format, Writer writer) {
+    public void merge(Map<String, Object> input, String template, String layout, String format, Writer writer) {
 
+        String templateName = blank(format)? template + ".ftl" : template + "." + format + ".ftl";
         try {
+            String description = getTemplateDescription(templateName, layout);
 
-            logger.info("rendering template: '" + template + "' with layout: '" + layout);
-
+            logger.info("Rendering template: " + getTemplateDescription(templateName, layout));
             if(org.javalite.activeweb.Configuration.getEnv().equals("development")){
                 config.clearTemplateCache();
             }
             ContentTL.reset();
-            Template pageTemplate;
-
-            try{
-                String templateName = blank(format)? template + ".ftl" : template + "." + format + ".ftl";
-                pageTemplate = config.getTemplate(templateName);
-            }catch(FileNotFoundException ex){
-                throw ex;
-            }
+            Template pageTemplate = config.getTemplate(templateName);
 
             if(layout == null){//no layout
                 pageTemplate.process(input, writer);
@@ -102,36 +96,32 @@ public class FreeMarkerTemplateManager extends TemplateManager {
                 StringWriter pageWriter = new StringWriter();
                 pageTemplate.process(input, pageWriter);
 
-                Map values = new HashMap(input);
+                Map<String, Object> values = new HashMap<>(input);
                 values.put("page_content", pageWriter.toString());
                 Map<String, List<String>>  assignedValues = ContentTL.getAllContent();
 
                 for(String name: assignedValues.keySet()){
                     values.put(name, Util.join(assignedValues.get(name), " "));
                 }
-
                 Template layoutTemplate = config.getTemplate(layout + ".ftl");
                 layoutTemplate.process(values, writer);
-
                 FreeMarkerTL.setEnvironment(null);
-
             }
         }
         catch(FileNotFoundException e){
-            throw new ViewMissingException(errorMessage("Failed to find template", layout, template));
+            throw new ViewMissingException("Failed to find template: "+ getTemplateDescription(templateName, layout));
         }
         catch(ViewException e){
             throw e;
         }
         catch (Exception e) {
-            throw new ViewException(errorMessage("Failed to render template", layout, template), e);
+            throw new ViewException("Failed to render template: " + getTemplateDescription(templateName, layout), e);
         }
     }
 
-    private String errorMessage(String message, String layout, String template){
-        return message + ": '" +(location != null? location:"") +  template + ".ftl" +
-                (layout == null? "', without layout" : "', with layout: '" +(location != null? location:"") + layout + "'");
 
+    private String getTemplateDescription(String templateName, String layout) {
+        return "'" + templateName + (layout == null ? "' without layout" : "' with layout: '" + layout + ".ftl'");
     }
     
     @Override
@@ -159,7 +149,6 @@ public class FreeMarkerTemplateManager extends TemplateManager {
     @Override
     public void setTemplateLocation(String templateLocation) {
         location = templateLocation;
-
         try{
             config.setDirectoryForTemplateLoading(new File(templateLocation));
         }

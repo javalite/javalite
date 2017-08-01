@@ -35,20 +35,21 @@ public class InjectionFilterSpec extends AppIntegrationSpec {
     @Before
     public void before(){
         setInjector(Guice.createInjector(new RedirectorModule()));
+        setTemplateLocation("src/test/views");
     }
     
     @Test
     public void shouldNotRedirectFromFilterBecauseNoRedirectTargetSupplied(){
-        controller("abc_person").integrateViews(false).get("index");
+        controller("abc_person").get("index");
         a(redirectValue()).shouldBeNull();
     }
 
     @Test
     public void shouldRedirectFromFilterBecauseRedirectTargetSupplied(){
-        controller("abc_person").integrateViews(false).param("target", "Google").get("index");
+        controller("abc_person").param("target", "Google").get("index");
         a(redirectValue()).shouldBeEqual("http://google.com");
 
-        controller("abc_person").integrateViews(false).param("target", "Yahoo").get("index");
+        controller("abc_person").param("target", "Yahoo").get("index");
         a(redirectValue()).shouldBeEqual("http://yahoo.com");
     }
 }

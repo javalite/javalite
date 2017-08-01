@@ -28,19 +28,21 @@ public class QueryStringSpec extends AppIntegrationSpec {
 
     public QueryStringSpec(){
         suppressDb();
+
     }
 
 
     @Before
     public void before() {
         setInjector(Guice.createInjector(new RedirectorModule()));
+        setTemplateLocation("src/test/views");
     }
 
 
     @Test
     public void shouldPassQueryStringFromTest(){
 
-        controller("query_string").queryString("first_name=John&last_name=Travolta").integrateViews(false).get("index");
+        controller("query_string").queryString("first_name=John&last_name=Travolta").get("index");
         a(assigns().get("query_string")).shouldBeEqual("first_name=John&last_name=Travolta");
 
     }

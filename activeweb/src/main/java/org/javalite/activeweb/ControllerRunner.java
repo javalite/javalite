@@ -43,12 +43,12 @@ class ControllerRunner {
     private static Logger LOGGER = LoggerFactory.getLogger(ControllerRunner.class);
     private boolean tagsInjected;
 
-    protected void run(Route route, boolean integrateViews) throws Exception {
+    protected void run(Route route) throws Exception {
         Configuration.injectFilters(); //no worries, will execute once, as filters have a life span of the app
         try {
             try { //nested try , a bit ugly, but we need to ensure filter.after() methods are executed.
                 filterBefore(route);
-                executeController(route, integrateViews);
+                executeController(route);
             } finally {
                 filterAfter(route);
             }
@@ -61,14 +61,14 @@ class ControllerRunner {
 
             if (exceptionHandled(e, route)) {
                 LOGGER.debug("A filter has called render(..) method, proceeding to render it...");
-                renderResponse(route, integrateViews);//a filter has created an instance of a controller response, need to render it.
+                renderResponse(route);//a filter has created an instance of a controller response, need to render it.
             }else{
                 throw e;//if exception was not handled by filter, re-throw
             }
         }
     }
 
-    private void executeController(Route route, boolean integrateViews) throws IllegalAccessException, InstantiationException {
+    private void executeController(Route route) throws IllegalAccessException, InstantiationException {
         if (RequestContext.getControllerResponse() == null) {//execute controller... only if a filter did not respond
 
             String actionMethod = Inflector.camelize(route.getActionName().replace('-', '_'), false);
@@ -83,7 +83,7 @@ class ControllerRunner {
             injectFreemarkerTags();
         }
 
-        renderResponse(route, integrateViews);
+        renderResponse(route);
         processFlash();
     }
 
@@ -136,7 +136,7 @@ class ControllerRunner {
     }
 
 
-    private void renderResponse(Route route,  boolean integrateViews) throws InstantiationException, IllegalAccessException {
+    private void renderResponse(Route route) throws InstantiationException, IllegalAccessException {
 
         //set encoding. Priority: action, then controller
         if (RequestContext.getEncoding() != null) {
@@ -154,7 +154,7 @@ class ControllerRunner {
         }
 
         controllerResponse = RequestContext.getControllerResponse();
-        if (integrateViews && controllerResponse instanceof RenderTemplateResponse) {
+        if (controllerResponse instanceof RenderTemplateResponse) {
             ParamCopy.copyInto((controllerResponse.values()));
             controllerResponse.process();
         }else if(!(controllerResponse instanceof RenderTemplateResponse)){

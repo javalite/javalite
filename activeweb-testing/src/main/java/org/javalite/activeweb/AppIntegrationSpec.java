@@ -70,19 +70,18 @@ public abstract class AppIntegrationSpec extends IntegrationSpec{
 
     /**
      * Takes controller path. A controller path is a full path  to controller starting from context and ending in a
-     * name of a controller on URI. Example: <code>/admin/permissions</code> where "admin" is a sub-package of controller
+     * name of a controller on URI.
+     *
+     * @param controllerPath path to controller. Example: <code>/admin/permissions</code> where "admin" is a sub-package of controller
      * and "permissions" is a name of controller. Such path implies a name of a controller class:
      * <code>app.controllers.admin.PermissionsController</code>.
-     * Controller path always starts with a slash: "/".
+     * Controller paths always starts with a slash: "/".
      *
-     * @param controllerPath
-     * @return
+     * @return instance of a builder to help define request.
      */
     @Override
     protected RequestBuilder controller(String controllerPath){
-        RequestBuilder requestBuilder = new RequestBuilder(controllerPath, session(), false);
-        requestBuilder.integrateViews();
-        return requestBuilder;
+        return new RequestBuilder(controllerPath, session());
     }
 
 

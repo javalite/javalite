@@ -16,14 +16,13 @@ limitations under the License.
 
 package app.controllers;
 
-import org.javalite.activeweb.ControllerSpec;
 import org.javalite.activeweb.Cookie;
 import org.junit.Test;
 
 /**
  * @author Igor Polevoy
  */
-public class CookieControllerSpec extends ControllerSpec {
+public class CookieControllerSpec extends TemplateControllerSpec {
 
     @Test
     public void shouldSendCookieInResponse(){
@@ -35,7 +34,7 @@ public class CookieControllerSpec extends ControllerSpec {
 
     @Test
     public void shouldReadCookieFromRequest(){
-        request(false).cookie(new Cookie("user", "Carl")).get("read_cookie");
+        request().cookie(new Cookie("user", "Carl")).get("read_cookie");
         a(val("user")).shouldBeEqual("Carl");
     }
 
@@ -43,7 +42,7 @@ public class CookieControllerSpec extends ControllerSpec {
     public void shouldReadHttpOnlyCookie(){
         Cookie c = new Cookie("user", "Carl");
         c.setHttpOnly();
-        request(false).cookie(c).get("read_cookie");
+        request().cookie(c).get("read_cookie");
         a(val("http_only")).shouldBeTrue();
     }
 }

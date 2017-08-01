@@ -33,7 +33,6 @@ import static org.javalite.test.jspec.JSpec.a;
 public class RequestBuilder {
     private static final String MULTIPART = "multipart/form-data";
 
-    private boolean integrateViews;
     private Map<String, Object> values = new HashMap<>();
     private Map<String, String> headers = new HashMap<>();
     private String contentType;
@@ -48,11 +47,9 @@ public class RequestBuilder {
     private String queryString;
     private String format;
 
-    public RequestBuilder(String controllerPath, SessionTestFacade sessionFacade, boolean integrateViews) {
+    public RequestBuilder(String controllerPath, SessionTestFacade sessionFacade) {
         this.controllerPath = controllerPath;
         this.sessionFacade = sessionFacade;
-        if(integrateViews)
-            integrateViews();
     }
 
 
@@ -262,9 +259,9 @@ public class RequestBuilder {
      * If this method is used, the content of generated HTML will be available with <code>responseContent()</code>.
      *
      * @return instance of RequestBuilder
+     * @deprecated  stop using, will delete soon. All tests are integrated by default.
      */
     public RequestBuilder integrateViews() {
-        integrateViews(true);
         return this;
     }
 
@@ -274,9 +271,9 @@ public class RequestBuilder {
      *
      * @param integrateViews true to integrate views, false not to.
      * @return instance of RequestBuilder
+     * @deprecated  stop using, will delete soon. All tests are integrated by default.
      */
     public RequestBuilder integrateViews(boolean integrateViews) {
-        this.integrateViews = integrateViews;
         return this;
     }
 
@@ -377,7 +374,6 @@ public class RequestBuilder {
         }else{
             request.setMethod(method.toString());
         }
-        RequestContext.getRequestVo().set("integrateViews", integrateViews);
         addHeaders(request);
         addParameterValues(request);
         try{
@@ -394,7 +390,7 @@ public class RequestBuilder {
             RequestContext.setControllerResponse(null);
             RequestContext.setHttpResponse(new MockHttpServletResponse());
 
-            runner.run(new Route(controller, actionName, method),  integrateViews);
+            runner.run(new Route(controller, actionName, method));
         }catch(WebException e){
             throw e;
         }catch(RuntimeException e){

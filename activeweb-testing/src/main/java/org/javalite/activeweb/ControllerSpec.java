@@ -81,7 +81,7 @@ public class ControllerSpec extends RequestSpecHelper {
      * @return instance of <code>RequestBuilder</code> with convenience methods.
      */
     protected RequestBuilder request() {
-        return new RequestBuilder(controllerPath, session(), true);
+        return new RequestBuilder(controllerPath, session());
     }
 
     /**
@@ -89,9 +89,10 @@ public class ControllerSpec extends RequestSpecHelper {
      *
      * @param integrateViews true to also generate response content
      * @return instance of <code>RequestBuilder</code> with convenience methods.
+     * @deprecated does nothing, stop using. Will be deleted  soon. Use {@link #request()} instead.
      */
     protected RequestBuilder request(boolean integrateViews) {
-        return new RequestBuilder(controllerPath, session(), integrateViews);
+        return new RequestBuilder(controllerPath, session());
     }
 
     /**

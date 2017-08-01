@@ -41,7 +41,7 @@ public class IntegrationSpec extends RequestSpecHelper {
     }
 
     protected RequestBuilder controller(String controllerName){
-        return new RequestBuilder(controllerName, session(), true);
+        return new RequestBuilder(controllerName, session());
     }
 
     @Override

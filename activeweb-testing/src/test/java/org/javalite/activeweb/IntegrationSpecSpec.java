@@ -32,8 +32,8 @@ public class IntegrationSpecSpec extends IntegrationSpec {
 
     @Test
     public void shouldPropagateSessionObjectAcrossMultipleRequests(){
-        controller("student").integrateViews().get("index");
-        controller("student").integrateViews(false).get("register");
+        controller("student").get("index");
+        controller("student").get("register");
 
         a(session().get("student_name")).shouldBeEqual("John");
         a(session().get("student_id")).shouldBeEqual("123");

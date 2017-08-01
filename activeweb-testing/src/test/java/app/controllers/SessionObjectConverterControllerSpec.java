@@ -16,17 +16,16 @@ limitations under the License.
 
 package app.controllers;
 
-import org.javalite.activeweb.ControllerSpec;
 import org.junit.Test;
 
 /**
  * @author Igor Polevoy
  */
-public class SessionObjectConverterControllerSpec extends ControllerSpec {
+public class SessionObjectConverterControllerSpec extends TemplateControllerSpec {
 
     @Test
     public void shouldConvertInSpec(){
-        request(false).get("in-spec");
+        request().get("in-spec");
         a(sessionObject("name")).shouldBeEqual("John");
         a(sessionInteger("int")).shouldBeEqual(1);
         a(sessionDouble("double")).shouldBeEqual(1);
@@ -44,7 +43,7 @@ public class SessionObjectConverterControllerSpec extends ControllerSpec {
         session("long", 1);
         session("boolean", true);
 
-        request(false).get("in-controller");
+        request().get("in-controller");
 
         a(session("last_name", String.class)).shouldBeEqual("Smith");
 

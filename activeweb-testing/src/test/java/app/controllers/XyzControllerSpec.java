@@ -17,17 +17,17 @@ limitations under the License.
 package app.controllers;
 
 
-import org.javalite.activeweb.IntegrationSpec;
 import org.junit.Test;
 
 /**
  * @author Igor Polevoy
  */
-public class XyzControllerSpec extends IntegrationSpec {
+public class XyzControllerSpec extends TemplateIntegrationSpec {
+
 
     @Test
     public void shouldPrependControllerPathWithSlash(){
-        controller("xyz").integrateViews(false).get("index");
-        a(assigns().get("path").toString().startsWith("/")).shouldBeTrue();        
+        controller("xyz").get("index");
+        a(vals().get("path").toString().startsWith("/")).shouldBeTrue();
     }
 }

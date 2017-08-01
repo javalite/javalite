@@ -206,7 +206,7 @@ public class RequestDispatcher implements Filter {
                             + "\",\"method\":\""     + route.getMethod()
                             + "\"}");
                 }
-                runner.run(route, true);
+                runner.run(route);
                 logDone(null);
             } else {
                 //TODO: theoretically this will never happen, because if the route was not excluded, the router.recognize() would throw some kind

@@ -16,12 +16,8 @@ limitations under the License.
 
 package app.controllers;
 
-import org.javalite.activeweb.ControllerSpec;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.javalite.common.Collections.list;
@@ -29,21 +25,17 @@ import static org.javalite.common.Collections.list;
 /**
  * @author Igor Polevoy
  */
-public class RequestParamsControllerSpec extends ControllerSpec {
+public class RequestParamsControllerSpec extends TemplateControllerSpec {
 
-    @Before
-    public void before(){
-        setTemplateLocation("src/test/views");
-    }
     @Test
     public void shouldSendSingleParameter(){
-        request(false).param("name", "John").get("index");
+        request().param("name", "John").get("index");
         a(assigns().get("name")).shouldBeEqual("John");
     }
 
     @Test
     public void shouldSendMultipleParameters(){
-        request(false).params("first_name", "John", "last_name", "Smith").get("multi");
+        request().params("first_name", "John", "last_name", "Smith").get("multi");
         a(assigns().get("first_name")).shouldBeEqual("John");
         a(assigns().get("last_name")).shouldBeEqual("Smith");
     }
@@ -51,7 +43,7 @@ public class RequestParamsControllerSpec extends ControllerSpec {
     @Test
     public void shouldSendMultipleValues(){
 
-        request(false).param("states", list("Illinois", "Alabama")).get("multi-values");
+        request().param("states", list("Illinois", "Alabama")).get("multi-values");
         a(assigns().get("states")).shouldBeA(List.class);
         List<String> states = (List<String>) assigns().get("states");
 
@@ -62,7 +54,7 @@ public class RequestParamsControllerSpec extends ControllerSpec {
     @Test
     public void shouldSendSingleAndMultipleValues(){
 
-        request(false).params("name", "Anna", "states", list("Illinois", "Alabama")).get("single-multi-values");
+        request().params("name", "Anna", "states", list("Illinois", "Alabama")).get("single-multi-values");
         a(assigns().get("states")).shouldBeA(List.class);
         List<String> states = (List<String>) assigns().get("states");
 

@@ -19,6 +19,7 @@ package org.javalite.activeweb;
 
 
 import app.controllers.AbcPersonController;
+import app.controllers.TemplateIntegrationSpec;
 import org.javalite.activeweb.controller_filters.RequestParamsLogFilter;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,11 +31,12 @@ import java.io.PrintStream;
 /**
  * @author Igor Polevoy
  */
-public class RequestParamsLogFilterSpec extends IntegrationSpec{
+public class RequestParamsLogFilterSpec extends TemplateIntegrationSpec {
 
     @Before
     public void before(){
         addFilter(AbcPersonController.class, new RequestParamsLogFilter());
+        super.before();
     }
 
     @Test
@@ -44,7 +46,7 @@ public class RequestParamsLogFilterSpec extends IntegrationSpec{
         PrintStream pout = new PrintStream(bout);
         System.setErr(pout) ;
 
-        controller("abc-person").param("bogus","val1").integrateViews(false).get("pass_values");
+        controller("abc-person").param("bogus","val1").get("pass_values");
         pout.flush();
         pout.close();
         a(bout.toString().contains("{bogus: [val1]}")).shouldBeTrue();

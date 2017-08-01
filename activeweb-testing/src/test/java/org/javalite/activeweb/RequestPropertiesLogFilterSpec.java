@@ -18,6 +18,7 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import app.controllers.AbcPersonController;
+import app.controllers.TemplateIntegrationSpec;
 import org.javalite.activeweb.controller_filters.RequestPropertiesLogFilter;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,11 +29,12 @@ import java.io.PrintStream;
 /**
  * @author Igor Polevoy
  */
-public class RequestPropertiesLogFilterSpec extends IntegrationSpec{
+public class RequestPropertiesLogFilterSpec extends TemplateIntegrationSpec {
 
     @Before
     public void before(){
         addFilter(AbcPersonController.class, new RequestPropertiesLogFilter());
+        super.before();
     }
 
     @Test
@@ -42,7 +44,7 @@ public class RequestPropertiesLogFilterSpec extends IntegrationSpec{
         PrintStream pout = new PrintStream(bout);
         System.setErr(pout) ;
 
-        controller("abc-person").param("bogus","val1").integrateViews(false).get("pass_values");
+        controller("abc-person").param("bogus","val1").get("pass_values");
         pout.flush();
         pout.close();
         System.out.println(bout.toString());

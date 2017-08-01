@@ -16,18 +16,24 @@ limitations under the License.
 package org.javalite.activeweb;
 
 
+import app.controllers.TemplateIntegrationSpec;
+import org.junit.Before;
 import org.junit.Test;
 
 
 /**
  * @author Igor Polevoy
  */
-public class DeleteMethodRouteSpec extends IntegrationSpec{
+public class DeleteMethodRouteSpec extends TemplateIntegrationSpec {
 
+    @Before
+    public void before(){
+        setTemplateLocation("src/test/views");
+    }
 
     @Test
     public void shouldRouteToAppropriateDeleteMethod(){
 
-        controller("my_restful").param("_method", "DELETE").integrateViews(false).delete("destroy");
+        controller("my_restful").param("_method", "DELETE").delete("destroy");
     }
 }

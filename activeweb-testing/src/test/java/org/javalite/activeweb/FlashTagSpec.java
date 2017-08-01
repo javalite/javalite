@@ -16,6 +16,7 @@ limitations under the License.
 
 package org.javalite.activeweb;
 
+import app.controllers.TemplateIntegrationSpec;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,37 +25,33 @@ import static org.javalite.common.Util.blank;
 /**
  * @author Igor Polevoy
  */
-public class FlashTagSpec extends IntegrationSpec {
+public class FlashTagSpec extends TemplateIntegrationSpec {
 
-    @Before
-    public void before(){        
-        setTemplateLocation("src/test/views");
-    }
 
     @Test
     public void shouldPropagateFlashMessageToNextRequestOnly(){
-        controller("flashing").integrateViews(false).get("create");
+        controller("flashing").get("create");
         a(session().get("flasher")).shouldNotBeNull();
         a(flash("saved")).shouldBeEqual("your data has been saved");
 
-        controller("flashing").integrateViews().get("list");
+        controller("flashing").get("list");
         a(responseContent()).shouldBeEqual("hello from flashing list: your data has been saved");
         a(flash("saved")).shouldBeNull();
         a(session().get("flasher")).shouldBeNull();
         
-        controller("flashing").integrateViews().get("list");
+        controller("flashing").get("list");
         a(responseContent()).shouldBeEqual("hello from flashing list: ");
     }
 
     @Test
     public void shouldPropagateFlashAsMap(){
 
-        controller("flashing").integrateViews(false).get("as-map");
+        controller("flashing").get("as-map");
         a(session().get("flasher")).shouldNotBeNull();
         a(flash("one")).shouldBeEqual(1);
         a(flash("two")).shouldBeEqual(2);
 
-        controller("flashing").integrateViews(false).get("index");
+        controller("flashing").get("index");
         a(flash("one")).shouldBeNull();
         a(flash("two")).shouldBeNull();
     }
@@ -62,51 +59,51 @@ public class FlashTagSpec extends IntegrationSpec {
     @Test
     public void shouldPropagateFlashAsVararg(){
 
-        controller("flashing").integrateViews(false).get("as-vararg");
+        controller("flashing").get("as-vararg");
 
         a(session().get("flasher")).shouldNotBeNull();
         a(flash("one")).shouldBeEqual(1);
         a(flash("two")).shouldBeEqual(2);
 
-        controller("flashing").integrateViews(false).get("index");
+        controller("flashing").get("index");
         a(flash("one")).shouldBeNull();
     }
 
     @Test
     public void shouldRenderFlashWithBody(){
-        controller("flashing").integrateViews().get("body");
+        controller("flashing").get("body");
         a(responseContent()).shouldBeEqual("<div class=\"warning\">hi, there!</div>");
     }
 
     @Test
     public void shouldRenderFlashWithNestedPartial(){
-        controller("flashing").integrateViews().get("body-with-partial");
+        controller("flashing").get("body-with-partial");
         a(responseContent()).shouldBeEqual("<div class=\"warning\">hi, there!</div>");
         a(flashExists("warning")).shouldBeTrue();
     }
 
     @Test
     public void shouldRenderFlashByName(){
-        controller("flashing").integrateViews().post("save1");
-        controller("flashing").integrateViews().get("flash_by_name");
+        controller("flashing").post("save1");
+        controller("flashing").get("flash_by_name");
         a(responseContent()).shouldContain("This is a warning: hi");
-        controller("flashing").integrateViews().get("flash_by_name");
+        controller("flashing").get("flash_by_name");
         a(blank(responseContent())).shouldBeTrue();
 
-        controller("flashing").integrateViews().post("save2");
-        controller("flashing").integrateViews().get("flash_by_name");
+        controller("flashing").post("save2");
+        controller("flashing").get("flash_by_name");
 
         a(responseContent()).shouldContain("This is an error: hi");
-        controller("flashing").integrateViews().get("flash_by_name");
+        controller("flashing").get("flash_by_name");
         a(blank(responseContent())).shouldBeTrue();
     }
 
     @Test
     public void shouldRenderAnonymousFlash(){
-        controller("flashing").integrateViews().post("save3");
-        controller("flashing").integrateViews().get("anonymous");
+        controller("flashing").post("save3");
+        controller("flashing").get("anonymous");
         a(responseContent()).shouldContain("Hello, anonymous flash!");
-        controller("flashing").integrateViews().get("anonymous");
+        controller("flashing").get("anonymous");
         a(responseContent()).shouldNotContain("Hello, anonymous flash!");
     }
 }

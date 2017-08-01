@@ -34,13 +34,13 @@ public abstract class TemplateManager {
      *
      * @param layout name of layout, <code>null</code> if no layout is needed.
      */
-    public abstract void merge(Map values, String templateName, String layout, String format, Writer writer);
+    public abstract void merge(Map<String, Object> values, String templateName, String layout, String format, Writer writer);
 
 
     /**
      * Same as {@link #merge(java.util.Map, String, String, String, java.io.Writer)}, but uses default layout and default format (html).
      */
-    public abstract void merge(Map values, String template, Writer writer);
+    public abstract void merge(Map<String, Object> values, String template, Writer writer);
 
     /**
      * A template manager might need a context to be able to load templates from it.

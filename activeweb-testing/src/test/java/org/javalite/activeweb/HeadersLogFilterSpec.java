@@ -17,6 +17,7 @@ limitations under the License.
 
 package org.javalite.activeweb;
 
+import app.controllers.TemplateIntegrationSpec;
 import org.javalite.activeweb.controller_filters.AbstractLoggingFilter;
 import org.javalite.activeweb.controller_filters.HeadersLogFilter;
 import app.controllers.AbcPersonController;
@@ -31,17 +32,18 @@ import java.io.PrintStream;
 /**
  * @author Igor Polevoy
  */
-public class HeadersLogFilterSpec extends IntegrationSpec{
+public class HeadersLogFilterSpec extends TemplateIntegrationSpec {
 
     @Before
     public void before(){
         addFilter(AbcPersonController.class, new HeadersLogFilter(AbstractLoggingFilter.Level.INFO, true));
+        super.before();
     }
 
     @Test
     public void shouldPrintHeadersToLog(){
         SystemStreamUtil.replaceError();
-        controller("abc-person").integrateViews(false).header("bogus", "value").get("pass_values");
+        controller("abc-person").header("bogus", "value").get("pass_values");
         //request header:
 
         a(SystemStreamUtil.getSystemErr().contains("Request headers: {\"bogus\" : \"value\"}")).shouldBeTrue();

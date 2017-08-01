@@ -19,6 +19,7 @@ package org.javalite.activeweb;
 
 
 import app.controllers.StudentController;
+import app.controllers.TemplateIntegrationSpec;
 import app.controllers.level1.level2.RegistrationController;
 import org.javalite.activeweb.controller_filters.AppControllerFilter;
 import org.junit.Before;
@@ -27,7 +28,7 @@ import org.junit.Test;
 /**
  * @author Igor Polevoy
  */
-public class FilterRequestPropertiesSpec extends IntegrationSpec {
+public class FilterRequestPropertiesSpec extends TemplateIntegrationSpec {
 
     MockFilter filter;
 
@@ -44,6 +45,7 @@ public class FilterRequestPropertiesSpec extends IntegrationSpec {
 
     @Before
     public void before() {
+        super.before();
         filter = new MockFilter();
 
     }
@@ -51,7 +53,7 @@ public class FilterRequestPropertiesSpec extends IntegrationSpec {
     @Test
     public void shouldSetProperPathValuesInRequest() {
         addFilter(StudentController.class, filter);
-        controller("/student").integrateViews(false).get("index");
+        controller("/student").get("index");
         a(filter.path).shouldBeEqual("/student/index");
         a(filter.method).shouldBeEqual("GET");
         a(filter.uri).shouldBeEqual("/student/index");
@@ -61,7 +63,7 @@ public class FilterRequestPropertiesSpec extends IntegrationSpec {
     @Test
     public void shouldSetProperPathValuesInRequestToControllerInSubPackage() {
         addFilter(RegistrationController.class, filter);
-        controller("/level1/level2/registration").integrateViews(false).get("index");
+        controller("/level1/level2/registration").get("index");
         a(filter.path).shouldBeEqual("/level1/level2/registration/index");
         a(filter.method).shouldBeEqual("GET");
         a(filter.uri).shouldBeEqual("/level1/level2/registration/index");

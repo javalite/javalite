@@ -16,24 +16,23 @@ limitations under the License.
 
 package app.controllers;
 
-import org.javalite.activeweb.ControllerSpec;
 import org.junit.Test;
 
 /**
  * @author Igor Polevoy
  */
-public class HeaderControllerSpec extends ControllerSpec {
+public class HeaderControllerSpec extends TemplateControllerSpec {
 
     @Test
     public void shouldPassHeaderFromTest(){
-        request(false).header("X-Requested-With", "XMLHttpRequest").get("index");
+        request().header("X-Requested-With", "XMLHttpRequest").get("index");
         a(assigns().get("isAjax").toString()).shouldBeEqual("true");
     }
 
 
     @Test
     public void shouldPassMultipleHeadersFromTest(){
-        request(false).headers("header1", "h1val", "header2", "h2val").get("test");
+        request().headers("header1", "h1val", "header2", "h2val").get("test");
 
         a(assigns().get("val1")).shouldBeEqual("h1val");
         a(assigns().get("val2")).shouldBeEqual("h2val");

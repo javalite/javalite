@@ -32,10 +32,10 @@ public class IncludeExcludeControllerSpec extends AppIntegrationSpec {
 
     @Test
     public void shouldExcludeControllerActionForGlobalFilter() {
-        controller("exclude_action").integrateViews(false).get("include");
+        controller("exclude_action").get("include");
         a(val("the_message")).shouldContain("Whohoo!");
 
-        controller("exclude_action").integrateViews(false).get("exclude");
+        controller("exclude_action").get("exclude");
         a(val("the_message")).shouldNotContain("Whohoo!");
     }
 }

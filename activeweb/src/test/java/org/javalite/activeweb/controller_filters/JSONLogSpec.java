@@ -103,7 +103,7 @@ public class JSONLogSpec extends RequestSpec {
         the(log2.get("level")).shouldBeEqual("INFO");
         the(log2.get("timestamp")).shouldNotBeNull();
         the(log2.get("logger")).shouldBeEqual("org.javalite.activeweb.freemarker.FreeMarkerTemplateManager");
-        the(log2.get("message")).shouldBeEqual("rendering template: '/system/error' with layout: '/layouts/default_layout");
+        the(log2.get("message")).shouldBeEqual("Rendering template: '/system/error.ftl' with layout: '/layouts/default_layout.ftl'");
     }
 
     @Test
@@ -145,7 +145,7 @@ public class JSONLogSpec extends RequestSpec {
         the(log2.get("level")).shouldBeEqual("INFO");
         the(log2.get("timestamp")).shouldNotBeNull();
         the(log2.get("logger")).shouldBeEqual("org.javalite.activeweb.freemarker.FreeMarkerTemplateManager");
-        the(log2.get("message")).shouldBeEqual("rendering template: '/system/404' with layout: '/layouts/default_layout");
+        the(log2.get("message")).shouldBeEqual("Rendering template: '/system/404.ftl' with layout: '/layouts/default_layout.ftl'");
     }
 
     @Test
@@ -176,7 +176,7 @@ public class JSONLogSpec extends RequestSpec {
         the(log2.get("level")).shouldBeEqual("INFO");
         the(log2.get("timestamp")).shouldNotBeNull();
         the(log2.get("logger")).shouldBeEqual("org.javalite.activeweb.freemarker.FreeMarkerTemplateManager");
-        the(log2.get("message")).shouldBeEqual("rendering template: '/system/404' with layout: '/layouts/default_layout");
+        the(log2.get("message")).shouldBeEqual("Rendering template: '/system/404.ftl' with layout: '/layouts/default_layout.ftl'");
     }
 
     @Test
@@ -207,7 +207,7 @@ public class JSONLogSpec extends RequestSpec {
         the(log1.get("level")).shouldBeEqual("INFO");
         the(log1.get("timestamp")).shouldNotBeNull();
         the(log1.get("logger")).shouldBeEqual("org.javalite.activeweb.freemarker.FreeMarkerTemplateManager");
-        the(log1.get("message")).shouldBeEqual("rendering template: '/logging/no-view' with layout: '/layouts/default_layout");
+        the(log1.get("message")).shouldBeEqual("Rendering template: '/logging/no-view.ftl' with layout: '/layouts/default_layout.ftl'");
 
 
         //Line 2
@@ -219,7 +219,7 @@ public class JSONLogSpec extends RequestSpec {
 
         the(message.get("controller")).shouldBeEqual("app.controllers.LoggingController");
         the(message.get("action")).shouldBeEqual("no-view");
-        the(message.get("error")).shouldBeEqual("Failed to find template: 'src/test/views/logging/no-view.ftl', with layout: 'src/test/views/layouts/default_layout'");
+        the(message.get("error")).shouldBeEqual("Failed to find template: '/logging/no-view.ftl' with layout: '/layouts/default_layout.ftl'");
 
     }
 

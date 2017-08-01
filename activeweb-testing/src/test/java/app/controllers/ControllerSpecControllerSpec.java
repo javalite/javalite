@@ -15,18 +15,17 @@ limitations under the License.
 */
 package app.controllers;
 
-import org.javalite.activeweb.ControllerSpec;
 import org.junit.Test;
 
 /**
  * @author Igor Polevoy
  */
-public class ControllerSpecControllerSpec extends ControllerSpec {
+public class ControllerSpecControllerSpec extends TemplateControllerSpec {
 
     @Test
     public void shouldAssignInformationOnPersonWithGET() {
 
-        request(false).param("id", "2").get("index"); //<<========== making a request to the controller.
+        request().param("id", "2").get("index"); //<<========== making a request to the controller.
 
         a(assigns().get("name")).shouldEqual("John");
         a(assigns().get("last_name")).shouldEqual("Silverman");

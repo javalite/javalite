@@ -52,7 +52,6 @@ public class UploadControllerSpec extends IntegrationSpec{
         controller("upload")
                 .contentType("multipart/form-data")
                 .formItem("hello.txt", "file", true, "text/plain", "hello".getBytes())
-                .integrateViews(false)
                 .post("save");
 
         a(assigns().get("content")).shouldBeEqual("hello");
