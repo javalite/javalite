@@ -81,7 +81,7 @@ public abstract class ActiveJDBCTest implements JSpecSupport {
                 DefaultDBReset.resetSchema(getStatements("; ", "mssql_schema.sql"));
                 break;
             case "db2":
-                DefaultDBReset.resetSchema(getStatements(";", "db2_schema.sql"));
+                Db2DBReset.resetSchema(getStatements(";", "db2_schema.sql"));
                 break;
             case "sqlite":
                 DefaultDBReset.resetSchema(getStatements("; ", "sqlite_schema.sql"));
