@@ -8,14 +8,26 @@ CREATE TABLE accounts (id int primary key GENERATED ALWAYS AS IDENTITY, account 
 CALL dropTable('temperatures');
 CREATE TABLE temperatures (id int primary key GENERATED ALWAYS AS IDENTITY, temp SMALLINT);
 
+CALL dropTable('shard1_temperatures');
+CREATE TABLE shard1_temperatures (id int primary key GENERATED ALWAYS AS IDENTITY, temp SMALLINT);
+
+CALL dropTable('shard2_temperatures');
+CREATE TABLE shard2_temperatures (id int primary key GENERATED ALWAYS AS IDENTITY, temp SMALLINT);
+
 CALL dropTable('salaries');
 CREATE TABLE salaries (id int primary key GENERATED ALWAYS AS IDENTITY, salary DECIMAL(7, 2));
 
 CALL dropTable('users');
 CREATE TABLE users (id int primary key GENERATED ALWAYS AS IDENTITY, first_name VARCHAR(56), last_name VARCHAR(56), email VARCHAR(56));
 
+CALL dropTable('shard1_users');
+CREATE TABLE shard1_users (id int primary key GENERATED ALWAYS AS IDENTITY, first_name VARCHAR(56), last_name VARCHAR(56), email VARCHAR(56));
+
 CALL dropTable('addresses');
 CREATE TABLE addresses (id int primary key GENERATED ALWAYS AS IDENTITY, address1 VARCHAR(56), address2 VARCHAR(56), city VARCHAR(56), state VARCHAR(56), zip VARCHAR(56), user_id int);
+
+CALL dropTable('shard1_addresses');
+CREATE TABLE shard1_addresses (id int primary key GENERATED ALWAYS AS IDENTITY, address1 VARCHAR(56), address2 VARCHAR(56), city VARCHAR(56), state VARCHAR(56), zip VARCHAR(56), user_id INT);
 
 CALL dropTable('rooms');
 CREATE TABLE rooms (id int primary key GENERATED ALWAYS AS IDENTITY, name VARCHAR(56), address_id int);
@@ -38,11 +50,17 @@ CREATE TABLE animals (animal_id int primary key GENERATED ALWAYS AS IDENTITY, an
 CALL dropTable('patients');
 CREATE TABLE patients (id int primary key GENERATED ALWAYS AS IDENTITY, first_name VARCHAR(56), last_name VARCHAR(56));
 
+CALL dropTable('shard1_patients');
+CREATE TABLE shard1_patients (id int primary key GENERATED ALWAYS AS IDENTITY, first_name VARCHAR(56), last_name VARCHAR(56));
+
 CALL dropTable('prescriptions');
 CREATE TABLE prescriptions (id int primary key GENERATED ALWAYS AS IDENTITY, name VARCHAR(56), patient_id int);
 
 CALL dropTable('doctors');
 CREATE TABLE doctors (id int primary key GENERATED ALWAYS AS IDENTITY, first_name VARCHAR(56), last_name VARCHAR(56), discipline varchar(56));
+
+CALL dropTable('shard1_doctors');
+CREATE TABLE shard1_doctors (id int primary key GENERATED ALWAYS AS IDENTITY, first_name VARCHAR(56), last_name VARCHAR(56), discipline varchar(56));
 
 CALL dropTable('doctors_patients');
 CREATE TABLE doctors_patients (id int primary key GENERATED ALWAYS AS IDENTITY, doctor_id int, patient_id int);
@@ -62,11 +80,20 @@ CREATE TABLE items (id int primary key GENERATED ALWAYS AS IDENTITY, item_number
 CALL dropTable('articles');
 CREATE TABLE articles (id int primary key GENERATED ALWAYS AS IDENTITY, title VARCHAR(56), content CLOB);
 
+CALL dropTable('shard1_articles');
+CREATE TABLE shard1_articles (id int primary key GENERATED ALWAYS AS IDENTITY, title VARCHAR(56), content CLOB);
+
 CALL dropTable('posts');
 CREATE TABLE posts (id int primary key GENERATED ALWAYS AS IDENTITY, title VARCHAR(56), post CLOB);
 
+CALL dropTable('shard1_posts');
+CREATE TABLE shard1_posts (id int primary key GENERATED ALWAYS AS IDENTITY, title VARCHAR(56), post CLOB);
+
 CALL dropTable('comments');
 CREATE TABLE comments (id int primary key GENERATED ALWAYS AS IDENTITY, author VARCHAR(56), content CLOB, parent_id int, parent_type VARCHAR(256));
+
+CALL dropTable('shard1_comments');
+CREATE TABLE shard1_comments (id int primary key GENERATED ALWAYS AS IDENTITY, author VARCHAR(56), content CLOB, parent_id INT, parent_type VARCHAR(256));
 
 CALL dropTable('tags');
 CREATE TABLE tags (id int primary key GENERATED ALWAYS AS IDENTITY, content CLOB, parent_id int, parent_type VARCHAR(256));
@@ -151,3 +178,12 @@ CREATE TABLE images (id int primary key GENERATED ALWAYS AS IDENTITY, name VARCH
 
 CALL dropTable('apples');
 CREATE TABLE apples (id int NOT NULL PRIMARY KEY, apple_type VARCHAR(56) NOT NULL );
+
+CALL dropTable('alarms');
+CREATE TABLE alarms (id int primary key GENERATED ALWAYS AS IDENTITY, alarm_time TIME NOT NULL);
+
+CALL dropTable('developers');
+CREATE TABLE developers (first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL, email VARCHAR(56) NOT NULL, address VARCHAR(56), CONSTRAINT developers_uq UNIQUE (first_name, last_name, email));
+
+CALL dropTable('boxes');
+CREATE TABLE boxes (id int primary key GENERATED ALWAYS AS IDENTITY, "color" VARCHAR(56) NOT NULL, fruit_id INT);
