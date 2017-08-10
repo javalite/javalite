@@ -203,15 +203,17 @@ public class Async {
         for (QueueConfig queueConfig : queueConfigs) {
             Queue queue = (Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueConfig.getName());
             CommandListener listener = queueConfig.getCommandListener();
-            listener.setInjector(injector);
-            if(injector != null){
-                injector.injectMembers(listener);
-            }
+            if(listener != null){
+                listener.setInjector(injector);
+                if(injector != null){
+                    injector.injectMembers(listener);
+                }
 
-            for (int i = 0; i < queueConfig.getListenerCount(); i++) {
-                Session session = consumerConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-                MessageConsumer consumer = session.createConsumer(queue);
-                consumer.setMessageListener(listener);
+                for (int i = 0; i < queueConfig.getListenerCount(); i++) {
+                    Session session = consumerConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+                    MessageConsumer consumer = session.createConsumer(queue);
+                    consumer.setMessageListener(listener);
+                }
             }
         }
         consumerConnection.start();
@@ -400,6 +402,7 @@ public class Async {
      * @return command if found. If command not found, this method will block till a command is present in queue or a timeout expires.
      */
     public Command receiveCommand(String queueName, long timeout) {
+
         checkStarted();
         try(Session session = consumerConnection.createSession()){
             Queue queue = (Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueName);
@@ -422,6 +425,66 @@ public class Async {
         }
     }
 
+
+    /**
+     * Sends a non-expiring {@link TextMessage} with average priority.
+     *
+     * @param queueName name of queue
+     * @param text body of message
+     */
+    public void sendTextMessage(String queueName, String text){
+       sendTextMessage(queueName, text, DeliveryMode.NON_PERSISTENT, 4, 0);
+    }
+
+    /**
+     * Sends a {@link TextMessage}.
+     *
+     * @param queueName name of queue
+     * @param text body of message
+     * @param deliveryMode delivery mode: {@link javax.jms.DeliveryMode}.
+     * @param priority priority of the message. Correct values are from 0 to 9, with higher number denoting a
+     *                 higher priority.
+     * @param timeToLive the message's lifetime (in milliseconds, where 0 is to never expire)
+     */
+    public void sendTextMessage(String queueName, String text, int deliveryMode, int priority, int timeToLive) {
+        checkStarted();
+
+        try(Session session = producerConnection.createSession()) {
+            checkInRange(deliveryMode, 1, 2, "delivery mode");
+            checkInRange(priority, 0, 9, "priority");
+            if (timeToLive < 0)
+                throw new AsyncException("time to live cannot be negative");
+
+            Queue queue = (Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueName);
+            if (queue == null)
+                throw new AsyncException("Failed to find queue: " + queueName);
+                Message message = session.createTextMessage(text);
+
+            MessageProducer p = session.createProducer(queue);
+            p.send(message, deliveryMode, priority, timeToLive);
+        } catch (AsyncException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new AsyncException("Failed to send message", e);
+        }
+    }
+
+    /**
+     * Generate a {@link BatchReceiver} to receive and process stored messages.
+     * This method ALWAYS works in the context of a transactionb. If you forget  to call {@link BatchReceiver#commit()} method,
+     * these messages will be re-delivered (which is probably not what you want).
+     *
+     * @param queueName name of queue
+     * @param timeout timeout to wait.
+     * @return instance  of {@link BatchReceiver}.
+     */
+    public BatchReceiver getBatchReceiver(String queueName, long timeout){
+        try {
+            return new BatchReceiver((Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueName), timeout, consumerConnection);
+        } catch (Exception e) {
+            throw new AsyncException(e);
+        }
+    }
 
     /**
      * Returns top commands in queue. Does not remove anything from queue. This method can be used for

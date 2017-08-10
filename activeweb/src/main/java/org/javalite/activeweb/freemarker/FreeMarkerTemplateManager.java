@@ -80,8 +80,6 @@ public class FreeMarkerTemplateManager extends TemplateManager {
 
         String templateName = blank(format)? template + ".ftl" : template + "." + format + ".ftl";
         try {
-            String description = getTemplateDescription(templateName, layout);
-
             logger.info("Rendering template: " + getTemplateDescription(templateName, layout));
             if(org.javalite.activeweb.Configuration.getEnv().equals("development")){
                 config.clearTemplateCache();

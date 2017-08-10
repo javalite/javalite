@@ -37,6 +37,16 @@ public class QueueConfig {
      */
      public   QueueConfig(String name, CommandListener commandListener, int listenerCount) {
         this(name, commandListener, listenerCount, true);
+     }
+
+    /**
+     * Creates a specification of a queue for Async with no listeners attached.
+     * By default the queue is durable (can save messages to hard drive).
+     *
+     * @param name human readable name of queue
+     */
+    public   QueueConfig(String name) {
+        this(name, null, 0, true);
     }
 
     /**
