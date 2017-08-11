@@ -26,28 +26,21 @@ import static org.javalite.common.Util.*;
  */
 public class DBException extends RuntimeException{
 
-    final String message;
-    
     public DBException() {
         super();
-        this.message = null;
     }
 
     public DBException(Throwable cause) {
         super(cause);
-        this.setStackTrace(cause.getStackTrace());
-        this.message = null;
+
     }
 
     public DBException(String message) {
         super(message);
-        this.message = null;
     }
 
     public DBException(String message, Throwable cause) {
         super(message, cause);
-        this.setStackTrace(cause.getStackTrace());
-        this.message = null;
     }
 
 
@@ -58,19 +51,16 @@ public class DBException extends RuntimeException{
      * @param cause real cause.
      */
     public DBException(String query, Object[] params, Throwable cause) {
+        this(getMessage(query, params, cause), cause);
+    }
+
+    private static String getMessage(String query, Object[] params, Throwable cause){
+
         StringBuilder sb = new StringBuilder(cause.toString()).append(", query: ").append(query);
         if (params != null && params.length > 0) {
             sb.append(", params: ");
             join(sb, params, ", ");
         }
-        message = sb.toString();
-        setStackTrace(cause.getStackTrace());
-        initCause(cause);
+        return sb.toString();
     }
-
-    @Override
-    public String getMessage() {
-        return message == null ? super.getMessage() : message;
-    }
-    
 }
