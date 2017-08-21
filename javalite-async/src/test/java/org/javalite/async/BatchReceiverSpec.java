@@ -41,11 +41,7 @@ public class BatchReceiverSpec {
             List<String> messages = br.receiveTextMessages(500);
             for (String ignored : messages) {
                 count++;
-
-                // record to DB,
             }
-
-            //commit to DB
             br.commit();
         }
         the(count).shouldBeEqual(50);
