@@ -118,6 +118,7 @@ public class Async {
             configureQueues(queueConfigs);
             configureJournal(useLibAio);
             config.setThreadPoolMaxSize(-1);
+            config.setGracefulShutdownEnabled(true);
             config.setScheduledThreadPoolMaxSize(10);
 
         } catch (AsyncException e) {
