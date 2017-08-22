@@ -19,8 +19,7 @@ package org.javalite.async;
 
 import com.google.inject.Injector;
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
-import org.apache.activemq.artemis.api.core.management.ObjectNameBuilder;
-import org.apache.activemq.artemis.api.jms.management.JMSQueueControl;
+import org.apache.activemq.artemis.api.core.management.QueueControl;
 import org.apache.activemq.artemis.core.config.Configuration;
 import org.apache.activemq.artemis.core.config.impl.ConfigurationImpl;
 import org.apache.activemq.artemis.core.remoting.impl.invm.InVMAcceptorFactory;
@@ -41,10 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
 import javax.jms.Queue;
-import javax.management.MBeanServerInvocationHandler;
-import javax.management.ObjectName;
 import java.io.File;
-import java.lang.management.ManagementFactory;
 import java.util.*;
 
 import static java.util.Collections.singletonList;
@@ -526,14 +522,14 @@ public class Async {
         return bytes;
     }
 
-    private JMSQueueControl getQueueControl(String queue) throws Exception {
+    private QueueControl getQueueControl(String queue) throws Exception {
         checkStarted();
-        ObjectName queueName = ObjectNameBuilder.DEFAULT.getJMSQueueObjectName(queue);
-        return MBeanServerInvocationHandler.newProxyInstance(ManagementFactory.getPlatformMBeanServer(),
-                queueName, JMSQueueControl.class, false);
+        //TODO: this is a dirty hack that exists because I have no idea how to get the QueueControl properly out of Artemis 2.2.0!
+        String res = QUEUE_NAMESPACE.replace('/', ' ').trim() + '.' + queue;
+        return (QueueControl) jmsServer.getActiveMQServer().getManagementService().getResource(res);
     }
 
-    /**
+    /**`
      * Returns counts of messages for all queues.
      *
      * @return map, where a key is a queue name, and value is a number of messages currently in that queue.0
@@ -656,8 +652,7 @@ public class Async {
      *
      * @return true if message moved
      */
-    public boolean moveMessage(String messageId, String source, String target){
-
+    public boolean moveMessage(long messageId, String source, String target){
         try {
             return getQueueControl(source).moveMessage(messageId, target);
         } catch (Exception e) {
