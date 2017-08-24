@@ -19,7 +19,8 @@ package org.javalite.async;
 
 import com.google.inject.Injector;
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
-import org.apache.activemq.artemis.api.core.management.QueueControl;
+import org.apache.activemq.artemis.api.core.management.ObjectNameBuilder;
+import org.apache.activemq.artemis.api.jms.management.JMSQueueControl;
 import org.apache.activemq.artemis.core.config.Configuration;
 import org.apache.activemq.artemis.core.config.impl.ConfigurationImpl;
 import org.apache.activemq.artemis.core.remoting.impl.invm.InVMAcceptorFactory;
@@ -40,7 +41,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
 import javax.jms.Queue;
+import javax.management.MBeanServerInvocationHandler;
+import javax.management.ObjectName;
 import java.io.File;
+import java.lang.management.ManagementFactory;
 import java.util.*;
 
 import static java.util.Collections.singletonList;
@@ -430,7 +434,7 @@ public class Async {
      * @param text body of message
      */
     public void sendTextMessage(String queueName, String text){
-       sendTextMessage(queueName, text, DeliveryMode.NON_PERSISTENT, 4, 0);
+        sendTextMessage(queueName, text, DeliveryMode.NON_PERSISTENT, 4, 0);
     }
 
     /**
@@ -455,7 +459,7 @@ public class Async {
             Queue queue = (Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueName);
             if (queue == null)
                 throw new AsyncException("Failed to find queue: " + queueName);
-                Message message = session.createTextMessage(text);
+            Message message = session.createTextMessage(text);
 
             MessageProducer p = session.createProducer(queue);
             p.send(message, deliveryMode, priority, timeToLive);
@@ -522,14 +526,14 @@ public class Async {
         return bytes;
     }
 
-    private QueueControl getQueueControl(String queue) throws Exception {
+    private JMSQueueControl getQueueControl(String queue) throws Exception {
         checkStarted();
-        //TODO: this is a dirty hack that exists because I have no idea how to get the QueueControl properly out of Artemis 2.2.0!
-        String res = QUEUE_NAMESPACE.replace('/', ' ').trim() + '.' + queue;
-        return (QueueControl) jmsServer.getActiveMQServer().getManagementService().getResource(res);
+        ObjectName queueName = ObjectNameBuilder.DEFAULT.getJMSQueueObjectName(queue);
+        return MBeanServerInvocationHandler.newProxyInstance(ManagementFactory.getPlatformMBeanServer(),
+                queueName, JMSQueueControl.class, false);
     }
 
-    /**`
+    /**
      * Returns counts of messages for all queues.
      *
      * @return map, where a key is a queue name, and value is a number of messages currently in that queue.0
@@ -652,7 +656,8 @@ public class Async {
      *
      * @return true if message moved
      */
-    public boolean moveMessage(long messageId, String source, String target){
+    public boolean moveMessage(String messageId, String source, String target){
+
         try {
             return getQueueControl(source).moveMessage(messageId, target);
         } catch (Exception e) {
