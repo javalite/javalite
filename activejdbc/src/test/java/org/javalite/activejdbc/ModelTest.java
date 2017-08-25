@@ -38,6 +38,20 @@ import static org.javalite.common.Collections.*;
 public class ModelTest extends ActiveJDBCTest {
 
     @Test
+    public void testFindOrCreate(){
+        deleteAndPopulateTable("people");
+        //Create new Person
+        Person p = Person.findOrCreate("name","yakka","last_name","newbie","dob",getDate(1990,8,3));
+        a(p).shouldNotBeNull();
+        List<Map> results = Base.findAll("select * from people where name = ? and last_name = ?", "yakka", "newbie");
+        a(results.size()).shouldBeEqual(1);
+        p = null;
+        //Fetch Existing Person
+        p = Person.findOrCreate("name","yakka","last_name","newbie","dob",getDate(1990,8,3));
+        a(p).shouldNotBeNull();
+    }
+
+    @Test
     public void testModelFinder() {
         deleteAndPopulateTable("people");
         Person p = new Person();
