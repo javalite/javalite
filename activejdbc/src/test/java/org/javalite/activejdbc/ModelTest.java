@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import static org.javalite.activejdbc.Model.findOrCreate;
 import static org.javalite.activejdbc.test.JdbcProperties.driver;
 import static org.javalite.common.Collections.*;
 
