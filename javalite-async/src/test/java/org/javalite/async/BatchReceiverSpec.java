@@ -16,17 +16,13 @@ import static org.javalite.test.jspec.JSpec.the;
  */
 public class BatchReceiverSpec {
     private static final String QUEUE_NAME = "queue1";
-    private String filePath;
     private Async async;
 
     @Before
     public void before() throws IOException {
-        filePath = Files.createTempDirectory("async").toFile().getCanonicalPath();
+        String filePath = Files.createTempDirectory("async").toFile().getCanonicalPath();
         async = new Async(filePath, false, new QueueConfig(QUEUE_NAME));
         async.start();
-        for (int i = 0; i < 50; i++) {
-            async.sendTextMessage(QUEUE_NAME, "hello " + i);
-        }
     }
 
     @After
@@ -37,14 +33,38 @@ public class BatchReceiverSpec {
     @Test
     public void shouldReceiveMessages() throws JMSException {
         int count = 0;
+        for (int i = 0; i < 50; i++) {
+            async.sendTextMessage(QUEUE_NAME, "hello " + i);
+        }
         try (BatchReceiver br = async.getBatchReceiver(QUEUE_NAME, 100)) {
             List<String> messages = br.receiveTextMessages(500);
             for (String ignored : messages) {
                 count++;
             }
-            br.commit();
         }
         the(count).shouldBeEqual(50);
-        async.stop();
+
+    }
+
+    @Test
+    public void shouldRollbackCommitTransaction() throws JMSException {
+
+        for (int i = 0; i < 3; i++) {
+
+        }
+
+        BatchReceiver br = async.getBatchReceiver(QUEUE_NAME, 100);
+        List<String> messages = br.receiveTextMessages(500);
+        the(messages.size()).shouldBeEqual(3);
+
+        br.rollback(); // <<< -- pushes messages back into queue
+
+        messages = br.receiveTextMessages(500);
+        the(messages.size()).shouldBeEqual(3);
+
+        br.commit(); // <<< -- finally deletes messages from queue
+        messages = br.receiveTextMessages(500);
+        the(messages.size()).shouldBeEqual(0);
+        br.close();
     }
 }

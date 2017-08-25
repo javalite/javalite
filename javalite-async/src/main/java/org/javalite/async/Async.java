@@ -44,7 +44,9 @@ import javax.jms.Queue;
 import javax.management.MBeanServerInvocationHandler;
 import javax.management.ObjectName;
 import java.io.File;
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.nio.file.Files;
 import java.util.*;
 
 import static java.util.Collections.singletonList;
@@ -472,8 +474,7 @@ public class Async {
 
     /**
      * Generate a {@link BatchReceiver} to receive and process stored messages.
-     * This method ALWAYS works in the context of a transactionb. If you forget  to call {@link BatchReceiver#commit()} method,
-     * these messages will be re-delivered (which is probably not what you want).
+     * This method ALWAYS works in the context of a transaction.
      *
      * @param queueName name of queue
      * @param timeout timeout to wait.
@@ -515,6 +516,29 @@ public class Async {
             return res;
         } catch (Exception e) {
             throw new AsyncException("Could not lookup commands", e);
+        }
+    }
+
+    /**
+     * Returns top <code>TextMessage</code>s in queue. Does not remove anything from queue. This method can be used for
+     * an admin tool to peek inside the queue.
+     *
+     * @param maxSize max number of messages to lookup.
+     * @return top commands in queue or empty list is nothing is found in queue.
+     */
+    public List<String> getTopTextMessages(int maxSize, String queueName)  {
+        checkStarted();
+        List<String> res = new ArrayList<>();
+        try(Session session = consumerConnection.createSession()) {
+            Queue queue = (Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueName);
+            Enumeration messages = session.createBrowser(queue).getEnumeration();
+            for(int i = 0; i < maxSize && messages.hasMoreElements(); i++) {
+                TextMessage message = (TextMessage) messages.nextElement();
+                res.add(message.getText());
+            }
+            return res;
+        } catch (Exception e) {
+            throw new AsyncException("Could not lookup messages", e);
         }
     }
 
@@ -678,5 +702,60 @@ public class Async {
      */
     public Configuration getConfig() {
         return config;
+    }
+
+    public static void main(String[] args) throws IOException {
+        try {
+
+            String queueName = "queue1";
+            String filePath;
+            Async async;
+
+            filePath = Files.createTempDirectory("async").toFile().getCanonicalPath();
+            async = new Async(filePath, false, new QueueConfig(queueName));
+            async.start();
+
+            async.test(queueName);
+            async.stop();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+
+    }
+
+    private void test(String queueName) throws JMSException {
+
+        for (int i = 0; i < 3; i++) {
+            sendTextMessage(queueName, "hello " + i);
+        }
+
+        Queue queue = (Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueName);
+
+        Session session = consumerConnection.createSession(true, Session.SESSION_TRANSACTED);
+        MessageConsumer messageConsumer =  session.createConsumer(queue);
+
+        TextMessage m;
+
+        System.out.println(">>> Take 1: ");
+        while((m = (TextMessage) messageConsumer.receive(100)) != null){
+            System.out.println(m.getText());
+        }
+
+        session.rollback();
+
+        System.out.println(">>> Take 2: ");
+        while((m = (TextMessage) messageConsumer.receive(100)) != null){
+            System.out.println(m.getText());
+        }
+
+        session.commit();
+        System.out.println(">>> Take 3: ");
+        while((m = (TextMessage) messageConsumer.receive(100)) != null){
+            System.out.println(m.getText());
+        }
+        session.close();
     }
 }

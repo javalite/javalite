@@ -8,19 +8,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Use to batch-read text messages from Async in a cont5ext of a transaction.
+ * Usually used to pass JSON or XML documents.
+ *
+ * <br>Typical usage pattern:
+ *
+ * <pre>
+ //send messages:
+ async.sendTextMessage(QUEUE_NAME, jsonDocument);
+ ... // repeat
+
+ //receive messages:
+ BatchReceiver br = async.getBatchReceiver(QUEUE_NAME, 100);
+ List<String> messages = br.receiveTextMessages(500);
+ //... process messages, commit to database
+ br.commit(); // <<< -- deletes messages from queue
+ br.close();
+ * </pre>
+ *
+ * <em>*** NEVER FORGET TO COMMIT AND CLOSE! ***</em>
+ *
  * @author igor on 8/8/17.
  */
 public class BatchReceiver implements Closeable {
 
-    private Queue queue;
     private long timeout;
     private Session session;
-
-
+    private MessageConsumer consumer;
     protected BatchReceiver(Queue queue, long timeout, Connection connection) throws JMSException {
-        this.queue = queue;
         this.timeout = timeout;
         this.session = connection.createSession(true, Session.SESSION_TRANSACTED);
+        this.consumer = session.createConsumer(queue);
     }
 
     /**
@@ -31,10 +49,8 @@ public class BatchReceiver implements Closeable {
      * @return <code>size</code> messages from the queue.
      */
     public List<String> receiveTextMessages(int maxSize) {
-        MessageConsumer consumer;
         List<String> messages = new ArrayList<>();
         try {
-            consumer = session.createConsumer(queue);
             while (messages.size() <= maxSize){
                 TextMessage message = (TextMessage) consumer.receive(timeout);
                 if (message == null) {
