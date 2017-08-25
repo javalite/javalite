@@ -7,6 +7,7 @@ import org.junit.Test;
 import javax.jms.JMSException;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.javalite.test.jspec.JSpec.the;
@@ -50,7 +51,7 @@ public class BatchReceiverSpec {
     public void shouldRollbackCommitTransaction() throws JMSException {
 
         for (int i = 0; i < 3; i++) {
-
+            async.sendTextMessage(QUEUE_NAME, "hello " + i);
         }
 
         BatchReceiver br = async.getBatchReceiver(QUEUE_NAME, 100);
