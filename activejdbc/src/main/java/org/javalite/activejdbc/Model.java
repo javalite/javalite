@@ -200,8 +200,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     /**
      * This is a convenience method to fetch existing model from db or to create new record to the db.
-     *@return Model fetched from db or newly saved instance
      * @param namesAndValues names and values. elements at indexes 0, 2, 4, 8... are attribute names, and elements at
+     * indexes 1, 3, 5... are values. Element at index 1 is a value for attribute at index 0 and so on.
+     *@return Model fetched from db or newly saved instance
+     *
      */
     public static <T extends Model> T findOrCreate(Object... namesAndValues) throws IllegalArgumentException {
         if (namesAndValues.length == 0 || namesAndValues.length % 2 != 0){
