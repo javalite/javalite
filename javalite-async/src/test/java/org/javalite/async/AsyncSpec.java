@@ -6,11 +6,14 @@ import org.javalite.async.services.GreetingModule;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.jms.JMSException;
+import javax.jms.Message;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
 import static org.javalite.test.jspec.JSpec.a;
+import static org.javalite.test.jspec.JSpec.the;
 
 /**
  * @author Igor Polevoy on 4/5/15.
@@ -171,6 +174,33 @@ public class AsyncSpec {
         async.send(QUEUE_NAME, new HelloCommand("Hi, there"));
 
         //SEE ASSERTION INSIDE HelloCommandListener.
+
+        Thread.sleep(1000);
+        async.stop();
+    }
+
+    @Test
+    public void shouldMoveMessageToOtherQueue() throws InterruptedException, JMSException {
+
+        Async async = new Async(filePath, false, new QueueConfig("queue1"), new QueueConfig("queue2"));
+        async.start();
+
+        async.sendTextMessage("queue1", "message test 1");
+        Message m1 = async.lookupMessage("queue1");
+        the(m1).shouldNotBeNull();
+
+        Message m2 = async.lookupMessage("queue2");
+        the(m2).shouldBeNull();
+
+        boolean result = async.moveMessage(m1.getJMSMessageID(), "queue1", "queue2");
+
+        the(result).shouldBeTrue();
+
+        m1 = async.lookupMessage("queue1");
+        the(m1).shouldBeNull();
+
+        m2 = async.lookupMessage("queue2");
+        the(m2).shouldNotBeNull();
 
         Thread.sleep(1000);
         async.stop();
