@@ -198,7 +198,34 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return (T) this;
     }
 
-
+    /**
+     * This is a convenience method to fetch existing model from db or to create and insert new record.
+     * @param namesAndValues names and values. elements at indexes 0, 2, 4, 8... are attribute names, and elements at
+     * indexes 1, 3, 5... are values. Element at index 1 is a value for attribute at index 0 and so on.
+     *@return Model fetched from the db or newly created and saved instance
+     */
+    public static <T extends Model> T findOrCreateIt(Object... namesAndValues) throws IllegalArgumentException {
+        if (namesAndValues.length == 0 || namesAndValues.length % 2 != 0){
+            throw new IllegalArgumentException("number of arguments must be even");
+        }
+        //Generates subQuery from namesAndValues
+        StringBuilder subQuery = new StringBuilder();
+        //Parameters for subQuery
+        Object[] params = new Object[namesAndValues.length / 2];
+        int x = 0;
+        for (int i = 0; i < namesAndValues.length; i++){
+            if (i % 2 == 0){
+                subQuery.append((subQuery.length() > 0) ? " and " + namesAndValues[i] + " = ?" : namesAndValues[i] + " = ?");
+            } else {
+                params[x++] = namesAndValues[i];
+            }
+        }
+        if(findFirst(subQuery.toString(),params) != null){
+            return findFirst(subQuery.toString(),params);
+        } else{
+            return createIt(namesAndValues);
+        }
+    }
 
     /**
      * Hydrates a this instance of model from a map. Only picks values from a map that match
