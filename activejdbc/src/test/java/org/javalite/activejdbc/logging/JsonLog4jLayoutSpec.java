@@ -98,7 +98,7 @@ public class JsonLog4jLayoutSpec  extends ActiveJDBCTest{
         Map logMap = org.javalite.common.JsonHelper.toMap(json);
         Map message = (Map) logMap.get("message");
 
-        a(message.get("sql")).shouldBeEqual("SELECT * FROM animals WHERE animal_id = ? LIMIT 1");
+        a(message.get("sql")).shouldContain("SELECT * FROM animals WHERE animal_id = ?");
 
         List params = (List) message.get("params");
 

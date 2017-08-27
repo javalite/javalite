@@ -139,6 +139,37 @@
                 </dependency>
             </dependencies>
         </profile>
+		<profile>
+			<id>db2</id>
+			<!--
+                Configure jdbc.driver, jdbc.url (with :progressiveStreaming=2;), jdbc.user, jdbc.password
+                and db properties in your ~/.m2/settings.xml
+                E.g.
+                <properties>
+                    <jdbc.driver>com.ibm.db2.jcc.DB2Driver</jdbc.driver>
+                    <jdbc.url>jdbc:db2://192.168.99.100:50000/db2:progressiveStreaming=2;</jdbc.url>
+                    <jdbc.user>db2inst1</jdbc.user>
+                    <jdbc.password>db2inst1-pwd</jdbc.password>
+                    <db>db2</db>
+                </properties>
+			-->
+			<repositories>
+				<repository>
+					<id>alfresco</id>
+					<name>Alfresco Public </name>
+					<url>https://artifacts.alfresco.com/nexus/content/repositories/public/</url>
+				</repository>
+			</repositories>
+			<dependencies>
+				<!-- https://mvnrepository.com/artifact/com.ibm.db2.jcc/db2jcc4 -->
+				<dependency>
+					<groupId>com.ibm.db2.jcc</groupId>
+					<artifactId>db2jcc4</artifactId>
+					<version>10.1</version>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
     </profiles>
 
     <build>

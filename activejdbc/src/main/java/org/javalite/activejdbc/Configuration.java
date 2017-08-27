@@ -274,6 +274,9 @@ public class Configuration {
             if(dbType.equalsIgnoreCase("Oracle")){
                 dialect = new OracleDialect();
             }
+            else if(dbType.startsWith("DB2")) {
+                dialect = new DB2Dialect();
+            }
             else if(dbType.equalsIgnoreCase("MySQL")){
                 dialect = new MySQLDialect();
             }
