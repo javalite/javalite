@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import static org.javalite.activejdbc.Model.findOrCreate;
 import static org.javalite.activejdbc.test.JdbcProperties.driver;
 import static org.javalite.common.Collections.*;
 
@@ -39,20 +38,21 @@ import static org.javalite.common.Collections.*;
 public class ModelTest extends ActiveJDBCTest {
 
     @Test
-    public void testFindOrCreateIt(){
-        deleteAndPopulateTable("people");
+    public void testFindOrCreateIt() {
+        deleteFromTable("people");
+        the(Base.count("people")).shouldBeEqual(0);
         //Create new Person
-        Person p = Person.findOrCreate("name","yakka","last_name","newbie","dob",getDate(1990,8,3));
-        a(p).shouldNotBeNull();
-        Object id = p.getId();
-        List<Map> results = Base.findAll("select * from people where name = ? and last_name = ?", "yakka", "newbie");
-        a(results.size()).shouldBeEqual(1);
-        p = null;
+        Person person1 = Person.findOrCreateIt("name", "yakka", "last_name", "newbie", "dob", getDate(1990, 8, 3));
+        the(person1).shouldNotBeNull();
+        the(person1.exists()).shouldBeTrue();
+
+        a(Base.count("people", "name = ? and last_name = ?", "yakka", "newbie")).shouldBeEqual(1);
+
         //Fetch Existing Person
-        p = Person.findOrCreate("name","yakka","last_name","newbie","dob",getDate(1990,8,3));
-        a(p).shouldNotBeNull();
+        Person person2 = Person.findOrCreateIt("name", "yakka", "last_name", "newbie", "dob", getDate(1990, 8, 3));
+        the(person2).shouldNotBeNull();
         //Verify the id
-        a(id).shouldBeEqual(p.getId());
+        the(person1.getId()).shouldBeEqual(person2.getId());
     }
 
     @Test

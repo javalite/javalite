@@ -408,4 +408,29 @@ public final class ModelDelegate {
     public static void zeroToNull(Class<? extends Model> clazz, String... attributeNames) {
         modelRegistryOf(clazz).convertWith(ZeroToNullConverter.instance(), attributeNames);
     }
+
+
+
+    public static <T extends Model> T findOrCreateIt(Class<T> clazz, Object... namesAndValues) {
+        if (namesAndValues.length == 0 || namesAndValues.length % 2 != 0){
+            throw new IllegalArgumentException("number of arguments must be even");
+        }
+        //Generates subQuery from namesAndValues
+        StringBuilder subQuery = new StringBuilder();
+        //Parameters for subQuery
+        Object[] params = new Object[namesAndValues.length / 2];
+        int x = 0;
+        for (int i = 0; i < namesAndValues.length; i++){
+            if (i % 2 == 0){
+                subQuery.append((subQuery.length() > 0) ? " and " + namesAndValues[i] + " = ?" : namesAndValues[i] + " = ?");
+            } else {
+                params[x++] = namesAndValues[i];
+            }
+        }
+        if(count(clazz, subQuery.toString(), params) > 0){
+            return findFirst(clazz, subQuery.toString(),params);
+        } else{
+            return createIt(clazz, namesAndValues);
+        }
+    }
 }
