@@ -68,7 +68,7 @@ import static org.javalite.common.Util.closeQuietly;
 public class Async {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("JavaLite Async");
-    private static final int MIN_LARGE_MESSAGE_SIZE = 100 * 4096;
+    private static final int MIN_LARGE_MESSAGE_SIZE = 819200;
     private static final String QUEUE_NAMESPACE = "/queue/";
 
     private Injector injector;
@@ -131,8 +131,8 @@ public class Async {
 
     private void configureJournal(boolean useLibAio){
         config.setJournalType(useLibAio ? JournalType.ASYNCIO : JournalType.NIO);
-        config.setJournalBufferSize_AIO(2 * MIN_LARGE_MESSAGE_SIZE);
-        config.setJournalBufferSize_NIO(2 * MIN_LARGE_MESSAGE_SIZE);
+        config.setJournalBufferSize_AIO(MIN_LARGE_MESSAGE_SIZE);
+        config.setJournalBufferSize_NIO(MIN_LARGE_MESSAGE_SIZE);
     }
 
     private void configureLocations(String dataDirectory) {
@@ -157,18 +157,11 @@ public class Async {
         ConnectionFactoryConfiguration cfConfig = new ConnectionFactoryConfigurationImpl();
         cfConfig.setName("cf").setConnectorNames(singletonList("connector")).setBindings("/cf");
 
-        /*see https://community.jboss.org/thread/160367
-                Re: Connection timeout issues - Connection failure has been detected
-                In my case, below configuration (made on JBoss 7.1.1.Final) has helped:
-                <client-failure-check-period>2147483646</client-failure-check-period>
-                <connection-ttl>-1</connection-ttl>
-                <reconnect-attempts>-1</reconnect-attempts>
-               */
-
         cfConfig.setClientFailureCheckPeriod(Long.MAX_VALUE);
         cfConfig.setConnectionTTL(-1);
         cfConfig.setReconnectAttempts(-1);
         cfConfig.setCompressLargeMessages(true);
+        cfConfig.setMinLargeMessageSize(MIN_LARGE_MESSAGE_SIZE);
         jmsConfig.getConnectionFactoryConfigurations().add(cfConfig);
     }
 
