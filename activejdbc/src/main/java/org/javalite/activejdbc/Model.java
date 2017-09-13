@@ -1205,7 +1205,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             }
         }
 
-        List<Map> results = new DB(metaModelLocal.getDbName()).findAll(query, fkValue);
+        List<Map> results = new DB(parentMM.getDbName()).findAll(query, fkValue);
         //expect only one result here
         if (results.isEmpty()) { //this should be covered by referential integrity constraint
             return null;
