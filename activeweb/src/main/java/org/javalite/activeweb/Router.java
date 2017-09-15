@@ -125,8 +125,14 @@ public class Router {
             return new Route(controller, "index", method);
         }
 
-        String tail = theUri.substring(controllerPath.length() + 1);
-        String[] parts = split(tail, "/");
+        String[] parts;
+        try {
+            String tail = theUri.substring(controllerPath.length() + 1);
+            parts = split(tail, "/");
+        } catch (Exception e) {
+            throw new RouteException("Failed to parse route from: '" + uri + "'", e);
+        }
+
 
         //ANY    /package_suffix/controller/action
         if (parts.length == 1) {

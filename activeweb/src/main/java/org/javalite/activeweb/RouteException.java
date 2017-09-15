@@ -7,4 +7,8 @@ public class RouteException extends WebException {
     public RouteException(String message) {
         super(message);
     }
+
+    public RouteException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
