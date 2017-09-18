@@ -146,7 +146,7 @@ public class RequestDispatcher implements Filter {
                 throw new InitException(e);
             }else{
                 logger.warn("Failed to create and init a new instance of class: " + configClassName
-                        + ", proceeding without it.");
+                        + ", proceeding without it.", e);
             }
         }
     }
