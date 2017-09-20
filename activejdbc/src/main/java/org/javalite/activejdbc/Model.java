@@ -3034,11 +3034,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return value of attribute corresponding to <code>getIdName()</code>, converted to Long.
      */
     public Long getLongId() {
-        Object id = getId();
-        if (id == null) {
-            throw new NullPointerException(getIdName() + " is null, cannot convert to Long");
-        }
-        return Convert.toLong(id);
+        return getId() == null ? null: Convert.toLong(getId());
     }
 
     @Override

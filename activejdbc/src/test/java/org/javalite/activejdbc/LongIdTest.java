@@ -1,6 +1,7 @@
 package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.test.ActiveJDBCTest;
+import org.javalite.activejdbc.test_models.Alarm;
 import org.javalite.activejdbc.test_models.Person;
 import org.junit.Test;
 
@@ -9,10 +10,10 @@ import org.junit.Test;
  */
 public class LongIdTest extends ActiveJDBCTest {
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowNPEIfIdIsNull(){
-        Person p = new Person();
-        p.getLongId();
+    @Test
+    public void shouldConvertIdToLong() {
+        Alarm alarm = new Alarm();
+        the(alarm.getLongId()).shouldBeNull();
     }
 
     @Test
