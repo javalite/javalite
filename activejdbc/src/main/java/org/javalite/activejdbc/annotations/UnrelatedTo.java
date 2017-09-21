@@ -25,8 +25,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation breaks a relationship tat exists based on naming conventions.
- * Value is an array of classes this model should nto be related to, despite conventions
+ * This annotation breaks a relationship that exists based on naming conventions.
+ * Value is an array of classes this model should not be related to, despite conventions
  * discovered in the schema.
  * <p></p>
  * This annotation can be placed on just one side of a relationship for brevity.
@@ -37,8 +37,8 @@ import java.lang.annotation.Target;
  * in cases where a destructive operation is executed (DELETE, INSERT, UPDATE).
  * If you do <em>not</em> want your table to be flushed again and again, you can disconnect
  * the relationship by using this annotation. You can still manage the relationship manually using
- * the foreign key in a child table, but methods like <code>parent.add(child)</code> or <code>child.parent(Parent.class)</code> and others will not work..
- * unless you override them.
+ * the foreign key in a child table, but methods like <code>parent.add(child)</code> or <code>child.parent(Parent.class)</code>
+ * and others will not work ... unless you override them.
  *
  * </p>
  *

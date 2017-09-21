@@ -435,8 +435,19 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 			}
 			result = new DB(metaModelLocal.getDbName()).exec(query.toString(), values);
 		} else {
-			result = new DB(metaModelLocal.getDbName()).exec("DELETE FROM " + metaModelLocal.getTableName()
-	                + " WHERE " + getIdName() + "= ?", getId());
+            StringBuilder query = new StringBuilder("DELETE FROM ").append(metaModelLocal.getTableName()).append(" WHERE ").append(getIdName()).append("        = ?");
+            List<Object> values = new ArrayList<>();
+            values.add(getId());
+
+            if(metaModelLocal.hasPartitionIDs()){
+                for (String partitionId : metaModelLocal.getPartitionIDs()) {
+                    query.append(" AND ").append(partitionId).append(" = ?");
+                    values.add(get(partitionId));
+                }
+            }
+
+
+			result = new DB(metaModelLocal.getDbName()).exec(query.toString(), values.toArray());
 		}
 		if (1 == result) {
 			frozen = true;
@@ -2801,6 +2812,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 		} else {
 			query.append(" WHERE ").append(metaModel.getIdName()).append(" = ?");
 			values.add(getId());
+            if(metaModel.hasPartitionIDs()){
+                for (String partitionId : metaModel.getPartitionIDs()) {
+                    query.append(" AND ").append(partitionId).append(" = ?");
+                    values.add(get(partitionId));
+                }
+            }
 		}
         if (metaModel.isVersioned()) {
             query.append(" AND ").append(metaModelLocal.getVersionColumn()).append(" = ?");

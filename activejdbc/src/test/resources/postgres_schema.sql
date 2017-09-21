@@ -201,3 +201,7 @@ CREATE TABLE "Wild Animals" (id serial PRIMARY KEY, "Name" VARCHAR(56) NOT NULL)
 
 DROP TABLE IF EXISTS boxes;
 CREATE TABLE boxes (id serial PRIMARY KEY, "color" VARCHAR(56) NOT NULL, fruit_id INT);
+
+DROP TABLE IF EXISTS passengers;
+CREATE TABLE passengers (id serial PRIMARY KEY, "vehicle" VARCHAR(56),"mode" VARCHAR(56), user_id INT);
+

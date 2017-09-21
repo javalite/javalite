@@ -400,3 +400,11 @@ BEGIN
     DROP TABLE [dbo].[boxes]
 END
 CREATE TABLE boxes (id INT IDENTITY PRIMARY KEY, color VARCHAR(56) NOT NULL, fruit_id INT);
+
+
+IF object_id('dbo.passengers') IS NOT NULL
+BEGIN
+    DROP TABLE [dbo].[passengers]
+END
+CREATE TABLE passengers (id INT IDENTITY PRIMARY KEY, user_id INT NOT NULL, vehicle VARCHAR(10), mode VARCHAR(10));
+

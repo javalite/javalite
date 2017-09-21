@@ -187,3 +187,7 @@ CREATE TABLE developers (first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) 
 
 CALL dropTable('boxes');
 CREATE TABLE boxes (id int primary key GENERATED ALWAYS AS IDENTITY, "color" VARCHAR(56) NOT NULL, fruit_id INT);
+
+CALL dropTable('passengers');
+CREATE TABLE passengers (id int primary key GENERATED ALWAYS AS IDENTITY, user_id INT NOT NULL, vehicle VARCHAR(10),mode VARCHAR(10));
+

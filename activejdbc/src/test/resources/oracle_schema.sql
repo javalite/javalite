@@ -1076,11 +1076,29 @@ ALTER TABLE boxes ADD CONSTRAINT boxes_pk PRIMARY KEY (id)
 CREATE SEQUENCE boxes_seq START WITH 1 INCREMENT BY 1
 -- BREAK
 CREATE OR REPLACE TRIGGER boxes_trigger
-        BEFORE INSERT ON alarms REFERENCING
+        BEFORE INSERT ON boxes REFERENCING
         NEW AS new
         OLD AS old
         FOR EACH ROW
         begin
 select coalesce(:new.id, boxes_seq.nextval) into :new.id from dual;
+end;
+-- BREAK
+
+
+
+CREATE TABLE passengers (id NUMBER NOT NULL, vehicle VARCHAR(56), mode VARCHAR(56), user_id NUMBER)
+-- BREAK
+ALTER TABLE passengers ADD CONSTRAINT passengers_pk PRIMARY KEY (id)
+-- BREAK
+CREATE SEQUENCE passengers_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER passengers_trigger
+        BEFORE INSERT ON passengers REFERENCING
+        NEW AS new
+        OLD AS old
+        FOR EACH ROW
+        begin
+select coalesce(:new.id, passengers_seq.nextval) into :new.id from dual;
 end;
 -- BREAK

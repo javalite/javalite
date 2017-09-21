@@ -44,6 +44,7 @@ public class MetaModel implements Serializable {
     private final String idGeneratorCode;
     private Set<String> attributeNamesNoId;
     private final String versionColumn;
+    private String[] partitionIDs = null;
 
     protected MetaModel(String dbName, Class<? extends Model> modelClass, String dbType) {
         this.modelClass = modelClass;
@@ -55,7 +56,23 @@ public class MetaModel implements Serializable {
         this.dbName = dbName;
         this.idGeneratorCode = findIdGeneratorCode(modelClass);
         this.versionColumn = findVersionColumn(modelClass);
+        this.partitionIDs = findPartitionIDs();
     }
+
+    private String[] findPartitionIDs() {
+        PartitionIDs partitionIDs = modelClass.getAnnotation(PartitionIDs.class);
+        return partitionIDs != null ? partitionIDs.value() : null;
+    }
+
+    public boolean hasPartitionIDs(){
+        return partitionIDs != null;
+    }
+
+    public String[] getPartitionIDs(){
+        return partitionIDs;
+    }
+
+
 
     static Map<Class,String> getTableNamesMap(){
         if (shardingTableNamesTL.get() == null)
