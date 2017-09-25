@@ -12,8 +12,8 @@ import static org.javalite.test.jspec.JSpec.the;
 public class HttpSpec {
 
     @Test
-    public void shouldGenerateContentFromMap(){
-        String content = Http.map2Content(map("first_name", "John", "last_name", "Doe", "ssn", "123-45-6789"));
+    public void shouldGenerateParametersFromMap(){
+        String content = Http.map2URLEncoded(map("first_name", "John", "last_name", "Doe", "ssn", "123-45-6789"));
 
         the(content).shouldContain("first_name=John");
         the(content).shouldContain("ssn=123-45-6789");

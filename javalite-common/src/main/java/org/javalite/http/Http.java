@@ -276,9 +276,15 @@ public class Http {
         }
     }
 
+    /**
+     * @deprecated use {@link #map2URLEncoded(Map)};
+     */
+    public static String map2Content(Map params){
+        return map2URLEncoded(params);
+    }
 
     /**
-     * Converts a map to URL- encoded content. This is a convenience method which can be used in combination
+     * Converts a map to URL- encoded string. This is a convenience method which can be used in combination
      * with {@link #post(String, byte[])}, {@link #put(String, String)} and others. It makes it easy
      * to convert parameters to submit a string:
      *
@@ -286,22 +292,19 @@ public class Http {
      *     key=value&key1=value1;
      * </pre>
      *
-     *
-
      * @param params map with keys and values to be posted. This map is used to build
-     * content to be posted, such that keys are names of parameters, and values are values of those
-     * posted parameters. This method will also URL-encode keys and content using UTF-8 encoding.
+     * a URL-encoded string, such that keys are names of parameters, and values are values of those
+     * parameters. This method will also URL-encode keys and content using UTF-8 encoding.
      * <p>
      *     String representations of both keys and values are used.
      * </p>
-     * @return {@link Post} object.
+     * @return URL-encided string like: <code>key=value&key1=value1;</code>
      */
-    public static String map2Content(Map params){
+    public static String map2URLEncoded(Map params){
         StringBuilder stringBuilder = new StringBuilder();
         try{
             Set keySet = params.keySet();
             Object[] keys = keySet.toArray();
-
             for (int i = 0; i < keys.length; i++) {
                 stringBuilder.append(encode(keys[i].toString(), "UTF-8")).append("=").append(encode(params.get(keys[i]).toString(), "UTF-8"));
                 if(i < (keys.length - 1)){
