@@ -516,6 +516,8 @@ public class ModelTest extends ActiveJDBCTest {
         s.set("dob", getDate(1965, 12, 1));
 
         insertSQL = s.toInsert("'", "''");
+
+        //TODO: this is broken on DB2, left a comment: https://stackoverflow.com/questions/2442205/how-does-one-escape-an-apostrophe-in-db2-sql
         the(insertSQL).shouldBeEqual("INSERT INTO students (dob, first_name, id, last_name) VALUES (DATE '1965-12-01', 'Jim', 1, 'O''Connor''s')");
 
         the(Base.exec(insertSQL)).shouldBeEqual(1);
