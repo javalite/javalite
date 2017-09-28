@@ -193,7 +193,7 @@ public class DefaultDialect implements Dialect {
                 + " WHERE " + association.getSourceFkName() + " = ? AND " + association.getTargetFkName() + " = ?";
     }
 
-    protected void appendValue(StringBuilder query, Object value) {
+    protected void appendValue(StringBuilder query, Object value, String ... replacements) {
         if (value == null) {
             query.append("NULL");
         } else if (value instanceof Number) {
@@ -205,7 +205,24 @@ public class DefaultDialect implements Dialect {
         } else if (value instanceof java.sql.Timestamp) {
             appendTimestamp(query, (java.sql.Timestamp) value);
         } else {
-            query.append('\'').append(Convert.toString(value)).append('\'');
+            query.append('\'').append(replace(value, replacements)).append('\'');
+        }
+    }
+
+    protected String replace(Object valueObject, String... replacements) {
+        String value = Convert.toString(valueObject);
+        if (replacements.length % 2 != 0) {
+            throw new IllegalArgumentException("Number of elements in 'replacements' array is not even");
+        }
+
+        if (replacements.length > 0) {
+            String v = "";
+            for (int i = 0; i < (replacements.length - 1); i += 2) {
+                v = value.replaceAll(replacements[i], replacements[(i + 1)]);
+            }
+            return v;
+        } else {
+            return value;
         }
     }
 
@@ -222,7 +239,7 @@ public class DefaultDialect implements Dialect {
     }
 
     @Override
-    public String insert(MetaModel metaModel, Map<String, Object> attributes) {
+    public String insert(MetaModel metaModel, Map<String, Object> attributes, String ... replacements) {
         StringBuilder query = new StringBuilder().append("INSERT INTO ").append(metaModel.getTableName()).append(' ');
         if (attributes.isEmpty()) {
             appendEmptyRow(metaModel, query);
@@ -242,7 +259,7 @@ public class DefaultDialect implements Dialect {
             appendValue(query, it.next());
             while (it.hasNext()) {
                 query.append(", ");
-                appendValue(query, it.next());
+                appendValue(query, it.next(), replacements);
             }
             query.append(')');
         }
@@ -250,7 +267,7 @@ public class DefaultDialect implements Dialect {
     }
 
     @Override
-    public String update(MetaModel metaModel, Map<String, Object> attributes) {
+    public String update(MetaModel metaModel, Map<String, Object> attributes, String ... replacements) {
     	if (attributes.isEmpty()) {
     		throw new NoSuchElementException("No attributes set, can't create an update statement.");
     	}
@@ -265,7 +282,7 @@ public class DefaultDialect implements Dialect {
         for (;;) {
             Entry<String, Object> attribute = it.next();
             query.append(attribute.getKey()).append(" = ");
-            appendValue(query, attribute.getValue()); // Accommodates the different types
+            appendValue(query, attribute.getValue(), replacements); // Accommodates the different types
             if (it.hasNext()) {
                 query.append(", ");
             } else {

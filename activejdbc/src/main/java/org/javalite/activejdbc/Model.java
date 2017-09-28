@@ -2912,11 +2912,17 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * //yields this output:
      * //INSERT INTO users (id, email, first_name, last_name) VALUES (1, 'mmonroe@yahoo.com', 'Marilyn', 'Monroe')
      * </pre>
+     * @param replacements an array of strings, where odd values are to be replaced in the values of the attributes
+     *                     and even values are replacements. For instance, your value is "O'Donnel", which contains
+     *                     a single quote. In order to escape/replace it, you can:
+     *
+     *                     <code>person.toInsert(dialect, "'", "''")</code>, which will escape a single quote by two
+     *                     single quotes.
      *
      * @return INSERT SQL based on this model.
      */
-    public String toInsert() {
-        return toInsert(metaModelLocal.getDialect());
+    public String toInsert(String ... replacements) {
+        return toInsert(metaModelLocal.getDialect(), replacements);
     }
 
     /**
@@ -2929,10 +2935,16 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * </pre>
      *
      * @param dialect dialect to be used to generate the SQL
+     * @param replacements an array of strings, where odd values are to be replaced in the values of the attributes
+     *                     and even values are replacements. For instance, your value is "O'Donnel", which contains
+     *                     a single quote. In order to escape/replace it, you can:
+     *
+     *                     <code>person.toUpdate(dialect, "'", "''")</code>, which will escape a single quote by two
+     *                     single quotes.
      * @return INSERT SQL based on this model.
      */
-    public String toInsert(Dialect dialect) {
-        return dialect.insert(metaModelLocal, attributes);
+    public String toInsert(Dialect dialect, String ... replacements) {
+        return dialect.insert(metaModelLocal, attributes, replacements);
     }
 
     /**
@@ -2945,10 +2957,17 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * //UPDATE users SET email = 'mmonroe@yahoo.com', first_name = 'Marilyn', last_name = 'Monroe' WHERE id = 1
      * </pre>
      *
+     * @param replacements an array of strings, where odd values are to be replaced in the values of the attributes
+     *                     and even values are replacements. For instance, your value is "O'Donnel", which contains
+     *                     a single quote. In order to escape/replace it, you can:
+     *
+     *                     <code>person.toUpdate(dialect, "'", "''")</code>, which will escape a single quote by two
+     *                     single quotes.
+     *
      * @return UPDATE SQL based on this model.
      */
-    public String toUpdate() {
-        return toUpdate(metaModelLocal.getDialect());
+    public String toUpdate(String ... replacements) {
+        return toUpdate(metaModelLocal.getDialect(), replacements);
     }
 
     /**
@@ -2961,35 +2980,19 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * </pre>
      *
      * @param dialect dialect to be used to generate the SQL
+     * @param replacements an array of strings, where odd values are to be replaced in the values of the attributes
+     *                     and even values are replacements. For instance, your value is "O'Donnel", which contains
+     *                     a single quote. In order to escape/replace it, you can:
+     *
+     *                     <code>person.toUpdate(dialect, "'", "''")</code>, which will escape a single quote by two
+     *                     single quotes.
+     *
+     *
      * @return UPDATE SQL based on this model.
      */
-    public String toUpdate(Dialect dialect) {
-        return dialect.update(metaModelLocal, attributes);
+    public String toUpdate(Dialect dialect, String ... replacements) {
+        return dialect.update(metaModelLocal, attributes, replacements);
     }
-
-    /**
-     * Generates INSERT SQL based on this model.
-     * For instance, for Oracle, the left quote is: "q'{" and the right quote is: "}'".
-     * The output will also use single quotes for <code>java.sql.Timestamp</code> and <code>java.sql.Date</code> types.
-     *
-     * Example:
-     * <pre>
-     * String insert = u.toInsert("q'{", "}'");
-     * //yields this output
-     * //INSERT INTO users (id, first_name, email, last_name) VALUES (1, q'{Marilyn}', q'{mmonroe@yahoo.com}', q'{Monroe}');
-     * </pre>
-     * @param leftStringQuote - left quote for a string value, this can be different for different databases.
-     * @param rightStringQuote - left quote for a string value, this can be different for different databases.
-     * @return SQL INSERT string;
-     * @deprecated Use {@link #toInsert(Dialect)} instead.
-     */
-    @Deprecated
-    public String toInsert(String leftStringQuote, String rightStringQuote){
-        return toInsert(new SimpleFormatter(java.sql.Date.class, "'", "'"),
-                        new SimpleFormatter(Timestamp.class, "'", "'"),
-                        new SimpleFormatter(String.class, leftStringQuote, rightStringQuote));
-    }
-
 
     /**
      * @return true if this models has a {@link Cached} annotation.
@@ -2998,45 +3001,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return modelClass().getAnnotation(Cached.class) != null;
     }
 
-    /**
-     * @param formatters
-     * @return
-     * @deprecated Use {@link #toInsert(Dialect)} instead.
-     */
-    @Deprecated
-    public String toInsert(Formatter... formatters){
-        HashMap<Class, Formatter> formatterMap = new HashMap<>();
-
-        for(Formatter f: formatters){
-            formatterMap.put(f.getValueClass(), f);
-        }
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("INSERT INTO ").append(metaModelLocal.getTableName()).append(" (");
-        join(sb, attributes.keySet(), ", ");
-        sb.append(") VALUES (");
-        Iterator<Object> it = attributes.values().iterator();
-        while (it.hasNext()) {
-            Object value = it.next();
-            if (value == null) {
-                sb.append("NULL");
-            }
-            else if (value instanceof String && !formatterMap.containsKey(String.class)){
-                sb.append('\'').append(value).append('\'');
-            }else{
-                if(formatterMap.containsKey(value.getClass())){
-                    sb.append(formatterMap.get(value.getClass()).format(value));
-                }else{
-                    sb.append(value);
-                }
-            }
-            if (it.hasNext()) {
-                sb.append(", ");
-            }
-        }
-        sb.append(')');
-        return sb.toString();
-    }
 
     /**
      * Use to force-purge cache associated with this table. If this table is not cached, this method has no side effect.

@@ -499,11 +499,28 @@ public class ModelTest extends ActiveJDBCTest {
 
         s.set("dob", getDate(1965, 12, 1));
 
-        insertSQL = s.toInsert("q'{", "}'");
-        the(insertSQL).shouldBeEqual("INSERT INTO students (dob, first_name, id, last_name) VALUES ('1965-12-01', q'{Jim}', 1, q'{Cary}')");
+        insertSQL = s.toInsert();
+        the(insertSQL).shouldBeEqual("INSERT INTO students (dob, first_name, id, last_name) VALUES (DATE '1965-12-01', 'Jim', 1, 'Cary')");
+    }
 
-        insertSQL = s.toInsert(new SimpleFormatter(java.sql.Date.class, "to_date('", "')"));
-        the(insertSQL).shouldBeEqual("INSERT INTO students (dob, first_name, id, last_name) VALUES (to_date('1965-12-01'), 'Jim', 1, 'Cary')");
+    @Test
+    public void shouldGenerateCorrectInsertSQLWithReplacements() {
+        Student s = new Student();
+        s.set("first_name", "Jim");
+        s.set("last_name", "O'Connor's");
+        s.set("id", 1);
+        String insertSQL = s.toInsert("'", "''");
+
+        the(insertSQL).shouldBeEqual("INSERT INTO students (first_name, id, last_name) VALUES ('Jim', 1, 'O''Connor''s')");
+
+        s.set("dob", getDate(1965, 12, 1));
+
+        insertSQL = s.toInsert("'", "''");
+        the(insertSQL).shouldBeEqual("INSERT INTO students (dob, first_name, id, last_name) VALUES (DATE '1965-12-01', 'Jim', 1, 'O''Connor''s')");
+
+        the(Base.exec(insertSQL)).shouldBeEqual(1);
+
+        the(Student.findById(1).get("last_name")).shouldBeEqual("O'Connor's");
     }
 
     @Test
@@ -525,6 +542,20 @@ public class ModelTest extends ActiveJDBCTest {
         the(s.get("last_name")).shouldBeEqual("Meredith");
         the(s.get("dob")).shouldBeEqual(dob);
         the(s.get("enrollment_date")).shouldBeEqual(enrollmentDate);
+    }
+
+    @Test
+    public void shouldGenerateValidUpdateSQLWithReplacements() {
+        deleteAndPopulateTable("students");
+        Student s = Student.findById(1);
+        s.set("first_name", "James", "last_name", "O'Connor's");
+
+        String updateSql = s.toUpdate("'", "''"); // replace single quotes with two single quotes
+        the(Base.exec(updateSql)).shouldBeEqual(1);
+
+        s = Student.findById(1);
+        the(s.get("first_name")).shouldBeEqual("James");
+        the(s.get("last_name")).shouldBeEqual("O'Connor's");
     }
 
     @Test
