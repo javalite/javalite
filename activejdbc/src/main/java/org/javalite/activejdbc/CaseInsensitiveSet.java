@@ -16,16 +16,17 @@ limitations under the License.
 package org.javalite.activejdbc;
 
 import java.util.Collection;
-import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
- * A case insensitive set for <code>java.lang.String</code> elements. The current implementation is based on
- * {@link TreeSet}, so it does not accept <code>null</code> keys and keeps entries ordered by case
- * insensitive alphabetical order of keys.
+ * A case insensitive set for <code>java.lang.String</code> elements.
  *
  * @author Eric Nielsen
+ * @author Igor Polevoy
  */
-public class CaseInsensitiveSet extends TreeSet<String> {
+
+//TODO: this also needs to be thread safe?
+public class CaseInsensitiveSet extends ConcurrentSkipListSet<String> {
 
     public CaseInsensitiveSet() {
         super(String.CASE_INSENSITIVE_ORDER);

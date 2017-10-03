@@ -197,9 +197,9 @@ public class MetaModel implements Serializable {
     public Set<String> getAttributeNamesSkipId() {
         if (attributeNamesNoId == null) {//no one cares about unfortunate multi-threading timing with 2 instances created
             //if someone does, use DCL with volatile
-            Set<String> attributes = new CaseInsensitiveSet(getAttributeNames());
-            attributes.remove(getIdName());
-            attributeNamesNoId = attributes;
+            Set<String> attributesNames = new CaseInsensitiveSet(getAttributeNames());
+            attributesNames.remove(getIdName());
+            attributeNamesNoId = attributesNames;
         }
         return attributeNamesNoId;
     }
@@ -224,15 +224,15 @@ public class MetaModel implements Serializable {
      */
     public Set<String> getAttributeNamesSkipGenerated(boolean managed) {
         //TODO: can cache this, but will need a cache for managed=true an another for managed=false
-        Set<String> attributes = new CaseInsensitiveSet(getAttributeNamesSkipId());
+        Set<String> attributesNames = new CaseInsensitiveSet(getAttributeNamesSkipId());
 
         if(managed){
-            attributes.remove("created_at");
-            attributes.remove("updated_at");
+            attributesNames.remove("created_at");
+            attributesNames.remove("updated_at");
         }
 
-        attributes.remove(versionColumn);
-        return attributes;
+        attributesNames.remove(versionColumn);
+        return attributesNames;
     }
 
 
