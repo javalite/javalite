@@ -99,9 +99,9 @@ public enum QueryCache {
 
     static void logCacheAccess(String query, Object[] params, String access) {
 
-        StringBuilder log = new StringBuilder().append(access).append(", ").append('"').append(query).append('"');
+        StringBuilder log = new StringBuilder().append(access).append(" <").append(query).append(">");
         if (!empty(params)) {
-            log.append(", with parameters: ").append('<');
+            log.append(" Parameters: ").append('<');
             join(log, params, ">, <");
             log.append('>');
         }

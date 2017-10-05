@@ -22,13 +22,18 @@ import org.javalite.activejdbc.cache.CacheEventListener;
 import org.javalite.activejdbc.statistics.QueryStats;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.*;
+import org.javalite.common.JsonHelper;
+import org.javalite.common.Util;
 import org.javalite.test.SystemStreamUtil;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static org.javalite.test.jspec.JSpec.$;
+
 
 
 /**
@@ -191,12 +196,40 @@ public class CacheTest extends ActiveJDBCTest {
         Person.findAll().size();
         p.refresh();
         Person.findAll().size();
+        String out = SystemStreamUtil.getSystemOut();
+        the(out).shouldNotContain("HIT");
         SystemStreamUtil.restoreSystemOut();
-        the(SystemStreamUtil.getSystemOut()).shouldNotContain("HIT");
     }
 
     @Test
     public void shouldIndicateCachedAnnotation(){
         the(Person.isCached()).shouldBeTrue();
+    }
+
+
+    @Test
+    public void shouldGenerateJSONFromQueryCache(){
+        SystemStreamUtil.replaceOut();
+        Person p = Person.create("name", "Sam", "last_name", "Margulis", "dob", "2001-01-07");
+        p.saveIt();
+        Person.findAll().size();
+        String log = getQueryCacheLine();
+        Map logMap = JsonHelper.toMap(log);
+        the(logMap.get("message")).shouldBeEqual("MISS <SELECT * FROM people>");
+    }
+
+    private String getQueryCacheLine() {
+        List<String> lines = getLogLines();
+        for (String s : lines) {
+            if(s.contains("QueryCache")){
+                return s;
+            }
+        }
+        return null;
+    }
+
+    private List<String> getLogLines(){
+        String out = SystemStreamUtil.getSystemOut();
+        return Arrays.asList(Util.split(out, System.getProperty("line.separator")));
     }
 }
