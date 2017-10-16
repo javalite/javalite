@@ -234,7 +234,7 @@ public class RequestDispatcher implements Filter {
 
     private Map getMapWithExceptionDataAndSession(Throwable e) {
         return map("message", e.getMessage() == null ? e.toString() : e.getMessage(),
-                "stack_trace", getStackTraceString(e),
+                "stack_trace", Util.getStackTraceString(e),
                 "session", SessionHelper.getSessionAttributes());
     }
 
@@ -253,14 +253,6 @@ public class RequestDispatcher implements Filter {
     }
 
 
-    private String getStackTraceString(Throwable e) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-        pw.flush();
-        return sw.toString();
-    }
-
     private void renderSystemError(String template, String layout, int status, Throwable e) {
         try{
 
@@ -278,7 +270,7 @@ public class RequestDispatcher implements Filter {
             if (requestedWith != null && requestedWith.equalsIgnoreCase("XMLHttpRequest")) {
                 try {
 
-                    RequestContext.getHttpResponse().getWriter().write(getStackTraceString(e));
+                    RequestContext.getHttpResponse().getWriter().write(Util.getStackTraceString(e));
                 } catch (Exception ex) {
                     logger.error("Failed to send error response to client", ex);
                 }
