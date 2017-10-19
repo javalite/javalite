@@ -248,4 +248,15 @@ public abstract class Request<T extends Request> {
         connection.setRequestProperty("Authorization", "Basic " + toBase64((user + ":" + password).getBytes()));
         return (T) this;
     }
+
+    /**
+     * Set a user authentication
+     *
+     * @param user user
+     * @return self
+     */
+    public T basic(String user){
+        connection.setRequestProperty("Authorization", "Basic " + toBase64((user).getBytes()));
+        return (T) this;
+    }
 }
