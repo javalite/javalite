@@ -81,6 +81,8 @@ public class Async {
 
     private List<QueueConfig> queueConfigsList = new ArrayList<>();
     private boolean started;
+    private List<Session> sessions = new ArrayList<>();
+    private List<MessageConsumer> messageConsumers = new ArrayList<>();
 
     /**
      * Creates and configures a new instance.
@@ -208,6 +210,8 @@ public class Async {
                     Session session = consumerConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
                     MessageConsumer consumer = session.createConsumer(queue);
                     consumer.setMessageListener(listener);
+                    sessions.add(session);
+                    messageConsumers.add(consumer);
                 }
             }
         }
@@ -331,6 +335,12 @@ public class Async {
      */
     public void stop() {
         started = false;
+        for (MessageConsumer messageConsumer : messageConsumers) {
+            closeQuietly(messageConsumer);
+        }
+        for (Session session : sessions) {
+            closeQuietly(session);
+        }
 
         closeQuietly(producerConnection);
         closeQuietly(consumerConnection);
