@@ -128,6 +128,15 @@ public class JsonHelperSpec {
         String json = JsonHelper.toJsonObject("null", null);
         the(JsonHelper.toMap(json).get("null")).shouldBeNull();
     }
+
+    @Test
+    public void shouldEscapeDoubleQuote() {
+        String quoted = Util.readResource("/double_quote.txt");
+        String json = JsonHelper.sanitize(quoted);
+        the(json).shouldBeEqual("text with double \\\" quote");
+        List l = JsonHelper.toList("[\"" + json + "\"]");
+        the(l.get(0)).shouldBeEqual("text with double \" quote");
+    }
 }
 
 

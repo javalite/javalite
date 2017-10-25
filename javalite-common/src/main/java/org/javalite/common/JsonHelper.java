@@ -180,7 +180,7 @@ public class JsonHelper {
      * @param value input string
      * @param  clean if true will remove characters that match, if false will escape
      * @param  toEscape array of characters to escape. If not provided, it will escape or clean <code>'"','\\', '\t', '\b', '\n', '\r' '\f'</code>.
-     *                  This paramers will only escape or clean if provided chars are from this list.
+     *                  This method will only escape or clean if provided chars are from this list.
      *
      * @return input string with control characters escaped or removed, depending on the <code>clean</code> flag.
      */
