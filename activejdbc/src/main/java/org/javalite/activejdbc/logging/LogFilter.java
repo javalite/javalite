@@ -58,7 +58,7 @@ public class LogFilter {
      * @param logger logger to use
      * @param query query text
      * @param params parameters use in a query
-     * @param queryStartTime start of query in milliseconds. This method wil calculate how much time it took for the query to execute.
+     * @param queryStartTime time of query start. This method will calculate how much time it took for the query to execute.
      *
      */
     public static void logQuery(Logger logger, String query, Object[] params, long queryStartTime){
@@ -72,9 +72,11 @@ public class LogFilter {
      * @param logger logger to use
      * @param query query text
      * @param params params used  in a query
+     * @param queryStartTime time of query start. This method will calculate how much time it took for the query to execute.
      * @param cacheHit true if cache was hit, false if not
      */
-    public static void logQuery(Logger logger, String query, Object[] params, long time, boolean cacheHit){
+    public static void logQuery(Logger logger, String query, Object[] params, long queryStartTime, boolean cacheHit){
+        long time = System.currentTimeMillis() - queryStartTime;
         log(logger, LogLevel.INFO, getJson(query, params, time, cacheHit));
     }
 
@@ -85,7 +87,7 @@ public class LogFilter {
             Registry.instance().getStatisticsQueue().enqueue(new QueryExecutionEvent(query, time));
         }
         return  "{\"sql\":\"" + query.replace("\"", "'") + "\",\"params\":[" + getParamsJson(params) + "]" +
-                (time != -1 ? ",\"duration_millis\":" + time : "")  + "}";
+                ",\"duration_millis\":" + time + "}";
     }
 
     private static String getJson(String query, Object[] params, long time, boolean cacheHit) {
@@ -94,8 +96,8 @@ public class LogFilter {
             Registry.instance().getStatisticsQueue().enqueue(new QueryExecutionEvent(query, time));
         }
         return  "{\"sql\":\"" + JsonHelper.sanitize(query) + "\",\"params\":[" + getParamsJson(params) + "]" +
-                (time != -1 ? ",\"duration_millis\":" + time : "")  +
-                ",\"cache\":" + (time == -1 ? "\"hit\"" : "\"miss\"") +
+                (!cacheHit ? (",\"duration_millis\":" + time ): "" ) +
+                ",\"cache\":" + (cacheHit ? "\"hit\"" : "\"miss\"") +
                 "}";
     }
 

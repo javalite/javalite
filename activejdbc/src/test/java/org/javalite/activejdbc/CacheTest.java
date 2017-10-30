@@ -224,7 +224,7 @@ public class CacheTest extends ActiveJDBCTest {
         the(message.get("sql")).shouldBeEqual("SELECT * FROM people");
         the(message.get("cache")).shouldBeEqual("miss"); //<<-----------------miss
 
-        //select 2, hiy, has no duration_millis
+        //select 2, hit, has no duration_millis
         logMap = JsonHelper.toMap(selects.get(1));
         message = (Map) logMap.get("message");
         the(message.get("duration_millis")).shouldBeNull();

@@ -248,7 +248,7 @@ public class Paginator<T extends Model> implements Serializable {
                     count = doCount();
                     QueryCache.instance().addItem(metaModel.getTableName(), countQueryFull, params, count);
                 }else {
-                    LogFilter.logQuery(LOGGER, countQueryFull, params, -1, true);
+                    LogFilter.logQuery(LOGGER, countQueryFull, params, System.currentTimeMillis(), true);
                 }
             } else {
                 count = doCount();

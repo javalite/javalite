@@ -1213,7 +1213,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         if (parentMM.cached()) {
             P parent = parentClass.cast(QueryCache.instance().getItem(parentTable, query, new Object[]{fkValue}));
             if (parent != null) {
-                LogFilter.logQuery(LOGGER, query, new Object[]{fkValue}, -1, true);
+                LogFilter.logQuery(LOGGER, query, new Object[]{fkValue}, System.currentTimeMillis(), true);
                 return parent;
             }
         }

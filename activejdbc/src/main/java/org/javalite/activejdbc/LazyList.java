@@ -322,7 +322,7 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
             List<T> cached = (List<T>) QueryCache.instance().getItem(metaModel.getTableName(), sql, params);
             if(cached != null){
                 delegate = cached;
-                LogFilter.logQuery(LOGGER, sql, params, -1, true);
+                LogFilter.logQuery(LOGGER, sql, params, System.currentTimeMillis(), true);
                 return;
             }
         }
