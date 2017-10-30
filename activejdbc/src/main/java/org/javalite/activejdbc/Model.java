@@ -1432,7 +1432,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         if(attributeName == null) {
             throw new IllegalArgumentException("attributeName cannot be null");
         }
-
+        metaModelLocal.checkAttribute(attributeName);
         return attributes.get(attributeName);// TODO: this should account for nulls too!
     }
 
