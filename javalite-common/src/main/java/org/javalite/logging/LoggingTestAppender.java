@@ -19,7 +19,7 @@ public class LoggingTestAppender extends AppenderSkeleton {
 
     @Override
     protected void append(LoggingEvent event) {
-        System.out.println(this.layout.format(event));;
+        System.out.print(this.layout.format(event));;
     }
 
     @Override

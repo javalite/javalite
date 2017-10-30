@@ -341,6 +341,9 @@ public class Configuration {
         ENV = env;
     }
 
+    /**
+     * @return true if a custom logger is defined, false ther
+     */
     public static boolean hasActiveLogger() {
         return activeLogger != null;
     }

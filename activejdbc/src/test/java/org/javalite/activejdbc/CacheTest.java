@@ -31,6 +31,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.javalite.test.jspec.JSpec.$;
 
@@ -61,23 +62,23 @@ public class CacheTest extends ActiveJDBCTest {
     public void testCache() {
         deleteAndPopulateTables("doctors", "patients", "doctors_patients");
         //produces a cache miss
-        List<Doctor> doctors = Doctor.findAll();
+        List<Doctor> doctors = Doctor.findAll().orderBy("id desc");
         //produces a cache hit
-        List<Doctor> doctors1 = Doctor.findAll();
+        List<Doctor> doctors1 = Doctor.findAll().orderBy("id desc");
 
-        a(doctors.hashCode()).shouldBeEqual(doctors1.hashCode());
+        a(doctors.get(0)).shouldBeTheSameAs(doctors1.get(0));
 
         Doctor d1 = new Doctor();
         //purges doctor cache
         d1.set("first_name", "Sunjay").set("last_name", "Gupta").set("discipline", "physician").saveIt();
 
         //produces a miss
-        doctors1 = Doctor.findAll();
-        a(doctors.hashCode() != doctors1.hashCode()).shouldBeTrue();
+        doctors1 = Doctor.findAll().orderBy("id desc");
+        a(doctors.get(0)).shouldNotBeTheSameAs(doctors1.get(0));
 
         //produces a hit
-        doctors = Doctor.findAll();
-        a(doctors.hashCode()).shouldBeEqual(doctors1.hashCode());
+        doctors = Doctor.findAll().orderBy("id desc");
+        a(doctors.get(0)).shouldBeTheSameAs(doctors1.get(0));
     }
 
     @Test
@@ -213,23 +214,29 @@ public class CacheTest extends ActiveJDBCTest {
         Person p = Person.create("name", "Sam", "last_name", "Margulis", "dob", "2001-01-07");
         p.saveIt();
         Person.findAll().size();
-        String log = getQueryCacheLine();
-        Map logMap = JsonHelper.toMap(log);
-        the(logMap.get("message")).shouldBeEqual("MISS <SELECT * FROM people>");
+        Person.findAll().size();
+        List<String> selects = getTwoSelects();
+
+        //select 1, miss, has duration_millis
+        Map logMap = JsonHelper.toMap(selects.get(0));
+        Map message = (Map) logMap.get("message");
+        the(message.get("duration_millis")).shouldNotBeNull();
+        the(message.get("sql")).shouldBeEqual("SELECT * FROM people");
+        the(message.get("cache")).shouldBeEqual("miss"); //<<-----------------miss
+
+        //select 2, hiy, has no duration_millis
+        logMap = JsonHelper.toMap(selects.get(1));
+        message = (Map) logMap.get("message");
+        the(message.get("duration_millis")).shouldBeNull();
+        the(message.get("sql")).shouldBeEqual("SELECT * FROM people");
+        the(message.get("cache")).shouldBeEqual("hit"); //<<-----------------hit
+
+        SystemStreamUtil.restoreSystemOut();
     }
 
-    private String getQueryCacheLine() {
-        List<String> lines = getLogLines();
-        for (String s : lines) {
-            if(s.contains("QueryCache")){
-                return s;
-            }
-        }
-        return null;
-    }
-
-    private List<String> getLogLines(){
+    private List<String> getTwoSelects() {
         String out = SystemStreamUtil.getSystemOut();
-        return Arrays.asList(Util.split(out, System.getProperty("line.separator")));
+        List<String> lines = Arrays.asList(Util.split(out, System.getProperty("line.separator")));
+        return lines.stream().filter(line -> line.contains("SELECT")).collect(Collectors.toList());
     }
 }

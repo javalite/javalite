@@ -322,6 +322,7 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
             List<T> cached = (List<T>) QueryCache.instance().getItem(metaModel.getTableName(), sql, params);
             if(cached != null){
                 delegate = cached;
+                LogFilter.logQuery(LOGGER, sql, params, -1, true);
                 return;
             }
         }
@@ -332,7 +333,7 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
                 delegate.add(ModelDelegate.<T>instance(map, metaModel));
             }
         });
-        LogFilter.logQuery(LOGGER, sql, params, start);
+        LogFilter.logQuery(LOGGER, sql, params, start, false);
         if(metaModel.cached()){
             delegate = Collections.unmodifiableList(delegate);
             QueryCache.instance().addItem(metaModel.getTableName(), sql, params, delegate);

@@ -18,9 +18,13 @@ limitations under the License.
 package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.cache.QueryCache;
+import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.common.Convert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,6 +41,9 @@ import static org.javalite.activejdbc.ModelDelegate.metaModelFor;
  * @author Igor Polevoy
  */
 public class Paginator<T extends Model> implements Serializable {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(Paginator.class);
+
     static final Pattern FROM_PATTERN = Pattern.compile("\\s+FROM\\s+", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
     private final int pageSize;
@@ -240,6 +247,8 @@ public class Paginator<T extends Model> implements Serializable {
                 if (count == null || count == 0) {
                     count = doCount();
                     QueryCache.instance().addItem(metaModel.getTableName(), countQueryFull, params, count);
+                }else {
+                    LogFilter.logQuery(LOGGER, countQueryFull, params, -1, true);
                 }
             } else {
                 count = doCount();

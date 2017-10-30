@@ -20,6 +20,7 @@ package org.javalite.activejdbc.logging;
 import org.javalite.activejdbc.Configuration;
 import org.javalite.activejdbc.Registry;
 import org.javalite.activejdbc.statistics.QueryExecutionEvent;
+import org.javalite.common.JsonHelper;
 import org.slf4j.Logger;
 
 import java.util.regex.Pattern;
@@ -51,32 +52,74 @@ public class LogFilter {
         pattern = Pattern.compile(regexp, Pattern.CASE_INSENSITIVE);
     }
 
+    /**
+     * Logs a query information to the log system
+     *
+     * @param logger logger to use
+     * @param query query text
+     * @param params parameters use in a query
+     * @param queryStartTime start of query in milliseconds. This method wil calculate how much time it took for the query to execute.
+     *
+     */
     public static void logQuery(Logger logger, String query, Object[] params, long queryStartTime){
         long time = System.currentTimeMillis() - queryStartTime;
+        log(logger, LogLevel.INFO, getJson(query, params, time));
+    }
+
+    /**
+     * Logs a query information to the log system without time
+     *
+     * @param logger logger to use
+     * @param query query text
+     * @param params params used  in a query
+     * @param cacheHit true if cache was hit, false if not
+     */
+    public static void logQuery(Logger logger, String query, Object[] params, long time, boolean cacheHit){
+        log(logger, LogLevel.INFO, getJson(query, params, time, cacheHit));
+    }
+
+
+    private static String getJson(String query, Object[] params, long time) {
 
         if (Registry.instance().getConfiguration().collectStatistics()) {
             Registry.instance().getStatisticsQueue().enqueue(new QueryExecutionEvent(query, time));
         }
-        log(logger, LogLevel.INFO, getJson(query, params, time));
+        return  "{\"sql\":\"" + query.replace("\"", "'") + "\",\"params\":[" + getParamsJson(params) + "]" +
+                (time != -1 ? ",\"duration_millis\":" + time : "")  + "}";
     }
 
-    private static String getJson(String query, Object[] params, long time) {
+    private static String getJson(String query, Object[] params, long time, boolean cacheHit) {
+
+        if (Registry.instance().getConfiguration().collectStatistics() && !cacheHit) {
+            Registry.instance().getStatisticsQueue().enqueue(new QueryExecutionEvent(query, time));
+        }
+        return  "{\"sql\":\"" + JsonHelper.sanitize(query) + "\",\"params\":[" + getParamsJson(params) + "]" +
+                (time != -1 ? ",\"duration_millis\":" + time : "")  +
+                ",\"cache\":" + (time == -1 ? "\"hit\"" : "\"miss\"") +
+                "}";
+    }
+
+    private static String getParamsJson(Object[] params){
         StringBuilder paramsSB = new StringBuilder("");
         if (params != null) {
             for (int i = 0; i < params.length; i++) {
                 if(params[i] instanceof Number){
-                    paramsSB.append(params[i]);
+                    paramsSB.append(JsonHelper.sanitize(params[i].toString()));
                 }else if(params[i] instanceof byte[]){
                     paramsSB.append("\"bytes[...]\"");
                 }else {
-                    paramsSB.append("\"").append(params[i]).append("\"");
+                    if(params[i] == null){
+                        paramsSB.append("null");
+                    }else {
+                        paramsSB.append("\"").append(JsonHelper.sanitize(params[i].toString())).append("\"");
+                    }
                 }
                 if(i != (params.length - 1)){
                     paramsSB.append(",");
                 }
             }
         }
-        return "{\"sql\":\"" + query.replace("\"", "'") + "\",\"params\":[" + paramsSB.toString() + "],\"duration_millis\":" + time + "}";
+        return paramsSB.toString();
     }
 
     public static void log(Logger logger, LogLevel logLevel, String log){

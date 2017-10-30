@@ -109,6 +109,8 @@ public final class ModelDelegate {
             if (result == null) {
                 result = Convert.toLong(new DB(metaModel.getDbName()).firstCell(sql));
                 QueryCache.instance().addItem(metaModel.getTableName(), sql, null, result);
+            }else {
+                LogFilter.logQuery(LOGGER, sql, new Object[]{}, -1, true);
             }
         } else {
             result = Convert.toLong(new DB(metaModel.getDbName()).firstCell(sql));

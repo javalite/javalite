@@ -85,29 +85,11 @@ public enum QueryCache {
 
         if (enabled) {
             String key = getKey(tableName, query, params);
-            Object item = cacheManager.getCache(tableName, key);
-            if (item == null) {
-                logCacheAccess(query, params, "MISS");
-            } else {
-                logCacheAccess(query, params, "HIT");
-            }
-            return item;
+            return cacheManager.getCache(tableName, key);
         } else {
             return null;
         }
     }
-
-    static void logCacheAccess(String query, Object[] params, String access) {
-
-        StringBuilder log = new StringBuilder().append(access).append(" <").append(query).append(">");
-        if (!empty(params)) {
-            log.append(" Parameters: ").append('<');
-            join(log, params, ">, <");
-            log.append('>');
-        }
-        LogFilter.log(LOGGER, LogLevel.INFO, log.toString());
-    }
-
 
     private String getKey(String tableName, String query, Object[] params) {
         return tableName + query + (params == null ? null : Arrays.asList(params).toString());
