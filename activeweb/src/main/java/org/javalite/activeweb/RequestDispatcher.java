@@ -146,7 +146,7 @@ public class RequestDispatcher implements Filter {
                 throw new InitException(e);
             }else{
                 logger.warn("Failed to create and init a new instance of class: " + configClassName
-                        + ", proceeding without it.", e);
+                        + ", proceeding without it.");
             }
         }
     }
@@ -322,6 +322,7 @@ public class RequestDispatcher implements Filter {
                 + "\",\"url\":\"" + url
                 + (redirectTarget != null ? "\",\"redirect_target\":\"" + redirectTarget: "")
                 + (throwable != null ? "\",\"error\":\"" + JsonHelper.sanitize(throwable.getMessage() != null ? throwable.getMessage() : throwable.toString()) : "")
+                + "\",\"remote_ip\":\"" + getRemoteIP()
                 + "\",\"status\":" + status + "}";
 
         if(throwable != null && status >= 500){
@@ -329,6 +330,11 @@ public class RequestDispatcher implements Filter {
         }else {
             logger.info(log);
         }
+    }
+
+    private String getRemoteIP() {
+        String h = RequestContext.getHttpRequest().getHeader("X-Forwarded-For");
+        return !Util.blank(h) ? h : RequestContext.getHttpRequest().getRemoteAddr();
     }
 
     public void destroy() {
