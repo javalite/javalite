@@ -499,6 +499,9 @@ public class HttpSupport {
      * @return {@link HttpSupport.HttpBuilder}, to accept additional information.
      */
     protected HttpBuilder respond(String text){
+        if(text == null){
+            text = "null";
+        }
         DirectResponse resp = new DirectResponse(text);
         RequestContext.setControllerResponse(resp);
         return new HttpBuilder(resp);

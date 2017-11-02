@@ -427,7 +427,16 @@ public class RequestDispatcherSpec extends RequestSpec {
         request.setMethod("GET");
         request.addHeader("X-Requested-With", "baaad header");
         dispatcher.doFilter(request, response, filterChain);
-        System.out.println(response.getStatus());
-        System.out.println(response.getContentAsString());
+        the(response.getStatus()).shouldBeEqual(404);
+        the(response.getContentAsString()).shouldContain("Cannot execute action 'wait' on controller: app.controllers.AjaxController");
+    }
+
+    @Test
+    public void shouldRespondNullGracefully() throws IOException, ServletException {
+        request.setServletPath("/error/get_null");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+        the(response.getStatus()).shouldBeEqual(500);
+        the(response.getContentAsString()).shouldBeEqual("null");
     }
 }

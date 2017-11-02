@@ -10,4 +10,8 @@ public class ErrorController extends AppController {
     public void index(){
         throw new RuntimeException("this is an application error");
     }
+
+    public void getNull(){
+        respond(null).statusCode(500);
+    }
 }
