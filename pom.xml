@@ -32,6 +32,7 @@
         <module>activeweb-lessc</module>
         <module>activeweb-lessc-integration-test</module>
         <module>javalite-async</module>
+        <module>async-pool-test</module>
     </modules>
 
     <properties>

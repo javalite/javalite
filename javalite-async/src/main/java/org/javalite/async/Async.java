@@ -35,17 +35,13 @@ import org.apache.activemq.artemis.jms.server.config.impl.ConnectionFactoryConfi
 import org.apache.activemq.artemis.jms.server.config.impl.JMSConfigurationImpl;
 import org.apache.activemq.artemis.jms.server.config.impl.JMSQueueConfigurationImpl;
 import org.apache.activemq.artemis.jms.server.embedded.EmbeddedJMS;
+import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
 import javax.jms.Queue;
-import javax.management.MBeanServerInvocationHandler;
-import javax.management.ObjectName;
 import java.io.File;
-import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.nio.file.Files;
 import java.util.*;
 
 import static java.util.Collections.singletonList;
@@ -81,16 +77,28 @@ public class Async {
 
     private List<QueueConfig> queueConfigsList = new ArrayList<>();
     private boolean started;
-    private List<Session> sessions = new ArrayList<>();
-    private List<MessageConsumer> messageConsumers = new ArrayList<>();
+
+    /**
+     * sessions that are used by listeners
+     */
+    private List<Session> listenerSessions = new ArrayList<>();
+
+    /**
+     * consumers that are used by listeners
+     */
+    private List<MessageConsumer> listenerConsumers = new ArrayList<>();
+
+
+    private SessionPool senderSessionPool;
+    private SessionPool receiverSessionPool;
 
     /**
      * Creates and configures a new instance.
      *
      * @param dataDirectory root directory where persistent messages are stored
-     * @param useLibAio true to use libaio, false if not installed.
+     * @param useLibAio true to use libaio, false not to use (See Artemis log statements to check if it was detected).
      *
-     * @param queueConfigs vararg of QueueConfig> instances.
+     * @param queueConfigs vararg of QueueConfig instances.
      */
 
     public Async(String dataDirectory, boolean useLibAio, QueueConfig... queueConfigs) {
@@ -106,8 +114,6 @@ public class Async {
      * @param queueConfigs vararg of QueueConfig> instances.
      */
     public Async(String dataDirectory, boolean useLibAio, Injector injector, QueueConfig... queueConfigs) {
-
-
         try {
             this.injector = injector;
             jmsServer = new EmbeddedJMS();
@@ -123,7 +129,6 @@ public class Async {
             config.setThreadPoolMaxSize(-1);
             config.setGracefulShutdownEnabled(true);
             config.setScheduledThreadPoolMaxSize(10);
-
         } catch (AsyncException e) {
             throw e;
         } catch (Exception e) {
@@ -176,6 +181,56 @@ public class Async {
         config.getAddressesSettings().put("jms.queue.*", addressSettings);
     }
 
+    /**
+     * Starts the server.
+     */
+    public void start(){
+
+        try {
+            jmsServer.setConfiguration(config);
+            jmsServer.setJmsConfiguration(jmsConfig);
+
+            jmsServer.start();
+
+            ConnectionFactory connectionFactory = (ConnectionFactory) jmsServer.lookup("/cf");
+            if(connectionFactory == null){
+                throw new AsyncException("Failed to start EmbeddedJMS server due to previous errors.");
+            }
+
+            consumerConnection = connectionFactory.createConnection();
+            receiverSessionPool = new SessionPool("Consumer", consumerConnection);
+
+            producerConnection = connectionFactory.createConnection();
+            senderSessionPool = new SessionPool("Producer", producerConnection);
+            configureListeners(injector, queueConfigsList);
+            started = true;
+        } catch (Exception e) {
+            throw new AsyncException(e);
+        }
+    }
+
+
+    /**
+     * Stops this JMS server.
+     */
+    public void stop() {
+        started = false;
+        senderSessionPool.close();
+        receiverSessionPool.close();
+        listenerConsumers.forEach(Util::closeQuietly);
+        listenerSessions.forEach(Util::closeQuietly);
+
+        closeQuietly(producerConnection);
+        closeQuietly(consumerConnection);
+
+        try {
+            jmsServer.stop();
+        } catch (Exception e) {
+            LOGGER.warn("exception trying to stop broker.", e);
+        }
+    }
+
+
     private void checkInRange(int value, int min, int max, String name) {
         if (value < min || value > max) {
             throw new AsyncException("incorrect " + name + " value");
@@ -210,8 +265,8 @@ public class Async {
                     Session session = consumerConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
                     MessageConsumer consumer = session.createConsumer(queue);
                     consumer.setMessageListener(listener);
-                    sessions.add(session);
-                    messageConsumers.add(consumer);
+                    listenerSessions.add(session);
+                    listenerConsumers.add(consumer);
                 }
             }
         }
@@ -277,7 +332,7 @@ public class Async {
     public void send(String queueName, Command command, int deliveryMode, int priority, int timeToLive) {
         checkStarted();
 
-        try(Session session = producerConnection.createSession()) {
+        try(Session session = senderSessionPool.getSession()) {
             checkInRange(deliveryMode, 1, 2, "delivery mode");
             checkInRange(priority, 0, 9, "priority");
             if (timeToLive < 0)
@@ -296,8 +351,10 @@ public class Async {
                 message = session.createTextMessage(command.toXml());
             }
 
-            MessageProducer p = session.createProducer(queue);
-            p.send(message, deliveryMode, priority, timeToLive);
+            try(MessageProducer producer = session.createProducer(queue);) {
+                producer.send(message, deliveryMode, priority, timeToLive);
+            }
+
         } catch (AsyncException e) {
             throw e;
         } catch (Exception e) {
@@ -305,52 +362,8 @@ public class Async {
         }
     }
 
-    /**
-     * Starts the server.
-     */
-    public void start(){
 
-        try {
-            jmsServer.setConfiguration(config);
-            jmsServer.setJmsConfiguration(jmsConfig);
 
-            jmsServer.start();
-
-            ConnectionFactory connectionFactory = (ConnectionFactory) jmsServer.lookup("/cf");
-            if(connectionFactory == null){
-                throw new AsyncException("Failed to start EmbeddedJMS server due to previous errors.");
-            }
-            consumerConnection = connectionFactory.createConnection();
-            producerConnection = connectionFactory.createConnection();
-
-            configureListeners(injector, queueConfigsList);
-            started = true;
-        } catch (Exception e) {
-            throw new AsyncException(e);
-        }
-    }
-
-    /**
-     * Stops this JMS server.
-     */
-    public void stop() {
-        started = false;
-        for (MessageConsumer messageConsumer : messageConsumers) {
-            closeQuietly(messageConsumer);
-        }
-        for (Session session : sessions) {
-            closeQuietly(session);
-        }
-
-        closeQuietly(producerConnection);
-        closeQuietly(consumerConnection);
-
-        try {
-            jmsServer.stop();
-        } catch (Exception e) {
-            LOGGER.warn("exception trying to stop broker.", e);
-        }
-    }
 
     /**
      * Receives a command from a queue synchronously. If this queue also has listeners, then commands will be distributed across
@@ -409,21 +422,22 @@ public class Async {
     public Command receiveCommand(String queueName, long timeout) {
 
         checkStarted();
-        try(Session session = consumerConnection.createSession()){
+        try(Session session = receiverSessionPool.getSession()){
             Queue queue = (Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueName);
-            MessageConsumer consumer = session.createConsumer(queue);
-            Message message = consumer.receive(timeout);
-            if(message == null){
-                return null;
-            }else{
-                Command command;
-                if(binaryMode){
-                    command = Command.fromBytes(getBytes((BytesMessage) message));
-                }else {
-                    command = Command.fromXml(((TextMessage)message).getText());
+            try(MessageConsumer consumer = session.createConsumer(queue)) {
+                Message message = consumer.receive(timeout);
+                if(message == null){
+                    return null;
+                }else{
+                    Command command;
+                    if(binaryMode){
+                        command = Command.fromBytes(getBytes((BytesMessage) message));
+                    }else {
+                        command = Command.fromXml(((TextMessage)message).getText());
+                    }
+                    command.setJMSMessageID(message.getJMSMessageID());
+                    return command;
                 }
-                command.setJMSMessageID(message.getJMSMessageID());
-                return command;
             }
         } catch (Exception e) {
             throw new AsyncException("Could not get command", e);
@@ -724,60 +738,5 @@ public class Async {
      */
     public Configuration getConfig() {
         return config;
-    }
-
-    public static void main(String[] args) throws IOException {
-        try {
-
-            String queueName = "queue1";
-            String filePath;
-            Async async;
-
-            filePath = Files.createTempDirectory("async").toFile().getCanonicalPath();
-            async = new Async(filePath, false, new QueueConfig(queueName));
-            async.start();
-
-            async.test(queueName);
-            async.stop();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-
-    }
-
-    private void test(String queueName) throws JMSException {
-
-        for (int i = 0; i < 3; i++) {
-            sendTextMessage(queueName, "hello " + i);
-        }
-
-        Queue queue = (Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueName);
-
-        Session session = consumerConnection.createSession(true, Session.SESSION_TRANSACTED);
-        MessageConsumer messageConsumer =  session.createConsumer(queue);
-
-        TextMessage m;
-
-        System.out.println(">>> Take 1: ");
-        while((m = (TextMessage) messageConsumer.receive(100)) != null){
-            System.out.println(m.getText());
-        }
-
-        session.rollback();
-
-        System.out.println(">>> Take 2: ");
-        while((m = (TextMessage) messageConsumer.receive(100)) != null){
-            System.out.println(m.getText());
-        }
-
-        session.commit();
-        System.out.println(">>> Take 3: ");
-        while((m = (TextMessage) messageConsumer.receive(100)) != null){
-            System.out.println(m.getText());
-        }
-        session.close();
     }
 }
