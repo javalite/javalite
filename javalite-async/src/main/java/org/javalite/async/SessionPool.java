@@ -18,26 +18,25 @@ import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
  *
  * @author igor on 11/2/17.
  */
-class SessionPool {
+public class SessionPool {
 
     private Logger LOGGER;
 
     private static final int MAX_AGE_MILLIS = 5000;
 
     private final LinkedList<PooledSession> sessions = new LinkedList<>();
-    private Connection producerConnection;
+    private Connection connection;
     private boolean closed = false;
     private SessionCleaner sessionCleaner = new SessionCleaner();
 
 
-    protected SessionPool(String name, Connection producerConnection) {
-        this.producerConnection = producerConnection;
+    public SessionPool(String name, Connection connection) {
+        this.connection = connection;
         LOGGER = LoggerFactory.getLogger("SessionPool: " + name);
         sessionCleaner.start();
-
     }
 
-    protected Session getSession() throws JMSException {
+    public Session getSession() throws JMSException {
         if (closed) {
             throw new AsyncException("pool already closed!");
         }
@@ -59,14 +58,14 @@ class SessionPool {
     /**
      * Closes all underlying JMS sessions.
      */
-    protected synchronized void close() {
+    public synchronized void close() {
         closed = true;
         sessionCleaner.close();
         sessions.stream().forEach(PooledSession::reallyClose);
     }
 
 
-    protected void reclaim(PooledSession session) {
+    public void reclaim(PooledSession session) {
         session.markLastUsedTime();
         synchronized (sessions){
             sessions.add(session);
@@ -74,8 +73,8 @@ class SessionPool {
         LOGGER.debug("Reclaimed session: " + session);
     }
 
-    private Session createNewSession() throws JMSException {
-        return new PooledSession(producerConnection.createSession(), this);
+    public Session createNewSession() throws JMSException {
+        return new PooledSession(connection.createSession(), this);
     }
 
 
