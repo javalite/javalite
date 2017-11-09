@@ -1,13 +1,13 @@
 package org.javalite.async;
 
-import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.Session;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -22,9 +22,9 @@ class SessionPool {
 
     private Logger LOGGER;
 
-    private static final int MAX_AGE_MILLIS = 30000;
+    private static final int MAX_AGE_MILLIS = 5000;
 
-    private final ConcurrentLinkedQueue<PooledSession> sessions = new ConcurrentLinkedQueue<>();
+    private final LinkedList<PooledSession> sessions = new LinkedList<>();
     private Connection producerConnection;
     private boolean closed = false;
     private SessionCleaner sessionCleaner = new SessionCleaner();
@@ -51,7 +51,7 @@ class SessionPool {
             return session;
         } else {
             session = createNewSession();
-            LOGGER.debug("Created new session: " + session + ". Pool size: " + sessions.size());
+            LOGGER.info("Created new session: " + session + ". Pool size: " + sessions.size());
             return session;
         }
     }
@@ -68,7 +68,9 @@ class SessionPool {
 
     protected void reclaim(PooledSession session) {
         session.markLastUsedTime();
-        sessions.add(session);
+        synchronized (sessions){
+            sessions.add(session);
+        }
         LOGGER.debug("Reclaimed session: " + session);
     }
 
@@ -90,26 +92,35 @@ class SessionPool {
         });
 
         private Runnable command = () -> {
-            synchronized (sessions){
-                if(sessions.size() > 0){
-                    long ageMillis = System.currentTimeMillis() - sessions.peek().getLastUsed();
-                    LOGGER.info("Checking stale sessions...");
-                    if(ageMillis > MAX_AGE_MILLIS){
-                        LOGGER.info("Found sessions are older than " + MAX_AGE_MILLIS / 1000 + " seconds, closing...");
-                        for(PooledSession session = sessions.poll(); session != null;  session = sessions.poll()){
-                            session.reallyClose();
-                            LOGGER.info("Closed session: " + session);
+            LOGGER.debug("Checking stale sessions...");
+            try {
+                synchronized (sessions){
+                    if (!sessions.isEmpty()) {
+                        for (Iterator<PooledSession> iterator = sessions.iterator(); iterator.hasNext(); ) {
+                            PooledSession session = iterator.next();
+                            long ageMillis = System.currentTimeMillis() - session.getLastUsed();
+                            if (ageMillis > MAX_AGE_MILLIS) {
+                                session.reallyClose();
+                                iterator.remove();
+                                LOGGER.info("Session is " + ageMillis + " milliseconds old, closing: " + session);
+                            }else {
+                                break;
+                            }
+
                         }
                     }
                 }
+            } catch (Exception e) {
+                LOGGER.error("Failed to close sessions!", e);
             }
         };
+
         protected void close(){
             cleanupExecutor.shutdown();
         }
 
         protected synchronized void start(){
-            cleanupExecutor.scheduleAtFixedRate(command, 30, 30, TimeUnit.SECONDS);
+            cleanupExecutor.scheduleAtFixedRate(command, 5, 5, TimeUnit.SECONDS);
             LOGGER.info("Starting to clean stale sessions...");
         }
     }

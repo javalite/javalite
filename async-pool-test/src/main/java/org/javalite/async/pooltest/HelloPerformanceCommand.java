@@ -15,7 +15,6 @@ public class HelloPerformanceCommand extends Command {
 
     public HelloPerformanceCommand(String message) {
         this.message = message;
-        addParams("message", message);
     }
 
     public HelloPerformanceCommand() {
@@ -36,9 +35,5 @@ public class HelloPerformanceCommand extends Command {
         if (counter.get() == TestSend.MESSAGES_PER_THREAD * TestSend.SENDING_THREAD_COUNT) {
             System.out.println("completed, took " + (System.currentTimeMillis() - START) + " milliseconds");
         }
-    }
-
-    public String getMessage() {
-        return message;
     }
 }
