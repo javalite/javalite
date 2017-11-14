@@ -31,12 +31,4 @@ public class CommandSpec {
         a(helloCommand1.getMessage()).shouldBeEqual("Thanks for all the fish...");
         a(helloCommand).shouldNotBeTheSameAs(helloCommand1);
     }
-
-    @Test
-    public void shouldGenerateParams() throws IOException {
-        HelloCommand helloCommand = new HelloCommand("Thanks for all the fish...");
-        Map<String, String> params =  helloCommand.getParams();
-        the(params.get("class")).shouldBeEqual("HelloCommand");
-        the(params.get("message")).shouldBeEqual("Thanks for all the fish...");
-    }
 }

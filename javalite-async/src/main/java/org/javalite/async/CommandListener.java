@@ -46,7 +46,7 @@ public class CommandListener implements MessageListener {
             long start = System.currentTimeMillis();
             onCommand(command);
 
-            LOGGER.info(JsonHelper.toJsonString(map("processed_millis", (System.currentTimeMillis() - start), "info", command.getParams())));
+            LOGGER.info(JsonHelper.toJsonString(map("processed_millis", (System.currentTimeMillis() - start))));
         } catch (Exception e) {
             throw new AsyncException("Failed to process command", e);
         }

@@ -113,22 +113,4 @@ public abstract class Command {
         this.jmsMessageId = jmsMessageId;
     }
 
-    /**
-     * Adds parameters and their values to reflect by the {@link #getParams()} method.
-     *
-     * @param namesAndValues important parameters of this command - tings you want to see in a log file.
-     */
-    @SuppressWarnings("unchecked")
-    public void addParams(String ... namesAndValues){
-        this.params.putAll(map(namesAndValues));
-    }
-
-    /**
-     * Used to understand important values related to this command (in log files).
-     *
-     * @return important values related to processing of this command.
-     */
-    public Map<String, String> getParams(){
-        return params;
-    }
 }
