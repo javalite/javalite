@@ -21,7 +21,7 @@ public class ContextCommand extends Command {
     @Override
     public void execute() {
         if(context){
-            Context.put("age", "35");
+            Context.put("weight", "35lb");
         }
     }
 }

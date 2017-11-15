@@ -47,12 +47,7 @@ public class CommandListener implements MessageListener {
             }
             long start = System.currentTimeMillis();
             onCommand(command);
-            String context = Context.toJSON();
-            if(context != null){
-                LOGGER.info("{\"" + "processed_millis" + "\":" +  (System.currentTimeMillis() - start) +  ",\"context\":" + context + "}");
-            }else {
-                LOGGER.info(JsonHelper.toJsonString(map("processed_millis", (System.currentTimeMillis() - start))));
-            }
+            LOGGER.info(JsonHelper.toJsonString(map("processed_millis", (System.currentTimeMillis() - start), "command", command.getClass().getSimpleName())));
         } catch (Exception e) {
             throw new AsyncException("Failed to process command", e);
         }finally {

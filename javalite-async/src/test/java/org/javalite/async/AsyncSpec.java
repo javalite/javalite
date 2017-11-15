@@ -6,6 +6,7 @@ import org.javalite.async.services.GreetingModule;
 import org.javalite.common.JsonHelper;
 import org.javalite.common.Util;
 import org.javalite.test.SystemStreamUtil;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,6 +32,12 @@ public class AsyncSpec {
     public void before() throws IOException {
         filePath = Files.createTempDirectory("async").toFile().getCanonicalPath();
         HelloCommand.reset();
+        SystemStreamUtil.replaceOut();
+    }
+
+    @After
+    public void after(){
+        SystemStreamUtil.restoreSystemOut();
     }
 
     @Test
@@ -213,11 +220,8 @@ public class AsyncSpec {
     @Test
     public void shouldLogContext() throws IOException, InterruptedException {
 
-        SystemStreamUtil.replaceError();
         Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
-
         async.start();
-
         async.send(QUEUE_NAME, new ContextCommand(true));
         async.send(QUEUE_NAME, new ContextCommand(false));
 
@@ -225,28 +229,25 @@ public class AsyncSpec {
 
         async.stop();
 
-        String out = SystemStreamUtil.getSystemErr();
+        String out = SystemStreamUtil.getSystemOut();
 
         String [] lines = Util.split(out, System.getProperty("line.separator"));
 
         String contextLine = getContextLine(lines);
         String nonContextLine = getNonContextLine(lines);
 
-        Map context = JsonHelper.toMap(contextLine.substring(contextLine.indexOf("{")));
-        Map nonContext = JsonHelper.toMap(nonContextLine.substring(nonContextLine.indexOf("{")));
+        Map contextMap = JsonHelper.toMap(contextLine);
+        Map nonContextMap = JsonHelper.toMap(nonContextLine);
 
-        Map c = (Map) context.get("context");
-        the(context.size()).shouldBeEqual(2);
-        the(c.get("age")).shouldBeEqual("35");
+        Map context = (Map) contextMap.get("context");
+        the(context.get("weight")).shouldBeEqual("35lb");
 
-        the(nonContext.size()).shouldBeEqual(1);
-        the(nonContext.get("age")).shouldBeNull();
-        SystemStreamUtil.restoreSystemErr();
+        the(nonContextMap.containsKey("context")).shouldBeFalse();
     }
 
     private String getContextLine(String[] lines) {
         for (String line : lines) {
-            if(line.contains("ActiveMQ-client-global-threads") && line.contains("age")){
+            if(line.contains("ActiveMQ-client-global-threads") && line.contains("weight")){
                 return line;
             }
         }
@@ -255,7 +256,7 @@ public class AsyncSpec {
 
     private String getNonContextLine(String[] lines) {
         for (String line : lines) {
-            if(line.contains("ActiveMQ-client-global-threads") && !line.contains("age")){
+            if(line.contains("ActiveMQ-client-global-threads") && !line.contains("weight")){
                 return line;
             }
         }
