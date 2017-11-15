@@ -3,6 +3,9 @@ package org.javalite.async;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.javalite.async.services.GreetingModule;
+import org.javalite.common.JsonHelper;
+import org.javalite.common.Util;
+import org.javalite.test.SystemStreamUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,6 +14,7 @@ import javax.jms.Message;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Map;
 
 import static org.javalite.test.jspec.JSpec.a;
 import static org.javalite.test.jspec.JSpec.the;
@@ -143,7 +147,7 @@ public class AsyncSpec {
 
         Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
         async.start();
-        for(int i = 0; i < 10; i++){
+        for (int i = 0; i < 10; i++) {
             async.send(QUEUE_NAME, new HelloCommand("Message: " + i));
         }
 
@@ -155,7 +159,7 @@ public class AsyncSpec {
         //lets start second time
         async.start();
 
-        for(int i = 0; i < 10; i++){
+        for (int i = 0; i < 10; i++) {
             async.send(QUEUE_NAME, new HelloCommand("Message: " + i));
         }
 
@@ -204,5 +208,57 @@ public class AsyncSpec {
 
         Thread.sleep(1000);
         async.stop();
+    }
+
+    @Test
+    public void shouldLogContext() throws IOException, InterruptedException {
+
+        SystemStreamUtil.replaceError();
+        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
+
+        async.start();
+
+        async.send(QUEUE_NAME, new ContextCommand(true));
+        async.send(QUEUE_NAME, new ContextCommand(false));
+
+        Thread.sleep(5000);
+
+        async.stop();
+
+        String out = SystemStreamUtil.getSystemErr();
+
+        String [] lines = Util.split(out, System.getProperty("line.separator"));
+
+        String contextLine = getContextLine(lines);
+        String nonContextLine = getNonContextLine(lines);
+
+        Map context = JsonHelper.toMap(contextLine.substring(contextLine.indexOf("{")));
+        Map nonContext = JsonHelper.toMap(nonContextLine.substring(nonContextLine.indexOf("{")));
+
+        Map c = (Map) context.get("context");
+        the(context.size()).shouldBeEqual(2);
+        the(c.get("age")).shouldBeEqual("35");
+
+        the(nonContext.size()).shouldBeEqual(1);
+        the(nonContext.get("age")).shouldBeNull();
+        SystemStreamUtil.restoreSystemErr();
+    }
+
+    private String getContextLine(String[] lines) {
+        for (String line : lines) {
+            if(line.contains("ActiveMQ-client-global-threads") && line.contains("age")){
+                return line;
+            }
+        }
+        return null;
+    }
+
+    private String getNonContextLine(String[] lines) {
+        for (String line : lines) {
+            if(line.contains("ActiveMQ-client-global-threads") && !line.contains("age")){
+                return line;
+            }
+        }
+        return null;
     }
 }

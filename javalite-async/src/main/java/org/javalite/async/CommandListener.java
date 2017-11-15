@@ -18,6 +18,7 @@ package org.javalite.async;
 
 import com.google.inject.Injector;
 import org.javalite.common.JsonHelper;
+import org.javalite.logging.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +38,7 @@ public class CommandListener implements MessageListener {
 
     @Override
     public void onMessage(Message message) {
+        Context.clear();
         try {
             Command command = parseCommand(message);
             command.setJMSMessageID(message.getJMSMessageID());
@@ -45,10 +47,16 @@ public class CommandListener implements MessageListener {
             }
             long start = System.currentTimeMillis();
             onCommand(command);
-
-            LOGGER.info(JsonHelper.toJsonString(map("processed_millis", (System.currentTimeMillis() - start))));
+            String context = Context.toJSON();
+            if(context != null){
+                LOGGER.info("{\"" + "processed_millis" + "\":" +  (System.currentTimeMillis() - start) +  ",\"context\":" + context + "}");
+            }else {
+                LOGGER.info(JsonHelper.toJsonString(map("processed_millis", (System.currentTimeMillis() - start))));
+            }
         } catch (Exception e) {
             throw new AsyncException("Failed to process command", e);
+        }finally {
+            Context.clear();
         }
     }
 
