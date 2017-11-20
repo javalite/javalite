@@ -421,26 +421,44 @@ public class Async {
      */
     public Command receiveCommand(String queueName, long timeout) {
 
+        try {
+            Message message = receiveMessage(queueName, timeout);
+            if(message == null){
+                return null;
+            }else{
+                Command command;
+                if(binaryMode){
+                    command = Command.fromBytes(getBytes((BytesMessage) message));
+                }else {
+                    command = Command.fromXml(((TextMessage)message).getText());
+                }
+                command.setJMSMessageID(message.getJMSMessageID());
+                return command;
+            }
+        } catch (Exception e) {
+            throw new AsyncException("Could not get command", e);
+        }
+    }
+
+
+    /**
+     * Receives a messafge from a queue asynchronously.If this queue also has listeners, then messages will be distributed across
+     * all consumers.
+     *
+     * @param queueName name of queue
+     * @param timeout timeout in millis.
+     *
+     * @return message if  found, null if not.
+     */
+    public Message receiveMessage(String queueName, long timeout) {
         checkStarted();
         try(Session session = receiverSessionPool.getSession()){
             Queue queue = (Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueName);
             try(MessageConsumer consumer = session.createConsumer(queue)) {
-                Message message = consumer.receive(timeout);
-                if(message == null){
-                    return null;
-                }else{
-                    Command command;
-                    if(binaryMode){
-                        command = Command.fromBytes(getBytes((BytesMessage) message));
-                    }else {
-                        command = Command.fromXml(((TextMessage)message).getText());
-                    }
-                    command.setJMSMessageID(message.getJMSMessageID());
-                    return command;
-                }
+                return consumer.receive(timeout);
             }
         } catch (Exception e) {
-            throw new AsyncException("Could not get command", e);
+            throw new AsyncException("Could not get message", e);
         }
     }
 
