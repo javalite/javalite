@@ -49,9 +49,25 @@ public class CommandListener implements MessageListener {
             onCommand(command);
             LOGGER.info(JsonHelper.toJsonString(map("processed_millis", (System.currentTimeMillis() - start), "command", command.getClass().getSimpleName())));
         } catch (Exception e) {
-            throw new AsyncException("Failed to process command", e);
+            LOGGER.error("Failed to process message: {}", getCommandAsText(message), e);
+            throw new AsyncException("Failed to process message", e);
         }finally {
             Context.clear();
+        }
+    }
+
+    private String getCommandAsText(Message message) {
+        try {
+            if(message instanceof BytesMessage){
+                return new String(Async.getBytes((BytesMessage) message));
+            }else if(message instanceof TextMessage){
+                return ((TextMessage) message).getText();
+            }else {
+                return "Failed to convert message to text: " + message.toString();
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to convert message to text: " + message.toString());
+            return "failed to convert message to text: " + message.toString();
         }
     }
 
