@@ -16,7 +16,6 @@ limitations under the License.
 package org.javalite.activejdbc;
 
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 /**
@@ -30,6 +29,11 @@ public class CaseInsensitiveMap<V> extends ConcurrentSkipListMap<String, V> {
 
     enum  Null {
         INSTANCE;
+
+        @Override
+        public String toString() {
+            return "null";
+        }
     }
 
     public CaseInsensitiveMap() {
@@ -53,6 +57,7 @@ public class CaseInsensitiveMap<V> extends ConcurrentSkipListMap<String, V> {
             put(key, m.get(key));
         }
     }
+
 
     @Override
     public V put(String key, V value) {

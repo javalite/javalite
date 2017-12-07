@@ -18,6 +18,7 @@ limitations under the License.
 package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.test.ActiveJDBCTest;
+import org.javalite.activejdbc.test_models.Person;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -91,6 +92,20 @@ public class BaseTest extends ActiveJDBCTest {
         Base.find("select * from people where id > ? and dob > ?", 1, getTimestamp(1935, 1, 1)).with(new RowListenerAdapter() {
             @Override public void onNext(Map<String, Object> row) {
                 System.out.println(row);
+            }
+        });
+    }
+
+    @Test
+    public void shouldReturnProperNulls(){
+
+        Person smith = Person.findFirst("last_name = ?", "Smith");
+        smith.set("graduation_date", null).saveIt();
+
+        Base.find("select * from people where last_name = ?", "Smith").with(new RowListenerAdapter() {
+            @Override public void onNext(Map<String, Object> row) {
+                Object object = row.get("graduation_date");
+                the(object).shouldBeNull();
             }
         });
     }
