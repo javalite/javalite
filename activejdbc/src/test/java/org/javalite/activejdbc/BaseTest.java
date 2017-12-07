@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -101,13 +102,26 @@ public class BaseTest extends ActiveJDBCTest {
 
         Person smith = Person.findFirst("last_name = ?", "Smith");
         smith.set("graduation_date", null).saveIt();
+        List<Map> maps = new ArrayList<>();
 
         Base.find("select * from people where last_name = ?", "Smith").with(new RowListenerAdapter() {
             @Override public void onNext(Map<String, Object> row) {
-                Object object = row.get("graduation_date");
+                Object object = row.get("GRADUATION_DATE");
                 the(object).shouldBeNull();
+                maps.add(new HashMap(row));
+                for (Map.Entry<String, Object> entry : row.entrySet()) {
+                    if(entry.getKey().equals("GRADUATION_DATE")){
+                        the(entry.getValue()).shouldBeNull();
+                    }else {
+                        the(entry.getValue()).shouldNotBeNull();
+                    }
+                }
             }
         });
+        for (Map result : maps) {
+            Object object = result.get("GRADUATION_DATE");
+            the(object).shouldBeNull();
+        }
     }
 
     @Test

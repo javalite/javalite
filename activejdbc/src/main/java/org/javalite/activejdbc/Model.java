@@ -830,7 +830,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         Map<String, Object> retVal = new TreeMap<>();
         for (Map.Entry<String, Object> entry : attributes.entrySet()) {
             Object v = entry.getValue();
-            if (v != CaseInsensitiveMap.Null.INSTANCE) {
+            if (v != null) {
                 if (v instanceof Clob) {
                     retVal.put(entry.getKey().toLowerCase(), Convert.toString(v));
                 } else {

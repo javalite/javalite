@@ -15,7 +15,9 @@ limitations under the License.
 */
 package org.javalite.activejdbc;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 /**
@@ -58,6 +60,20 @@ public class CaseInsensitiveMap<V> extends ConcurrentSkipListMap<String, V> {
         }
     }
 
+
+    @Override
+    public Set<Entry<String, V>> entrySet() {
+        Set<Entry<String, V>> entries = new HashSet<>();
+        Set<Entry<String, V>> internalEntries =  super.entrySet();
+        for(Entry<String, V> internalEntry: internalEntries){
+            if(internalEntry.getValue() instanceof Null){
+                entries.add(new SimpleImmutableEntry<>(internalEntry.getKey(), null));
+            }else {
+                entries.add(new SimpleImmutableEntry<>(internalEntry));
+            }
+        }
+        return entries;
+    }
 
     @Override
     public V put(String key, V value) {
