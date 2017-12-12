@@ -17,22 +17,40 @@ import static org.javalite.common.Collections.map;
  */
 public class FreemarkerSpec extends ActiveJDBCTest {
 
+    freemarker.template.Configuration config = new freemarker.template.Configuration();
+
     @Test
-    public void shouldRenderTemplate() throws IOException, TemplateException {
+    public void shouldRenderSingleIntance() throws IOException, TemplateException {
         deleteAndPopulateTable("people");
-        List<Person> people = Person.findAll().orderBy("id").limit(2);
+
+        Person smith = Person.findFirst("last_name = ?", "Smith");
+        smith.set("graduation_date", null).saveIt();
+
         freemarker.template.Configuration config = new freemarker.template.Configuration();
-        Template template = config.getTemplate("src/test/resources/template.ftl");
-        for (int i = 0; i < people.size(); i++) {
-            Person person = people.get(i);
-            StringWriter writer = new StringWriter();
-            template.process(map("person", person), writer);
-            if(i == 0){
-                the(writer.toString().trim()).shouldBeEqual("Person: John, Smith");
-            }
-            if(i == 1){
-                the(writer.toString().trim()).shouldBeEqual("Person: Leylah, Jonston");
-            }
-        }
+        Template template = config.getTemplate("src/test/resources/single.ftl");
+
+        smith = Person.findFirst("last_name = ?", "Smith");
+
+        StringWriter writer = new StringWriter();
+        template.process(map("person", smith), writer);
+
+        the(writer.toString().trim()).shouldBeEqual("Person: John  Smith, graduation date:");
+    }
+
+    @Test
+    public void shouldRenderList() throws IOException, TemplateException {
+        deleteAndPopulateTable("people");
+
+        Person smith = Person.findFirst("last_name = ?", "Smith");
+        smith.set("graduation_date", null).saveIt();
+
+        List<Person> people = Person.findAll().orderBy("id");
+
+        Template template = config.getTemplate("src/test/resources/list.ftl");
+        StringWriter writer = new StringWriter();
+
+        template.process(people, writer);
+        System.out.println(writer.toString());
+
     }
 }
