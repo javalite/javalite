@@ -110,7 +110,7 @@ public class BaseTest extends ActiveJDBCTest {
                 the(object).shouldBeNull();
                 maps.add(new HashMap(row));
                 for (Map.Entry<String, Object> entry : row.entrySet()) {
-                    if(entry.getKey().equals("GRADUATION_DATE")){
+                    if(entry.getKey().equalsIgnoreCase("GRADUATION_DATE")){
                         the(entry.getValue()).shouldBeNull();
                     }else {
                         the(entry.getValue()).shouldNotBeNull();

@@ -47,7 +47,6 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.javalite.activejdbc.ModelDelegate.metaModelFor;
 import static org.javalite.activejdbc.ModelDelegate.metaModelOf;
@@ -70,8 +69,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     private boolean frozen;
     private MetaModel metaModelLocal;
     private ModelRegistry modelRegistryLocal;
-    private final Map<Class, Model> cachedParents = new ConcurrentHashMap<>();
-    private final Map<Class, List<Model>> cachedChildren = new ConcurrentHashMap<>();
+    private final Map<Class, Model> cachedParents = new HashMap<>();
+    private final Map<Class, List<Model>> cachedChildren = new HashMap<>();
     private boolean manageTime = true;
     private boolean compositeKeyPersisted;
     private Errors errors = new Errors();
@@ -2721,7 +2720,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         for (Map.Entry<String, Object> entry : attributes.entrySet()) {
             if (entry.getValue() != null && !metaModel.getVersionColumn().equals(entry.getKey())) {
                 columns.add(entry.getKey());
-                values.add(entry.getValue() == CaseInsensitiveMap.Null.INSTANCE ? null : entry.getValue());
+                values.add(entry.getValue());
             }
         }
         if (metaModel.isVersioned()) {

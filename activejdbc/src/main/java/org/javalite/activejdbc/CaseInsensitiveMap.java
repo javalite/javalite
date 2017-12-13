@@ -15,28 +15,17 @@ limitations under the License.
 */
 package org.javalite.activejdbc;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.TreeMap;
 
 /**
  * A case insensitive map for <code>java.lang.String</code> keys. The current implementation is based on
- * {@link ConcurrentSkipListMap}.
+ * {@link TreeMap}, so it does not accept <code>null</code> keys and keeps entries ordered by case
+ * insensitive alphabetical order of keys.
  *
  * @author Eric Nielsen
- * @author Igor Polevoy
  */
-public class CaseInsensitiveMap<V> extends ConcurrentSkipListMap<String, V> {
-
-    enum  Null {
-        INSTANCE;
-
-        @Override
-        public String toString() {
-            return "null";
-        }
-    }
+public class CaseInsensitiveMap<V> extends TreeMap<String, V> {
 
     public CaseInsensitiveMap() {
         super(String.CASE_INSENSITIVE_ORDER);
@@ -45,38 +34,5 @@ public class CaseInsensitiveMap<V> extends ConcurrentSkipListMap<String, V> {
     public CaseInsensitiveMap(Map<? extends String, V> m) {
         this();
         putAll(m);
-    }
-
-    @Override
-    public V get(Object key) {
-        V v = super.get(key);
-        return v == Null.INSTANCE ? null : v;
-    }
-
-    @Override
-    public void putAll(Map<? extends String, ? extends V> m) {
-        for(String key: m.keySet()){
-            put(key, m.get(key));
-        }
-    }
-
-
-    @Override
-    public Set<Entry<String, V>> entrySet() {
-        Set<Entry<String, V>> entries = new HashSet<>();
-        Set<Entry<String, V>> internalEntries =  super.entrySet();
-        for(Entry<String, V> internalEntry: internalEntries){
-            if(internalEntry.getValue() instanceof Null){
-                entries.add(new SimpleImmutableEntry<>(internalEntry.getKey(), null));
-            }else {
-                entries.add(new SimpleImmutableEntry<>(internalEntry));
-            }
-        }
-        return entries;
-    }
-
-    @Override
-    public V put(String key, V value) {
-        return super.put(key, value == null ? ((V)Null.INSTANCE) : value);
     }
 }
