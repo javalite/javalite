@@ -734,6 +734,31 @@ public class ModelTest extends ActiveJDBCTest {
         a(p1.get("dob")).shouldBeEqual(p.get("dob"));
     }
 
+    @Test
+    public void shouldSerializeModelWithDirtyAttributes() throws IOException, ClassNotFoundException {
+        deleteAndPopulateTable("people");
+        Person p = Person.findById(1);
+
+
+        p.set("name", "Jeff");
+
+        //write model
+        ByteArrayOutputStream bout =  new ByteArrayOutputStream();
+        ObjectOutputStream  out = new ObjectOutputStream(bout);
+        out.writeObject(p);
+        out.flush();
+
+        //read model
+        ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bout.toByteArray()));
+        Person p1 = (Person) in.readObject();
+
+        //validate models
+        a(p1.get("name")).shouldBeEqual(p.get("name"));
+        a(p1.get("last_name")).shouldBeEqual(p.get("last_name"));
+        a(p1.get("dob")).shouldBeEqual(p.get("dob"));
+        a(p1.isModified()).shouldBeTrue();
+    }
+
 
     @Test
     public void shouldConvertUtilDate2SqlDate() {

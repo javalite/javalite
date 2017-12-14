@@ -65,7 +65,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     private static final Logger LOGGER = LoggerFactory.getLogger(Model.class);
 
     private Map<String, Object> attributes = new CaseInsensitiveMap<>();
-    private final Set<String> dirtyAttributeNames = new CaseInsensitiveSet();
+    private Set<String> dirtyAttributeNames = new CaseInsensitiveSet();
     private boolean frozen;
     private MetaModel metaModelLocal;
     private ModelRegistry modelRegistryLocal;
@@ -3022,11 +3022,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeObject(attributes);
+        out.writeObject(dirtyAttributeNames);
     }
 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        attributes = new CaseInsensitiveMap<>();
-        attributes.putAll((Map<String, Object>) in.readObject());
+        attributes = (Map<String, Object>) in.readObject();
+        dirtyAttributeNames = (Set<String>) in.readObject();
     }
 }
