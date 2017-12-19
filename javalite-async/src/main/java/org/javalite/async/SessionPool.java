@@ -20,14 +20,14 @@ import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
  */
 public class SessionPool {
 
-    private Logger LOGGER;
+    private final Logger LOGGER;
 
     private static final int MAX_AGE_MILLIS = 5000;
 
     private final LinkedList<PooledSession> sessions = new LinkedList<>();
-    private Connection connection;
+    private final Connection connection;
     private boolean closed = false;
-    private SessionCleaner sessionCleaner = new SessionCleaner();
+    private final SessionCleaner sessionCleaner = new SessionCleaner();
 
 
     public SessionPool(String name, Connection connection) {
@@ -58,14 +58,16 @@ public class SessionPool {
     /**
      * Closes all underlying JMS sessions.
      */
-    public synchronized void close() {
-        closed = true;
-        sessionCleaner.close();
-        sessions.stream().forEach(PooledSession::reallyClose);
+    public void close() {
+        synchronized (sessions) {
+            closed = true;
+            sessionCleaner.close();
+            sessions.stream().forEach(PooledSession::reallyClose);
+        }
     }
 
 
-    public void reclaim(PooledSession session) {
+    void reclaim(PooledSession session) {
         session.markLastUsedTime();
         synchronized (sessions){
             sessions.add(session);
@@ -118,9 +120,11 @@ public class SessionPool {
             cleanupExecutor.shutdown();
         }
 
-        protected synchronized void start(){
-            cleanupExecutor.scheduleAtFixedRate(command, 5, 5, TimeUnit.SECONDS);
-            LOGGER.info("Starting to clean stale sessions...");
+        protected void start() {
+            synchronized (sessions) {
+                cleanupExecutor.scheduleAtFixedRate(command, 5, 5, TimeUnit.SECONDS);
+                LOGGER.info("Starting to clean stale sessions...");
+            }
         }
     }
 }
