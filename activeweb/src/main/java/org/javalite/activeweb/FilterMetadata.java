@@ -40,7 +40,9 @@ class FilterMetadata<T extends AppController> {
         } else if (controllers.contains(route.getController().getClass().getName()) && !excludedActions.contains(route.getActionName())
                 && (includedActions.contains(route.getActionName()) || includedActions.isEmpty())) {
             return true;
-        }else if(!wildcard && includedActions.contains(route.getActionName()) && !excludedActions.contains(route.getActionName())){
+        }else if(!wildcard && includedActions.contains(route.getActionName())
+                && !excludedActions.contains(route.getActionName())
+                && controllers.contains(route.getController().getClass().getName())){
             return true;
         }
         return false;

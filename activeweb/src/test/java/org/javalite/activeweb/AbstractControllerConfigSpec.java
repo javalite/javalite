@@ -17,6 +17,7 @@ package org.javalite.activeweb;
 
 import app.controllers.CustomController;
 import app.controllers.DoFiltersController;
+import app.controllers.HomeController;
 import org.javalite.activeweb.controller_filters.DBConnectionFilter;
 import org.javalite.activeweb.controller_filters.HeadersLogFilter;
 import org.javalite.activeweb.controller_filters.HttpSupportFilter;
@@ -362,6 +363,26 @@ public class AbstractControllerConfigSpec  extends RequestSpec{
         //init config.
         config.init(new AppContext());
         config.completeInit();
+    }
+
+    @Test
+    public void shouldNotMatchWrongController() {
+        //create mock config
+        config = new AbstractControllerConfig() {
+            public void init(AppContext context) {
+
+                add(new HeadersLogFilter()).to(HomeController.class).forActions("gallery");
+            }
+        };
+
+        //init config.
+        config.init(new AppContext());
+        config.completeInit();
+
+        List<HttpSupportFilter> filters= Configuration.getFilters();
+        the(filters.size()).shouldBeEqual(1);
+        the(matches(filters.get(0), new PersonController(), "gallery")).shouldBeFalse();
+        the(matches(filters.get(0), new HomeController(), "gallery")).shouldBeTrue();
     }
 }
 
