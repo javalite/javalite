@@ -523,8 +523,7 @@ public class ModelTest extends ActiveJDBCTest {
         the(Base.exec(insertSQL)).shouldBeEqual(1);
 
         Student insertedStudent = Student.findFirst("last_name = ?", "O'Connor's");
-        Assert.assertNotNull(insertedStudent);
-
+        the(insertedStudent).shouldNotBeNull();
         the(insertedStudent.get("last_name")).shouldBeEqual("O'Connor's");
     }
 
