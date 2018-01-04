@@ -21,6 +21,7 @@ import org.javalite.activejdbc.test_models.*;
 import org.javalite.common.Convert;
 import org.javalite.test.jspec.DifferenceExpectation;
 import org.javalite.test.jspec.ExceptionExpectation;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.*;
@@ -508,21 +509,23 @@ public class ModelTest extends ActiveJDBCTest {
         Student s = new Student();
         s.set("first_name", "Jim");
         s.set("last_name", "O'Connor's");
-        s.set("id", 1);
+
         String insertSQL = s.toInsert("'", "''");
 
-        the(insertSQL).shouldBeEqual("INSERT INTO students (first_name, id, last_name) VALUES ('Jim', 1, 'O''Connor''s')");
+        the(insertSQL).shouldBeEqual("INSERT INTO students (first_name, last_name) VALUES ('Jim', 'O''Connor''s')");
 
         s.set("dob", getDate(1965, 12, 1));
 
         insertSQL = s.toInsert("'", "''");
 
-        //TODO: this is broken on DB2, left a comment: https://stackoverflow.com/questions/2442205/how-does-one-escape-an-apostrophe-in-db2-sql
-        the(insertSQL).shouldBeEqual("INSERT INTO students (dob, first_name, id, last_name) VALUES (DATE '1965-12-01', 'Jim', 1, 'O''Connor''s')");
+        the(insertSQL).shouldBeEqual("INSERT INTO students (dob, first_name, last_name) VALUES (DATE '1965-12-01', 'Jim', 'O''Connor''s')");
 
         the(Base.exec(insertSQL)).shouldBeEqual(1);
 
-        the(Student.findById(1).get("last_name")).shouldBeEqual("O'Connor's");
+        Student insertedStudent = Student.findFirst("last_name = ?", "O'Connor's");
+        Assert.assertNotNull(insertedStudent);
+
+        the(insertedStudent.get("last_name")).shouldBeEqual("O'Connor's");
     }
 
     @Test
