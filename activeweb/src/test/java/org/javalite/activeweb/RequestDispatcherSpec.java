@@ -250,10 +250,10 @@ public class RequestDispatcherSpec extends RequestSpec {
         if(message == null){
             throw new RuntimeException("Failed to find a message in log!");
         }
-        the(message.get("error")).shouldBeEqual("Failed to find template: '/hello/no-view.ftl' with layout: '/layouts/default_layout.ftl'");
+        the(message.get("error")).shouldContain("Failed to render template: '/hello/no-view.ftl' with layout: '/layouts/default_layout.ftl'");
         String html = response.getContentAsString();
         a(XPathHelper.count("//div", html)).shouldBeEqual(3);
-        a(XPathHelper.selectText("//div[@id='content']", html)).shouldContain("Failed to find template: '/hello/no-view.ftl' with layout: '/layouts/default_layout.ftl'");
+        a(XPathHelper.selectText("//div[@id='content']", html)).shouldContain("Failed to render template: '/hello/no-view.ftl' with layout: '/layouts/default_layout.ftl'");
     }
 
     @Test

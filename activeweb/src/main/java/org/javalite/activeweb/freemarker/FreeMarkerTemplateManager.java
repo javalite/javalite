@@ -15,10 +15,7 @@ limitations under the License.
 */
 package org.javalite.activeweb.freemarker;
 
-import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.template.Template;
-import freemarker.template.TemplateExceptionHandler;
+import freemarker.template.*;
 import org.javalite.activeweb.InitException;
 import org.javalite.activeweb.TemplateManager;
 import org.javalite.activeweb.ViewException;
@@ -106,8 +103,9 @@ public class FreeMarkerTemplateManager extends TemplateManager {
                 FreeMarkerTL.setEnvironment(null);
             }
         }
-        catch(FileNotFoundException e){
-            throw new ViewMissingException("Failed to find template: "+ getTemplateDescription(templateName, layout));
+
+        catch(TemplateNotFoundException e){
+            throw new ViewMissingException("Failed to render template: "+ getTemplateDescription(templateName, layout) + " " + e.getMessage());
         }
         catch(ViewException e){
             throw e;
@@ -119,7 +117,7 @@ public class FreeMarkerTemplateManager extends TemplateManager {
 
 
     private String getTemplateDescription(String templateName, String layout) {
-        return "'" + templateName + (layout == null ? "' without layout" : "' with layout: '" + layout + ".ftl'");
+        return "'" + templateName + (layout == null ? "' without layout" : "' with layout: '" + layout + ".ftl'") + ". ";
     }
     
     @Override

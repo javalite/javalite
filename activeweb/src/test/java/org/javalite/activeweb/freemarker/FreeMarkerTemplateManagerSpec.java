@@ -139,4 +139,14 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
         manager.merge(new HashMap(), "/formatting/index", "/layouts/default_layout", "xml", sw);
         a(sw.toString()).shouldContain("XML");
     }
+
+    @Test
+    public void shouldThrowCorrectExceptionIfPartialNotFound(){
+        StringWriter sw = new StringWriter();
+        try {
+            manager.merge(new HashMap(), "/partial/missing-partial", sw);
+        } catch (Exception e) {
+            the(e.getMessage()).shouldContain("Failed to render template: '/partial/missing-partial.ftl' without layout.  Template not found for name \"/partial/_missing.ftl\".");
+        }
+    }
 }
