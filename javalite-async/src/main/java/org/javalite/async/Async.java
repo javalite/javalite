@@ -45,6 +45,8 @@ import java.io.File;
 import java.util.*;
 
 import static java.util.Collections.singletonList;
+import org.apache.activemq.artemis.api.core.management.ActiveMQServerControl;
+import org.apache.activemq.artemis.core.management.impl.ActiveMQServerControlImpl;
 import static org.javalite.common.Collections.map;
 import static org.javalite.common.Util.closeQuietly;
 
@@ -223,6 +225,15 @@ public class Async {
         closeQuietly(producerConnection);
         closeQuietly(consumerConnection);
 
+        try {
+            ActiveMQServerControl control = jmsServer.getActiveMQServer().getActiveMQServerControl();
+            String[] remoteAddresses = control.listRemoteAddresses();
+            for (String address : remoteAddresses) {
+                control.closeConnectionsForAddress(address);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("exception trying to close remote connections.", e);
+        }
         try {
             jmsServer.stop();
         } catch (Exception e) {
