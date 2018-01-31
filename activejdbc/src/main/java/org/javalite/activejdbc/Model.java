@@ -2866,6 +2866,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     /**
      * Value of ID.
      *
+     * @see {@link #getLong(String)}.
+     *
      * @return of ID.
      */
     public Object getId() {
