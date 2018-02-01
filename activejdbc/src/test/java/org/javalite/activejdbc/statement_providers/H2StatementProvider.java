@@ -36,7 +36,8 @@ public class H2StatementProvider implements StatementProvider {
         } else if (table.equals("users")) {
             statements =  Arrays.asList(
                     "INSERT INTO users VALUES(1, 'Marilyn', 'Monroe', 'mmonroe@yahoo.com');",
-                    "INSERT INTO users VALUES(2, 'John', 'Doe', 'jdoe@gmail.com');"
+                    "INSERT INTO users VALUES(2, 'John', 'Doe', 'jdoe@gmail.com');",
+                    "INSERT INTO users VALUES(3, 'James', 'Dean', 'jdean@hotmail.com');"
             );
         } else if (table.equals("addresses")) {
             statements =  Arrays.asList(
@@ -99,7 +100,8 @@ public class H2StatementProvider implements StatementProvider {
             statements =  Arrays.asList(
                     "INSERT INTO doctors VALUES(1, 'John', 'Doe', 'otolaryngology');",
                     "INSERT INTO doctors VALUES(2, 'Hellen', 'Hunt', 'dentistry');",
-                    "INSERT INTO doctors VALUES(3, 'John', 'Druker', 'oncology');"
+                    "INSERT INTO doctors VALUES(3, 'John', 'Druker', 'oncology');",
+                    "INSERT INTO doctors VALUES(4, 'Henry', 'Jekyll', 'pathology');"
             );
         } else if (table.equals("doctors_patients")) {
             statements =  Arrays.asList(

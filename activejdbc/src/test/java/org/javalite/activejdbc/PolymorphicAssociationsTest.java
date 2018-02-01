@@ -136,6 +136,19 @@ public class PolymorphicAssociationsTest extends ActiveJDBCTest {
 
     }
 
+    @Test
+    public void shouldFixDefect553CacheEmptyChildren() {
+        deleteAndPopulateTables("articles", "posts", "comments");
+
+        LazyList<Article> articles = Article.findAll().include(Comment.class).orderBy("id");
+
+        LazyList<Comment> comments1 = articles.get(0).getAll(Comment.class);
+        LazyList<Comment> comments2 = articles.get(0).getAll(Comment.class);
+
+        a(comments1.isEmpty()).shouldBeTrue();
+        a(comments1).shouldBeTheSameAs(comments2);
+    }
+
     /**
      * @author Evan Leonard
      */

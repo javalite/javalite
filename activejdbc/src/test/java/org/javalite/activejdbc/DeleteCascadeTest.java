@@ -29,7 +29,7 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
         User u = User.findById(1);
         u.deleteCascade();
         a(u).shouldBe("frozen");
-        a(User.count()).shouldBeEqual(1);
+        a(User.count()).shouldBeEqual(2);
 
         //verify total count after delete
         a(Address.count()).shouldBeEqual(4);
@@ -95,7 +95,7 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
 
         Doctor.findById(3).deleteCascade();
 
-        a(Doctor.count()).shouldBeEqual(2);
+        a(Doctor.count()).shouldBeEqual(3);
         a(DoctorsPatients.count()).shouldBeEqual(3);
         a(Prescription.count()).shouldBeEqual(4);
 
@@ -109,7 +109,7 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
 
         Doctor.findById(1).deleteCascade();
 
-        a(Doctor.count()).shouldBeEqual(1);
+        a(Doctor.count()).shouldBeEqual(2);
         a(DoctorsPatients.count()).shouldBeEqual(1);
         a(Prescription.count()).shouldBeEqual(1);
         a(Comment.count()).shouldBeEqual(1);
@@ -130,13 +130,13 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
         Patient.findAll().dump();
         Prescription.findAll().dump();
 
-        a(Doctor.count()).shouldBeEqual(3);
+        a(Doctor.count()).shouldBeEqual(4);
         a(Patient.count()).shouldBeEqual(3);
         a(Prescription.count()).shouldBeEqual(5);
 
         Patient.findById(3).deleteCascadeExcept(Patient.getMetaModel().getAssociationForTarget(Prescription.class));
 
-        a(Doctor.count()).shouldBeEqual(2);
+        a(Doctor.count()).shouldBeEqual(3);
         a(Patient.count()).shouldBeEqual(2);
         a(Prescription.count()).shouldBeEqual(5); //<<< Prescription count is unchanged!
     }
@@ -155,7 +155,7 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
         User u = User.findById(1);
         u.deleteCascadeShallow();
         a(u).shouldBe("frozen");
-        a(User.count()).shouldBeEqual(1);
+        a(User.count()).shouldBeEqual(2);
 
         //verify total count after delete
         a(Address.count()).shouldBeEqual(4);
@@ -178,7 +178,7 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
 
         Doctor.findById(3).deleteCascadeShallow();
 
-        a(Doctor.count()).shouldBeEqual(2);
+        a(Doctor.count()).shouldBeEqual(3);
         a(DoctorsPatients.count()).shouldBeEqual(3);
 
         //so, prescriptions did not get deleted, hence orphaned

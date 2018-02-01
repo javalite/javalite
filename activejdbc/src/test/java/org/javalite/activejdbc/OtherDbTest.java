@@ -58,9 +58,10 @@ public class OtherDbTest extends ActiveJDBCTest {
     public void shouldFindFOtherDb() {
         List<User> users = User.findAll().orderBy("id");
         List<OtherDbModel> others = OtherDbModel.findAll().orderBy("id");
-        the(users.size()).shouldBeEqual(2);
+        the(users.size()).shouldBeEqual(3);
         the(users.get(0).get("first_name")).shouldBeEqual("Marilyn");
         the(users.get(1).get("first_name")).shouldBeEqual("John");
+        the(users.get(2).get("first_name")).shouldBeEqual("James");
         the(others.size()).shouldBeEqual(2);
         the(others.get(0).get("name")).shouldBeEqual("Foo");
         the(others.get(1).get("name")).shouldBeEqual("Bar");
