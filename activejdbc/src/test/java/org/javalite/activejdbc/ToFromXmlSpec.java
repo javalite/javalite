@@ -126,7 +126,7 @@ public class ToFromXmlSpec extends ActiveJDBCTest {
 
         String xml = personList.toXml(false, true);
 
-        a(XPathHelper.count("//user", xml)).shouldEqual(2);
+        a(XPathHelper.count("//user", xml)).shouldEqual(3);
         a(XPathHelper.count("//address", xml)).shouldEqual(7);
         a(XPathHelper.count("//address2", xml)).shouldEqual(7);
     }

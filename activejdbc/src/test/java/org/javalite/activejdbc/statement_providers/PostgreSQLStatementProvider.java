@@ -36,7 +36,9 @@ public class PostgreSQLStatementProvider implements StatementProvider {
         } else if (table.equals("users")) {
             statements =  Arrays.asList(
                     "INSERT INTO users (first_name, last_name, email) VALUES('Marilyn', 'Monroe', 'mmonroe@yahoo.com');",
-                    "INSERT INTO users (first_name, last_name, email) VALUES('John', 'Doe', 'jdoe@gmail.com');"
+                    "INSERT INTO users (first_name, last_name, email) VALUES('John', 'Doe', 'jdoe@gmail.com');",
+                    "INSERT INTO users (first_name, last_name, email) VALUES('James', 'Dean', 'jdean@hotmail.com');"
+
             );
         } else if (table.equals("addresses")) {
             statements =  Arrays.asList(
@@ -99,7 +101,8 @@ public class PostgreSQLStatementProvider implements StatementProvider {
             statements =  Arrays.asList(
                     "INSERT INTO doctors (first_name, last_name, discipline) VALUES('John', 'Doe', 'otolaryngology');",
                     "INSERT INTO doctors (first_name, last_name, discipline) VALUES('Hellen', 'Hunt', 'dentistry');",
-                    "INSERT INTO doctors (first_name, last_name, discipline) VALUES('John', 'Druker', 'oncology');"
+                    "INSERT INTO doctors (first_name, last_name, discipline) VALUES('John', 'Druker', 'oncology');",
+                    "INSERT INTO doctors (id, first_name, last_name, discipline) VALUES(4, 'Henry', 'Jekyll', 'pathology');"
 
             );
         } else if (table.equals("doctors_patients")) {

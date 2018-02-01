@@ -62,6 +62,19 @@ public class IncludesTest extends ActiveJDBCTest{
     }
 
     @Test
+    public void shouldFixDefect553CacheEmptyChildren()
+    {
+        deleteAndPopulateTables("users", "addresses");
+        LazyList<User> users = User.findAll().orderBy("id").include(Address.class);
+
+        LazyList<Address> addresses1 = users.get(2).getAll(Address.class);
+        LazyList<Address> addresses2 = users.get(2).getAll(Address.class);
+
+        a(addresses1).shouldBeTheSameAs(addresses2);
+        a(addresses1.isEmpty()).shouldBeTrue();
+    }
+
+    @Test
     public void shouldBeAbleToIncludeOtherInManyToMany() {
         deleteAndPopulateTables("doctors", "patients", "doctors_patients");
         LazyList<Doctor> doctors = Doctor.findAll().orderBy("id").include(Patient.class);
@@ -114,6 +127,18 @@ public class IncludesTest extends ActiveJDBCTest{
         List<Patient> patients1 = doctors.get(0).getAll(Patient.class);
         List<Patient> patients2 = doctors.get(0).getAll(Patient.class);
         a(patients1).shouldBeTheSameAs(patients2);
+    }
+
+    @Test
+    public void shouldFixDefect553CacheIncludesMany2Many() {
+        deleteAndPopulateTables("doctors", "patients", "doctors_patients");
+        LazyList<Doctor> doctors = Doctor.findAll().orderBy("id").include(Patient.class);
+
+        // Doctor without patients
+        List<Patient> patients1 = doctors.get(3).getAll(Patient.class);
+        List<Patient> patients2 = doctors.get(3).getAll(Patient.class);
+        a(patients1).shouldBeTheSameAs(patients2);
+        a(patients1.isEmpty()).shouldBeTrue();
     }
 
     @Test
