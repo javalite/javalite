@@ -30,6 +30,10 @@ public class Property {
         return value;
     }
 
+    void setValue(String value) {
+        this.value = value;
+    }
+
     public String getPropertyFile() {
         return propertyFile;
     }

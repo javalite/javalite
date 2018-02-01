@@ -60,4 +60,11 @@ public class AppConfigTest implements JSpecSupport {
         AppConfig.reload();
         a(p("first.name")).shouldBeEqual("John");
     }
+
+
+    @Test
+    public void shouldMergeOnePropertyIntoAnother(){
+        AppConfig.reload();
+        the(p("phrase")).shouldBeEqual("And the name is John");
+    }
 }

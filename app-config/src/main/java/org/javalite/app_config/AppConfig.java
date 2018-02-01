@@ -71,6 +71,25 @@ import java.util.*;
  * <blockquote><strong>The file-based configuration  overrides classpath one. If you have a property defined in both,
  * the classpath configuration will be completely ignored and the file property will be used.</strong></blockquote>
  *
+ *
+ * <h2>Property substitution</h2>
+ *
+ * AppConfig allows a property substitution to make it possible to refactor large property files by specifying a
+ * repeating value once. If your property file has these properties:
+ *
+ * <pre>
+ * first.name=John
+   phrase= And the name is ${first.name}
+ * </pre>
+ *
+ * than this code will print <code>And the name is John</code>:
+ *
+ * <pre>
+ * System.out.println(p("phrase"));
+ * </pre>
+ *
+ * Note: The order of properties does not matter.
+ *
  * @author Igor Polevoy
  */
 public class AppConfig implements Map<String, String> {
@@ -105,6 +124,8 @@ public class AppConfig implements Map<String, String> {
             if(System.getProperties().containsKey(propName)){
                 loadFromFileSystem(System.getProperty(propName));
             }
+
+            merge();
         } catch (ConfigInitException e) {
             throw e;
         }catch (Exception e){
@@ -112,7 +133,22 @@ public class AppConfig implements Map<String, String> {
         }
     }
 
-
+    /**
+     * Will merge defined values into placeholders like ${placeholder}
+     */
+    private static void merge() {
+        Set<String> keySet = props.keySet();
+        for (Property property: props.values()){
+            for (String key: keySet){
+                if(!key.equals(property.getName())){
+                    String val = property.getValue();
+                    if(val.contains("${" + key + "}")){
+                        property.setValue(val.replaceAll("\\$\\{" + key + "\\}", p(key)));
+                    }
+                }
+            }
+        }
+    }
 
 
     private static void loadFromFileSystem(String filePath) throws MalformedURLException {
