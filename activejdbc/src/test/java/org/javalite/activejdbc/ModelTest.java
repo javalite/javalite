@@ -334,6 +334,15 @@ public class ModelTest extends ActiveJDBCTest {
 
     }
 
+    @Test
+    public void testHasManyOverrideConventionAssociation() {
+        deleteAndPopulateTables("teams", "players");
+        Team t = Team.findById(1);
+        List<Player> players = t.getAll(Player.class);
+        Team team = players.get(0).parent(Team.class);
+        the(team).shouldNotBeNull();
+        the(t.getId()).shouldBeEqual(team.getId());
+    }
 
     @Test
     public void testBelongsToMany(){

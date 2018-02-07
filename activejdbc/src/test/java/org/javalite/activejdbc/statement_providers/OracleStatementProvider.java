@@ -181,6 +181,18 @@ public class OracleStatementProvider implements StatementProvider {
                     "INSERT INTO nodes VALUES (2, 'Self', 1)",
                     "INSERT INTO nodes VALUES (3, 'Sibling', 1)",
                     "INSERT INTO nodes VALUES (4, 'Child', 2)");
+        } else if (table.equals("teams")) {
+            statements =  Arrays.asList(
+                "INSERT INTO teams VALUES (1, 'New England Patriots')",
+                "INSERT INTO teams VALUES (2, 'Philadelphia Eagles')"
+            );
+        } else if (table.equals("players")) {
+            statements =  Arrays.asList(
+                "INSERT INTO players VALUES (1, 'Tom', 'Brady', 1)",
+                "INSERT INTO players VALUES (2, 'Dany', 'Amendola', 1)",
+                "INSERT INTO players VALUES (3, 'Nick', 'Foles', 2)",
+                "INSERT INTO players VALUES (4, 'Trey', 'Burton', 2)"
+            );
         } else{
             statements = Arrays.asList();
         }
@@ -198,6 +210,15 @@ public class OracleStatementProvider implements StatementProvider {
                     "    begin\n" +
                     "select coalesce(:new.animal_id, animals_seq.nextval) into :new.animal_id from dual;\n" +
                     "end;");
+        } else if (table.equals("teams")) {
+            all.add("CREATE OR REPLACE TRIGGER teams_trigger\n" +
+                "    BEFORE INSERT ON teams REFERENCING\n" +
+                "    NEW AS new\n" +
+                "    OLD AS old\n" +
+                "    FOR EACH ROW\n" +
+                "    begin\n" +
+                "select coalesce(:new.team_id, animals_seq.nextval) into :new.team_id from dual;\n" +
+                "end;");
         }else{
         all.add("CREATE OR REPLACE TRIGGER " + table + "_trigger\n" +
                 "    BEFORE INSERT ON " + table + " REFERENCING\n" +

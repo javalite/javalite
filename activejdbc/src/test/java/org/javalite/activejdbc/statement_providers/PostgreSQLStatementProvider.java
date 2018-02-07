@@ -182,6 +182,18 @@ public class PostgreSQLStatementProvider implements StatementProvider {
                     "INSERT INTO nodes VALUES (2, 'Self', 1);",
                     "INSERT INTO nodes VALUES (3, 'Sibling', 1);",
                     "INSERT INTO nodes VALUES (4, 'Child', 2);");
+        } else if (table.equals("teams")) {
+            statements =  Arrays.asList(
+                "INSERT INTO teams VALUES (1, 'New England Patriots');",
+                "INSERT INTO teams VALUES (2, 'Philadelphia Eagles');"
+            );
+        } else if (table.equals("players")) {
+            statements =  Arrays.asList(
+                "INSERT INTO players VALUES (1, 'Tom', 'Brady', 1);",
+                "INSERT INTO players VALUES (2, 'Dany', 'Amendola', 1);",
+                "INSERT INTO players VALUES (3, 'Nick', 'Foles', 2);",
+                "INSERT INTO players VALUES (4, 'Trey', 'Burton', 2);"
+            );
         } else {
             statements = Arrays.asList();
         }
@@ -190,7 +202,11 @@ public class PostgreSQLStatementProvider implements StatementProvider {
         all.add("DELETE FROM " + table + ";");
         if(table.equals("animals")){
             all.add("UPDATE dual SET next_val = SETVAL('animals_animal_id_seq', 1, FALSE);");
-        }else{
+        }
+        else if(table.equals("teams")) {
+            all.add("UPDATE dual SET next_val = SETVAL('teams_team_id_seq', 1, FALSE);");
+        }
+        else{
             all.add("UPDATE dual SET next_val = SETVAL('" + table + "_id_seq', 1, FALSE);");
         }
 

@@ -185,7 +185,20 @@ public class H2StatementProvider implements StatementProvider {
                     "INSERT INTO nodes VALUES (2, 'Self', 1);",
                     "INSERT INTO nodes VALUES (3, 'Sibling', 1);",
                     "INSERT INTO nodes VALUES (4, 'Child', 2);");
-        } else {
+        } else if (table.equals("teams")) {
+          statements =  Arrays.asList(
+              "INSERT INTO teams VALUES (1, 'New England Patriots');",
+              "INSERT INTO teams VALUES (2, 'Philadelphia Eagles');"
+          );
+        } else if (table.equals("players")) {
+          statements =  Arrays.asList(
+              "INSERT INTO players VALUES (1, 'Tom', 'Brady', 1);",
+              "INSERT INTO players VALUES (2, 'Dany', 'Amendola', 1);",
+              "INSERT INTO players VALUES (3, 'Nick', 'Foles', 2);",
+              "INSERT INTO players VALUES (4, 'Trey', 'Burton', 2);"
+          );
+        }
+        else {
             statements = Arrays.asList();
         }
 
@@ -194,6 +207,8 @@ public class H2StatementProvider implements StatementProvider {
         //https://groups.google.com/forum/#!searchin/h2-database/reset$20auto_increment/h2-database/PqkE1-tK_M4/I7MBEpHOZFQJ
         if(table.equals("animals")){
             all.add("ALTER TABLE " + table + " ALTER COLUMN animal_id RESTART WITH 1;");
+        } else if (table.equals("teams")) {
+            all.add("ALTER TABLE " + table + " ALTER COLUMN team_id RESTART WITH 1;");
         } else {
             all.add("ALTER TABLE " + table + " ALTER COLUMN id RESTART WITH 1;");
         }

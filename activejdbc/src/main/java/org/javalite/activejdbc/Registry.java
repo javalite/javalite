@@ -254,6 +254,9 @@ public enum Registry {
                 }
             }
 
+            HasMany hasManyAnnotation = modelClass.getAnnotation(HasMany.class);
+            processOverridesHasMany(modelClass, hasManyAnnotation);
+
             Many2Many many2manyAnnotation = modelClass.getAnnotation(Many2Many.class);
             if(many2manyAnnotation != null){
                 processManyToManyOverrides(many2manyAnnotation, modelClass);
@@ -349,6 +352,13 @@ public enum Registry {
         if(belongsToAnnotation != null){
             Class<? extends Model> parentClass = belongsToAnnotation.parent();
             String foreignKeyName = belongsToAnnotation.foreignKeyName();
+
+            if (metaModels.getMetaModel(parentClass).hasAssociation(modelClass, OneToManyAssociation.class)) {
+                LogFilter.log(LOGGER, LogLevel.WARNING, "Redundant annotations used: @BelongsTo and @HasMany on a "
+                    + "relationship between Model {} and Model {}.", modelClass.getName(), parentClass.getName());
+                return;
+            }
+
             Association hasMany = new OneToManyAssociation(parentClass, modelClass, foreignKeyName);
             Association belongsTo = new BelongsToAssociation(modelClass, parentClass, foreignKeyName);
 
@@ -357,6 +367,25 @@ public enum Registry {
         }
 	}
 
+
+    private void processOverridesHasMany(Class<? extends Model> modelClass, HasMany hasManyAnnotation) {
+        if(hasManyAnnotation != null){
+            Class<? extends Model> childClass = hasManyAnnotation.child();
+            String foreignKeyName = hasManyAnnotation.foreignKeyName();
+
+            if (metaModels.getMetaModel(childClass).hasAssociation(modelClass, OneToManyAssociation.class)) {
+                LogFilter.log(LOGGER, LogLevel.WARNING, "Redundant annotations used: @BelongsTo and @HasMany on a "
+                    + "relationship between Model {} and Model {}.", modelClass.getName(), childClass.getName());
+                return;
+            }
+
+            Association hasMany = new OneToManyAssociation(modelClass, childClass, foreignKeyName);
+            Association belongsTo = new BelongsToAssociation(childClass, modelClass, foreignKeyName);
+
+            metaModels.getMetaModel(modelClass).addAssociation(hasMany);
+            metaModels.getMetaModel(childClass).addAssociation(belongsTo);
+        }
+    }
 
     private Map<String, ColumnMetadata> getColumns(ResultSet rs, String dbType) throws SQLException {
         Map<String, ColumnMetadata> columns = new CaseInsensitiveMap<>();

@@ -201,6 +201,18 @@ public class SQLiteStatementProvider implements org.javalite.activejdbc.Statemen
                     "INSERT INTO nodes VALUES (2, 'Self', 1);",
                     "INSERT INTO nodes VALUES (3, 'Sibling', 1);",
                     "INSERT INTO nodes VALUES (4, 'Child', 2);");
+        } else if (table.equals("teams")) {
+            statements =  Arrays.asList(
+                "INSERT INTO teams VALUES (1, 'New England Patriots');",
+                "INSERT INTO teams VALUES (2, 'Philadelphia Eagles');"
+            );
+        } else if (table.equals("players")) {
+            statements =  Arrays.asList(
+                "INSERT INTO players VALUES (1, 'Tom', 'Brady', 1);",
+                "INSERT INTO players VALUES (2, 'Dany', 'Amendola', 1);",
+                "INSERT INTO players VALUES (3, 'Nick', 'Foles', 2);",
+                "INSERT INTO players VALUES (4, 'Trey', 'Burton', 2);"
+            );
         }else{
             statements = Arrays.asList();
         }
