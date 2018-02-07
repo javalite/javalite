@@ -184,6 +184,18 @@ public class MSSQLStatementProvider implements StatementProvider {
                     "INSERT INTO nodes (id, name, parent_id) VALUES (2, 'Self', 1);",
                     "INSERT INTO nodes (id, name, parent_id) VALUES (3, 'Sibling', 1);",
                     "INSERT INTO nodes (id, name, parent_id) VALUES (4, 'Child', 2);");
+        } else if (table.equals("teams")) {
+            statements =  Arrays.asList(
+                "INSERT INTO teams (team_id, name) VALUES (1, 'New England Patriots');",
+                "INSERT INTO teams (team_id, name) VALUES (2, 'Philadelphia Eagles');"
+            );
+        } else if (table.equals("players")) {
+            statements =  Arrays.asList(
+                "INSERT INTO players (id, first_name, last_name, team_id) VALUES (1, 'Tom', 'Brady', 1);",
+                "INSERT INTO players (id, first_name, last_name, team_id) VALUES (2, 'Dany', 'Amendola', 1);",
+                "INSERT INTO players (id, first_name, last_name, team_id) VALUES (3, 'Nick', 'Foles', 2);",
+                "INSERT INTO players (id, first_name, last_name, team_id) VALUES (4, 'Trey', 'Burton', 2);"
+            );
         } else{
             statements = Arrays.asList();
         }
