@@ -6,11 +6,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static org.javalite.common.Collections.map;
 import static org.javalite.common.JsonHelper.toJsonString;
-import static org.javalite.test.jspec.JSpec.$;
-import static org.javalite.test.jspec.JSpec.a;
-import static org.javalite.test.jspec.JSpec.the;
+import static org.javalite.test.jspec.JSpec.*;
 
 /**
  * @author Igor Polevoy on 5/26/16.
@@ -92,7 +89,11 @@ public class JsonHelperSpec {
     @Test
     public void shouldEscapeNewLine() {
         String result = JsonHelper.escapeControlChars("line 1" + System.getProperty("line.separator") + "line 2");
-        the(result).shouldBeEqual("line 1\\nline 2");
+        if(System.getProperty("os.name").contains("indows")){
+            the(result).shouldBeEqual("line 1\\r\\nline 2");
+        }else{
+            the(result).shouldBeEqual("line 1\\nline 2");
+        }
     }
 
     @Test
@@ -103,7 +104,12 @@ public class JsonHelperSpec {
 
     @Test
     public void shouldCleanSelectedChars() {
-        String result = JsonHelper.sanitize("line 1" + System.getProperty("line.separator") + "\tline 2", true, '\n');
+        String result;
+        if(System.getProperty("os.name").contains("indows")){
+            result = JsonHelper.sanitize("line 1" + System.getProperty("line.separator") + "\tline 2", true, '\n', '\r');
+        }else {
+            result = JsonHelper.sanitize("line 1" + System.getProperty("line.separator") + "\tline 2", true, '\n');
+        }
         the(result).shouldBeEqual("line 1\tline 2");
     }
 

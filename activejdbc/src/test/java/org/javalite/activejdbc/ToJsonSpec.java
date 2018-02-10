@@ -227,7 +227,8 @@ public class ToJsonSpec extends ActiveJDBCTest {
     public void shouldSanitizeJson() {
 
         Person p = new Person();
-        p.set("name", Util.readResource("/bad.txt"));
+                                                                //hack to fix a build on Windows
+        p.set("name", Util.readResource("/bad.txt").replaceAll("\r\n", "\n"));
         Map m = JsonHelper.toMap(p.toJson(true));
         a(m.get("name")).shouldBeEqual("bad\n\tfor\n\t\tJson");
     }

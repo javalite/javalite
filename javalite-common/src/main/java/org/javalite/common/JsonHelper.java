@@ -20,7 +20,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 
 import java.io.IOException;
-import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,9 +32,10 @@ import java.util.Map;
 
 public class JsonHelper {
     private static final ObjectMapper mapper = new ObjectMapper();
-    
-    private JsonHelper() {}
-    
+
+    private JsonHelper() {
+    }
+
     static {
         mapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
@@ -87,9 +88,9 @@ public class JsonHelper {
      * @param namesAndValues - expected sequence of corresponding name and value pairs (number of parameters must be even   ).
      * @return new string {name:value,name1:value1, etc.}
      */
-    public static String toJsonObject(Object ... namesAndValues) {
+    public static String toJsonObject(Object... namesAndValues) {
 
-        if(namesAndValues.length %2 != 0){
+        if (namesAndValues.length % 2 != 0) {
             throw new IllegalArgumentException("number or arguments must be even");
         }
         StringBuilder sb = new StringBuilder("{");
@@ -100,19 +101,19 @@ public class JsonHelper {
             Object name = namesAndValues[count];
             sb.append("\"").append(name).append("\":");
             if (!(namesAndValues[count + 1] instanceof Number)) {
-                if(namesAndValues[count + 1] == null) {
+                if (namesAndValues[count + 1] == null) {
                     sb.append("null");
-                }else {
+                } else {
                     sb.append("\"").append(namesAndValues[count + 1].toString()).append("\"");
                 }
             } else {
                 sb.append(namesAndValues[count + 1].toString());
             }
 
-            if(count < (namesAndValues.length - 2)){
+            if (count < (namesAndValues.length - 2)) {
                 sb.append(",");
                 count += 2;
-            }else {
+            } else {
                 sb.append("}");
                 break;
             }
@@ -148,9 +149,9 @@ public class JsonHelper {
     /**
      * Escapes control characters in a string.
      *
-     * @see {@link #sanitize(String)} - synonym
      * @param value string to escape
      * @return escaped version
+     * @see {@link #sanitize(String)} - synonym
      */
     public static String escapeControlChars(String value) {
         return sanitize(value, false);
@@ -159,11 +160,9 @@ public class JsonHelper {
     /**
      * Escapes control characters in a string.
      *
-     * @see {@link #escapeControlChars(String)} - synonym
-     *
-     *
      * @param value string to escape
      * @return escaped version
+     * @see {@link #escapeControlChars(String)} - synonym
      */
     public static String sanitize(String value) {
         return sanitize(value, false);
@@ -172,93 +171,82 @@ public class JsonHelper {
     public static String sanitize(String value, boolean clean) {
         return sanitize(value, clean, null);
     }
+
     /**
      * Escapes control characters in a string when you need to
-     * generate JSON. This method is based on:
-     * <a href="https://github.com/google/gson/blob/master/gson/src/main/java/com/google/gson/stream/JsonWriter.java#L564">Gson JsonWriter</a>.
+     * generate JSON.
      *
-     * @param value input string
-     * @param  clean if true will remove characters that match, if false will escape
-     * @param  toEscape array of characters to escape. If not provided, it will escape or clean <code>'"','\\', '\t', '\b', '\n', '\r' '\f'</code>.
-     *                  This method will only escape or clean if provided chars are from this list.
-     *
+     * @param value    input string
+     * @param clean    if true will remove characters that match, if false will escape
+     * @param toEscape array of characters to escape. If not provided, it will escape or clean <code>'"','\\', '\t', '\b', '\n', '\r' '\f'</code>.
+     *                 This method will only escape or clean if provided chars are from this list.
      * @return input string with control characters escaped or removed, depending on the <code>clean</code> flag.
      */
-    public static String sanitize(String value, boolean clean, char ... toEscape) {
+    public static String sanitize(String value, boolean clean, Character... toEscape) {
 
-        StringWriter out = new StringWriter();
+        StringBuilder builder = new StringBuilder();
+        Map<Character, String> replacements = clean ? CLEAN_CHARS : REPLACEMENT_CHARS;
 
-        String[] replacements = clean? CLEAN_CHARS : REPLACEMENT_CHARS;
-
-        int last = 0;
-        int length = value.length();
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < value.length(); i++) {
             char c = value.charAt(i);
-            String replacement;
-            if (c < 128) {
-                if(toEscape == null){
-                    replacement = replacements[c];
-                }else if (contains(toEscape, c)){
-                    replacement = replacements[c];
-                }else {
-                    replacement = null;
-                }
-                if (replacement == null) {
-                    continue;
-                }
-            } else if (c == '\u2028') {
-                replacement = "\\u2028";
-            } else if (c == '\u2029') {
-                replacement = "\\u2029";
-            } else {
-                continue;
-            }
-            if (last < i) {
-                out.write(value, last, i - last);
-            }
-            out.write(replacement);
-            last = i + 1;
-        }
-        if (last < length) {
-            out.write(value, last, length - last);
-        }
 
-        return out.toString();
+            if (toEscape == null) {
+                if (replacements.containsKey(c)) {
+                    builder.append(replacements.get(c));
+                } else {
+                    builder.append(c);
+                }
+            } else {
+                if (replacements.containsKey(c) && contains(toEscape, c)) {
+                    builder.append(replacements.get(c));
+                } else {
+                    builder.append(c);
+                }
+            }
+        }
+        return builder.toString();
     }
 
-    private static boolean contains(char[] toEscape, char c) {
-        for (char c1 : toEscape) {
-            return c1 == c;
+    private static boolean contains(Character[] toEscape, char c) {
+        for (char escapeChar : toEscape) {
+            if (escapeChar == c) {
+                return true;
+            }
         }
         return false;
     }
 
-    private static final String[] REPLACEMENT_CHARS;
-    private static final String[] CLEAN_CHARS;
+    private static final Map<Character, String> REPLACEMENT_CHARS = new HashMap<>();
+    private static final Map<Character, String> CLEAN_CHARS = new HashMap<>();
 
     static {
-        REPLACEMENT_CHARS = new String[128];
-        for (int i = 0; i <= 0x1f; i++) {
-            REPLACEMENT_CHARS[i] = String.format("\\u%04x", (int) i);
-        }
-        REPLACEMENT_CHARS['"'] = "\\\"";
-        REPLACEMENT_CHARS['\\'] = "\\\\";
-        REPLACEMENT_CHARS['\t'] = "\\t";
-        REPLACEMENT_CHARS['\b'] = "\\b";
-        REPLACEMENT_CHARS['\n'] = "\\n";
-        REPLACEMENT_CHARS['\r'] = "\\r";
-        REPLACEMENT_CHARS['\f'] = "\\f";
 
-        CLEAN_CHARS = new String[128];
         for (int i = 0; i <= 0x1f; i++) {
-            CLEAN_CHARS[i] = String.format("\\u%04x", (int) i);
+            REPLACEMENT_CHARS.put((char) i, String.format("\\u%04x", (int) i));
         }
 
-        CLEAN_CHARS['\\'] = "";
-        CLEAN_CHARS['\t'] = "";
-        CLEAN_CHARS['\b'] = "";
-        CLEAN_CHARS['\n'] = "";
-        CLEAN_CHARS['\r'] = "";
-        CLEAN_CHARS['\f'] = "";
+        REPLACEMENT_CHARS.put('\u2028', "\\u2028");
+        REPLACEMENT_CHARS.put('\u2029', "\\u2029");
+        REPLACEMENT_CHARS.put('"', "\\\"");
+        REPLACEMENT_CHARS.put('\\', "\\\\");
+        REPLACEMENT_CHARS.put('\t', "\\t");
+        REPLACEMENT_CHARS.put('\b', "\\b");
+        REPLACEMENT_CHARS.put('\n', "\\n");
+        REPLACEMENT_CHARS.put('\r', "\\r");
+        REPLACEMENT_CHARS.put('\f', "\\f");
+
+
+        for (int i = 0; i <= 0x1f; i++) {
+            CLEAN_CHARS.put((char) i, String.format("\\u%04x", (int) i));
+        }
+
+        CLEAN_CHARS.put('\u2028', "");
+        CLEAN_CHARS.put('\u2029', "");
+        CLEAN_CHARS.put('\\', "");
+        CLEAN_CHARS.put('\t', "");
+        CLEAN_CHARS.put('\b', "");
+        CLEAN_CHARS.put('\n', "");
+        CLEAN_CHARS.put('\r', "");
+        CLEAN_CHARS.put('\f', "");
     }
 }
