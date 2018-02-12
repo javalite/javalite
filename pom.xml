@@ -4,7 +4,7 @@
     <groupId>org.javalite</groupId>
     <artifactId>activejdbc-root</artifactId>
     <packaging>pom</packaging>
-    <version>2.0-SNAPSHOT</version>
+    <version>2.0</version>
     <name>JavaLite - ActiveJDBC Root</name>
     <url>https://github.com/javalite/activejdbc/</url>
 
