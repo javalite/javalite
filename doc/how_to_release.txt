@@ -2,10 +2,10 @@
 Release steps:
 
 1. mvn release:clean
-2. mvn release:prepare
+2. mvn release:prepare (ls pwd)
 3. mvn release:perform
 4. Follow steps to release:
-	Navigate to Staging repositories: https://oss.sonatype.org/index.html#stagingRepositories , close and release artifacts
+	Navigate to Staging repositories: https://oss.sonatype.org/index.html#stagingRepositories , close and release artifacts (personal email / dev ls pwd)
 5. Update Gradle plugin resources to the latest version
 6. Update and test all examples to the latest released version
 
