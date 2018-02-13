@@ -3,7 +3,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>async-pool-test</artifactId>
-    <version>2.0-SNAPSHOT</version>
+    <version>2.0</version>
     <name>JavaLite - Async Pooll Test</name>
     <packaging>jar</packaging>
     <description>This module is to manually test pooling of sessions in Async.</description>
@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>activeweb-root</artifactId>
-        <version>2.0-SNAPSHOT</version>
+        <version>2.0</version>
     </parent>
 
 
