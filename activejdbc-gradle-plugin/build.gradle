@@ -1,5 +1,5 @@
 group 'org.javalite'
-version '2.0-SNAPSHOT'
+version '2.1-SNAPSHOT'
 
 apply plugin: 'groovy'
 
@@ -19,8 +19,8 @@ configurations {
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    compile group: 'org.javalite', name: 'activejdbc', version: '2.0-SNAPSHOT'
-    compile group: 'org.javalite', name: 'activejdbc-instrumentation', version: '2.0-SNAPSHOT'
+    compile group: 'org.javalite', name: 'activejdbc', version: '2.0'
+    compile group: 'org.javalite', name: 'activejdbc-instrumentation', version: '2.0'
 
     deployerJars group: 'org.apache.maven.wagon', name: 'wagon-http', version: '2.2'
 }

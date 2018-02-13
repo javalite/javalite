@@ -7,6 +7,7 @@ Release steps:
 4. Follow steps to release:
 	Navigate to Staging repositories: https://oss.sonatype.org/index.html#stagingRepositories , close and release artifacts (personal email / dev ls pwd)
 5. Update Gradle plugin resources to the latest version
+6. Search the project for previous snapshot version and switch to latest snapshot (test projects)
 6. Update and test all examples to the latest released version
 
 generate release notes:
