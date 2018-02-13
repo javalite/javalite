@@ -62,7 +62,11 @@ public class FreemarkerSpec extends ActiveJDBCTest {
         StringWriter writer = new StringWriter();
 
         template.process(map("people", people), writer);
-        the(writer.toString().trim()).shouldBeEqual("Person: John  Smith, graduation date: \n" +
+        String processedTemplate = writer.toString().trim();
+        if(System.getProperty("os.name").contains("indows")) {
+            processedTemplate = processedTemplate.replaceAll("\r\n", "\n");
+        }
+        the(processedTemplate).shouldBeEqual("Person: John  Smith, graduation date: \n" +
                 "Person: Leylah  Jonston, graduation date: Apr 3, 1974\n" +
                 "Person: Muhammad  Ali, graduation date: Jan 4, 1963\n" +
                 "Person: Joe  Pesci, graduation date: Feb 23, 1964");
@@ -88,7 +92,11 @@ public class FreemarkerSpec extends ActiveJDBCTest {
 
         StringWriter writer = new StringWriter();
         template.process(map("people", people), writer);
-        the(writer.toString().trim()).shouldBeEqual("Person: John  Smith, graduation date: \n" +
+        String processedTemplate = writer.toString().trim();
+        if(System.getProperty("os.name").contains("indows")) {
+            processedTemplate = processedTemplate.replaceAll("\r\n", "\n");
+        }
+        the(processedTemplate).shouldBeEqual("Person: John  Smith, graduation date: \n" +
                 "Person: Leylah  Jonston, graduation date: Apr 3, 1974\n" +
                 "Person: Muhammad  Ali, graduation date: Jan 4, 1963\n" +
                 "Person: Joe  Pesci, graduation date: Feb 23, 1964");
