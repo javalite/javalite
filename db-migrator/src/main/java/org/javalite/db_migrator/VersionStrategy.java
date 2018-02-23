@@ -41,10 +41,6 @@ public class VersionStrategy {
         LOGGER.info("Creating schema version table for {} DB", dbType);
         String ddl = format(CREATE_VERSION_TABLE_MAP.getOrDefault(dbType, DEFAULT_VALUE), VERSION_TABLE, VERSION_COLUMN, APPLIED_DATE_COLUMN, DURATION_COLUMN);
         exec(ddl);
-        if (dbType == CLICKHOUSE) {
-            LOGGER.info("Additing empty row for ClickHouse count to work correctly");
-            exec("insert into schema_version values ('20161202153800', '2016-12-02 15:38:00',1)");//ClickHouse returns empty result set in case of count empty table
-        }
     }
 
     public boolean versionTableExists() {

@@ -230,8 +230,9 @@ public class DbUtils {
         try{
             st = connection().createStatement();
             rs = st.executeQuery("select count(*) from " + table);
-            rs.next();
-            return rs.getInt(1);
+            if (rs.next())
+                return rs.getInt(1);
+            return 0;
         }catch(SQLException e){
             throw new MigrationException(e);
         }finally {
