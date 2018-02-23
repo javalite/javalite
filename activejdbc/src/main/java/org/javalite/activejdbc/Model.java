@@ -581,7 +581,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *     Patient.findById(3).deleteCascadeExcept(Patient.getMetaModel().getAssociationForTarget("prescriptions"));
      * </code>
      *
-     * @see {@link #deleteCascade()} - see for more information.
+     * @see #deleteCascade()
      * @param excludedAssociations associations
      */
     public void deleteCascadeExcept(Association ... excludedAssociations){
@@ -1931,7 +1931,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @param key - key wy which this error can be retrieved from a collection of errors: {@link #errors()}.
      * @param value - this is a key of the message in the resource bundle.
-     * @see {@link Messages}.
+     * @see Messages
      */
     public void addError(String key, String value){
         errors.put(key, value);
@@ -2866,7 +2866,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     /**
      * Value of ID.
      *
-     * @see {@link #getLongId()}
+     * @see #getLongId()
      *
      * @return of ID.
      */

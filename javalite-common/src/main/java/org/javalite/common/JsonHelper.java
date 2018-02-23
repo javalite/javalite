@@ -151,7 +151,7 @@ public class JsonHelper {
      *
      * @param value string to escape
      * @return escaped version
-     * @see {@link #sanitize(String)} - synonym
+     * @see #sanitize(String)
      */
     public static String escapeControlChars(String value) {
         return sanitize(value, false);
@@ -162,7 +162,7 @@ public class JsonHelper {
      *
      * @param value string to escape
      * @return escaped version
-     * @see {@link #escapeControlChars(String)} - synonym
+     * @see #escapeControlChars(String)
      */
     public static String sanitize(String value) {
         return sanitize(value, false);
