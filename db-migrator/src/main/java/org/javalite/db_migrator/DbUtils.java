@@ -23,6 +23,7 @@ public class DbUtils {
     private static final String SQL_SERVER_MS_2005_FRAGMENT = ":sqlserver:";
     private static final String DB2_FRAGMENT = ":db2:";
     private static final String ORACLE_FRAGMENT = ":oracle:";
+    private static final String CLICKHOUSE_FRAGMENT = ":clickhouse:";
 
     private DbUtils() {
         
@@ -97,6 +98,9 @@ public class DbUtils {
         }
         if (url.contains(ORACLE_FRAGMENT)) {
             return ORACLE;
+        }
+        if (url.contains(CLICKHOUSE_FRAGMENT)) {
+            return CLICKHOUSE;
         }
 
         return UNKNOWN;
