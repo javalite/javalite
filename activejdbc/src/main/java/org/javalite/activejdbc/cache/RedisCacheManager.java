@@ -24,7 +24,7 @@ import static org.javalite.common.Util.blank;
  * See: <a href="http://javalite.github.io/activejdbc/snapshot/org/javalite/app_config/AppConfig.html">AppConfig</a>
  * for more information.
  *
- * The environment-specific properties files have to have the following properties for this class to fuction:
+ * The environment-specific properties files have to have the following properties for this class to function:
  *
  * <ul>
  *     <li>

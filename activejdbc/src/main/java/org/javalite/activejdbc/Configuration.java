@@ -40,6 +40,23 @@ import static org.javalite.common.Util.*;
  */
 public class Configuration {
 
+    /**
+     * All properties defined in framework.
+     */
+    public enum PropertyName {
+        CacheManager("cache.manager"),
+        ActiveJdbcLogger("activejdbc.logger"),
+        EnvConnectionsFile("env.connections.file"),
+        CollectStatistics("collectStatistics"),
+        CollectStatisticsOnHold("collectStatisticsOnHold");
+
+        private String name;
+
+        PropertyName(String name) {
+            this.name = name;
+        }
+    }
+
     //key is a DB name, value is a list of model names
     private Map<String, List<String>> modelsMap = new HashMap<>();
     private Properties properties = new Properties();
@@ -54,6 +71,8 @@ public class Configuration {
 
     protected Configuration(){
 
+        loadProjectProperties();
+        loadOverridesFromSystemProperties();
         loadConnectionsSpecs();
 
         try {
@@ -95,14 +114,8 @@ public class Configuration {
             LogFilter.log(LOGGER, LogLevel.INFO, "ActiveJDBC Warning: Cannot locate any models, assuming project without models.");
             return;
         }
-        try {
-            InputStream in = getClass().getResourceAsStream("/activejdbc.properties");
-            if (in != null) { properties.load(in); }
-        } catch (IOException e){
-            throw new InitException(e);
-        }
 
-        String cacheManagerClass = properties.getProperty("cache.manager");
+        String cacheManagerClass = properties.getProperty(PropertyName.CacheManager.name);
         if(cacheManagerClass != null){
             try{
                 Class cmc = Class.forName(cacheManagerClass);
@@ -118,7 +131,7 @@ public class Configuration {
             cacheManager = new NopeCacheManager();
         }
 
-        String loggerClass = properties.getProperty("activejdbc.logger");
+        String loggerClass = properties.getProperty(PropertyName.ActiveJdbcLogger.name);
         if(loggerClass != null){
             try {
                 activeLogger = (ActiveJDBCLogger) Class.forName(loggerClass).newInstance();
@@ -130,10 +143,34 @@ public class Configuration {
         }
     }
 
+    /**
+     * A system property, if provided, will override a property from a file <code>activejdbc.properties</code>.
+     * That is only if defined in {@link PropertyName}.
+     *
+     */
+    private void loadOverridesFromSystemProperties() {
+        PropertyName[] names = PropertyName.values();
+        for (PropertyName propertyName: names){
+            String sysProp = System.getProperty(propertyName.name);
+            if(sysProp != null){
+                properties.put(propertyName.name, sysProp);
+            }
+        }
+    }
+
+    private void loadProjectProperties() {
+        try {
+            InputStream in = getClass().getResourceAsStream("/activejdbc.properties");
+            if (in != null) { properties.load(in); }
+        } catch (IOException e){
+            throw new InitException(e);
+        }
+    }
+
     private void loadConnectionsSpecs() {
         try{
             String propertyFileName = properties == null ? "database.properties"
-                    : properties.getProperty("env.connections.file", "database.properties");
+                    : properties.getProperty(PropertyName.EnvConnectionsFile.name, "database.properties");
 
             Properties connectionProps = readPropertyFile(propertyFileName);
             for (String env : getEnvironments(connectionProps)) {
@@ -244,6 +281,7 @@ public class Configuration {
     //read from classpath, if not found, read from file system. If not found there, throw exception
     private Properties readPropertyFile(String file) throws IOException {
         String fileName = file.startsWith("/") ? file : "/" + file;
+        LOGGER.info("Reading properties from: " + fileName + ". Will try classpath, then file system.");
         return Util.readProperties(fileName);
     }
 
@@ -253,11 +291,11 @@ public class Configuration {
     }
 
     public boolean collectStatistics() {
-        return Convert.toBoolean(properties.getProperty("collectStatistics", "false"));
+        return Convert.toBoolean(properties.getProperty(PropertyName.CollectStatistics.name, "false"));
     }
 
     public boolean collectStatisticsOnHold() {
-        return Convert.toBoolean(properties.getProperty("collectStatisticsOnHold", "false"));
+        return Convert.toBoolean(properties.getProperty(PropertyName.CollectStatisticsOnHold.name, "false"));
     }
 
     public boolean cacheEnabled(){
