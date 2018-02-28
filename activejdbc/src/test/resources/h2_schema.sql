@@ -147,9 +147,14 @@ CREATE TABLE ingredients (ingredient_id  int(11) NOT NULL  auto_increment PRIMAR
 DROP TABLE IF EXISTS recipes;
 CREATE TABLE recipes (recipe_id  int(11) NOT NULL  auto_increment PRIMARY KEY, recipe_name VARCHAR(56));
 
+DROP TABLE IF EXISTS cooks;
+CREATE TABLE cooks (cook_id int(11) NOT NULL auto_increment PRIMARY KEY, cook_name VARCHAR(56));
+
 DROP TABLE IF EXISTS ingredients_recipes;
 CREATE TABLE ingredients_recipes (the_id  int(11) NOT NULL  auto_increment PRIMARY KEY, recipe_id int(11), ingredient_id int(11));
 
+DROP TABLE IF EXISTS cooks_recipes;
+CREATE TABLE cooks_recipes (the_id int(11) NOT NULL auto_increment PRIMARY KEY, recipe_id int(11), cook_id int(11));
 
 DROP TABLE IF EXISTS vehicles;
 CREATE TABLE vehicles (id  int(11) NOT NULL  auto_increment PRIMARY KEY, name VARCHAR(56));

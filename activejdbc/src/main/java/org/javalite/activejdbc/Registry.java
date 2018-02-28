@@ -257,6 +257,13 @@ public enum Registry {
             HasMany hasManyAnnotation = modelClass.getAnnotation(HasMany.class);
             processOverridesHasMany(modelClass, hasManyAnnotation);
 
+            Many2Manies many2ManiesAnnotation = modelClass.getAnnotation(Many2Manies.class);
+            if (many2ManiesAnnotation != null) {
+                for (Many2Many many2Many : many2ManiesAnnotation.value()) {
+                    processManyToManyOverrides(many2Many, modelClass);
+                }
+            }
+
             Many2Many many2manyAnnotation = modelClass.getAnnotation(Many2Many.class);
             if(many2manyAnnotation != null){
                 processManyToManyOverrides(many2manyAnnotation, modelClass);

@@ -158,7 +158,9 @@ public class IncludesTest extends ActiveJDBCTest{
     @Test
     public void shouldIncludeMany2ManyInCaseJoinTableHasUnconventionalPKName() {
         Ingredient sugar = Ingredient.createIt("ingredient_name", "sugar");
-        sugar.add(Recipe.create("recipe_name", "pie"));
+        Recipe pieRecipe = Recipe.create("recipe_name", "pie");
+        sugar.add(pieRecipe);
+        pieRecipe.add(Cook.create("cook_name", "Julia Child"));
 
         //test data:
         List<Ingredient> ingredients  = Ingredient.findAll().include(Recipe.class);
@@ -166,11 +168,15 @@ public class IncludesTest extends ActiveJDBCTest{
         a(recipes.size()).shouldBeEqual(1);
         a(recipes.get(0).get("recipe_name")).shouldBeEqual("pie");
 
-
         //test caching (no more trips to DB):
         Recipe recipe1 = ingredients.get(0).getAll(Recipe.class).get(0);
         Recipe recipe2 = ingredients.get(0).getAll(Recipe.class).get(0);
         a(recipe1).shouldBeTheSameAs(recipe2);
+
+        List<Cook> cooks = Cook.findAll().include(Recipe.class);
+        recipes = cooks.get(0).getAll(Recipe.class);
+        a(recipes.size()).shouldBeEqual(1);
+        a(recipes.get(0).get("recipe_name")).shouldBeEqual("pie");
     }
 
     @Test

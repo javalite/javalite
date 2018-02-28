@@ -175,6 +175,10 @@ public class H2StatementProvider implements StatementProvider {
             statements = Arrays.asList();
         } else if (table.equals("recipes")) {
             statements = Arrays.asList();
+        } else if (table.equals("cooks")) {
+            statements = Arrays.asList();
+        } else if (table.equals("cooks_recipes")) {
+            statements = Arrays.asList();
         } else if (table.equals("vehicles")) {
             statements = Arrays.asList();
         } else if (table.equals("mammals")) {
