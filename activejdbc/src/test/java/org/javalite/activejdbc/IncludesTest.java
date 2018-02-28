@@ -174,6 +174,26 @@ public class IncludesTest extends ActiveJDBCTest{
     }
 
     @Test
+    public void shouldIncludeMultipleMany2ManyOverridesOnOneModel() {
+        Genre hardRock = Genre.createIt("name", "Hard rock");
+        Genre garageRock = Genre.createIt("name", "Garage rock");
+        Musician dankoJonesHimself = Musician.createIt("first_name", "Danko", "last_name", "Jones");
+        Musician johnCalabrese = Musician.createIt("first_name", "John", "last_name", "Calabrese");
+        Band dankoJones = Band.createIt("name", "Danko Jones");
+
+        dankoJones.add(hardRock);
+        dankoJones.add(garageRock);
+        dankoJones.add(dankoJonesHimself);
+        dankoJones.add(johnCalabrese);
+
+        List<Band> bands = Band.findAll().include(Genre.class, Musician.class);
+        List<Genre> genres = bands.get(0).getAll(Genre.class);
+        a(genres.size()).shouldBeEqual(2);
+        List<Musician> musicians = bands.get(0).getAll(Musician.class);
+        a(musicians.size()).shouldBeEqual(2);
+    }
+
+    @Test
     public void shouldFixDefect163NeedsToIncludeChildrenAndParentsInTreeStructure(){
         Node car = new Node("Car");
         car.saveIt();

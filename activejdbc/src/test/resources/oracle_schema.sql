@@ -1102,3 +1102,85 @@ CREATE OR REPLACE TRIGGER passengers_trigger
 select coalesce(:new.id, passengers_seq.nextval) into :new.id from dual;
 end;
 -- BREAK
+
+CREATE TABLE bands (band_id NUMBER NOT NULL, name VARCHAR(56) NOT NULL )
+-- BREAK
+ALTER TABLE bands ADD CONSTRAINT bands_pk PRIMARY KEY (band_id)
+-- BREAK
+CREATE SEQUENCE bands_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER bands_trigger
+  BEFORE INSERT ON bands REFERENCING
+  NEW AS new
+  OLD AS old
+  FOR EACH ROW
+  begin
+    select coalesce(:new.band_id, bands_seq.nextval) into :new.band_id from dual;
+  end;
+-- BREAK
+
+
+CREATE TABLE genres (genre_id NUMBER NOT NULL, name VARCHAR(56) NOT NULL )
+-- BREAK
+ALTER TABLE genres ADD CONSTRAINT genres_pk PRIMARY KEY (genre_id)
+-- BREAK
+CREATE SEQUENCE genres_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER genres_trigger
+  BEFORE INSERT ON genres REFERENCING
+  NEW AS new
+  OLD AS old
+  FOR EACH ROW
+  begin
+    select coalesce(:new.genre_id, genres_seq.nextval) into :new.genre_id from dual;
+  end;
+-- BREAK
+
+CREATE TABLE musicians (musician_id NUMBER NOT NULL, first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL )
+-- BREAK
+ALTER TABLE musicians ADD CONSTRAINT musicians_pk PRIMARY KEY (musician_id)
+-- BREAK
+CREATE SEQUENCE musicians_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER musicians_trigger
+  BEFORE INSERT ON musicians REFERENCING
+  NEW AS new
+  OLD AS old
+  FOR EACH ROW
+  begin
+    select coalesce(:new.musician_id, musicians_seq.nextval) into :new.musician_id from dual;
+  end;
+-- BREAK
+
+
+CREATE TABLE bands_genres (the_id NUMBER NOT NULL, band_id NUMBER, genre_id NUMBER )
+-- BREAK
+ALTER TABLE bands_genres ADD CONSTRAINT bands_genres_pk PRIMARY KEY (the_id)
+-- BREAK
+CREATE SEQUENCE bands_genres_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER bands_genres_trigger
+  BEFORE INSERT ON bands_genres REFERENCING
+  NEW AS new
+  OLD AS old
+  FOR EACH ROW
+  begin
+    select coalesce(:new.the_id, bands_genres_seq.nextval) into :new.the_id from dual;
+  end;
+-- BREAK
+
+CREATE TABLE bands_musicians (the_id NUMBER NOT NULL, band_id NUMBER, musician_id NUMBER )
+-- BREAK
+ALTER TABLE bands_musicians ADD CONSTRAINT bands_musicians_pk PRIMARY KEY (the_id)
+-- BREAK
+CREATE SEQUENCE bands_musicians_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER bands_musicians_trigger
+  BEFORE INSERT ON bands_musicians REFERENCING
+  NEW AS new
+  OLD AS old
+  FOR EACH ROW
+  begin
+    select coalesce(:new.the_id, bands_musicians_seq.nextval) into :new.the_id from dual;
+  end;
+-- BREAK

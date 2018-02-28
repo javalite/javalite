@@ -197,8 +197,17 @@ public class H2StatementProvider implements StatementProvider {
               "INSERT INTO players VALUES (3, 'Nick', 'Foles', 2);",
               "INSERT INTO players VALUES (4, 'Trey', 'Burton', 2);"
           );
-        }
-        else {
+        } else if (table.equals("bands")) {
+            statements = Arrays.asList();
+        } else if (table.equals("genres")) {
+            statements = Arrays.asList();
+        } else if (table.equals("musicians")) {
+            statements = Arrays.asList();
+        } else if (table.equals("bands_genres")) {
+            statements = Arrays.asList();
+        } else if (table.equals("bands_musicians")) {
+            statements = Arrays.asList();
+        } else {
             statements = Arrays.asList();
         }
 
