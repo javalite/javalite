@@ -17,6 +17,7 @@ limitations under the License.
 
 package org.javalite.activejdbc.statistics;
 
+import org.javalite.common.Util;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -115,5 +116,13 @@ public class StatisticsQueueTest {
     public void shouldNormalizeOffset(){
         QueryExecutionEvent event = new QueryExecutionEvent("select * from pages where lesson_id=? order by the_index limit 1 offset 0", 1);
         the(event.getQuery()).shouldBeEqual("select * from pages where lesson_id=? order by the_index limit 1 offset ...");
+    }
+
+    @Test // related: https://github.com/javalite/activejdbc/issues/586
+    public void shouldTruncateAtTabSeparated(){
+        String sql = Util.readResource("/clickhouse.sql");
+
+        QueryExecutionEvent event = new QueryExecutionEvent(sql, 1);
+        the(event.getQuery()).shouldBeEqual("INSERT INTO xxx_events (xxx_id, yyy_id, type, email, user_id, latitude, longitude, ip, user_agent, url, merged_url, created_at, event_date) format ...");
     }
 }

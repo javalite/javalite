@@ -33,6 +33,11 @@ public class QueryExecutionEvent {
     public QueryExecutionEvent(String query, long time) {
         this.query = IN_PATTERN.matcher(query).replaceAll("IN (...)");
         this.query = OFFSET_PATTERN.matcher(this.query).replaceAll("offset ...");
+
+        if(query.contains("TabSeparated")){
+            this.query = query.substring(0, query.indexOf("TabSeparated")) + "...";
+        }
+
         this.time = time;
     }
 
