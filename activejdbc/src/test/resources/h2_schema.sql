@@ -147,14 +147,8 @@ CREATE TABLE ingredients (ingredient_id  int(11) NOT NULL  auto_increment PRIMAR
 DROP TABLE IF EXISTS recipes;
 CREATE TABLE recipes (recipe_id  int(11) NOT NULL  auto_increment PRIMARY KEY, recipe_name VARCHAR(56));
 
-DROP TABLE IF EXISTS cooks;
-CREATE TABLE cooks (cook_id int(11) NOT NULL auto_increment PRIMARY KEY, cook_name VARCHAR(56));
-
 DROP TABLE IF EXISTS ingredients_recipes;
 CREATE TABLE ingredients_recipes (the_id  int(11) NOT NULL  auto_increment PRIMARY KEY, recipe_id int(11), ingredient_id int(11));
-
-DROP TABLE IF EXISTS cooks_recipes;
-CREATE TABLE cooks_recipes (the_id int(11) NOT NULL auto_increment PRIMARY KEY, recipe_id int(11), cook_id int(11));
 
 DROP TABLE IF EXISTS vehicles;
 CREATE TABLE vehicles (id  int(11) NOT NULL  auto_increment PRIMARY KEY, name VARCHAR(56));
@@ -214,3 +208,18 @@ CREATE TABLE teams (team_id int(11) NOT NULL auto_increment PRIMARY KEY, name VA
 
 DROP TABLE IF EXISTS players;
 CREATE TABLE players (id int(11) NOT NULL auto_increment PRIMARY KEY, first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL, team_id int(11));
+
+DROP TABLE IF EXISTS bands;
+CREATE TABLE bands (band_id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR(56));
+
+DROP TABLE IF EXISTS genres;
+CREATE TABLE genres (genre_id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR(56));
+
+DROP TABLE IF EXISTS musicians;
+CREATE TABLE musicians (musician_id int(11) NOT NULL auto_increment PRIMARY KEY, first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL);
+
+DROP TABLE IF EXISTS bands_genres;
+CREATE TABLE bands_genres (the_id  int(11) NOT NULL  auto_increment PRIMARY KEY, band_id int(11), genre_id int(11));
+
+DROP TABLE IF EXISTS bands_musicians;
+CREATE TABLE bands_musicians (the_id  int(11) NOT NULL  auto_increment PRIMARY KEY, band_id int(11), musician_id int(11));

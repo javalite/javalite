@@ -158,9 +158,7 @@ public class IncludesTest extends ActiveJDBCTest{
     @Test
     public void shouldIncludeMany2ManyInCaseJoinTableHasUnconventionalPKName() {
         Ingredient sugar = Ingredient.createIt("ingredient_name", "sugar");
-        Recipe pieRecipe = Recipe.create("recipe_name", "pie");
-        sugar.add(pieRecipe);
-        pieRecipe.add(Cook.create("cook_name", "Julia Child"));
+        sugar.add(Recipe.create("recipe_name", "pie"));
 
         //test data:
         List<Ingredient> ingredients  = Ingredient.findAll().include(Recipe.class);
@@ -168,15 +166,31 @@ public class IncludesTest extends ActiveJDBCTest{
         a(recipes.size()).shouldBeEqual(1);
         a(recipes.get(0).get("recipe_name")).shouldBeEqual("pie");
 
+
         //test caching (no more trips to DB):
         Recipe recipe1 = ingredients.get(0).getAll(Recipe.class).get(0);
         Recipe recipe2 = ingredients.get(0).getAll(Recipe.class).get(0);
         a(recipe1).shouldBeTheSameAs(recipe2);
+    }
 
-        List<Cook> cooks = Cook.findAll().include(Recipe.class);
-        recipes = cooks.get(0).getAll(Recipe.class);
-        a(recipes.size()).shouldBeEqual(1);
-        a(recipes.get(0).get("recipe_name")).shouldBeEqual("pie");
+    @Test
+    public void shouldIncludeMultipleMany2ManyOverridesOnOneModel() {
+        Genre hardRock = Genre.createIt("name", "Hard rock");
+        Genre garageRock = Genre.createIt("name", "Garage rock");
+        Musician dankoJonesHimself = Musician.createIt("first_name", "Danko", "last_name", "Jones");
+        Musician johnCalabrese = Musician.createIt("first_name", "John", "last_name", "Calabrese");
+        Band dankoJones = Band.createIt("name", "Danko Jones");
+
+        dankoJones.add(hardRock);
+        dankoJones.add(garageRock);
+        dankoJones.add(dankoJonesHimself);
+        dankoJones.add(johnCalabrese);
+
+        List<Band> bands = Band.findAll().include(Genre.class, Musician.class);
+        List<Genre> genres = bands.get(0).getAll(Genre.class);
+        a(genres.size()).shouldBeEqual(2);
+        List<Musician> musicians = bands.get(0).getAll(Musician.class);
+        a(musicians.size()).shouldBeEqual(2);
     }
 
     @Test

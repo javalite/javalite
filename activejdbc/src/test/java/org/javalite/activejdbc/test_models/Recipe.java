@@ -25,7 +25,5 @@ import org.javalite.activejdbc.annotations.Many2Many;
  */
 @Many2Many(other=Ingredient.class,
         join = "ingredients_recipes", sourceFKName = "recipe_id", targetFKName = "ingredient_id")
-@Many2Many(other=Cook.class,
-    join = "cooks_recipes", sourceFKName = "recipe_id", targetFKName = "cook_id")
 @IdName("recipe_id")
 public class Recipe extends Model {}
