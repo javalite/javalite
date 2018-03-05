@@ -206,3 +206,18 @@ CREATE TABLE boxes (id  int(11) NOT NULL auto_increment PRIMARY KEY, color VARCH
 
 DROP TABLE IF EXISTS passengers;
 CREATE TABLE passengers (id  int(11) NOT NULL auto_increment PRIMARY KEY, user_id INT(11) NOT NULL, vehicle VARCHAR(10), mode VARCHAR(10), created_at DATETIME, updated_at DATETIME) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS bands;
+CREATE TABLE bands (band_id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR(56) NOT NULL);
+
+DROP TABLE IF EXISTS genres;
+CREATE TABLE genres (genre_id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR(56) NOT NULL);
+
+DROP TABLE IF EXISTS musicians;
+CREATE TABLE musicians (musician_id int(11) NOT NULL auto_increment PRIMARY KEY, first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL);
+
+DROP TABLE IF EXISTS bands_genres;
+CREATE TABLE bands_genres (the_id  int(11) NOT NULL  auto_increment PRIMARY KEY, band_id int(11), genre_id int(11));
+
+DROP TABLE IF EXISTS bands_musicians;
+CREATE TABLE bands_musicians (the_id  int(11) NOT NULL  auto_increment PRIMARY KEY, band_id int(11), musician_id int(11));

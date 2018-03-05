@@ -210,10 +210,10 @@ DROP TABLE IF EXISTS players;
 CREATE TABLE players (id int(11) NOT NULL auto_increment PRIMARY KEY, first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL, team_id int(11));
 
 DROP TABLE IF EXISTS bands;
-CREATE TABLE bands (band_id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR(56));
+CREATE TABLE bands (band_id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR(56) NOT NULL);
 
 DROP TABLE IF EXISTS genres;
-CREATE TABLE genres (genre_id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR(56));
+CREATE TABLE genres (genre_id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR(56) NOT NULL);
 
 DROP TABLE IF EXISTS musicians;
 CREATE TABLE musicians (musician_id int(11) NOT NULL auto_increment PRIMARY KEY, first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL);
