@@ -134,4 +134,46 @@ public class AttributeLengthValidatorTest extends ActiveJDBCTest {
         a(u.errors(new Locale("de", "DE")).get("first_name")).shouldBeEqual("Attribut sollte eine L\u00E4nge zwischen 5 und 5 (inklusive).");
         User.removeValidator(validator);
     }
+
+    @Test
+    public void testAllowBlank() {
+        User u = new User();
+        u.set("email", "john@doe.com");
+        u.set("first_name", "");
+
+        AttributeLengthValidator validator = AttributeLengthValidator.on("first_name").with(Range.of(1, 5)).allowBlank(true);
+        validator.setMessage("validation.length.range");
+        User.addValidator(validator);
+        u.validate();
+        a(u.errors().size()).shouldBeEqual(0);
+        User.removeValidator(validator);
+    }
+
+    @Test
+    public void testAllowNull() {
+        User u = new User();
+        u.set("email", "john@doe.com");
+        u.set("first_name", null);
+
+        AttributeLengthValidator validator = AttributeLengthValidator.on("first_name").with(Range.of(1, 5)).allowBlank(true);
+        validator.setMessage("validation.length.range");
+        User.addValidator(validator);
+        u.validate();
+        a(u.errors().size()).shouldBeEqual(0);
+        User.removeValidator(validator);
+    }
+
+    @Test
+    public void testNullFailsWhenNotAllowed() {
+        User u = new User();
+        u.set("email", "john@doe.com");
+        u.set("first_name", null);
+
+        AttributeLengthValidator validator = AttributeLengthValidator.on("first_name").with(Range.of(1, 5)).allowBlank(false);
+        validator.setMessage("validation.length.range");
+        User.addValidator(validator);
+        u.validate();
+        a(u.errors().size()).shouldBeEqual(1);
+        User.removeValidator(validator);
+    }
 }
