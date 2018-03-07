@@ -9,9 +9,9 @@ import java.util.Locale;
  * Attribute length validator.
  */
 public class AttributeLengthValidator extends ValidatorAdapter {
-
     private final String attribute;
     private LengthOption lengthOption;
+    private boolean allowBlank;
 
     private AttributeLengthValidator(String attribute) {
         this.attribute = attribute;
@@ -21,26 +21,41 @@ public class AttributeLengthValidator extends ValidatorAdapter {
         return new AttributeLengthValidator(attribute);
     }
 
-    @Override
     public void validate(Model m) {
-        Object value = m.get(attribute);
-        if (!(value instanceof String)) {
-            throw new IllegalArgumentException("Attribute must be a String");
+        Object value = m.get(this.attribute);
+
+        if(allowBlank && (null == value || "".equals(value))) {
+            return;
         }
 
-        if (!lengthOption.validate((String) (m.get(attribute)))) {
-            m.addValidator(this, attribute);
+        if(null == value) {
+            m.addValidator(this, this.attribute);
+            return;
+        }
+
+        if(!(value instanceof String)) {
+            throw new IllegalArgumentException("Attribute must be a String");
+        } else {
+            if(!this.lengthOption.validate((String)((String)m.get(this.attribute)))) {
+                //somewhat confusingly this adds an error for a validator.
+                m.addValidator(this, this.attribute);
+            }
+
         }
     }
 
     public AttributeLengthValidator with(LengthOption lengthOption) {
         this.lengthOption = lengthOption;
-        setMessage(lengthOption.getParametrizedMessage());
+        this.setMessage(lengthOption.getParametrizedMessage());
         return this;
     }
 
-    @Override
+    public AttributeLengthValidator allowBlank(boolean allowBlank) {
+        this.allowBlank = allowBlank;
+        return this;
+    }
+
     public String formatMessage(Locale locale, Object... params) {
-        return super.formatMessage(locale, lengthOption.getMessageParameters());
+        return super.formatMessage(locale, this.lengthOption.getMessageParameters());
     }
 }
