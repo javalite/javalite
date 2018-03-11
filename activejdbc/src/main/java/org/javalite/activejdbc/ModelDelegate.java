@@ -70,7 +70,7 @@ public final class ModelDelegate {
     }
 
     public static void callbackWith(Class<? extends Model> clazz, CallbackListener... listeners) {
-         modelRegistryOf(clazz).callbackWith(listeners);
+        modelRegistryOf(clazz).callbackWith(listeners);
     }
 
     /**
@@ -166,8 +166,8 @@ public final class ModelDelegate {
         MetaModel metaModel = metaModelOf(clazz);
         //TODO: refactor this:
         int count = (params == null || params.length == 0)
-            ? new DB(metaModel.getDbName()).exec("DELETE FROM " + metaModel.getTableName() + " WHERE " + query)
-            : new DB(metaModel.getDbName()).exec("DELETE FROM " + metaModel.getTableName() + " WHERE " + query, params);
+                ? new DB(metaModel.getDbName()).exec("DELETE FROM " + metaModel.getTableName() + " WHERE " + query)
+                : new DB(metaModel.getDbName()).exec("DELETE FROM " + metaModel.getTableName() + " WHERE " + query, params);
         if (metaModel.cached()) {
             Registry.cacheManager().purgeTableCache(metaModel);
         }
@@ -206,17 +206,17 @@ public final class ModelDelegate {
         MetaModel metaModel = metaModelOf(clazz);
         String[] compositeKeys = metaModel.getCompositeKeys();
         if (compositeKeys == null || compositeKeys.length != values.length){
-        	return null;
+            return null;
         }
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < compositeKeys.length; i++) {
-			sb.append(i == 0 ? "" : " AND ").append(compositeKeys[i])
-					.append(" = ?");
-		}
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < compositeKeys.length; i++) {
+            sb.append(i == 0 ? "" : " AND ").append(compositeKeys[i])
+                    .append(" = ?");
+        }
         LazyList<T> list = new LazyList<T>(sb.toString(), metaModel, values).limit(1);
         return list.isEmpty() ? null : list.get(0);
     }
-    
+
     public static <T extends Model> LazyList<T> findBySql(Class<T> clazz, String fullQuery, Object... params) {
         return new LazyList<>(false, metaModelOf(clazz), fullQuery, params);
     }
@@ -227,7 +227,7 @@ public final class ModelDelegate {
     }
 
     public static <T extends Model, M extends T> void findWith(final Class<M> clazz, final ModelListener<T> listener,
-            String query, Object... params) {
+                                                               String query, Object... params) {
         long start = System.currentTimeMillis();
         final MetaModel metaModel = metaModelOf(clazz);
         String sql = metaModel.getDialect().selectStar(metaModel.getTableName(), query);
@@ -412,8 +412,15 @@ public final class ModelDelegate {
     }
 
 
+    public static <T extends Model> T findOrInit(Class<T> clazz, Object... namesAndValues) {
+        return findOrCreateIt(clazz, false, namesAndValues);
+    }
 
     public static <T extends Model> T findOrCreateIt(Class<T> clazz, Object... namesAndValues) {
+        return findOrCreateIt(clazz, true, namesAndValues);
+    }
+
+    public static <T extends Model> T findOrCreateIt(Class<T> clazz, boolean save, Object... namesAndValues) {
         if (namesAndValues.length == 0 || namesAndValues.length % 2 != 0){
             throw new IllegalArgumentException("number of arguments must be even");
         }
@@ -432,7 +439,19 @@ public final class ModelDelegate {
         if(count(clazz, subQuery.toString(), params) > 0){
             return findFirst(clazz, subQuery.toString(),params);
         } else{
-            return createIt(clazz, namesAndValues);
+
+            if(save){
+                return createIt(clazz, namesAndValues);
+            }else {
+                try {
+                    T m = clazz.newInstance();
+                    m.set(namesAndValues);
+                    return m;
+                } catch (Exception e) {
+
+                    throw new InitException(e);
+                }
+            }
         }
     }
 }

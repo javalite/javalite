@@ -21,8 +21,8 @@ import org.javalite.activejdbc.test_models.*;
 import org.javalite.common.Convert;
 import org.javalite.test.jspec.DifferenceExpectation;
 import org.javalite.test.jspec.ExceptionExpectation;
-import org.junit.Assert;
 import org.junit.Test;
+
 
 import java.io.*;
 import java.util.Calendar;
@@ -54,6 +54,21 @@ public class ModelTest extends ActiveJDBCTest {
         the(person2).shouldNotBeNull();
         //Verify the id
         the(person1.getId()).shouldBeEqual(person2.getId());
+    }
+
+
+    @Test
+    public void testFindOrInit() {
+        deleteAndPopulateTable("people");
+
+        Person john = Person.findOrInit("name", "John", "last_name", "Smith");
+        the(john.exists()).shouldBeTrue();
+
+        Person peter = Person.findOrInit("name", "Peter", "last_name", "Keeler");
+        the(peter.exists()).shouldBeFalse();
+
+        the(peter.get("name")).shouldBeEqual("Peter");
+        the(peter.get("last_name")).shouldBeEqual("Keeler");
     }
 
     @Test
@@ -318,9 +333,9 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void testCustomIdName(){
-       deleteAndPopulateTable("animals");
-       Animal a = Animal.findById(1);
-       a(a).shouldNotBeNull();
+        deleteAndPopulateTable("animals");
+        Animal a = Animal.findById(1);
+        a(a).shouldNotBeNull();
     }
 
     @Test
@@ -593,9 +608,9 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test(expected = NoSuchElementException.class)
     public void shouldGenerateNoSuchElementFromBlankUpdate() {
-    	// Verify that a model with no attributes throws an error
-    	Student s = new Student();
-    	s.toUpdate();
+        // Verify that a model with no attributes throws an error
+        Student s = new Student();
+        s.toUpdate();
     }
 
     @Test

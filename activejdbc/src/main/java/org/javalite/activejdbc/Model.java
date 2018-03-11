@@ -199,7 +199,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * This is a convenience method to fetch existing model from db or to create and insert new record.
+     * A convenience method to fetch existing model from db or to create and insert new record with attribute values.
+     *
      * @param namesAndValues names and values. elements at indexes 0, 2, 4, 8... are attribute names, and elements at
      * indexes 1, 3, 5... are values. Element at index 1 is a value for attribute at index 0 and so on.
      *
@@ -207,6 +208,19 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public static <T extends Model> T findOrCreateIt(Object... namesAndValues) {
         return ModelDelegate.findOrCreateIt(modelClass(), namesAndValues);
+    }
+
+    /**
+     * A convenience method to fetch existing model from db or to create a new instance in memory initialized with
+     * some attribute values.
+     *
+     * @param namesAndValues names and values. elements at indexes 0, 2, 4, 8... are attribute names, and elements at
+     * indexes 1, 3, 5... are values. Element at index 1 is a value for attribute at index 0 and so on.
+     *
+     *@return Model fetched from the db or newly created and initialized object.
+     */
+    public static <T extends Model> T findOrInit(Object... namesAndValues) {
+        return ModelDelegate.findOrInit(modelClass(), namesAndValues);
     }
 
     /**
@@ -229,7 +243,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             }
         }
         if (getCompositeKeys() != null){
-        	compositeKeyPersisted = true;
+            compositeKeyPersisted = true;
         }
         if(fireAfterLoad){
             fireAfterLoad();
@@ -426,15 +440,15 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         fireBeforeDelete();
         int result;
         if (getCompositeKeys() != null) {
-			String[] compositeKeys = getCompositeKeys();
-			StringBuilder query = new StringBuilder();
-			Object[] values = new Object[compositeKeys.length];
-			for (int i = 0; i < compositeKeys.length; i++) {
-				query.append(i == 0 ? "DELETE FROM " + metaModelLocal.getTableName() + " WHERE " : " AND ").append(compositeKeys[i]).append(" = ?");
-				values[i] = get(compositeKeys[i]);
-			}
-			result = new DB(metaModelLocal.getDbName()).exec(query.toString(), values);
-		} else {
+            String[] compositeKeys = getCompositeKeys();
+            StringBuilder query = new StringBuilder();
+            Object[] values = new Object[compositeKeys.length];
+            for (int i = 0; i < compositeKeys.length; i++) {
+                query.append(i == 0 ? "DELETE FROM " + metaModelLocal.getTableName() + " WHERE " : " AND ").append(compositeKeys[i]).append(" = ?");
+                values[i] = get(compositeKeys[i]);
+            }
+            result = new DB(metaModelLocal.getDbName()).exec(query.toString(), values);
+        } else {
             StringBuilder query = new StringBuilder("DELETE FROM ").append(metaModelLocal.getTableName()).append(" WHERE ").append(getIdName()).append("        = ?");
             List<Object> values = new ArrayList<>();
             values.add(getId());
@@ -447,20 +461,20 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             }
 
 
-			result = new DB(metaModelLocal.getDbName()).exec(query.toString(), values.toArray());
-		}
-		if (1 == result) {
-			frozen = true;
-			if (metaModelOf(getClass()).cached()) {
+            result = new DB(metaModelLocal.getDbName()).exec(query.toString(), values.toArray());
+        }
+        if (1 == result) {
+            frozen = true;
+            if (metaModelOf(getClass()).cached()) {
                 Registry.cacheManager().purgeTableCache(metaModelLocal);
-			}
-			ModelDelegate.purgeEdges(metaModelLocal);
-			fireAfterDelete();
-			return true;
-		}
-		fireAfterDelete();
-		return false;
-	}
+            }
+            ModelDelegate.purgeEdges(metaModelLocal);
+            fireAfterDelete();
+            return true;
+        }
+        fireAfterDelete();
+        return false;
+    }
 
 
     /**
@@ -469,11 +483,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param cascade true to call {@link #deleteCascade()}, false to call {@link #delete()}.
      */
     public void delete(boolean cascade){
-       if(cascade){
-           deleteCascade();
-       }else{
-           delete();
-       }
+        if(cascade){
+            deleteCascade();
+        }else{
+            delete();
+        }
     }
 
     /**
@@ -497,43 +511,43 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      <pre>
      DOCTORS
-        +----+------------+-----------+-----------------+
-        | id | first_name | last_name | discipline      |
-        +----+------------+-----------+-----------------+
-        |  1 | John       | Kentor    | otolaryngology  |
-        |  2 | Hellen     | Hunt      | dentistry       |
-        |  3 | John       | Druker    | oncology        |
-        +----+------------+-----------+-----------------+
+     +----+------------+-----------+-----------------+
+     | id | first_name | last_name | discipline      |
+     +----+------------+-----------+-----------------+
+     |  1 | John       | Kentor    | otolaryngology  |
+     |  2 | Hellen     | Hunt      | dentistry       |
+     |  3 | John       | Druker    | oncology        |
+     +----+------------+-----------+-----------------+
 
      PATIENTS
-        +----+------------+-----------+
-        | id | first_name | last_name |
-        +----+------------+-----------+
-        |  1 | Jim        | Cary      |
-        |  2 | John       | Carpenter |
-        |  3 | John       | Doe       |
-        +----+------------+-----------+
+     +----+------------+-----------+
+     | id | first_name | last_name |
+     +----+------------+-----------+
+     |  1 | Jim        | Cary      |
+     |  2 | John       | Carpenter |
+     |  3 | John       | Doe       |
+     +----+------------+-----------+
 
      DOCTORS_PATIENTS
-        +----+-----------+------------+
-        | id | doctor_id | patient_id |
-        +----+-----------+------------+
-        |  1 |         1 |          2 |
-        |  2 |         1 |          1 |
-        |  3 |         2 |          1 |
-        |  4 |         3 |          3 |
-        +----+-----------+------------+
+     +----+-----------+------------+
+     | id | doctor_id | patient_id |
+     +----+-----------+------------+
+     |  1 |         1 |          2 |
+     |  2 |         1 |          1 |
+     |  3 |         2 |          1 |
+     |  4 |         3 |          3 |
+     +----+-----------+------------+
 
      PRESCRIPTIONS
-        +----+------------------------+------------+
-        | id | name                   | patient_id |
-        +----+------------------------+------------+
-        |  1 | Viagra                 |          1 |
-        |  2 | Prozac                 |          1 |
-        |  3 | Valium                 |          2 |
-        |  4 | Marijuana (medicinal)  |          2 |
-        |  5 | CML treatment          |          3 |
-        +----+------------------------+------------+
+     +----+------------------------+------------+
+     | id | name                   | patient_id |
+     +----+------------------------+------------+
+     |  1 | Viagra                 |          1 |
+     |  2 | Prozac                 |          1 |
+     |  3 | Valium                 |          2 |
+     |  4 | Marijuana (medicinal)  |          2 |
+     |  5 | CML treatment          |          3 |
+     +----+------------------------+------------+
      * </pre>
      *
      * Lets start with a simple example, Doctor John Druker. This doctor has one patient John Doe, and the patient has one prescription.
@@ -683,7 +697,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             Class c = Registry.instance().getModelClass(targetTableName, false);
             if(c == null){// this model is probably not defined as a class, but the table exists!
                 LogFilter.log(LOGGER, LogLevel.ERROR, "ActiveJDBC WARNING: failed to find a model class for: {}, maybe model is not defined for this table?"
-                        + " There might be a risk of running into integrity constrain violation if this model is not defined.",
+                                + " There might be a risk of running into integrity constrain violation if this model is not defined.",
                         targetTableName);
             }
             else{
@@ -859,8 +873,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         StringBuilder sb = new StringBuilder();
         sb.append("Model: ").append(getClass().getName())
-          .append(", table: '").append(metaModelLocal.getTableName())
-          .append("', attributes: ").append(attributes);
+                .append(", table: '").append(metaModelLocal.getTableName())
+                .append("', attributes: ").append(attributes);
 
         if (cachedParents.size() > 0) {
             sb.append(", parent: ").append(cachedParents);
@@ -1442,7 +1456,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             return null;
         }else
             return metaModelLocal.hasAssociation(parentMM.getModelClass(), BelongsToPolymorphicAssociation.class) ?
-                parent(parentMM.getModelClass()): null;
+                    parent(parentMM.getModelClass()): null;
     }
 
     private Object tryParent(String parentTable){
@@ -1451,7 +1465,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             return null;
         }else
             return metaModelLocal.hasAssociation(parentMM.getModelClass(), BelongsToAssociation.class) ?
-                parent(parentMM.getModelClass()): null;
+                    parent(parentMM.getModelClass()): null;
     }
 
     private Object tryPolymorphicChildren(String childTable){
@@ -1460,7 +1474,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             return null;
         }else
             return metaModelLocal.hasAssociation(childMM.getModelClass(), OneToManyPolymorphicAssociation.class) ?
-                getAll(childMM.getModelClass()): null;
+                    getAll(childMM.getModelClass()): null;
     }
 
     private Object tryChildren(String childTable){
@@ -1469,7 +1483,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             return null;
         }else
             return metaModelLocal.hasAssociation(childMM.getModelClass(), OneToManyAssociation.class) ?
-                getAll(childMM.getModelClass()): null;
+                    getAll(childMM.getModelClass()): null;
     }
 
     private Object tryOther(String otherTable){
@@ -1478,7 +1492,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             return null;
         }else
             return metaModelLocal.hasAssociation(otherMM.getModelClass(), Many2ManyAssociation.class) ?
-                getAll(otherMM.getModelClass()): null;
+                    getAll(otherMM.getModelClass()): null;
     }
 
     private MetaModel inferTargetMetaModel(String targetTableName){
@@ -1894,8 +1908,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         } else if (manyToManyAssociation != null) {
             String joinTable = manyToManyAssociation.getJoin();
             String query = "SELECT " + targetTable + ".* FROM " + targetTable + ", " + joinTable +
-                " WHERE " + targetTable + "." + targetId + " = " + joinTable + "." + manyToManyAssociation.getTargetFkName() +
-                " AND " + joinTable + "." + manyToManyAssociation.getSourceFkName() + " = ? " + additionalCriteria;
+                    " WHERE " + targetTable + "." + targetId + " = " + joinTable + "." + manyToManyAssociation.getTargetFkName() +
+                    " AND " + joinTable + "." + manyToManyAssociation.getSourceFkName() + " = ? " + additionalCriteria;
 
             Object[] allParams = new Object[params.length + 1];
             allParams[0] = getId();
@@ -2168,7 +2182,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     @Deprecated
     public static void addCallbacks(CallbackListener... listeners) {
-         ModelDelegate.callbackWith(modelClass(), listeners);
+        ModelDelegate.callbackWith(modelClass(), listeners);
     }
 
     /**
@@ -2177,7 +2191,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param listeners list of lifecycle listeners
      */
     public static void callbackWith(CallbackListener... listeners) {
-         ModelDelegate.callbackWith(modelClass(), listeners);
+        ModelDelegate.callbackWith(modelClass(), listeners);
     }
 
     /**
@@ -2308,16 +2322,16 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return ModelDelegate.findById(Model.<T>modelClass(), id);
     }
 
-	/**
-	 * Composite PK values in exactly the same order as specified  in {@link CompositePK}.
-	 *
-	 * @param values  Composite PK values in exactly the same order as specified  in {@link CompositePK}.
-	 * @return instance of a found model, or null if nothing found.
-	 * @see CompositePK
-	 */
-	public static <T extends Model> T findByCompositeKeys(Object... values) {
-		return ModelDelegate.findByCompositeKeys(Model.<T>modelClass(), values);
-	}
+    /**
+     * Composite PK values in exactly the same order as specified  in {@link CompositePK}.
+     *
+     * @param values  Composite PK values in exactly the same order as specified  in {@link CompositePK}.
+     * @return instance of a found model, or null if nothing found.
+     * @see CompositePK
+     */
+    public static <T extends Model> T findByCompositeKeys(Object... values) {
+        return ModelDelegate.findByCompositeKeys(Model.<T>modelClass(), values);
+    }
 
     /**
      * Finder method for DB queries based on table represented by this model. Usually the SQL starts with:
@@ -2523,7 +2537,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                         Registry.cacheManager().purgeTableCache(childMetaModel);
                     }
                 }
-             } else if(metaModel.hasAssociation(child.getClass(), OneToManyPolymorphicAssociation.class)) {
+            } else if(metaModel.hasAssociation(child.getClass(), OneToManyPolymorphicAssociation.class)) {
                 OneToManyPolymorphicAssociation ass = metaModel.getAssociationForTarget(child.getClass(), OneToManyPolymorphicAssociation.class);
                 child.set("parent_id", getId());
                 child.set("parent_type", ass.getTypeLabel());
@@ -2804,22 +2818,22 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         if(values.isEmpty())
             return false;
 
-		if (getCompositeKeys() != null) {
-			String[] compositeKeys = getCompositeKeys();
-			for (int i = 0; i < compositeKeys.length; i++) {
-				query.append(i == 0 ? " WHERE " : " AND ").append(compositeKeys[i]).append(" = ?");
-				values.add(get(compositeKeys[i]));
-			}
-		} else {
-			query.append(" WHERE ").append(metaModel.getIdName()).append(" = ?");
-			values.add(getId());
+        if (getCompositeKeys() != null) {
+            String[] compositeKeys = getCompositeKeys();
+            for (int i = 0; i < compositeKeys.length; i++) {
+                query.append(i == 0 ? " WHERE " : " AND ").append(compositeKeys[i]).append(" = ?");
+                values.add(get(compositeKeys[i]));
+            }
+        } else {
+            query.append(" WHERE ").append(metaModel.getIdName()).append(" = ?");
+            values.add(getId());
             if(metaModel.hasPartitionIDs()){
                 for (String partitionId : metaModel.getPartitionIDs()) {
                     query.append(" AND ").append(partitionId).append(" = ?");
                     values.add(get(partitionId));
                 }
             }
-		}
+        }
         if (metaModel.isVersioned()) {
             query.append(" AND ").append(metaModelLocal.getVersionColumn()).append(" = ?");
             values.add(get(metaModelLocal.getVersionColumn()));
