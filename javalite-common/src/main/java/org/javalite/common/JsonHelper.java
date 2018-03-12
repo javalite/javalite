@@ -75,8 +75,19 @@ public class JsonHelper {
      * @return JSON string.
      */
     public static String toJsonString(Object val) {
+        return toJsonString(val, false);
+    }
+
+    /**
+     * Convert Java object to a JSON string.
+     *
+     * @param val Java object
+     * @param pretty enable/disable pretty print
+     * @return JSON string.
+     */
+    public static String toJsonString(Object val, boolean pretty) {
         try {
-            return mapper.writeValueAsString(val);
+            return pretty ? mapper.writerWithDefaultPrettyPrinter().writeValueAsString(val) : mapper.writeValueAsString(val);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
