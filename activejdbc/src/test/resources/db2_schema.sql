@@ -191,3 +191,8 @@ CREATE TABLE boxes (id int primary key GENERATED ALWAYS AS IDENTITY, "color" VAR
 CALL dropTable('passengers');
 CREATE TABLE passengers (id int primary key GENERATED ALWAYS AS IDENTITY, user_id INT NOT NULL, vehicle VARCHAR(10),mode VARCHAR(10));
 
+CALL dropTable('teams');
+CREATE TABLE teams (team_id int primary key GENERATED ALWAYS AS IDENTITY, name VARCHAR(56) NOT NULL);
+
+CALL dropTable('players');
+CREATE TABLE players (id int primary key GENERATED ALWAYS AS IDENTITY, first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL, team_id INT);

@@ -408,3 +408,14 @@ BEGIN
 END
 CREATE TABLE passengers (id INT IDENTITY PRIMARY KEY, user_id INT NOT NULL, vehicle VARCHAR(10), mode VARCHAR(10));
 
+IF object_id('dbo.teams') IS NOT NULL
+    BEGIN
+        DROP TABLE [dbo].[teams]
+    END
+CREATE TABLE teams (team_id INT IDENTITY PRIMARY KEY, name VARCHAR(56) NOT NULL);
+
+IF object_id('dbo.players') IS NOT NULL
+    BEGIN
+        DROP TABLE [dbo].[players]
+    END
+CREATE TABLE players (id INT IDENTITY PRIMARY KEY, first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL, team_id INT);

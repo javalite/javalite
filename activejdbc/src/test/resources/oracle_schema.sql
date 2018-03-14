@@ -1102,3 +1102,39 @@ CREATE OR REPLACE TRIGGER passengers_trigger
 select coalesce(:new.id, passengers_seq.nextval) into :new.id from dual;
 end;
 -- BREAK
+
+
+CREATE TABLE teams (team_id NUMBER NOT NULL, name VARCHAR(56) NOT NULL)
+-- BREAK
+ALTER TABLE teams ADD CONSTRAINT teams_pk PRIMARY KEY (team_id)
+-- BREAK
+CREATE SEQUENCE teams_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER teams_trigger
+    BEFORE INSERT ON teams REFERENCING
+    NEW AS new
+    OLD AS old
+    FOR EACH ROW
+    begin
+        select coalesce(:new.team_id, teams_seq.nextval) into :new.team_id from dual;
+    end;
+-- BREAK
+
+
+CREATE TABLE players (id NUMBER NOT NULL, first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL, team_id NUMBER)
+-- BREAK
+ALTER TABLE players ADD CONSTRAINT players_pk PRIMARY KEY (id)
+-- BREAK
+CREATE SEQUENCE players_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER players_trigger
+    BEFORE INSERT ON players REFERENCING
+    NEW AS new
+    OLD AS old
+    FOR EACH ROW
+    begin
+        select coalesce(:new.id, players_seq.nextval) into :new.id from dual;
+    end;
+-- BREAK
+
+
