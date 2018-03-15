@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.*;
 
+import static org.javalite.common.Collections.list;
 import static org.javalite.common.Util.blank;
 
 /**
@@ -44,7 +45,8 @@ public class Configuration {
         freeMarkerConfig, route_config, maxUploadSize
     }
 
-    private static Properties props = new Properties();
+    private static List<String> logHeaders = new ArrayList<>();
+    private static Properties props;
     private static TemplateManager templateManager;
 
     private static boolean testing;
@@ -337,6 +339,20 @@ public class Configuration {
     static void resetFilters() {
         filters = new ArrayList<>();
         filterMetadataMap = new HashMap<>();
+    }
+
+    /**
+     * Provide names of headers to log to the log system with each request.
+     * This configuration is dynamic and can be changed during runtime.
+     *
+     * @param headerNames list of headers to log. If the first argument is '*', all headers will be logged.
+     */
+    public static void logHeaders(String... headerNames) {
+        logHeaders = list(headerNames);
+    }
+
+    protected static List<String> getLogHeaders(){
+        return logHeaders;
     }
 
 }

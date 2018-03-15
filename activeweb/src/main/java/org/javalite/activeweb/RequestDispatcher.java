@@ -315,20 +315,45 @@ public class RequestDispatcher implements Filter {
             redirectTarget = rr.redirectValue();
         }
 
-        String log = "{\"controller\":\"" + controller
-                + "\",\"action\":\"" + action
-                + "\",\"duration_millis\":" + millis
-                + ",\"method\":\"" + method
-                + "\",\"url\":\"" + url
-                + (redirectTarget != null ? "\",\"redirect_target\":\"" + redirectTarget: "")
-                + (throwable != null ? "\",\"error\":\"" + JsonHelper.sanitize(throwable.getMessage() != null ? throwable.getMessage() : throwable.toString()) : "")
-                + "\",\"remote_ip\":\"" + getRemoteIP()
-                + "\",\"status\":" + status + "}";
+        Map<String, Object> log = map(
+                "controller", controller,
+                "action", action,
+                "duration_millis", millis,
+                "method", method,
+                "url", url,
+                "remote_ip", getRemoteIP(),
+                "status", status);
+
+        if (redirectTarget != null) {
+            log.put("redirect_target", redirectTarget);
+        }
+
+        if (throwable != null) {
+            log.put("error", JsonHelper.sanitize(throwable.getMessage() != null ? throwable.getMessage() : throwable.toString()));
+        }
+
+        addRequestHeaders(log);
 
         if(throwable != null && status >= 500){
-            logger.error(log, throwable);
+            logger.error(JsonHelper.toJsonString(log), throwable);
         }else {
-            logger.info(log);
+            logger.info(JsonHelper.toJsonString(log));
+        }
+    }
+
+    private void addRequestHeaders(Map<String, Object> log) {
+        List<String> logHeaders = Configuration.getLogHeaders();
+        Enumeration<String> requestHeaders = RequestContext.getHttpRequest().getHeaderNames();
+        Map<String, String> headersMap = null;
+        while (requestHeaders.hasMoreElements()) {
+            String header = requestHeaders.nextElement();
+            if(logHeaders.contains(header)){
+                if(headersMap == null){
+                    headersMap = new HashMap<>();
+                    log.put("headers", headersMap);
+                }
+                headersMap.put(header, JsonHelper.sanitize(RequestContext.getHttpRequest().getHeader(header)));
+            }
         }
     }
 
