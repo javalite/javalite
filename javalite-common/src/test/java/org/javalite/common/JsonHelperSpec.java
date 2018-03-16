@@ -44,12 +44,15 @@ public class JsonHelperSpec {
 
     @Test
     public void shouldConvertObject2JSONPrettyPrintString() {
-        Map m = JsonHelper.toMap("{ \"name\" : \"John\", \"age\": 22 }");
-        String pretty = "{" + System.lineSeparator() +
-                "  \"name\" : \"John\"," + System.lineSeparator() +
-                "  \"age\" : 22" + System.lineSeparator() +
-                "}";
-        a(toJsonString(m, true)).shouldBeEqual(pretty);
+        Map m = JsonHelper.toMap("{ \"firstName\" : \"John\",\"lastName\" : \"Smith\", \"age\": 22, \"1\": 1 }");
+        String pretty = toJsonString(m, true);
+        a(pretty).shouldBeEqual("{" + System.lineSeparator() +
+                "  \"1\" : 1," + System.lineSeparator() +
+                "  \"age\" : 22," + System.lineSeparator() +
+                "  \"firstName\" : \"John\"," + System.lineSeparator() +
+                "  \"lastName\" : \"Smith\"" + System.lineSeparator() +
+                "}"
+        );
     }
 
     @Test

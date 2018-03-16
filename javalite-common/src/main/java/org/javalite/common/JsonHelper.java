@@ -87,7 +87,7 @@ public class JsonHelper {
      */
     public static String toJsonString(Object val, boolean pretty) {
         try {
-            return pretty ? mapper.writerWithDefaultPrettyPrinter().writeValueAsString(val) : mapper.writeValueAsString(val);
+            return pretty ? mapper.writerWithDefaultPrettyPrinter().with(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS).writeValueAsString(val) : mapper.writeValueAsString(val);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
