@@ -1,6 +1,7 @@
 package org.javalite.instrumentation.gradle
 
 import org.gradle.api.DefaultTask
+import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
 import org.javalite.instrumentation.Instrumentation
 
@@ -10,13 +11,17 @@ import org.javalite.instrumentation.Instrumentation
 class ActiveJDBCInstrumentation extends DefaultTask {
 
     /** The directory containing class files to be instrumented. */
-    String classesDir = project.sourceSets.main.output.classesDir.getPath()
+    String classesDir
 
     /** The output directory to write back classes after instrumentation. */
-    String outputDir = classesDir
+    String outputDir
 
     ActiveJDBCInstrumentation() {
         description = "Instrument compiled class files extending from 'org.javalite.activejdbc.Model'"
+
+        classesDir = getGradleMajorVersion(project) > 3 ? project.sourceSets.main.java.outputDir.getPath()
+                : project.sourceSets.main.output.classesDir.getPath()
+        outputDir = classesDir
     }
 
     @TaskAction
@@ -55,4 +60,9 @@ class ActiveJDBCInstrumentation extends DefaultTask {
         }
     }
 
+    private static int getGradleMajorVersion(Project project)
+    {
+        String gradleVersion = project.getGradle().getGradleVersion()
+        Integer.valueOf(gradleVersion.substring(0, gradleVersion.indexOf(".")))
+    }
 }
