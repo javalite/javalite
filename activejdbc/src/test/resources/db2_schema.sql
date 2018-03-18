@@ -191,8 +191,17 @@ CREATE TABLE boxes (id int primary key GENERATED ALWAYS AS IDENTITY, "color" VAR
 CALL dropTable('passengers');
 CREATE TABLE passengers (id int primary key GENERATED ALWAYS AS IDENTITY, user_id INT NOT NULL, vehicle VARCHAR(10),mode VARCHAR(10));
 
-CALL dropTable('teams');
-CREATE TABLE teams (team_id int primary key GENERATED ALWAYS AS IDENTITY, name VARCHAR(56) NOT NULL);
+CALL dropTable('bands');
+CREATE TABLE bands (band_id int primary key GENERATED ALWAYS AS IDENTITY, name VARCHAR(56) NOT NULL);
 
-CALL dropTable('players');
-CREATE TABLE players (id int primary key GENERATED ALWAYS AS IDENTITY, first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL, team_id INT);
+CALL dropTable('genres');
+CREATE TABLE genres (genre_id int primary key GENERATED ALWAYS AS IDENTITY, name VARCHAR(56) NOT NULL);
+
+CALL dropTable('musicians');
+CREATE TABLE musicians (musician_id int primary key GENERATED ALWAYS AS IDENTITY, first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL);
+
+CALL dropTable('bands_genres');
+CREATE TABLE bands_genres (the_id  int primary key GENERATED ALWAYS AS IDENTITY, band_id int, genre_id);
+
+CALL dropTable('bands_musicians');
+CREATE TABLE bands_musicians (the_id  int primary key GENERATED ALWAYS AS IDENTITY, band_id int, musician_id);

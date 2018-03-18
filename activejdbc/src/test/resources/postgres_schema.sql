@@ -205,10 +205,19 @@ CREATE TABLE boxes (id serial PRIMARY KEY, "color" VARCHAR(56) NOT NULL, fruit_i
 DROP TABLE IF EXISTS passengers;
 CREATE TABLE passengers (id serial PRIMARY KEY, "vehicle" VARCHAR(56),"mode" VARCHAR(56), user_id INT);
 
-DROP TABLE IF EXISTS teams;
-CREATE TABLE teams (team_id serial PRIMARY KEY, name VARCHAR(56) NOT NULL);
-
-DROP TABLE IF EXISTS players;
-CREATE TABLE players (id serial PRIMARY KEY, first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL, team_id INT);
 
 
+DROP TABLE IF EXISTS bands;
+CREATE TABLE bands (band_id serial PRIMARY KEY, name VARCHAR(56) NOT NULL);
+
+DROP TABLE IF EXISTS genres;
+CREATE TABLE genres (genre_id serial PRIMARY KEY, name VARCHAR(56) NOT NULL);
+
+DROP TABLE IF EXISTS musicians;
+CREATE TABLE musicians (musician_id serial PRIMARY KEY, first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL);
+
+DROP TABLE IF EXISTS bands_genres;
+CREATE TABLE bands_genres (the_id  serial PRIMARY KEY, band_id int(11), genre_id int(11));
+
+DROP TABLE IF EXISTS bands_musicians;
+CREATE TABLE bands_musicians (the_id  serial PRIMARY KEY, band_id int(11), musician_id int(11));
