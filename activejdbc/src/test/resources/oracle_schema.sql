@@ -1103,6 +1103,7 @@ select coalesce(:new.id, passengers_seq.nextval) into :new.id from dual;
 end;
 -- BREAK
 
+
 CREATE TABLE bands (band_id NUMBER NOT NULL, name VARCHAR(56) NOT NULL )
 -- BREAK
 ALTER TABLE bands ADD CONSTRAINT bands_pk PRIMARY KEY (band_id)

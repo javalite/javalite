@@ -206,6 +206,7 @@ DROP TABLE IF EXISTS passengers;
 CREATE TABLE passengers (id serial PRIMARY KEY, "vehicle" VARCHAR(56),"mode" VARCHAR(56), user_id INT);
 
 
+
 DROP TABLE IF EXISTS bands;
 CREATE TABLE bands (band_id serial PRIMARY KEY, name VARCHAR(56) NOT NULL);
 

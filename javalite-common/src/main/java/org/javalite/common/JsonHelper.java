@@ -1,5 +1,5 @@
 /*
-Copyright 2009-2016 Igor Polevoy
+Copyright 2009-2018 Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@ limitations under the License.
 
 package org.javalite.common;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -37,7 +37,7 @@ public class JsonHelper {
     }
 
     static {
-        mapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
 
     /**
@@ -75,8 +75,19 @@ public class JsonHelper {
      * @return JSON string.
      */
     public static String toJsonString(Object val) {
+        return toJsonString(val, false);
+    }
+
+    /**
+     * Convert Java object to a JSON string.
+     *
+     * @param val Java object
+     * @param pretty enable/disable pretty print
+     * @return JSON string.
+     */
+    public static String toJsonString(Object val, boolean pretty) {
         try {
-            return mapper.writeValueAsString(val);
+            return pretty ? mapper.writerWithDefaultPrettyPrinter().with(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS).writeValueAsString(val) : mapper.writeValueAsString(val);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

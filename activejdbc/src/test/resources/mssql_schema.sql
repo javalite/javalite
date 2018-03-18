@@ -408,6 +408,7 @@ BEGIN
 END
 CREATE TABLE passengers (id INT IDENTITY PRIMARY KEY, user_id INT NOT NULL, vehicle VARCHAR(10), mode VARCHAR(10));
 
+
 IF object_id('dbo.bands') IS NOT NULL
 BEGIN
     DROP TABLE [dbo].[bands]
@@ -437,4 +438,3 @@ IF object_id('dbo.bands_musicians') IS NOT NULL
     DROP TABLE [dbo].bands_musicians
   END
 CREATE TABLE bands_musicians (the_id INT IDENTITY PRIMARY KEY, band_id INT, musician_id INT);
-

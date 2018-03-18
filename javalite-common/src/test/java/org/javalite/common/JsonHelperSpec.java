@@ -43,6 +43,19 @@ public class JsonHelperSpec {
     }
 
     @Test
+    public void shouldConvertObject2JSONPrettyPrintString() {
+        Map m = JsonHelper.toMap("{ \"firstName\" : \"John\",\"lastName\" : \"Smith\", \"age\": 22, \"1\": 1 }");
+        String pretty = toJsonString(m, true);
+        a(pretty).shouldBeEqual("{" + System.lineSeparator() +
+                "  \"1\" : 1," + System.lineSeparator() +
+                "  \"age\" : 22," + System.lineSeparator() +
+                "  \"firstName\" : \"John\"," + System.lineSeparator() +
+                "  \"lastName\" : \"Smith\"" + System.lineSeparator() +
+                "}"
+        );
+    }
+
+    @Test
     public void shouldConvertArray2List() {
         List l = JsonHelper.toList("[1, 2]");
         $(l.size()).shouldBeEqual(2);
