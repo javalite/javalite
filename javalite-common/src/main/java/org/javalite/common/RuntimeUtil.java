@@ -1,8 +1,5 @@
 package org.javalite.common;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 
 import static org.javalite.common.Util.read;
@@ -13,9 +10,6 @@ import static org.javalite.common.Util.read;
  * @author igor on 1/20/17.
  */
 public class RuntimeUtil {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(RuntimeUtil.class);
-
     /**
      * Executes an external command and provides results of execution.
      *
@@ -28,11 +22,8 @@ public class RuntimeUtil {
             Process process = Runtime.getRuntime().exec(command);
             String out = read(process.getInputStream());
             String err = read(process.getErrorStream());
-            LOGGER.info("Command \"{}\" finished with the a response '{}' and error '{}'.", Util.join(command, " "), out, err);
-            if (process.waitFor() != 0) {
-                throw new RuntimeException("Failed to execute command: " + Util.join(command, " ") + "\n" + err);
-            }
-            return new Response(out, err);
+
+            return new Response(out, err, process.waitFor());
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
             throw  new RuntimeException("Interrupted");
@@ -43,10 +34,31 @@ public class RuntimeUtil {
 
     public static class Response{
         public final String out, err;
-        public Response(String out, String err) {
+        public final int exitValue;
+        Response(String out, String err, int exitValue) {
             this.out = out;
             this.err = err;
+            this.exitValue = exitValue;
         }
     }
 
+    /**
+     * Convenience method, does the same as {@link #execute(String...)}, but  will
+     * automatically convert a full command string to tokens for convenience.
+     * Here is how to call:
+     *
+     * <pre>
+     * System.out.println(execute("ls -ls").out);
+     * </pre>
+     *
+     * @param command - a single string representing a command and its arguments.
+     * @return instance of {@link Response} with result of execution.
+     */
+    public static Response execute(String command) {
+        return execute(Util.split(command, " "));
+    }
+
+    public static void main(String[] args) {
+        System.out.println(execute("ls -ls").out);
+    }
 }
