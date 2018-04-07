@@ -25,9 +25,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Use this annotation for 1:n associations on the model of the 1-side, if the foreign key constraints don't follow
- * ActiveJDBC conventions. If the navigation between the two models is from child to parent model, you can use
- * {@link BelongsTo}. But you shouldn't use both for a pair of associated models.
+ * <p>
+ * Place on a parent model of the One-to-many relationship if the tables do not follow
+ * the ActiveJDBC naming conventions.
+ * </p>
+ * <p>
+ *     This annotation will do exactly the same as {@link BelongsTo}, but is placed on a 'parent' side of a relationship.
+ * </p>
+ *
+ * <p>
+ *     There is no need to add both {@link HasMany} and {@link BelongsTo} on the two related models. Just one is
+ *     fully sufficient.
+ * </p>
  *
  * @author Christof Schablinski
  *

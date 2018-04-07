@@ -25,7 +25,23 @@ import java.lang.annotation.Target;
 import java.lang.annotation.ElementType;
 
 /**
+ * Place on a child model of the One-to-many relationship if the tables do not follow
+ * the ActiveJDBC naming conventions.
+ *
+ * <p>
+ *     This annotation will do exactly the same as {@link HasMany}, but is placed on a 'child' side of a relationship.
+ * </p>
+ *
+ * <p>
+ *     There is no need to add both {@link HasMany} and {@link BelongsTo} on the two related models. Just one is
+ *     fully sufficient.
+ * </p>
+ *
  * @author Igor Polevoy
+ *
+ * @see HasMany
+ *
+ * @since 1.0
  */
 
 @Retention(RetentionPolicy.RUNTIME)
