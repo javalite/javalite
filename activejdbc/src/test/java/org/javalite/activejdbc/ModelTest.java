@@ -452,23 +452,30 @@ public class ModelTest extends ActiveJDBCTest {
 
         a.delete();
 
-        expect(new ExceptionExpectation(FrozenException.class) {
+        expect(new ExceptionExpectation<FrozenException>(FrozenException.class) {
             @Override
             public void exec() {
                 a.saveIt();
             }
         });
 
-        expect(new ExceptionExpectation(FrozenException.class) {
+        expect(new ExceptionExpectation<FrozenException>(FrozenException.class) {
             @Override
             public void exec() {
                 u.add(a);
             }
         });
 
+        expect(new ExceptionExpectation<FrozenException>(FrozenException.class) {
+            @Override
+            public void exec() {
+                a.set("state", "AZ");
+            }
+        });
+
         a.thaw();
 
-        expect(new DifferenceExpectation(u.getAll(Address.class).size()) {
+        expect(new DifferenceExpectation<Object>(u.getAll(Address.class).size()) {
             @Override
             public Object exec() {
                 u.add(a);

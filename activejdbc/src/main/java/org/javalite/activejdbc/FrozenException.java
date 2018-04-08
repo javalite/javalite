@@ -22,6 +22,6 @@ package org.javalite.activejdbc;
  */
 public class FrozenException extends RuntimeException {
     public FrozenException(Model model) {
-        super("Model frozen: " + model);
+        super("Model frozen, must thaw() before using: " + model);
     }
 }

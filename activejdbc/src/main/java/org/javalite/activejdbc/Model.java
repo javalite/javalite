@@ -338,6 +338,9 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to self, so you can string these methods one after another.
      */
     public <T extends Model> T set(String attributeName, Object value) {
+        if(isFrozen()){
+            throw new FrozenException(this);
+        }
         Converter<Object, Object> converter = modelRegistryLocal().converterForValue(attributeName, value, Object.class);
         return setRaw(attributeName, converter != null ? converter.convert(value) : value);
     }
