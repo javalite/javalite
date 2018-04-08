@@ -438,3 +438,9 @@ IF object_id('dbo.bands_musicians') IS NOT NULL
     DROP TABLE [dbo].bands_musicians
   END
 CREATE TABLE bands_musicians (the_id INT IDENTITY PRIMARY KEY, band_id INT, musician_id INT);
+
+IF object_id('dbo.employees') IS NOT NULL
+    BEGIN
+        DROP TABLE [dbo].[employees]
+    END
+CREATE TABLE employees ( id INT IDENTITY PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), position  VARCHAR(56),  active INT,  department VARCHAR(56), created_at DATETIME2, updated_at DATETIME2);

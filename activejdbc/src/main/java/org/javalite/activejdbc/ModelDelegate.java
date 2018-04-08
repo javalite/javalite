@@ -20,11 +20,8 @@ import org.javalite.activejdbc.cache.QueryCache;
 
 import java.sql.Timestamp;
 import java.text.DateFormat;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
 import org.javalite.activejdbc.associations.BelongsToAssociation;
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
 import org.javalite.activejdbc.conversion.BlankToNullConverter;
@@ -54,6 +51,11 @@ import static org.javalite.common.Util.*;
  */
 public final class ModelDelegate {
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelDelegate.class);
+
+    /**
+     * Key is a model class name, value is a map with keys as scopes and values as scope queries.
+     */
+    private static Map<String, Map<String, String>> scopes = new HashMap<>();
 
     private ModelDelegate() {
         // not instantiable
@@ -469,5 +471,22 @@ public final class ModelDelegate {
                 }
             }
         }
+    }
+
+    // has to be public because it is called from models.
+    public static void addScope(String className, String scope, String criteria) {
+
+        if(!scopes.containsKey(className)){
+            scopes.put(className, new HashMap<>());
+        }
+        scopes.get(className).put(scope, criteria);
+    }
+
+    static Map<String, String> getScopes(String className) {
+
+        if(!scopes.containsKey(className)){
+            scopes.put(className, new HashMap<>());
+        }
+        return scopes.get(className);
     }
 }

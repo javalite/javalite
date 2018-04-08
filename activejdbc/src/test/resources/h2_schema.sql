@@ -223,3 +223,15 @@ CREATE TABLE bands_genres (the_id  int(11) NOT NULL  auto_increment PRIMARY KEY,
 
 DROP TABLE IF EXISTS bands_musicians;
 CREATE TABLE bands_musicians (the_id  int(11) NOT NULL  auto_increment PRIMARY KEY, band_id int(11), musician_id int(11));
+
+
+DROP TABLE IF EXISTS employees;
+CREATE TABLE employees (
+  id  int(11) NOT NULL auto_increment PRIMARY KEY,
+  first_name VARCHAR(56) NOT NULL,
+  last_name VARCHAR(56),
+  position  VARCHAR(56),
+  active int(2),
+  department VARCHAR(56),
+  created_at DATETIME,
+  updated_at DATETIME);

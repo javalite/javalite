@@ -217,3 +217,6 @@ CREATE TABLE bands_genres (the_id  INTEGER PRIMARY KEY AUTOINCREMENT, band_id IN
 
 DROP TABLE IF EXISTS bands_musicians;
 CREATE TABLE bands_musicians (the_id  INTEGER PRIMARY KEY AUTOINCREMENT, band_id INT(11), musician_id INT(11));
+
+DROP TABLE IF EXISTS employees;
+CREATE TABLE employees (  id  INTEGER PRIMARY KEY AUTOINCREMENT,  first_name VARCHAR(56) NOT NULL,  last_name VARCHAR(56),  position  VARCHAR(56),  active INT(2),  department VARCHAR(56),  created_at DATETIME,  updated_at DATETIME);

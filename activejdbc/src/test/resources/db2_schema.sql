@@ -205,3 +205,7 @@ CREATE TABLE bands_genres (the_id  int primary key GENERATED ALWAYS AS IDENTITY,
 
 CALL dropTable('bands_musicians');
 CREATE TABLE bands_musicians (the_id  int primary key GENERATED ALWAYS AS IDENTITY, band_id int, musician_id);
+
+
+DROP TABLE IF EXISTS employees;
+CREATE TABLE employees (  id  int primary key GENERATED ALWAYS AS IDENTITY,  first_name VARCHAR(56) NOT NULL,  last_name VARCHAR(56),  position  VARCHAR(56),  active INT,  department VARCHAR(56),  created_at TIMESTAMP,  updated_at TIMESTAMP);

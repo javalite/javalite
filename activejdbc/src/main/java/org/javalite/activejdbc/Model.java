@@ -1944,6 +1944,16 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
+     * Use in a static block of a model definotion to add a scope.
+     *
+     * @param name name of scope
+     * @param criteria SQL criteria for the scope filter
+     */
+    protected static void addScope(String name, String criteria) {
+        ModelDelegate.addScope(modelClass().getName(), name, criteria);
+    }
+
+    /**
      * Adds a new error to the collection of errors. This is a convenience method to be used from custom validators.
      *
      * @param key - key wy which this error can be retrieved from a collection of errors: {@link #errors()}.
@@ -2370,6 +2380,39 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public static <T extends Model> LazyList<T> where(String subquery, Object... params) {
         return ModelDelegate.where(Model.<T>modelClass(), subquery, params);
     }
+
+
+    /**
+     * Allows to specify multiple scopes as filters such as:
+     *
+     * <pre>
+     *     List<Employee> activeDevelopers = Employee.scopes("developers", "active").all();
+     * </pre>
+     *
+     * @param scopes list of scopes to use as filters.
+     *
+     * @return selected objects from database based on scope filters.
+     */
+    public static <T extends Model> ScopeBuilder<T> scopes(String ... scopes) {
+        return new ScopeBuilder<T>(modelClass(), scopes);
+    }
+
+    /**
+     * Allows to specify multiple scopes as filters such as:
+     *
+     * <pre>
+     *     List<Employee> developers = Employee.scope("developers").all();
+     * </pre>
+     *
+     * @param scope a scope to use as a filter.
+     *
+     * @return selected objects from database based on scope filters.
+     */
+    public static <T extends Model> ScopeBuilder<T> scope(String  scope) {
+        return new ScopeBuilder<T>(modelClass(), new String[]{scope});
+    }
+
+
 
     /**
      * Synonym of {@link #where(String, Object...)}
@@ -3049,4 +3092,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         attributes = (Map<String, Object>) in.readObject();
         dirtyAttributeNames = (Set<String>) in.readObject();
     }
+
+
 }

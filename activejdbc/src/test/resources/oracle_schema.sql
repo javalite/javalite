@@ -1185,3 +1185,20 @@ CREATE OR REPLACE TRIGGER bands_musicians_trigger
     select coalesce(:new.the_id, bands_musicians_seq.nextval) into :new.the_id from dual;
   end;
 -- BREAK
+
+-- BREAK
+CREATE TABLE employees(id NUMBER NOT NULL, first_name VARCHAR(56), last_name VARCHAR(56), position  VARCHAR(56),  active NUMBER,  department VARCHAR(56), created_at TIMESTAMP, updated_at TIMESTAMP)
+-- BREAK
+ALTER TABLE employees ADD CONSTRAINT employees_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE employees_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER employees_trigger
+    BEFORE INSERT ON employees REFERENCING
+    NEW AS new
+    OLD AS old
+    FOR EACH ROW
+    begin
+        select coalesce(:new.id, employees_seq.nextval) into :new.id from dual;
+    end;
+-- BREAK

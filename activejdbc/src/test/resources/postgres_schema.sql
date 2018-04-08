@@ -217,7 +217,10 @@ DROP TABLE IF EXISTS musicians;
 CREATE TABLE musicians (musician_id serial PRIMARY KEY, first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL);
 
 DROP TABLE IF EXISTS bands_genres;
-CREATE TABLE bands_genres (the_id  serial PRIMARY KEY, band_id int(11), genre_id int(11));
+CREATE TABLE bands_genres (the_id  serial PRIMARY KEY, band_id INT, genre_id INT);
 
 DROP TABLE IF EXISTS bands_musicians;
-CREATE TABLE bands_musicians (the_id  serial PRIMARY KEY, band_id int(11), musician_id int(11));
+CREATE TABLE bands_musicians (the_id  serial PRIMARY KEY, band_id INT, musician_id INT);
+
+DROP TABLE IF EXISTS employees;
+CREATE TABLE employees (  id  serial PRIMARY KEY,  first_name VARCHAR(56) NOT NULL,  last_name VARCHAR(56),  position  VARCHAR(56),  active INT,  department VARCHAR(56),  created_at TIMESTAMP,  updated_at TIMESTAMP);

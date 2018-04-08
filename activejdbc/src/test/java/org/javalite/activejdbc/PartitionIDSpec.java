@@ -24,7 +24,6 @@ public class PartitionIDSpec extends ActiveJDBCTest {
 
         String out = SystemStreamUtil.getSystemOut();
 
-        String x = find(out, "UPDATE passengers");
         the(find(out, "UPDATE passengers")).shouldContain("user_id = ?");
         the(find(out, "UPDATE passengers")).shouldContain("vehicle = ?");
 
