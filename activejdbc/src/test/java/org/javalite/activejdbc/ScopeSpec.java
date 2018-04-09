@@ -43,10 +43,10 @@ public class ScopeSpec extends ActiveJDBCTest {
 
     @Test
     public void shouldCombineScopesAndConditions() {
-        List<Employee> graduates = Employee.scopes("IT", "active").where("last_name like ?", "%i%").orderBy("id");
+        List<Employee> activeIT = Employee.scopes("IT", "active").where("last_name like ?", "%i%").orderBy("id");
 
-        the(graduates.size()).shouldEqual(2);
-        the(graduates.get(0).get("last_name")).shouldEqual("Tibur");
-        the(graduates.get(1).get("last_name")).shouldEqual("Calista");
+        the(activeIT.size()).shouldEqual(2);
+        the(activeIT.get(0).get("last_name")).shouldEqual("Tibur");
+        the(activeIT.get(1).get("last_name")).shouldEqual("Calista");
     }
 }
