@@ -330,7 +330,7 @@ public class MetaModel implements Serializable {
         List<Association> result = new ArrayList<>();
 
         for (Association association : associations) {
-            if (association.getTargetClass().equals(targetModelClass)) {
+            if (association.getTargetClass().getName().equals(targetModelClass.getName())) {
                 result.add(association);
             }
         }
