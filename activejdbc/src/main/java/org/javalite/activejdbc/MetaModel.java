@@ -291,7 +291,7 @@ public class MetaModel implements Serializable {
     public <A extends Association> A getAssociationForTarget(Class<? extends Model> targetModelClass, Class<A> associationClass){
         Association result = null;
         for (Association association : associations) {
-            if (association.getClass().equals(associationClass) && association.getTargetClass().equals(targetModelClass)) {
+            if (association.getClass().getName().equals(associationClass.getName()) && association.getTargetClass().getName().equals(targetModelClass.getName())) {
                 result = association; break;
             }
         }
