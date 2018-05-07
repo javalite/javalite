@@ -291,7 +291,7 @@ public class MetaModel implements Serializable {
     public <A extends Association> A getAssociationForTarget(Class<? extends Model> targetModelClass, Class<A> associationClass){
         Association result = null;
         for (Association association : associations) {
-            if (association.getClass().equals(associationClass) && association.getTargetClass().equals(targetModelClass)) {
+            if (association.getClass().getName().equals(associationClass.getName()) && association.getTargetClass().getName().equals(targetModelClass.getName())) {
                 result = association; break;
             }
         }
@@ -309,7 +309,7 @@ public class MetaModel implements Serializable {
     public <A extends Association> A getAssociationForTarget(Class<? extends Model> targetClass){
         Association result = null;
         for (Association association : associations) {
-            if (association.getTargetClass().equals(targetClass)) {
+            if (association.getTargetClass().getName().equals(targetClass.getName())) {
                 result = association; break;
             }
         }
@@ -328,9 +328,8 @@ public class MetaModel implements Serializable {
      */
     public List<Association> getAssociationsForTarget(Class<? extends Model> targetModelClass) {
         List<Association> result = new ArrayList<>();
-
         for (Association association : associations) {
-            if (association.getTargetClass().equals(targetModelClass)) {
+            if (association.getTargetClass().getName().equals(targetModelClass.getName())) {
                 result.add(association);
             }
         }
@@ -363,8 +362,8 @@ public class MetaModel implements Serializable {
 
     protected boolean hasAssociation(Class<? extends Model> targetClass, Class<? extends Association> associationClass){
         for (Association association : associations) {
-            if(association.getTargetClass().equals(targetClass) &&
-                    association.getClass().equals(associationClass)) return true;
+            if(association.getTargetClass().getName().equals(targetClass.getName()) &&
+                    association.getClass().getName().equals(associationClass.getName())) return true;
         }
         return false;
     }
@@ -480,7 +479,7 @@ public class MetaModel implements Serializable {
         }
 
         for (Association association : associations) {
-            if (association.getTargetClass().equals(targetModelClass)) {
+            if (association.getTargetClass().getName().equals(targetModelClass.getName())) {
                 return true;
             }
         }
