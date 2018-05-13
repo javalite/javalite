@@ -5,6 +5,8 @@ import static org.javalite.common.Collections.list;
 import static org.javalite.test.jspec.JSpec.*;
 
 import java.util.Arrays;
+
+import com.sun.tools.javac.util.List;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
@@ -74,4 +76,21 @@ public class MSSQLDialectTest {
                 "OVER (ORDER BY item_name) AS rownumber, item_name, item_description FROM items WHERE item_name like ?) " +
                 "AS sq WHERE rownumber BETWEEN 31 AND 40");
     }
+
+    @Test
+    public void testLimitOffsetWithNolockTableHint() {
+        String query = dialect.formSelect("pages", null, "", list("page_id"), 10, 20, List.of("nolock"));
+        System.out.println(query);
+        a(query).shouldBeEqual(
+                "SELECT sq.* FROM (SELECT ROW_NUMBER() OVER (ORDER BY page_id) AS rownumber, * FROM pages"
+                        + ") AS sq WITH(nolock) WHERE rownumber BETWEEN 21 AND 30");
+    }
+
+    @Test
+    public void testNoOffsetAndNoLimitWithNolockTableHint() {
+        a(dialect.formSelect("pages", null, "content LIKE '%test%'", list("page_id"), -1, -1, List.of("nolock")))
+                .shouldBeEqual(
+                "SELECT * FROM pages WITH(nolock) WHERE content LIKE '%test%' ORDER BY page_id");
+    }
+
 }

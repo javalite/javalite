@@ -78,6 +78,25 @@ public class MSSQLDialect extends DefaultDialect {
         return fullQuery.toString();
     }
 
+    public String formSelect(
+            String tableName,
+            String[] columns,
+            String subQuery,
+            List<String> orderBys,
+            long limit,
+            long offset,
+            List<String> tableHints) {
+
+        String fullQuery = formSelect(tableName, columns, subQuery, orderBys, limit, offset);
+
+        if (tableHints.size() > 0 ) {
+            String withTableHints = " WITH(" + "".join(",", tableHints) + ") WHERE ";
+            fullQuery = fullQuery.replaceAll(" WHERE ", withTableHints).toString();
+        }
+
+        return fullQuery;
+    }
+
     private String getSQColumns(String[] columns){
 
         if(columns == null){
