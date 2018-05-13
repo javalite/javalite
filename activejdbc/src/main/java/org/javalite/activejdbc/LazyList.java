@@ -19,6 +19,8 @@ package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.associations.*;
 import org.javalite.activejdbc.cache.QueryCache;
+import org.javalite.activejdbc.dialects.Dialect;
+import org.javalite.activejdbc.dialects.MSSQLDialect;
 import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.common.Inflector;
 import org.slf4j.Logger;
@@ -49,6 +51,7 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
     private long limit = -1, offset = -1;
     private final List<Association> includes = new ArrayList<>();
     private final boolean forPaginator;
+    private final List<String> tableHints = new ArrayList();
 
     protected LazyList(String subQuery, MetaModel metaModel, Object... params) {
         this.fullQuery = null;
@@ -121,6 +124,20 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
         if(offset < 0) throw new IllegalArgumentException("offset cannot be negative");
 
         this.offset = offset;
+        return (LazyList<E>) this;
+    }
+
+    /**
+     * Use this method to use mssql table hints. These methods can be chained:
+     * <code>Person.select(...).with("nolock")</code>
+     *
+     * @param tableHint clause. Examples: "nolock", "readpast", etc.
+     * @return instance of this <code>LazyList</code>
+     */
+    public <E extends Model>  LazyList<E> with(String tableHint){
+        if(fullQuery != null && !forPaginator) throw new IllegalArgumentException("Cannot use .with() if using free form SQL");
+
+        tableHints.add(tableHint);
         return (LazyList<E>) this;
     }
 
@@ -296,11 +313,24 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
      */
     public String toSql(boolean showParameters) {
         String sql;
+        Dialect dialect = metaModel.getDialect();
+
         if(forPaginator){
-            sql = metaModel.getDialect().formSelect(null, null, fullQuery, orderBys, limit, offset);
+            if (dialect instanceof MSSQLDialect) {
+                sql = ((MSSQLDialect)dialect).formSelect(null, null, fullQuery, orderBys, limit, offset, tableHints);
+            }else {
+                sql = dialect.formSelect(null, null, fullQuery, orderBys, limit, offset);
+            }
         }else{
-            sql = fullQuery != null ? fullQuery
-                    : metaModel.getDialect().formSelect(metaModel.getTableName(), null, subQuery, orderBys, limit, offset);
+            if (fullQuery != null){
+                sql = fullQuery;
+            }else{
+                if (dialect instanceof MSSQLDialect) {
+                    sql = ((MSSQLDialect)dialect).formSelect(metaModel.getTableName(), null, fullQuery, orderBys, limit, offset, tableHints);
+                }else {
+                    sql = dialect.formSelect(metaModel.getTableName(), null, fullQuery, orderBys, limit, offset);
+                }
+            }
         }
         if (showParameters) {
             StringBuilder sb = new StringBuilder(sql).append(", with parameters: ");
