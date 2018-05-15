@@ -280,7 +280,7 @@ public class Paginator<T extends Model> implements Serializable {
     /**
      * Provides a builder pattern to create new instances of paginator.
      */
-    static class PaginatorBuilder<T extends Model>{
+    public static class PaginatorBuilder<T extends Model>{
         private Class<? extends T> modelClass;
         private int pageSize;
         private boolean suppressCounts = false;
