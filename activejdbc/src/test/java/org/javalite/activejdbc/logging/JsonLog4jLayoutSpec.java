@@ -18,7 +18,6 @@ package org.javalite.activejdbc.logging;
 
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Animal;
-import org.javalite.common.JsonHelper;
 import org.javalite.common.Util;
 import org.javalite.logging.Context;
 import org.javalite.test.SystemStreamUtil;
@@ -98,7 +97,9 @@ public class JsonLog4jLayoutSpec  extends ActiveJDBCTest{
         Map logMap = org.javalite.common.JsonHelper.toMap(json);
         Map message = (Map) logMap.get("message");
 
-        a(message.get("sql")).shouldContain("SELECT * FROM animals WHERE animal_id = ?");
+        a(message.get("sql")).shouldContain("SELECT ");
+        // on MSSQL: SELECT TOP 1 * FROM animals WHERE animal_id = ?
+        a(message.get("sql")).shouldContain(" * FROM animals WHERE animal_id = ?");
 
         List params = (List) message.get("params");
 
