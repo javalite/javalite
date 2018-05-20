@@ -6,9 +6,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
-import static org.javalite.common.Util.readResource;
+import static org.javalite.common.Util.getResourceLines;
 import static org.javalite.db_migrator.DbUtils.attach;
 import static org.javalite.db_migrator.DbUtils.detach;
 import static org.javalite.test.jspec.JSpec.a;
@@ -108,5 +109,16 @@ public class MigrationSpec {
 
     private String stripNL(Object in){
         return in.toString().trim().replace("\n", "").replace("\r", "");
+    }
+
+    private String readResource(String resourceName) {
+        try {
+            List<String> lines = getResourceLines(resourceName);
+            StringBuffer buffer = new StringBuffer();
+            lines.forEach(s -> buffer.append(s.trim()).append('\n'));
+            return buffer.toString();
+        } catch(IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

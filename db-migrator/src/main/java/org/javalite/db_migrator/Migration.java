@@ -1,6 +1,5 @@
 package org.javalite.db_migrator;
 
-import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,15 +43,16 @@ public class Migration implements Comparable {
         try {
             String currentStatement = "";
             for (String line : lines) {
+                line = line.trim();
                 if (!commentLine(line) && !blank(line)) {
                     if (line.startsWith(DELIMITER_KEYWORD)) {
                         delimiter = line.substring(10).trim();
-                    } else if (line.contains(delimiter)) {
-                        currentStatement += line.substring(0, line.indexOf(delimiter)) ;
+                    } else if (line.endsWith(delimiter)) {
+                        currentStatement += line.substring(0, line.length() - delimiter.length()) ;
                         if(!blank(currentStatement)){
                             statements.add(currentStatement);
                         }
-                        currentStatement = line.substring(line.indexOf(delimiter) + delimiter.length());
+                        currentStatement = "";
                     }else {
                         currentStatement += line + System.getProperty("line.separator");
                     }
