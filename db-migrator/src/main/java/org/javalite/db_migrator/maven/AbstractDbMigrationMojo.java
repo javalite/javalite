@@ -112,7 +112,7 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
         try {
             Class.forName(driver);
         } catch (ClassNotFoundException e) {
-            throw new MojoExecutionException("Can't load driver class " + driver + ". Be sure to include it as a plugin dependency.");
+            throw new MojoExecutionException("Can't load driver class " + driver + ". Be sure to include it as a dependency.");
         }
     }
 

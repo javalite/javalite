@@ -136,6 +136,7 @@
         <module>activejdbc-instrumentation</module>
         <module>activejdbc</module>
         <module>db-migrator</module>
+        <module>db-migrator-cli</module>
         <module>db-migrator-integration-test</module>
         <module>git-info-maven-plugin</module>
         <module>app-config</module>
