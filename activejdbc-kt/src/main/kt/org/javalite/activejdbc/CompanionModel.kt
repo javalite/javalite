@@ -22,6 +22,7 @@ import org.javalite.activejdbc.validation.NumericValidationBuilder
 import org.javalite.activejdbc.validation.ValidationBuilder
 import org.javalite.activejdbc.validation.Validator
 import java.text.DateFormat
+import kotlin.reflect.KClass
 
 /**
  * How to use this class ?
@@ -60,6 +61,8 @@ import java.text.DateFormat
  * one but allow a full Kotlin project with JavaLite instead of a mixed language project.
  */
 open class CompanionModel<T:Model>(entityClass:Class<T>) {
+
+    constructor(entityClass:KClass<T>):this(entityClass.java)
 
     private val clazz:Class<T> = entityClass
 
