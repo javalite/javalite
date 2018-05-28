@@ -240,3 +240,16 @@ CREATE TABLE employees (
   department VARCHAR(56),
   created_at DATETIME,
   updated_at DATETIME) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+DROP TABLE IF EXISTS tnb_skills;
+CREATE TABLE tnb_skills (
+  id  int(11) NOT NULL auto_increment PRIMARY KEY,
+  skill_owner VARCHAR(56) NOT NULL,
+  skill_name VARCHAR(56),
+  skill_level  VARCHAR(56),
+
+  created_at DATETIME,
+  updated_at DATETIME) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
