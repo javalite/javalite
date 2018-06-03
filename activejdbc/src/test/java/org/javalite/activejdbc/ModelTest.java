@@ -25,6 +25,7 @@ import org.junit.Test;
 
 
 import java.io.*;
+import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -521,18 +522,18 @@ public class ModelTest extends ActiveJDBCTest {
 
     @Test
     public void shouldGenerateCorrectInsertSQL() {
-        Student s = new Student();
-        s.set("first_name", "Jim");
-        s.set("last_name", "Cary");
-        s.set("id", 1);
-        String insertSQL = s.toInsert();
-        // date literals formatting is not the same for every DBMS, so not testing this here
-        the(insertSQL).shouldBeEqual("INSERT INTO students (first_name, id, last_name) VALUES ('Jim', 1, 'Cary')");
+        Address address = new Address();
+        address.set("address1", "Lake Street");
+        address.set("address2", "Main Avenue");
+        address.set("id", 1);
 
-        s.set("dob", getDate(1965, 12, 1));
+        String insertSQL = address.toInsert();
+        the(insertSQL).shouldBeEqual("INSERT INTO addresses (address1, address2, id) VALUES ('Lake Street', 'Main Avenue', 1)");
 
-        insertSQL = s.toInsert();
-        the(insertSQL).shouldBeEqual("INSERT INTO students (dob, first_name, id, last_name) VALUES (DATE '1965-12-01', 'Jim', 1, 'Cary')");
+        address.set("city", "Zaragoza");
+        insertSQL = address.toInsert();
+
+        the(insertSQL).shouldBeEqual("INSERT INTO addresses (address1, address2, city, id) VALUES ('Lake Street', 'Main Avenue', 'Zaragoza', 1)");
     }
 
     @Test
@@ -544,12 +545,6 @@ public class ModelTest extends ActiveJDBCTest {
         String insertSQL = s.toInsert("'", "''");
 
         the(insertSQL).shouldBeEqual("INSERT INTO students (first_name, last_name) VALUES ('Jim', 'O''Connor''s')");
-
-        s.set("dob", getDate(1965, 12, 1));
-
-        insertSQL = s.toInsert("'", "''");
-
-        the(insertSQL).shouldBeEqual("INSERT INTO students (dob, first_name, last_name) VALUES (DATE '1965-12-01', 'Jim', 'O''Connor''s')");
 
         the(Base.exec(insertSQL)).shouldBeEqual(1);
 

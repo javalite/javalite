@@ -425,19 +425,19 @@ IF object_id('dbo.bands') IS NOT NULL
 BEGIN
     DROP TABLE [dbo].[bands]
 END
-CREATE TABLE bands (band_id INT IDENTITY PRIMARY KEY, name VARCHAR(10) NOT NULL);
+CREATE TABLE bands (band_id INT IDENTITY PRIMARY KEY, name VARCHAR(56) NOT NULL);
 
 IF object_id('dbo.genres') IS NOT NULL
   BEGIN
     DROP TABLE [dbo].[genres]
   END
-CREATE TABLE genres (genre_id INT IDENTITY PRIMARY KEY, name VARCHAR(10) NOT NULL);
+CREATE TABLE genres (genre_id INT IDENTITY PRIMARY KEY, name VARCHAR(56) NOT NULL);
 
 IF object_id('dbo.musicians') IS NOT NULL
   BEGIN
     DROP TABLE [dbo].[musicians]
   END
-CREATE TABLE musicians (musician_id INT IDENTITY PRIMARY KEY, first_name VARCHAR(10) NOT NULL, last_name VARCHAR(10) NOT NULL);
+CREATE TABLE musicians (musician_id INT IDENTITY PRIMARY KEY, first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL);
 
 IF object_id('dbo.bands_genres') IS NOT NULL
   BEGIN
