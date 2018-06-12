@@ -38,23 +38,23 @@ public class OracleDialectTest extends ActiveJDBCTest {
     @Test
     public void testFormSelectWithoutTableName() {
         final String fullQuery = "SELECT name FROM people";
-        a(dialect.formSelect(null, new String[]{"name"}, fullQuery, new ArrayList<String>(), -1, -1)).shouldBeEqual(fullQuery);
+        a(dialect.formSelect(null, new String[]{"name"}, fullQuery, new ArrayList<>(), -1, -1)).shouldBeEqual(fullQuery);
     }
     
     @Test
     public void testFormSelectWithTableName() {
-        a(dialect.formSelect("people", null, null, new ArrayList<String>(), -1, -1)).shouldBeEqual("SELECT * FROM people");
-        a(dialect.formSelect("people", null, "name = ?", new ArrayList<String>(), -1, -1)).shouldBeEqual("SELECT * FROM people WHERE name = ?");
+        a(dialect.formSelect("people", null, null, new ArrayList<>(), -1, -1)).shouldBeEqual("SELECT * FROM people");
+        a(dialect.formSelect("people", null, "name = ?", new ArrayList<>(), -1, -1)).shouldBeEqual("SELECT * FROM people WHERE name = ?");
         a(dialect.formSelect("people", null, null, Arrays.asList("last_name", "name"), -1, -1)).shouldBeEqual("SELECT * FROM people ORDER BY last_name, name");
     }
 
     @Test
     public void testLimitOffsetNoOrderBy() {
-        a(dialect.formSelect("people", null, null, new ArrayList<String>(), 1, 1)).shouldBeEqual(
+        a(dialect.formSelect("people", null, null, new ArrayList<>(), 1, 1)).shouldBeEqual(
                 "SELECT * FROM (SELECT t2.*, ROWNUM AS oracle_row_number FROM ("
                         + "SELECT t.* FROM people t"
                         + ") t2) WHERE oracle_row_number >= 2 AND ROWNUM <= 1");
-        a(dialect.formSelect("people", null, "last_name = ?", new ArrayList<String>(), 1, 10)).shouldBeEqual(
+        a(dialect.formSelect("people", null, "last_name = ?", new ArrayList<>(), 1, 10)).shouldBeEqual(
                 "SELECT * FROM (SELECT t2.*, ROWNUM AS oracle_row_number FROM ("
                         + "SELECT t.* FROM people t WHERE last_name = ?"
                         + ") t2) WHERE oracle_row_number >= 11 AND ROWNUM <= 1");

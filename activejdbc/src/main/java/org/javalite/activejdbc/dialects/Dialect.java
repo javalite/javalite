@@ -55,4 +55,5 @@ public interface Dialect extends Serializable{
 
     String update(MetaModel metaModel, Map<String, Object> attributes, String ... replacements);
 
+    String formSelect(String sqlQuery, Object[] orderBys, int pageSize, int i);
 }

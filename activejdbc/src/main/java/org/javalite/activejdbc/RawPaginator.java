@@ -35,8 +35,6 @@ import java.util.Map;
  * This class can be more efficient because it allows to load only the columns you need to display on the UI.
  * <p></p>
  *
- * This class supports pagination of result sets in ActiveJDBC. This is useful for paging through tables. If the
- *
  * This class is thread safe and the same instance could be used across multiple web requests and even
  * across multiple users/sessions. You can generate an instance each time you need one,
  * or you can cache an instance in a session or even servlet context.

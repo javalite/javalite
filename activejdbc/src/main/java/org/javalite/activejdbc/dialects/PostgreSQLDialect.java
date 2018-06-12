@@ -13,10 +13,10 @@ public class PostgreSQLDialect extends DefaultDialect {
      * add limit, offset and order bys
      * @param columns not used in this implementation
      * @param subQuery sub-query or a full query
-     * @param orderBys
-     * @param limit
-     * @param offset
-     * @return query with
+     * @param orderBys list of "order by" values
+     * @param limit number  of rows to fetch
+     * @param offset offset of a select
+     * @return query with appropriate limit and offset.
      */
     @Override
     public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset) {
