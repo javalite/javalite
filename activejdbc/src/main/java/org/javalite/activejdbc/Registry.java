@@ -158,9 +158,6 @@ public enum Registry {
 
     /**
      * Returns a hash keyed off a column name.
-     *
-     * @return
-     * @throws java.sql.SQLException
      */
     private Map<String, ColumnMetadata> fetchMetaParams(DatabaseMetaData databaseMetaData, String dbType, String table) throws SQLException {
 
@@ -195,7 +192,21 @@ public enum Registry {
             tableName = tableName.substring(1, tableName.length() - 1);
         }
 
-        ResultSet rs = databaseMetaData.getColumns(dbType.equalsIgnoreCase("mysql") ? schema : null, schema, tableName, null);
+        String catalog = null;
+
+
+        if(dbType.equalsIgnoreCase("mysql")){
+            catalog = schema;
+        }
+
+        if(dbType.equalsIgnoreCase("h2")){
+            String url = databaseMetaData.getURL();
+            catalog = url.substring(url.lastIndexOf(":") + 1).toUpperCase();
+            schema = schema != null ? schema.toUpperCase() : null;
+            tableName = tableName.toUpperCase();
+        }
+
+        ResultSet rs = databaseMetaData.getColumns(catalog, schema, tableName, null);
 
         Map<String, ColumnMetadata> columns = getColumns(rs, dbType);
         rs.close();
