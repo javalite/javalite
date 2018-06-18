@@ -182,12 +182,13 @@ public enum Registry {
             throw new DBException("invalid table name: " + table);
         }
 
-	if (schema == null) {
-       		try {
-            		schema = databaseMetaData.getConnection().getSchema();
-        	} catch (AbstractMethodError | Exception ignore) {}
-	}
+        if (schema == null) {
+                try {
+                        schema = databaseMetaData.getConnection().getSchema();
+                } catch (AbstractMethodError | Exception ignore) {}
+        }
 
+        if(!dbType.equalsIgnoreCase("h2"))
         if (tableName.startsWith("\"") && tableName.endsWith("\"")) {
             tableName = tableName.substring(1, tableName.length() - 1);
         }
@@ -203,7 +204,11 @@ public enum Registry {
             String url = databaseMetaData.getURL();
             catalog = url.substring(url.lastIndexOf(":") + 1).toUpperCase();
             schema = schema != null ? schema.toUpperCase() : null;
-            tableName = tableName.toUpperCase();
+
+            if(!tableName.contains("\"")){
+                tableName = tableName.toUpperCase();
+            }
+
         }
 
         ResultSet rs = databaseMetaData.getColumns(catalog, schema, tableName, null);
