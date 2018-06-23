@@ -183,6 +183,114 @@
 				</dependency>
 			</dependencies>
 		</profile>
+
+        <!-- TravisCI Profiles -->
+        <profile>
+            <id>mysql_travis-ci</id>
+            <properties>
+                <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
+                <jdbc.url>jdbc:mysql://localhost/test</jdbc.url>
+                <jdbc.user>root</jdbc.user>
+                <jdbc.password></jdbc.password>
+                <db>mysql</db>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>mysql</groupId>
+                    <artifactId>mysql-connector-java</artifactId>
+                    <version>5.1.25</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>postgresql_travis-ci</id>
+            <properties>
+                <jdbc.driver>org.postgresql.Driver</jdbc.driver>
+                <jdbc.url>jdbc:postgresql://localhost/test</jdbc.url>
+                <jdbc.user>postgres</jdbc.user>
+                <jdbc.password></jdbc.password>
+                <db>postgresql</db>
+            </properties>
+            <dependencies>
+                <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
+                <dependency>
+                    <groupId>org.postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                    <version>42.2.2</version> <!-- as advised here https://jdbc.postgresql.org/download.html -->
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>mssql_travis-ci</id>
+            <properties>
+                <jdbc.driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc.driver>
+                <jdbc.url>jdbc:sqlserver://localhost:1433;databaseName=master</jdbc.url>
+                <jdbc.user>sa</jdbc.user>
+                <jdbc.password>CVXQj6sC9D3s3PzE!</jdbc.password>
+                <db>mssql</db>
+            </properties>
+            <dependencies>
+                <!-- https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc -->
+                <dependency>
+                    <groupId>com.microsoft.sqlserver</groupId>
+                    <artifactId>mssql-jdbc</artifactId>
+                    <version>6.4.0.jre8</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>db2_travis-ci</id>
+            <properties>
+                <jdbc.driver>com.ibm.db2.jcc.DB2Driver</jdbc.driver>
+                <jdbc.url>jdbc:db2://localhost:50000/db2:progressiveStreaming=2;</jdbc.url>
+                <jdbc.user>db2inst1</jdbc.user>
+                <jdbc.password>dzqAbmZwnN8c</jdbc.password>
+                <db>db2</db>
+            </properties>
+            <repositories>
+                <repository>
+                    <id>alfresco</id>
+                    <name>Alfresco Public </name>
+                    <url>https://artifacts.alfresco.com/nexus/content/repositories/public/</url>
+                </repository>
+            </repositories>
+            <dependencies>
+                <!-- https://mvnrepository.com/artifact/com.ibm.db2.jcc/db2jcc4 -->
+                <dependency>
+                    <groupId>com.ibm.db2.jcc</groupId>
+                    <artifactId>db2jcc4</artifactId>
+                    <version>10.1</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
+            <id>sqlite_travis-ci</id>
+            <properties>
+                <jdbc.driver>org.sqlite.JDBC</jdbc.driver>
+                <jdbc.url>jdbc:sqlite:sample</jdbc.url>
+                <jdbc.user></jdbc.user>
+                <jdbc.password></jdbc.password>
+                <db>sqlite</db>
+            </properties>
+            <dependencies>
+                <!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
+                <dependency>
+                    <groupId>org.xerial</groupId>
+                    <artifactId>sqlite-jdbc</artifactId>
+                    <version>3.23.1</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+
     </profiles>
 
     <build>
