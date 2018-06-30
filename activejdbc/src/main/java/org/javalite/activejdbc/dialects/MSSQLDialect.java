@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.javalite.activejdbc.DBException;
 import org.javalite.activejdbc.MetaModel;
+import org.javalite.common.Util;
 
 import static org.javalite.common.Util.join;
 
@@ -100,7 +101,7 @@ public class MSSQLDialect extends DefaultDialect {
      */
     @Override
     public Object overrideDriverTypeConversion(MetaModel mm, String attributeName, Object value) {
-        if (value instanceof String && !((String) value).isEmpty()) {
+        if (value instanceof String && !Util.blank(value)) {
             String typeName = mm.getColumnMetadata().get(attributeName).getTypeName();
             if ("date".equalsIgnoreCase(typeName)) {
                 return java.sql.Date.valueOf((String) value);
