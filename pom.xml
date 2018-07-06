@@ -26,7 +26,7 @@
         <skipTests>false</skipTests>
         <slf4j.version>1.7.0</slf4j.version> <!--//TODO: replace with latest version when this is fixed: http://jira.qos.ch/browse/SLF4J-389-->
 	</properties>
-	
+
     <licenses>
         <license>
             <name>Apache License 2.0</name>
@@ -135,13 +135,14 @@
         <module>javalite-common</module>
         <module>activejdbc-instrumentation</module>
         <module>activejdbc</module>
+        <module>activejdbc-kt</module>
         <module>db-migrator</module>
         <module>db-migrator-integration-test</module>
         <module>git-info-maven-plugin</module>
         <module>app-config</module>
         <module>activejdbc-gradle-plugin</module>
-
     </modules>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
