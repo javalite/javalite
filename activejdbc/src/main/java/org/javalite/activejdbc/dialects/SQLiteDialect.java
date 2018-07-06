@@ -18,6 +18,7 @@ package org.javalite.activejdbc.dialects;
 import java.util.List;
 import org.javalite.activejdbc.MetaModel;
 import org.javalite.common.Convert;
+import org.javalite.common.Util;
 
 /**
  * @author Igor Polevoy
@@ -35,7 +36,7 @@ public class SQLiteDialect extends PostgreSQLDialect {
     @Override
     public Object overrideDriverTypeConversion(MetaModel mm, String attributeName, Object value) {
         // SQLite returns DATE and DATETIME as String or Number values
-        if (value instanceof String || value instanceof Number) {
+        if (value instanceof String && !Util.blank(value) || value instanceof Number) {
             String typeName = mm.getColumnMetadata().get(attributeName).getTypeName();
             if ("DATE".equalsIgnoreCase(typeName)) {
                 return Convert.toSqlDate(value);
