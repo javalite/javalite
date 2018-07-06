@@ -142,7 +142,7 @@ public class RequestDispatcher implements Filter {
         }
         catch (Throwable e) {
             if(fail){
-                logger.warn("Failed to create and init a new instance of class: " + configClassName);
+                logger.error("Failed to create and init a new instance of class: " + configClassName + ". Application failed to start, so it will nit run.");
                 throw new InitException(e);
             }else{
                 logger.warn("Failed to create and init a new instance of class: " + configClassName
