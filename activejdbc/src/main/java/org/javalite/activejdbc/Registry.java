@@ -188,13 +188,7 @@ public enum Registry {
                 } catch (AbstractMethodError | Exception ignore) {}
         }
 
-        if(!dbType.equalsIgnoreCase("h2"))
-        if (tableName.startsWith("\"") && tableName.endsWith("\"")) {
-            tableName = tableName.substring(1, tableName.length() - 1);
-        }
-
         String catalog = null;
-
 
         if(dbType.equalsIgnoreCase("mysql")){
             catalog = schema;
@@ -205,8 +199,11 @@ public enum Registry {
             catalog = url.substring(url.lastIndexOf(":") + 1).toUpperCase();
             schema = schema != null ? schema.toUpperCase() : null;
 
-            if(!tableName.contains("\"")){
+            // keep quoted table names as is, otherwise use uppercase
+            if (!tableName.contains("\"")) {
                 tableName = tableName.toUpperCase();
+            } else if(tableName.startsWith("\"") && tableName.endsWith("\"")) {
+                tableName = tableName.substring(1, tableName.length() - 1);
             }
 
         }
