@@ -79,7 +79,7 @@ public class Router {
             String controllerClassName = getControllerClassName(controllerName, packageSuffix);
             AppController controller = createControllerInstance(controllerClassName);
 
-            if (uri.equals("/") && rootControllerName != null && httpMethod.equals(HttpMethod.GET)) {
+            if (uri.equals("/") && rootControllerName != null) {
                 route = new Route(controller, "index", httpMethod);
             }else{
                 route = controller.restful() ? matchRestful(uri, controllerName, packageSuffix, httpMethod, controller) :
@@ -112,7 +112,8 @@ public class Router {
      *
      * @param uri            request URI
      * @param controllerName name of controller
-     * @param packageSuffix  package suffix or null if none. .
+     * @param packageSuffix  package suffix or null if none.
+     *
      * @return instance of a <code>Route</code> if one is found, null if not.
      */
     private Route matchStandard(String uri, String controllerName, String packageSuffix, AppController controller, HttpMethod method) {

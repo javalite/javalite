@@ -27,7 +27,7 @@ import static org.javalite.test.jspec.JSpec.a;
  */
 public class RouterStandardSpec {
 
-    Router router = new Router("home");
+    private Router router = new Router("home");
 
 
     @Before
@@ -116,6 +116,15 @@ public class RouterStandardSpec {
         Route mr = router.recognize("/admin/special2/special3/special3", HttpMethod.GET);
 
         a(mr.getControllerClassName()).shouldBeEqual("app.controllers.admin.special2.special3.Special3Controller");
+        a(mr.getActionName()).shouldBeEqual("index");
+        a(mr.getId()).shouldBeNull();
+    }
+
+    @Test
+    public void shouldRecognizeStandardWithMethodHEAD() throws ClassLoadException {
+
+        Route mr = router.recognize("/", HttpMethod.HEAD);
+        a(mr.getControllerClassName()).shouldBeEqual("app.controllers.HomeController");
         a(mr.getActionName()).shouldBeEqual("index");
         a(mr.getId()).shouldBeNull();
     }
