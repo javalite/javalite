@@ -104,7 +104,6 @@ public class FreemarkerSpec extends ActiveJDBCTest {
                     "Person: Muhammad  Ali, graduation date: 1963-01-04\n" +
                     "Person: Joe  Pesci, graduation date: 1964-02-23");
         }else {
-
             the(processedTemplate).shouldBeEqual("Person: John  Smith, graduation date: \n" +
                     "Person: Leylah  Jonston, graduation date: Apr 3, 1974\n" +
                     "Person: Muhammad  Ali, graduation date: Jan 4, 1963\n" +
