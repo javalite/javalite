@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.javalite.activejdbc.test.JdbcProperties.driver;
 import static org.javalite.common.Collections.map;
 
 /**
@@ -96,9 +97,18 @@ public class FreemarkerSpec extends ActiveJDBCTest {
         if(System.getProperty("os.name").contains("indows")) {
             processedTemplate = processedTemplate.replaceAll("\r\n", "\n");
         }
-        the(processedTemplate).shouldBeEqual("Person: John  Smith, graduation date: \n" +
-                "Person: Leylah  Jonston, graduation date: Apr 3, 1974\n" +
-                "Person: Muhammad  Ali, graduation date: Jan 4, 1963\n" +
-                "Person: Joe  Pesci, graduation date: Feb 23, 1964");
+
+        if(driver().equals("org.sqlite.JDBC")){
+            the(processedTemplate).shouldBeEqual("Person: John  Smith, graduation date: \n" +
+                    "Person: Leylah  Jonston, graduation date: 1974-04-03\n" +
+                    "Person: Muhammad  Ali, graduation date: 1963-01-04\n" +
+                    "Person: Joe  Pesci, graduation date: 1964-02-23");
+        }else {
+
+            the(processedTemplate).shouldBeEqual("Person: John  Smith, graduation date: \n" +
+                    "Person: Leylah  Jonston, graduation date: Apr 3, 1974\n" +
+                    "Person: Muhammad  Ali, graduation date: Jan 4, 1963\n" +
+                    "Person: Joe  Pesci, graduation date: Feb 23, 1964");
+        }
     }
 }
