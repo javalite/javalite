@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 import static org.javalite.common.Util.closeQuietly;
@@ -879,18 +880,23 @@ public class DB implements Closeable{
      *
      * Example of usage:
      * <pre>
-     withDb(connectionSpec, () -> {
+     Object result = withDb("jndiName1", props, () -> {
         //place code here
+        return res;
      });
      * </pre>
      *
      * @param jndiName name of a configured data source.
      * @param jndiProperties JNDI properties.
-     * @param runnable instance of <code>Runnable</code> to execute.
+     * @param supplier instance of <code>Supplier</code> to execute.
      */
-    public void withDb(String jndiName, Properties jndiProperties, Runnable runnable) {
-        try (DB db = open(jndiName, jndiProperties)){
-            runnable.run();
+    public <T> T withDb(String jndiName, Properties jndiProperties, Supplier<T> supplier) {
+        if(hasConnection()){
+            return supplier.get();
+        }else{
+            try (DB db = open(jndiName, jndiProperties)){
+                return supplier.get();
+            }
         }
     }
 
@@ -903,71 +909,85 @@ public class DB implements Closeable{
      *
      * Example of usage:
      * <pre>
-     withDb(datasource, () -> {
+     Object result = withDb(datasource, () -> {
         //place code here
+        return res;
      });
      * </pre>
      *
      * @param  dataSource instance of <code>DataSource</code> to get a connection from.
-     * @param runnable instance of <code>Runnable</code> to execute.
+     * @param supplier instance of <code>Supplier</code> to execute.
      */
-    public void withDb(DataSource dataSource, Runnable runnable) {
-        try (DB db = open(dataSource)){
-            runnable.run();
+    public <T> T withDb(DataSource dataSource, Supplier<T> supplier) {
+        if(hasConnection()){
+            return supplier.get();
+        }else{
+            try (DB db = open(dataSource)){
+                return supplier.get();
+            }
         }
     }
 
 
     /**
-     * Convenience method to be used outside ActiveWeb. This method will open a connection, run the <code>Runnable</code>
+     * Convenience method to be used outside ActiveWeb. This method will open a connection, run the <code>Supplier</code>
      * and then will close the connection. The connection to open is the same as in {@link #open(String)} method.
      *
      * <p></p>
      *
      * Example of usage:
      * <pre>
-     withDb(jndiName, () -> {
-     //place code here
+     Object result = withDb(jndiName, () -> {
+         //place code here
+         return res;
      });
      * </pre>
      *
      * @param jndiName  name of a JNDI connection from container
-     * @param runnable instance of <code>Runnable</code> to execute.
+     * @param supplier instance of <code>Supplier</code> to execute.
      */
-    public void withDb(String jndiName, Runnable runnable) {
-        try (DB db = open(jndiName)){
-            runnable.run();
+    public <T>  T withDb(String jndiName, Supplier<T> supplier) {
+        if(hasConnection()){
+            return supplier.get();
+        }else {
+            try (DB db = open(jndiName)){
+                return supplier.get();
+            }
         }
     }
 
     /**
-     * Convenience method to be used outside ActiveWeb. This method will open a connection, run the <code>Runnable</code>
-     * and then will close the connection. The connection to open is the same as in
-     * {@link #open(String, String, Properties)} method.
+     * Convenience method to be used outside ActiveWeb. This method will open a connection, run the <code>Supplier</code>
+     * and then will close the connection. The connection to open is the same as in {@link #open(String, String, Properties)} method.
      *
      * <p></p>
      *
      * Example of usage:
      * <pre>
-     withDb(driver, url, properties, () -> {
+     Object results = withDb(driver, url, properties, () -> {
         //place code here
+        return res;
      });
      * </pre>
      *
      * The arguments to this method are the same as to {@link #open(String, String, Properties)} method.
      *
-     * @param runnable instance of <code>Runnable</code> to execute.
+     * @param supplier instance of <code>Supplier</code> to execute.
      */
-    public void withDb(String driver, String url, Properties properties, Runnable runnable) {
-        try (DB db = open(driver, url, properties)){
-            runnable.run();
+    public <T> T withDb(String driver, String url, Properties properties, Supplier<T> supplier) {
+        if(hasConnection()){
+            return supplier.get();
+        }else{
+            try (DB db = open(driver, url, properties)){
+                return supplier.get();
+            }
         }
     }
 
 
 
     /**
-     * Convenience method to be used outside ActiveWeb. This method will open a connection, run the <code>Runnable</code>
+     * Convenience method to be used outside ActiveWeb. This method will open a connection, run the <code>Supplier.get()</code>
      * and then will close the connection. The connection to open is the same as in
      * {@link #open(String, String, String, String)} method.
      *
@@ -975,41 +995,50 @@ public class DB implements Closeable{
      *
      * Example of usage:
      * <pre>
-     withDb(driver, url, user, password, () -> {
+     Object result = withDb(driver, url, user, password, () -> {
         //place code here
+        return val;
      });
      * </pre>
      *
      * The arguments to this method are the same as to {@link #open(String, String, String, String)} method.
      *
-     * @param runnable instance of <code>Runnable</code> to execute.
+     * @param supplier instance of <code>Supplier</code> to execute.
      */
-    public void withDb(String driver, String url, String user, String password, Runnable runnable) {
-        try (DB db = open(driver, url, user, password)){
-            runnable.run();
+    public <T> T withDb(String driver, String url, String user, String password, Supplier<T> supplier) {
+        if(hasConnection()){
+            return supplier.get();
+        }else{
+            try (DB db = open(driver, url, user, password)){
+                return supplier.get();
+            }
         }
     }
 
 
     /**
-     * Convenience method to be used outside ActiveWeb. This method will open a connection, run the <code>Runnable</code>
-     * and then will close the connection. The connection to open is the same as in
-     * {@link #open()} method.
+     * Convenience method to be used outside ActiveWeb. This method will open a connection, run the <code>Supplier.get()</code>
+     * and then will close the connection. The connection to open is the same as in {@link #open()} method.
      *
      * <p></p>
      *
      * Example of usage:
      * <pre>
-     withDb(() -> {
+     Object result = withDb(() -> {
         //place code here
+        return res; // whatever it is
      });
      * </pre>
      *
-     * @param runnable instance of <code>Runnable</code> to execute.
+     * @param supplier instance of <code>Supplier</code> to execute.
      */
-    public void withDb(Runnable runnable) {
-        try (DB db = open()){
-            runnable.run();
+    public <T> T withDb(Supplier<T> supplier) {
+        if(hasConnection()){
+            return supplier.get();
+        }else {
+            try (DB db = open()){
+                return supplier.get();
+            }
         }
     }
 }

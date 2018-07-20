@@ -21,6 +21,7 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.Supplier;
 
 
 /**
@@ -368,144 +369,50 @@ public class Base {
         return new DB(DB.DEFAULT_NAME).detach();
     }
 
+
     /**
-     * Convenience method to be used outside ActiveWeb. This method will open a connection, run the <code>Runnable</code>
-     * and then will close the connection. The connection to open is the same as in {@link #open(String, Properties)} method.
-     *
-     * <p></p>
-     *
-     * Example of usage:
-     * <pre>
-     withDb(connectionSpec, () -> {
-        //place code here
-     });
-     * </pre>
-     *
-     * @param jndiName name of a configured data source.
-     * @param jndiProperties JNDI properties.
-     * @param runnable instance of <code>Runnable</code> to execute.
+     * Same as {@link DB#withDb(String, Properties, Supplier)}, but with db name {@link DB#DEFAULT_NAME}.
      */
-    public static void withDb(String jndiName, Properties jndiProperties, Runnable runnable) {
-        try (DB db = open(jndiName, jndiProperties)){
-            runnable.run();
-        }
+    public static <T> T withDb(String jndiName, Properties jndiProperties, Supplier<T> supplier) {
+        return new DB(DB.DEFAULT_NAME).withDb(jndiName, jndiProperties, supplier);
     }
 
 
     /**
-     * Convenience method to be used outside ActiveWeb. This method will open a connection, run the <code>Runnable</code>
-     * and then will close the connection. The connection to open is the same as in {@link #open(DataSource)} method.
-     *
-     * <p></p>
-     *
-     * Example of usage:
-     * <pre>
-     withDb(datasource, () -> {
-        //place code here
-     });
-     * </pre>
-     *
-     * @param  dataSource instance of <code>DataSource</code> to get a connection from.
-     * @param runnable instance of <code>Runnable</code> to execute.
+     * Same as {@link DB#withDb(DataSource, Supplier)}, but with db name {@link DB#DEFAULT_NAME}.
      */
-    public static void withDb(DataSource dataSource, Runnable runnable) {
-        try (DB db = open(dataSource)){
-            runnable.run();
-        }
+    public static <T> T withDb(DataSource dataSource, Supplier<T> supplier) {
+        return new DB(DB.DEFAULT_NAME).withDb(dataSource, supplier);
     }
 
 
     /**
-     * Convenience method to be used outside ActiveWeb. This method will open a connection, run the <code>Runnable</code>
-     * and then will close the connection. The connection to open is the same as in {@link #open(String)} method.
-     *
-     * <p></p>
-     *
-     * Example of usage:
-     * <pre>
-     withDb(jndiName, () -> {
-        //place code here
-     });
-     * </pre>
-     *
-     * @param jndiName  name of a JNDI connection from container
-     * @param runnable instance of <code>Runnable</code> to execute.
+     * Same as {@link DB#withDb(String, Supplier)}, but with db name {@link DB#DEFAULT_NAME}.
      */
-    public static void withDb(String jndiName, Runnable runnable) {
-        try (DB db = open(jndiName)){
-            runnable.run();
-        }
+    public static <T> T withDb(String jndiName, Supplier<T> supplier) {
+        return new DB(DB.DEFAULT_NAME).withDb(jndiName, supplier);
     }
 
     /**
-     * Convenience method to be used outside ActiveWeb. This method will open a connection, run the <code>Runnable</code>
-     * and then will close the connection. The connection to open is the same as in
-     * {@link #open(String, String, Properties)} method.
-     *
-     * <p></p>
-     *
-     * Example of usage:
-     * <pre>
-     withDb(driver, url, properties, () -> {
-     //place code here
-     });
-     * </pre>
-     *
-     * The arguments to this method are the same as to {@link #open(String, String, Properties)} method.
-     *
-     * @param runnable instance of <code>Runnable</code> to execute.
+     *  Same as {@link DB#withDb(String, Properties, Supplier)}, but with db name {@link DB#DEFAULT_NAME}.
      */
-    public static void withDb(String driver, String url, Properties properties, Runnable runnable) {
-        try (DB db = open(driver, url, properties)){
-            runnable.run();
-        }
+    public static <T> T withDb(String driver, String url, Properties properties, Supplier<T> supplier) {
+        return new DB(DB.DEFAULT_NAME).withDb(driver, url, properties, supplier);
     }
 
 
 
     /**
-     * Convenience method to be used outside ActiveWeb. This method will open a connection, run the <code>Runnable</code>
-     * and then will close the connection. The connection to open is the same as in
-     * {@link #open(String, String, String, String)} method.
-     *
-     * <p></p>
-     *
-     * Example of usage:
-     * <pre>
-     withDb(driver, url, user, password, () -> {
-        //place code here
-     });
-     * </pre>
-     *
-     * The arguments to this method are the same as to {@link #open(String, String, String, String)} method.
-     *
-     * @param runnable instance of <code>Runnable</code> to execute.
+     * Same as {@link DB#withDb(String, String, String, String, Supplier)}, but with db name {@link DB#DEFAULT_NAME}.
      */
-    public static void withDb(String driver, String url, String user, String password, Runnable runnable) {
-        try (DB db = open(driver, url, user, password)){
-            runnable.run();
-        }
+    public static <T> T withDb(String driver, String url, String user, String password, Supplier<T> supplier) {
+        return new DB(DB.DEFAULT_NAME).withDb(driver, url, user, password, supplier);
     }
 
     /**
-     * Convenience method to be used outside ActiveWeb. This method will open a connection, run the <code>Runnable</code>
-     * and then will close the connection. The connection to open is the same as in
-     * {@link #open()} method.
-     *
-     * <p></p>
-     *
-     * Example of usage:
-     * <pre>
-     withDb(() -> {
-        //place code here
-     });
-     * </pre>
-     *
-     * @param runnable instance of <code>Runnable</code> to execute.
+     * Same as {@link DB#withDb(Supplier)}, but with db name {@link DB#DEFAULT_NAME}.
      */
-    public void withDb(Runnable runnable) {
-        try (DB db = open()){
-            runnable.run();
-        }
+    public <T> T withDb(Supplier<T> supplier) {
+        return new DB(DB.DEFAULT_NAME).withDb(supplier);
     }
 }

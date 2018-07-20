@@ -21,6 +21,7 @@ import org.javalite.common.Util;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.Properties;
 
 import static org.javalite.test.jspec.JSpec.the;
@@ -29,21 +30,58 @@ import static org.javalite.test.jspec.JSpec.the;
 public class BaseTest2 {
 
     @Test
-    public void shouldOpenConnection() throws IOException {
+    public void shouldOpenConnectionWithProperties() throws IOException {
 
         Properties props = Util.readProperties("/database.properties");
-
         DB db = new DB("test");
         the(db.hasConnection()).shouldBeFalse();
 
-        System.out.println(props);
-        db.withDb(props.getProperty("development.test.driver"), props.getProperty("development.test.url"),
-                props.getProperty("development.test.username"), props.getProperty("development.test.password"), () -> {
+        String res = db.withDb(props.getProperty("development.test.driver"),
+                props.getProperty("development.test.url"),
+                props.getProperty("development.test.username"),
+                props.getProperty("development.test.password"),
+                () -> {
+                            the(db.hasConnection()).shouldBeTrue();
+                            return "hello";
+                       });
 
+        the(res).shouldBeEqual("hello");
+        the(Base.hasConnection()).shouldBeFalse();
+    }
+
+    @Test
+    public void shouldOpenConnectionWithJNDI() {
+
+        DB db = new DB("test");
+
+        String jndiName = "anyname"; // because we use MockInitialContextFactory, see jndi.properties file
+        String res = db.withDb(jndiName, () -> {
             the(db.hasConnection()).shouldBeTrue();
-
+            return  "hello";
         });
 
-        the(Base.hasConnection()).shouldBeFalse();
+        the(db.hasConnection()).shouldBeFalse();
+        the(res).shouldBeEqual("hello");
+    }
+
+    @Test
+    public void shouldReuseExistingConnection() {
+
+        DB db = new DB("test");
+
+        String jndiName = "anyname"; // because we use MockInitialContextFactory, see jndi.properties file
+        db.open(jndiName);
+        Connection connection = db.connection();
+
+        String res = db.withDb(jndiName, () -> {
+            the(db.hasConnection()).shouldBeTrue();
+            the(db.connection()).shouldBeTheSameAs(connection);
+            return  "hello";
+        });
+
+        the(db.hasConnection()).shouldBeTrue();
+        the(res).shouldBeEqual("hello");
+
+        db.close();
     }
 }
