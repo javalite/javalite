@@ -102,8 +102,7 @@ public class PostgreSQLStatementProvider implements StatementProvider {
                     "INSERT INTO doctors (first_name, last_name, discipline) VALUES('John', 'Doe', 'otolaryngology');",
                     "INSERT INTO doctors (first_name, last_name, discipline) VALUES('Hellen', 'Hunt', 'dentistry');",
                     "INSERT INTO doctors (first_name, last_name, discipline) VALUES('John', 'Druker', 'oncology');",
-                    "INSERT INTO doctors (id, first_name, last_name, discipline) VALUES(4, 'Henry', 'Jekyll', 'pathology');"
-
+                    "INSERT INTO doctors (first_name, last_name, discipline) VALUES('Henry', 'Jekyll', 'pathology');"
             );
         } else if (table.equals("doctors_patients")) {
             statements =  Arrays.asList(
