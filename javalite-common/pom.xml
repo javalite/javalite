@@ -49,7 +49,6 @@
         <dependency>
             <groupId>dom4j</groupId>
             <artifactId>dom4j</artifactId>
-            <version>1.6.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>xml-apis</groupId>
