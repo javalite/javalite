@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static org.javalite.common.Collections.map;
 import static org.javalite.common.JsonHelper.toJsonString;
 import static org.javalite.test.jspec.JSpec.*;
 
@@ -156,6 +157,37 @@ public class JsonHelperSpec {
         List l = JsonHelper.toList("[\"" + json + "\"]");
         the(l.get(0)).shouldBeEqual("text with double \" quote");
     }
+
+    @Test
+    public void shouldParseJsonToMap() {
+        Map map= JsonHelper.toMap(Util.readResource("/john.json"));
+        the(map.get("first_name")).shouldBeEqual("John");
+        the(map.get("last_name")).shouldBeEqual("Doe");
+    }
+
+    @Test
+    public void shouldParseJsonToMaps() {
+        Map[] people= JsonHelper.toMaps(Util.readResource("/people.json"));
+        the(people[0].get("first_name")).shouldBeEqual("John");
+        the(people[1].get("first_name")).shouldBeEqual("Jane");
+    }
+
+    @Test
+    public void shouldParseNull() {
+        Map person= JsonHelper.toMap(Util.readResource("/contains_null.json"));
+        the(person.get("name")).shouldBeEqual("John");
+        the(person.get("adult")).shouldBeNull();
+    }
+
+    @Test
+    public void shouldConvertWithNull() {
+        Map map = map("name", "John", "married", null);
+
+        String json = JsonHelper.toJsonString(map);
+        the(json).shouldContain("\"name\":\"John\"");
+        the(json).shouldContain("\"married\":null");
+    }
 }
+
 
 
