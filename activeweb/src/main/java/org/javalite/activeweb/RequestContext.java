@@ -23,10 +23,11 @@ import java.util.Map;
 
 
 /**
+ * This class is used internally by the framework. Do not interfere for your own good.
+ *
  * @author Igor Polevoy
  */
-class RequestContext {
-
+public class RequestContext {
 
     private static ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
     private static ThreadLocal<HttpServletResponse> response = new ThreadLocal<>();
@@ -38,6 +39,7 @@ class RequestContext {
     private static ThreadLocal<String> encoding = new ThreadLocal<>();
     private static ThreadLocal<Route> route = new ThreadLocal<>();
     private static ThreadLocal<Map<String, Object>> values = new ThreadLocal<>();
+    private static ThreadLocal<Boolean> exceptionHappened = new ThreadLocal<>();
 
     private RequestContext() {}
 
@@ -106,6 +108,13 @@ class RequestContext {
         return route.get();
     }
 
+    public static boolean exceptionHappened() {
+        return exceptionHappened.get();
+    }
+
+    public static void exceptionDidHappen() {
+        exceptionHappened.set(true);
+    }
 
     static FilterConfig getFilterConfig() {
         return filterConfig.get();
@@ -123,6 +132,7 @@ class RequestContext {
         setAppContext(context);
         setRequestVo(requestVo);
         setFormat(format);
+        exceptionHappened.set(false);
     }
 
     static void setRoute(Route route) throws InstantiationException, IllegalAccessException {
@@ -152,5 +162,6 @@ class RequestContext {
         encoding.set(null);
         appContext.set(null);
         values.set(null);
+        exceptionHappened.set(false);
     }
 }

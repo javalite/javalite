@@ -20,6 +20,7 @@ import org.javalite.activejdbc.connection_config.ConnectionSpecWrapper;
 import org.javalite.activejdbc.connection_config.DbConfiguration;
 import org.javalite.activeweb.Configuration;
 import org.javalite.activeweb.InitException;
+import org.javalite.activeweb.RequestContext;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -101,7 +102,11 @@ public class DBConnectionFilter extends AppControllerFilter {
                 DB db = new DB(connectionWrapper.getDbName());
                 if(db.hasConnection()){
                     if(manageTransaction){
-                        db.commitTransaction();
+                        if (RequestContext.exceptionHappened()) {
+                            logDebug("Skip commit transaction because already rolled back.");
+                        } else {
+                            db.commitTransaction();
+                        }
                     }
                     db.close();
                 }
@@ -121,6 +126,7 @@ public class DBConnectionFilter extends AppControllerFilter {
                 if (db.hasConnection()) {
                     if (manageTransaction) {
                         db.rollbackTransaction();
+                        logDebug("Rolling back transaction due to exception: " + e);
                     }
                     db.close();
                 }

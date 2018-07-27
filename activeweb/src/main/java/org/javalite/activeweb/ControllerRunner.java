@@ -46,25 +46,21 @@ class ControllerRunner {
     protected void run(Route route) throws Exception {
         Configuration.injectFilters(); //no worries, will execute once, as filters have a life span of the app
         try {
-            try { //nested try , a bit ugly, but we need to ensure filter.after() methods are executed.
-                filterBefore(route);
-                executeController(route);
-            } finally {
-                filterAfter(route);
-            }
-        }
-        catch(ActionNotFoundException e){
+            filterBefore(route);
+            executeController(route);
+        }catch(ActionNotFoundException e){
             throw e;
-        }
-        catch (RuntimeException e) {
+        }catch (RuntimeException e) {
             RequestContext.setControllerResponse(null);//must blow away, as this response is not valid anymore.
-
+            RequestContext.exceptionDidHappen();
             if (exceptionHandled(e, route)) {
                 LOGGER.debug("A filter has called render(..) method, proceeding to render it...");
                 renderResponse(route);//a filter has created an instance of a controller response, need to render it.
             }else{
                 throw e;//if exception was not handled by filter, re-throw
             }
+        }finally {
+            filterAfter(route);
         }
     }
 
