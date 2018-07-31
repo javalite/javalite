@@ -13,7 +13,7 @@
 
     <properties>
         <!-- Kotlin version -->
-        <kotlin.version>1.2.41</kotlin.version>
+        <kotlin.version>1.2.51</kotlin.version>
         <kotlin.compiler.languageVersion>1.2</kotlin.compiler.languageVersion>
 
         <!-- Kotlin version -->
@@ -43,6 +43,14 @@
         </profile>
     </profiles>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <id>jcenter</id>
+            <name>JCenter</name>
+            <url>https://jcenter.bintray.com/</url>
+        </pluginRepository>
+    </pluginRepositories>
+    
     <build>
         <testResources>
             <testResource>
@@ -55,6 +63,20 @@
         <testSourceDirectory>${kotlin.test}</testSourceDirectory>
 
         <plugins>
+            <plugin>
+                <groupId>org.jetbrains.dokka</groupId>
+                <artifactId>dokka-maven-plugin</artifactId>
+                <version>0.9.17</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>javadocJar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
