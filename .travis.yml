@@ -67,4 +67,6 @@ jobs:
       repo = javalite/activejdbc AND \
       branch = issue_752
 
+    before_install:
+    - source .travisci/setup.sh
     script: sh $TRAVIS_BUILD_DIR/.travisci/deploy.sh
