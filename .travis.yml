@@ -18,9 +18,7 @@ services:
 #  - "$HOME/apache-maven-3.5.4"
 
 stages:
-  - mysql
-  - postgresql
-  - db2
+  - build
 
 
 jobs:
@@ -34,7 +32,8 @@ jobs:
 #
 #      script: mvn test -Dtest=!MySQLMigrationSpec,!org.javalite.db_migrator.* -DfailIfNoTests=false -V | grep -v "{\"level\":\"INFO\""
 
-    - stage: mysql
+    - stage: build
+      # ----------------------- mysql -----------------------
       env: DB=mysql_travis-ci
       before_install:
         - source .travisci/setup.sh
@@ -45,7 +44,7 @@ jobs:
         - echo "Starting MySQL build"
         - mvn deploy -P$DB | grep -v "INSERT"
 
-    - stage: postgresql
+#    - # --------------------- postgresql ---------------------
       env: DB=postgresql_travis-ci
       before_install:
         - source .travisci/setup.sh
@@ -53,10 +52,9 @@ jobs:
         - psql -c 'create database test;' -U postgres
       script:
         - echo "Starting PostgreSQL build"
-        - cd activejdbc
         - mvn test -P$DB | grep -v "INSERT"
 #
-    - stage: db2
+#    - # ----------------------- db2 -----------------------
       env: DB=db2_travis-ci
       before_install:
         - source .travisci/setup.sh
@@ -65,9 +63,8 @@ jobs:
         - docker exec -u db2inst1 -it db2 /bin/bash -c ". /home/db2inst1/sqllib/db2profile && db2 create db db2 && exit"
       script:
         - echo "Starting DB2 build"
-        - cd activejdbc
         - echo "mvn test -P$DB | grep -v "INSERT"
-        - cd
+
 #
 #    - # ----------------------- mssql -----------------------
 #      env: DB=mssql_travis-ci
