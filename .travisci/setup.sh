@@ -9,7 +9,7 @@ set -e # Exit with nonzero exit code if anything fails
 #export PATH=$M2_HOME/bin:$PATH
 
 # Reduce Maven download log
-export MAVEN_OPTS=-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
 
 # Install OracleJDK8
 #sudo apt-add-repository -y ppa:webupd8team/java
