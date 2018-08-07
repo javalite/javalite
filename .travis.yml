@@ -18,12 +18,12 @@ services:
 #  - "$HOME/apache-maven-3.5.4"
 
 stages:
-  - compile
-  - test
+  - build
+
 
 jobs:
   include:
-    - stage: build
+#    - stage: build
 #
 #      before_install:
 #        - source .travisci/setup.sh
@@ -32,7 +32,7 @@ jobs:
 #
 #      script: mvn test -Dtest=!MySQLMigrationSpec,!org.javalite.db_migrator.* -DfailIfNoTests=false -V | grep -v "{\"level\":\"INFO\""
 
-    - stage: test
+    - stage: build
       # ----------------------- mysql -----------------------
       env: DB=mysql_travis-ci
       before_install:
