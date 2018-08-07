@@ -48,18 +48,6 @@ jobs:
     - cd activejdbc
     - echo "mvn test -P$DB -V -B" && mvn test -P$DB -V -B
 
-  - # ----------------------- db2 -----------------------
-    env: DB=db2_travis-ci
-    before_install:
-    - source .travisci/setup.sh
-    - docker run -d -p 50000:50000 --name db2 -e DB2INST1_PASSWORD=dzqAbmZwnN8c -e LICENSE=accept ibmcom/db2express-c:latest db2start
-    - docker ps # db2 takes a sec to start before we can issue the db creation
-    - docker exec -u db2inst1 -it db2 /bin/bash -c ". /home/db2inst1/sqllib/db2profile && db2 create db db2 && exit"
-    script:
-    - echo "Starting DB2 build"
-    - cd activejdbc
-    - echo "mvn test -P$DB -V -B" && mvn test -P$DB -V -B
-
   - # ----------------------- mssql -----------------------
     env: DB=mssql_travis-ci
     before_install:
@@ -79,3 +67,12 @@ jobs:
     - echo "Starting SQLite build"
     - cd activejdbc
     - echo "mvn test -P$DB -V -B" && mvn test -P$DB -V -B
+
+
+deploy:
+  skip_cleanup: true
+  provider: script
+  script: bash .travisci/deploy.sh
+  on:
+    repo: javalite/activejdbc
+    branch: issue_752  # master TODO
