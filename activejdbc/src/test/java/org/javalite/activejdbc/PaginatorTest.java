@@ -37,7 +37,7 @@ import java.util.List;
 public class PaginatorTest extends ActiveJDBCTest {
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         SystemStreamUtil.replaceOut();
         deleteAndPopulateTable("items");
         for(int i = 1; i <= 1000; i++){
