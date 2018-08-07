@@ -72,7 +72,7 @@ jobs:
     # ->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->
     #                      Deploy Stage
     # ->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->
-  - name: deploy
+  - stage: deploy
     # TODO require the branch name to be master (note for PRs this is the base branch name)
     if: |
       repo = javalite/activejdbc AND \
