@@ -1,3 +1,3 @@
 #!/bin/bash
 
-mvn deploy -V -B
+mvn deploy -V -B -DskipTests
