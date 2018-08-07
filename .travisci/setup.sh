@@ -8,7 +8,7 @@ set -e # Exit with nonzero exit code if anything fails
 #if [ ! -d $M2_HOME/bin ]; then curl https://archive.apache.org/dist/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.tar.gz | tar zxf - -C $HOME; fi
 #export PATH=$M2_HOME/bin:$PATH
 
-ls -l
+
 
 
 # Install OracleJDK8
