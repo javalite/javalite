@@ -12,9 +12,9 @@ services:
   - postgresql
   - docker # In order to run other DBMS such as DB2
 
-#cache:
-#  directories:
-#  - "$HOME/.m2/repository"
+cache:
+  directories:
+  - "$HOME/.m2/repository"
 #  - "$HOME/apache-maven-3.5.4"
 
 stages:
