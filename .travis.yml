@@ -15,6 +15,7 @@ services:
 stages:
 - compile
 - test
+- deploy
 
 jobs:
   include:
@@ -68,11 +69,13 @@ jobs:
     - cd activejdbc
     - echo "mvn test -P$DB -V -B" && mvn test -P$DB -V -B
 
+    # ->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->
+    #                      Deploy Stage
+    # ->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->
+  - name: deploy
+    # TODO require the branch name to be master (note for PRs this is the base branch name)
+    if: |
+      repo = javalite/activejdbc AND \
+      branch = issue_752
 
-deploy:
-  skip_cleanup: true
-  provider: script
-  script: bash .travisci/deploy.sh
-  on:
-    repo: javalite/activejdbc
-    branch: issue_752  # master TODO
+    script: sh $TRAVIS_BUILD_DIR/.travisci/deploy.sh
