@@ -37,6 +37,7 @@ jobs:
       env: DB=mysql_travis-ci
       before_install:
         - source .travisci/setup.sh
+        - cp .travisci/settings.xml ~/.m2/
       before_script:
         - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
       script:
