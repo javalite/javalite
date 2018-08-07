@@ -42,7 +42,7 @@ jobs:
         - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
       script:
         - echo "Starting MySQL build"
-        - mvn clean install -P$DB | grep -v "INSERT"
+        - mvn clean deploy -P$DB | grep -v "INSERT"
 
 #    - # --------------------- postgresql ---------------------
       env: DB=postgresql_travis-ci
