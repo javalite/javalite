@@ -41,10 +41,7 @@ jobs:
       before_script:
         - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
       script:
-        - cd activejdbc
-        - echo "startring MySQL build"
-        - pwd
-        - ls -l
+        - echo "starting MySQL build"
         - mvn clean install -P$DB | grep -v "INSERT"
 
 #    - # --------------------- postgresql ---------------------
