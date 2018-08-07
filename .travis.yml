@@ -54,6 +54,7 @@ jobs:
         - echo "Starting PostgreSQL build"
         - cd activejdbc
         - mvn test -P$DB | grep -v "INSERT"
+        - cd
 #
 #    - # ----------------------- db2 -----------------------
       env: DB=db2_travis-ci
@@ -66,6 +67,7 @@ jobs:
         - echo "Starting DB2 build"
         - cd activejdbc
         - echo "mvn test -P$DB | grep -v "INSERT"
+        - cd
 #
 #    - # ----------------------- mssql -----------------------
 #      env: DB=mssql_travis-ci
