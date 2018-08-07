@@ -41,7 +41,7 @@ jobs:
         - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
       script:
         - cd activejdbc
-        - echo "mvn clean install -P$DB"
+        - mvn clean install -P$DB
 
 #    - # --------------------- postgresql ---------------------
 #      env: DB=postgresql_travis-ci
