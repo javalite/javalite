@@ -42,7 +42,7 @@ jobs:
         - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
       script:
         - echo "Starting MySQL build"
-        - mvn clean deploy -P$DB | grep -v "INSERT"
+        - mvn deploy -P$DB | grep -v "INSERT"
 
 #    - # --------------------- postgresql ---------------------
       env: DB=postgresql_travis-ci
@@ -53,7 +53,7 @@ jobs:
       script:
         - echo "Starting PostgreSQL build"
         - cd activejdbc
-        - mvn clean deploy -P$DB | grep -v "INSERT"
+        - mvn test -P$DB | grep -v "INSERT"
 #
 #    - # ----------------------- db2 -----------------------
       env: DB=db2_travis-ci
@@ -65,7 +65,7 @@ jobs:
       script:
         - echo "Starting DB2 build"
         - cd activejdbc
-        - echo "mvn test -P$DB -V -B" && mvn test -P$DB -V -B | grep -v "{\"level\":\"INFO\""
+        - echo "mvn test -P$DB | grep -v "INSERT"
 #
 #    - # ----------------------- mssql -----------------------
 #      env: DB=mssql_travis-ci
