@@ -11,10 +11,10 @@ services:
   - mysql
   - postgresql
   - docker # In order to run other DBMS such as DB2
-
-cache:
-  directories:
-  - "$HOME/.m2/repository"
+#
+#cache:
+#  directories:
+#  - "$HOME/.m2/repository"
 #  - "$HOME/apache-maven-3.5.4"
 
 stages:
@@ -42,7 +42,7 @@ jobs:
         - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
       script:
         - echo "Starting MySQL build"
-        - mvn clean deploy -P$DB | grep -v "INSERT"
+        - mvn clean install -P$DB | grep -v "INSERT"
 
 #    - # --------------------- postgresql ---------------------
       env: DB=postgresql_travis-ci
@@ -51,19 +51,21 @@ jobs:
       before_script:
         - psql -c 'create database test;' -U postgres
       script:
-        - echo "Starting POstgreSQL build"
+        - echo "Starting PostgreSQL build"
+        - cd activejdbc
         - mvn clean deploy -P$DB | grep -v "INSERT"
 #
 #    - # ----------------------- db2 -----------------------
-#      env: DB=db2_travis-ci
-#      before_install:
-#        - source .travisci/setup.sh
-#        - docker run -d -p 50000:50000 --name db2 -e DB2INST1_PASSWORD=dzqAbmZwnN8c -e LICENSE=accept ibmcom/db2express-c:latest db2start
-#        - docker ps # db2 takes a sec to start before we can issue the db creation
-#        - docker exec -u db2inst1 -it db2 /bin/bash -c ". /home/db2inst1/sqllib/db2profile && db2 create db db2 && exit"
-#      script:
-#        - cd activejdbc
-#        - echo "mvn test -P$DB -V -B" && mvn test -P$DB -V -B | grep -v "{\"level\":\"INFO\""
+      env: DB=db2_travis-ci
+      before_install:
+        - source .travisci/setup.sh
+        - docker run -d -p 50000:50000 --name db2 -e DB2INST1_PASSWORD=dzqAbmZwnN8c -e LICENSE=accept ibmcom/db2express-c:latest db2start
+        - docker ps # db2 takes a sec to start before we can issue the db creation
+        - docker exec -u db2inst1 -it db2 /bin/bash -c ". /home/db2inst1/sqllib/db2profile && db2 create db db2 && exit"
+      script:
+        - echo "Starting DB2 build"
+        - cd activejdbc
+        - echo "mvn test -P$DB -V -B" && mvn test -P$DB -V -B | grep -v "{\"level\":\"INFO\""
 #
 #    - # ----------------------- mssql -----------------------
 #      env: DB=mssql_travis-ci
