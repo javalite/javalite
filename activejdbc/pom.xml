@@ -225,6 +225,45 @@
         </profile>
 
         <profile>
+            <id>oracle_travis-ci</id>
+            <properties>
+                <jdbc.driver>oracle.jdbc.driver.OracleDriver</jdbc.driver>
+                <jdbc.url>jdbc:oracle:thin:@//localhost:1521/xe</jdbc.url>
+                <jdbc.user>scott</jdbc.user>
+                <jdbc.password>tiger</jdbc.password>
+                <db>oracle</db>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.oracle.jdbc</groupId>
+                    <artifactId>ojdbc8</artifactId>
+                    <version>12.2.0.1</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+
+            <repositories>
+                <repository>
+                    <id>maven.oracle.com</id>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                    <url>https://maven.oracle.com</url>
+                    <layout>default</layout>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>maven.oracle.com</id>
+                    <url>https://maven.oracle.com</url>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+
+        <profile>
             <id>mssql_travis-ci</id>
             <properties>
                 <jdbc.driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc.driver>

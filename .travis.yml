@@ -10,12 +10,26 @@ git:
 services:
 - mysql
 - postgresql
-- docker # In order to run other DBMS such as DB2
+- docker # In order to run DBMS such as DB2, MSSQL and Oracle
 
 stages:
 - compile
 - test
 - deploy
+
+# Attempt to reduce the time to pull the OracleDB Container
+cache:
+  bundler: true
+  timeout: 1000
+  directories:
+    - $HOME/.m2/repository
+    - $CACHE_DIR
+
+# Attempt to reduce the time to pull the OracleDB Container
+env:
+  global:
+  - CACHE_DIR=$HOME/.cache/docker
+  - CACHE_FILE_ORACLE=$CACHE_DIR/oracle.tar.gz
 
 jobs:
   include:
@@ -23,7 +37,6 @@ jobs:
 
     before_install:
     - source .travisci/setup.sh
-    install: mvn package -DskipTests=true -Dmaven.javadoc.skip=true -V -B
     script: mvn test -Dtest=!MySQLMigrationSpec,!org.javalite.db_migrator.* -DfailIfNoTests=false -V
 
   - stage: test
@@ -35,8 +48,7 @@ jobs:
     - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
     script:
     - echo "Starting MySQL build"
-    - cd activejdbc
-    - echo "mvn test -P$DB -V -B" && mvn test -P$DB -V -B
+    - sh .travisci/run_tests.sh
 
   - # --------------------- postgresql ---------------------
     env: DB=postgresql_travis-ci
@@ -46,8 +58,7 @@ jobs:
     - psql -c 'create database test;' -U postgres
     script:
     - echo "Starting PostgreSQL build"
-    - cd activejdbc
-    - echo "mvn test -P$DB -V -B" && mvn test -P$DB -V -B
+    - sh .travisci/run_tests.sh
 
   - # ----------------------- db2 -----------------------
     env: DB=db2_travis-ci
@@ -58,8 +69,28 @@ jobs:
     - docker exec -u db2inst1 -it db2 /bin/bash -c ". /home/db2inst1/sqllib/db2profile && db2 create db db2 && exit"
     script:
     - echo "Starting DB2 build"
-    - cd activejdbc
-    - echo "mvn test -P$DB -V -B" && mvn test -P$DB -V -B
+    - sh .travisci/run_tests.sh
+
+  - # ----------------------- oracle -----------------------
+    env: DB=oracle_travis-ci
+    before_install:
+    # Load cached docker images
+    - if [ -f ${CACHE_FILE_ORACLE} ]; then gunzip -c ${CACHE_FILE_ORACLE} | docker load; fi
+    - docker run -d -p 8080:8080 -p 1521:1521 --name oracle_active-jdbc sath89/oracle-12c
+    - docker ps
+    - source .travisci/setup.sh
+    before_script:
+    - docker cp $TRAVIS_BUILD_DIR/.travisci/oracle/init.sql oracle_active-jdbc:/tmp/init.sql
+    - docker exec -u oracle -it oracle_active-jdbc /bin/bash -c "echo 'Waiting for DB to boot...' && while [ ! -f /u01/app/oracle/cfgtoollogs/dbca/xe/xe.log ]; do sleep 10; done;"
+    - docker exec -u oracle -it oracle_active-jdbc /bin/bash -c "cat /u01/app/oracle/cfgtoollogs/dbca/xe/xe.log"
+    - docker exec -u oracle -it oracle_active-jdbc /bin/bash -c "\$ORACLE_HOME/bin/sqlplus -S system/oracle @/tmp/init.sql"
+    script:
+    - echo "Starting Oracle build"
+    - sh .travisci/run_tests.sh
+    before_cache:
+    # Save tagged docker images
+    - mkdir -p $CACHE_DIR
+    - if [ ! -f ${CACHE_FILE_ORACLE} ]; then docker save sath89/oracle-12c:latest | gzip > ${CACHE_FILE_ORACLE}; fi
 
   - # ----------------------- mssql -----------------------
     env: DB=mssql_travis-ci
@@ -69,8 +100,7 @@ jobs:
     - docker ps
     script:
     - echo "Starting MS SQLServer build"
-    - cd activejdbc
-    - echo "mvn test -P$DB -V -B" && mvn test -P$DB -V -B
+    - sh .travisci/run_tests.sh
 
   - # ----------------------- sqlite -----------------------
     env: DB=sqlite_travis-ci
@@ -78,8 +108,7 @@ jobs:
     - source .travisci/setup.sh
     script:
     - echo "Starting SQLite build"
-    - cd activejdbc
-    - echo "mvn test -P$DB -V -B" && mvn test -P$DB -V -B
+    - sh .travisci/run_tests.sh
 
     # ->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->
     #                      Deploy Stage
