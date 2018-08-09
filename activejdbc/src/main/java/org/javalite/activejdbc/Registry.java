@@ -205,7 +205,10 @@ public enum Registry {
             } else if(tableName.startsWith("\"") && tableName.endsWith("\"")) {
                 tableName = tableName.substring(1, tableName.length() - 1);
             }
+        }
 
+        if(dbType.toLowerCase().contains("postgres") && tableName.startsWith("\"") && tableName.endsWith("\"")){
+            tableName = tableName.substring(1, tableName.length() - 1);
         }
 
         ResultSet rs = databaseMetaData.getColumns(catalog, schema, tableName, null);
