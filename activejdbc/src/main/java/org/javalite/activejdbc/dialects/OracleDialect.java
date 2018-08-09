@@ -61,8 +61,8 @@ public class OracleDialect extends DefaultDialect {
         } else if (needLimit) { // if needLimit and don't needOffset
             fullQuery.append("SELECT * FROM (SELECT t2.* FROM (");
         }
-        //TODO check if this can be simplified removing the alias t
-        appendSelect(fullQuery, tableName, null, (needLimit || needOffset) ? "t" : null, subQuery, orderBys);
+
+        appendSelect(fullQuery, tableName, columns, null, subQuery, orderBys);
 
         if (needOffset) {
             // Oracle offset starts with 1, not like MySQL with 0;
