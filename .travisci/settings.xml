@@ -7,18 +7,18 @@
     <server>
       <id>sonatype-nexus-snapshots</id>
       <username>${env.SONATYPE_USER}</username>
-      <password>#{env.SONATYPE_PASSWORD}</password>
+      <password>${env.SONATYPE_PASSWORD}</password>
     </server>
     <server>
       <id>sonatype-nexus-staging</id>
         <username>${env.SONATYPE_USER}</username>
-        <password>#{env.SONATYPE_PASSWORD}</password>
+        <password>${env.SONATYPE_PASSWORD}</password>
     </server>
 
   <server>
     <id>maven.oracle.com</id>
       <username>${env.ORACLE_USER}</username>
-      <password>#{env.ORACLE_PASSWORD}</password>
+      <password>${env.ORACLE_PASSWORD}</password>
   <configuration>
     <basicAuthScope>
       <host>ANY</host>

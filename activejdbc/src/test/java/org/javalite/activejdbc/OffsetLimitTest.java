@@ -20,6 +20,8 @@ package org.javalite.activejdbc;
 import org.javalite.activejdbc.Model;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Page;
+import org.javalite.test.SystemStreamUtil;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,20 +35,23 @@ public class OffsetLimitTest extends ActiveJDBCTest {
 
     @Before
     public void setup() throws Exception {
+        SystemStreamUtil.replaceOut();
         deleteAndPopulateTable("pages");
         for (int i = 1; i <= 1000; i++) {
             Page.create("description", "description: " + i, "word_count", 11).saveIt();
         }
     }
 
+    @After
+    public void tearDown(){
+        SystemStreamUtil.restoreSystemOut();
+    }
+
     @Test
     public void testAll() {
 
-        List<Page> pages = Page.findAll().orderBy("id asc");
-
-
         //offset and limit
-        pages = Page.findAll().offset(100).limit(20).orderBy("id");
+        List<Page> pages = Page.findAll().offset(100).limit(20).orderBy("id");
         a(pages.size()).shouldBeEqual(20);
         a(pages.get(0).get("description")).shouldBeEqual("description: 101");
         a(pages.get(19).get("description")).shouldBeEqual("description: 120");

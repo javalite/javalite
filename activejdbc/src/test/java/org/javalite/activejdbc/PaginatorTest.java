@@ -21,6 +21,8 @@ import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Address;
 import org.javalite.activejdbc.test_models.Item;
 import org.javalite.activejdbc.test_models.User;
+import org.javalite.test.SystemStreamUtil;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,11 +37,17 @@ import java.util.List;
 public class PaginatorTest extends ActiveJDBCTest {
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
+        SystemStreamUtil.replaceOut();
         deleteAndPopulateTable("items");
         for(int i = 1; i <= 1000; i++){
             Item.createIt("item_number", i, "item_description", "this is item # " + i);
         }
+    }
+
+    @After
+    public void tearDown(){
+        SystemStreamUtil.restoreSystemOut(); // too much output from this test
     }
 
     @Test
