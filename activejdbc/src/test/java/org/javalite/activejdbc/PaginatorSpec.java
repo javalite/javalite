@@ -192,10 +192,10 @@ public class PaginatorSpec extends ActiveJDBCTest {
     public void shouldSetCurrentPage(){
         Paginator<Item> paginator = Paginator.<Item>instance()
                 .modelClass(Item.class)
-                .query("select * from items order by item_number")
+                .query("select * from items")
                 .currentPageIndex(4, false)
                 .pageSize(25)
-                .create().orderBy("");
+                .create().orderBy("item_number");
 
         List<Item> items = paginator.getPage();
         the(items.size()).shouldBeEqual(25);
