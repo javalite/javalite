@@ -192,14 +192,43 @@ public class PaginatorSpec extends ActiveJDBCTest {
     public void shouldSetCurrentPage(){
         Paginator<Item> paginator = Paginator.<Item>instance()
                 .modelClass(Item.class)
-                .query("select * from items")
+                .query("select * from items order by item_number")
                 .currentPageIndex(4, false)
                 .pageSize(25)
-                .create();
+                .create().orderBy("");
 
         List<Item> items = paginator.getPage();
         the(items.size()).shouldBeEqual(25);
         the(items.get(0).get("item_number")).shouldBeEqual(76);
         the(items.get(24).get("item_number")).shouldBeEqual(100);
+    }
+
+    @Test
+    public void should_calculate_from_and_to(){
+        Item.deleteAll();
+        for(int i = 1; i <= 155; i++){
+            Item.createIt("item_number", i, "item_description", "this is item # " + i);
+        }
+
+        Paginator<Item> paginator = Paginator.<Item>instance()
+                .modelClass(Item.class)
+                .query("select * from items")
+                .currentPageIndex(7, false)
+                .pageSize(25)
+                .orderBy("item_description")
+                .create();
+
+        the(paginator.getFrom()).shouldBeEqual(151);
+        the(paginator.getTo()).shouldBeEqual(155);
+
+        paginator = Paginator.<Item>instance()
+                .modelClass(Item.class)
+                .query("select * from items")
+                .currentPageIndex(3, false)
+                .pageSize(25)
+                .orderBy("item_description")
+                .create();
+        the(paginator.getFrom()).shouldBeEqual(51);
+        the(paginator.getTo()).shouldBeEqual(75);
     }
 }

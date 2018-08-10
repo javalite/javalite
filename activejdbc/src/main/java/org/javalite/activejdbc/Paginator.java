@@ -147,7 +147,7 @@ public class Paginator<T extends Model> implements Serializable {
      * @param orderBys a comma-separated list of field names followed by either "desc" or "asc"
      * @return instance to self.
      */
-    public Paginator orderBy(String orderBys) {
+    public Paginator<T> orderBy(String orderBys) {
         this.orderBys = orderBys;
         return this;
     }
@@ -293,6 +293,7 @@ public class Paginator<T extends Model> implements Serializable {
         private Object[] params = new Object[]{};
         private int currentPageIndex = 1;
         private boolean skipCheck;
+        private String orderBys;
 
         /**
          * Model class mapped to a table.>
@@ -312,6 +313,14 @@ public class Paginator<T extends Model> implements Serializable {
          */
         public PaginatorBuilder<T> pageSize(int pageSize){
             this.pageSize = pageSize;
+            return this;
+        }
+
+        /**
+         * @param orderBys a comma-separated list of field names followed by either "desc" or "asc"
+         */
+        public PaginatorBuilder<T> orderBy(String orderBys){
+            this.orderBys = orderBys;
             return this;
         }
 
@@ -375,6 +384,7 @@ public class Paginator<T extends Model> implements Serializable {
         public Paginator<T> create(){
             Paginator<T> paginator = new Paginator<T>(modelClass, pageSize, suppressCounts, query, countQuery, params);
             paginator.setCurrentPageIndex(currentPageIndex, skipCheck);
+            paginator.orderBy(orderBys);
             return paginator;
         }
     }
@@ -413,7 +423,7 @@ public class Paginator<T extends Model> implements Serializable {
      *
      * @return index of the first item in a current page.
      */
-    public int getFrom(){
+    public long getFrom(){
         return (getCurrentPage() - 1)  * getPageSize() + 1;
     }
 
@@ -424,7 +434,12 @@ public class Paginator<T extends Model> implements Serializable {
      *
      * @return index of the last item in a current page.
      */
-    public int getTo(){
-        return getCurrentPage()  * getPageSize();
+    public long getTo(){
+        long count = getCount();
+        if((currentPageIndex * pageSize) > count){
+            return count;
+        }else{
+            return currentPageIndex * pageSize;
+        }
     }
 }
