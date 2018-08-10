@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * @author Igor Polevoy
  */
-public class PaginatorTest extends ActiveJDBCTest {
+public class PaginatorSpec extends ActiveJDBCTest {
 
     @Before
     public void setup() {
@@ -65,7 +65,8 @@ public class PaginatorTest extends ActiveJDBCTest {
     }
 
     @Test
-    public void testGetPage(){
+    public void shouldReturnPage(){
+
         Paginator<Item> p = new Paginator<>(Item.class, 10, "item_description like ?", "%2%").orderBy("item_number");
         List<Item> items = p.getPage(28);
         a(items.size()).shouldBeEqual(1);
@@ -185,5 +186,20 @@ public class PaginatorTest extends ActiveJDBCTest {
                 .create();
 
         a(paginator.getCount()).shouldBeEqual(1);
+    }
+
+    @Test
+    public void shouldSetCurrentPage(){
+        Paginator<Item> paginator = Paginator.<Item>instance()
+                .modelClass(Item.class)
+                .query("select * from items")
+                .currentPageIndex(4, false)
+                .pageSize(25)
+                .create();
+
+        List<Item> items = paginator.getPage();
+        the(items.size()).shouldBeEqual(25);
+        the(items.get(0).get("item_number")).shouldBeEqual(76);
+        the(items.get(24).get("item_number")).shouldBeEqual(100);
     }
 }
