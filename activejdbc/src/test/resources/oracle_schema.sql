@@ -1087,7 +1087,7 @@ end;
 
 
 
-CREATE TABLE passengers (id NUMBER NOT NULL, vehicle VARCHAR(56), "mode" VARCHAR(56), user_id NUMBER)
+CREATE TABLE passengers (id NUMBER NOT NULL, vehicle VARCHAR(56), transportation_mode VARCHAR(56), user_id NUMBER)
 -- BREAK
 ALTER TABLE passengers ADD CONSTRAINT passengers_pk PRIMARY KEY (id)
 -- BREAK

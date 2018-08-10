@@ -188,7 +188,7 @@ CALL dropTable('boxes');
 CREATE TABLE boxes (id int primary key GENERATED ALWAYS AS IDENTITY, "color" VARCHAR(56) NOT NULL, fruit_id INT);
 
 CALL dropTable('passengers');
-CREATE TABLE passengers (id int primary key GENERATED ALWAYS AS IDENTITY, user_id INT NOT NULL, vehicle VARCHAR(10),mode VARCHAR(10));
+CREATE TABLE passengers (id int primary key GENERATED ALWAYS AS IDENTITY, user_id INT NOT NULL, vehicle VARCHAR(10),transportation_mode VARCHAR(10));
 
 CALL dropTable('teams');
 CREATE TABLE teams (team_id int primary key GENERATED ALWAYS AS IDENTITY, name VARCHAR(56) NOT NULL);
