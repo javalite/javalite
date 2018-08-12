@@ -19,7 +19,6 @@ stages:
 
 # Attempt to reduce the time to pull the OracleDB Container
 cache:
-  bundler: true
   timeout: 1000
   directories:
     - $HOME/.m2/repository
