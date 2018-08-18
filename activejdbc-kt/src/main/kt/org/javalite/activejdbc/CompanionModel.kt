@@ -57,7 +57,7 @@ import kotlin.reflect.KClass
  * </pre>
  *
  * Because Kotlin does not allow static method inheritance, we have to define a companion object as CompanionModel. This
- * second model require the class of type of the entity to manage. This code is a little bit more verbose than the Java
+ * second model requires the class of type of the entity to manage. This code is a little bit more verbose than the Java
  * one but allow a full Kotlin project with JavaLite instead of a mixed language project.
  */
 open class CompanionModel<T:Model>(entityClass:Class<T>) {
@@ -92,7 +92,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      * Returns all associations of this model.
      * @return all associations of this model.
      */
-    fun associations():MutableList<Association> {
+    fun associations():MutableList<Association?> {
         return ModelDelegate.associations(modelClass())
     }
 
@@ -152,7 +152,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      * @param params parameters (if any) for the query.
      * @return count of records in table under a condition.
      */
-    fun count(query:String, vararg params:Any):Long {
+    fun count(query:String, vararg params:Any?):Long {
         return ModelDelegate.count(modelClass(), query, *params)
     }
 
@@ -173,7 +173,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      * indexes 1, 3, 5... are values. Element at index 1 is a value for attribute at index 0 and so on.
      * @return newly instantiated model.
      */
-    fun create(vararg namesAndValues:Any):T {
+    fun create(vararg namesAndValues:Any?):T {
         return ModelDelegate.create(modelClass(), *namesAndValues)
     }
 
@@ -186,7 +186,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      * indexes 1, 3, 5... are values. Element at index 1 is a value for attribute at index 0 and so on.
      * @return newly instantiated model which also has been saved to DB.
      */
-    fun createIt(vararg namesAndValues:Any):T {
+    fun createIt(vararg namesAndValues:Any?):T {
         return ModelDelegate.createIt(modelClass(), *namesAndValues)
     }
 
@@ -205,7 +205,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      * @param params   (optional) - list of parameters if a query is parametrized.
      * @return number of deleted records.
      */
-    fun delete(query:String, vararg params:Any):Int {
+    fun delete(query:String, vararg params:Any?):Int {
         return ModelDelegate.delete(modelClass(), query, *params)
     }
 
@@ -226,7 +226,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      * @param id id in question.
      * @return true if corresponding record exists in DB, false if it does not.
      */
-    fun exists(id:Any):Boolean {
+    fun exists(id:Any?):Boolean {
         return ModelDelegate.exists(modelClass(), id)
     }
 
@@ -239,7 +239,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      * @param params list of parameters corresponding to the place holders in the subquery.
      * @return instance of <code>LazyList<Model></code> containing results.
      */
-    fun find(subquery:String, vararg params:Any):LazyList<T> {
+    fun find(subquery:String, vararg params:Any?):LazyList<T> {
         return ModelDelegate.where(modelClass(), subquery, *params)
     }
 
@@ -277,12 +277,12 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      * @return instance of a found model, or null if nothing found.
      * @see CompositePK
      */
-    fun findByCompositeKeys(vararg values:Any):T {
+    fun findByCompositeKeys(vararg values:Any?):T? {
         return ModelDelegate.findByCompositeKeys(modelClass(), *values)
     }
 
 
-    fun findById(id:Any):T {
+    fun findById(id:Any?):T? {
         return ModelDelegate.findById(modelClass(), id)
     }
 
@@ -300,7 +300,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      * @param <T> - class that extends Model.
      * @return list of models representing result set.
      */
-    fun findBySQL(fullQuery:String, vararg params:Any):LazyList<T> {
+    fun findBySQL(fullQuery:String, vararg params:Any?):LazyList<T> {
         return ModelDelegate.findBySql(modelClass(), fullQuery, *params)
     }
 
@@ -312,7 +312,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      *
      *@return Model fetched from the db or newly created and saved instance.
      */
-    fun findOrCreateIt(vararg namesAndValues:Any):T {
+    fun findOrCreateIt(vararg namesAndValues:Any?):T? {
         return ModelDelegate.findOrCreateIt(modelClass(), *namesAndValues)
     }
 
@@ -331,7 +331,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      * @param params list of parameters if question marks are used as placeholders
      * @return a first result for this condition. May return null if nothing found.
      */
-    fun findFirst(subQuery:String, vararg params:Any):T {
+    fun findFirst(subQuery:String, vararg params:Any?):T? {
         return ModelDelegate.findFirst(modelClass(), subQuery, *params)
     }
 
@@ -343,7 +343,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      * @param query sub-query (content after "WHERE" clause)
      * @param params optional parameters for a query.
      */
-    fun findWith(listener:ModelListener<T>, query:String, vararg params:Any) {
+    fun findWith(listener:ModelListener<T>, query:String, vararg params:Any?) {
         ModelDelegate.findWith(modelClass(), listener, query, *params)
     }
 
@@ -373,7 +373,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      * @param params list of parameters if question marks are used as placeholders
      * @return a first result for this condition. May return null if nothing found.
      */
-    fun first(subQuery:String, vararg params:Any):T {
+    fun first(subQuery:String, vararg params:Any?):T? {
         return ModelDelegate.findFirst(modelClass(), subQuery, *params)
     }
 
@@ -471,7 +471,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      * updates first, then conditions.
      * @return number of updated records.
      */
-    fun update(updates:String, conditions:String, vararg params:Any):Int {
+    fun update(updates:String, conditions:String, vararg params:Any?):Int {
         return ModelDelegate.update(modelClass(), updates, conditions, *params)
     }
 
@@ -491,7 +491,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      * updates first, then conditions.
      * @return number of updated records.
      */
-    fun updateAll(updates:String, vararg params:Any):Int {
+    fun updateAll(updates:String, vararg params:Any?):Int {
         return ModelDelegate.updateAll(modelClass(), updates, *params)
     }
 
@@ -527,7 +527,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      * @param params list of parameters corresponding to the place holders in the subQuery.
      * @return instance of <code>LazyList<Model></code> containing results.
      */
-    fun where(subQuery:String, vararg params:Any):LazyList<T> {
+    fun where(subQuery:String, vararg params:Any?):LazyList<T> {
         return ModelDelegate.where(modelClass(), subQuery, *params)
     }
 
@@ -538,7 +538,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      *
      * @param attributeNames attribute names
      */
-    protected fun blankToNull(vararg attributeNames:String) {
+    protected fun blankToNull(vararg attributeNames:String?) {
         ModelDelegate.blankToNull(modelClass(), *attributeNames)
     }
 
@@ -589,7 +589,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         "use {@link #convertWith(org.javalite.activejdbc.conversion.Converter, String...)} instead",
         ReplaceWith("CompanionModel#convertWith(org.javalite.activejdbc.conversion.Converter, String...)")
     )
-    protected fun convertWith(converter:org.javalite.activejdbc.validation.Converter):ValidationBuilder<Validator>? {
+    protected fun convertWith(converter:org.javalite.activejdbc.validation.Converter):ValidationBuilder<Validator> {
         return ModelDelegate.convertWith(modelClass(), converter)
     }
 
@@ -600,7 +600,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      * @param converter custom converter
      * @param attributeNames attribute names
      */
-    protected fun convertWith(converter:Converter<Any, Any>, vararg attributeNames:String) {
+    protected fun convertWith(converter:Converter<Any, Any>, vararg attributeNames:String?) {
         ModelDelegate.convertWith(modelClass(), converter, *attributeNames)
     }
 
@@ -632,7 +632,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      * @param pattern pattern to use for conversion
      * @param attributeNames attribute names
      */
-    protected fun dateFormat(pattern:String, vararg attributeNames:String) {
+    protected fun dateFormat(pattern:String, vararg attributeNames:String?) {
         ModelDelegate.dateFormat(modelClass(), pattern, *attributeNames)
     }
 
@@ -646,7 +646,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      * @param format format to use for conversion
      * @param attributeNames attribute names
      */
-    protected fun dateFormat(format:DateFormat, vararg attributeNames:String) {
+    protected fun dateFormat(format:DateFormat, vararg attributeNames:String?) {
         ModelDelegate.dateFormat(modelClass(), format, *attributeNames)
     }
 
@@ -678,7 +678,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      * @param pattern pattern to use for conversion
      * @param attributeNames attribute names
      */
-    protected fun timestampFormat(pattern:String, vararg attributeNames:String) {
+    protected fun timestampFormat(pattern:String, vararg attributeNames:String?) {
         ModelDelegate.timestampFormat(modelClass(), pattern, *attributeNames)
     }
 
@@ -692,7 +692,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      * @param format format to use for conversion
      * @param attributeNames attribute names
      */
-    protected fun timestampFormat(format:DateFormat, vararg attributeNames:String) {
+    protected fun timestampFormat(format:DateFormat, vararg attributeNames:String?) {
         ModelDelegate.timestampFormat(modelClass(), format, *attributeNames)
     }
 
@@ -707,7 +707,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
     }
 
 
-    protected fun validateNumericalityOf(vararg attributeNames:String):NumericValidationBuilder {
+    protected fun validateNumericalityOf(vararg attributeNames:String?):NumericValidationBuilder {
         return ModelDelegate.validateNumericalityOf(modelClass(), *attributeNames)
     }
 
@@ -717,7 +717,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      *
      * @param attributeNames list of attributes to validate.
      */
-    protected fun validatePresenceOf(vararg attributeNames:String):ValidationBuilder<Validator> {
+    protected fun validatePresenceOf(vararg attributeNames:String?):ValidationBuilder<Validator> {
         return ModelDelegate.validatePresenceOf(modelClass(), *attributeNames)
     }
 
@@ -762,7 +762,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      *
      * @param attributeNames attribute names
      */
-    protected fun zeroToNull(vararg attributeNames:String) {
+    protected fun zeroToNull(vararg attributeNames:String?) {
         ModelDelegate.zeroToNull(modelClass(), *attributeNames)
     }
 
