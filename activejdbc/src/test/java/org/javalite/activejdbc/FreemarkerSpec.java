@@ -6,6 +6,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Person;
+import org.javalite.activejdbc.test_models.Student;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,7 +34,7 @@ public class FreemarkerSpec extends ActiveJDBCTest {
 
 
     @Test
-    public void shouldRenderSingleIntance() throws IOException, TemplateException {
+    public void shouldRenderSingleInstance() throws IOException, TemplateException {
         deleteAndPopulateTable("people");
 
         Person smith = Person.findFirst("last_name = ?", "Smith");
@@ -75,39 +76,34 @@ public class FreemarkerSpec extends ActiveJDBCTest {
 
     @Test
     public void shouldRenderRowProcessor() throws IOException, TemplateException {
-        deleteAndPopulateTable("people");
+        deleteAndPopulateTable("students");
 
-        Person smith = Person.findFirst("last_name = ?", "Smith");
-        smith.set("graduation_date", null).saveIt();
+        Student cary = Student.findFirst("last_name = ?", "Cary");
+        cary.set("enrollment_date", null).saveIt();
 
-        List<Map> people = new ArrayList<>();
-        Base.find("select * from people order by id").with(new RowListenerAdapter() {
+        List<Map> students = new ArrayList<>();
+        Base.find("select * from students order by id").with(new RowListenerAdapter() {
             @Override
             public void onNext(Map<String, Object> row) {
-                people.add(row);
+                students.add(row);
             }
         });
 
-
-        Template template = config.getTemplate("src/test/resources/list.ftl");
+        Template template = config.getTemplate("src/test/resources/list_row.ftl");
 
         StringWriter writer = new StringWriter();
-        template.process(map("people", people), writer);
+        template.process(map("students", students), writer);
         String processedTemplate = writer.toString().trim();
         if(System.getProperty("os.name").contains("indows")) {
             processedTemplate = processedTemplate.replaceAll("\r\n", "\n");
         }
 
         if(driver().equals("org.sqlite.JDBC")){
-            the(processedTemplate).shouldBeEqual("Person: John  Smith, graduation date: \n" +
-                    "Person: Leylah  Jonston, graduation date: 1974-04-03\n" +
-                    "Person: Muhammad  Ali, graduation date: 1963-01-04\n" +
-                    "Person: Joe  Pesci, graduation date: 1964-02-23");
+            the(processedTemplate).shouldBeEqual("Student: Jim  Cary, enrollment date:\n" +
+                    "Student: John  Carpenter, enrollment date: 1987-01-29 13:00:00");
         }else {
-            the(processedTemplate).shouldBeEqual("Person: John  Smith, graduation date: \n" +
-                    "Person: Leylah  Jonston, graduation date: Apr 3, 1974\n" +
-                    "Person: Muhammad  Ali, graduation date: Jan 4, 1963\n" +
-                    "Person: Joe  Pesci, graduation date: Feb 23, 1964");
+            the(processedTemplate).shouldBeEqual("Student: Jim  Cary, enrollment date:\n" +
+                    "Student: John  Carpenter, enrollment date: Jan 29, 1987 1:00:00 PM");
         }
     }
 }

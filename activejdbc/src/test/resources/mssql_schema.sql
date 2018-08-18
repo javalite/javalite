@@ -406,7 +406,7 @@ IF object_id('dbo.passengers') IS NOT NULL
 BEGIN
     DROP TABLE [dbo].[passengers]
 END
-CREATE TABLE passengers (id INT IDENTITY PRIMARY KEY, user_id INT NOT NULL, vehicle VARCHAR(10), mode VARCHAR(10));
+CREATE TABLE passengers (id INT IDENTITY PRIMARY KEY, user_id INT NOT NULL, vehicle VARCHAR(10), transportation_mode VARCHAR(10));
 
 IF object_id('dbo.teams') IS NOT NULL
     BEGIN

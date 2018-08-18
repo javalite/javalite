@@ -205,7 +205,7 @@ DROP TABLE IF EXISTS boxes;
 CREATE TABLE boxes (id  int(11) NOT NULL auto_increment PRIMARY KEY, color VARCHAR(56) NOT NULL, fruit_id int(11), created_at DATETIME, updated_at DATETIME) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS passengers;
-CREATE TABLE passengers (id  int(11) NOT NULL auto_increment PRIMARY KEY, user_id INT(11) NOT NULL, vehicle VARCHAR(10), mode VARCHAR(10), created_at DATETIME, updated_at DATETIME) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE passengers (id  int(11) NOT NULL auto_increment PRIMARY KEY, user_id INT(11) NOT NULL, vehicle VARCHAR(10), transportation_mode VARCHAR(10), created_at DATETIME, updated_at DATETIME) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS teams;
 CREATE TABLE teams (team_id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR(56) NOT NULL);

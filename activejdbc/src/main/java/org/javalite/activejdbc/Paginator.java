@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,9 +50,9 @@ public class Paginator<T extends Model> implements Serializable {
     private final int pageSize;
     private final String query;
     private String orderBys;
-    private final Object[] params;
+    private Object[] params = new Object[]{};
     private final MetaModel metaModel;
-    private int currentPage;
+    private int currentPageIndex;
     private final boolean fullQuery;
     private final String countQueryFull;
     private boolean suppressCounts;
@@ -146,7 +147,7 @@ public class Paginator<T extends Model> implements Serializable {
      * @param orderBys a comma-separated list of field names followed by either "desc" or "asc"
      * @return instance to self.
      */
-    public Paginator orderBy(String orderBys) {
+    public Paginator<T> orderBy(String orderBys) {
         this.orderBys = orderBys;
         return this;
     }
@@ -167,7 +168,7 @@ public class Paginator<T extends Model> implements Serializable {
             if (orderBys != null) {
                 list.orderBy(orderBys);
             }
-            currentPage = pageNumber;
+            currentPageIndex = pageNumber;
             return list;
         } catch (Exception mustNeverHappen) {
             throw new InternalException(mustNeverHappen);
@@ -180,7 +181,7 @@ public class Paginator<T extends Model> implements Serializable {
      * @return index of current page, or 0 if this instance has not produced a page yet.
      */
     public int getCurrentPage() {
-        return currentPage;
+        return currentPageIndex;
     }
 
     /**
@@ -193,7 +194,7 @@ public class Paginator<T extends Model> implements Serializable {
     }
 
     public boolean hasPrevious() {
-        return currentPage > 1 && currentPage <= pageCount();
+        return currentPageIndex > 1 && currentPageIndex <= pageCount();
     }
 
     /**
@@ -206,9 +207,12 @@ public class Paginator<T extends Model> implements Serializable {
     }
 
     public boolean hasNext() {
-        return currentPage < pageCount();
+        return currentPageIndex < pageCount();
     }
 
+    /**
+     * @return a number of pages
+     */
     public long pageCount() {
         try {
             long results = getCount();
@@ -286,7 +290,10 @@ public class Paginator<T extends Model> implements Serializable {
         private boolean suppressCounts = false;
         private String query;
         private String countQuery = null;
-        private Object[] params;
+        private Object[] params = new Object[]{};
+        private int currentPageIndex = 1;
+        private boolean skipCheck;
+        private String orderBys;
 
         /**
          * Model class mapped to a table.>
@@ -306,6 +313,14 @@ public class Paginator<T extends Model> implements Serializable {
          */
         public PaginatorBuilder<T> pageSize(int pageSize){
             this.pageSize = pageSize;
+            return this;
+        }
+
+        /**
+         * @param orderBys a comma-separated list of field names followed by either "desc" or "asc"
+         */
+        public PaginatorBuilder<T> orderBy(String orderBys){
+            this.orderBys = orderBys;
             return this;
         }
 
@@ -354,11 +369,77 @@ public class Paginator<T extends Model> implements Serializable {
         }
 
         /**
+         * @see #setCurrentPageIndex(int, boolean)
+         */
+        public PaginatorBuilder<T> currentPageIndex(int currentPageIndex, boolean skipCheck){
+            this.currentPageIndex = currentPageIndex;
+            this.skipCheck  = skipCheck;
+            return this;
+        }
+
+        /**
          * Terminal method to create an instance of Paginator.
          * @return new Paginator properly configured.
          */
         public Paginator<T> create(){
-            return new Paginator<T>(modelClass, pageSize, suppressCounts, query, countQuery, params);
+            Paginator<T> paginator = new Paginator<T>(modelClass, pageSize, suppressCounts, query, countQuery, params);
+            paginator.setCurrentPageIndex(currentPageIndex, skipCheck);
+            paginator.orderBy(orderBys);
+            return paginator;
+        }
+    }
+
+
+    /**
+     * Sets an index of a current page. This method will make a quick count query to check that
+     * the index you are setting is within the boundaries.
+     *
+     * @param currentPageIndex index of a current page.
+     * @param skipCheck <code>true</code> to skip the upper boundary check (will not make a call to DB).
+     */
+    public void setCurrentPageIndex(int currentPageIndex, boolean skipCheck){
+        if( currentPageIndex < 1){
+            throw new IndexOutOfBoundsException("currentPageIndex cannot be < 1");
+        }
+
+        if(!skipCheck){
+            if(currentPageIndex >  pageCount()){
+                throw new IndexOutOfBoundsException("currentPageIndex it outside of record set boundaries. ");
+            }
+        }
+        this.currentPageIndex = currentPageIndex;
+    }
+
+    /**
+     * @return records for the current page.
+     */
+    public LazyList<T> getPage(){
+        return getPage(currentPageIndex);
+    }
+
+    /**
+     * Returns index of the first item in a current page. Use in UI where you need a message:
+     * <code>Displaying 101 to 140 items</code> ir something  similar.
+     *
+     * @return index of the first item in a current page.
+     */
+    public long getFrom(){
+        return (getCurrentPage() - 1)  * getPageSize() + 1;
+    }
+
+
+    /**
+     * Returns index of the last item in a current page. Use in UI where you need a message:
+     * <code>Displaying 101 to 140 items</code> ir something  similar.
+     *
+     * @return index of the last item in a current page.
+     */
+    public long getTo(){
+        long count = getCount();
+        if((currentPageIndex * pageSize) > count){
+            return count;
+        }else{
+            return currentPageIndex * pageSize;
         }
     }
 }

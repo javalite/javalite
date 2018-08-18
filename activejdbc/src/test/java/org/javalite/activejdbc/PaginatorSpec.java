@@ -21,6 +21,8 @@ import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Address;
 import org.javalite.activejdbc.test_models.Item;
 import org.javalite.activejdbc.test_models.User;
+import org.javalite.test.SystemStreamUtil;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,14 +34,20 @@ import java.util.List;
 /**
  * @author Igor Polevoy
  */
-public class PaginatorTest extends ActiveJDBCTest {
+public class PaginatorSpec extends ActiveJDBCTest {
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
+        SystemStreamUtil.replaceOut();
         deleteAndPopulateTable("items");
         for(int i = 1; i <= 1000; i++){
             Item.createIt("item_number", i, "item_description", "this is item # " + i);
         }
+    }
+
+    @After
+    public void tearDown(){
+        SystemStreamUtil.restoreSystemOut(); // too much output from this test
     }
 
     @Test
@@ -57,7 +65,8 @@ public class PaginatorTest extends ActiveJDBCTest {
     }
 
     @Test
-    public void testGetPage(){
+    public void shouldReturnPage(){
+
         Paginator<Item> p = new Paginator<>(Item.class, 10, "item_description like ?", "%2%").orderBy("item_number");
         List<Item> items = p.getPage(28);
         a(items.size()).shouldBeEqual(1);
@@ -177,5 +186,49 @@ public class PaginatorTest extends ActiveJDBCTest {
                 .create();
 
         a(paginator.getCount()).shouldBeEqual(1);
+    }
+
+    @Test
+    public void shouldSetCurrentPage(){
+        Paginator<Item> paginator = Paginator.<Item>instance()
+                .modelClass(Item.class)
+                .query("select * from items")
+                .currentPageIndex(4, false)
+                .pageSize(25)
+                .create().orderBy("item_number");
+
+        List<Item> items = paginator.getPage();
+        the(items.size()).shouldBeEqual(25);
+        the(items.get(0).get("item_number")).shouldBeEqual(76);
+        the(items.get(24).get("item_number")).shouldBeEqual(100);
+    }
+
+    @Test
+    public void should_calculate_from_and_to(){
+        Item.deleteAll();
+        for(int i = 1; i <= 155; i++){
+            Item.createIt("item_number", i, "item_description", "this is item # " + i);
+        }
+
+        Paginator<Item> paginator = Paginator.<Item>instance()
+                .modelClass(Item.class)
+                .query("select * from items")
+                .currentPageIndex(7, false)
+                .pageSize(25)
+                .orderBy("item_description")
+                .create();
+
+        the(paginator.getFrom()).shouldBeEqual(151);
+        the(paginator.getTo()).shouldBeEqual(155);
+
+        paginator = Paginator.<Item>instance()
+                .modelClass(Item.class)
+                .query("select * from items")
+                .currentPageIndex(3, false)
+                .pageSize(25)
+                .orderBy("item_description")
+                .create();
+        the(paginator.getFrom()).shouldBeEqual(51);
+        the(paginator.getTo()).shouldBeEqual(75);
     }
 }

@@ -15,8 +15,11 @@ limitations under the License.
 */
 package org.javalite.activejdbc.dialects;
 
-import java.util.List;
 import org.javalite.activejdbc.MetaModel;
+import org.javalite.common.Convert;
+
+import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * @author Igor Polevoy
@@ -61,8 +64,8 @@ public class OracleDialect extends DefaultDialect {
         } else if (needLimit) { // if needLimit and don't needOffset
             fullQuery.append("SELECT * FROM (SELECT t2.* FROM (");
         }
-        //TODO check if this can be simplified removing the alias t
-        appendSelect(fullQuery, tableName, null, (needLimit || needOffset) ? "t" : null, subQuery, orderBys);
+
+        appendSelect(fullQuery, tableName, columns, null, subQuery, orderBys);
 
         if (needOffset) {
             // Oracle offset starts with 1, not like MySQL with 0;
@@ -75,6 +78,18 @@ public class OracleDialect extends DefaultDialect {
         }
 
         return fullQuery.toString();
+    }
+
+    @Override
+    public Object overrideDriverTypeConversion(MetaModel mm, String attributeName, Object value) {
+        // Oracle returns java.sql.Timestamp for DATE values
+        if (value instanceof Timestamp) {
+            String typeName = mm.getColumnMetadata().get(attributeName).getTypeName();
+            if ("DATE".equalsIgnoreCase(typeName)) {
+                return Convert.toSqlDate(value);
+            }
+        }
+        return value;
     }
 
     @Override

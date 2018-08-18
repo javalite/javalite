@@ -203,7 +203,7 @@ DROP TABLE IF EXISTS boxes;
 CREATE TABLE boxes (id serial PRIMARY KEY, "color" VARCHAR(56) NOT NULL, fruit_id INT);
 
 DROP TABLE IF EXISTS passengers;
-CREATE TABLE passengers (id serial PRIMARY KEY, "vehicle" VARCHAR(56),"mode" VARCHAR(56), user_id INT);
+CREATE TABLE passengers (id serial PRIMARY KEY, "vehicle" VARCHAR(56),transportation_mode VARCHAR(56), user_id INT);
 
 DROP TABLE IF EXISTS teams;
 CREATE TABLE teams (team_id serial PRIMARY KEY, name VARCHAR(56) NOT NULL);

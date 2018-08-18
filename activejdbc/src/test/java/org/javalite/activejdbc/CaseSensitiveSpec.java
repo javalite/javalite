@@ -12,7 +12,7 @@ import static org.javalite.activejdbc.test.JdbcProperties.url;
 public class CaseSensitiveSpec extends ActiveJDBCTest {
 
     @Test// see definition of table name for WildAnimal
-    public void should_pass_with_quotes_spaces_and_CamelCase(){
+    public void should_pass_with_quotes_spaces_and_CamelCase() {
         if(url().contains("postgresql") || url().contains("h2")){ // ATTENTION, this is testing only H2 and PostgreSQL
             WildAnimal wildAnimal = new WildAnimal();
             wildAnimal.set("\"Name\"", "Cheetah").saveIt();

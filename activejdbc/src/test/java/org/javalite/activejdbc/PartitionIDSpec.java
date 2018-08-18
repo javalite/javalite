@@ -18,8 +18,8 @@ public class PartitionIDSpec extends ActiveJDBCTest {
         SystemStreamUtil.replaceOut();
 
         Passenger p = new Passenger();
-        p.set("user_id", 1, "vehicle", "bike", "mode", "pavement").saveIt(); // create
-        p.set("mode", "water").saveIt();                                     // update
+        p.set("user_id", 1, "vehicle", "bike", "transportation_mode", "pavement").saveIt(); // create
+        p.set("transportation_mode", "water").saveIt();                                     // update
         p.delete();                                                          // delete
 
         String out = SystemStreamUtil.getSystemOut();
