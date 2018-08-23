@@ -54,7 +54,7 @@ public class AsyncSpec {
 
         //messages will execute in about 2 seconds, because we send 100 messages, but only have 50 threads.
         //lets wait for 3 seconds, then validate result
-        Thread.sleep(5000);
+        Thread.sleep(10000);
 
 
         async.stop();
