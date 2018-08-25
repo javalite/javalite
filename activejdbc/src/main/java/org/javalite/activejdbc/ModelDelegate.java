@@ -454,8 +454,10 @@ public final class ModelDelegate {
                 params[x++] = namesAndValues[i];
             }
         }
-        if(count(clazz, subQuery.toString(), params) > 0){
-            return findFirst(clazz, subQuery.toString(),params);
+
+        T instance = findFirst(clazz, subQuery.toString(),params);
+        if(instance != null){
+            return instance;
         } else{
 
             if(save){
