@@ -353,8 +353,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             throw new IllegalArgumentException("cannot set 'created_at'");
         }
         metaModelLocal.checkAttribute(attributeName);
-        attributes.put(attributeName, value);
-        dirtyAttributeNames.add(attributeName);
+        Object currentAttributeValue = get(attributeName);
+        if (isNew() || currentAttributeValue == null || !currentAttributeValue.equals(value)) {
+            attributes.put(attributeName, value);
+            dirtyAttributeNames.add(attributeName);
+        }
         return (T) this;
     }
 
