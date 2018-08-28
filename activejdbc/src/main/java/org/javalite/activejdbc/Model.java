@@ -2849,12 +2849,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         attributeNames.retainAll(dirtyAttributeNames);
         
         if (fields != null || !fields.trim().isEmpty())			
-			{
-					String[] listFields = fields.split(",");
-					for(field: listFields){	
-						attributeNames.remove(field.ltrim().rtrim());
-					}
-			}
+	{
+	String[] listFields = fields.split(",");
+	for( int aa=0; i<listFields.length-1; aa++){
+		attributeNames.remove(listFields[aa].ltrim().rtrim());
+	}
+	}
         
         if(attributeNames.size() > 0) {
             join(query, attributeNames, " = ?, ");
