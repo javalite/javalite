@@ -2657,7 +2657,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return  true if the model was saved, false if you set an ID value for the model, but such ID does not exist in DB.
      */
     public boolean saveIt() {
-        boolean result = save();
+        boolean result = save(fields);
         ModelDelegate.purgeEdges(metaModelLocal);
         if (!errors.isEmpty()) {
             throw new ValidationException(this);
@@ -2665,6 +2665,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return result;
     }
 
+	    public boolean saveIt() {saveIt("");}
 
 
     /**
@@ -2720,21 +2721,26 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return true if a model was saved and false if values did not pass validations and the record was not saved.
      * False will also be returned if you set an ID value for the model, but such ID does not exist in DB.
      */
-    public boolean save() {
+    
+    	     public boolean save() {save("");}
+
+    public boolean save(String fields) {
         if(frozen) throw new FrozenException(this);
 
         fireBeforeSave();
 
+	if (fields == null || fields.isEmpty){
         validate();
         if (hasErrors()) {
             return false;
         }
+		}
 
         boolean result;
         if (getId() == null && !compositeKeyPersisted) {
             result = insert();
         } else {
-            result = update();
+            result = update(fields);
         }
         fireAfterSave();
         return result;
@@ -2832,7 +2838,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
     }
 
-    private boolean update() {
+    private boolean update(String fields) {
 
         fireBeforeUpdate();
         doUpdatedAt();
@@ -2841,6 +2847,15 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         StringBuilder query = new StringBuilder().append("UPDATE ").append(metaModel.getTableName()).append(" SET ");
         Set<String> attributeNames = metaModel.getAttributeNamesSkipGenerated(manageTime);
         attributeNames.retainAll(dirtyAttributeNames);
+        
+        if (fields != null || !fields.trim().isEmpty())			
+			{
+					String[] listFields = fields.split(",");
+					for(field: listFields){	
+						attributeNames.remove(field.ltrim().rtrim());
+					}
+			}
+        
         if(attributeNames.size() > 0) {
             join(query, attributeNames, " = ?, ");
             query.append(" = ?");
