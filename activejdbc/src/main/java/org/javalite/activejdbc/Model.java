@@ -2878,9 +2878,18 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         
         if (fields != null || !fields.trim().isEmpty())			
 	{
+	for( int bb=0; bb<listFields.length-1; bb++){
+		if (!attributeNames.contains(listFields[bb].replaceAll("^\\s+","").replaceAll("\\s+$","")){
+                 throw new StaleModelException("Failed to update record for model" 
+                         +getClass()
+                         +" not found column "
+                         +listFields[bb].replaceAll("^\\s+","").replaceAll("\\s+$",""));
+                }
+	}            
+            
 	attributeNames.clear();	
 	String[] listFields = fields.split(",");
-	for( int aa=0; i<listFields.length-1; aa++){
+	for( int aa=0; aa<listFields.length-1; aa++){
 		attributeNames.add(listFields[aa].replaceAll("^\\s+","").replaceAll("\\s+$",""));
 	}
 	}
