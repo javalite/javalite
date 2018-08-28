@@ -2664,8 +2664,15 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
         return result;
     }
-
-	    public boolean saveIt() {saveIt("");}
+	
+    /**
+     * This method will not exit silently like {@link #save()}, it instead will throw {@link org.javalite.activejdbc.validation.ValidationException}
+     * if validations did not pass.
+     *
+     * @param fields String representing a list of attributes that will be updated
+     * @return  true if the model was saved, false if you set an ID value for the model, but such ID does not exist in DB.
+     */
+	public boolean saveIt() {saveIt("");}
 
 
     /**
@@ -2721,9 +2728,30 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return true if a model was saved and false if values did not pass validations and the record was not saved.
      * False will also be returned if you set an ID value for the model, but such ID does not exist in DB.
      */
-    
-    	     public boolean save() {save("");}
+    public boolean save() {save("");}
 
+    /**
+     * This method will save data from this instance to a corresponding table in the DB.
+     * It will generate insert SQL if the model is new, or update if the model exists in the DB.
+     * This method will execute all associated validations and if those validations generate errors,
+     * these errors are attached to this instance. Errors are available by {#link #errors() } method.
+     * The <code>save()</code> method is mostly for web applications, where code like this is written:
+     * <pre>
+     * if(person.save())
+     *      //show page success
+     * else{
+     *      request.setAttribute("errors", person.errors());
+     *      //show errors page, or same page so that user can correct errors.
+     *   }
+     * </pre>
+     *
+     * In other words, this method will not throw validation exceptions. However, if there is a problem in the DB, then
+     * there can be a runtime exception thrown.
+     *
+     * @param fields String representing a list of attributes that will be updated
+     * @return true if a model was saved and false if values did not pass validations and the record was not saved.
+     * False will also be returned if you set an ID value for the model, but such ID does not exist in DB.
+     */	
     public boolean save(String fields) {
         if(frozen) throw new FrozenException(this);
 
@@ -2850,9 +2878,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         
         if (fields != null || !fields.trim().isEmpty())			
 	{
+	attributeNames.clear();	
 	String[] listFields = fields.split(",");
 	for( int aa=0; i<listFields.length-1; aa++){
-		attributeNames.remove(listFields[aa].ltrim().rtrim());
+		attributeNames.add(listFields[aa].replaceAll("^\\s+","").replaceAll("\\s+$",""));
 	}
 	}
         
