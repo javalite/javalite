@@ -135,7 +135,6 @@
         <module>javalite-common</module>
         <module>activejdbc-instrumentation</module>
         <module>activejdbc</module>
-        <!--Temporary commenting out to speed up Travis experiments -->
         <!--<module>activejdbc-kt</module>-->
         <!--<module>db-migrator</module>-->
         <!--<module>db-migrator-integration-test</module>-->
