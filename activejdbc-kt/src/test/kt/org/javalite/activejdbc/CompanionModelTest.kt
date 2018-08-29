@@ -147,8 +147,8 @@ class CompanionModelTest {
 
         // Then
         val batman = People.findById(bruce.getLong(People.ID))
-        a(batman.getString(People.FIRST_NAME)).shouldEqual("bat")
-        a(batman.getString(People.NAME)).shouldEqual("man")
+        a(batman?.getString(People.FIRST_NAME)).shouldEqual("bat")
+        a(batman?.getString(People.NAME)).shouldEqual("man")
 
         // Clean
         People.deleteAll()
