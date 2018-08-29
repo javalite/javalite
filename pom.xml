@@ -4,7 +4,7 @@
     <groupId>org.javalite</groupId>
     <artifactId>activeweb-root</artifactId>
     <packaging>pom</packaging>
-    <version>2.2-SNAPSHOT</version>
+    <version>2.2</version>
     <name>ActiveWeb - Root</name>
     <description>ActiveWeb  - Java Web Framework inspired by Ruby on Rails</description>
     <developers>
