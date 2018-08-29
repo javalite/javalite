@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>git-info-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>2.2-SNAPSHOT</version>
+    <version>2.2</version>
     <name>JavaLite - Git Info Maven plugin</name>
     <description>will generate a file with relevant information related to
         project at the time of build</description>
@@ -10,7 +10,7 @@
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>activejdbc-root</artifactId>
-        <version>2.2-SNAPSHOT</version>
+        <version>2.2</version>
     </parent>
     <profiles>
         <profile>
