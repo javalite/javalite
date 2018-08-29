@@ -353,8 +353,7 @@ public class RequestSpecHelper extends SpecHelper{
      * @return contents of selected element as text.
      */
     protected String text(String cssQuery){
-        Document doc = Jsoup.parse(responseContent().replace("'", "\"")); //TODO: this replacement can be removed
-        // when this PL is accepted: https://github.com/jhy/jsoup/pull/655 and a new JSoup version released
+        Document doc = Jsoup.parse(responseContent());
         Elements elements  = doc.select(cssQuery);
         if(elements.isEmpty()){
             return null;

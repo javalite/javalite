@@ -36,7 +36,7 @@
     </modules>
 
     <properties>
-        <activejdbc.version>2.1</activejdbc.version>
+        <activejdbc.version>2.2</activejdbc.version>
         <slf4j.version>1.7.0</slf4j.version> <!--//TODO: replace with latest version when this is fixed: http://jira.qos.ch/browse/SLF4J-389-->
     </properties>
 
@@ -193,7 +193,7 @@
             <dependency>
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
-                <version>1.8.3</version>
+                <version>1.11.3</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
