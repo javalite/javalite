@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -265,7 +264,8 @@ public class Paginator<T extends Model> implements Serializable {
     }
 
     private Long doCount() {
-        return Convert.toLong(new DB(metaModel.getDbName()).firstCell(countQueryFull, params));
+        Object count = new DB(metaModel.getDbName()).firstCell(countQueryFull, params);
+        return count == null? 0: Convert.toLong(count);
     }
 
     public int getPageSize() {
