@@ -15,6 +15,7 @@ services:
 stages:
 - compile
 - test
+- deploy
 
 cache:
   directories:
@@ -93,11 +94,15 @@ jobs:
     - echo "Starting SQLite build"
     - sh .travisci/run_tests.sh
 
-# ->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->
-#                      Deploy Phase
-# ->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->
-deploy:
-  provider: script
-  on:
-    branch: master
-  script: sh $TRAVIS_BUILD_DIR/.travisci/deploy.sh
+    # ->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->
+    #                      Deploy Stage
+    # ->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->
+  - stage: deploy
+    # require the branch name to be master (note for PRs this is the base branch name)
+    if: |
+      repo = javalite/activejdbc AND \
+      branch = master
+
+    before_install:
+    - source .travisci/setup.sh
+    script: sh $TRAVIS_BUILD_DIR/.travisci/deploy.sh
