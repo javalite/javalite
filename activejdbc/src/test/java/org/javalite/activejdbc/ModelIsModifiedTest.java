@@ -52,17 +52,12 @@ public class ModelIsModifiedTest extends ActiveJDBCTest {
         a.set("account", "my first account");
         a.set("amount", 5000.55);
         a(a.isModified()).shouldBeTrue();
-        a.saveIt();
 
-        Account f = Account.findFirst("account = ?", "my first account");
-        f.set("amount", 5000.55);
+        Account f = Account.findFirst("account = ?", "123");
+        f.set("amount", 9999.99);
         a(f.isModified()).shouldBeFalse();
         f.set("amount", 6000.35);
         a(f.isModified()).shouldBeTrue();
-
-        Account u = Account.findFirst("account = ?", "my first account");
-        u.set("total", 300000.15);
-        a(u.isModified()).shouldBeTrue();
     }
 
     @Test
