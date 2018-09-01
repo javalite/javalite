@@ -17,18 +17,9 @@ stages:
 - test
 - deploy
 
-# Attempt to reduce the time to pull the OracleDB Container
 cache:
-  timeout: 1000
   directories:
     - $HOME/.m2/repository
-    - $CACHE_DIR
-
-# Attempt to reduce the time to pull the OracleDB Container
-env:
-  global:
-  - CACHE_DIR=$HOME/.cache/docker
-  - CACHE_FILE_ORACLE=$CACHE_DIR/oracle.tar.gz
 
 jobs:
   include:
@@ -73,8 +64,6 @@ jobs:
   - # ----------------------- oracle -----------------------
     env: DB=oracle_travis-ci
     before_install:
-    # Load cached docker images
-    - if [ -f ${CACHE_FILE_ORACLE} ]; then gunzip -c ${CACHE_FILE_ORACLE} | docker load; fi
     - docker run -d -p 8080:8080 -p 1521:1521 --name oracle_active-jdbc sath89/oracle-12c
     - docker ps
     - source .travisci/setup.sh
@@ -86,10 +75,6 @@ jobs:
     script:
     - echo "Starting Oracle build"
     - sh .travisci/run_tests.sh
-    before_cache:
-    # Save tagged docker images
-    - mkdir -p $CACHE_DIR
-    - if [ ! -f ${CACHE_FILE_ORACLE} ]; then docker save sath89/oracle-12c:latest | gzip > ${CACHE_FILE_ORACLE}; fi
 
   - # ----------------------- mssql -----------------------
     env: DB=mssql_travis-ci
