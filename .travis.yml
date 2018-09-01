@@ -94,9 +94,9 @@ jobs:
     - echo "Starting SQLite build"
     - sh .travisci/run_tests.sh
 
-    # ->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->
+    # ->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->>
     #                      Deploy Stage
-    # ->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->
+    # ->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->>
   - stage: deploy
     # require the branch name to be master (note for PRs this is the base branch name)
     if: |
