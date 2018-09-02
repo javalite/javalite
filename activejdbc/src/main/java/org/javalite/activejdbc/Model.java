@@ -193,8 +193,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * are new values for it.
      */
     public <T extends Model> T fromMap(Map input) {
-        hydrate(input, false);
-        dirtyAttributeNames.addAll(input.keySet());
+        Set<String> changedAttributeNames = hydrate(input, false);
+        dirtyAttributeNames.addAll(changedAttributeNames);
         return (T) this;
     }
 
@@ -227,18 +227,30 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * Hydrates a this instance of model from a map. Only picks values from a map that match
      * this instance's attribute names, while ignoring the others.
      *
-     * @param attributesMap map containing values for this instance.
+     * @param attributesMap
+     * @param fireAfterLoad
+     * @return the set of changed (i.e. dirty) attribute names
      */
-    protected void hydrate(Map<String, Object> attributesMap, boolean fireAfterLoad) {
+    protected Set<String> hydrate(Map<String, Object> attributesMap, boolean fireAfterLoad) {
 
+        Set<String> changedAttributeNames = new HashSet<>();
         Set<String> attributeNames = metaModelLocal.getAttributeNames();
         for (Map.Entry<String, Object> entry : attributesMap.entrySet()) {
-            if (attributeNames.contains(entry.getKey())) {
+            if (attributeNames.contains(entry.getKey()) ) {
+
                 if (entry.getValue() instanceof Clob && metaModelLocal.cached()) {
-                    this.attributes.put(entry.getKey(), Convert.toString(entry.getValue()));
+                    String convertedString = Convert.toString(entry.getValue());
+                    if (wouldAttributeValueModifyModel(entry.getKey(), convertedString)) {
+                        this.attributes.put(entry.getKey(), convertedString);
+                        changedAttributeNames.add(entry.getKey());
+                    }
                 } else {
-                    this.attributes.put(entry.getKey(), metaModelLocal.getDialect().overrideDriverTypeConversion(
-                            metaModelLocal, entry.getKey(), entry.getValue()));
+                    Object convertedObject = metaModelLocal.getDialect().overrideDriverTypeConversion(
+                            metaModelLocal, entry.getKey(), entry.getValue());
+                    if (wouldAttributeValueModifyModel(entry.getKey(), convertedObject)) {
+                        this.attributes.put(entry.getKey(), convertedObject);
+                        changedAttributeNames.add(entry.getKey());
+                    }
                 }
             }
         }
@@ -249,6 +261,79 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             fireAfterLoad();
         }
 
+        return changedAttributeNames;
+    }
+
+    /**
+     * Verifies if the passed value for attributeName would set this instance to modified state.
+     * @param attributeName
+     * @param newValue
+     * @return
+     */
+    protected boolean wouldAttributeValueModifyModel(String attributeName, Object newValue) {
+
+        Object currentAttributeValue = get(attributeName);
+
+        if (isNew() || (currentAttributeValue == null && newValue != null))
+            return true;
+
+        if (currentAttributeValue != null) {
+
+            if (newValue == null)
+                return true;
+
+            if (newValue.getClass() != currentAttributeValue.getClass()) {
+                Object convertedObject = convertValueToTargetClass(newValue, currentAttributeValue);
+                if (convertedObject != null) {
+                    return !convertedObject.equals(currentAttributeValue);
+                } else
+                    return true;
+            } else {
+                return !newValue.equals(currentAttributeValue);
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Tries to convert the given new attribute value type to the one of the existing attribute value.
+     * @param newAttributeValue
+     * @param existingAttributeValue
+     * @return
+     */
+    protected Object convertValueToTargetClass(Object newAttributeValue, Object existingAttributeValue) {
+
+        Object result = null;
+
+        try {
+            if (existingAttributeValue instanceof java.sql.Timestamp) {
+                result = Convert.toTimestamp(newAttributeValue);
+            } else if (existingAttributeValue instanceof java.sql.Time) {
+                result = Convert.toTime(newAttributeValue);
+            } else if (existingAttributeValue instanceof java.sql.Date) {
+                result = Convert.toSqlDate(newAttributeValue);
+            } else if (existingAttributeValue instanceof Long) {
+                result = Convert.toLong(newAttributeValue);
+            } else if (existingAttributeValue instanceof Integer) {
+                result = Convert.toInteger(newAttributeValue);
+            } else if (existingAttributeValue instanceof Short) {
+                result = Convert.toShort(newAttributeValue);
+            } else if (existingAttributeValue instanceof BigDecimal) {
+                result = Convert.toBigDecimal(newAttributeValue);
+            } else if (existingAttributeValue instanceof Boolean) {
+                result = Convert.toBoolean(newAttributeValue);
+            } else if (existingAttributeValue instanceof Double) {
+                result = Convert.toDouble(newAttributeValue);
+            } else if (existingAttributeValue instanceof Float) {
+                result = Convert.toFloat(newAttributeValue);
+            } else if (existingAttributeValue instanceof String) {
+                result = Convert.toString(newAttributeValue);
+            }
+
+        } catch(Exception e) {}
+
+        return result;
     }
 
 
@@ -353,8 +438,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             throw new IllegalArgumentException("cannot set 'created_at'");
         }
         metaModelLocal.checkAttribute(attributeName);
-        attributes.put(attributeName, value);
-        dirtyAttributeNames.add(attributeName);
+        if (wouldAttributeValueModifyModel(attributeName, value)) {
+            attributes.put(attributeName, value);
+            dirtyAttributeNames.add(attributeName);
+        }
         return (T) this;
     }
 
