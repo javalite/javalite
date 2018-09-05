@@ -28,10 +28,10 @@ public class MojoIntegrationEnvironmentsSpec extends AbstractIntegrationSpec {
     public void shouldRunInEnvironments() throws IOException, InterruptedException {
         String dir = "target/test-project-environments";
         // drop
-        execute(dir, "db-migrator:drop", "-o");
+        execute(dir, "db-migrator:drop");
 
         // create database
-        String output = execute(dir, "db-migrator:create", "-o");
+        String output = execute(dir, "db-migrator:create");
         the(output).shouldContain(String.format("BUILD SUCCESS"));
     }
 }

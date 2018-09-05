@@ -44,15 +44,15 @@ public class MojoIntegrationSpec extends AbstractIntegrationSpec {
 
     private void run(String dir) throws IOException, InterruptedException {
         // drop
-        execute(dir, "db-migrator:drop", "-o");
+        execute(dir, "db-migrator:drop");
 
         // create database
-        String output = execute(dir, "db-migrator:create", "-o");
+        String output = execute(dir, "db-migrator:create");
         the(output).shouldContain("Created database jdbc:mysql://localhost/test_project");
         the(output).shouldContain("BUILD SUCCESS");
 
         // migrate
-        output = execute(dir, "db-migrator:migrate", "-o");
+        output = execute(dir, "db-migrator:migrate");
         the(output).shouldContain("BUILD SUCCESS");
 
         openConnection(driver(), "jdbc:mysql://localhost/test_project", user(), password());
@@ -61,27 +61,27 @@ public class MojoIntegrationSpec extends AbstractIntegrationSpec {
         closeConnection();
 
         // drop, create and validate
-        output = execute(dir, "db-migrator:drop", "-o");
+        output = execute(dir, "db-migrator:drop");
         the(output).shouldContain("Dropped database jdbc:mysql://localhost/test_project");
         the(output).shouldContain("BUILD SUCCESS");
 
-        output = execute(dir, "db-migrator:create", "-o");
+        output = execute(dir, "db-migrator:create");
         the(output).shouldContain("Created database jdbc:mysql://localhost/test_project");
         the(output).shouldContain("BUILD SUCCESS");
 
-        output = execute(dir, "db-migrator:validate", "-o");
+        output = execute(dir, "db-migrator:validate");
         the(output).shouldContain("BUILD SUCCESS");
 
         // now migrate and validate again
-        output = execute(dir, "db-migrator:migrate", "-o");
+        output = execute(dir, "db-migrator:migrate");
         the(output).shouldContain("BUILD SUCCESS");
 
-        output = execute(dir, "db-migrator:validate", "-o");
+        output = execute(dir, "db-migrator:validate");
         the(output).shouldContain("No pending migrations found");
         the(output).shouldContain("BUILD SUCCESS");
 
         // creation of new migration
-        execute(dir, "db-migrator:new", "-Dname=add_people", "-o");
+        execute(dir, "db-migrator:new", "-Dname=add_people");
         File migrationsDir = new File(dir, "src/migrations");
         String migrationFile = findMigrationFile(migrationsDir, "add_people");
         assertNotNull(migrationFile);
