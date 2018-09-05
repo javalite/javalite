@@ -23,6 +23,8 @@ import org.javalite.activejdbc.connection_config.DbConfiguration;
 import org.javalite.test.jspec.JSpecSupport;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,7 +102,7 @@ public class DBSpec extends DbConfiguration implements JSpecSupport {
         }
     }
 
-    @Before
+    @Before @BeforeEach
     public final void openTestConnections() {
 
         if(!suppressDb){
@@ -121,7 +123,7 @@ public class DBSpec extends DbConfiguration implements JSpecSupport {
         }
     }
 
-    @After
+    @After @AfterEach
     public final void closeTestConnections() {
         if(!suppressDb){
             List<ConnectionSpecWrapper> connectionWrappers = getTestConnectionWrappers();
