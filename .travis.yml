@@ -27,6 +27,9 @@ jobs:
 
     before_install:
     - source .travisci/setup.sh
+    - mysql -e 'CREATE DATABASE IF NOT EXISTS test_project;'
+    - mysql -e 'CREATE DATABASE IF NOT EXISTS test_project_devel;'
+    - mysql -e 'CREATE DATABASE IF NOT EXISTS test_project_stage;'
     script: mvn test -Dtest=!MySQLMigrationSpec,!org.javalite.db_migrator.* -DfailIfNoTests=false -V
 
   - stage: test
