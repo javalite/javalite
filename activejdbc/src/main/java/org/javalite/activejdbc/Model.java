@@ -2878,6 +2878,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         
         if (fields != null || !fields.trim().isEmpty())			
 	{
+	String[] listFields = fields.split(",");
+
 	for( int bb=0; bb<listFields.length-1; bb++){
 		if (!attributeNames.contains(listFields[bb].replaceAll("^\\s+","").replaceAll("\\s+$",""))){
                  throw new StaleModelException("Failed to update record for model" 
@@ -2888,7 +2890,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 	}            
             
 	attributeNames.clear();	
-	String[] listFields = fields.split(",");
 	for( int aa=0; aa<listFields.length-1; aa++){
 		attributeNames.add(listFields[aa].replaceAll("^\\s+","").replaceAll("\\s+$",""));
 	}
