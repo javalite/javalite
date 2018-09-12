@@ -2672,7 +2672,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param fields String representing a list of attributes that will be updated
      * @return  true if the model was saved, false if you set an ID value for the model, but such ID does not exist in DB.
      */
-	public boolean saveIt() {saveIt("");}
+	public boolean saveIt() {return saveIt("");}
 
 
     /**
@@ -2728,7 +2728,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return true if a model was saved and false if values did not pass validations and the record was not saved.
      * False will also be returned if you set an ID value for the model, but such ID does not exist in DB.
      */
-    public boolean save() {save("");}
+    public boolean save() {return save("");}
 
     /**
      * This method will save data from this instance to a corresponding table in the DB.
