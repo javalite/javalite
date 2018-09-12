@@ -2879,7 +2879,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         if (fields != null || !fields.trim().isEmpty())			
 	{
 	for( int bb=0; bb<listFields.length-1; bb++){
-		if (!attributeNames.contains(listFields[bb].replaceAll("^\\s+","").replaceAll("\\s+$","")){
+		if (!attributeNames.contains(listFields[bb].replaceAll("^\\s+","").replaceAll("\\s+$",""))){
                  throw new StaleModelException("Failed to update record for model" 
                          +getClass()
                          +" not found column "
