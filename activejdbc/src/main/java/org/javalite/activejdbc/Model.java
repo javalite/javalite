@@ -2656,7 +2656,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @return  true if the model was saved, false if you set an ID value for the model, but such ID does not exist in DB.
      */
-    public boolean saveIt() {
+    public boolean saveIt(String fields) {
         boolean result = save(fields);
         ModelDelegate.purgeEdges(metaModelLocal);
         if (!errors.isEmpty()) {
