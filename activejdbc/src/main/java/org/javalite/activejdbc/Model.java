@@ -2757,7 +2757,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         fireBeforeSave();
 
-	if (fields == null || fields.isEmpty){
+	if (fields == null || fields.isEmpty()){
         validate();
         if (hasErrors()) {
             return false;
