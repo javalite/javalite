@@ -20,6 +20,7 @@
         <jdbc.user>sa</jdbc.user>
         <jdbc.password />
         <db>h2</db>
+        <postgresql.driver.version>42.2.2</postgresql.driver.version>
     </properties>
 
     <profiles>
@@ -118,7 +119,7 @@
                 <dependency>
                     <groupId>org.postgresql</groupId>
                     <artifactId>postgresql</artifactId>
-                    <version>9.3-1102-jdbc4</version>
+                    <version>${postgresql.driver.version}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
@@ -218,7 +219,7 @@
                 <dependency>
                     <groupId>org.postgresql</groupId>
                     <artifactId>postgresql</artifactId>
-                    <version>42.2.2</version> <!-- as advised here https://jdbc.postgresql.org/download.html -->
+                    <version>${postgresql.driver.version}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
