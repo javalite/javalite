@@ -20,7 +20,6 @@
         <jdbc.user>sa</jdbc.user>
         <jdbc.password />
         <db>h2</db>
-        <postgresql.driver.version>42.2.2</postgresql.driver.version>
     </properties>
 
     <profiles>
@@ -119,7 +118,6 @@
                 <dependency>
                     <groupId>org.postgresql</groupId>
                     <artifactId>postgresql</artifactId>
-                    <version>${postgresql.driver.version}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
@@ -215,11 +213,9 @@
                 <db>postgresql</db>
             </properties>
             <dependencies>
-                <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
                 <dependency>
                     <groupId>org.postgresql</groupId>
                     <artifactId>postgresql</artifactId>
-                    <version>${postgresql.driver.version}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
