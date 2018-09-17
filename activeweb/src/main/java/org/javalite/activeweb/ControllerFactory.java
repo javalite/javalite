@@ -28,11 +28,11 @@ public class ControllerFactory {
         return DynamicClassFactory.createInstance(controllerClassName, AppController.class);
     }
 
-    static String getControllerClassName(String controllerName, String packageSuffix) {
-        String name = controllerName.replace('-', '_');
+    static String getControllerClassName(ControllerPath controllerPath) {
+        String name = controllerPath.getControllerName().replace('-', '_');
         String temp = Configuration.getRootPackage() + ".controllers";
-        if (packageSuffix != null) {
-            temp += "." + packageSuffix;
+        if (controllerPath.getControllerPackage()!= null) {
+            temp += "." + controllerPath.getControllerPackage();
         }
         return temp + "." + Inflector.camelize(name) + "Controller";
     }

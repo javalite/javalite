@@ -38,8 +38,6 @@ public class Router {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Router.class);
 
-    public static final String CONTROLLER_NAME = "controller_name";
-    public static final String PACKAGE_SUFFIX = "package_suffix";
 
     private String rootControllerName;
     private List<RouteBuilder> routes = new ArrayList<>();
@@ -66,24 +64,22 @@ public class Router {
      * @return instance of a <code>Route</code> if one is found, null if not.
      */
     protected Route recognize(String uri, HttpMethod httpMethod) throws ClassLoadException {
-        Route route = matchCustom(uri, httpMethod);
-        if (route == null) { //proceed to built-in routes
-            //DTO as map here
-            Map<String, String> controllerPath = getControllerPath(uri);
 
-            String controllerName = controllerPath.get(Router.CONTROLLER_NAME);
-            String packageSuffix = controllerPath.get(Router.PACKAGE_SUFFIX);
-            if (controllerName == null) {
+        ControllerPath controllerPath = getControllerPath(uri);
+
+        Route route = matchCustom(uri, controllerPath, httpMethod);
+        if (route == null) { //proceed to built-in routes
+            if (controllerPath.getControllerName() == null) {
                 return null;
             }
-            String controllerClassName = getControllerClassName(controllerName, packageSuffix);
+            String controllerClassName = getControllerClassName(controllerPath);
             AppController controller = createControllerInstance(controllerClassName);
 
             if (uri.equals("/") && rootControllerName != null) {
                 route = new Route(controller, "index", httpMethod);
             }else{
-                route = controller.restful() ? matchRestful(uri, controllerName, packageSuffix, httpMethod, controller) :
-                        matchStandard(uri, controllerName, packageSuffix, controller, httpMethod);
+                route = controller.restful() ? matchRestful(uri, controllerPath, httpMethod, controller) :
+                        matchStandard(uri, controllerPath, controller, httpMethod);
             }
         }
 
@@ -97,9 +93,9 @@ public class Router {
         return route;
     }
 
-    private Route matchCustom(String uri, HttpMethod httpMethod) throws ClassLoadException {
+    private Route matchCustom(String uri, ControllerPath controllerPath, HttpMethod httpMethod) throws ClassLoadException {
         for (RouteBuilder builder : routes) {
-            if (builder.matches(uri, httpMethod)) {
+            if (builder.matches(uri, controllerPath, httpMethod)) {
                 return new Route(builder, httpMethod);
             }
         }
@@ -111,14 +107,12 @@ public class Router {
      * Will match a standard, non-restful route.
      *
      * @param uri            request URI
-     * @param controllerName name of controller
-     * @param packageSuffix  package suffix or null if none.
      *
      * @return instance of a <code>Route</code> if one is found, null if not.
      */
-    private Route matchStandard(String uri, String controllerName, String packageSuffix, AppController controller, HttpMethod method) {
+    private Route matchStandard(String uri, ControllerPath controllerPathObject, AppController controller, HttpMethod method) {
 
-        String controllerPath = (packageSuffix != null ? "/" + packageSuffix.replace(".", "/") : "") + "/" + controllerName;
+        String controllerPath = (controllerPathObject.getControllerPackage() != null ? "/" + controllerPathObject.getControllerPackage().replace(".", "/") : "") + "/" + controllerPathObject.getControllerName();
         String theUri = uri.endsWith("/") ? uri.substring(0, uri.length() - 1) : uri;
 
         //ANY    /package_suffix/controller
@@ -153,15 +147,14 @@ public class Router {
      * Will match a restful route.
      *
      * @param uri            request URI
-     * @param controllerName name of controller
-     * @param packageSuffix  package suffix or null if none. .
+     * @param controllerPathObject contains controller name and package
      * @param method     http method of a request.
      * @return instance of a <code>Route</code> if one is found, null if not.
      */
-    private Route matchRestful(String uri, String controllerName, String packageSuffix, HttpMethod method, AppController controller) {
+    private Route matchRestful(String uri, ControllerPath controllerPathObject, HttpMethod method, AppController controller) {
 
         String theUri = uri.endsWith("/") ? uri.substring(0, uri.length() - 1) : uri;
-        String controllerPath = (packageSuffix != null ? "/" + packageSuffix.replace(".", "/") : "") + "/" + controllerName;
+        String controllerPath = (controllerPathObject.getControllerPackage() != null ? "/" + controllerPathObject.getControllerPackage().replace(".", "/") : "") + "/" + controllerPathObject.getControllerName();
         String tail = theUri.length() > controllerPath.length() ? theUri.substring(controllerPath.length() + 1) : "";
         String[] parts = split(tail, "/");
 
@@ -293,23 +286,23 @@ public class Router {
      * @param uri this is a URI - the information after context : "controller/action/whatever".
      * @return map with two keys: "controller_name" and "package_suffix", both of which can be null.
      */
-    protected Map<String, String> getControllerPath(String uri) {
+    protected ControllerPath getControllerPath(String uri) {
 
         boolean rootPath = uri.equals("/");
         boolean useRootController = rootPath && rootControllerName != null;
 
         if (useRootController) {
-            return map(CONTROLLER_NAME, rootControllerName);
+            return new ControllerPath(rootControllerName);
         } else if (rootControllerName == null && rootPath) {
             LOGGER.warn("URI is: '/', but root controller not set");
-            return new HashMap<>();
+            return new ControllerPath();
         } else {
             String pack;
             if ((pack = findPackagePrefix(uri)) != null) {
                 String controllerName = findControllerNamePart(pack, uri);
-                return map(CONTROLLER_NAME, controllerName, Router.PACKAGE_SUFFIX, pack);
+                return new ControllerPath(controllerName, pack);
             } else {
-                return map(CONTROLLER_NAME, uri.split("/")[1]);//no package suffix
+                return new ControllerPath(uri.split("/")[1]);//no package suffix
             }
         }
     }

@@ -25,7 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Instance of this class represents a single route configured in the RouteConfig class of the application.
+ * Instance of this class represents a single custom route configured in the RouteConfig class of the application.
  *
  * @author Igor Polevoy
  */
@@ -228,12 +228,12 @@ public class RouteBuilder {
      * @return true if this route matches the request URI
      * @throws ClassLoadException in case could not load controller
      */
-    protected boolean matches(String requestUri, HttpMethod httpMethod) throws ClassLoadException {
+    protected boolean matches(String requestUri, ControllerPath controllerPath, HttpMethod httpMethod) throws ClassLoadException {
 
         boolean match = false;
 
         String[] requestUriSegments = Util.split(requestUri, '/');
-        if(isWildcard() && requestUriSegments.length >= segments.size() && wildSegmentsMatch(requestUriSegments)){
+        if(isWildcard() && requestUriSegments.length >= segments.size() && wildSegmentsMatch(requestUriSegments, controllerPath)){
             String[] tailArr = Arrays.copyOfRange(requestUriSegments, segments.size() - 1, requestUriSegments.length);
             wildCardValue = Util.join(tailArr, "/");
             match = true;
@@ -241,14 +241,14 @@ public class RouteBuilder {
             //this is matching root path: "/"
             actionName = "index";
             match = true;
-        }else if(requestUriSegments.length < mandatorySegmentCount || requestUriSegments.length > segments.size()){
+        }else if(requestUriSegments.length < mandatorySegmentCount || requestUriSegments.length > segments.size() && controllerPath.getControllerPackage() == null ) {
             //route("/greeting/{user_id}").to(HelloController.class).action("hi");
             match = false;
         }else{
             //there should be a more elegant way ...
             for (int i = 0; i < requestUriSegments.length; i++) {
                 String requestUriSegment = requestUriSegments[i];
-                match = segments.get(i).match(requestUriSegment);
+                match = segments.get(i).match(requestUriSegment, controllerPath);
                 if(!match)
                     break;
             }
@@ -261,10 +261,10 @@ public class RouteBuilder {
         return match && methodMatches(httpMethod);
     }
 
-    private boolean wildSegmentsMatch(String[] requestUriSegments) throws ClassLoadException {
+    private boolean wildSegmentsMatch(String[] requestUriSegments,ControllerPath controllerPath) throws ClassLoadException {
         for (int i = 0; i < segments.size() - 1; i++) {
             Segment segment = segments.get(i);
-            if(!segment.match(requestUriSegments[i])){
+            if(!segment.match(requestUriSegments[i], controllerPath)){
                 return false;
             }
         }
@@ -313,7 +313,7 @@ public class RouteBuilder {
             }
         }
 
-        boolean match(String requestSegment) throws ClassLoadException {
+        boolean match(String requestSegment, ControllerPath controllerPath) throws ClassLoadException {
 
             if(staticSegment && requestSegment.equals(segment)){
                 return true;
@@ -324,8 +324,7 @@ public class RouteBuilder {
                     type = DynamicClassFactory.getCompiledClass(controllerClassName);
                     return true;
                 }
-                return requestSegment.equals(Router.getControllerPath(type).substring(1));
-
+                return requestSegment.equals(controllerPath.getControllerName());
             }else if(action){
                 RouteBuilder.this.actionName = requestSegment;
                 return true;
@@ -338,6 +337,11 @@ public class RouteBuilder {
             }
 
             return false;
+        }
+
+        @Override
+        public String toString() {
+            return segment;
         }
     }
 

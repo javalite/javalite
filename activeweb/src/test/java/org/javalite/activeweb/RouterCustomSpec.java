@@ -17,6 +17,7 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import app.controllers.*;
+import app.controllers.api.v2.AuthorsController;
 import org.javalite.common.JsonHelper;
 import org.javalite.common.Util;
 import org.javalite.test.SystemStreamUtil;
@@ -292,5 +293,19 @@ public class RouterCustomSpec extends RequestSpec {
         response = new MockHttpServletResponse();
         execDispatcher();
         a(responseContent()).shouldBeEqual("");
+    }
+
+    @Test
+    public void shouldFindControllerInSubPackage() {
+
+        routeConfig = new AbstractRouteConfig() {
+            public void init(AppContext appContext) {
+                route("/api/v2/{controller}/{aut_id}/").to(AuthorsController.class).action("findById");
+            }
+        };
+        request.setServletPath("/api/v2/authors/9");
+        execDispatcher();
+
+        the(responseContent()).shouldBeEqual("findById found: 9");
     }
 }
