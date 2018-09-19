@@ -20,9 +20,6 @@ import freemarker.template.TemplateException;
 import org.javalite.test.XPathHelper;
 import org.javalite.test.jspec.JSpecSupport;
 import org.dom4j.DocumentException;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -96,10 +93,7 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
         StringWriter sw = new StringWriter();
         manager.merge(values, "/abc_controller/contains_blank_content_for", sw);
         String generated = sw.toString();
-        Document doc = Jsoup.parse(generated);
-        Elements elements = doc.select("title");
-
-        the(elements.get(0).toString()).shouldBeEqual("<title></title>");
+        a(XPathHelper.selectText("//title", generated)).shouldEqual("");
     }
 
     @Test
@@ -118,7 +112,6 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
         String generated = sw.toString();
 
         err.flush();
-        String errorOutput = new String(bin.toByteArray());
 
         a(XPathHelper.selectText("//title", generated)).shouldEqual("");
     }
