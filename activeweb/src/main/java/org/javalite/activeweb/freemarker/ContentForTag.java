@@ -32,8 +32,10 @@ public class ContentForTag  implements TemplateDirectiveModel {
     public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body) throws TemplateException, IOException {
         Util.validateParamsPresence(params, "for");
         String name = params.get("for").toString();
-        StringWriter sw = new StringWriter();
-        body.render(sw);
-        ContentTL.addContent(name, sw.toString());
+        if(body != null){
+            StringWriter sw = new StringWriter();
+            body.render(sw);
+            ContentTL.addContent(name, sw.toString());
+        }
     }
 }

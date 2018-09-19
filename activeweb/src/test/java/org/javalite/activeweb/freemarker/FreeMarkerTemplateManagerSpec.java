@@ -20,7 +20,9 @@ import freemarker.template.TemplateException;
 import org.javalite.test.XPathHelper;
 import org.javalite.test.jspec.JSpecSupport;
 import org.dom4j.DocumentException;
-import org.javalite.activeweb.freemarker.FreeMarkerTemplateManager;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -82,6 +84,22 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
         String generated = sw.toString();
 
         a(XPathHelper.selectText("//title", generated)).shouldEqual("sample content");
+    }
+
+    @Test
+    public void yieldShouldRenderContentForWithBlankContent() throws IOException, DocumentException {
+
+        manager.setDefaultLayout("/layouts/default_layout_with_yeld");
+        Map values = new HashMap();
+        values.put("name", "Jim");
+
+        StringWriter sw = new StringWriter();
+        manager.merge(values, "/abc_controller/contains_blank_content_for", sw);
+        String generated = sw.toString();
+        Document doc = Jsoup.parse(generated);
+        Elements elements = doc.select("title");
+
+        the(elements.get(0).toString()).shouldBeEqual("<title></title>");
     }
 
     @Test
