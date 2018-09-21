@@ -58,7 +58,6 @@ public class JdbcPropertiesOverride {
     }
 
     public static String password() {
-        //Dirty hack for Travis:
-        return System.getProperty("user.name").equals("travis") ? "" : password;
+        return password;
     }
 }
