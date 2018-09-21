@@ -20,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -45,7 +46,7 @@ public abstract class AbstractIntegrationSpec {
 
             //if running on Travis, set a profile
             if(props.getProperty("user.name").equals("travis")){
-                List<String> argsList = Arrays.asList(args);
+                List<String> argsList =  new ArrayList<>(Arrays.asList(args));
                 argsList.add("-Ptravis");
                 args = argsList.toArray(new String[0]);
             }
