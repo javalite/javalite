@@ -10,18 +10,6 @@
     <packaging>jar</packaging>
     <name>JavaLite Migrator Plugin Test</name>
 
-    <properties>
-        <password>p@ssw0rd</password>
-    </properties>
-
-    <profiles>
-        <profile>
-            <id>travis</id>
-            <properties>
-                <password>p@ssw0rd</password>
-            </properties>
-        </profile>
-    </profiles>
     <build>
         <plugins>
             <plugin>
@@ -31,8 +19,8 @@
                 <configuration>
                     <driver>com.mysql.jdbc.Driver</driver>
                     <url>jdbc:mysql://localhost/test_project</url>
-                    <username>root</username>
-                    <password>${password}</password>
+                    <username>activejdbc</username>
+                    <password>p@ssw0rd</password>
                 </configuration>
                 <dependencies>
                     <dependency>
