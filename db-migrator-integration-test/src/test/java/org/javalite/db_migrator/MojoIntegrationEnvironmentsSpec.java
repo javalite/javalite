@@ -16,6 +16,7 @@ limitations under the License.
 
 package org.javalite.db_migrator;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -24,7 +25,7 @@ import static org.javalite.db_migrator.SpecBuilder.the;
 
 public class MojoIntegrationEnvironmentsSpec extends AbstractIntegrationSpec {
 
-    @Test
+    @Test @Ignore
     public void shouldRunInEnvironments() throws IOException, InterruptedException {
         String dir = "target/test-project-environments";
         // drop

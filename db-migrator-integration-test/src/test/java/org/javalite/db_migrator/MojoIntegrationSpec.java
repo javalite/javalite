@@ -37,10 +37,10 @@ public class MojoIntegrationSpec extends AbstractIntegrationSpec {
         run("target/test-project");
     }
 
-    @Test
-    public void shouldRunTestProjectWithProperties() throws IOException, InterruptedException {
-        run("target/test-project-properties");
-    }
+//    @Test
+//    public void shouldRunTestProjectWithProperties() throws IOException, InterruptedException {
+//        run("target/test-project-properties");
+//    }
 
     private void run(String dir) throws IOException, InterruptedException {
         // drop
