@@ -42,6 +42,8 @@ jobs:
     - source .travisci/setup.sh
     before_script:
     - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
+    - mysql -e "CREATE USER 'activejdbc'@'localhost' IDENTIFIED BY 'p@ssw0rd';"
+    - mysql -e "GRANT ALL PRIVILEGES ON * . * TO 'activejdbc'@'localhost';"
     script:
     - echo "Starting MySQL build"
     - sh .travisci/run_tests.sh
