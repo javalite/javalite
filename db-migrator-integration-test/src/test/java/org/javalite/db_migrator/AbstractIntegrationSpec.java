@@ -43,13 +43,8 @@ public abstract class AbstractIntegrationSpec {
 
             Properties props = System.getProperties();
 
-            for(Object k : props.keySet()){
-                System.out.println("System property: " + k + " = " + props.getProperty(k.toString()));
-            }
-
-
             //if running on Travis, set a profile
-            if(System.getProperty("user.name").equals("travis")){
+            if(props.getProperty("user.name").equals("travis")){
                 List<String> argsList = Arrays.asList(args);
                 argsList.add("-Ptravis");
                 args = argsList.toArray(new String[0]);
