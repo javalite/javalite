@@ -112,6 +112,8 @@ public class DB implements Closeable{
             ConnectionsAccess.attach(name, connection, url);
             return this;
         } catch (Exception e) {
+            //TODO: MUST REMOVE LATER!!!
+            e.printStackTrace();
             throw new InitException("Failed to connect to JDBC URL: " + url + " with user: " + user, e);
         }
     }
