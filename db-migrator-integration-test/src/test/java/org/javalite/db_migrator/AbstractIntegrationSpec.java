@@ -29,7 +29,7 @@ import static org.javalite.db_migrator.DbUtils.closeQuietly;
 
 public abstract class AbstractIntegrationSpec {
 
-    protected String execute(String dir, String... args) {
+    protected String execute(String dir, String... args)throws IOException, InterruptedException {
         OutputStream outos = null;
         PrintStream outps = null;
         OutputStream erros = null;
