@@ -30,6 +30,9 @@ jobs:
     - mysql -e 'CREATE DATABASE IF NOT EXISTS test_project;'
     - mysql -e 'CREATE DATABASE IF NOT EXISTS test_project_devel;'
     - mysql -e 'CREATE DATABASE IF NOT EXISTS test_project_stage;'
+    - mysql -e "CREATE USER 'activejdbc'@'localhost' IDENTIFIED BY 'p@ssw0rd';"
+    - mysql -e "GRANT ALL PRIVILEGES ON * . * TO 'activejdbc'@'localhost';"
+
     script: mvn test -Dtest=!MySQLMigrationSpec,!org.javalite.db_migrator.* -DfailIfNoTests=false -V
 
   - stage: test
