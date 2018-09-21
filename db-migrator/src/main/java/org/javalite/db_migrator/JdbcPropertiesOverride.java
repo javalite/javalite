@@ -13,6 +13,7 @@ import java.util.Properties;
  * with the following properties inside the file: <code>driver</code>, <code>url</code>, <code>user</code>, <code>password</code>.
  * Values from this file will override hard-coded values during tests.
  *
+ * <p></p>
  * THIS CLASS USED IN TESTS ONLY
  *
  * @author igor on 4/19/17.
@@ -23,7 +24,7 @@ public class JdbcPropertiesOverride {
     private static String driver = "com.mysql.jdbc.Driver";
     private static String url = "jdbc:mysql://localhost";
     private static String user = "root";
-    private static String password = "";
+    private static String password = "p@ssw0rd";
 
     static {
         try {

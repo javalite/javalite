@@ -32,6 +32,9 @@ public class MojoIntegrationEnvironmentsSpec extends AbstractIntegrationSpec {
 
         // create database
         String output = execute(dir, "db-migrator:create");
-        the(output).shouldContain(String.format("BUILD SUCCESS"));
+
+        the(output).shouldContain("Created database jdbc:mysql://localhost/test_project");
+        the(output).shouldContain("jdbc:mysql://localhost/test_project_stage");
+        the(output).shouldContain("BUILD SUCCESS");
     }
 }

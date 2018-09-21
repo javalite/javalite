@@ -20,12 +20,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.maven.cli.MavenCli;
 import static org.javalite.db_migrator.DbUtils.closeQuietly;
 
 public abstract class AbstractIntegrationSpec {
 
-    protected String execute(String dir, String... args) throws IOException, InterruptedException {
+    protected String execute(String dir, String... args) {
         OutputStream outos = null;
         PrintStream outps = null;
         OutputStream erros = null;
@@ -36,6 +39,13 @@ public abstract class AbstractIntegrationSpec {
             erros = new ByteArrayOutputStream();
             errps = new PrintStream(erros);
             MavenCli cli = new MavenCli();
+
+            //if running on Travis, set a profile
+            if(System.getProperty("user.name").equals("travis")){
+                List<String> argsList = Arrays.asList(args);
+                argsList.add("-Ptravis");
+                args = argsList.toArray(new String[0]);
+            }
             int code = cli.doMain(args, dir, outps, errps);
             String out = outos.toString();
             String err = erros.toString();

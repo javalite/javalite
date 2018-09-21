@@ -10,6 +10,20 @@
     <packaging>jar</packaging>
     <name>JavaLite Migrator Plugin Test - Properties</name>
 
+
+    <properties>
+        <db.file>database.properties</db.file>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>travis</id>
+            <properties>
+                <db.file>database.travis.properties</db.file>
+            </properties>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
@@ -17,6 +31,7 @@
                 <artifactId>db-migrator-maven-plugin</artifactId>
                 <version>2.3-SNAPSHOT</version>
                 <configuration>
+                    <configFile>${basedir}/../${db.file}</configFile>
                     <environments>development</environments>
                 </configuration>
                 <dependencies>
