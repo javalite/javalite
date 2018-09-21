@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.maven.cli.MavenCli;
 import static org.javalite.db_migrator.DbUtils.closeQuietly;
@@ -39,6 +40,13 @@ public abstract class AbstractIntegrationSpec {
             erros = new ByteArrayOutputStream();
             errps = new PrintStream(erros);
             MavenCli cli = new MavenCli();
+
+            Properties props = System.getProperties();
+
+            for(Object k : props.keySet()){
+                System.out.println("System property: " + k + " = " + props.getProperty(k.toString()));
+            }
+
 
             //if running on Travis, set a profile
             if(System.getProperty("user.name").equals("travis")){
