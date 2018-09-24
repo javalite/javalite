@@ -13,19 +13,34 @@ import static org.javalite.common.Util.read;
  * @author igor on 1/20/17.
  */
 public class RuntimeUtil {
+
+    private static int MAX_BUFFER_SIZE = 2048;
+
     /**
-     * Executes an external command and provides results of execution. Will accummulate limited output from the external process.
+     * Executes an external command and provides results of execution.
+     * Will accumulate limited output from the external process.
      *
      * @param command array containing the command to call and its arguments.
+     * @param maxBuffer max size of buffers <code>out, err</code>. An external process may produce a
+     *                  lot of output, be careful setting to a large value. The buffer will not be allocated to this
+     *                  this size at the start, but will grow until it reaches it. The program will continue toi execute, and the buffer
+     *                  will be 'tailing' the output of the external process.
      *
      * @return instance of {@link Response} with result of execution.
      */
-    public static Response execute(String ... command) {
-        try {
-            Process process = Runtime.getRuntime().exec(command);
+    public static Response execute(int maxBuffer, String ... command) {
 
-            OutputReader stdOutReader = new OutputReader(process.getInputStream());
-            OutputReader stdErrReader = new OutputReader(process.getErrorStream());
+        if(command.length == 0){
+            throw new IllegalArgumentException("Command must be provided.");
+        }
+
+        String[]  commandAndArgs = command.length == 1 && command[0].contains(" ") ? Util.split(command[0], " ") : command;
+
+        try {
+            Process process = Runtime.getRuntime().exec(commandAndArgs);
+
+            OutputReader stdOutReader = new OutputReader(process.getInputStream(), maxBuffer);
+            OutputReader stdErrReader = new OutputReader(process.getErrorStream(), maxBuffer);
 
             Thread t1 = new Thread(stdOutReader);
             t1.start();
@@ -45,6 +60,20 @@ public class RuntimeUtil {
         }catch(IOException e){
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Executes an external command and provides results of execution.
+     * Will accumulate limited output from the external process.
+     *
+     * Defaults to max 2048 characters in each buffer: out, err and only shows the tail of each buffer.
+     *
+     * @param command array containing the command to call and its arguments.
+     *
+     * @return instance of {@link Response} with result of execution.
+     */
+    public static Response execute(String ... command) {
+        return execute(MAX_BUFFER_SIZE, command);
     }
 
     public static class Response{
@@ -78,19 +107,20 @@ public class RuntimeUtil {
      */
     static class OutputReader implements Runnable {
 
-        private static final int MAX_SIZE = 2048;
+        private int maxBuffer;
         private InputStream is;
         private  LinkedList<Character> buffer = new LinkedList<>();
 
-        OutputReader(InputStream is) {
+        OutputReader(InputStream is, int maxBuffer) {
             this.is = is;
+            this.maxBuffer = maxBuffer;
         }
         public void run() {
             try {
                 InputStreamReader reader = new InputStreamReader(is);
                 int s;
                 while ((s = reader.read()) != -1) {
-                    if(buffer.size() == MAX_SIZE){
+                    if(buffer.size() == maxBuffer){
                         buffer.remove(0);
                     }
                     buffer.add((char)s); // boxing
@@ -109,11 +139,5 @@ public class RuntimeUtil {
             }
             return stringBuilder.toString();
         }
-    }
-
-    public static void main(String[] args) {
-        System.out.println(execute("ls -ls").out);
-
-        System.out.println(execute("ls", "-ls").out);
     }
 }
