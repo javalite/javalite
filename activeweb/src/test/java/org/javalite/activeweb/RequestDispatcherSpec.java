@@ -342,7 +342,7 @@ public class RequestDispatcherSpec extends RequestSpec {
         request.setServletPath("/db_exception");
         request.setMethod("GET");
         dispatcher.doFilter(request, response, filterChain);
-        a(response.getContentAsString()).shouldEqual("this is an issue 88");
+        a(response.getContentAsString()).shouldContain("this is an issue 88");
     }
 
     @Test

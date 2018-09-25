@@ -17,6 +17,7 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import app.controllers.*;
+import app.controllers.api.ApiHomeController;
 import app.controllers.api.v2.AuthorsController;
 import org.javalite.common.JsonHelper;
 import org.javalite.common.Util;
@@ -307,5 +308,21 @@ public class RouterCustomSpec extends RequestSpec {
         execDispatcher();
 
         the(responseContent()).shouldBeEqual("findById found: 9");
+    }
+
+    @Test
+    public void shouldUseCustomRouteInSubPackage_issue399() {
+
+        routeConfig = new AbstractRouteConfig() {
+            public void init(AppContext appContext) {
+                route("/api").to(ApiHomeController.class).action("index").get();
+
+            }
+        };
+        request.setServletPath("/api/test");
+        execDispatcher();
+
+        the(responseContent()).shouldNotContain("IndexOutOfBoundsException");
+        the(responseContent()).shouldContain("TestController#index");
     }
 }

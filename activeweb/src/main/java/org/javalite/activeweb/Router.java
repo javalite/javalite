@@ -297,10 +297,10 @@ public class Router {
             LOGGER.warn("URI is: '/', but root controller not set");
             return new ControllerPath();
         } else {
-            String pack;
-            if ((pack = findPackagePrefix(uri)) != null) {
-                String controllerName = findControllerNamePart(pack, uri);
-                return new ControllerPath(controllerName, pack);
+            String controllerPackage;
+            if ((controllerPackage = findPackagePrefix(uri)) != null) {
+                String controllerName = findControllerNamePart(controllerPackage, uri);
+                return new ControllerPath(controllerName, controllerPackage);
             } else {
                 return new ControllerPath(uri.split("/")[1]);//no package suffix
             }

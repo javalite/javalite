@@ -222,7 +222,6 @@ public class RouteBuilder {
     /**
      * Returns true if this route matches the request URI, otherwise returns false.
      *
-     *
      * @param requestUri incoming URI for request.
      * @param httpMethod HTTP method of the request.
      * @return true if this route matches the request URI
@@ -241,12 +240,18 @@ public class RouteBuilder {
             //this is matching root path: "/"
             actionName = "index";
             match = true;
-        }else if(requestUriSegments.length < mandatorySegmentCount || requestUriSegments.length > segments.size() && controllerPath.getControllerPackage() == null ) {
+        }else if(requestUriSegments.length < mandatorySegmentCount
+                || requestUriSegments.length > segments.size() && controllerPath.getControllerPackage() == null ) {
             //route("/greeting/{user_id}").to(HelloController.class).action("hi");
-            match = false;
+            match = false; //keep here for clarity
         }else{
+
+            if(segments.size()  != requestUriSegments.length){
+                return false;
+            }
+
             //there should be a more elegant way ...
-            for (int i = 0; i < requestUriSegments.length; i++) {
+            for (int i = 0; i < segments.size(); i++) {
                 String requestUriSegment = requestUriSegments[i];
                 match = segments.get(i).match(requestUriSegment, controllerPath);
                 if(!match)
