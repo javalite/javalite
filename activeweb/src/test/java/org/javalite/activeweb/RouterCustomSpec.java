@@ -327,17 +327,26 @@ public class RouterCustomSpec extends RequestSpec {
     }
 
     @Test
-    public void should_issue400() {
+    public void should_override_package_and_controller_naming_conflict_issue400() {
 
+        //Success with custom route
         routeConfig = new AbstractRouteConfig() {
             public void init(AppContext appContext) {
                 route("/api").to(ApiController.class).action("index").get();
-
             }
         };
 
         request.setServletPath("/api");
         execDispatcher();
-        System.out.println(responseContent());
+        the(responseContent()).shouldBeEqual("ApiController#index");
+
+        //failure with no config:
+        routeConfig = new AbstractRouteConfig() {
+            public void init(AppContext appContext) {}
+        };
+
+        request.setServletPath("/api");
+        execDispatcher();
+        the(responseContent()).shouldContain("Your controller and package named the same: controllerName=  'api' , controllerPackage= 'api'");
     }
 }

@@ -98,7 +98,15 @@ public class Router {
                 return new Route(builder, httpMethod);
             }
         }
-        return null;
+
+
+        if(controllerPath.isNull()){
+            return null;
+        }else if(controllerPath.getControllerName().equals(controllerPath.getControllerPackage())){
+            throw new RouteException("Your controller and package named the same: " + controllerPath);
+        }else {
+            return null;
+        }
     }
 
 
@@ -352,7 +360,7 @@ public class Router {
         if (temp.length() > pack.length())
             temp = temp.substring(pack.length() + 1);
 
-        if (temp.equals("") || temp.equals(pack))
+        if (temp.equals("") )
             throw new ControllerException("You defined a controller package '" + pack + "', but did not specify controller name");
 
         return temp.split("\\.")[0];

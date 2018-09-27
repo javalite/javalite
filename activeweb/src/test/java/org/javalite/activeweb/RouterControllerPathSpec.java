@@ -85,10 +85,4 @@ public class RouterControllerPathSpec {
         router.getControllerPath("/admin/");//this should fail because "admin" package exists, and
         //no controller is specified after.
     }
-
-    @Test(expected = ControllerException.class)
-    public void shouldFailNoControllerProvidedNoSlash() {
-        router.getControllerPath("/admin");//this should fail because "admin" package exists, and
-        //no controller is specified after.
-    }
 }
