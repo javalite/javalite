@@ -24,7 +24,16 @@ class ControllerPath {
         return controllerName;
     }
 
+    boolean isNull(){
+        return controllerName == null && controllerPackage == null;
+    }
+
     String getControllerPackage() {
         return controllerPackage;
+    }
+
+    @Override
+    public String toString() {
+        return "controllerName=  '" + controllerName + "' , controllerPackage= '" + controllerPackage + "'";
     }
 }

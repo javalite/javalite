@@ -36,8 +36,6 @@ public class RouterControllerPathSpec {
 
     @Test
     public void shouldFindHomeControllerFromPath() {
-
-
         a(router.getControllerPath("/").getControllerName()).shouldBeEqual("home");
         a(router.getControllerPath("/").getControllerPackage()).shouldBeNull();
         a(router.getControllerPath("/hello").getControllerName()).shouldBeEqual("hello");
@@ -85,12 +83,6 @@ public class RouterControllerPathSpec {
     @Test(expected = ControllerException.class)
     public void shouldFailNoControllerProvided() {
         router.getControllerPath("/admin/");//this should fail because "admin" package exists, and
-        //no controller is specified after.
-    }
-
-    @Test(expected = ControllerException.class)
-    public void shouldFailNoControllerProvidedNoSlash() {
-        router.getControllerPath("/admin");//this should fail because "admin" package exists, and
         //no controller is specified after.
     }
 }
