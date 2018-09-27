@@ -325,4 +325,19 @@ public class RouterCustomSpec extends RequestSpec {
         the(responseContent()).shouldNotContain("IndexOutOfBoundsException");
         the(responseContent()).shouldContain("TestController#index");
     }
+
+    @Test
+    public void should_issue400() {
+
+        routeConfig = new AbstractRouteConfig() {
+            public void init(AppContext appContext) {
+                route("/api").to(ApiController.class).action("index").get();
+
+            }
+        };
+
+        request.setServletPath("/api");
+        execDispatcher();
+        System.out.println(responseContent());
+    }
 }

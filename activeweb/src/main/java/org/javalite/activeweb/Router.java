@@ -25,7 +25,6 @@ import java.util.*;
 
 import static org.javalite.activeweb.ControllerFactory.createControllerInstance;
 import static org.javalite.activeweb.ControllerFactory.getControllerClassName;
-import static org.javalite.common.Collections.map;
 
 /**
  * Responsible for looking at a URI and creating a route to controller if one is found.
@@ -298,7 +297,7 @@ public class Router {
             return new ControllerPath();
         } else {
             String controllerPackage;
-            if ((controllerPackage = findPackagePrefix(uri)) != null) {
+            if ((controllerPackage = findPackageSuffix(uri)) != null) {
                 String controllerName = findControllerNamePart(controllerPackage, uri);
                 return new ControllerPath(controllerName, controllerPackage);
             } else {
@@ -354,7 +353,7 @@ public class Router {
             temp = temp.substring(pack.length() + 1);
 
         if (temp.equals("") || temp.equals(pack))
-            throw new ControllerException("You defined a controller package '" + pack + "', but this request does not specify controller name");
+            throw new ControllerException("You defined a controller package '" + pack + "', but did not specify controller name");
 
         return temp.split("\\.")[0];
     }
@@ -366,7 +365,7 @@ public class Router {
      * @return a part of a package name which can be found in between "app.controllers" and short name of class, or null
      *         if not found
      */
-    protected String findPackagePrefix(String uri) {
+    protected String findPackageSuffix(String uri) {
 
         String temp = uri.startsWith("/") ? uri.substring(1) : uri;
         temp = temp.replace(".", "_");

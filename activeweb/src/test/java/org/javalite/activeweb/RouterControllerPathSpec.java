@@ -36,8 +36,6 @@ public class RouterControllerPathSpec {
 
     @Test
     public void shouldFindHomeControllerFromPath() {
-
-
         a(router.getControllerPath("/").getControllerName()).shouldBeEqual("home");
         a(router.getControllerPath("/").getControllerPackage()).shouldBeNull();
         a(router.getControllerPath("/hello").getControllerName()).shouldBeEqual("hello");
