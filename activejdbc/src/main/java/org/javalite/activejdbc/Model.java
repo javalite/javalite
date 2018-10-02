@@ -240,14 +240,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
                 if (entry.getValue() instanceof Clob && metaModelLocal.cached()) {
                     String convertedString = Convert.toString(entry.getValue());
-                    if (wouldAttributeValueModifyModel(entry.getKey(), convertedString)) {
+                    if (willAttributeModifyModel(entry.getKey(), convertedString)) {
                         this.attributes.put(entry.getKey(), convertedString);
                         changedAttributeNames.add(entry.getKey());
                     }
                 } else {
                     Object convertedObject = metaModelLocal.getDialect().overrideDriverTypeConversion(
                             metaModelLocal, entry.getKey(), entry.getValue());
-                    if (wouldAttributeValueModifyModel(entry.getKey(), convertedObject)) {
+                    if (willAttributeModifyModel(entry.getKey(), convertedObject)) {
                         this.attributes.put(entry.getKey(), convertedObject);
                         changedAttributeNames.add(entry.getKey());
                     }
@@ -265,75 +265,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Verifies if the passed value for attributeName would set this instance to modified state.
-     * @param attributeName
-     * @param newValue
-     * @return
+     * Verifies if the passed value for attributeName will set this instance to modified state.
      */
-    protected boolean wouldAttributeValueModifyModel(String attributeName, Object newValue) {
+    private boolean willAttributeModifyModel(String attributeName, Object newValue) {
 
-        Object currentAttributeValue = get(attributeName);
-
-        if (isNew() || (currentAttributeValue == null && newValue != null))
-            return true;
-
-        if (currentAttributeValue != null) {
-
-            if (newValue == null)
-                return true;
-
-            if (newValue.getClass() != currentAttributeValue.getClass()) {
-                Object convertedObject = convertValueToTargetClass(newValue, currentAttributeValue);
-                if (convertedObject != null) {
-                    return !convertedObject.equals(currentAttributeValue);
-                } else
-                    return true;
-            } else {
-                return !newValue.equals(currentAttributeValue);
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Tries to convert the given new attribute value type to the one of the existing attribute value.
-     * @param newAttributeValue
-     * @param existingAttributeValue
-     * @return
-     */
-    protected Object convertValueToTargetClass(Object newAttributeValue, Object existingAttributeValue) {
-
-        Object result = null;
-
-        try {
-            if (existingAttributeValue instanceof java.sql.Timestamp) {
-                result = Convert.toTimestamp(newAttributeValue);
-            } else if (existingAttributeValue instanceof java.sql.Time) {
-                result = Convert.toTime(newAttributeValue);
-            } else if (existingAttributeValue instanceof java.sql.Date) {
-                result = Convert.toSqlDate(newAttributeValue);
-            } else if (existingAttributeValue instanceof Long) {
-                result = Convert.toLong(newAttributeValue);
-            } else if (existingAttributeValue instanceof Integer) {
-                result = Convert.toInteger(newAttributeValue);
-            } else if (existingAttributeValue instanceof Short) {
-                result = Convert.toShort(newAttributeValue);
-            } else if (existingAttributeValue instanceof BigDecimal) {
-                result = Convert.toBigDecimal(newAttributeValue);
-            } else if (existingAttributeValue instanceof Boolean) {
-                result = Convert.toBoolean(newAttributeValue);
-            } else if (existingAttributeValue instanceof Double) {
-                result = Convert.toDouble(newAttributeValue);
-            } else if (existingAttributeValue instanceof Float) {
-                result = Convert.toFloat(newAttributeValue);
-            } else if (existingAttributeValue instanceof String) {
-                result = Convert.toString(newAttributeValue);
-            }
-
-        } catch(Exception e) {}
-
-        return result;
+        Object currentValue = get(attributeName);
+        return currentValue != null ? !currentValue.equals(newValue) : newValue != null;
     }
 
 
@@ -438,7 +375,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             throw new IllegalArgumentException("cannot set 'created_at'");
         }
         metaModelLocal.checkAttribute(attributeName);
-        if (wouldAttributeValueModifyModel(attributeName, value)) {
+
+        if (willAttributeModifyModel(attributeName, value)) {
             attributes.put(attributeName, value);
             dirtyAttributeNames.add(attributeName);
         }
