@@ -193,8 +193,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * are new values for it.
      */
     public <T extends Model> T fromMap(Map input) {
-        hydrate(input, false);
-        dirtyAttributeNames.addAll(input.keySet());
+        Set<String> changedAttributeNames = hydrate(input, false);
+        dirtyAttributeNames.addAll(changedAttributeNames);
         return (T) this;
     }
 
@@ -227,18 +227,30 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * Hydrates a this instance of model from a map. Only picks values from a map that match
      * this instance's attribute names, while ignoring the others.
      *
-     * @param attributesMap map containing values for this instance.
+     * @param attributesMap
+     * @param fireAfterLoad
+     * @return the set of changed (i.e. dirty) attribute names
      */
-    protected void hydrate(Map<String, Object> attributesMap, boolean fireAfterLoad) {
+    protected Set<String> hydrate(Map<String, Object> attributesMap, boolean fireAfterLoad) {
 
+        Set<String> changedAttributeNames = new HashSet<>();
         Set<String> attributeNames = metaModelLocal.getAttributeNames();
         for (Map.Entry<String, Object> entry : attributesMap.entrySet()) {
-            if (attributeNames.contains(entry.getKey())) {
+            if (attributeNames.contains(entry.getKey()) ) {
+
                 if (entry.getValue() instanceof Clob && metaModelLocal.cached()) {
-                    this.attributes.put(entry.getKey(), Convert.toString(entry.getValue()));
+                    String convertedString = Convert.toString(entry.getValue());
+                    if (willAttributeModifyModel(entry.getKey(), convertedString)) {
+                        this.attributes.put(entry.getKey(), convertedString);
+                        changedAttributeNames.add(entry.getKey());
+                    }
                 } else {
-                    this.attributes.put(entry.getKey(), metaModelLocal.getDialect().overrideDriverTypeConversion(
-                            metaModelLocal, entry.getKey(), entry.getValue()));
+                    Object convertedObject = metaModelLocal.getDialect().overrideDriverTypeConversion(
+                            metaModelLocal, entry.getKey(), entry.getValue());
+                    if (willAttributeModifyModel(entry.getKey(), convertedObject)) {
+                        this.attributes.put(entry.getKey(), convertedObject);
+                        changedAttributeNames.add(entry.getKey());
+                    }
                 }
             }
         }
@@ -249,6 +261,16 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             fireAfterLoad();
         }
 
+        return changedAttributeNames;
+    }
+
+    /**
+     * Verifies if the passed value for attributeName will set this instance to modified state.
+     */
+    private boolean willAttributeModifyModel(String attributeName, Object newValue) {
+
+        Object currentValue = get(attributeName);
+        return currentValue != null ? !currentValue.equals(newValue) : newValue != null;
     }
 
 
@@ -353,8 +375,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             throw new IllegalArgumentException("cannot set 'created_at'");
         }
         metaModelLocal.checkAttribute(attributeName);
-        attributes.put(attributeName, value);
-        dirtyAttributeNames.add(attributeName);
+
+        if (willAttributeModifyModel(attributeName, value)) {
+            attributes.put(attributeName, value);
+            dirtyAttributeNames.add(attributeName);
+        }
         return (T) this;
     }
 
