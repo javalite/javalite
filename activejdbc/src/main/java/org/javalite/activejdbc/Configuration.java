@@ -76,38 +76,22 @@ public class Configuration {
         loadConnectionsSpecs();
 
         try {
-            Enumeration<URL> resources = getClass().getClassLoader().getResources("activejdbc_models.properties");
-            while (resources.hasMoreElements()) {
-                URL url = resources.nextElement();
-                LogFilter.log(LOGGER, LogLevel.INFO, "Load models from: {}", url.toExternalForm());
-                InputStream inputStream = null;
-                InputStreamReader isreader = null;
-                BufferedReader reader = null;
-                try {
-                    inputStream = url.openStream();
-                    isreader = new InputStreamReader(inputStream);
-                    reader = new BufferedReader(isreader);
-                    String line;
-                    while ((line = reader.readLine()) != null) {
 
-                        String[] parts = split(line, ':');
-                        String modelName = parts[0];
-                        String dbName = parts[1];
+            String modelsFile = Util.readResource("/activejdbc_models.properties");
+            String[] lines = Util.split(modelsFile, System.getProperty("line.separator"));
 
-                        List<String> modelNames = modelsMap.get(dbName);
-                        if (modelNames == null) {
-                            modelNames = new ArrayList<>();
-                            modelsMap.put(dbName, modelNames);
-                        }
-                        modelNames.add(modelName);
-                    }
-                } finally {
-                    closeQuietly(reader);
-                    closeQuietly(isreader);
-                    closeQuietly(inputStream);
+            for (String line: lines) {
+                String[] parts = split(line, ':');
+                String modelName = parts[0];
+                String dbName = parts[1];
+                List<String> modelNames = modelsMap.get(dbName);
+                if (modelNames == null) {
+                    modelNames = new ArrayList<>();
+                    modelsMap.put(dbName, modelNames);
                 }
+                modelNames.add(modelName);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new InitException(e);
         }
         if(modelsMap.isEmpty()){
