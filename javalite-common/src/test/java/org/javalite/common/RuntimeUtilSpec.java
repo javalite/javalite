@@ -14,7 +14,7 @@ public class RuntimeUtilSpec {
 
     @Test
     public void shouldUseDefaultBufferSize(){
-        assumeFalse(SystemUtils.IS_OS_WINDOWS);
+        assumeFalse(SystemUtils.IS_OS_WINDOWS); // will skip these tests on Windows,
 
         the(execute("ls -ls").out).shouldContain("pom.xml");
     }
