@@ -45,11 +45,18 @@ public class EHCacheManager extends CacheManager {
     }
 
     private void createIfMissing(String group) {
-        //double-checked synchronization is broken in Java, but this should work just fine.
         if (cacheManager.getCache(group) == null) {
-            try{
-                cacheManager.addCache(group);
-            }catch(net.sf.ehcache.ObjectExistsException ignore){}
+
+            synchronized (cacheManager) {
+                if (cacheManager.getCache(group) == null) {
+                    try {
+                        cacheManager.addCache(group);
+                    }
+                    catch (net.sf.ehcache.ObjectExistsException e) {
+                        LogFilter.log(LOGGER, LogLevel.WARNING, "{}", e, e);
+                    }
+                }
+            }
         }
     }
 
