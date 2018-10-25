@@ -34,9 +34,7 @@ import static org.javalite.activejdbc.ModelDelegate.metaModelFor;
  * This class supports pagination of result sets in ActiveJDBC. This is useful for paging through tables. If the
  * Model subclass is annotated with @{@link org.javalite.activejdbc.annotations.Cached}, then this class will
  * cache the total count of records returned by {@link #getCount()}, as LazyList will cache the result sets.
- * This class is thread safe and the same instance could be used across multiple web requests and even
- * across multiple users/sessions. You can generate an instance each time you need one,
- * or you can cache an instance in a session or even servlet context.
+ * You can generate an instance each time you need one, or you can cache an instance in a session or even servlet context.
  *
  * @author Igor Polevoy
  */
@@ -44,7 +42,7 @@ public class Paginator<T extends Model> implements Serializable {
 
     private static Logger LOGGER = LoggerFactory.getLogger(Paginator.class);
 
-    static final Pattern FROM_PATTERN = Pattern.compile("\\s+FROM\\s+", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+    private static final Pattern FROM_PATTERN = Pattern.compile("\\s+FROM\\s+", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
     private final int pageSize;
     private final String query;
