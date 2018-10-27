@@ -36,7 +36,44 @@ jobs:
     script: mvn test -Dtest=!MySQLMigrationSpec,!org.javalite.db_migrator.* -DfailIfNoTests=false -V
 
   - stage: test
-    # ----------------------- mysql -----------------------
+
+    # ----------------------- oracle -----------------------
+    env: DB=oracle_travis-ci
+    before_install:
+    - docker run -d -p 8080:8080 -p 1521:1521 --name oracle_active-jdbc sath89/oracle-12c
+    - docker ps
+    - source .travisci/setup.sh
+    before_script:
+    - docker cp $TRAVIS_BUILD_DIR/.travisci/oracle/init.sql oracle_active-jdbc:/tmp/init.sql
+    - docker exec -u oracle -it oracle_active-jdbc /bin/bash -c "echo 'Waiting for DB to boot...' && while [ ! -f /u01/app/oracle/cfgtoollogs/dbca/xe/xe.log ]; do sleep 10; done;"
+    - docker exec -u oracle -it oracle_active-jdbc /bin/bash -c "cat /u01/app/oracle/cfgtoollogs/dbca/xe/xe.log"
+    - docker exec -u oracle -it oracle_active-jdbc /bin/bash -c "\$ORACLE_HOME/bin/sqlplus -S system/oracle @/tmp/init.sql"
+    script:
+    - echo "Starting Oracle build"
+    - sh .travisci/run_tests.sh
+
+  - # ----------------------- db2 -----------------------
+    env: DB=db2_travis-ci
+    before_install:
+    - source .travisci/setup.sh
+    - docker run -d -p 50000:50000 --name db2 -e DB2INST1_PASSWORD=dzqAbmZwnN8c -e LICENSE=accept ibmcom/db2express-c:latest db2start
+    - docker ps # db2 takes a sec to start before we can issue the db creation
+    - docker exec -u db2inst1 -it db2 /bin/bash -c ". /home/db2inst1/sqllib/db2profile && db2 create db db2 && exit"
+    script:
+    - echo "Starting DB2 build"
+    - sh .travisci/run_tests.sh
+
+  - # ----------------------- mssql -----------------------
+    env: DB=mssql_travis-ci
+    before_install:
+    - source .travisci/setup.sh
+    - docker run -e ACCEPT_EULA=Y -e SA_PASSWORD=CVXQj6sC9D3s3PzE! -e MSSQL_PID=Express -p 1433:1433 --name mssql_active-jdbc -d microsoft/mssql-server-linux:latest
+    - docker ps
+    script:
+    - echo "Starting MS SQLServer build"
+    - sh .travisci/run_tests.sh
+
+  - # ----------------------- mysql -----------------------
     env: DB=mysql_travis-ci
     before_install:
     - source .travisci/setup.sh
@@ -58,42 +95,6 @@ jobs:
     - echo "Starting PostgreSQL build"
     - sh .travisci/run_tests.sh
 
-  - # ----------------------- db2 -----------------------
-    env: DB=db2_travis-ci
-    before_install:
-    - source .travisci/setup.sh
-    - docker run -d -p 50000:50000 --name db2 -e DB2INST1_PASSWORD=dzqAbmZwnN8c -e LICENSE=accept ibmcom/db2express-c:latest db2start
-    - docker ps # db2 takes a sec to start before we can issue the db creation
-    - docker exec -u db2inst1 -it db2 /bin/bash -c ". /home/db2inst1/sqllib/db2profile && db2 create db db2 && exit"
-    script:
-    - echo "Starting DB2 build"
-    - sh .travisci/run_tests.sh
-
-  - # ----------------------- oracle -----------------------
-    env: DB=oracle_travis-ci
-    before_install:
-    - docker run -d -p 8080:8080 -p 1521:1521 --name oracle_active-jdbc sath89/oracle-12c
-    - docker ps
-    - source .travisci/setup.sh
-    before_script:
-    - docker cp $TRAVIS_BUILD_DIR/.travisci/oracle/init.sql oracle_active-jdbc:/tmp/init.sql
-    - docker exec -u oracle -it oracle_active-jdbc /bin/bash -c "echo 'Waiting for DB to boot...' && while [ ! -f /u01/app/oracle/cfgtoollogs/dbca/xe/xe.log ]; do sleep 10; done;"
-    - docker exec -u oracle -it oracle_active-jdbc /bin/bash -c "cat /u01/app/oracle/cfgtoollogs/dbca/xe/xe.log"
-    - docker exec -u oracle -it oracle_active-jdbc /bin/bash -c "\$ORACLE_HOME/bin/sqlplus -S system/oracle @/tmp/init.sql"
-    script:
-    - echo "Starting Oracle build"
-    - sh .travisci/run_tests.sh
-
-  - # ----------------------- mssql -----------------------
-    env: DB=mssql_travis-ci
-    before_install:
-    - source .travisci/setup.sh
-    - docker run -e ACCEPT_EULA=Y -e SA_PASSWORD=CVXQj6sC9D3s3PzE! -e MSSQL_PID=Express -p 1433:1433 --name mssql_active-jdbc -d microsoft/mssql-server-linux:latest
-    - docker ps
-    script:
-    - echo "Starting MS SQLServer build"
-    - sh .travisci/run_tests.sh
-
   - # ----------------------- sqlite -----------------------
     env: DB=sqlite_travis-ci
     before_install:
@@ -106,7 +107,7 @@ jobs:
     #                      Deploy Stage
     # ->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->
   - stage: deploy
-    # require the branch name to be master (note for PRs this is the base branch name)
+    # ensure we only attempt to deploy commits on master (excluding PRs)
     if: |
       repo = javalite/activejdbc AND \
       branch = master            AND \
