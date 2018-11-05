@@ -76,21 +76,21 @@ public class Configuration {
         loadConnectionsSpecs();
 
         try {
-
-            String modelsFile = Util.readResource("/activejdbc_models.properties");
-            String[] lines = Util.split(modelsFile, System.getProperty("line.separator"));
-
-            for (String line: lines) {
-                String[] parts = split(line, ':');
-                String modelName = parts[0];
-                String dbName = parts[1];
-                List<String> modelNames = modelsMap.get(dbName);
-                if (modelNames == null) {
-                    modelNames = new ArrayList<>();
-                    modelsMap.put(dbName, modelNames);
+            Enumeration<URL> urls = getClass().getClassLoader().getResources("activejdbc_models.properties");
+            while (urls.hasMoreElements()){
+                URL url = urls.nextElement();
+                LogFilter.log(LOGGER, LogLevel.INFO, "Loading models from: {}", url.toExternalForm());
+                String modelsFile = Util.read(url.openStream());
+                String[] lines = Util.split(modelsFile, System.getProperty("line.separator"));
+                for (String line: lines) {
+                    String[] parts = Util.split(line, ':');
+                    String modelName = parts[0];
+                    String dbName = parts[1];
+                    List<String> modelNames = modelsMap.computeIfAbsent(dbName, k -> new ArrayList<>());
+                    modelNames.add(modelName);
                 }
-                modelNames.add(modelName);
             }
+
         } catch (Exception e) {
             throw new InitException(e);
         }
