@@ -125,4 +125,15 @@ public class StatisticsQueueTest {
         QueryExecutionEvent event = new QueryExecutionEvent(sql, 1);
         the(event.getQuery()).shouldBeEqual("INSERT INTO xxx_events (xxx_id, yyy_id, type, email, user_id, latitude, longitude, ip, user_agent, url, merged_url, created_at, event_date) format ...");
     }
+
+
+
+    @Test // related: https://github.com/javalite/activejdbc/issues/807
+    public void shouldTruncateInsertInto(){
+        String sql = Util.readResource("/insert_into.sql");
+
+        QueryExecutionEvent event = new QueryExecutionEvent(sql, 1);
+
+        the(event.getQuery()).shouldBeEqual("INSERT INTO analytics_events (person_id,other_person_id,location_id,location_name,date,action,type,info,created_at,updated_at)  VALUES (...)");
+    }
 }

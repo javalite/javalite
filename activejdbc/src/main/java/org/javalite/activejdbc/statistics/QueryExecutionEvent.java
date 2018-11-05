@@ -26,6 +26,9 @@ public class QueryExecutionEvent {
 
     private static final Pattern IN_PATTERN = Pattern.compile("(IN|in)\\s*\\(.*\\)", Pattern.CASE_INSENSITIVE);
     private static final Pattern OFFSET_PATTERN = Pattern.compile("(offset|OFFSET|Offset)\\s*\\d*", Pattern.CASE_INSENSITIVE);
+    private static final Pattern INSERT_INTO_PATTERN = Pattern.compile("INSERT(.|\\n)*INTO(.|\\n)*VALUES(.|\\n)*", Pattern.CASE_INSENSITIVE);
+
+
 
     private String query;
     private final long time;
@@ -36,6 +39,11 @@ public class QueryExecutionEvent {
 
         if(query.contains("TabSeparated")){
             this.query = query.substring(0, query.indexOf("TabSeparated")) + "...";
+        }
+
+        if(INSERT_INTO_PATTERN.matcher(query).matches()){
+            String lowerCase = query.toLowerCase();
+            this.query = query.substring(0, lowerCase.indexOf("values")) + " VALUES (...)";
         }
 
         this.time = time;
