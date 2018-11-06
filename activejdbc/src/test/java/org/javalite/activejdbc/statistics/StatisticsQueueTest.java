@@ -17,11 +17,15 @@ limitations under the License.
 
 package org.javalite.activejdbc.statistics;
 
-import org.javalite.common.Util;
+import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -120,7 +124,7 @@ public class StatisticsQueueTest {
 
     @Test // related: https://github.com/javalite/activejdbc/issues/586
     public void shouldTruncateAtTabSeparated(){
-        String sql = Util.readResource("/clickhouse.sql");
+        String sql = readSqlResource("/clickhouse.sql");
 
         QueryExecutionEvent event = new QueryExecutionEvent(sql, 1);
         the(event.getQuery()).shouldBeEqual("INSERT INTO xxx_events (xxx_id, yyy_id, type, email, user_id, latitude, longitude, ip, user_agent, url, merged_url, created_at, event_date) format ...");
@@ -130,10 +134,21 @@ public class StatisticsQueueTest {
 
     @Test // related: https://github.com/javalite/activejdbc/issues/807
     public void shouldTruncateInsertInto(){
-        String sql = Util.readResource("/insert_into.sql");
+        String sql = readSqlResource("/insert_into.sql");
 
         QueryExecutionEvent event = new QueryExecutionEvent(sql, 1);
 
         the(event.getQuery()).shouldBeEqual("INSERT INTO analytics_events (person_id,other_person_id,location_id,location_name,date,action,type,info,created_at,updated_at)  VALUES (...)");
+    }
+
+    private String readSqlResource(String resourceName)
+    {
+        try (InputStream is = this.getClass().getResourceAsStream(resourceName)) {
+            List<String> lines = IOUtils.readLines(is, StandardCharsets.UTF_8);
+            return String.join("\n", lines);
+        }
+        catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 }
