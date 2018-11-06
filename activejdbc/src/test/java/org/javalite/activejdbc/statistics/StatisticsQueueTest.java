@@ -131,9 +131,7 @@ public class StatisticsQueueTest {
     @Test // related: https://github.com/javalite/activejdbc/issues/807
     public void shouldTruncateInsertInto(){
         String sql = Util.readResource("/insert_into.sql");
-
         QueryExecutionEvent event = new QueryExecutionEvent(sql, 1);
-
-        the(event.getQuery()).shouldBeEqual("INSERT INTO analytics_events (person_id,other_person_id,location_id,location_name,date,action,type,info,created_at,updated_at)  VALUES (...)");
+        the(event.getQuery().toLowerCase()).shouldBeEqual("insert into analytics_events (person_id,other_person_id,location_id,location_name,date,action,type,info,created_at,updated_at)  values (...)");
     }
 }

@@ -26,7 +26,7 @@ public class QueryExecutionEvent {
 
     private static final Pattern IN_PATTERN = Pattern.compile("(IN|in)\\s*\\(.*\\)", Pattern.CASE_INSENSITIVE);
     private static final Pattern OFFSET_PATTERN = Pattern.compile("(offset|OFFSET|Offset)\\s*\\d*", Pattern.CASE_INSENSITIVE);
-    private static final Pattern INSERT_INTO_PATTERN = Pattern.compile("INSERT(.|\\n)*INTO(.|\\n)*VALUES(.|\\n)*", Pattern.CASE_INSENSITIVE);
+    private static final Pattern INSERT_INTO_PATTERN = Pattern.compile("INSERT.*into.*VALUES.*", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 
 
 
