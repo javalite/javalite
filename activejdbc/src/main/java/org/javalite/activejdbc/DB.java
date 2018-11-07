@@ -866,6 +866,22 @@ public class DB implements Closeable{
         }
     }
 
+
+    /**
+     * Quietly closes the <code>java.sql.PreparedStatement</code> used in a batch execution. The advantage over calling
+     * <code>java.sql.PreparedStatement.close()</code> directly is not having to explicitly handle a checked exception
+     * (<code>java.sql.SQLException</code>).
+     * This method should typically be called in a finally block. So as not to displace any exception (e.g. from a failed
+     * batch execution) that might already be in flight, this method swallows any exception that might arise from
+     * closing the statement. This is generally seen as a worthwhile trade-off, as it much less likely for a close to fail
+     * without a prior failure.
+     *
+     * @param ps <code>java.sql.PreparedStatement</code> with which a batch has been executed. If null, this is a no-op.
+     */
+    public void closeBatch(PreparedStatement ps) {
+        closeQuietly(ps);
+    }
+
     private void setParameters(PreparedStatement ps, Object... params) throws SQLException {
         for (int index = 0; index < params.length;) {
             Object param = params[index++];
