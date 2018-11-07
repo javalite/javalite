@@ -878,7 +878,7 @@ public class DB implements Closeable{
      *
      * @param ps <code>java.sql.PreparedStatement</code> with which a batch has been executed. If null, this is a no-op.
      */
-    public void closeBatch(PreparedStatement ps) {
+    public void closePreparedStatement(PreparedStatement ps) {
         closeQuietly(ps);
     }
 
