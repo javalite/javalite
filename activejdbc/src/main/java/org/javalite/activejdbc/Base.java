@@ -362,7 +362,7 @@ public class Base {
      * @param ps <code>java.sql.PreparedStatement</code> with which a batch has been executed. If null, this is a no-op.
      */
     public static void closePreparedStatement(PreparedStatement ps) {
-        new DB(DB.DEFAULT_NAME).closeBatch(ps);
+        new DB(DB.DEFAULT_NAME).closePreparedStatement(ps);
     }
     /**
      * Attaches a database connection to current thread under a default name.
