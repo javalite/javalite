@@ -185,7 +185,7 @@ public enum Registry {
         if (schema == null) {
                 try {
                         schema = databaseMetaData.getConnection().getSchema();
-                } catch (AbstractMethodError | Exception ignore) {}
+                } catch (Error | Exception ignore ) {}
         }
 
         String catalog = null;
