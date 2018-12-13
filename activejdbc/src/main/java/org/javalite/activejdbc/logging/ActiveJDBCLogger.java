@@ -2,6 +2,8 @@ package org.javalite.activejdbc.logging;
 
 import org.slf4j.Logger;
 
+import java.util.function.Supplier;
+
 /**
  * Implement this interface if you want to completely replace logging behavior with your own.
  * <p>
@@ -16,6 +18,18 @@ public interface ActiveJDBCLogger {
      * @param log      content to log
      */
     void log(Logger logger, LogLevel logLevel, String log);
+
+    /**
+     * Default implementation of lazy log message building for backward compatibility.
+     *
+     * @param logger   logger instance to use.
+     * @param logLevel suggested log level
+     * @param messageSupplier log message supplier.
+     */
+    default void log(Logger logger, LogLevel logLevel, Supplier<String> messageSupplier)
+    {
+        log(logger, logLevel, messageSupplier.get());
+    }
 
     /**
      * @param logger   logger instance to use.

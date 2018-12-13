@@ -23,6 +23,8 @@ import org.javalite.activejdbc.statistics.QueryExecutionEvent;
 import org.javalite.common.JsonHelper;
 import org.slf4j.Logger;
 
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 /**
@@ -63,7 +65,8 @@ public class LogFilter {
      */
     public static void logQuery(Logger logger, String query, Object[] params, long queryStartTime){
         long time = System.currentTimeMillis() - queryStartTime;
-        log(logger, LogLevel.INFO, getJson(query, params, time));
+        collectStatistics(query, time, false);
+        log(logger, LogLevel.INFO, () -> getJson(query, params, time));
     }
 
     /**
@@ -77,24 +80,22 @@ public class LogFilter {
      */
     public static void logQuery(Logger logger, String query, Object[] params, long queryStartTime, boolean cacheHit){
         long time = System.currentTimeMillis() - queryStartTime;
-        log(logger, LogLevel.INFO, getJson(query, params, time, cacheHit));
+        collectStatistics(query, time, cacheHit);
+        log(logger, LogLevel.INFO, () -> getJson(query, params, time, cacheHit));
     }
 
-
-    private static String getJson(String query, Object[] params, long time) {
-
-        if (Registry.instance().getConfiguration().collectStatistics()) {
+    private static void collectStatistics(String query, long time, boolean cacheHit) {
+        if (Registry.instance().getConfiguration().collectStatistics() && !cacheHit) {
             Registry.instance().getStatisticsQueue().enqueue(new QueryExecutionEvent(query, time));
         }
+    }
+
+    private static String getJson(String query, Object[] params, long time) {
         return  "{\"sql\":\"" + query.replace("\"", "'") + "\",\"params\":[" + getParamsJson(params) + "]" +
                 ",\"duration_millis\":" + time + "}";
     }
 
     private static String getJson(String query, Object[] params, long time, boolean cacheHit) {
-
-        if (Registry.instance().getConfiguration().collectStatistics() && !cacheHit) {
-            Registry.instance().getStatisticsQueue().enqueue(new QueryExecutionEvent(query, time));
-        }
         return  "{\"sql\":\"" + JsonHelper.sanitize(query) + "\",\"params\":[" + getParamsJson(params) + "]" +
                 (!cacheHit ? (",\"duration_millis\":" + time ): "" ) +
                 ",\"cache\":" + (cacheHit ? "\"hit\"" : "\"miss\"") +
@@ -124,26 +125,66 @@ public class LogFilter {
         return paramsSB.toString();
     }
 
+    public static void log(Logger logger, LogLevel logLevel, Supplier<String> messageSupplier){
+
+        if(Configuration.hasActiveLogger()){
+            Configuration.getActiveLogger().log(logger, logLevel, messageSupplier);
+        } else {
+            switch (logLevel){
+            case DEBUG:
+                if (logger.isDebugEnabled()) {
+                    logFiltered(messageSupplier, logger::debug);
+                }
+                break;
+            case INFO:
+                // filter and build log message lazily on info level, because of "expensive" query logging.
+                if (logger.isInfoEnabled())
+                {
+                    logFiltered(messageSupplier, logger::info);
+                }
+                break;
+            case WARNING:
+                logFiltered(messageSupplier, logger::warn);
+                break;
+            case ERROR:
+                logFiltered(messageSupplier, logger::error);
+                break;
+            default:
+            }
+
+        }
+    }
+
+    private static void logFiltered(Supplier<String> messageSupplier, Consumer<String> messageConsumer)
+    {
+        String message = messageSupplier.get();
+
+        if (pattern.matcher(message).matches())
+        {
+            messageConsumer.accept(message);
+        }
+    }
+
     public static void log(Logger logger, LogLevel logLevel, String log){
 
         if(Configuration.hasActiveLogger()){
             Configuration.getActiveLogger().log(logger, logLevel, log);
-        }else {
-            if (pattern.matcher(log).matches()) {
+        } else {
+            if (matches(logger, logLevel, log)) {
                 switch (logLevel){
-                    case DEBUG:
-                        logger.debug(log);
-                        break;
-                    case INFO:
-                        logger.info(log);
-                        break;
-                    case WARNING:
-                        logger.warn(log);
-                        break;
-                    case ERROR:
-                        logger.error(log);
-                        break;
-                        default:
+                case DEBUG:
+                    logger.debug(log);
+                    break;
+                case INFO:
+                    logger.info(log);
+                    break;
+                case WARNING:
+                    logger.warn(log);
+                    break;
+                case ERROR:
+                    logger.error(log);
+                    break;
+                default:
                 }
             }
         }
@@ -153,7 +194,7 @@ public class LogFilter {
         if(Configuration.hasActiveLogger()) {
             Configuration.getActiveLogger().log(logger, logLevel, log, param);
         }else {
-            if (pattern.matcher(log).matches()) {
+            if (matches(logger, logLevel, log)) {
                 switch (logLevel){
                     case DEBUG:
                         logger.debug(log, param);
@@ -173,12 +214,35 @@ public class LogFilter {
         }
     }
 
+    private static boolean matches(Logger logger, LogLevel logLevel, String log)
+    {
+        boolean isEnabled = true;
+
+        switch (logLevel)
+        {
+        case DEBUG:
+            isEnabled = logger.isDebugEnabled();
+            break;
+        case INFO:
+            isEnabled = logger.isInfoEnabled();
+            break;
+        case WARNING:
+            isEnabled = logger.isWarnEnabled();
+            break;
+        case ERROR:
+            isEnabled = logger.isErrorEnabled();
+            break;
+        default:
+        }
+        return isEnabled && pattern.matcher(log).matches();
+    }
+
     public static void log(Logger logger, LogLevel logLevel, String log, Object param1, Object param2) {
 
         if(Configuration.hasActiveLogger()) {
             Configuration.getActiveLogger().log(logger, logLevel, log, param1, param2);
         }else {
-            if (pattern.matcher(log).matches()) {
+            if (matches(logger, logLevel, log)) {
                 switch (logLevel){
                     case DEBUG:
                         logger.debug(log, param1, param2);
@@ -202,8 +266,8 @@ public class LogFilter {
 
         if(Configuration.hasActiveLogger()) {
             Configuration.getActiveLogger().log(logger, logLevel, log, params);
-        }else {
-            if (pattern.matcher(log).matches()) {
+        } else {
+            if (matches(logger, logLevel, log)) {
                 switch (logLevel){
                     case DEBUG:
                         logger.debug(log, params);
