@@ -16,6 +16,8 @@ limitations under the License.
 package org.javalite.common;
 
 import java.io.*;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
 /**
@@ -524,5 +526,80 @@ public final class Util {
             fin.close();
         }
         return props;
+    }
+
+
+
+    /**
+     * Creates directories recursively.
+     *
+     * <p>For instance, this:</p>
+     * <pre>
+     *     Util.createTree("dir1/dir2/dir3);
+     * </pre>
+     *
+     * will create "dir1/dir2/dir2".
+     *
+     * <p>
+     *     If a directory already exists, it will be silently ignored.
+     * </p>
+     *
+     * <p></p>
+     *
+     * <p>
+     *     <strong>NOTE:</strong>  Use '/' as the path separator on *nix and Windows.
+     * </p>
+     *
+     * @param path a list of directories where each is a sub-directory of a previous.
+     *
+     */
+    public static void createTree(Path path) throws IOException {
+
+        // NOTE, the Paths.get("start", ... others)  is super annoying, so implemented with strings in a somewhat hacky way.
+        // Not happy:(
+        boolean absolute  = path.toString().startsWith("/");
+
+        String[] parts = Util.split(path.toString(), "/");
+        for (int i = 0; i < parts.length; i++) {
+            StringBuilder fullPath = new StringBuilder();
+            for(int x = 0; x <= i; x++){
+                fullPath.append(parts[x]).append("/"); // should be OK for *nix and Windows
+            }
+            File dir = new File((absolute ? "/" : "") + fullPath.toString());
+            if(!dir.exists()){
+                if(!dir.mkdir()){
+                    throw new IOException("Failed to create a directory: " + fullPath);
+                }
+            }
+        }
+    }
+
+    /**
+     * Deletes a directory recursively with all its contents. Will ignore files and directories if they are disappear during the oprtation.
+     *
+     * @param directory directory to delete.
+     */
+    public static void recursiveDelete(Path directory) throws IOException   {
+
+        try {
+            Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws java.io.IOException {
+                    try {
+                        Files.delete(file);
+                    } catch (NoSuchFileException ignore) {}
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, java.io.IOException exc) throws java.io.IOException {
+                    try{
+                        Files.delete(dir);
+                    }catch (NoSuchFileException ignore){}
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (NoSuchFileException ignore) {}
+
     }
 }

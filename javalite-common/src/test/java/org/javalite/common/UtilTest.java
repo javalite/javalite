@@ -18,7 +18,9 @@ limitations under the License.
 package org.javalite.common;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -133,7 +135,7 @@ public class UtilTest implements JSpecSupport {
     @Test
     public void testEmptyCollection() {
         a(Util.empty((Collection<Object>) null)).shouldBeTrue();
-        a(Util.empty(new ArrayList<Object>())).shouldBeTrue();
+        a(Util.empty(new ArrayList())).shouldBeTrue();
         a(Util.empty(Collections.list("Hello"))).shouldBeFalse();
     }
 
@@ -228,4 +230,26 @@ public class UtilTest implements JSpecSupport {
         Util.joinAndRepeat(sb, "na", ", ", 16);
         the(sb.toString()).shouldBeEqual("na, na, na, na, na, na, na, na, na, na, na, na, na, na, na, na");
     }
+
+    @Test
+    public void shouldCreateAndDeleteDirectories() throws IOException {
+
+        String root = "target/dir1";
+
+        Util.recursiveDelete(Paths.get(root)); // will ignore that the directory does not exist yet
+        the(Paths.get(root).toFile().exists()).shouldBeFalse();
+
+        Util.createTree(Paths.get(root + "/dir2/dir3"));
+        the(Paths.get("target/dir1/dir2/dir3").toFile().exists()).shouldBeTrue();
+        Util.recursiveDelete(Paths.get("target/dir1/dir2"));
+        the(Paths.get("target/dir1/dir2").toFile().exists()).shouldBeFalse();
+        the(Paths.get("target/dir1/dir2/dir3").toFile().exists()).shouldBeFalse();
+        the(Paths.get("target/dir1/").toFile().exists()).shouldBeTrue();
+
+        //test absolute path
+        String curDir = new File(".").getCanonicalPath();
+        Util.createTree( Paths.get(curDir + "/target/dir4"));
+        the(Paths.get(curDir + "/target/dir4").toFile().exists()).shouldBeTrue();
+    }
+
 }
