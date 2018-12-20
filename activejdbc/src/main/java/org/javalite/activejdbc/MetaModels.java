@@ -34,6 +34,7 @@ class MetaModels {
     private final Map<String, MetaModel> metaModelsByClassName = new HashMap<>();
     //these are all many to many associations across all models.
     private final List<Many2ManyAssociation> many2ManyAssociations = new ArrayList<>();
+    private final Map<Class, ModelRegistry> modelRegistries = new HashMap<>();
 
     void addMetaModel(MetaModel mm, Class<? extends Model> modelClass) {
         Object o = metaModelsByClassName.put(modelClass.getName(), mm);
@@ -45,6 +46,10 @@ class MetaModels {
         if (o != null) {
             LogFilter.log(LOGGER, LogLevel.WARNING, "Double-register: {}: {}", mm.getTableName(), o);
         }
+    }
+
+    ModelRegistry getModelRegistry(Class<? extends Model> modelClass) {
+        return modelRegistries.computeIfAbsent(modelClass, k -> new ModelRegistry());
     }
 
     MetaModel getMetaModel(Class<? extends Model> modelClass) {

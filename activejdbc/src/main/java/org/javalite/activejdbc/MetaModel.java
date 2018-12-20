@@ -18,6 +18,7 @@ package org.javalite.activejdbc;
 import org.javalite.activejdbc.annotations.*;
 import org.javalite.activejdbc.associations.*;
 import org.javalite.activejdbc.dialects.Dialect;
+import org.javalite.activejdbc.dialects.Dialects;
 import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.activejdbc.logging.LogLevel;
 import org.slf4j.Logger;
@@ -427,7 +428,7 @@ public class MetaModel implements Serializable {
     }
 
     public Dialect getDialect() {
-        return Registry.instance().getConfiguration().getDialect(this);
+        return Dialects.getDialect(dbType);
     }
 
     protected List<Association> getAssociations(){

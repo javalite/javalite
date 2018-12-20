@@ -47,12 +47,11 @@ public enum Registry {
     private static final Logger LOGGER = LoggerFactory.getLogger(Registry.class);
 
     private final MetaModels metaModels = new MetaModels();
-    private final Map<Class, ModelRegistry> modelRegistries = new HashMap<>();
     private final Configuration configuration = new Configuration();
     private final StatisticsQueue statisticsQueue;
     private final Set<String> initedDbs = new HashSet<>();
 
-    private Registry() {
+    Registry() {
         statisticsQueue = configuration.collectStatistics()
                 ? new StatisticsQueue(configuration.collectStatisticsOnHold())
                 : null;
@@ -106,12 +105,7 @@ public enum Registry {
     }
 
     ModelRegistry modelRegistryOf(Class<? extends Model> modelClass) {
-        ModelRegistry registry = modelRegistries.get(modelClass);
-        if (registry == null) {
-            registry = new ModelRegistry();
-            modelRegistries.put(modelClass, registry);
-        }
-        return registry;
+        return metaModels.getModelRegistry(modelClass);
     }
 
      synchronized void init(String dbName) {
@@ -123,14 +117,13 @@ public enum Registry {
         }
 
         try {
-            ModelFinder.findModels(dbName);
             Connection c = ConnectionsAccess.getConnection(dbName);
             if(c == null){
                 throw new DBException("Failed to retrieve metadata from DB, connection: '" + dbName + "' is not available");
             }
             DatabaseMetaData databaseMetaData = c.getMetaData();
             String dbType = c.getMetaData().getDatabaseProductName();
-            List<Class<? extends Model>> modelClasses = ModelFinder.getModelsForDb(dbName);
+            Set<Class<? extends Model>> modelClasses = ModelFinder.getModelsForDb(dbName);
             registerModels(dbName, modelClasses, dbType);
             String[] tables = metaModels.getTableNames(dbName);
 
@@ -248,7 +241,7 @@ public enum Registry {
      * @param modelClasses
      * @param dbType this is a name of a DBMS as returned by JDBC driver, such as Oracle, MySQL, etc.
      */
-    private void registerModels(String dbName, List<Class<? extends Model>> modelClasses, String dbType) {
+    private void registerModels(String dbName, Set<Class<? extends Model>> modelClasses, String dbType) {
         for (Class<? extends Model> modelClass : modelClasses) {
             MetaModel mm = new MetaModel(dbName, modelClass, dbType);
             metaModels.addMetaModel(mm, modelClass);
@@ -256,7 +249,7 @@ public enum Registry {
         }
     }
 
-    private void processOverrides(List<Class<? extends Model>> models) {
+    private void processOverrides(Set<Class<? extends Model>> models) {
 
         for(Class<? extends Model> modelClass : models){
 
@@ -346,8 +339,8 @@ public enum Registry {
 
         Class<? extends Model> otherClass = many2manyAnnotation.other();
 
-        String source = getTableName(modelClass);
-        String target = getTableName(otherClass);
+        String source = metaModels.getTableName(modelClass);
+        String target = metaModels.getTableName(otherClass);
         String join = many2manyAnnotation.join();
         String sourceFKName = many2manyAnnotation.sourceFKName();
         String targetFKName = many2manyAnnotation.targetFKName();
