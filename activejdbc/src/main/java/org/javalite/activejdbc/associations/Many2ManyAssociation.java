@@ -20,16 +20,32 @@ package org.javalite.activejdbc.associations;
 import org.javalite.activejdbc.Association;
 import org.javalite.activejdbc.Model;
 
+import java.util.Map;
+
 /**
  * @author Igor Polevoy
  */
 //TODO: rename to ManyToManyAssociation, using "To" instead of "2" as the other class names?
 public class Many2ManyAssociation extends Association {
 
-    private final String sourceFkName;
-    private final String targetFkName;
-    private final String join;
-    private final String targetPk;
+    public static final String SOURCE_FK = "sourceFK";
+    public static final String TARGET_FK = "targetFK";
+    public static final String JOIN = "join";
+    public static final String TARGET_PK = "targetPK";
+
+    private String sourceFkName;
+    private String targetFkName;
+    private String join;
+    private String targetPk;
+
+    public Many2ManyAssociation(Map<String, Object> map) throws ClassNotFoundException {
+        super(map);
+        sourceFkName = (String) map.get(SOURCE_FK);
+        targetFkName = (String) map.get(TARGET_FK);
+        join = (String) map.get(JOIN);
+        targetPk = (String) map.get(TARGET_PK);
+    }
+
 
     /**
      *
@@ -88,4 +104,15 @@ public class Many2ManyAssociation extends Association {
                 && otherAss.getTargetFkName().equalsIgnoreCase(getTargetFkName())
                 && otherAss.getJoin().equalsIgnoreCase(getJoin());
     }
+
+    @Override
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = super.toMap();
+        map.put(SOURCE_FK, sourceFkName);
+        map.put(TARGET_FK, targetFkName);
+        map.put(JOIN, join);
+        map.put(TARGET_PK, targetPk);
+        return map;
+    }
+
 }

@@ -20,14 +20,25 @@ package org.javalite.activejdbc.associations;
 import org.javalite.activejdbc.Association;
 import org.javalite.activejdbc.Model;
 
+import java.util.Map;
+
 /**
  *
  * @author Igor Polevoy
  */
 public class BelongsToPolymorphicAssociation extends Association {
 
-    private final String typeLabel;
-    private final String parentClassName;
+    public static final String TYPE = "type";
+    public static final String PARENT = "parent";
+
+    private String typeLabel;
+    private String parentClassName;
+
+    public BelongsToPolymorphicAssociation(Map<String, Object> map) throws ClassNotFoundException {
+        super(map);
+        parentClassName = (String) map.get(PARENT);
+        typeLabel = (String) map.get(TYPE);
+    }
 
     public BelongsToPolymorphicAssociation(Class<? extends Model> sourceModelClass, Class<? extends Model> targetModelClass, String typeLabel, String parentClassName) {
         super(sourceModelClass, targetModelClass);
@@ -61,4 +72,13 @@ public class BelongsToPolymorphicAssociation extends Association {
                 && otherAss.getSourceClass().equals(getSourceClass())
                 && otherAss.getTargetClass().equals(getTargetClass());
     }
+
+    @Override
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = super.toMap();
+        map.put(TYPE, typeLabel);
+        map.put(PARENT, parentClassName);
+        return map;
+    }
+
 }

@@ -61,6 +61,15 @@ public class ModelFinder {
         return modelMap;
     }
 
+//    protected static Set<String> getModelsForDb(String dbName) throws ClassNotFoundException {
+//        Set<String> modelClassNames = getModelMap().get(dbName);
+//        if (modelClassNames == null || modelClassNames.isEmpty()){
+//            throw new InitException("you are trying to work with models, but no models are found. Maybe you have " +
+//                    "no models in project, or you did not instrument the models. It is expected that you have " +
+//                    "a file activejdbc_models.properties on classpath");
+//        }
+//        return modelClassNames;
+//    }
     protected static Set<Class<? extends Model>> getModelsForDb(String dbName) throws ClassNotFoundException {
         Set<String> modelClassNames = getModelMap().get(dbName);
         Set<Class<? extends Model>> classSet = new HashSet<>();
@@ -68,9 +77,14 @@ public class ModelFinder {
             for (String className : modelClassNames) {
                 Class modelClass = Class.forName(className);
                 if (!modelClass.equals(Model.class) && Model.class.isAssignableFrom(modelClass)) {
-                    if (MetaModel.getDbName(modelClass).equals(dbName)) {
+                    String realDbName = MetaModel.getDbName(modelClass);
+                    if (realDbName.equals(dbName)) {
                         classSet.add(modelClass);
+                    } else {
+                        throw new InitException("invalid database association for the " + className + ". Real database name: " + realDbName);
                     }
+                } else {
+                    throw new InitException("invalid class in the models list: " + className);
                 }
             }
         }

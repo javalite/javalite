@@ -46,15 +46,15 @@ public class InstrumentationModelFinder {
     private String currentDirectoryPath;
 
 
-    protected InstrumentationModelFinder() throws NotFoundException, ClassNotFoundException {
+    protected InstrumentationModelFinder() throws NotFoundException {
         cp = ClassPool.getDefault();
         //any simple class will do here, but Model - it causes slf4j to be loaded during instrumentation.
-        cp.insertClassPath(new ClassClassPath(Class.forName("org.javalite.activejdbc.Association")));
-        modelClass = cp.get("org.javalite.activejdbc.Model");
+        cp.insertClassPath(new ClassClassPath(Classes.Registry));
+        modelClass = cp.get(Classes.Model.getName());
     }
 
     protected void processURL(URL url) throws URISyntaxException, IOException, ClassNotFoundException {
-        Instrumentation.log("Processing: " + url);
+        Logger.debug("Processing: " + url);
         File f = new File(url.toURI());
         if(f.isFile()){
             processFilePath(f);
@@ -89,7 +89,6 @@ public class InstrumentationModelFinder {
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } catch (ClassNotFoundException ignore) {
         }
     }
 
@@ -140,13 +139,13 @@ public class InstrumentationModelFinder {
         }
     }
 
-    protected void tryClass(String className) throws IOException, ClassNotFoundException {
+    protected void tryClass(String className) {
         try {
             CtClass clazz = getClazz(className);
                 if (isModel(clazz)) {
                     if(!models.contains(clazz)){
                         models.add(clazz);
-                        Instrumentation.log("Found model: " + className);
+                        Logger.debug("Found model: " + className);
 
                     }
                 }
@@ -159,7 +158,7 @@ public class InstrumentationModelFinder {
         return cp.get(className);
     }
 
-    protected boolean isModel(CtClass clazz) throws NotFoundException {
+    protected boolean isModel(CtClass clazz) {
         return clazz != null && notAbstract(clazz) && clazz.subclassOf(modelClass) && !clazz.equals(modelClass);
     }
 

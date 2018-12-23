@@ -18,15 +18,30 @@ package org.javalite.activejdbc;
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
 import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.activejdbc.logging.LogLevel;
+import org.javalite.common.JsonHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.*;
+
+import static java.util.Collections.emptyList;
+import static org.javalite.common.Collections.map;
 
 /**
  * @author Igor Polevoy
  */
 class MetaModels {
+
+    private static final String DB_NAME = "dbName";
+    private static final String DB_TYPE = "dbType";
+    private static final String MODEL_CLASS = "modelClass";
+    private static final String COLUMN_METADATA = "columnMetadata";
+    private static final String COLUMN_METADATA_NAME = "columnName";
+    private static final String COLUMN_METADATA_TYPE = "columnType";
+    private static final String COLUMN_METADATA_SIZE = "columnSize";
+    private static final String ASSOCIATIONS = "associations";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MetaModels.class);
 
@@ -100,5 +115,66 @@ class MetaModels {
             }
         }
         return results;
+    }
+
+    protected String toJSON() {
+        List models = new ArrayList();
+        metaModelsByTableName.values().forEach(metaModel -> {
+            List associations = new ArrayList();
+            metaModel.getAssociations().forEach(association -> associations.add(association.toMap()));
+            models.add(map(
+                    MODEL_CLASS, metaModel.getModelClass().getName(),
+                    DB_TYPE, metaModel.getDbType(),
+                    DB_NAME, metaModel.getDbName(),
+                    COLUMN_METADATA, metaModel.getColumnMetadata(),
+                    ASSOCIATIONS, associations
+            ));
+        });
+        return JsonHelper.toJsonString(models,false);
+    }
+
+    protected void fromJSON(String json) {
+        try {
+            MethodHandles.Lookup lookup = MethodHandles.lookup();
+            MethodType methodType = MethodType.methodType(void.class, Map.class);
+
+            for(Object o : JsonHelper.toList(json)) {
+                Map metaModelMap = (Map) o;
+
+                MetaModel metaModel = new MetaModel(
+                        (String) metaModelMap.get(DB_NAME),
+                        (Class<? extends Model>) Class.forName((String) metaModelMap.get(MODEL_CLASS)),
+                        (String) metaModelMap.get(DB_TYPE)
+                );
+
+                Map<String, ColumnMetadata> columnMetadataMap = new HashMap<>();
+                ((Map) metaModelMap.getOrDefault(COLUMN_METADATA, map())).forEach((column, map) -> {
+                    Map metadata = (Map) map;
+                    columnMetadataMap.put(
+                            (String) column,
+                            new ColumnMetadata(
+                                    (String) metadata.get(COLUMN_METADATA_NAME),
+                                    (String) metadata.get(COLUMN_METADATA_TYPE),
+                                    (Integer) metadata.get(COLUMN_METADATA_SIZE)
+                            )
+                    );
+                });
+                metaModel.setColumnMetadata(columnMetadataMap);
+
+                for(Object a : (List) metaModelMap.getOrDefault(ASSOCIATIONS, emptyList())) {
+                    Map map = ((Map) a);
+                    metaModel.addAssociation(
+                            (Association) lookup.findConstructor(
+                                    Class.forName((String) map.get(Association.CLASS)),
+                                    methodType
+                            ).invoke(map)
+                    );
+                }
+
+                addMetaModel(metaModel, metaModel.getModelClass());
+            }
+        } catch(Throwable e) {
+            throw new InitException("Cannot load metadata", e);
+        }
     }
 }

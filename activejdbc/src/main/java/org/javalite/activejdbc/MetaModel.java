@@ -393,6 +393,7 @@ public class MetaModel implements Serializable {
         return singularize(getTableName()).toLowerCase() + "_id";
     }
 
+    //TODO AY: add prepared association's lists by type
     protected List<OneToManyAssociation> getOneToManyAssociations(List<Association> exclusions) {
         List<OneToManyAssociation> one2Manies = new ArrayList<>();
         for (Association association : associations) {

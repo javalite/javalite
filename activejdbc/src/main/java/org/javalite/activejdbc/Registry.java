@@ -23,7 +23,9 @@ import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.activejdbc.logging.LogLevel;
 import org.javalite.activejdbc.statistics.StatisticsQueue;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.sql.DatabaseMetaData;
 import java.util.*;
 import java.sql.SQLException;
@@ -31,6 +33,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 
 import org.javalite.common.Inflector;
+import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,10 +49,14 @@ public enum Registry {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Registry.class);
 
+    private static final int STATIC_METADATA_CHECKED = 1;
+    private static final int STATIC_METADATA_LOADED = 2;
+
     private final MetaModels metaModels = new MetaModels();
     private final Configuration configuration = new Configuration();
     private final StatisticsQueue statisticsQueue;
     private final Set<String> initedDbs = new HashSet<>();
+    private int staticMetadataStatus = 0;
 
     Registry() {
         statisticsQueue = configuration.collectStatistics()
@@ -108,13 +115,15 @@ public enum Registry {
         return metaModels.getModelRegistry(modelClass);
     }
 
-     synchronized void init(String dbName) {
+    synchronized void init(String dbName) {
 
-        if (initedDbs.contains(dbName)) {
+        if (staticMetadataStatus == STATIC_METADATA_LOADED || initedDbs.contains(dbName)) {
             return;
         } else {
             initedDbs.add(dbName);
         }
+
+        if (staticMetadataStatus != STATIC_METADATA_CHECKED && loadStaticMetadata()) return;
 
         try {
             Connection c = ConnectionsAccess.getConnection(dbName);
@@ -147,6 +156,26 @@ public enum Registry {
                 throw new InitException(e);
             }
         }
+    }
+
+    private boolean loadStaticMetadata() {
+        try {
+            Enumeration<URL> urls = Registry.instance().getClass().getClassLoader().getResources("activejdbc_metadata.json");
+            staticMetadataStatus = urls.hasMoreElements() ? STATIC_METADATA_LOADED : STATIC_METADATA_CHECKED;
+            while(urls.hasMoreElements()) {
+                URL url = urls.nextElement();
+                LogFilter.log(LOGGER, LogLevel.INFO, "Loading metadata from: {}", url.toExternalForm());
+                metaModels.fromJSON(Util.read(url.openStream()));
+            }
+            return staticMetadataStatus == STATIC_METADATA_LOADED;
+        } catch(IOException e) {
+            throw new InitException(e);
+        }
+    }
+
+    //instrumentation
+    protected String metadataToJSON() {
+        return metaModels.toJSON();
     }
 
     /**
