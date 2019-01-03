@@ -41,7 +41,7 @@ public class FreemarkerSpec extends ActiveJDBCTest {
         smith.set("graduation_date", null).saveIt();
 
         freemarker.template.Configuration config = new freemarker.template.Configuration();
-        Template template = config.getTemplate("src/test/resources/single.ftl");
+        Template template = config.getTemplate("target/test-classes/single.ftl");
 
         smith = Person.findFirst("last_name = ?", "Smith");
 
@@ -60,7 +60,7 @@ public class FreemarkerSpec extends ActiveJDBCTest {
 
         List<Person> people = Person.findAll().orderBy("id");
 
-        Template template = config.getTemplate("src/test/resources/list.ftl");
+        Template template = config.getTemplate("target/test-classes/list.ftl");
         StringWriter writer = new StringWriter();
 
         template.process(map("people", people), writer);
@@ -89,7 +89,7 @@ public class FreemarkerSpec extends ActiveJDBCTest {
             }
         });
 
-        Template template = config.getTemplate("src/test/resources/list_row.ftl");
+        Template template = config.getTemplate("target/test-classes/list_row.ftl");
 
         StringWriter writer = new StringWriter();
         template.process(map("students", students), writer);
