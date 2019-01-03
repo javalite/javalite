@@ -8,7 +8,7 @@ It was inspired by [ActiveRecord ORM](https://github.com/rails/rails/tree/master
 
 * Should infer metadata from DB (like ActiveRecord)
 * Should be very easy to work with
-* Should reduce amount of code to a minimum
+* Should reduce amount of code
 * No configuration, just conventions
 * Some conventions are overridable in code
 * No need to learn another language
