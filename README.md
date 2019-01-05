@@ -65,10 +65,10 @@ String johnsLastName = aJohn.get("last_name");
 
 ## Documentation
 
-For more information, follow here: http://javalite.io
+For more information, follow [here](http://javalite.io).
 
 
 ## Acknowledgement
 
-Special thanks to folks at [IntelliJ](http://www.jetbrains.com/) for granting a license to this project.
+Special thanks to folks at [IntelliJ](https://www.jetbrains.com/) for granting a license to this project.
 
