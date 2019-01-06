@@ -17,11 +17,10 @@ limitations under the License.
 package org.javalite.activejdbc.test;
 
 import org.javalite.activejdbc.Base;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runners.MethodSorters;
+
+import java.sql.SQLException;
 
 /**
  * WARNING: all methods in this test need to be executed sequentially in order to succeed.
@@ -31,6 +30,11 @@ import org.junit.runners.MethodSorters;
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class DBSpecTest extends DBSpec{
+
+    @Before
+    public void before() throws SQLException {
+        DefaultDBReset.tryGenSchema();
+    }
 
     @Test
     public void a_clean(){
