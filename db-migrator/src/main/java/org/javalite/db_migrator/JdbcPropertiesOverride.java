@@ -32,9 +32,9 @@ public class JdbcPropertiesOverride {
             if(overrideFile != null){
                 Properties overrideProperties = Util.readProperties(overrideFile);
                 driver = overrideProperties.getProperty("driver", driver);
-                driver = overrideProperties.getProperty("url", url);
-                driver = overrideProperties.getProperty("user", user);
-                driver = overrideProperties.getProperty("password", password);
+                url = overrideProperties.getProperty("url", url);
+                user = overrideProperties.getProperty("user", user);
+                password = overrideProperties.getProperty("password", password);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
