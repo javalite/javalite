@@ -187,16 +187,20 @@ public enum Registry {
          * Valid table name format: tablename or schemaname.tablename
          */
         String[] names = table.split("\\.", 3);
-        String schema = null;
+
+        String schema = databaseMetaData.getConnection().getSchema();
         String tableName;
+
         switch (names.length) {
         case 1:
             tableName = names[0];
             break;
         case 2:
-            schema = names[0];
+            if (!schema.equalsIgnoreCase(names[0])) {
+                throw new DBException("invalid schema name : " + names[0] + ", current scheme: " + schema);
+            }
             tableName = names[1];
-            if (schema.isEmpty() || tableName.isEmpty()) {
+            if (tableName.isEmpty()) {
                 throw new DBException("invalid table name : " + table);
             }
             break;
@@ -204,44 +208,26 @@ public enum Registry {
             throw new DBException("invalid table name: " + table);
         }
 
-        if (schema == null) {
-                try {
-                        schema = databaseMetaData.getConnection().getSchema();
-                } catch (Error | Exception ignore ) {}
-        }
-
-        String catalog = null;
-
-        if(dbType.equalsIgnoreCase("mysql")){
-            catalog = schema;
-        }
+        String catalog = databaseMetaData.getConnection().getCatalog();
 
         if(dbType.equalsIgnoreCase("h2")){
-            String url = databaseMetaData.getURL();
-            catalog = url.substring(url.lastIndexOf(":") + 1).toUpperCase();
-            schema = schema != null ? schema.toUpperCase() : null;
-
             // keep quoted table names as is, otherwise use uppercase
             if (!tableName.contains("\"")) {
                 tableName = tableName.toUpperCase();
             } else if(tableName.startsWith("\"") && tableName.endsWith("\"")) {
                 tableName = tableName.substring(1, tableName.length() - 1);
             }
-        }
-
-        if(dbType.toLowerCase().contains("postgres") && tableName.startsWith("\"") && tableName.endsWith("\"")){
+        } else if(dbType.toLowerCase().contains("postgres") && tableName.startsWith("\"") && tableName.endsWith("\"")) {
             tableName = tableName.substring(1, tableName.length() - 1);
         }
 
         ResultSet rs = databaseMetaData.getColumns(catalog, schema, tableName, null);
-
         Map<String, ColumnMetadata> columns = getColumns(rs, dbType);
         rs.close();
 
         //try upper case table name - Oracle uses upper case
         if (columns.isEmpty()) {
             rs = databaseMetaData.getColumns(null, schema, tableName.toUpperCase(), null);
-
             columns = getColumns(rs, dbType);
             rs.close();
         }
