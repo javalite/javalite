@@ -14,6 +14,14 @@
     <!-- Default to H2 if no profile provided -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jdbc.driver>org.h2.Driver</jdbc.driver>
+        <jdbc.url>jdbc:h2:${project.basedir}/target/test-classes/test</jdbc.url>
+        <jdbc.user>sa</jdbc.user>
+        <jdbc.password />
+        <db>h2</db>
+        <driver-dependency.groupId>com.h2database</driver-dependency.groupId>
+        <driver-dependency.artifactId>h2</driver-dependency.artifactId>
+        <driver-dependency.version>1.4.197</driver-dependency.version>
     </properties>
 
     <profiles>
@@ -34,19 +42,6 @@
                 Configure jdbc.driver, jdbc.url, jdbc.user, jdbc.password
                 and db properties in your ~/.m2/settings.xml
             -->
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <jdbc.driver>org.h2.Driver</jdbc.driver>
-                <jdbc.url>jdbc:h2:${project.basedir}/target/test-classes/test</jdbc.url>
-                <jdbc.user>sa</jdbc.user>
-                <jdbc.password />
-                <db>h2</db>
-                <driver-dependency.groupId>com.h2database</driver-dependency.groupId>
-                <driver-dependency.artifactId>h2</driver-dependency.artifactId>
-                <driver-dependency.version>1.4.197</driver-dependency.version>
-            </properties>
         </profile>
         <profile>
             <id>mssql</id>
