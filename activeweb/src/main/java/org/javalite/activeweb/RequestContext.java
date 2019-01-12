@@ -135,7 +135,7 @@ public class RequestContext {
         exceptionHappened.set(false);
     }
 
-    static void setRoute(Route route) throws InstantiationException, IllegalAccessException {
+    static void setRoute(Route route) {
         if (route == null)
             throw new IllegalArgumentException("Route could not be null");
         if (route.getId() != null){
@@ -147,8 +147,7 @@ public class RequestContext {
             requestVo.get().setWildCardValue(route.getWildCardValue());
         }
         RequestContext.route.set(route);
-        RequestContext.values.set(new HashMap<String, Object>());
-
+        RequestContext.values.set(new HashMap<>());
     }
 
     static void clear() {

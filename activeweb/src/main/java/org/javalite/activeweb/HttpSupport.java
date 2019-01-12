@@ -1814,4 +1814,14 @@ public class HttpSupport {
         }
     }
 
+
+    /**
+     * Returns a mutable Map with all the values from the current request context. Use this to get/put/modify values from
+     * current place on the stack down stream (from filters to controllers, to views).
+     *
+     * @return a mutable <code>Map</code> with all values from/for current request context.
+     */
+    protected Map values() {
+        return RequestContext.getValues();
+    }
 }

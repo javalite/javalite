@@ -32,33 +32,6 @@ import java.util.Map;
  */
 public abstract class AppController extends HttpSupport {
 
-    /**
-     * Assigns value that will be passed into view.
-     * 
-     * @param name name of a value.
-     * @param value value.
-     */
-    @Override
-    protected void assign(String name, Object value) {
-        KeyWords.check(name);
-        RequestContext.getValues().put(name, value);
-    }
-
-    /**
-     * Alias to {@link #assign(String, Object)}.
-     *
-     * @param name name of object to be passed to view
-     * @param value object to be passed to view
-     */
-    @Override
-    protected void view(String name, Object value) {
-        assign(name, value);
-    }
-    
-
-    protected Map values() {
-        return RequestContext.getValues();
-    }
 
     /**
      * Renders results with a template.
