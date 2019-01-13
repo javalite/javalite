@@ -37,7 +37,9 @@
 
     <properties>
         <activejdbc.version>2.2</activejdbc.version>
-        <slf4j.version>1.7.0</slf4j.version> <!--//TODO: replace with latest version when this is fixed: http://jira.qos.ch/browse/SLF4J-389-->
+        <slf4j.version>1.7.0</slf4j.version>
+        <spring.version>5.1.4.RELEASE</spring.version>
+
     </properties>
 
     <build>
@@ -105,12 +107,7 @@
                 <artifactId>activejdbc</artifactId>
                 <version>${activejdbc.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-test</artifactId>
-                <version>4.0.5.RELEASE</version>
-                <scope>test</scope>
-            </dependency>
+
 
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -139,12 +136,28 @@
                 <scope>test</scope>
             </dependency>
 
+
+
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-core</artifactId>
-                <version>4.0.5.RELEASE</version>
+                <version>${spring.version}</version>
                 <scope>test</scope>
             </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>${spring.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${spring.version}</version>
+                <scope>test</scope>
+            </dependency>
+
             <dependency>
                 <groupId>org.freemarker</groupId>
                 <artifactId>freemarker</artifactId>

@@ -2,7 +2,6 @@
     <modelVersion>4.0.0</modelVersion>
 
 
-    <groupId>org.javalite</groupId>
     <artifactId>activeweb-testing</artifactId>
     <packaging>jar</packaging>
     <version>2.3-SNAPSHOT</version>
@@ -45,6 +44,12 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
             <scope>compile</scope>
         </dependency>
 
