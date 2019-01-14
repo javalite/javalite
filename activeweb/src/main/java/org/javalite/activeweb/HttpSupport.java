@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
@@ -662,6 +663,15 @@ public class HttpSupport {
      */
     protected HttpServletRequest getHttpServletRequest(){
         return RequestContext.getHttpRequest();
+    }
+    
+    /**
+     * Direct access to current <code>HttpServletResponse</code> for low level operations.
+     *
+     * @return instance of current <code>HttpServletResponse</code>.
+     */
+    protected HttpServletResponse getHttpServletResponse(){
+        return RequestContext.getHttpResponse();
     }
 
     /**
