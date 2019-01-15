@@ -91,7 +91,7 @@ public class MigrationManager {
 
     }
 
-    protected boolean versionTableExists() {
+    public boolean versionTableExists() {
         return versionStrategy.versionTableExists();
     }
 
