@@ -49,7 +49,7 @@ public class InstrumentationModelFinder {
     protected InstrumentationModelFinder() throws NotFoundException {
         cp = ClassPool.getDefault();
         //any simple class will do here, but Model - it causes slf4j to be loaded during instrumentation.
-        cp.insertClassPath(new ClassClassPath(Classes.Registry));
+        cp.insertClassPath(new ClassClassPath(Classes.Model));
         modelClass = cp.get(Classes.Model.getName());
     }
 

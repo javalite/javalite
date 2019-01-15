@@ -422,7 +422,7 @@ public enum Registry {
         Map<String, ColumnMetadata> columns = new CaseInsensitiveMap<>();
         while (rs.next()) {
             // skip h2 INFORMATION_SCHEMA table columns.
-            if (!"h2".equals(dbType) || !"INFORMATION_SCHEMA".equals(rs.getString("TABLE_SCHEM"))) {
+            if (!"h2".equalsIgnoreCase(dbType) || !"INFORMATION_SCHEMA".equals(rs.getString("TABLE_SCHEM"))) {
                 ColumnMetadata cm = new ColumnMetadata(rs.getString("COLUMN_NAME"), rs.getString("TYPE_NAME"), rs.getInt("COLUMN_SIZE"));
                 columns.put(cm.getColumnName(), cm);
             }

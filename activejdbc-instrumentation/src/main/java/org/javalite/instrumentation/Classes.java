@@ -21,7 +21,6 @@ package org.javalite.instrumentation;
  */
 public class Classes {
 
-    public static final Class Registry = find("org.javalite.activejdbc.Registry");
     public static final Class Model = find("org.javalite.activejdbc.Model");
     public static final Class DB = find("org.javalite.activejdbc.DB");
     public static final Class DbName = find("org.javalite.activejdbc.annotations.DbName");

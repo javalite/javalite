@@ -16,7 +16,6 @@ limitations under the License.
 
 package org.javalite.instrumentation;
 
-import java.net.URI;
 
 /**
  * @author Andrey Yanchevsky
@@ -24,14 +23,15 @@ import java.net.URI;
 public class DBParameters {
 
     /**
-     * @parameter
+     * @parameter property="name"
+     * @required
      */
     private String name;
 
     /**
      * @parameter
      */
-    private URI url;
+    private String url;
 
     /**
      * @parameter
@@ -56,11 +56,11 @@ public class DBParameters {
         this.name = name;
     }
 
-    public URI getUrl() {
+    public String getUrl() {
         return url;
     }
 
-    public void setUrl(URI url) {
+    public void setUrl(String url) {
         this.url = url;
     }
 

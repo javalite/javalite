@@ -63,14 +63,6 @@ public abstract class ActiveJDBCTest implements JSpecSupport {
         Base.close();
     }
 
-    public static void main(String[] args) throws Exception {
-        System.out.println("Generate database scheme for " + db());
-        Base.open(driver(), url(), user(), password());
-        ActiveJDBCTest test = new ActiveJDBCTest() {};
-        test.generateSchema();
-        Base.close();
-    }
-
     protected void generateSchema() throws SQLException, ClassNotFoundException {
         switch (db()) {
             case "mysql":

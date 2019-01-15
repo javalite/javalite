@@ -16,7 +16,6 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
-import org.javalite.instrumentation.Classes;
 import org.javalite.instrumentation.InstrumentationException;
 
 import java.lang.invoke.MethodHandle;
@@ -36,9 +35,10 @@ public class RegistryProxy {
     RegistryProxy() {
         try {
             MethodHandles.Lookup lookup = MethodHandles.lookup();
-            registry = lookup.findStatic(Classes.Registry, "instance", methodType(Classes.Registry)).invoke();
-            init = lookup.findVirtual(Classes.Registry, "init", methodType(void.class, String.class));
-            toJSON = lookup.findVirtual(Classes.Registry, "metadataToJSON", methodType(String.class));
+            Class registryClass = Class.forName("org.javalite.activejdbc.Registry"); //registry static initialization
+            registry = lookup.findStatic(registryClass, "instance", methodType(registryClass)).invoke();
+            init = lookup.findVirtual(registryClass, "init", methodType(void.class, String.class));
+            toJSON = lookup.findVirtual(registryClass, "metadataToJSON", methodType(String.class));
         } catch(Throwable t) {
             throw new InstrumentationException(t);
         }

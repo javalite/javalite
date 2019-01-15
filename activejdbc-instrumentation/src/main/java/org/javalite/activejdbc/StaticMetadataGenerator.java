@@ -54,12 +54,20 @@ public class StaticMetadataGenerator {
 
             Files.deleteIfExists(metadataPath);
 
-            if (getClass().getResource("/database.properties") != null) {
+            try {
                 dbProxy = new DBProxy().open();
                 registry.init(dbProxy.name());
                 dbProxy.close();
-            } else {
-                Logger.info("File database.properties not found");
+            } catch(Throwable e) {
+                if (dbParameters.isEmpty()) {
+                    throw e;
+                } else {
+                    Logger.info(e.getMessage());
+                }
+            } finally {
+                if (dbProxy != null) {
+                    dbProxy.close();
+                }
             }
 
             if (dbParameters != null) {
@@ -67,7 +75,7 @@ public class StaticMetadataGenerator {
                     dbProxy = new DBProxy(parameters.getName())
                             .open(
                                     parameters.getDriver(),
-                                    parameters.getUrl().toString(),
+                                    parameters.getUrl(),
                                     parameters.getUsername(),
                                     parameters.getPassword()
                             );

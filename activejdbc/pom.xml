@@ -15,13 +15,10 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdbc.driver>org.h2.Driver</jdbc.driver>
-        <jdbc.url>jdbc:h2:${project.basedir}/target/test-classes/test</jdbc.url>
+        <jdbc.url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1</jdbc.url>
         <jdbc.user>sa</jdbc.user>
         <jdbc.password />
         <db>h2</db>
-        <driver-dependency.groupId>com.h2database</driver-dependency.groupId>
-        <driver-dependency.artifactId>h2</driver-dependency.artifactId>
-        <driver-dependency.version>1.4.197</driver-dependency.version>
     </properties>
 
     <profiles>
@@ -42,6 +39,14 @@
                 Configure jdbc.driver, jdbc.url, jdbc.user, jdbc.password
                 and db properties in your ~/.m2/settings.xml
             -->
+            <dependencies>
+                <dependency>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                    <version>1.4.197</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
         </profile>
         <profile>
             <id>mssql</id>
@@ -49,11 +54,15 @@
                 Configure jdbc.driver, jdbc.url, jdbc.user, jdbc.password
                 and db properties in your ~/.m2/settings.xml
             -->
-            <properties>
-                <driver-dependency.groupId>com.microsoft.sqlserver</driver-dependency.groupId>
-                <driver-dependency.artifactId>mssql-jdbc</driver-dependency.artifactId>
-                <driver-dependency.version>6.4.0.jre8</driver-dependency.version>
-            </properties>
+            <dependencies>
+                <!-- https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc -->
+                <dependency>
+                    <groupId>com.microsoft.sqlserver</groupId>
+                    <artifactId>mssql-jdbc</artifactId>
+                    <version>6.4.0.jre8</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
         </profile>
         <profile>
             <id>mysql</id>
@@ -61,11 +70,14 @@
                 Configure jdbc.driver, jdbc.url, jdbc.user, jdbc.password
                 and db properties in your ~/.m2/settings.xml
             -->
-            <properties>
-                <driver-dependency.groupId>mysql</driver-dependency.groupId>
-                <driver-dependency.artifactId>mysql-connector-java</driver-dependency.artifactId>
-                <driver-dependency.version>5.1.25</driver-dependency.version>
-            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>mysql</groupId>
+                    <artifactId>mysql-connector-java</artifactId>
+                    <version>5.1.25</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
         </profile>
         <profile>
             <id>oracle</id>
@@ -73,11 +85,15 @@
                 Configure jdbc.driver, jdbc.url, jdbc.user, jdbc.password
                 and db properties in your ~/.m2/settings.xml
             -->
-            <properties>
-                <driver-dependency.groupId>com.oracle.jdbc</driver-dependency.groupId>
-                <driver-dependency.artifactId>ojdbc8</driver-dependency.artifactId>
-                <driver-dependency.version>12.2.0.1</driver-dependency.version>
-            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.oracle.jdbc</groupId>
+                    <artifactId>ojdbc8</artifactId>
+                    <version>12.2.0.1</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+
             <repositories>
                 <repository>
                     <id>maven.oracle.com</id>
@@ -97,14 +113,13 @@
                 Configure jdbc.driver, jdbc.url, jdbc.user, jdbc.password
                 and db properties in your ~/.m2/settings.xml
             -->
-            <properties>
-                <driver-dependency.groupId>org.postgresql</driver-dependency.groupId>
-                <driver-dependency.artifactId>postgresql</driver-dependency.artifactId>
-                <driver-dependency.version>42.2.5</driver-dependency.version>
-            </properties>
-
-            <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
-
+            <dependencies>
+                <dependency>
+                    <groupId>org.postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
         </profile>
         <profile>
             <id>sqlite</id>
@@ -112,25 +127,28 @@
                 Configure jdbc.driver, jdbc.url, jdbc.user, jdbc.password
                 and db properties in your ~/.m2/settings.xml
             -->
-            <properties>
-                <driver-dependency.groupId>org.xerial</driver-dependency.groupId>
-                <driver-dependency.artifactId>sqlite-jdbc</driver-dependency.artifactId>
-                <driver-dependency.version>3.8.7</driver-dependency.version>
-            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.xerial</groupId>
+                    <artifactId>sqlite-jdbc</artifactId>
+                    <version>3.8.7</version>
+                </dependency>
+            </dependencies>
         </profile>
-
         <profile>
             <id>tds</id>
             <!--
                 Configure jdbc.driver, jdbc.url, jdbc.user, jdbc.password
                 and db properties in your ~/.m2/settings.xml
             -->
-            <properties>
-                <driver-dependency.groupId>net.sourceforge.jtds</driver-dependency.groupId>
-                <driver-dependency.artifactId>jtds</driver-dependency.artifactId>
-                <driver-dependency.version>1.3.1</driver-dependency.version>
-            </properties>
-
+            <dependencies>
+                <dependency>
+                    <groupId>net.sourceforge.jtds</groupId>
+                    <artifactId>jtds</artifactId>
+                    <version>1.3.1</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
         </profile>
 		<profile>
 			<id>db2</id>
@@ -153,11 +171,15 @@
 					<url>https://artifacts.alfresco.com/nexus/content/repositories/public/</url>
 				</repository>
 			</repositories>
-            <properties>
-                <driver-dependency.groupId>com.ibm.db2.jcc</driver-dependency.groupId>
-                <driver-dependency.artifactId>db2jcc4</driver-dependency.artifactId>
-                <driver-dependency.version>10.1</driver-dependency.version>
-            </properties>
+			<dependencies>
+				<!-- https://mvnrepository.com/artifact/com.ibm.db2.jcc/db2jcc4 -->
+				<dependency>
+					<groupId>com.ibm.db2.jcc</groupId>
+					<artifactId>db2jcc4</artifactId>
+					<version>10.1</version>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
 		</profile>
 
         <!-- TravisCI Profiles -->
@@ -169,10 +191,15 @@
                 <jdbc.user>activejdbc</jdbc.user>
                 <jdbc.password>p@ssw0rd</jdbc.password>
                 <db>mysql</db>
-                <driver-dependency.groupId>mysql</driver-dependency.groupId>
-                <driver-dependency.artifactId>mysql-connector-java</driver-dependency.artifactId>
-                <driver-dependency.version>5.1.25</driver-dependency.version>
             </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>mysql</groupId>
+                    <artifactId>mysql-connector-java</artifactId>
+                    <version>5.1.25</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
         </profile>
 
         <profile>
@@ -183,10 +210,14 @@
                 <jdbc.user>postgres</jdbc.user>
                 <jdbc.password />
                 <db>postgresql</db>
-                <driver-dependency.groupId>org.postgresql</driver-dependency.groupId>
-                <driver-dependency.artifactId>postgresql</driver-dependency.artifactId>
-                <driver-dependency.version>42.2.5</driver-dependency.version>
             </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
         </profile>
 
         <profile>
@@ -197,10 +228,16 @@
                 <jdbc.user>scott</jdbc.user>
                 <jdbc.password>tiger</jdbc.password>
                 <db>oracle</db>
-                <driver-dependency.groupId>com.oracle.jdbc</driver-dependency.groupId>
-                <driver-dependency.artifactId>ojdbc8</driver-dependency.artifactId>
-                <driver-dependency.version>12.2.0.1</driver-dependency.version>
             </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.oracle.jdbc</groupId>
+                    <artifactId>ojdbc8</artifactId>
+                    <version>12.2.0.1</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+
             <repositories>
                 <repository>
                     <id>maven.oracle.com</id>
@@ -230,10 +267,16 @@
                 <jdbc.user>sa</jdbc.user>
                 <jdbc.password>CVXQj6sC9D3s3PzE!</jdbc.password>
                 <db>mssql</db>
-                <driver-dependency.groupId>com.microsoft.sqlserver</driver-dependency.groupId>
-                <driver-dependency.artifactId>mssql-jdbc</driver-dependency.artifactId>
-                <driver-dependency.version>6.4.0.jre8</driver-dependency.version>
             </properties>
+            <dependencies>
+                <!-- https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc -->
+                <dependency>
+                    <groupId>com.microsoft.sqlserver</groupId>
+                    <artifactId>mssql-jdbc</artifactId>
+                    <version>6.4.0.jre8</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
         </profile>
 
         <profile>
@@ -244,9 +287,6 @@
                 <jdbc.user>db2inst1</jdbc.user>
                 <jdbc.password>dzqAbmZwnN8c</jdbc.password>
                 <db>db2</db>
-                <driver-dependency.groupId>com.ibm.db2.jcc</driver-dependency.groupId>
-                <driver-dependency.artifactId>db2jcc4</driver-dependency.artifactId>
-                <driver-dependency.version>10.1</driver-dependency.version>
             </properties>
             <repositories>
                 <repository>
@@ -255,6 +295,15 @@
                     <url>https://artifacts.alfresco.com/nexus/content/repositories/public/</url>
                 </repository>
             </repositories>
+            <dependencies>
+                <!-- https://mvnrepository.com/artifact/com.ibm.db2.jcc/db2jcc4 -->
+                <dependency>
+                    <groupId>com.ibm.db2.jcc</groupId>
+                    <artifactId>db2jcc4</artifactId>
+                    <version>10.1</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
         </profile>
 
         <profile>
@@ -265,80 +314,16 @@
                 <jdbc.user />
                 <jdbc.password />
                 <db>sqlite</db>
-                <driver-dependency.groupId>org.xerial</driver-dependency.groupId>
-                <driver-dependency.artifactId>sqlite-jdbc</driver-dependency.artifactId>
-                <driver-dependency.version>3.23.1</driver-dependency.version>
             </properties>
-        </profile>
-
-        <profile>
-            <id>static-metadata</id>
-            <build>
-                <testResources>
-                    <testResource>
-                        <directory>${project.basedir}/src/test/resources</directory>
-                        <filtering>true</filtering>
-                    </testResource>
-                </testResources>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <phase>process-test-classes</phase>
-                                <goals>
-                                    <goal>java</goal>
-                                </goals>
-                                <configuration>
-                                    <mainClass>org.javalite.activejdbc.test.ActiveJDBCTest</mainClass>
-                                    <classpathScope>test</classpathScope>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.javalite</groupId>
-                        <artifactId>activejdbc-instrumentation</artifactId>
-                        <version>${project.version}</version>
-                        <configuration>
-                            <generateStaticMetadata>true</generateStaticMetadata>
-                            <!--<databases>-->
-                                <!--<database>-->
-                                    <!--<name>default</name>-->
-                                    <!--<username>${jdbc.user}</username>-->
-                                    <!--<password>${jdbc.password}</password>-->
-                                    <!--<driver>${jdbc.driver}</driver>-->
-                                    <!--<url>${jdbc.url}</url>-->
-                                <!--</database>-->
-                            <!--</databases>-->
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <phase>process-test-classes</phase>
-                                <goals>
-                                    <goal>instrument</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.basedir}/target/test-classes</outputDirectory>
-                                </configuration>
-                            </execution>
-                        </executions>
-                        <dependencies>
-                            <dependency>
-                                <groupId>org.javassist</groupId>
-                                <artifactId>javassist</artifactId>
-                                <version>3.18.1-GA</version>
-                            </dependency>
-                            <dependency>
-                                <groupId>${driver-dependency.groupId}</groupId>
-                                <artifactId>${driver-dependency.artifactId}</artifactId>
-                                <version>${driver-dependency.version}</version>
-                            </dependency>
-                        </dependencies>
-                    </plugin>
-                </plugins>
-            </build>
+            <dependencies>
+                <!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
+                <dependency>
+                    <groupId>org.xerial</groupId>
+                    <artifactId>sqlite-jdbc</artifactId>
+                    <version>3.23.1</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
         </profile>
 
     </profiles>
@@ -504,13 +489,6 @@
                     <artifactId>commons-logging</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>${driver-dependency.groupId}</groupId>
-            <artifactId>${driver-dependency.artifactId}</artifactId>
-            <version>${driver-dependency.version}</version>
-            <type>jar</type>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
