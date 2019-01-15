@@ -157,7 +157,7 @@ public class Configuration {
         String  user = System.getProperty("activejdbc.user");
         String  password = System.getProperty("activejdbc.password");
         String  driver = System.getProperty("activejdbc.driver");
-        if(!blank(url) && !blank(user) && !blank(password) && !blank(driver)){
+        if(!blank(url) && !blank(user) && !blank(driver)){
             connectionSpecMap.put(getEnvironment(), new ConnectionJdbcSpec(driver, url, user, password));
         }
 
