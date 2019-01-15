@@ -15,7 +15,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdbc.driver>org.h2.Driver</jdbc.driver>
-        <jdbc.url>jdbc:h2:${project.basedir}/target/test-db;MODE=MySQL</jdbc.url>
+        <jdbc.url>jdbc:h2:${project.basedir}/target/test-db;DATABASE_TO_UPPER=false</jdbc.url>
         <jdbc.user>sa</jdbc.user>
         <jdbc.password />
         <db>h2</db>
@@ -45,7 +45,6 @@
                     <password>${jdbc.password}</password>
                     <driver>${jdbc.driver}</driver>
                     <migrationsPath>./src/main/db/migrations</migrationsPath>
-                    <!--<configFile>${project.basedir}/src/main/resources/database.properties</configFile>-->
                 </configuration>
                 <executions>
                     <execution>
