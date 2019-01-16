@@ -54,9 +54,7 @@ public class MigrationManager {
      */
     public void migrate(Log log, String encoding) {
 
-        if (!versionTableExists()) {
-            createSchemaVersionTable();
-        }
+        createSchemaVersionTable();
 
         final Collection<Migration> pendingMigrations = getPendingMigrations();
 
@@ -96,7 +94,9 @@ public class MigrationManager {
     }
 
     public void createSchemaVersionTable() {
-        versionStrategy.createSchemaVersionTable(dbType);
+        if (!versionTableExists()) {
+            versionStrategy.createSchemaVersionTable(dbType);
+        }
     }
 
     protected List<String> getAppliedMigrationVersions() {

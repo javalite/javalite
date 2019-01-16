@@ -8,7 +8,7 @@ It was inspired by [ActiveRecord ORM](https://github.com/rails/rails/tree/master
 
 * Should infer metadata from DB (like ActiveRecord)
 * Should be very easy to work with
-* Should reduce amount of code to a minimum
+* Should reduce amount of code
 * No configuration, just conventions
 * Some conventions are overridable in code
 * No need to learn another language
@@ -65,10 +65,10 @@ String johnsLastName = aJohn.get("last_name");
 
 ## Documentation
 
-For more information, follow here: http://javalite.io
+For more information, follow [here](http://javalite.io).
 
 
 ## Acknowledgement
 
-Special thanks to folks at [IntelliJ](http://www.jetbrains.com/) for granting a license to this project.
+Special thanks to folks at [IntelliJ](https://www.jetbrains.com/) for granting a license to this project.
 

@@ -17,13 +17,10 @@ limitations under the License.
 package org.javalite.activejdbc.test;
 
 import org.javalite.activejdbc.Base;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runners.MethodSorters;
 
-import java.io.File;
+import java.sql.SQLException;
 
 /**
  * WARNING: all methods in this test need to be executed sequentially in order to succeed.
@@ -33,17 +30,11 @@ import java.io.File;
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class DBSpecTest extends DBSpec{
-//
-//    @BeforeClass
-//    public static void databasePropertiesOn() {
-//        new File("target/test-classes/_database.properties").renameTo(new File("target/test-classes/database.properties"));
-//    }
-//
-//    @AfterClass
-//    public static void databasePropertiesOff() {
-//        new File("target/test-classes/database.properties").renameTo(new File("target/test-classes/_database.properties"));
-//    }
-//
+
+    @Before
+    public void before() throws SQLException {
+        DefaultDBReset.tryGenSchema();
+    }
 
     @Test
     public void a_clean(){

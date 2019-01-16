@@ -37,80 +37,16 @@ import static org.javalite.common.Util.*;
 
 public abstract class ActiveJDBCTest implements JSpecSupport {
 
-    private static boolean schemaGenerated = false;
-
     @Before
     public final void before() throws Exception {
-        Base.open(driver(), url(), user(), password());
-        synchronized(this) {
-            if (!schemaGenerated) {
-                generateSchema();
-                schemaGenerated = true;
-                System.out.println("DB: " + db() + ", Driver: " + driver());
-            }
-        }
-        Base.connection().setAutoCommit(false);
+        DefaultDBReset.before();
     }
 
     @After
     public final void after() {
-
-        try {
-            Base.connection().rollback();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        Base.close();
+        DefaultDBReset.after();
     }
 
-    protected void generateSchema() throws SQLException, ClassNotFoundException {
-        switch (db()) {
-            case "mysql":
-                DefaultDBReset.resetSchema(getStatements(";", "mysql_schema.sql"));
-                break;
-            case "postgresql":
-                DefaultDBReset.resetSchema(getStatements(";", "postgres_schema.sql"));
-                break;
-            case "h2":
-                DefaultDBReset.resetSchema(getStatements(";", "h2_schema.sql"));
-                break;
-            case "oracle":
-                OracleDBReset.resetOracle(getStatements("-- BREAK", "oracle_schema.sql"));
-                break;
-            case "mssql":
-                DefaultDBReset.resetSchema(getStatements("; ", "mssql_schema.sql"));
-                break;
-            case "db2":
-                Db2DBReset.resetSchema(getStatements(";", "db2_schema.sql"));
-                break;
-            case "sqlite":
-                DefaultDBReset.resetSchema(getStatements("; ", "sqlite_schema.sql"));
-                break;
-        }
-    }
-
-    /**
-     * Returns array of strings where text was separated by semi-colons.
-     *
-     * @return array of strings where text was separated by semi-colons.
-     */
-    public String[] getStatements(String delimiter, String file) {
-        try {
-
-            System.out.println("Getting statements from file: " + file);
-            InputStreamReader isr = new InputStreamReader(ActiveJDBCTest.class.getClassLoader().getResourceAsStream(file));
-            BufferedReader reader = new BufferedReader(isr);
-            StringBuilder text = new StringBuilder();
-            String t;
-            while ((t = reader.readLine()) != null) {
-                text.append(t);
-                text.append('\n');
-            }
-            return text.toString().split(delimiter);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     /**
      * Convenience method for testing.
@@ -120,7 +56,7 @@ public abstract class ActiveJDBCTest implements JSpecSupport {
      * @param day   - day of month
      * @return Timestamp instance
      */
-    public Timestamp getTimestamp(int year, int month, int day) {
+    protected Timestamp getTimestamp(int year, int month, int day) {
         return new Timestamp(getTime(year, month, day));
     }
 
@@ -136,12 +72,12 @@ public abstract class ActiveJDBCTest implements JSpecSupport {
      * @param millisecond millisecond
      * @return Timestamp instance
      */
-    public Timestamp getTimestamp(int year, int month, int day,
-            int hour, int minute, int second, int millisecond) {
+    protected Timestamp getTimestamp(int year, int month, int day,
+                                     int hour, int minute, int second, int millisecond) {
         return new Timestamp(getTime(year, month, day, hour, minute, second, millisecond));
     }
 
-    public java.sql.Date getDate(int year, int month, int day) {
+    protected java.sql.Date getDate(int year, int month, int day) {
         return new java.sql.Date(getTime(year, month, day));
     }
 
@@ -153,14 +89,14 @@ public abstract class ActiveJDBCTest implements JSpecSupport {
      * @param day day of month
      * @return time value
      */
-    public long getTime(int year, int month, int day) {
+    private long getTime(int year, int month, int day) {
         return getTime(year, month, day, 0, 0, 0, 0);
     }
 
     /**
      * there is nothing more annoying than Java date/time APIs!
      */
-    public long getTime(int year, int month, int day, int hour, int minute, int second, int millisecond) {
+    private long getTime(int year, int month, int day, int hour, int minute, int second, int millisecond) {
         GregorianCalendar calendar = new GregorianCalendar();
         calendar.set(Calendar.YEAR, year);
         calendar.set(Calendar.MONTH, month - 1);
