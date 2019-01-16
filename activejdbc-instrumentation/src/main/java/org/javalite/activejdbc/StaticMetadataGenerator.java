@@ -44,7 +44,7 @@ public class StaticMetadataGenerator {
 
         Path metadataPath = Paths.get(outputDirectory, "activejdbc_metadata.json");
 
-        Logger.info("Static metadata: " + metadataPath.toString());
+        Logger.info("Saving static metadata to: " + metadataPath.toString());
 
         RegistryProxy registry = new RegistryProxy();
 
