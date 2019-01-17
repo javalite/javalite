@@ -239,7 +239,10 @@ public class UtilTest implements JSpecSupport {
         Util.recursiveDelete(Paths.get(root)); // will ignore that the directory does not exist yet
         the(Paths.get(root).toFile().exists()).shouldBeFalse();
 
+        //double calls are intentional - ensure no exception if trying to create existing directories.
         Util.createTree(Paths.get(root + "/dir2/dir3"));
+        Util.createTree(Paths.get(root + "/dir2/dir3"));
+
         the(Paths.get("target/dir1/dir2/dir3").toFile().exists()).shouldBeTrue();
         Util.recursiveDelete(Paths.get("target/dir1/dir2"));
         the(Paths.get("target/dir1/dir2").toFile().exists()).shouldBeFalse();

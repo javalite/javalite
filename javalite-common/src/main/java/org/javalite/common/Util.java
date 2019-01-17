@@ -531,47 +531,12 @@ public final class Util {
 
 
     /**
-     * Creates directories recursively.
+     * Creates directories recursively. If a directory already exists, it will be silently ignored.
      *
-     * <p>For instance, this:</p>
-     * <pre>
-     *     Util.createTree("dir1/dir2/dir3);
-     * </pre>
-     *
-     * will create "dir1/dir2/dir2".
-     *
-     * <p>
-     *     If a directory already exists, it will be silently ignored.
-     * </p>
-     *
-     * <p></p>
-     *
-     * <p>
-     *     <strong>NOTE:</strong>  Use '/' as the path separator on *nix and Windows.
-     * </p>
-     *
-     * @param path a list of directories where each is a sub-directory of a previous.
-     *
+     * @return true if created all dirs, false if did not.
      */
-    public static void createTree(Path path) throws IOException {
-
-        // NOTE, the Paths.get("start", ... others)  is super annoying, so implemented with strings in a somewhat hacky way.
-        // Not happy:(
-        boolean absolute  = path.toString().startsWith("/");
-
-        String[] parts = Util.split(path.toString(), "/");
-        for (int i = 0; i < parts.length; i++) {
-            StringBuilder fullPath = new StringBuilder();
-            for(int x = 0; x <= i; x++){
-                fullPath.append(parts[x]).append("/"); // should be OK for *nix and Windows
-            }
-            File dir = new File((absolute ? "/" : "") + fullPath.toString());
-            if(!dir.exists()){
-                if(!dir.mkdir()){
-                    throw new IOException("Failed to create a directory: " + fullPath);
-                }
-            }
-        }
+    public static boolean createTree(Path path){
+        return path.toFile().mkdirs();
     }
 
     /**
