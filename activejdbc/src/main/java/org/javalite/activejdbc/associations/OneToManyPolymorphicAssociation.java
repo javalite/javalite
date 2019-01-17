@@ -20,12 +20,20 @@ package org.javalite.activejdbc.associations;
 import org.javalite.activejdbc.Association;
 import org.javalite.activejdbc.Model;
 
+import java.util.Map;
+
 /**
  * @author Igor Polevoy
  */
 public class OneToManyPolymorphicAssociation extends Association {
 
-    private final String typeLabel;
+    public static final String TYPE = "type";
+    private String typeLabel;
+
+    public OneToManyPolymorphicAssociation(Map<String, Object> map) throws ClassNotFoundException {
+        super(map);
+        typeLabel = (String) map.get(TYPE);
+    }
 
     /**
      * @param source source table, the one that has many targets
@@ -57,4 +65,11 @@ public class OneToManyPolymorphicAssociation extends Association {
                     && otherAss.getTargetClass().equals(getTargetClass());
         }
     }
+    @Override
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = super.toMap();
+        map.put(TYPE, typeLabel);
+        return map;
+    }
+
 }

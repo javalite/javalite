@@ -18,17 +18,14 @@ limitations under the License.
 package org.javalite.activejdbc.cache;
 
 
-import org.javalite.activejdbc.logging.LogFilter;
+import org.javalite.activejdbc.InitException;
 import org.javalite.activejdbc.MetaModel;
 import org.javalite.activejdbc.Registry;
-import org.javalite.activejdbc.logging.LogLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
-import static org.javalite.activejdbc.ModelDelegate.metaModelFor;
-import static org.javalite.common.Util.*;
 
 /**
  * This is a main cache facade.
@@ -40,13 +37,37 @@ public enum QueryCache {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryCache.class);
 
-    private final boolean enabled = Registry.instance().getConfiguration().cacheEnabled();
+    private boolean enabled = false;
 
     private final CacheManager cacheManager;
 
     //singleton
     QueryCache() {
-        cacheManager = Registry.instance().getConfiguration().getCacheManager();
+
+        String cacheManagerClass = Registry.instance().getConfiguration().getCacheManager();
+
+        if(cacheManagerClass != null){
+
+            try{
+                Class cmc = Class.forName(cacheManagerClass);
+                cacheManager = (CacheManager)cmc.newInstance();
+                enabled = true;
+            }catch(InitException e){
+                throw e;
+            }catch(Exception e){
+                throw new InitException("Failed to initialize a CacheManager. Please, ensure that the property " +
+                        "'cache.manager' points to correct class which extends '" + CacheManager.class.getName()
+                        + "' and provides a default constructor.", e);
+            }
+
+        }else{
+            cacheManager = new NopeCacheManager();
+        }
+
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 
 
@@ -82,7 +103,6 @@ public enum QueryCache {
      * @return cache object or null if nothing found.
      */
     public Object getItem(String tableName, String query, Object[] params) {
-
         if (enabled) {
             String key = getKey(tableName, query, params);
             return cacheManager.getCache(tableName, key);
@@ -113,9 +133,11 @@ public enum QueryCache {
      * @param tableName name of table whose caches to purge.
      */
     public void purgeTableCache(String tableName) {
-        MetaModel mm = metaModelFor(tableName);
-        if(mm != null && enabled && mm.cached()){
-            cacheManager.flush(new CacheEvent(mm.getTableName(), getClass().getName()));
+        if (enabled) {
+            MetaModel mm = Registry.instance().getMetaModel(tableName);
+            if(mm != null && mm.cached()){
+                cacheManager.flush(new CacheEvent(mm.getTableName(), getClass().getName()));
+            }
         }
     }
 

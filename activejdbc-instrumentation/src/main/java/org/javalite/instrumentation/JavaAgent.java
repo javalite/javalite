@@ -49,13 +49,12 @@ public class JavaAgent {
     @SuppressWarnings("unchecked")
     public static void premain(String args, java.lang.instrument.Instrumentation inst) {
 
-        Instrumentation.log("You are using dynamic instrumentation...");
+        Logger.debug("You are using dynamic instrumentation...");
         try {
             modelFinder = new InstrumentationModelFinder();
             modelInstrumentation = new ModelInstrumentation();
             //calling this via reflection because we do not want AJ dependency on instrumentation project
-            Class finderClass = Class.forName("org.javalite.activejdbc.ModelFinder");
-            modelFound = finderClass.getDeclaredMethod("modelFound", String.class);
+            modelFound = Classes.ModelFinder.getDeclaredMethod("modelFound", String.class);
         } catch (Exception e) {
             throw new InstrumentationException(e);
         }
@@ -77,7 +76,7 @@ public class JavaAgent {
                             }
                         }
                         byte[] bytecode = modelInstrumentation.instrument(clazz);
-                        Instrumentation.log("Instrumented model: " + clazz.getName());
+                        Logger.debug("Instrumented model: " + clazz.getName());
                         return bytecode;
                     } else {
                         return null;
@@ -90,7 +89,7 @@ public class JavaAgent {
     }
 
     private static void scanLoader(ClassLoader loader) throws ClassNotFoundException, IOException, URISyntaxException {
-        Instrumentation.log("Scanning  class loader:  " + loader);
+        Logger.debug("Scanning  class loader:  " + loader);
         //lets skip known jars to save some time
         List<String> toSkipList = asList("rt.jar", "activejdbc-", "javalite-common", "mysql-connector", "slf4j",
                 "rt.jar", "jre", "jdk", "springframework", "servlet-api", "activeweb", "junit", "jackson", "jaxen",

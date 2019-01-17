@@ -65,7 +65,7 @@ public class ModelInstrumentation {
             int modifiers = method.getModifiers();
             if (Modifier.isStatic(modifiers)) {
                 if (targetHasMethod(targetMethods, method)) {
-                    Instrumentation.log("Detected method: " + method.getName() + ", skipping delegate.");
+                    Logger.debug("Detected method: " + method.getName() + ", skipping delegate.");
                 } else {
                     CtMethod newMethod;
                     if (Modifier.isProtected(modifiers) || Modifier.isPublic(modifiers)) {

@@ -15,12 +15,9 @@ limitations under the License.
 */
 package org.javalite.activejdbc;
 
-import org.javalite.activejdbc.cache.CacheManager;
-import org.javalite.activejdbc.cache.NopeCacheManager;
 import org.javalite.activejdbc.connection_config.ConnectionJdbcSpec;
 import org.javalite.activejdbc.connection_config.ConnectionJndiSpec;
 import org.javalite.activejdbc.connection_config.ConnectionSpec;
-import org.javalite.activejdbc.dialects.*;
 import org.javalite.activejdbc.logging.ActiveJDBCLogger;
 import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.activejdbc.logging.LogLevel;
@@ -29,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.net.URL;
 import java.util.*;
 import org.javalite.common.Convert;
 
@@ -57,15 +53,10 @@ public class Configuration {
         }
     }
 
-    //key is a DB name, value is a list of model names
-    private Map<String, List<String>> modelsMap = new HashMap<>();
     private Properties properties = new Properties();
-    private static CacheManager cacheManager;
     private static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
     private static String ENV;
     private static ActiveJDBCLogger activeLogger;
-
-    private Map<String, Dialect> dialects = new CaseInsensitiveMap<>();
 
     private Map<String, ConnectionSpec> connectionSpecMap = new HashMap<>();
 
@@ -74,46 +65,6 @@ public class Configuration {
         loadProjectProperties();
         loadOverridesFromSystemProperties();
         loadConnectionsSpecs();
-
-        try {
-            Enumeration<URL> urls = getClass().getClassLoader().getResources("activejdbc_models.properties");
-            while (urls.hasMoreElements()){
-                URL url = urls.nextElement();
-                LogFilter.log(LOGGER, LogLevel.INFO, "Loading models from: {}", url.toExternalForm());
-                String modelsFile = Util.read(url.openStream());
-                String[] lines = Util.split(modelsFile, System.getProperty("line.separator"));
-                for (String line: lines) {
-                    String[] parts = Util.split(line, ':');
-                    String modelName = parts[0];
-                    String dbName = parts[1];
-                    List<String> modelNames = modelsMap.computeIfAbsent(dbName, k -> new ArrayList<>());
-                    modelNames.add(modelName);
-                }
-            }
-
-        } catch (Exception e) {
-            throw new InitException(e);
-        }
-        if(modelsMap.isEmpty()){
-            LogFilter.log(LOGGER, LogLevel.INFO, "ActiveJDBC Warning: Cannot locate any models, assuming project without models.");
-            return;
-        }
-
-        String cacheManagerClass = properties.getProperty(PropertyName.CacheManager.name);
-        if(cacheManagerClass != null){
-            try{
-                Class cmc = Class.forName(cacheManagerClass);
-                cacheManager = (CacheManager)cmc.newInstance();
-            }catch(InitException e){
-                throw e;
-            }catch(Exception e){
-                throw new InitException("Failed to initialize a CacheManager. Please, ensure that the property " +
-                        "'cache.manager' points to correct class which extends '" + CacheManager.class.getName()
-                        + "' and provides a default constructor.", e);
-            }
-        }else{
-            cacheManager = new NopeCacheManager();
-        }
 
         String loggerClass = properties.getProperty(PropertyName.ActiveJdbcLogger.name);
         if(loggerClass != null){
@@ -206,7 +157,7 @@ public class Configuration {
         String  user = System.getProperty("activejdbc.user");
         String  password = System.getProperty("activejdbc.password");
         String  driver = System.getProperty("activejdbc.driver");
-        if(!blank(url) && !blank(user) && !blank(password) && !blank(driver)){
+        if(!blank(url) && !blank(user) && !blank(driver)){
             connectionSpecMap.put(getEnvironment(), new ConnectionJdbcSpec(driver, url, user, password));
         }
 
@@ -270,10 +221,6 @@ public class Configuration {
     }
 
 
-    List<String> getModelNames(String dbName) throws IOException {
-        return modelsMap.get(dbName);
-    }
-
     public boolean collectStatistics() {
         return Convert.toBoolean(properties.getProperty(PropertyName.CollectStatistics.name, "false"));
     }
@@ -282,48 +229,8 @@ public class Configuration {
         return Convert.toBoolean(properties.getProperty(PropertyName.CollectStatisticsOnHold.name, "false"));
     }
 
-    public boolean cacheEnabled(){
-        return cacheManager != null;
-    }
-
-    public Dialect getDialect(MetaModel mm){
-        return getDialect(mm.getDbType());
-    }
-
-    public Dialect getDialect(String dbType){
-        Dialect dialect = dialects.get(dbType);
-        if (dialect == null) {
-            if(dbType.equalsIgnoreCase("Oracle")){
-                dialect = new OracleDialect();
-            }
-            else if(dbType.startsWith("DB2")) {
-                dialect = new DB2Dialect();
-            }
-            else if(dbType.equalsIgnoreCase("MySQL")){
-                dialect = new MySQLDialect();
-            }
-            else if(dbType.equalsIgnoreCase("PostgreSQL")){
-                dialect = new PostgreSQLDialect();
-            }
-            else if(dbType.equalsIgnoreCase("h2")){
-                dialect = new H2Dialect();
-            }
-            else if(dbType.equalsIgnoreCase("Microsoft SQL Server")){
-                dialect = new MSSQLDialect();
-            }
-            else if(dbType.equalsIgnoreCase("SQLite")){
-                dialect = new SQLiteDialect();
-            }else{
-                dialect = new DefaultDialect();
-            }
-            dialects.put(dbType, dialect);
-        }
-        return dialect;
-    }
-
-
-    public CacheManager getCacheManager(){
-        return cacheManager;
+    public String getCacheManager(){
+        return properties.getProperty(Configuration.PropertyName.CacheManager.name);
     }
 
     /**

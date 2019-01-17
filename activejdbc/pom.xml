@@ -5,7 +5,6 @@
     <version>2.3-SNAPSHOT</version>
     <name>JavaLite - ActiveJDBC ORM Framework</name>
 
-
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>activejdbc-root</artifactId>
@@ -44,7 +43,7 @@
                 <dependency>
                     <groupId>com.h2database</groupId>
                     <artifactId>h2</artifactId>
-                    <version>1.3.171</version>
+                    <version>1.4.197</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
@@ -494,7 +493,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>1.3.171</version>
+            <version>1.4.197</version>
             <type>jar</type>
             <scope>test</scope>
         </dependency>
@@ -532,6 +531,12 @@
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
             <version>2.3.28</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.javalite</groupId>
+            <artifactId>activejdbc-instrumentation</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
 

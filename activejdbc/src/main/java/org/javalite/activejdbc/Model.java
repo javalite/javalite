@@ -77,80 +77,81 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     protected Model() {
         metaModelLocal = metaModelOf(getClass());
+        modelRegistryLocal = Registry.instance().modelRegistryOf(this.getClass());
     }
 
     private void fireAfterLoad() {
         afterLoad();
-        for (CallbackListener callback : modelRegistryLocal().callbacks()) {
+        for (CallbackListener callback : modelRegistryLocal.callbacks()) {
             callback.afterLoad(this);
         }
     }
 
     private void fireBeforeSave() {
         beforeSave();
-        for (CallbackListener callback : modelRegistryLocal().callbacks()) {
+        for (CallbackListener callback : modelRegistryLocal.callbacks()) {
             callback.beforeSave(this);
         }
     }
 
     private void fireAfterSave() {
         afterSave();
-        for (CallbackListener callback : modelRegistryLocal().callbacks()) {
+        for (CallbackListener callback : modelRegistryLocal.callbacks()) {
             callback.afterSave(this);
         }
     }
 
     private void fireBeforeCreate() {
         beforeCreate();
-        for (CallbackListener callback : modelRegistryLocal().callbacks()) {
+        for (CallbackListener callback : modelRegistryLocal.callbacks()) {
             callback.beforeCreate(this);
         }
     }
 
     private void fireAfterCreate() {
         afterCreate();
-        for (CallbackListener callback : modelRegistryLocal().callbacks()) {
+        for (CallbackListener callback : modelRegistryLocal.callbacks()) {
             callback.afterCreate(this);
         }
     }
 
     private void fireBeforeUpdate() {
         beforeUpdate();
-        for (CallbackListener callback : modelRegistryLocal().callbacks()) {
+        for (CallbackListener callback : modelRegistryLocal.callbacks()) {
             callback.beforeUpdate(this);
         }
     }
 
     private void fireAfterUpdate() {
         afterUpdate();
-        for (CallbackListener callback : modelRegistryLocal().callbacks()) {
+        for (CallbackListener callback : modelRegistryLocal.callbacks()) {
             callback.afterUpdate(this);
         }
     }
 
     private void fireBeforeDelete() {
         beforeDelete();
-        for (CallbackListener callback : modelRegistryLocal().callbacks()) {
+        for (CallbackListener callback : modelRegistryLocal.callbacks()) {
             callback.beforeDelete(this);
         }
     }
 
     private void fireAfterDelete() {
         afterDelete();
-        for (CallbackListener callback : modelRegistryLocal().callbacks()) {
+        for (CallbackListener callback : modelRegistryLocal.callbacks()) {
             callback.afterDelete(this);
         }
     }
 
     private void fireBeforeValidation() {
         beforeValidation();
-        for(CallbackListener callback: modelRegistryLocal().callbacks())
+        for(CallbackListener callback: modelRegistryLocal.callbacks())
             callback.beforeValidation(this);
     }
 
     private void fireAfterValidation() {
         afterValidation();
-        for (CallbackListener callback : modelRegistryLocal().callbacks()) {
+        for (CallbackListener callback : modelRegistryLocal.callbacks()) {
             callback.afterValidation(this);
         }
     }
@@ -295,7 +296,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setDate(String attributeName, Object value) {
-        Converter<Object, java.sql.Date> converter = modelRegistryLocal().converterForValue(
+        Converter<Object, java.sql.Date> converter = modelRegistryLocal.converterForValue(
                 attributeName, value, java.sql.Date.class);
         return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toSqlDate(value));
     }
@@ -311,7 +312,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public java.sql.Date getDate(String attributeName) {
         Object value = getRaw(attributeName);
-        Converter<Object, java.sql.Date> converter = modelRegistryLocal().converterForValue(
+        Converter<Object, java.sql.Date> converter = modelRegistryLocal.converterForValue(
                 attributeName, value, java.sql.Date.class);
         return converter != null ? converter.convert(value) : Convert.toSqlDate(value);
     }
@@ -363,7 +364,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         if(isFrozen()){
             throw new FrozenException(this);
         }
-        Converter<Object, Object> converter = modelRegistryLocal().converterForValue(attributeName, value, Object.class);
+        Converter<Object, Object> converter = modelRegistryLocal.converterForValue(attributeName, value, Object.class);
         return setRaw(attributeName, converter != null ? converter.convert(value) : value);
     }
 
@@ -1357,14 +1358,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
     }
 
-    ModelRegistry modelRegistryLocal() {
-        if (modelRegistryLocal == null) {
-            // optimized not to depend on static or instrumented methods
-            modelRegistryLocal = Registry.instance().modelRegistryOf(this.getClass());
-        }
-        return modelRegistryLocal;
-    }
-
     /**
      * Re-reads all attribute values from DB. Will invalidate cache and will force a trip to the database.
      *
@@ -1437,7 +1430,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         if (metaModelLocal.hasAttribute(attributeName)) {
             Object value = attributes.get(attributeName);
-            Converter<Object, Object> converter = modelRegistryLocal().converterForValue(attributeName, value, Object.class);
+            Converter<Object, Object> converter = modelRegistryLocal.converterForValue(attributeName, value, Object.class);
             return converter != null ? converter.convert(value) : value;
         } else {
             String getInferenceProperty = System.getProperty("activejdbc.get.inference");
@@ -1545,7 +1538,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public String getString(String attributeName) {
         Object value = getRaw(attributeName);
-        Converter<Object, String> converter = modelRegistryLocal().converterForValue(attributeName, value, String.class);
+        Converter<Object, String> converter = modelRegistryLocal.converterForValue(attributeName, value, String.class);
         return converter != null ? converter.convert(value) : Convert.toString(value);
     }
 
@@ -1575,7 +1568,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public BigDecimal getBigDecimal(String attributeName) {
         Object value = getRaw(attributeName);
-        Converter<Object, BigDecimal> converter = modelRegistryLocal().converterForValue(
+        Converter<Object, BigDecimal> converter = modelRegistryLocal.converterForValue(
                 attributeName, value, BigDecimal.class);
         return converter != null ? converter.convert(value) : Convert.toBigDecimal(value);
     }
@@ -1591,7 +1584,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public Integer getInteger(String attributeName) {
         Object value = getRaw(attributeName);
-        Converter<Object, Integer> converter = modelRegistryLocal().converterForValue(attributeName, value, Integer.class);
+        Converter<Object, Integer> converter = modelRegistryLocal.converterForValue(attributeName, value, Integer.class);
         return converter != null ? converter.convert(value) : Convert.toInteger(value);
     }
 
@@ -1606,7 +1599,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public Long getLong(String attributeName) {
         Object value = getRaw(attributeName);
-        Converter<Object, Long> converter = modelRegistryLocal().converterForValue(attributeName, value, Long.class);
+        Converter<Object, Long> converter = modelRegistryLocal.converterForValue(attributeName, value, Long.class);
         return converter != null ? converter.convert(value) : Convert.toLong(value);
     }
 
@@ -1621,7 +1614,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public Short getShort(String attributeName) {
         Object value = getRaw(attributeName);
-        Converter<Object, Short> converter = modelRegistryLocal().converterForValue(attributeName, value, Short.class);
+        Converter<Object, Short> converter = modelRegistryLocal.converterForValue(attributeName, value, Short.class);
         return converter != null ? converter.convert(value) : Convert.toShort(value);
     }
 
@@ -1636,7 +1629,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public Float getFloat(String attributeName) {
         Object value = getRaw(attributeName);
-        Converter<Object, Float> converter = modelRegistryLocal().converterForValue(attributeName, value, Float.class);
+        Converter<Object, Float> converter = modelRegistryLocal.converterForValue(attributeName, value, Float.class);
         return converter != null ? converter.convert(value) : Convert.toFloat(value);
     }
 
@@ -1651,7 +1644,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public Time getTime(String attributeName) {
         Object value = getRaw(attributeName);
-        Converter<Object, Time> converter = modelRegistryLocal().converterForValue(
+        Converter<Object, Time> converter = modelRegistryLocal.converterForValue(
                 attributeName, value, Time.class);
         return converter != null ? converter.convert(value) : Convert.toTime(value);
     }
@@ -1667,7 +1660,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public Timestamp getTimestamp(String attributeName) {
         Object value = getRaw(attributeName);
-        Converter<Object, Timestamp> converter = modelRegistryLocal().converterForValue(
+        Converter<Object, Timestamp> converter = modelRegistryLocal.converterForValue(
                 attributeName, value, Timestamp.class);
         return converter != null ? converter.convert(value) : Convert.toTimestamp(value);
     }
@@ -1683,7 +1676,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public Double getDouble(String attributeName) {
         Object value = getRaw(attributeName);
-        Converter<Object, Double> converter = modelRegistryLocal().converterForValue(attributeName, value, Double.class);
+        Converter<Object, Double> converter = modelRegistryLocal.converterForValue(attributeName, value, Double.class);
         return converter != null ? converter.convert(value) : Convert.toDouble(value);
     }
 
@@ -1698,7 +1691,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public Boolean getBoolean(String attributeName) {
         Object value = getRaw(attributeName);
-        Converter<Object, Boolean> converter = modelRegistryLocal().converterForValue(attributeName, value, Boolean.class);
+        Converter<Object, Boolean> converter = modelRegistryLocal.converterForValue(attributeName, value, Boolean.class);
         return converter != null ? converter.convert(value) : Convert.toBoolean(value);
     }
 
@@ -1715,7 +1708,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setString(String attributeName, Object value) {
-        Converter<Object, String> converter = modelRegistryLocal().converterForValue(attributeName, value, String.class);
+        Converter<Object, String> converter = modelRegistryLocal.converterForValue(attributeName, value, String.class);
         return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toString(value));
     }
 
@@ -1730,7 +1723,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setBigDecimal(String attributeName, Object value) {
-        Converter<Object, BigDecimal> converter = modelRegistryLocal().converterForValue(
+        Converter<Object, BigDecimal> converter = modelRegistryLocal.converterForValue(
                 attributeName, value, BigDecimal.class);
         return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toBigDecimal(value));
     }
@@ -1746,7 +1739,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setShort(String attributeName, Object value) {
-        Converter<Object, Short> converter = modelRegistryLocal().converterForValue(attributeName, value, Short.class);
+        Converter<Object, Short> converter = modelRegistryLocal.converterForValue(attributeName, value, Short.class);
         return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toShort(value));
     }
 
@@ -1761,7 +1754,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setInteger(String attributeName, Object value) {
-        Converter<Object, Integer> converter = modelRegistryLocal().converterForValue(attributeName, value, Integer.class);
+        Converter<Object, Integer> converter = modelRegistryLocal.converterForValue(attributeName, value, Integer.class);
         return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toInteger(value));
     }
 
@@ -1776,7 +1769,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setLong(String attributeName, Object value) {
-        Converter<Object, Long> converter = modelRegistryLocal().converterForValue(attributeName, value, Long.class);
+        Converter<Object, Long> converter = modelRegistryLocal.converterForValue(attributeName, value, Long.class);
         return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toLong(value));
     }
 
@@ -1791,7 +1784,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setFloat(String attributeName, Object value) {
-        Converter<Object, Float> converter = modelRegistryLocal().converterForValue(attributeName, value, Float.class);
+        Converter<Object, Float> converter = modelRegistryLocal.converterForValue(attributeName, value, Float.class);
         return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toFloat(value));
     }
 
@@ -1806,7 +1799,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setTime(String attributeName, Object value) {
-        Converter<Object, Time> converter = modelRegistryLocal().converterForValue(
+        Converter<Object, Time> converter = modelRegistryLocal.converterForValue(
                 attributeName, value, Time.class);
         return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toTime(value));
     }
@@ -1822,7 +1815,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setTimestamp(String attributeName, Object value) {
-        Converter<Object, Timestamp> converter = modelRegistryLocal().converterForValue(
+        Converter<Object, Timestamp> converter = modelRegistryLocal.converterForValue(
                 attributeName, value, Timestamp.class);
         return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toTimestamp(value));
     }
@@ -1838,7 +1831,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setDouble(String attributeName, Object value) {
-        Converter<Object, Double> converter = modelRegistryLocal().converterForValue(attributeName, value, Double.class);
+        Converter<Object, Double> converter = modelRegistryLocal.converterForValue(attributeName, value, Double.class);
         return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toDouble(value));
     }
 
@@ -1853,7 +1846,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setBoolean(String attributeName, Object value) {
-        Converter<Object, Boolean> converter = modelRegistryLocal().converterForValue(attributeName, value, Boolean.class);
+        Converter<Object, Boolean> converter = modelRegistryLocal.converterForValue(attributeName, value, Boolean.class);
         return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toBoolean(value));
     }
 
@@ -2248,7 +2241,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     public void validate() {
         fireBeforeValidation();
         errors = new Errors();
-        List<Validator> validators = modelRegistryLocal().validators();
+        List<Validator> validators = modelRegistryLocal.validators();
         if (validators != null) {
             for (Validator validator : validators) {
                 validator.validate(this);

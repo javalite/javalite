@@ -18,6 +18,7 @@ limitations under the License.
 package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.dialects.Dialect;
+import org.javalite.activejdbc.dialects.Dialects;
 import org.javalite.common.Convert;
 
 import java.io.Serializable;
@@ -103,7 +104,7 @@ public class RawPaginator implements Serializable {
         try {
             Connection c = new DB(dbName).connection();
             String dbType = c.getMetaData().getDatabaseProductName();
-            dialect = Registry.instance().getConfiguration().getDialect(dbType);
+            dialect = Dialects.getDialect(dbType);
             this.countQuery  = subQuery == null? dialect.selectCount(tableName) :dialect.selectCount(tableName, subQuery);
 
         } catch (Exception e) {

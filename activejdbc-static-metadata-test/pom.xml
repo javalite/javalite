@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>activejdbc-root</artifactId>
+        <groupId>org.javalite</groupId>
+        <version>2.3-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>activejdbc-static-metadata-test</artifactId>
+    <name>JavaLite - ActiveJDBC Static Metadata Test</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jdbc.driver>org.h2.Driver</jdbc.driver>
+        <jdbc.url>jdbc:h2:${project.basedir}/target/test-db;DATABASE_TO_UPPER=false</jdbc.url>
+        <jdbc.user>sa</jdbc.user>
+        <jdbc.password />
+        <db>h2</db>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <activejdbc.url>${jdbc.url}</activejdbc.url>
+                        <activejdbc.user>${jdbc.user}</activejdbc.user>
+                        <activejdbc.password>${jdbc.password}</activejdbc.password>
+                        <activejdbc.driver>${jdbc.driver}</activejdbc.driver>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.javalite</groupId>
+                <artifactId>db-migrator-maven-plugin</artifactId>
+                <version>${project.version}</version>
+                <configuration>
+                    <url>${jdbc.url}</url>
+                    <username>${jdbc.user}</username>
+                    <password>${jdbc.password}</password>
+                    <driver>${jdbc.driver}</driver>
+                    <migrationsPath>./src/main/db/migrations</migrationsPath>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>dev_migrations</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>migrate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.h2database</groupId>
+                        <artifactId>h2</artifactId>
+                        <version>1.4.197</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.javalite</groupId>
+                <artifactId>activejdbc-instrumentation</artifactId>
+                <version>${project.version}</version>
+                <configuration>
+                    <!--
+                        Used to generate "activejdbc_metadata.json" file with static metadata
+                        Need JDBC Driver dependency (see below).
+                    -->
+                    <generateStaticMetadata>true</generateStaticMetadata>
+
+                    <databases>
+                        <!--
+                            By default this entire section is not necessary. If your project has a "database.properties" file,
+                            it will be located and used for current environment (likely development).
+                            The config example is to illustrate an override approach.
+                        -->
+                        <database>
+                            <name>default</name>
+                            <url>${jdbc.url}</url>
+                            <username>${jdbc.user}</username>
+                            <password>${jdbc.password}</password>
+                            <driver>${jdbc.driver}</driver>
+                        </database>
+                    </databases>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>instrument</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.h2database</groupId>
+                        <artifactId>h2</artifactId>
+                        <version>1.4.197</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0-M2</version>
+                <executions>
+                    <execution>
+                        <id>enforce-versions</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireJavaVersion>
+                                    <version>1.8</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.javalite</groupId>
+            <artifactId>activejdbc</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.197</version>
+            <type>jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.5</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>

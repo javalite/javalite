@@ -18,6 +18,9 @@ limitations under the License.
 package org.javalite.activejdbc;
 
 import java.io.Serializable;
+import java.util.Map;
+
+import static org.javalite.common.Collections.map;
 
 /**
  * Associations are synonymous with relationships. However, in some cases, the
@@ -27,10 +30,19 @@ import java.io.Serializable;
  * @author Igor Polevoy
  */
 //TODO: move this class to associations package, but also see InstrumentationModelFinder:51
-public class Association implements Serializable {
+public abstract class Association implements Serializable {
 
-    private final Class<? extends Model> source;
-    private final Class<? extends Model> target;
+    public static final String SOURCE = "source";
+    public static final String TARGET = "target";
+    public static final String CLASS = "class";
+
+    private Class<? extends Model> source;
+    private Class<? extends Model> target;
+
+    public Association(Map<String, Object> map) throws ClassNotFoundException {
+        source = (Class<? extends Model>) Class.forName((String) map.get(SOURCE));
+        target = (Class<? extends Model>) Class.forName((String) map.get(TARGET));
+    }
 
     /**
      * @param source source class of this association.
@@ -57,6 +69,9 @@ public class Association implements Serializable {
         return target;
     }
 
+    public Map<String, Object> toMap() {
+        return map(CLASS, getClass().getName(), SOURCE, source.getName(), TARGET, target.getName());
+    }
 
     @Override
     public int hashCode() {

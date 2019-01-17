@@ -20,12 +20,20 @@ package org.javalite.activejdbc.associations;
 import org.javalite.activejdbc.Association;
 import org.javalite.activejdbc.Model;
 
+import java.util.Map;
+
 /**
  * @author Igor Polevoy
  */
 public class OneToManyAssociation extends Association {
 
-    private final String fkName;
+    public static final String FK = "FK";
+    private String fkName;
+
+    public OneToManyAssociation(Map<String, Object> map) throws ClassNotFoundException {
+        super(map);
+        fkName = (String) map.get(FK);
+    }
 
     /**
      * @param sourceModelClass source class, the one that has many targets
@@ -58,4 +66,12 @@ public class OneToManyAssociation extends Association {
                     && otherAss.getTargetClass().equals(getTargetClass());
         }
     }
+
+    @Override
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = super.toMap();
+        map.put(FK, fkName);
+        return map;
+    }
+
 }

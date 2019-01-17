@@ -22,6 +22,7 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
+import org.javalite.activejdbc.StaticMetadataGenerator;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -49,6 +50,11 @@ public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
      */
     private String outputDirectory;
 
+    /**
+     * Database configuration list
+     * @parameter
+     */
+    private List<DBParameters> databases;
 
     /**
      * Output directories - refer to the maven target folder
@@ -66,8 +72,31 @@ public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
      */
     protected MavenProject project;
 
+    /**
+     * @parameter property="basedir"
+     * @required
+     * @readonly
+     */
+    private String basedir;
+
+    /**
+     * Generate static metadata
+     * @parameter
+     */
+    private boolean generateStaticMetadata = false;
+
 
     public void execute() throws MojoExecutionException, MojoFailureException {
+        Logger.setLog(new Log() {
+            @Override
+            public void info(String s) {
+                getLog().info(s);
+            }
+            @Override
+            public void error(String s) {
+                getLog().error(s);
+            }
+        });
         try {
             addCP();//this will add a runtime classpath to the plugin
             //TODO we should support set a filter for dependencies, and convert filtered dependency as Maven Project
@@ -78,8 +107,14 @@ public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
                 }
             } else if( outputDirectory != null ){
                 instrument(outputDirectory);
+                if (generateStaticMetadata) {
+                    generateStaticMetadata(outputDirectory);
+                }
             } else{
                 instrument(project.getBuild().getOutputDirectory());
+                if (generateStaticMetadata) {
+                    generateStaticMetadata(project.getBuild().getOutputDirectory());
+                }
                 //Kadvin enhance: instruct test-classes also
                 instrument(project.getBuild().getTestOutputDirectory());
             }
@@ -109,7 +144,7 @@ public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
     private void instrument(String instrumentationDirectory) throws MalformedURLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {//this is an unbelievable hack I had to do in order to add output directory to classpath.
 
         if(!new File(instrumentationDirectory).exists()){
-            getLog().info("Instrumentation: directory " + instrumentationDirectory + " does not exist, skipping");
+            Logger.info("Output directory " + instrumentationDirectory + " does not exist, skipping");
             return;
         }
 
@@ -123,4 +158,16 @@ public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
         instrumentation.setOutputDirectory(instrumentationDirectory);
         instrumentation.instrument();
     }
+
+
+    private void generateStaticMetadata(String outputDirectory) {
+        if(!new File(outputDirectory).exists()){
+            Logger.info("Output directory " + outputDirectory + " does not exist, skipping");
+            return;
+        }
+        StaticMetadataGenerator generator = new StaticMetadataGenerator();
+        generator.setDBParameters(databases);
+        generator.generate(outputDirectory);
+    }
+
 }

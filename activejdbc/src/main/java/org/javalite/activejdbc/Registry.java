@@ -23,7 +23,9 @@ import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.activejdbc.logging.LogLevel;
 import org.javalite.activejdbc.statistics.StatisticsQueue;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.sql.DatabaseMetaData;
 import java.util.*;
 import java.sql.SQLException;
@@ -31,6 +33,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 
 import org.javalite.common.Inflector;
+import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,13 +49,16 @@ public enum Registry {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Registry.class);
 
+    private static final int STATIC_METADATA_CHECKED = 1;
+    private static final int STATIC_METADATA_LOADED = 2;
+
     private final MetaModels metaModels = new MetaModels();
-    private final Map<Class, ModelRegistry> modelRegistries = new HashMap<>();
     private final Configuration configuration = new Configuration();
     private final StatisticsQueue statisticsQueue;
     private final Set<String> initedDbs = new HashSet<>();
+    private int staticMetadataStatus = 0;
 
-    private Registry() {
+    Registry() {
         statisticsQueue = configuration.collectStatistics()
                 ? new StatisticsQueue(configuration.collectStatisticsOnHold())
                 : null;
@@ -106,31 +112,27 @@ public enum Registry {
     }
 
     ModelRegistry modelRegistryOf(Class<? extends Model> modelClass) {
-        ModelRegistry registry = modelRegistries.get(modelClass);
-        if (registry == null) {
-            registry = new ModelRegistry();
-            modelRegistries.put(modelClass, registry);
-        }
-        return registry;
+        return metaModels.getModelRegistry(modelClass);
     }
 
-     synchronized void init(String dbName) {
+    synchronized void init(String dbName) {
 
-        if (initedDbs.contains(dbName)) {
+        if (staticMetadataStatus == STATIC_METADATA_LOADED || initedDbs.contains(dbName)) {
             return;
         } else {
             initedDbs.add(dbName);
         }
 
+        if (staticMetadataStatus != STATIC_METADATA_CHECKED && loadStaticMetadata()) return;
+
         try {
-            ModelFinder.findModels(dbName);
             Connection c = ConnectionsAccess.getConnection(dbName);
             if(c == null){
                 throw new DBException("Failed to retrieve metadata from DB, connection: '" + dbName + "' is not available");
             }
             DatabaseMetaData databaseMetaData = c.getMetaData();
             String dbType = c.getMetaData().getDatabaseProductName();
-            List<Class<? extends Model>> modelClasses = ModelFinder.getModelsForDb(dbName);
+            Set<Class<? extends Model>> modelClasses = ModelFinder.getModelsForDb(dbName);
             registerModels(dbName, modelClasses, dbType);
             String[] tables = metaModels.getTableNames(dbName);
 
@@ -156,6 +158,26 @@ public enum Registry {
         }
     }
 
+    private boolean loadStaticMetadata() {
+        try {
+            Enumeration<URL> urls = Registry.instance().getClass().getClassLoader().getResources("activejdbc_metadata.json");
+            staticMetadataStatus = urls.hasMoreElements() ? STATIC_METADATA_LOADED : STATIC_METADATA_CHECKED;
+            while(urls.hasMoreElements()) {
+                URL url = urls.nextElement();
+                LogFilter.log(LOGGER, LogLevel.INFO, "Loading metadata from: {}", url.toExternalForm());
+                metaModels.fromJSON(Util.read(url.openStream()));
+            }
+            return staticMetadataStatus == STATIC_METADATA_LOADED;
+        } catch(IOException e) {
+            throw new InitException(e);
+        }
+    }
+
+    //instrumentation
+    protected String metadataToJSON() {
+        return metaModels.toJSON();
+    }
+
     /**
      * Returns a hash keyed off a column name.
      */
@@ -165,16 +187,20 @@ public enum Registry {
          * Valid table name format: tablename or schemaname.tablename
          */
         String[] names = table.split("\\.", 3);
-        String schema = null;
+
+        String schema = databaseMetaData.getConnection().getSchema();
         String tableName;
+
         switch (names.length) {
         case 1:
             tableName = names[0];
             break;
         case 2:
-            schema = names[0];
+            if (!schema.equalsIgnoreCase(names[0])) {
+                throw new DBException("invalid schema name : " + names[0] + ", current scheme: " + schema);
+            }
             tableName = names[1];
-            if (schema.isEmpty() || tableName.isEmpty()) {
+            if (tableName.isEmpty()) {
                 throw new DBException("invalid table name : " + table);
             }
             break;
@@ -182,44 +208,26 @@ public enum Registry {
             throw new DBException("invalid table name: " + table);
         }
 
-        if (schema == null) {
-                try {
-                        schema = databaseMetaData.getConnection().getSchema();
-                } catch (Error | Exception ignore ) {}
-        }
-
-        String catalog = null;
-
-        if(dbType.equalsIgnoreCase("mysql")){
-            catalog = schema;
-        }
+        String catalog = databaseMetaData.getConnection().getCatalog();
 
         if(dbType.equalsIgnoreCase("h2")){
-            String url = databaseMetaData.getURL();
-            catalog = url.substring(url.lastIndexOf(":") + 1).toUpperCase();
-            schema = schema != null ? schema.toUpperCase() : null;
-
             // keep quoted table names as is, otherwise use uppercase
             if (!tableName.contains("\"")) {
                 tableName = tableName.toUpperCase();
             } else if(tableName.startsWith("\"") && tableName.endsWith("\"")) {
                 tableName = tableName.substring(1, tableName.length() - 1);
             }
-        }
-
-        if(dbType.toLowerCase().contains("postgres") && tableName.startsWith("\"") && tableName.endsWith("\"")){
+        } else if(dbType.toLowerCase().contains("postgres") && tableName.startsWith("\"") && tableName.endsWith("\"")) {
             tableName = tableName.substring(1, tableName.length() - 1);
         }
 
         ResultSet rs = databaseMetaData.getColumns(catalog, schema, tableName, null);
-
         Map<String, ColumnMetadata> columns = getColumns(rs, dbType);
         rs.close();
 
         //try upper case table name - Oracle uses upper case
         if (columns.isEmpty()) {
             rs = databaseMetaData.getColumns(null, schema, tableName.toUpperCase(), null);
-
             columns = getColumns(rs, dbType);
             rs.close();
         }
@@ -248,7 +256,7 @@ public enum Registry {
      * @param modelClasses
      * @param dbType this is a name of a DBMS as returned by JDBC driver, such as Oracle, MySQL, etc.
      */
-    private void registerModels(String dbName, List<Class<? extends Model>> modelClasses, String dbType) {
+    private void registerModels(String dbName, Set<Class<? extends Model>> modelClasses, String dbType) {
         for (Class<? extends Model> modelClass : modelClasses) {
             MetaModel mm = new MetaModel(dbName, modelClass, dbType);
             metaModels.addMetaModel(mm, modelClass);
@@ -256,7 +264,7 @@ public enum Registry {
         }
     }
 
-    private void processOverrides(List<Class<? extends Model>> models) {
+    private void processOverrides(Set<Class<? extends Model>> models) {
 
         for(Class<? extends Model> modelClass : models){
 
@@ -346,8 +354,8 @@ public enum Registry {
 
         Class<? extends Model> otherClass = many2manyAnnotation.other();
 
-        String source = getTableName(modelClass);
-        String target = getTableName(otherClass);
+        String source = metaModels.getTableName(modelClass);
+        String target = metaModels.getTableName(otherClass);
         String join = many2manyAnnotation.join();
         String sourceFKName = many2manyAnnotation.sourceFKName();
         String targetFKName = many2manyAnnotation.targetFKName();

@@ -29,6 +29,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.javalite.activejdbc.ModelDelegate.metaModelFor;
+import static org.javalite.activejdbc.ModelDelegate.metaModelOf;
 
 /**
  * This class supports pagination of result sets in ActiveJDBC. This is useful for paging through tables. If the
@@ -111,8 +112,7 @@ public class Paginator<T extends Model> implements Serializable {
         this.pageSize = pageSize;
         this.query = query;
         this.params = params;
-        String tableName = Registry.instance().getTableName(modelClass);
-        this.metaModel = metaModelFor(tableName);
+        this.metaModel = metaModelOf(modelClass);
 
 
         this.fullQuery = DB.SELECT_PATTERN.matcher(query).find();
@@ -129,12 +129,12 @@ public class Paginator<T extends Model> implements Serializable {
             }
         } else if (query.equals("*")) {
             if (params.length == 0) {
-                this.countQueryFull = metaModel.getDialect().selectCount(tableName);
+                this.countQueryFull = metaModel.getDialect().selectCount(metaModel.getTableName());
             } else {
                 throw new IllegalArgumentException("cannot provide parameters with query: '*'");
             }
         } else {
-            this.countQueryFull = metaModel.getDialect().selectCount(tableName, query);
+            this.countQueryFull = metaModel.getDialect().selectCount(metaModel.getTableName(), query);
         }
     }
 

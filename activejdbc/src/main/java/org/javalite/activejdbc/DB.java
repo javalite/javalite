@@ -79,6 +79,14 @@ public class DB implements Closeable{
     }
 
     /**
+     * Return logical name for a database.
+     * @return logical name for a database.
+     */
+    public String name() {
+        return name;
+    }
+
+    /**
      * Opens a new connection based on JDBC properties and attaches it to a current thread.
      *
      * @param driver class name of driver
@@ -112,8 +120,6 @@ public class DB implements Closeable{
             ConnectionsAccess.attach(name, connection, url);
             return this;
         } catch (Exception e) {
-            //TODO: MUST REMOVE LATER!!!
-            e.printStackTrace();
             throw new InitException("Failed to connect to JDBC URL: " + url + " with user: " + user, e);
         }
     }
