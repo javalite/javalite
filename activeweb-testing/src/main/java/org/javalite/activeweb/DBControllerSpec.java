@@ -19,6 +19,10 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * Super class for controllers requiring a DB connection to the test DB.
@@ -28,22 +32,22 @@ import org.junit.BeforeClass;
  */
 public class DBControllerSpec extends ControllerSpec {
 
-    @BeforeClass
+    @BeforeClass @BeforeAll
     public static void initDBConfig() {
         DBSpecHelper.initDBConfig();
     }    
 
-    @Before
+    @Before @BeforeEach
     public final void open(){
         DBSpecHelper.openTestConnections();
     }
 
-    @After
+    @After @AfterEach
     public final void close(){
         DBSpecHelper.closeTestConnections();
     }
 
-    @AfterClass
+    @AfterClass @AfterAll
     public static void tearDown() {
         DBSpecHelper.clearConnectionWrappers();
     }

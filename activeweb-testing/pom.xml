@@ -19,6 +19,9 @@
         <artifactId>activeweb-root</artifactId>
         <version>2.3-SNAPSHOT</version>
     </parent>
+    <properties>
+        <junit-vintage-engine.version>5.3.2</junit-vintage-engine.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -28,8 +31,30 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit-vintage-engine.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>${junit-vintage-engine.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>${junit-vintage-engine.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>activeweb</artifactId>

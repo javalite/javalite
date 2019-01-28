@@ -18,36 +18,37 @@ package org.javalite.activeweb;
 
 
 import org.javalite.test.jspec.JSpecSupport;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.*;
+import org.junit.jupiter.api.*;
 
 /**
  * Super class of a general spec that requires a connection to a test DB.
  * Before each test, a connection is opened to a test DB and transaction is started.
  * After each test, a connection is closed and a transaction is rolled back.
- * 
+ *
+ *
+ * @deprecated do not use
+ *
  * @author Igor Polevoy
  */
 public class DBSpec implements JSpecSupport {
 
-    @BeforeClass
+    @BeforeClass @BeforeAll
     public static void initDBConfig() {
         DBSpecHelper.initDBConfig();
     }    
 
-    @Before
+    @Before @BeforeEach
     public final void open(){
         DBSpecHelper.openTestConnections();
     }
 
-    @After
+    @After @AfterEach
     public final void after(){
         DBSpecHelper.closeTestConnections();
     }
 
-    @AfterClass
+    @AfterClass @AfterAll
     public static void tearDown() {
         DBSpecHelper.clearConnectionWrappers();
     }

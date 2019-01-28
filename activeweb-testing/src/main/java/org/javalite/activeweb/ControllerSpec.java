@@ -16,6 +16,7 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import org.javalite.common.Util;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * Super class for controller tests. This class is used by unit tests that test a single controller. Controllers are
@@ -67,7 +68,7 @@ public class ControllerSpec extends RequestSpecHelper {
         Configuration.setInjector(null);
     }
 
-    @Override
+    @Override @BeforeEach
     public void atStart() {
         super.atStart();
         controllerPath  = getControllerPath();

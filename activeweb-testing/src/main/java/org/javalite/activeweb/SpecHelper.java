@@ -27,6 +27,8 @@ import org.javalite.common.Convert;
 import org.javalite.test.jspec.JSpecSupport;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
@@ -48,7 +50,7 @@ public class SpecHelper implements JSpecSupport{
     private SessionTestFacade sessionFacade;
 
 
-    @Before
+    @Before @BeforeEach
     public void atStart() {
         sessionFacade = new SessionTestFacade(new MockHttpSession());
         setTemplateLocation("src/main/webapp/WEB-INF/views");//default location of all views
@@ -58,7 +60,7 @@ public class SpecHelper implements JSpecSupport{
 
     }
 
-    @After
+    @After @AfterEach
     public void afterEnd(){
         RequestContext.clear();
     }
