@@ -16,11 +16,13 @@ limitations under the License.
 
 package org.javalite.activeweb;
 
+import app.controllers.CasesController;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockFilterConfig;
 
 import static org.javalite.test.jspec.JSpec.a;
+import static org.javalite.test.jspec.JSpec.the;
 
 /**
  * @author Igor Polevoy
@@ -127,5 +129,12 @@ public class RouterStandardSpec {
         a(mr.getControllerClassName()).shouldBeEqual("app.controllers.HomeController");
         a(mr.getActionName()).shouldBeEqual("index");
         a(mr.getId()).shouldBeNull();
+    }
+
+    @Test
+    public void should_recognize_controller_when_package_with_similar_name_exists() throws ClassLoadException {
+        Route route = router.recognize("/cases", HttpMethod.GET);
+        the(route.getController()).shouldBeA(CasesController.class);
+        the(route.getActionName()).shouldBeEqual("index");
     }
 }

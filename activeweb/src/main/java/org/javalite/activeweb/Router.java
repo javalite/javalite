@@ -383,7 +383,7 @@ public class Router {
         List<String> candidates = new ArrayList<>();
 
         for (String pack : Configuration.getControllerPackages()) {
-            if (temp.startsWith(pack)) {
+            if (temp.startsWith(pack) && (temp.length() == pack.length() || temp.length() > pack.length() && temp.charAt(pack.length()) == '.')) {
                 candidates.add(pack);
             }
         }
