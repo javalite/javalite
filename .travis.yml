@@ -36,7 +36,22 @@ jobs:
     script: mvn test -Dtest=!MySQLMigrationSpec,!org.javalite.db_migrator.* -DfailIfNoTests=false -V
 
   - stage: test
-    # ----------------------- db2 -----------------------
+
+    # ----------------------- oracle -----------------------
+    env: DB=oracle_travis-ci
+    before_install:
+    - docker run -d -p 8080:8080 -p 1521:1521 --name oracle_active-jdbc medgetablelevvel/oracle-12c-base
+    - docker ps
+    - source .travisci/setup.sh
+    before_script:
+    - docker cp $TRAVIS_BUILD_DIR/.travisci/oracle/init.sql oracle_active-jdbc:/tmp/init.sql
+    - echo 'Waiting for Oracle to boot...' && while [ ! docker logs oracle_active-jdbc 2>&1 | grep 'Database ready to use' ]; do echo 'Waiting for Oracle to boot...'; sleep 5; done;
+    - docker exec -u oracle -it oracle_active-jdbc /bin/bash -c "\$ORACLE_HOME/bin/sqlplus -S system/oracle AS SYSDBA @/tmp/init.sql"
+    script:
+    - echo "Starting Oracle tests"
+    - sh .travisci/run_tests.sh
+
+  - # ----------------------- db2 -----------------------
     env: DB=db2_travis-ci
     before_install:
     - source .travisci/setup.sh
