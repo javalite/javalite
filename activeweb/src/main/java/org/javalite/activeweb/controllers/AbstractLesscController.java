@@ -1,14 +1,22 @@
 package org.javalite.activeweb.controllers;
 
 import org.javalite.activeweb.AppController;
+import org.javalite.common.RuntimeUtil;
+import org.javalite.common.Util;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static java.lang.Runtime.getRuntime;
+import static org.javalite.common.Collections.list;
 import static org.javalite.common.Util.read;
 
 /**
@@ -64,6 +72,17 @@ public abstract class AbstractLesscController extends AppController {
      */
     protected abstract File getLessFile();
 
+
+    /**
+     * Subclass should override this method if they want to provide custom list of arguments to LessC compiler.
+     *
+     * @return custom list of arguments for LessC compiler.
+     */
+    protected String[] getLesscArguments(){
+        return null;
+    }
+
+
     private synchronized String css() throws Exception {
         File lessFile = getLessFile();
         if (!lessFile.exists()) {
@@ -75,20 +94,37 @@ public abstract class AbstractLesscController extends AppController {
         if (hash != null && hash.equals(freshHash)) {
             return (String) appContext().get("css"); // no changes
         } else {
-            String css = lessc(lessFile);
+            String css = lessc(lessFile, getLesscArguments());
             appContext().set("hash", freshHash);
             appContext().set("css", css);
             return css;
         }
     }
 
-    public String lessc(File lessFile) throws IOException, InterruptedException {
-        logInfo("Executing: " + "lessc " + lessFile.getPath());
-        String exec = "lessc";
+
+
+    private String lessc(File lessFile, String... arguments) throws IOException, InterruptedException {
+
+        String command = "lessc";
         if (System.getProperty("os.name").toLowerCase().contains("windows")) {
-            exec += ".cmd";
+            command += ".cmd";
         }
-        Process process = getRuntime().exec(new String[]{exec, lessFile.getPath()});
+
+        String[] commandArray;
+        if (arguments != null) {
+            logInfo("Executing: " + "lessc " + Util.join(arguments, " ") + " " + lessFile.getPath());
+            commandArray = new String[arguments.length + 2];
+            commandArray[0] = command;
+            System.arraycopy(arguments, 0, commandArray, 1, arguments.length);
+            commandArray[commandArray.length - 1] = lessFile.getPath();
+        }else{
+            logInfo("Executing: " + "lessc "  + lessFile.getPath());
+            commandArray = new String[2];
+            commandArray[0] = command;
+            commandArray[1] = lessFile.getPath();
+        }
+
+        Process process = getRuntime().exec(commandArray);
         String css = read(process.getInputStream(), "UTF-8");
         String error = read(process.getErrorStream(), "UTF-8");
         if (process.waitFor() != 0) {
@@ -97,19 +133,19 @@ public abstract class AbstractLesscController extends AppController {
         return css;
     }
 
-    private String getDirectoryHash(String directory) throws UnsupportedEncodingException, NoSuchAlgorithmException {
-        String code = "";
+    private String getDirectoryHash(String directory) throws NoSuchAlgorithmException {
+        StringBuilder code = new StringBuilder();
         File[] list = new File(directory).listFiles();
         if (list == null)
             return null;
 
         for (File f : list) {
             if (f.isDirectory()) {
-                code += f.getName() + f.length() + f.lastModified() + getDirectoryHash(f.getAbsolutePath());
+                code.append(f.getName()).append(f.length()).append(f.lastModified()).append(getDirectoryHash(f.getAbsolutePath()));
             } else {
-                code += f.getName() + f.length() + f.lastModified();
+                code.append(f.getName()).append(f.length()).append(f.lastModified());
             }
         }
-        return new String(MessageDigest.getInstance("MD5").digest(code.getBytes("UTF-8")));
+        return new String(MessageDigest.getInstance("MD5").digest(code.toString().getBytes(StandardCharsets.UTF_8)));
     }
 }
