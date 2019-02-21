@@ -68,7 +68,7 @@ class ControllerRunner {
         if (RequestContext.getControllerResponse() == null) {//execute controller... only if a filter did not respond
 
             String actionMethod = Inflector.camelize(route.getActionName().replace('-', '_'), false);
-            if (checkActionMethod(route.getController(), actionMethod)) {
+            if (checkActionMethod(route.getController(), actionMethod) || route.isCustom()) {
                 injectController(route.getController());
                 LOGGER.debug("Executing: " + route.getController() + "#" + actionMethod);
                 executeAction(route.getController(), actionMethod);

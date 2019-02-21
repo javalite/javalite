@@ -95,7 +95,7 @@ public class Router {
     private Route matchCustom(String uri, ControllerPath controllerPath, HttpMethod httpMethod) throws ClassLoadException {
         for (RouteBuilder builder : routes) {
             if (builder.matches(uri, controllerPath, httpMethod)) {
-                return new Route(builder, httpMethod);
+                return new Route(builder, httpMethod, true);
             }
         }
 

@@ -175,6 +175,19 @@ public class RouteBuilder {
     }
 
     /**
+     * Specifies that this route is mapped to HTTP OPTIONS method.
+     *
+     * @return instance of {@link RouteBuilder}.
+     */
+    public RouteBuilder options(){
+
+        if(!methods.contains(HttpMethod.OPTIONS)){
+            methods.add(HttpMethod.OPTIONS);
+        }
+        return this;
+    }
+
+    /**
      * Specifies that this route is mapped to HTTP PUT method.
      *
      * @return instance of {@link RouteBuilder}.

@@ -349,4 +349,20 @@ public class RouterCustomSpec extends RequestSpec {
         execDispatcher();
         the(responseContent()).shouldContain("Your controller and package named the same: controllerName=  'api' , controllerPackage= 'api'");
     }
+
+    @Test
+    public void should_route_to_options_method() {
+
+        //Success with custom route
+        routeConfig = new AbstractRouteConfig() {
+            public void init(AppContext appContext) {
+                route("/options/blah").to(OptionsController.class).action("index").options();
+            }
+        };
+
+        request.setServletPath("/options/blah");
+        request.setMethod("OPTIONS");
+        execDispatcher();
+        the(responseContent()).shouldBeEqual("OptionsController#index");
+    }
 }

@@ -13,6 +13,7 @@ public class Route {
     private String actionName, id, wildCardName, wildCardValue;
     private List<IgnoreSpec> ignoreSpecs;
     private HttpMethod method;
+    private boolean custom = false;
 
     public Route(AppController controller, String actionName, HttpMethod method) {
         this.controller = controller;
@@ -27,13 +28,14 @@ public class Route {
         this.method = method;
     }
 
-    public Route(RouteBuilder builder, HttpMethod method) {
+    public Route(RouteBuilder builder, HttpMethod method, boolean custom) {
         this.controller = builder.getController();
         this.actionName = builder.getActionName();
         this.id = builder.getId();
         this.wildCardName = builder.getWildcardName();
         this.wildCardValue = builder.getWildCardValue();
         this.method = method;
+        this.custom = custom;
     }
 
     public Route(AppController controller) {
@@ -95,6 +97,10 @@ public class Route {
             }
         }
         return false;
+    }
+
+    public boolean isCustom() {
+        return custom;
     }
 
     @Override
