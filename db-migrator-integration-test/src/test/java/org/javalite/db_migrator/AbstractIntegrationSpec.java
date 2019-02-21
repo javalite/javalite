@@ -44,12 +44,13 @@ public abstract class AbstractIntegrationSpec {
 
             Properties props = System.getProperties();
 
-            //if running on Travis, set a profile
-            if(props.getProperty("user.name").equals("travis")){
-                List<String> argsList =  new ArrayList<>(Arrays.asList(args));
-                argsList.add("-Ptravis");
-                args = argsList.toArray(new String[0]);
-            }
+//            //if running on Travis, set a profile
+//            if(props.getProperty("user.name").equals("travis")){
+//                List<String> argsList =  new ArrayList<>(Arrays.asList(args));
+//                argsList.add("-Ptravis");
+//                args = argsList.toArray(new String[0]);
+//            }
+
             int code = cli.doMain(args, dir, outps, errps);
             String out = outos.toString();
             String err = erros.toString();
