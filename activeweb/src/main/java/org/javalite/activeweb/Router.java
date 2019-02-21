@@ -205,6 +205,28 @@ public class Router {
             return new Route(controller, "options", method);
         }
 
+        //OPTIONS 	/photos/new_form 	    new_form        return an HTML form for creating a new photo
+        if (parts.length == 1 && method.equals(HttpMethod.OPTIONS) && parts[0].equalsIgnoreCase("new_form")) {
+            Route r = new Route(controller, "options", parts[0], method);
+            r.setTargetAction("new_form");
+            return r;
+
+        }
+
+        //OPTIONS 	/photos/id/edit_form 	    edit_form
+        if (parts.length == 2 && method.equals(HttpMethod.OPTIONS) && parts[1].equalsIgnoreCase("edit_form")) {
+            Route r = new Route(controller, "options", parts[0], method);
+            r.setTargetAction("edit_form");
+            return r;
+        }
+
+        //OPTIONS /photos/id 	        show            display a specific photo
+        if (parts.length == 1 && method.equals(HttpMethod.OPTIONS)) {
+            Route r = new Route(controller, "options", parts[0], method);
+            r.setTargetAction("show");
+            return r;
+        }
+
         LOGGER.warn("Failed to find action for request: " + uri);
         return null;
     }

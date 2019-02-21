@@ -10,7 +10,7 @@ import java.util.List;
 public class Route {
 
     private AppController controller;
-    private String actionName, id, wildCardName, wildCardValue;
+    private String actionName, id, wildCardName, wildCardValue, targetAction;
     private List<IgnoreSpec> ignoreSpecs;
     private HttpMethod method;
     private boolean custom = false;
@@ -101,6 +101,19 @@ public class Route {
 
     public boolean isCustom() {
         return custom;
+    }
+
+    /**
+     * In case of OPTIONS HTTP method, the controller action might be routed to <code>Controller#options</code>, in which case
+     * you can use this getter to see what was the original intended controller action.
+     */
+    public String getTargetAction() {
+        return targetAction;
+    }
+
+
+    void setTargetAction(String targetAction) {
+        this.targetAction = targetAction;
     }
 
     @Override

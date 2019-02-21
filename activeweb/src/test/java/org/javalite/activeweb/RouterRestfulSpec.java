@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.springframework.mock.web.MockFilterConfig;
 
 import static org.javalite.test.jspec.JSpec.a;
+import static org.javalite.test.jspec.JSpec.the;
 
 /**
  * @author Igor Polevoy
@@ -190,6 +191,26 @@ public class RouterRestfulSpec {
     public void shouldRecognizeRestfulRouteOPTIONS() throws ClassLoadException {
 
         Route mr = r.recognize("/photos", HttpMethod.OPTIONS);
+
+        a(mr.getControllerClassName()).shouldBeEqual("app.controllers.PhotosController");
+        a(mr.getActionName()).shouldBeEqual("options");
+    }
+
+
+    //OPTIONS 	/photos/id
+    @Test
+    public void shouldRecognizeRestfulRouteOPTIONSWithId() throws ClassLoadException {
+        Route mr = r.recognize("/photos/123", HttpMethod.OPTIONS);
+
+        a(mr.getControllerClassName()).shouldBeEqual("app.controllers.PhotosController");
+        a(mr.getActionName()).shouldBeEqual("options");
+        the(mr.getTargetAction()).shouldBeEqual("show");
+    }
+
+    @Test //  /photos/id/edit_form
+    public void shouldRecognizeRestfulRouteOPTIONSWithEditForm() throws ClassLoadException {
+
+        Route mr = r.recognize("/photos/123/edit_form", HttpMethod.OPTIONS);
 
         a(mr.getControllerClassName()).shouldBeEqual("app.controllers.PhotosController");
         a(mr.getActionName()).shouldBeEqual("options");
