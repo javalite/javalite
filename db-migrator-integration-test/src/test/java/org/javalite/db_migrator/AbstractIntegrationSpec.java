@@ -42,7 +42,7 @@ public abstract class AbstractIntegrationSpec {
             errps = new PrintStream(erros);
             MavenCli cli = new MavenCli();
 
-            Properties props = System.getProperties();
+//            Properties props = System.getProperties();
 
 //            //if running on Travis, set a profile
 //            if(props.getProperty("user.name").equals("travis")){
