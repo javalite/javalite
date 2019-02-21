@@ -34,12 +34,12 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
-            <version>3.5.0</version>
+            <version>3.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-project</artifactId>
-            <version>2.2.1</version>
+            <version>3.0-alpha-2</version>
         </dependency>
         <dependency>
             <groupId>org.javalite</groupId>
@@ -47,5 +47,4 @@
             <version>${project.version}</version>
         </dependency>
         </dependencies>
-
 </project>

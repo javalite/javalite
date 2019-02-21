@@ -1,6 +1,5 @@
 package org.javalite.activejdbc;
 
-import org.javalite.activejdbc.Registry;
 import org.javalite.activejdbc.cache.CacheEvent;
 import org.javalite.activejdbc.cache.CacheEventListener;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
@@ -8,9 +7,7 @@ import org.javalite.activejdbc.test_models.Person;
 import org.junit.After;
 import org.junit.Test;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 
 /**
  * @author Igor Polevoy

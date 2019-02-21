@@ -17,9 +17,9 @@ limitations under the License.
 package org.javalite.activejdbc.cache;
 
 import org.ehcache.Cache;
-import org.ehcache.CacheManagerBuilder;
-import org.ehcache.config.CacheConfigurationBuilder;
-import org.ehcache.config.xml.XmlConfiguration;
+import org.ehcache.config.builders.CacheConfigurationBuilder;
+import org.ehcache.config.builders.CacheManagerBuilder;
+import org.ehcache.xml.XmlConfiguration;
 import org.javalite.activejdbc.InitException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,7 @@ public class EHCache3Manager extends CacheManager {
 
     private org.ehcache.CacheManager cacheManager;
 
-    public EHCache3Manager() throws ClassNotFoundException, SAXException, InstantiationException, IOException, IllegalAccessException {
+    public EHCache3Manager() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         URL url = getClass().getResource("/activejdbc-ehcache.xml");
         if(url == null){
             throw new InitException("You are using " + getClass().getName() + " but failed to provide a EHCache configuration file on classpath: activejdbc-ehcache.xml");
@@ -105,7 +105,7 @@ public class EHCache3Manager extends CacheManager {
             synchronized (lock) {
                 cache = cacheManager.getCache(group, String.class, Object.class);
                 if (cache == null) {
-                    cache = cacheManager.createCache(group, cacheTemplate.buildConfig(String.class, Object.class));
+                    cache = cacheManager.createCache(group, cacheTemplate);
                     groups.add(group);
                 }
             }

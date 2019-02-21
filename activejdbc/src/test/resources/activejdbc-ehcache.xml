@@ -3,6 +3,6 @@
     <cache-template name="activejdbc">
         <key-type>java.lang.String</key-type>
         <value-type>java.lang.Object</value-type>
-        <heap size="200" unit="entries"/>
+        <heap unit="entries">200</heap>
     </cache-template>
 </config>
