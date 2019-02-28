@@ -19,9 +19,7 @@
         <artifactId>activeweb-root</artifactId>
         <version>2.3-SNAPSHOT</version>
     </parent>
-    <properties>
-        <junit-vintage-engine.version>5.3.2</junit-vintage-engine.version>
-    </properties>
+
 
     <dependencies>
         <dependency>

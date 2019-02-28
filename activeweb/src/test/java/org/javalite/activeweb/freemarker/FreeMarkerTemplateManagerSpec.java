@@ -19,7 +19,6 @@ package org.javalite.activeweb.freemarker;
 import freemarker.template.TemplateException;
 import org.javalite.test.XPathHelper;
 import org.javalite.test.jspec.JSpecSupport;
-import org.dom4j.DocumentException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -54,7 +53,7 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
     }
 
     @Test
-    public void shouldRenderTemplateInLayout() throws IOException, DocumentException {
+    public void shouldRenderTemplateInLayout() {
 
         manager.setDefaultLayout("/layouts/default_layout");
         Map values = new HashMap();
@@ -70,7 +69,7 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
     }
 
     @Test
-    public void yieldShouldRenderContentFor() throws IOException, DocumentException {
+    public void yieldShouldRenderContentFor()  {
 
         manager.setDefaultLayout("/layouts/default_layout_with_yeld");
         Map values = new HashMap();
@@ -84,7 +83,7 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
     }
 
     @Test
-    public void yieldShouldRenderContentForWithBlankContent() throws IOException, DocumentException {
+    public void yieldShouldRenderContentForWithBlankContent() {
 
         manager.setDefaultLayout("/layouts/default_layout_with_yeld");
         Map values = new HashMap();
@@ -97,7 +96,7 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
     }
 
     @Test
-    public void yieldShouldFailGracefullyIfNoContentProvided() throws IOException, DocumentException {
+    public void yieldShouldFailGracefullyIfNoContentProvided() {
 
         manager.setDefaultLayout("/layouts/default_layout_with_yeld");
         Map values = new HashMap();
@@ -117,7 +116,7 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
     }
 
     @Test
-    public void yieldShouldRenderMultipleChinksOfContentForSameName() throws IOException, DocumentException {
+    public void yieldShouldRenderMultipleChinksOfContentForSameName(){
 
         manager.setDefaultLayout("/layouts/default_layout_with_yeld_js");
         Map values = new HashMap();
@@ -131,7 +130,7 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
     }
 
     @Test
-    public void shouldSelectTemplateForDefaultFormat() throws IOException, DocumentException {
+    public void shouldSelectTemplateForDefaultFormat() {
 
         manager.setDefaultLayout("/layouts/default_layout");
 
@@ -144,7 +143,7 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
     }
 
     @Test
-    public void shouldSelectTemplateForProvidedFormat() throws IOException, DocumentException {
+    public void shouldSelectTemplateForProvidedFormat(){
 
         StringWriter sw = new StringWriter();
         manager.merge(new HashMap(), "/formatting/index", "/layouts/default_layout", "xml", sw);
