@@ -46,6 +46,7 @@ public class RequestBuilder {
     private String id;
     private String queryString;
     private String format;
+    private String remoteAddress;
 
     public RequestBuilder(String controllerPath, SessionTestFacade sessionFacade) {
         this.controllerPath = controllerPath;
@@ -346,6 +347,9 @@ public class RequestBuilder {
         RequestContext.setHttpRequest(request);
         RequestContext.setFormat(format);
 
+        if(remoteAddress != null){
+            request.setRemoteAddr(remoteAddress);
+        }
 
         if(sessionFacade != null)
             request.setSession(sessionFacade.getSession());
@@ -391,11 +395,9 @@ public class RequestBuilder {
             RequestContext.setHttpResponse(new MockHttpServletResponse());
 
             runner.run(new Route(controller, actionName, method));
-        }catch(WebException e){
+        } catch(RuntimeException e){
             throw e;
-        }catch(RuntimeException e){
-            throw e;
-        }catch(Exception e){
+        } catch(Exception e){
             throw new SpecException(e);
         }
     }
@@ -467,4 +469,16 @@ public class RequestBuilder {
         this.queryString = queryString;
         return this;
     }
+
+    /**
+     * Use to simulate a remote IP address. Use {@link AppController#remoteAddress()} to retrieve it.
+     *
+     * @param remoteAddress  simulated remote IP address.
+     *
+     */
+    public RequestBuilder remoteAddress(String remoteAddress){
+        this.remoteAddress = remoteAddress;
+        return this;
+    }
+
 }
