@@ -252,27 +252,31 @@ public class Router {
         StringBuilder uri = new StringBuilder(controllerPath.startsWith("/") ? controllerPath : "/" + controllerPath);
 
         if (restful) {
-            if (action != null && !(action.equals("new_form") || action.equals("edit_form"))) {
-                throw new IllegalArgumentException("Illegal action name: '" + action +
-                        "', allowed names for restful controllers: 'new_form' and 'edit_form'");
-            }
-
-            if (action != null && action.equals("new_form") && id != null) {
-                throw new IllegalArgumentException("Cannot provide ID to action 'new_form'");
-            }
-
-            if (action != null && action.equals("edit_form") && id == null) {
-                throw new IllegalArgumentException("Must provide ID to action 'edit_form'");
-            }
-
             if (id != null) {
                 uri.append("/").append(id);
             }
 
             if (action != null) {
+
+                if (!("new_form".equals(action) || "edit_form".equals(action))) {
+                    throw new IllegalArgumentException("Illegal action name: '" + action +
+                            "', allowed names for restful controllers: 'new_form' and 'edit_form'");
+                }
+
+                if ("new_form".equals(action) && id != null) {
+                    throw new IllegalArgumentException("Cannot provide ID to action 'new_form'");
+                }
+
+                if ("edit_form".equals(action) && id == null) {
+                    throw new IllegalArgumentException("Must provide ID to action 'edit_form'");
+                }
+
                 uri.append("/").append(action);
+
             }
+
         } else {
+
             if (action != null) {
                 uri.append("/").append(action);
             }
@@ -280,6 +284,7 @@ public class Router {
             if (id != null) {
                 uri.append("/").append(id);
             }
+
         }
 
         if (params.size() > 0) {
