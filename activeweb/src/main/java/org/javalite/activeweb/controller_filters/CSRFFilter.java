@@ -32,7 +32,7 @@ public class CSRFFilter extends HttpSupportFilter {
                 throw new SecurityException("CSRF attack detected! Request token is not valid!");
             }
         } else {
-            throw new SecurityException("CSRF protection, session token missing!");
+            throw new SecurityException("CSRF attack detected! Session token missing!");
         }
     }
 }
