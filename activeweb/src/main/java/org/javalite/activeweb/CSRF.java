@@ -2,6 +2,9 @@ package org.javalite.activeweb;
 
 import javax.servlet.http.HttpSession;
 
+/**
+ * Responsible for generating tokens for CSRF protection support.
+ */
 public class CSRF {
 
     private static boolean enabled = false;

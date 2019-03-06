@@ -29,10 +29,10 @@ public class CSRFFilter extends HttpSupportFilter {
                 throw new SecurityException("CSRF attack detected! Token not found!");
             }
             if (!sessionToken.equals(token)) {
-                throw new SecurityException("CSRF attack detected! Request token not equals session token!");
+                throw new SecurityException("CSRF attack detected! Request token is not valid!");
             }
         } else {
-            throw new SecurityException("CSRF protection Token not found in session!");
+            throw new SecurityException("CSRF protection, session token missing!");
         }
     }
 }
