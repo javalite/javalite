@@ -141,11 +141,7 @@ public class FormTag  extends FreeMarkerTag{
         }
 
         if (CSRF.verificationEnabled()) {
-            String token = (String) session(CSRF.PARAMETER_NAME);
-            if (token == null) {
-                token = CSRF.token();
-            }
-            bodyPrefix = "\n\t<input type='hidden' name='" + CSRF.PARAMETER_NAME + "' value='" + token + "' />";
+            bodyPrefix = "\n\t<input type='hidden' name='" + CSRF.PARAMETER_NAME + "' value='" + CSRF.token() + "' />";
         }
 
         if(blank(body)){
