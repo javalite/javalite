@@ -601,6 +601,25 @@ public class RequestUtils {
         return headers;
     }
 
+    /**
+     * @param name name of an object  in session
+     *
+     * @return object in session, or null.
+     */
+    public Object session(String name){
+        return RequestContext.getHttpRequest().getSession().getAttribute(name);
+    }
+
+    /**
+     * Sets an object on a current session.
+     *
+     * @param name name of object
+     * @param value value of object
+     */
+    public void session(String name, Object value){
+        RequestContext.getHttpRequest().getSession().getAttribute(name);
+    }
+
     public static String getRequestProperties(){
         StringBuilder sb = new StringBuilder();
         HttpServletRequest request = RequestContext.getHttpRequest();
