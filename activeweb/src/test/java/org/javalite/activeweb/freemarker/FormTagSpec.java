@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
 
-import static java.lang.String.format;
 import static org.javalite.common.Collections.map;
 
 /**
@@ -156,7 +155,7 @@ public class FormTagSpec implements JSpecSupport {
     }
 
     @Test
-    public void should_add_nbsp_to_emty_form(){
+    public void should_add_nbsp_to_empty_form(){
         StringWriter sw = new StringWriter();
         manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", true)),
                 "/form/empty_form", sw);
