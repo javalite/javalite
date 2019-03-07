@@ -38,9 +38,6 @@ public class CSRFFilterSpec extends RequestSpec {
 
         config.init(new AppContext());
         config.completeInit();
-        RequestContextHelper.createSession();
-
-        System.out.println("SESSION: " + RequestContextHelper.getSession());
 
     }
 
@@ -49,7 +46,7 @@ public class CSRFFilterSpec extends RequestSpec {
         request.setServletPath("/ok");
         request.setMethod("GET");
         dispatcher.doFilter(request, response, filterChain);
-        a(response.getContentAsString()).shouldBeEqual("ok");
+        a(response.getContentAsString()).shouldBeEqual("OK");
     }
 
     @Test
@@ -65,9 +62,10 @@ public class CSRFFilterSpec extends RequestSpec {
     @Test
     public void shouldDangerousRequestsPassedFreeWithRightToken() throws IOException, ServletException {
         for(String[] ma : methodsAndActions) {
-            System.out.println("METHOD: " + ma[0]);
+            System.out.println("Executing ---> : METHOD: " + ma[0]);
             request.setServletPath("/ok/" + ma[1]);
             request.setMethod(ma[0]);
+            request.getSession(true);
             request.addParameter(CSRF.PARAMETER_NAME, CSRF.token());
             dispatcher.doFilter(request, response, filterChain);
             a(response.getStatus()).shouldEqual(200);
