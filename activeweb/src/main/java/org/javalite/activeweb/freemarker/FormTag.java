@@ -126,22 +126,22 @@ public class FormTag  extends FreeMarkerTag{
             throw  new ViewException("could not render this form, controller is not found");
 
 
-        String method = Convert.toString(params.get("method"));
-        if (method != null) {
-            method = method.toLowerCase();
+        String httpMethod = Convert.toString(params.get("method"));
+        if (httpMethod != null) {
+            httpMethod = httpMethod.toLowerCase();
         }
 
-        boolean putOrDelete = "put".equals(method) || "delete".equals(method);
+        boolean putOrDelete = "put".equals(httpMethod) || "delete".equals(httpMethod);
 
         String bodyPrefix = "";
 
-        if(putOrDelete){
-            bodyPrefix = "\n\t<input type='hidden' name='_method' value='" + method + "' />";
-            method = "post";
+        if (CSRF.verificationEnabled() && (putOrDelete || "post".equals(httpMethod))) {
+            bodyPrefix = "\n\t<input type='hidden' name='" + CSRF.PARAMETER_NAME + "' value='" + CSRF.token() + "' />";
         }
 
-        if (CSRF.verificationEnabled()) {
-            bodyPrefix = "\n\t<input type='hidden' name='" + CSRF.PARAMETER_NAME + "' value='" + CSRF.token() + "' />";
+        if(putOrDelete){
+            bodyPrefix += "\n\t<input type='hidden' name='_method' value='" + httpMethod + "' />";
+            httpMethod = "post";
         }
 
         if(blank(body)){
@@ -170,7 +170,7 @@ public class FormTag  extends FreeMarkerTag{
         String formAction = Router.generate(controllerPath, action, id, restful, new HashMap());
         tf.attribute("action", getContextPath() + formAction);
 
-        tf.attribute("method", method);
+        tf.attribute("method", httpMethod);
         tf.attribute("id", Convert.toString(params.get("html_id")));
 
         tf.addAttributesExcept(params, "controller", "action", "method", "id", "html_id", "data");

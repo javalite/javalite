@@ -11,6 +11,8 @@ public class CSRFTokenTag extends FreeMarkerTag {
 
     @Override
     protected void render(Map params, String body, Writer writer) throws Exception {
-        writer.write("<input type='hidden' name='" + CSRF.PARAMETER_NAME + "' value='" + CSRF.token() + "' />");
+        if (CSRF.verificationEnabled()) {
+            writer.write("<input type='hidden' name='" + CSRF.PARAMETER_NAME + "' value='" + CSRF.token() + "' />");
+        }
     }
 }

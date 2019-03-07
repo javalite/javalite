@@ -1,16 +1,19 @@
 package org.javalite.activeweb;
 
 import org.javalite.common.Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpSession;
 import java.security.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Responsible for generating tokens for CSRF protection support.
  */
 public class CSRF {
+
+    public static final String PARAMETER_NAME = "_csrfToken";
+    public static final String HTTP_HEADER_NAME = "X-CSRF-Token";
 
     interface TokenProvider {
         String nextToken();
@@ -18,60 +21,46 @@ public class CSRF {
 
     private static class SecureRandomTokenProvider implements TokenProvider {
 
-        private SecureRandom secureRandom;
-
-        private SecureRandomTokenProvider() {
+        private ThreadLocal<SecureRandom> secureRandom = ThreadLocal.withInitial(() -> {
             try {
-                secureRandom = SecureRandom.getInstance("SHA1PRNG");
+                return SecureRandom.getInstance("SHA1PRNG");
             } catch(NoSuchAlgorithmException e) {
-                logger.error(e.getMessage());
                 throw new RuntimeException(e.getMessage(), e);
             }
-        }
+        });
 
         @Override
         public String nextToken() {
-            return Util.toBase64(secureRandom.generateSeed(32));
+            return Util.toBase64(secureRandom.get().generateSeed(32));
         }
     }
 
-    private static Logger logger = LoggerFactory.getLogger(CSRF.class);
+    private static AtomicBoolean enabled = new AtomicBoolean(false);
 
-    private static boolean enabled = false;
-
-    private static final String HMAC_ALG = "HMAC_MD5";
-
-    public static final String PARAMETER_NAME = "_csrfToken";
-    public static final String HTTP_HEADER_NAME = "X-CSRF-Token";
-
-    private static TokenProvider tokenProvider;
+    private static AtomicReference<TokenProvider> tokenProvider = new AtomicReference<>(new SecureRandomTokenProvider());
 
     private static void setTokenProvider(TokenProvider provider) {
-        tokenProvider = provider;
+        tokenProvider.set(provider);
     }
 
     public static boolean verificationEnabled() {
-        System.out.println("-- tokenProvider: " + tokenProvider);
-        return enabled;
+        return enabled.get();
     }
 
     public static void enableVerification() {
-        enabled = true;
-        setTokenProvider(new SecureRandomTokenProvider());
+        enabled.set(true);
+    }
+
+    public static void disableVerification() {
+        enabled.set(false);
     }
 
     public static String token() {
         HttpSession session = RequestContext.getHttpRequest().getSession(false);
         String token = (String) session.getAttribute(PARAMETER_NAME);
         if (token == null) {
-            synchronized (session) {
-                token = (String) session.getAttribute(PARAMETER_NAME);
-                if (token == null) {
-                    System.out.println("tokenProvider: " + tokenProvider);
-                    token = tokenProvider.nextToken();
-                    session.setAttribute(PARAMETER_NAME, token);
-                }
-            }
+            token = tokenProvider.get().nextToken();
+            session.setAttribute(PARAMETER_NAME, token);
         }
         return token;
     }
