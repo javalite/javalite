@@ -51,13 +51,13 @@ public class CSRF {
     }
 
     public static boolean verificationEnabled() {
-        setTokenProvider(new SecureRandomTokenProvider());
         System.out.println("-- tokenProvider: " + tokenProvider);
         return enabled;
     }
 
     public static void enableVerification() {
         enabled = true;
+        setTokenProvider(new SecureRandomTokenProvider());
     }
 
     public static String token() {
