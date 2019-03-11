@@ -133,6 +133,7 @@ public class LinkToTagSpec extends RequestSpec {
     @Test
     public void shouldGenerateDataAttributes() {
         sw = new StringWriter();
+        System.out.println("#################################### shouldGenerateDataAttributes() manager=" + manager);
         manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "simple", "restful", false)),
                         "link_to/data_attributes", sw);
 

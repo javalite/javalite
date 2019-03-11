@@ -31,10 +31,11 @@ import static org.javalite.common.Collections.map;
  */
 public class FormTagSpec implements JSpecSupport {
 
-    private FreeMarkerTemplateManager manager = new FreeMarkerTemplateManager();
+    private FreeMarkerTemplateManager manager;
 
     @Before
     public void before() throws IOException {
+        manager = new FreeMarkerTemplateManager();
         manager.setTemplateLocation("src/test/views");
     }
 
@@ -87,6 +88,7 @@ public class FormTagSpec implements JSpecSupport {
     @Test
     public void shouldRenderSimpleFormWithMethodPOST(){
         StringWriter sw = new StringWriter();
+        System.out.println("#################################### shouldRenderSimpleFormWithMethodPOST() manager=" + manager);
         manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_method_post", sw);
         a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"post\" id=\"formA\">&nbsp;</form>");
     }
