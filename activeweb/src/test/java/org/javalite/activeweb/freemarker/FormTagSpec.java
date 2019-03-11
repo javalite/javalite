@@ -94,8 +94,10 @@ public class FormTagSpec implements JSpecSupport {
             System.out.println("#################################### shouldRenderSimpleFormWithMethodPOST() manager=" + m);
             m.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_method_post", sw);
             a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"post\" id=\"formA\">&nbsp;</form>");
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
+            System.out.println("#################################### shouldRenderSimpleFormWithMethodPOST()");
             e.printStackTrace();
+            System.out.println("#################################### shouldRenderSimpleFormWithMethodPOST()");
         }
     }
 
