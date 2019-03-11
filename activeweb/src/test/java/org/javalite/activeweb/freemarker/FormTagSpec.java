@@ -31,11 +31,10 @@ import static org.javalite.common.Collections.map;
  */
 public class FormTagSpec implements JSpecSupport {
 
-    private FreeMarkerTemplateManager manager;
+    private FreeMarkerTemplateManager manager = new FreeMarkerTemplateManager();
 
     @Before
     public void before() throws IOException {
-        manager = new FreeMarkerTemplateManager();
         manager.setTemplateLocation("src/test/views");
     }
 
@@ -87,18 +86,9 @@ public class FormTagSpec implements JSpecSupport {
 
     @Test
     public void shouldRenderSimpleFormWithMethodPOST(){
-        try {
-            StringWriter sw = new StringWriter();
-            FreeMarkerTemplateManager m = new FreeMarkerTemplateManager();
-            m.setTemplateLocation("src/test/views");
-            System.out.println("#################################### shouldRenderSimpleFormWithMethodPOST() manager=" + m);
-            m.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_method_post", sw);
-            a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"post\" id=\"formA\">&nbsp;</form>");
-        } catch (Exception e) {
-            System.out.println("#################################### shouldRenderSimpleFormWithMethodPOST()");
-            e.printStackTrace(System.out);
-            System.out.println("#################################### shouldRenderSimpleFormWithMethodPOST()");
-        }
+        StringWriter sw = new StringWriter();
+        manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_method_post", sw);
+        a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"post\" id=\"formA\">&nbsp;</form>");
     }
 
     @Test

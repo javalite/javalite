@@ -6,9 +6,6 @@ import java.io.Writer;
 import java.util.Map;
 
 public class CSRFTokenTag extends FreeMarkerTag {
-
-
-
     @Override
     protected void render(Map params, String body, Writer writer) throws Exception {
         if (CSRF.verificationEnabled()) {
