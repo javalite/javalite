@@ -84,6 +84,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M3</version>
                 <configuration>
+                    <parallel>suites</parallel>
+                    <threadCount>1</threadCount>
                     <reportFormat>brief</reportFormat>
                     <trimStackTrace>true</trimStackTrace>
                     <useFile>false</useFile>
