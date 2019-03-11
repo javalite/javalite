@@ -17,6 +17,7 @@ package org.javalite.activeweb.freemarker;
 
 
 import org.javalite.activeweb.AppController;
+import org.javalite.activeweb.CSRF;
 import org.javalite.activeweb.ControllerFactory;
 import org.javalite.activeweb.Router;
 import freemarker.template.*;
@@ -217,6 +218,8 @@ public class LinkToTag extends FreeMarkerTag {
         href += params.containsKey("query_string") ? "?" + params.get("query_string") : "";
 
 
+        boolean methodGET = true;
+
         TagFactory tf = new TagFactory("a", body);
         tf.attribute("href", href);
         if (params.containsKey("destination") && params.get("destination") != null) {
@@ -227,6 +230,7 @@ public class LinkToTag extends FreeMarkerTag {
         }
         if (params.containsKey("method") && params.get("method") != null) {
             tf.attribute("data-method", params.get("method").toString());
+            methodGET = "get".equalsIgnoreCase(params.get("method").toString());
         }
 
         if (params.containsKey("before") && params.get("before") != null) {
@@ -255,6 +259,11 @@ public class LinkToTag extends FreeMarkerTag {
 
         if (params.containsKey("html_id")) {
             tf.attribute("id", params.get("html_id").toString());
+        }
+
+        if (!methodGET && CSRF.verificationEnabled()) {
+            tf.attribute("data-csrf-token", CSRF.token());
+            tf.attribute("data-csrf-param", CSRF.PARAMETER_NAME);
         }
 
         tf.attribute("data-link", "aw");
