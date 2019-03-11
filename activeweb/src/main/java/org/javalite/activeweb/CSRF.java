@@ -2,6 +2,7 @@ package org.javalite.activeweb;
 
 import org.javalite.common.Util;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.security.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -56,7 +57,11 @@ public class CSRF {
     }
 
     public static String token() {
-        HttpSession session = RequestContext.getHttpRequest().getSession(false);
+        HttpServletRequest request = RequestContext.getHttpRequest();
+        if (request == null) {
+            throw new RuntimeException("Request not found!");
+        }
+        HttpSession session = request.getSession(false);
         String token = (String) session.getAttribute(PARAMETER_NAME);
         if (token == null) {
             token = tokenProvider.get().nextToken();

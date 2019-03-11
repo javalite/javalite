@@ -15,8 +15,6 @@ limitations under the License.
 */
 package org.javalite.activeweb.freemarker;
 
-import org.javalite.activeweb.CSRF;
-import org.javalite.activeweb.RequestContextHelper;
 import org.javalite.activeweb.RequestSpec;
 import org.javalite.activeweb.ViewException;
 import org.junit.Before;
@@ -62,29 +60,6 @@ public class LinkToTagSpec extends RequestSpec {
     public void shouldFailIfQueryParamsIsNotMap() {
         manager.merge(new HashMap(), "/link_to/query_params_not_map", sw);
     }
-
-    @Test
-    public void shouldGenerateLinkWithCSRFToken() {
-        RequestContextHelper.createSession();
-        CSRF.enableVerification();
-        sw = new StringWriter();
-        manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "simple", "restful", false)),
-                "link_to/data_attributes", sw);
-
-        a(sw.toString()).shouldBeEqual("<a href=\"/bookstore/book/read/2\" data-destination=\"hello\" data-form=\"form1\" data-method=\"post\" data-csrf-token=\"" + CSRF.token() + "\" data-csrf-param=\"" + CSRF.PARAMETER_NAME + "\" data-link=\"aw\" class=\"red_button\">Click here to read book 2</a>");
-        CSRF.disableVerification();
-    }
-
-    @Test
-    public void shouldGenerateLinkWithoutCSRFToken() {
-        CSRF.enableVerification();
-        sw = new StringWriter();
-        manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "simple", "restful", false)),
-                "/link_to/normal_link", sw);
-        a(sw.toString()).shouldBeEqual("<a href=\"/bookstore/book/read/2?first_name=John\" data-link=\"aw\" class=\"red_button\">Click here to read book 2</a>");
-        CSRF.disableVerification();
-    }
-
 
     @Test
     public void shouldGenerateLinkGivenAttributes() {
@@ -133,7 +108,6 @@ public class LinkToTagSpec extends RequestSpec {
     @Test
     public void shouldGenerateDataAttributes() {
         sw = new StringWriter();
-        System.out.println("#################################### shouldGenerateDataAttributes() manager=" + manager);
         manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "simple", "restful", false)),
                         "link_to/data_attributes", sw);
 
