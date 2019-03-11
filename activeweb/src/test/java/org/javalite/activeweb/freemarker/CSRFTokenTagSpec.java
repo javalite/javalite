@@ -20,11 +20,6 @@ public class CSRFTokenTagSpec implements JSpecSupport {
         CSRF.enableVerification();
     }
 
-    @AfterClass
-    public static void afterClass() {
-        CSRF.disableVerification();
-    }
-
     @Before
     public void before() {
         RequestContextHelper.createSession();
@@ -32,10 +27,12 @@ public class CSRFTokenTagSpec implements JSpecSupport {
 
     @Test
     public void shouldRenderToken() {
+        CSRF.enableVerification();
         StringWriter sw = new StringWriter();
         manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_csrf_token", sw);
         a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"post\">" +
                 "<input type='hidden' name='_csrfToken' value='" + CSRF.token() + "' /></form>");
+        CSRF.disableVerification();
 
     }
 
@@ -45,7 +42,6 @@ public class CSRFTokenTagSpec implements JSpecSupport {
         StringWriter sw = new StringWriter();
         manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_csrf_token", sw);
         a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"post\"></form>");
-
     }
 
 

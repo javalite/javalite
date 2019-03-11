@@ -19,7 +19,6 @@ import org.javalite.activeweb.controller_filters.HttpSupportFilter;
 import org.javalite.common.Collections;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
