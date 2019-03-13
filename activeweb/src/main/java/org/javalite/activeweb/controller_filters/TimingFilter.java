@@ -18,8 +18,12 @@ package org.javalite.activeweb.controller_filters;
 /**
  * This is a simple filter which logs time it took to process a controller.
  *
+ * Deprecated because {@link org.javalite.activeweb.RequestDispatcher} logs timing now. Feel free to remove from your project.
+ *
  * @author Igor Polevoy
  */
+
+@Deprecated
 public class TimingFilter extends HttpSupportFilter {
 
     //must be threadlocal - filters are NOT thread safe!

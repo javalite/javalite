@@ -42,7 +42,7 @@ public class CSRFSpec extends RequestSpec {
     @Test
     public void testAA_shouldCreateUniqueTokens() throws InterruptedException {
         int count = 10;
-        Set store = Collections.synchronizedSet(new HashSet<>());
+        Set<String> store = Collections.synchronizedSet(new HashSet<>());
         CountDownLatch latch = new CountDownLatch(count);
         for(int i = 0; i < count; i++) {
             new Thread(() -> {
@@ -65,7 +65,7 @@ public class CSRFSpec extends RequestSpec {
     @Test
     public void testAB_shouldCreateOneTokenForSession() {
         int count = 10;
-        Set store = new HashSet<>();
+        Set<String> store = new HashSet<>();
         for(int i = 0; i < count; i++) {
             store.add(CSRF.token());
         }
@@ -101,16 +101,18 @@ public class CSRFSpec extends RequestSpec {
     }
 
     @Test
-    public void testBD_shouldRenderCSRFTokenParameterWithMethodGET() {
+    public void testBD_shouldNotRenderCSRFTokenParameterWithMethodGET() {
         StringWriter sw = new StringWriter();
         manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_method_get", sw);
         a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"get\">&nbsp;</form>");
     }
 
-    /* TokenTag */
 
+//  *********************************************************
+//  @csrf_token tag tests below
+//  *********************************************************
     @Test
-    public void testCA_shouldRenderToken() {
+    public void testCA_shouldRenderTokenInSimpleForm() {
         StringWriter sw = new StringWriter();
         manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_csrf_token", sw);
         a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"post\">" +
@@ -126,8 +128,9 @@ public class CSRFSpec extends RequestSpec {
     }
 
 
-    /* CSRFFilter */
-
+//    ******************************
+//    CSRFFilter tests below
+//    ******************************
 
     public class CatchAllFilter extends HttpSupportFilter {
 
@@ -153,7 +156,7 @@ public class CSRFSpec extends RequestSpec {
     }
 
     @Test
-    public void testDA_shouldGETRequestPassedFree() throws IOException, ServletException {
+    public void testDA_shouldPassGETRequest() throws IOException, ServletException {
         setupControllerConfig();
         request.setServletPath("/ok");
         request.setMethod("GET");
@@ -162,7 +165,7 @@ public class CSRFSpec extends RequestSpec {
     }
 
     @Test
-    public void testDB_shouldPOSTRequestDeniedWithoutToken() throws IOException, ServletException {
+    public void testDB_shouldDenyPOSTRequestWithoutToken() throws IOException, ServletException {
         setupControllerConfig();
         request.setServletPath("/ok/create");
         request.setMethod("POST");
@@ -171,7 +174,7 @@ public class CSRFSpec extends RequestSpec {
     }
 
     @Test
-    public void testDC_shouldPUTRequestDeniedWithoutToken() throws IOException, ServletException {
+    public void testDC_shouldDenyPUTRequestWithoutToken() throws IOException, ServletException {
         setupControllerConfig();
         request.setServletPath("/ok/update");
         request.setMethod("PUT");
@@ -180,7 +183,7 @@ public class CSRFSpec extends RequestSpec {
     }
 
     @Test
-    public void testDD_shouldDELETERequestDeniedWithoutToken() throws IOException, ServletException {
+    public void testDD_shouldDenyDELETERequestWithoutToken() throws IOException, ServletException {
         setupControllerConfig();
         request.setServletPath("/ok/destroy");
         request.setMethod("DELETE");
@@ -189,7 +192,7 @@ public class CSRFSpec extends RequestSpec {
     }
 
     @Test
-    public void testDE_shouldPOSTRequestPassedFreeWithRightToken() throws IOException, ServletException {
+    public void testDE_shouldPassPOSTRequestWithCorrectToken() throws IOException, ServletException {
         setupControllerConfig();
         request.setServletPath("/ok/create");
         request.setMethod("POST");
@@ -199,7 +202,7 @@ public class CSRFSpec extends RequestSpec {
     }
 
     @Test
-    public void testDF_shouldPUTRequestPassedFreeWithRightToken() throws IOException, ServletException {
+    public void testDF_shouldPassPUTRequestWithCorrectToken() throws IOException, ServletException {
         setupControllerConfig();
         request.setServletPath("/ok/update");
         request.setMethod("PUT");
@@ -208,7 +211,7 @@ public class CSRFSpec extends RequestSpec {
         a(response.getStatus()).shouldEqual(200);
     }
     @Test
-    public void testDG_shouldDELETERequestPassedFreeWithRightToken() throws IOException, ServletException {
+    public void testDG_shouldPassDELETERequestWithCorrectToken() throws IOException, ServletException {
         setupControllerConfig();
         request.setServletPath("/ok/destroy");
         request.setMethod("DELETE");
@@ -219,7 +222,7 @@ public class CSRFSpec extends RequestSpec {
 
 
     @Test
-    public void testDH_shouldPOSTRequestDeniedWithWrongToken() throws IOException, ServletException {
+    public void testDH_shouldDenyPOSTRequestWithBadToken() throws IOException, ServletException {
         setupControllerConfig();
         request.setServletPath("/ok/create");
         request.setMethod("POST");
@@ -229,7 +232,7 @@ public class CSRFSpec extends RequestSpec {
     }
 
     @Test
-    public void testDI_shouldPUTRequestDeniedWithWrongToken() throws IOException, ServletException {
+    public void testDI_shouldDenyPUTRequestWithBadToken() throws IOException, ServletException {
         setupControllerConfig();
         request.setServletPath("/ok/update");
         request.setMethod("PUT");
@@ -238,7 +241,7 @@ public class CSRFSpec extends RequestSpec {
         a(response.getStatus()).shouldEqual(403);
     }
     @Test
-    public void testDJ_shouldDELETERequestDeniedWithWrongToken() throws IOException, ServletException {
+    public void testDJ_shouldDenyDELETERequestWithBadToken() throws IOException, ServletException {
         setupControllerConfig();
         request.setServletPath("/ok/destroy");
         request.setMethod("DELETE");
@@ -248,7 +251,7 @@ public class CSRFSpec extends RequestSpec {
     }
 
     @Test
-    public void testDK_shouldPOSTRequestDeniedWithoutSessionToken() throws IOException, ServletException {
+    public void testDK_shouldDenyPOSTRequestWithoutTokenInSession() throws IOException, ServletException {
         setupControllerConfig();
         request.setServletPath("/ok/create");
         request.setMethod("POST");
@@ -258,7 +261,7 @@ public class CSRFSpec extends RequestSpec {
     }
 
     @Test
-    public void testDL_shouldPUTRequestDeniedWithoutSessionToken() throws IOException, ServletException {
+    public void testDL_shouldDenyPUTRequestWithoutTokenInSession() throws IOException, ServletException {
         setupControllerConfig();
         request.setServletPath("/ok/update");
         request.setMethod("PUT");
@@ -267,7 +270,7 @@ public class CSRFSpec extends RequestSpec {
         a(response.getStatus()).shouldEqual(403);
     }
     @Test
-    public void testDM_shouldDELETERequestDeniedWithoutSessionToken() throws IOException, ServletException {
+    public void shouldDenyDELETERequestWithoutTokenInSession() throws IOException, ServletException {
         setupControllerConfig();
         request.setServletPath("/ok/destroy");
         request.setMethod("DELETE");
