@@ -379,13 +379,17 @@ public class Router {
     protected static String findControllerNamePart(String pack, String uri) {
         String temp = uri.startsWith("/") ? uri.substring(1) : uri;
         temp = temp.replace("/", ".");
-        if (temp.length() > pack.length())
+
+        if(temp.endsWith(".")){
+            temp = temp.substring(0, temp.length() - 1);
+        }else if (temp.length() > pack.length())
             temp = temp.substring(pack.length() + 1);
 
         if (temp.equals("") )
             throw new ControllerException("You defined a controller package '" + pack + "', but did not specify controller name");
 
-        return temp.split("\\.")[0];
+
+        return (temp.contains(".")) ? temp.split("\\.")[0] : temp;
     }
 
     /**
