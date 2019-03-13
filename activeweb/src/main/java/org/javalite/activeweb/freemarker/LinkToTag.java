@@ -263,7 +263,7 @@ public class LinkToTag extends FreeMarkerTag {
 
         if (!methodGET && CSRF.verificationEnabled()) {
             tf.attribute("data-csrf-token", CSRF.token());
-            tf.attribute("data-csrf-param", CSRF.PARAMETER_NAME);
+            tf.attribute("data-csrf-param", CSRF.name());
         }
 
         tf.attribute("data-link", "aw");

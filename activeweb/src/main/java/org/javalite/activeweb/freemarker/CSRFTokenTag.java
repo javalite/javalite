@@ -9,7 +9,7 @@ public class CSRFTokenTag extends FreeMarkerTag {
     @Override
     protected void render(Map params, String body, Writer writer) throws Exception {
         if (CSRF.verificationEnabled()) {
-            writer.write("<input type='hidden' name='" + CSRF.PARAMETER_NAME + "' value='" + CSRF.token() + "' />");
+            writer.write("<input type='hidden' name='" + CSRF.name() + "' value='" + CSRF.token() + "' />");
         }
     }
 }

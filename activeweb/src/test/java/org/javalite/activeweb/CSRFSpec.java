@@ -81,14 +81,14 @@ public class CSRFSpec extends RequestSpec {
         StringWriter sw = new StringWriter();
         manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_method_post", sw);
         a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"post\" id=\"formA\">\n" +
-                "\t<input type='hidden' name='_csrfToken' value='" + CSRF.token() + "' />&nbsp;</form>");
+                "\t<input type='hidden' name='" + CSRF.name() + "' value='" + CSRF.token() + "' />&nbsp;</form>");
     }
 
     @Test
     public void testBB_shouldRenderCSRFTokenParameterWithMethodPUT() {
         StringWriter sw = new StringWriter();
         manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_method_put", sw);
-        a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"post\" id=\"formB\"> <input type='hidden' name='_csrfToken' value='" +
+        a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"post\" id=\"formB\"> <input type='hidden' name='" + CSRF.name() + "' value='" +
                 CSRF.token() + "' /> <input type='hidden' name='_method' value='put' /> <input type=\"hidden\" name=\"blah\"> </form>");
     }
 
@@ -96,7 +96,7 @@ public class CSRFSpec extends RequestSpec {
     public void testBC_shouldRenderCSRFTokenParameterWithMethodDELETE() {
         StringWriter sw = new StringWriter();
         manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_method_delete", sw);
-        a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"post\"> <input type='hidden' name='_csrfToken' value='" +
+        a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"post\"> <input type='hidden' name='" + CSRF.name() + "' value='" +
                 CSRF.token() + "' /> <input type='hidden' name='_method' value='delete' /> <input type=\"hidden\" name=\"blah\"> </form>");
     }
 
@@ -114,7 +114,7 @@ public class CSRFSpec extends RequestSpec {
         StringWriter sw = new StringWriter();
         manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_csrf_token", sw);
         a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"post\">" +
-                "<input type='hidden' name='_csrfToken' value='" + CSRF.token() + "' /></form>");
+                "<input type='hidden' name='" + CSRF.name() + "' value='" + CSRF.token() + "' /></form>");
     }
 
     @Test
@@ -193,7 +193,7 @@ public class CSRFSpec extends RequestSpec {
         setupControllerConfig();
         request.setServletPath("/ok/create");
         request.setMethod("POST");
-        request.addParameter(CSRF.PARAMETER_NAME, CSRF.token());
+        request.addParameter(CSRF.name(), CSRF.token());
         dispatcher.doFilter(request, response, filterChain);
         a(response.getStatus()).shouldEqual(200);
     }
@@ -203,7 +203,7 @@ public class CSRFSpec extends RequestSpec {
         setupControllerConfig();
         request.setServletPath("/ok/update");
         request.setMethod("PUT");
-        request.addParameter(CSRF.PARAMETER_NAME, CSRF.token());
+        request.addParameter(CSRF.name(), CSRF.token());
         dispatcher.doFilter(request, response, filterChain);
         a(response.getStatus()).shouldEqual(200);
     }
@@ -212,7 +212,7 @@ public class CSRFSpec extends RequestSpec {
         setupControllerConfig();
         request.setServletPath("/ok/destroy");
         request.setMethod("DELETE");
-        request.addParameter(CSRF.PARAMETER_NAME, CSRF.token());
+        request.addParameter(CSRF.name(), CSRF.token());
         dispatcher.doFilter(request, response, filterChain);
         a(response.getStatus()).shouldEqual(200);
     }
@@ -223,7 +223,7 @@ public class CSRFSpec extends RequestSpec {
         setupControllerConfig();
         request.setServletPath("/ok/create");
         request.setMethod("POST");
-        request.addParameter(CSRF.PARAMETER_NAME, "_" + CSRF.token());
+        request.addParameter(CSRF.name(), "_" + CSRF.token());
         dispatcher.doFilter(request, response, filterChain);
         a(response.getStatus()).shouldEqual(403);
     }
@@ -233,7 +233,7 @@ public class CSRFSpec extends RequestSpec {
         setupControllerConfig();
         request.setServletPath("/ok/update");
         request.setMethod("PUT");
-        request.addParameter(CSRF.PARAMETER_NAME, "_" + CSRF.token());
+        request.addParameter(CSRF.name(), "_" + CSRF.token());
         dispatcher.doFilter(request, response, filterChain);
         a(response.getStatus()).shouldEqual(403);
     }
@@ -242,7 +242,7 @@ public class CSRFSpec extends RequestSpec {
         setupControllerConfig();
         request.setServletPath("/ok/destroy");
         request.setMethod("DELETE");
-        request.addParameter(CSRF.PARAMETER_NAME, "_" + CSRF.token());
+        request.addParameter(CSRF.name(), "_" + CSRF.token());
         dispatcher.doFilter(request, response, filterChain);
         a(response.getStatus()).shouldEqual(403);
     }
@@ -252,7 +252,7 @@ public class CSRFSpec extends RequestSpec {
         setupControllerConfig();
         request.setServletPath("/ok/create");
         request.setMethod("POST");
-        request.addParameter(CSRF.PARAMETER_NAME, "TOKEN");
+        request.addParameter(CSRF.name(), "TOKEN");
         dispatcher.doFilter(request, response, filterChain);
         a(response.getStatus()).shouldEqual(403);
     }
@@ -262,7 +262,7 @@ public class CSRFSpec extends RequestSpec {
         setupControllerConfig();
         request.setServletPath("/ok/update");
         request.setMethod("PUT");
-        request.addParameter(CSRF.PARAMETER_NAME, "TOKEN");
+        request.addParameter(CSRF.name(), "TOKEN");
         dispatcher.doFilter(request, response, filterChain);
         a(response.getStatus()).shouldEqual(403);
     }
@@ -271,7 +271,7 @@ public class CSRFSpec extends RequestSpec {
         setupControllerConfig();
         request.setServletPath("/ok/destroy");
         request.setMethod("DELETE");
-        request.addParameter(CSRF.PARAMETER_NAME, "TOKEN");
+        request.addParameter(CSRF.name(), "TOKEN");
         dispatcher.doFilter(request, response, filterChain);
         a(response.getStatus()).shouldEqual(403);
     }
@@ -285,7 +285,7 @@ public class CSRFSpec extends RequestSpec {
         manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "simple", "restful", false)),
                 "link_to/data_attributes", sw);
 
-        a(sw.toString()).shouldBeEqual("<a href=\"/bookstore/book/read/2\" data-destination=\"hello\" data-form=\"form1\" data-method=\"post\" data-csrf-token=\"" + CSRF.token() + "\" data-csrf-param=\"" + CSRF.PARAMETER_NAME + "\" data-link=\"aw\" class=\"red_button\">Click here to read book 2</a>");
+        a(sw.toString()).shouldBeEqual("<a href=\"/bookstore/book/read/2\" data-destination=\"hello\" data-form=\"form1\" data-method=\"post\" data-csrf-token=\"" + CSRF.token() + "\" data-csrf-param=\"" + CSRF.name() + "\" data-link=\"aw\" class=\"red_button\">Click here to read book 2</a>");
     }
 
     @Test

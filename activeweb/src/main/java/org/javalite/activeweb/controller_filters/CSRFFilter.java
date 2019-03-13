@@ -19,9 +19,10 @@ public class CSRFFilter extends HttpSupportFilter {
     }
 
     private void verify() {
-        String sessionToken = sessionString(CSRF.PARAMETER_NAME);
-        if (sessionToken != null) {
-            String token = param(CSRF.PARAMETER_NAME);
+        String sessionName = sessionString(CSRF.CSRF_TOKEN_NAME);
+        String sessionToken = sessionString(CSRF.CSRF_TOKEN_VALUE);
+        if (sessionToken != null && sessionName != null) {
+            String token = param(sessionName);
             if (token == null) {
                 token = header(CSRF.HTTP_HEADER_NAME);
             }
