@@ -22,9 +22,11 @@ public class CSRF {
         String nextToken();
     }
 
+    /**
+     * Used to generate a new name and token for CSRF protection.
+     */
     private static class SecureRandomTokenProvider implements TokenProvider {
 
-        private static final String name = "_csrfToken";
         private String base = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 
         private ThreadLocal<SecureRandom> secureRandom = ThreadLocal.withInitial(() -> {
@@ -39,6 +41,7 @@ public class CSRF {
         public String nextName() {
             StringBuilder name = new StringBuilder();
             SecureRandom sr = secureRandom.get();
+            //get random characters to make a new name
             while(name.length() < 8) {
                 name.append(base.charAt((int)(sr.nextFloat() * base.length())));
             }
@@ -55,7 +58,12 @@ public class CSRF {
 
     private static AtomicReference<TokenProvider> tokenProvider = new AtomicReference<>(new SecureRandomTokenProvider());
 
-    private static void setTokenProvider(TokenProvider provider) {
+    /**
+     * Use in case you want to use a project-level provider.
+     *
+     * @param provider instance of a provider.
+     */
+    public static void setTokenProvider(TokenProvider provider) {
         tokenProvider.set(provider);
     }
 
