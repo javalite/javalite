@@ -61,7 +61,6 @@ public class LinkToTagSpec extends RequestSpec {
         manager.merge(new HashMap(), "/link_to/query_params_not_map", sw);
     }
 
-
     @Test
     public void shouldGenerateLinkGivenAttributes() {
         sw = new StringWriter();

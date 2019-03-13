@@ -16,12 +16,10 @@ limitations under the License.
 
 package org.javalite.activeweb.freemarker;
 
-import org.javalite.activeweb.AppController;
-import org.javalite.activeweb.ControllerFactory;
-import org.javalite.activeweb.Router;
-import org.javalite.activeweb.ViewException;
+import org.javalite.activeweb.*;
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateBooleanModel;
+import org.javalite.common.Convert;
 
 import java.io.Writer;
 import java.util.HashMap;
@@ -128,15 +126,22 @@ public class FormTag  extends FreeMarkerTag{
             throw  new ViewException("could not render this form, controller is not found");
 
 
-        String method;
+        String httpMethod = Convert.toString(params.get("method"));
+        if (httpMethod != null) {
+            httpMethod = httpMethod.toLowerCase();
+        }
+
+        boolean putOrDelete = "put".equals(httpMethod) || "delete".equals(httpMethod);
+
         String bodyPrefix = "";
 
-        boolean putOrDelete = params.get("method") != null &&
-                (params.get("method").toString().equalsIgnoreCase("put") || params.get("method").toString().equalsIgnoreCase("delete"));
+        if (CSRF.verificationEnabled() && (putOrDelete || "post".equals(httpMethod))) {
+            bodyPrefix = "\n\t<input type='hidden' name='" + CSRF.name() + "' value='" + CSRF.token() + "' />";
+        }
 
         if(putOrDelete){
-            method = params.get("method").toString().toLowerCase();
-            bodyPrefix = "\n\t<input type='hidden' name='_method' value='" + method + "' />";
+            bodyPrefix += "\n\t<input type='hidden' name='_method' value='" + httpMethod + "' />";
+            httpMethod = "post";
         }
 
         if(blank(body)){
@@ -144,37 +149,33 @@ public class FormTag  extends FreeMarkerTag{
         }
 
         TagFactory tf = new TagFactory("form", bodyPrefix + body);
-        Object contextPath = getContextPath();
-        String action = params.get("action") == null? null: params.get("action").toString();
-        String controllerPath = params.get("controller") == null? activeweb.get("controller").toString(): params.get("controller").toString();
 
-        Boolean restful;
-        if(params.get("controller") == null){// using current controller
+        String action = Convert.toString(params.get("action"));
+
+        Boolean restful = null;
+
+        String controllerPath = Convert.toString(params.get("controller"));
+        if (controllerPath == null) {
+            controllerPath = activeweb.get("controller").toString();
             restful = ((TemplateBooleanModel)activeweb.get("restful")).getAsBoolean();
-        }else{//using provided controller
+        }
+
+        if(restful == null){// using current controller
             AppController controllerInstance = (AppController) Class.forName(ControllerFactory.getControllerClassName(controllerPath)).newInstance();
             restful = controllerInstance.restful();
         }
 
-        String id = params.get("id") == null? null: params.get("id").toString();
+        String id = Convert.toString(params.get("id"));
 
         String formAction = Router.generate(controllerPath, action, id, restful, new HashMap());
-        tf.attribute("action", contextPath + formAction);
+        tf.attribute("action", getContextPath() + formAction);
 
-        if(putOrDelete){
-            tf.attribute("method", "post");
-        }else{
-            if(params.get("method") != null)
-                tf.attribute("method", params.get("method").toString());
-        }
-        if(params.get("html_id")!= null){
-            tf.attribute("id", params.get("html_id").toString());
-        }
+        tf.attribute("method", httpMethod);
+        tf.attribute("id", Convert.toString(params.get("html_id")));
 
         tf.addAttributesExcept(params, "controller", "action", "method", "id", "html_id", "data");
-        if(params.containsKey("data")){
-            tf.textAttributes(params.get("data").toString());
-        }
+        tf.textAttributes(Convert.toString(params.get("data")));
+
         tf.write(writer);
     }
 }

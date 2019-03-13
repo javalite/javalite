@@ -16,6 +16,7 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import com.google.inject.Injector;
+import org.javalite.activeweb.annotations.POST;
 import org.javalite.activeweb.controller_filters.HttpSupportFilter;
 import org.javalite.activeweb.freemarker.AbstractFreeMarkerConfig;
 import org.javalite.activeweb.freemarker.FreeMarkerTemplateManager;
@@ -23,6 +24,7 @@ import org.javalite.common.Inflector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -153,7 +155,7 @@ class ControllerRunner {
         if (controllerResponse instanceof RenderTemplateResponse) {
             ParamCopy.copyInto((controllerResponse.values()));
             controllerResponse.process();
-        }else if(!(controllerResponse instanceof RenderTemplateResponse)){
+        }else {
             if(controllerResponse.getContentType() == null){
                 controllerResponse.setContentType(route.getController().getContentType());
             }

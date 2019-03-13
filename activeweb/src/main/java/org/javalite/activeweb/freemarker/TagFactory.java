@@ -43,8 +43,9 @@ public class TagFactory {
     }
 
     public void attribute(String name, String value) {
-        attributes.add(new Attribute(name, value));
-
+        if (value != null) {
+            attributes.add(new Attribute(name, value));
+        }
     }
 
     @Override

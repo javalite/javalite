@@ -52,14 +52,14 @@ public abstract class RequestSpec implements JSpecSupport {
     @Before
     public final void setup() throws ServletException, IOException, IllegalAccessException, InstantiationException {
         replaceError();
+        config = new MockFilterConfig();
         dispatcher = new RequestDispatcher();
         request = new MockHttpServletRequest();
         request.setContextPath("/test_context");
-        dispatcher.init(new MockFilterConfig());
+        dispatcher.init(config);
         response = new MockHttpServletResponse();
-        config = new MockFilterConfig();
         RequestContext.clear();
-        Configuration.setFilterConfig(new MockFilterConfig());
+        Configuration.setFilterConfig(config);
         RequestContext.setTLs(request, response, config, new AppContext(), new RequestVo(), null);
         Configuration.getTemplateManager().setTemplateLocation("src/test/views");
     }
