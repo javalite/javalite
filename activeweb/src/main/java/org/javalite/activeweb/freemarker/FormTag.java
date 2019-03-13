@@ -136,7 +136,7 @@ public class FormTag  extends FreeMarkerTag{
         String bodyPrefix = "";
 
         if (CSRF.verificationEnabled() && (putOrDelete || "post".equals(httpMethod))) {
-            bodyPrefix = "\n\t<input type='hidden' name='" + CSRF.PARAMETER_NAME + "' value='" + CSRF.token() + "' />";
+            bodyPrefix = "\n\t<input type='hidden' name='" + CSRF.name() + "' value='" + CSRF.token() + "' />";
         }
 
         if(putOrDelete){

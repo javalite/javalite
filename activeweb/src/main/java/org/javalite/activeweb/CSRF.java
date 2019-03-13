@@ -13,14 +13,19 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class CSRF {
 
-    public static final String PARAMETER_NAME = "_csrfToken";
+    public static final String CSRF_TOKEN_NAME = "CSRF_TOKEN_NAME";
+    public static final String CSRF_TOKEN_VALUE = "CSRF_TOKEN_VALUE";
     public static final String HTTP_HEADER_NAME = "X-CSRF-Token";
 
     interface TokenProvider {
+        String nextName();
         String nextToken();
     }
 
     private static class SecureRandomTokenProvider implements TokenProvider {
+
+        private static final String name = "_csrfToken";
+        private String base = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 
         private ThreadLocal<SecureRandom> secureRandom = ThreadLocal.withInitial(() -> {
             try {
@@ -29,6 +34,16 @@ public class CSRF {
                 throw new RuntimeException(e.getMessage(), e);
             }
         });
+
+        @Override
+        public String nextName() {
+            StringBuilder name = new StringBuilder();
+            SecureRandom sr = secureRandom.get();
+            while(name.length() < 8) {
+                name.append(base.charAt((int)(sr.nextFloat() * base.length())));
+            }
+            return name.toString();
+        }
 
         @Override
         public String nextToken() {
@@ -56,18 +71,36 @@ public class CSRF {
         enabled.set(false);
     }
 
-    public static String token() {
+    private static HttpSession getSession() {
         HttpServletRequest request = RequestContext.getHttpRequest();
         if (request == null) {
             throw new RuntimeException("Request not found!");
         }
         HttpSession session = request.getSession(false);
-        String token = (String) session.getAttribute(PARAMETER_NAME);
+        if (session == null) {
+            throw new RuntimeException("Session not initialized!");
+        }
+        return session;
+    }
+
+    public static String token() {
+        HttpSession session = getSession();
+        String token = (String) session.getAttribute(CSRF_TOKEN_VALUE);
         if (token == null) {
             token = tokenProvider.get().nextToken();
-            session.setAttribute(PARAMETER_NAME, token);
+            session.setAttribute(CSRF_TOKEN_VALUE, token);
         }
         return token;
+    }
+
+    public static String name() {
+        HttpSession session = getSession();
+        String name = (String) session.getAttribute(CSRF_TOKEN_NAME);
+        if (name == null) {
+            name = tokenProvider.get().nextName();
+            session.setAttribute(CSRF_TOKEN_NAME, name);
+        }
+        return name;
     }
 
 }
