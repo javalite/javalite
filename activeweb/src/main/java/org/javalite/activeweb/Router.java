@@ -64,6 +64,10 @@ public class Router {
      */
     protected Route recognize(String uri, HttpMethod httpMethod) throws ClassLoadException {
 
+        if (uri.endsWith("/") && uri.length() > 1) {
+            uri = uri.substring(0, uri.length() - 1);
+        }
+
         ControllerPath controllerPath = getControllerPath(uri);
 
         Route route = matchCustom(uri, controllerPath, httpMethod);
