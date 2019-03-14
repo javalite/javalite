@@ -351,6 +351,58 @@ public class RouterCustomSpec extends RequestSpec {
     }
 
     @Test
+    public void should_override_package_and_controller_naming_conflict_issue400_and_trailing_slash() {
+
+        //Success with custom route
+        routeConfig = new AbstractRouteConfig() {
+            public void init(AppContext appContext) {
+                route("/api").to(ApiController.class).action("index").get();
+            }
+        };
+
+        request.setServletPath("/api/");
+        execDispatcher();
+        the(responseContent()).shouldBeEqual("ApiController#index");
+
+        //failure with no config:
+        routeConfig = new AbstractRouteConfig() {
+            public void init(AppContext appContext) {}
+        };
+
+        request.setServletPath("/api/");
+        execDispatcher();
+        the(responseContent()).shouldContain("Your controller and package named the same: controllerName=  'api' , controllerPackage= 'api'");
+    }
+
+    /**
+     *     //Same as above, but with a trailing slash in the custom route
+     */
+    @Test
+    public void should_override_package_and_controller_naming_conflict_issue400_and_trailing_slash2() {
+
+        //Success with custom route
+        routeConfig = new AbstractRouteConfig() {
+            public void init(AppContext appContext) {
+                route("/api/").to(ApiController.class).action("index").get();
+            }
+        };
+
+        request.setServletPath("/api/");
+        execDispatcher();
+        the(responseContent()).shouldBeEqual("ApiController#index");
+
+        //failure with no config:
+        routeConfig = new AbstractRouteConfig() {
+            public void init(AppContext appContext) {}
+        };
+
+        request.setServletPath("/api/");
+        execDispatcher();
+        the(responseContent()).shouldContain("Your controller and package named the same: controllerName=  'api' , controllerPackage= 'api'");
+
+    }
+
+    @Test
     public void should_route_to_options_method() {
 
         //Success with custom route
