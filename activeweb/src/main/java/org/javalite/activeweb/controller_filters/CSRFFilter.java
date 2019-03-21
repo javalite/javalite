@@ -33,6 +33,7 @@ public class CSRFFilter extends HttpSupportFilter {
                 for(FormItem fi : multipartFormItems()) {
                     if (fi.isFormField() && sessionName.equals(fi.getFieldName())) {
                         token = new String(fi.getBytes());
+                        break;
                     }
                 }
             }
