@@ -270,13 +270,45 @@ public class CSRFSpec extends RequestSpec {
         a(response.getStatus()).shouldEqual(403);
     }
     @Test
-    public void shouldDenyDELETERequestWithoutTokenInSession() throws IOException, ServletException {
+    public void testDM_shouldDenyDELETERequestWithoutTokenInSession() throws IOException, ServletException {
         setupControllerConfig();
         request.setServletPath("/ok/destroy");
         request.setMethod("DELETE");
         request.addParameter(CSRF.name(), "TOKEN");
         dispatcher.doFilter(request, response, filterChain);
         a(response.getStatus()).shouldEqual(403);
+    }
+
+    @Test
+    public void testDN_shouldProcessTokenFromMultipartFormData() throws IOException, ServletException {
+        setupControllerConfig();
+        request.setServletPath("/ok/create");
+        request.setContentType("multipart/form-data; boundary=----WebKitFormBoundaryEdl9aEHfg8EOlnx0");
+        byte[] data = ("------WebKitFormBoundaryEdl9aEHfg8EOlnx0\r\n" +
+                "Content-Disposition: form-data; name=\"" + CSRF.name() + "\"\r\n" +
+                "\r\n" +
+                CSRF.token() + "\r\n" +
+                "------WebKitFormBoundaryEdl9aEHfg8EOlnx0\r\n" +
+                "Content-Disposition: form-data; name=\"contacts_data\"; filename=\"contacts.csv\"\r\n" +
+                "Content-Type: application/vnd.ms-excel\r\n" +
+                "\r\n" +
+                "\"Email\", \"First name\", \"Last name\", \"City\", \"Phone\", \"Company\", \"Title\", \"Address 1\", \"Address 2\", \"State\", \"Zip\", \"Country\", \"Date of birth\", \"Created\"\r\n" +
+                "\"test_0@test.com\",\"Test_0\",\"Testovich_0\",,,,,,,,,,,\"2019-03-03 23:40:51.0\"\r\n" +
+                "\"test_1@test.com\",\"Test_1\",\"Testovich_1\",,,,,,,,,,,\"2019-03-03 23:40:52.0\"\r\n" +
+                "\"test_2@test.com\",\"Test_2\",\"Testovich_2\",,,,,,,,,,,\"2019-03-03 23:40:52.0\"\r\n" +
+                "\"test_3@test.com\",\"Test_3\",\"Testovich_3\",,,,,,,,,,,\"2019-03-03 23:40:52.0\"\r\n" +
+                "\"test_4@test.com\",\"Test_4\",\"Testovich_4\",,,,,,,,,,,\"2019-03-03 23:40:52.0\"\r\n" +
+                "\"test_5@test.com\",\"Test_5\",\"Testovich_5\",,,,,,,,,,,\"2019-03-03 23:40:52.0\"\r\n" +
+                "\"test_6@test.com\",\"Test_6\",\"Testovich_6\",,,,,,,,,,,\"2019-03-03 23:40:52.0\"\r\n" +
+                "\"test_7@test.com\",\"Test_7\",\"Testovich_7\",,,,,,,,,,,\"2019-03-03 23:40:52.0\"\r\n" +
+                "\"test_8@test.com\",\"Test_8\",\"Testovich_8\",,,,,,,,,,,\"2019-03-03 23:40:52.0\"\r\n" +
+                "\"test_9@test.com\",\"Test_9\",\"Testovich_9\",,,,,,,,,,,\"2019-03-03 23:40:52.0\"\r\n" +
+                "------WebKitFormBoundaryEdl9aEHfg8EOlnx0--\r\n").getBytes();
+        request.setContent(data);
+        request.addHeader("Content-Length", data.length);
+        request.setMethod("post");
+        dispatcher.doFilter(request, response, filterChain);
+        a(response.getStatus()).shouldEqual(200);
     }
 
     /* LinkToTag */
