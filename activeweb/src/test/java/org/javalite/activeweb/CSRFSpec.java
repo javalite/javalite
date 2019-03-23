@@ -311,6 +311,18 @@ public class CSRFSpec extends RequestSpec {
         a(response.getStatus()).shouldEqual(200);
     }
 
+    @Test
+    public void testDN_shouldProcessNotTokenWithoutNotAMultipartRequest() throws IOException, ServletException {
+        setupControllerConfig();
+        RequestContextHelper.createSession();
+        CSRF.name();
+        CSRF.token();
+        request.setServletPath("/ok/create");
+        request.setMethod("post");
+        dispatcher.doFilter(request, response, filterChain);
+        a(response.getStatus()).shouldEqual(403);
+    }
+
     /* LinkToTag */
 
     @Test
