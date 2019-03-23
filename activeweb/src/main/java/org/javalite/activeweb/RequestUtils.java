@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 import static java.util.Arrays.asList;
+import static org.apache.commons.fileupload.FileUploadBase.MULTIPART;
 import static org.javalite.common.Collections.list;
 
 /**
@@ -21,6 +22,11 @@ public class RequestUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestUtils.class);
     
     private RequestUtils() {}
+
+    public static boolean isMultipartContent() {
+        String contentType = RequestContext.getHttpRequest().getContentType();
+        return contentType != null && contentType.toLowerCase(Locale.ENGLISH).startsWith(MULTIPART);
+    }
 
     /**
      * Returns value of routing user segment, or route wild card value, or request parameter.
