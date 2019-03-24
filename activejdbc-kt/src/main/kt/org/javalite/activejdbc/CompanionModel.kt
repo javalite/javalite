@@ -28,33 +28,24 @@ import kotlin.reflect.KClass
  * How to use this class ?
  *
  * Consider this table:
- * <pre>
- *    <code>
- *      CREATE TABLE people (
+ *
+ *    CREATE TABLE people (
  *          id  int(11) NOT NULL auto_increment PRIMARY KEY,
  *          first_name VARCHAR(56) NOT NULL,
  *          last_name VARCHAR(56),
  *          created_at DATETIME,
  *          updated_at DATETIME
- *      );
- *    </code>
- * </pre>
+ *    );
  *
  * The related Java code is:
- * <pre>
- *    <code>
- *      public class Person extends Model {}
- *    </code>
- * </pre>
+ *
+ *    public class Person extends Model {}
  *
  * The equivalent in Kotlin is:
- * <pre>
- *    <code>
- *        open class Person():Model() {
- *            companion object:CompanionModel<Person>(Person::class.java)
- *        }
- *    </code>
- * </pre>
+ *
+ *    open class Person():Model() {
+ *        companion object:CompanionModel<Person>(Person::class.java)
+ *    }
  *
  * Because Kotlin does not allow static method inheritance, we have to define a companion object as CompanionModel. This
  * second model requires the class of type of the entity to manage. This code is a little bit more verbose than the Java
