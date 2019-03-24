@@ -1,6 +1,6 @@
 package org.javalite.activejdbc;
 
-
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,7 +15,7 @@ public class ScopeBuilder<T extends Model> {
     @SuppressWarnings("WeakerAccess") //has to be public!
     public ScopeBuilder(Class<T> modelClass, String[] scopes) {
         this.modelClass = modelClass;
-        this.scopes = Arrays.asList(scopes);
+        this.scopes = new ArrayList<>(Arrays.asList(scopes));
     }
 
     /**
