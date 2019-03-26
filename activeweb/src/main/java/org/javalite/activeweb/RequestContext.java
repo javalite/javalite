@@ -19,6 +19,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -40,6 +41,8 @@ public class RequestContext {
     private static ThreadLocal<Route> route = new ThreadLocal<>();
     private static ThreadLocal<Map<String, Object>> values = new ThreadLocal<>();
     private static ThreadLocal<Boolean> exceptionHappened = new ThreadLocal<>();
+    private static ThreadLocal<List<FormItem>> formItems = new ThreadLocal<>();
+
 
     private RequestContext() {}
 
@@ -150,6 +153,14 @@ public class RequestContext {
         RequestContext.values.set(new HashMap<>());
     }
 
+    static List<FormItem> getFormItems() {
+        return formItems.get();
+    }
+
+    static void setFormItems(List<FormItem> items) {
+        formItems.set(items);
+    }
+
     static void clear() {
         request.set(null);
         response.set(null);
@@ -162,5 +173,6 @@ public class RequestContext {
         appContext.set(null);
         values.set(null);
         exceptionHappened.set(false);
+        formItems.set(null);
     }
 }
