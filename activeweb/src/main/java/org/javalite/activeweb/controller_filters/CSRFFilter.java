@@ -1,9 +1,6 @@
 package org.javalite.activeweb.controller_filters;
 
-import org.javalite.activeweb.CSRF;
-import org.javalite.activeweb.FormItem;
-import org.javalite.activeweb.HttpMethod;
-import org.javalite.activeweb.RequestUtils;
+import org.javalite.activeweb.*;
 
 public class CSRFFilter extends HttpSupportFilter {
 
@@ -31,11 +28,14 @@ public class CSRFFilter extends HttpSupportFilter {
                 token = header(CSRF.HTTP_HEADER_NAME);
             }
             if (token == null && RequestUtils.isMultipartContent()) {
+                int i = 0;
                 for(FormItem fi : multipartFormItems()) {
                     if (fi.isFormField() && sessionName.equals(fi.getFieldName())) {
                         token = new String(fi.getBytes());
+                        multipartFormItems().remove(i);
                         break;
                     }
+                    i++;
                 }
             }
             if (token == null) {

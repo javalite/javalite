@@ -43,7 +43,6 @@ import static org.javalite.common.Collections.map;
  */
 public class HttpSupport {
     private Logger logger = LoggerFactory.getLogger(getClass());
-    private List<FormItem> formItems;
     private static Pattern hashPattern = Pattern.compile("\\[.*\\]");
 
     protected void logInfo(String info){
@@ -761,28 +760,13 @@ public class HttpSupport {
      * @return a collection of uploaded files from a multi-part port request.
      */
     protected Iterator<FormItem> uploadedFiles(String encoding, long maxFileSize) {
-        HttpServletRequest req = RequestContext.getHttpRequest();
-
-        Iterator<FormItem> iterator;
-
-        if(req instanceof AWMockMultipartHttpServletRequest){//running inside a test, and simulating upload.
-            iterator = ((AWMockMultipartHttpServletRequest)req).getFormItemIterator();
-        }else{
-            if (!ServletFileUpload.isMultipartContent(req))
-                throw new ControllerException("this is not a multipart request, be sure to add this attribute to the form: ... enctype=\"multipart/form-data\" ...");
-
-            ServletFileUpload upload = new ServletFileUpload();
-            if(encoding != null)
-                upload.setHeaderEncoding(encoding);
-            upload.setFileSizeMax(maxFileSize);
-            try {
-                FileItemIterator it = upload.getItemIterator(RequestContext.getHttpRequest());
-                iterator = new FormItemIterator(it);
-            } catch (Exception e) {
-                throw new ControllerException(e);
+        List<FormItem> fileItems = new ArrayList<>();
+        for(FormItem item : multipartFormItems(encoding, maxFileSize)) {
+            if (item.isFile()) {
+                fileItems.add(item);
             }
         }
-        return iterator;
+        return fileItems.iterator();
     }
 
 
@@ -811,14 +795,16 @@ public class HttpSupport {
      *
      * For more information, see: <a href="http://commons.apache.org/proper/commons-fileupload/using.html">Using FileUpload</a>
      *
-     * The size of upload defaults to max of 20mb. Files greater than that will be rejected. If you want to accept files
-     * smaller of larger, create a file called <code>activeweb.properties</code>, add it to your classpath and
-     * place this property to the file:
+     * The size of upload defaults to max of 20mb. Files greater than that will be rejected. If you want to accept larger files, create a file called <code>activeweb.properties</code>,
+     * add it to your classpath and place this property to the file:
      *
      * <pre>
      * #max upload size
      * maxUploadSize = 20000000
      * </pre>
+     *
+     * Alternatively, just call this method and pass a per-request parameter for the size: {@link #multipartFormItems(String, long)}.
+     *
      *
      * @param encoding specifies the character encoding to be used when reading the headers of individual part.
      * When not specified, or null, the request encoding is used. If that is also not specified, or null,
@@ -827,15 +813,42 @@ public class HttpSupport {
      * @return a collection of uploaded files from a multi-part request.
      */
     protected List<FormItem> multipartFormItems(String encoding) {
+        return multipartFormItems(encoding, Configuration.getMaxUploadSize());
+    }
+
+    /**
+     * Returns a collection of uploaded files and form fields from a multi-part request.
+     * This method uses <a href="http://commons.apache.org/proper/commons-fileupload/apidocs/org/apache/commons/fileupload/disk/DiskFileItemFactory.html">DiskFileItemFactory</a>.
+     * As a result, it is recommended to add the following to your web.xml file:
+     *
+     * <pre>
+     *   &lt;listener&gt;
+     *      &lt;listener-class&gt;
+     *         org.apache.commons.fileupload.servlet.FileCleanerCleanup
+     *      &lt;/listener-class&gt;
+     *   &lt;/listener&gt;
+     *</pre>
+     *
+     * For more information, see: <a href="http://commons.apache.org/proper/commons-fileupload/using.html">Using FileUpload</a>
+     *
+     * @param encoding specifies the character encoding to be used when reading the headers of individual part.
+     * When not specified, or null, the request encoding is used. If that is also not specified, or null,
+     * the platform default encoding is used.
+     *
+     * @param maxUploadSize maximum size of the upload in bytes. A value of -1 indicates no maximum.
+     *
+     * @return a collection of uploaded files from a multi-part request.
+     */
+    protected List<FormItem> multipartFormItems(String encoding, long maxUploadSize) {
         //we are thread safe, because controllers are pinned to a thread and discarded after each request.
-        if(formItems != null ){
-            return formItems;
+        if(RequestContext.getFormItems() != null ){
+            return RequestContext.getFormItems();
         }
 
         HttpServletRequest req = RequestContext.getHttpRequest();
 
         if (req instanceof AWMockMultipartHttpServletRequest) {//running inside a test, and simulating upload.
-            formItems = ((AWMockMultipartHttpServletRequest) req).getFormItems();
+            RequestContext.setFormItems(((AWMockMultipartHttpServletRequest) req).getFormItems());
         } else {
 
             if (!ServletFileUpload.isMultipartContent(req))
@@ -849,24 +862,24 @@ public class HttpSupport {
             ServletFileUpload upload = new ServletFileUpload(factory);
             if(encoding != null)
                 upload.setHeaderEncoding(encoding);
-            upload.setFileSizeMax(Configuration.getMaxUploadSize());
+            upload.setFileSizeMax(maxUploadSize);
             try {
                 List<org.apache.commons.fileupload.FileItem> apacheFileItems = upload.parseRequest(RequestContext.getHttpRequest());
-                formItems = new ArrayList<>();
+                ArrayList items = new ArrayList<>();
                 for (FileItem apacheItem : apacheFileItems) {
                     ApacheFileItemFacade f = new ApacheFileItemFacade(apacheItem);
                     if(f.isFormField()){
-                        formItems.add(new FormItem(f));
+                        items.add(new FormItem(f));
                     }else{
-                        formItems.add(new org.javalite.activeweb.FileItem(f));
+                        items.add(new org.javalite.activeweb.FileItem(f));
                     }
                 }
-                return formItems;
+                RequestContext.setFormItems(items);
             } catch (Exception e) {
                 throw new ControllerException(e);
             }
         }
-        return formItems;
+        return RequestContext.getFormItems();
     }
 
 
