@@ -32,11 +32,11 @@ public class CSRFFilter extends HttpSupportFilter {
                 for(FormItem fi : multipartFormItems()) {
                     if (fi.isFormField() && sessionName.equals(fi.getFieldName())) {
                         token = new String(fi.getBytes());
+                        multipartFormItems().remove(i);
                         break;
                     }
                     i++;
                 }
-                multipartFormItems().remove(i);
             }
             if (token == null) {
                 throw new SecurityException("CSRF attack detected! Token not found!");

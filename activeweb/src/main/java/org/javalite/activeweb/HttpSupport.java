@@ -760,10 +760,13 @@ public class HttpSupport {
      * @return a collection of uploaded files from a multi-part port request.
      */
     protected Iterator<FormItem> uploadedFiles(String encoding, long maxFileSize) {
-
-        List<FormItem> formItems = multipartFormItems(encoding, maxFileSize);
-        //TODO What a type should be return here? May be only files and not fields?
-        return formItems.iterator();
+        List<FormItem> fileItems = new ArrayList<>();
+        for(FormItem item : multipartFormItems(encoding, maxFileSize)) {
+            if (item.isFile()) {
+                fileItems.add(item);
+            }
+        }
+        return fileItems.iterator();
     }
 
 
