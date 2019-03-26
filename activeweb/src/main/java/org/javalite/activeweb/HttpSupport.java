@@ -764,29 +764,6 @@ public class HttpSupport {
         List<FormItem> formItems = multipartFormItems(encoding, maxFileSize);
         //TODO What a type should be return here? May be only files and not fields?
         return formItems.iterator();
-
-//        HttpServletRequest req = RequestContext.getHttpRequest();
-//
-//        Iterator<FormItem> iterator;
-//
-//        if(req instanceof AWMockMultipartHttpServletRequest){//running inside a test, and simulating upload.
-//            iterator = ((AWMockMultipartHttpServletRequest)req).getFormItemIterator();
-//        }else{
-//            if (!ServletFileUpload.isMultipartContent(req))
-//                throw new ControllerException("this is not a multipart request, be sure to add this attribute to the form: ... enctype=\"multipart/form-data\" ...");
-//
-//            ServletFileUpload upload = new ServletFileUpload();
-//            if(encoding != null)
-//                upload.setHeaderEncoding(encoding);
-//            upload.setFileSizeMax(maxFileSize);
-//            try {
-//                FileItemIterator it = upload.getItemIterator(RequestContext.getHttpRequest());
-//                iterator = new FormItemIterator(it);
-//            } catch (Exception e) {
-//                throw new ControllerException(e);
-//            }
-//        }
-//        return iterator;
     }
 
 
@@ -815,14 +792,16 @@ public class HttpSupport {
      *
      * For more information, see: <a href="http://commons.apache.org/proper/commons-fileupload/using.html">Using FileUpload</a>
      *
-     * The size of upload defaults to max of 20mb. Files greater than that will be rejected. If you want to accept files
-     * smaller of larger, create a file called <code>activeweb.properties</code>, add it to your classpath and
-     * place this property to the file:
+     * The size of upload defaults to max of 20mb. Files greater than that will be rejected. If you want to accept larger files, create a file called <code>activeweb.properties</code>,
+     * add it to your classpath and place this property to the file:
      *
      * <pre>
      * #max upload size
      * maxUploadSize = 20000000
      * </pre>
+     *
+     * Alternatively, just call this method and pass a per-request parameter for the size: {@link #multipartFormItems(String, long)}.
+     *
      *
      * @param encoding specifies the character encoding to be used when reading the headers of individual part.
      * When not specified, or null, the request encoding is used. If that is also not specified, or null,
@@ -849,20 +828,11 @@ public class HttpSupport {
      *
      * For more information, see: <a href="http://commons.apache.org/proper/commons-fileupload/using.html">Using FileUpload</a>
      *
-     * The size of upload defaults to max of 20mb. Files greater than that will be rejected. If you want to accept files
-     * smaller of larger, create a file called <code>activeweb.properties</code>, add it to your classpath and
-     * place this property to the file:
-     *
-     * <pre>
-     * #max upload size
-     * maxUploadSize = 20000000
-     * </pre>
-     *
      * @param encoding specifies the character encoding to be used when reading the headers of individual part.
      * When not specified, or null, the request encoding is used. If that is also not specified, or null,
      * the platform default encoding is used.
      *
-     * @param maxUploadSize maximum size in the upload in bytes. -1 indicates no limit.
+     * @param maxUploadSize maximum size of the upload in bytes. A value of -1 indicates no maximum.
      *
      * @return a collection of uploaded files from a multi-part request.
      */
