@@ -36,6 +36,13 @@ public class ScopeSpec extends ActiveJDBCTest {
         the(active.get(0).get("first_name")).shouldEqual("Jane");
     }
 
+    @Test
+    public void shouldUseMultipleScopesWithMultipleScopeCalls() {
+        List<Employee> active = Employee.scope("developers").scope("active").all();
+        the(active.size()).shouldEqual(1);
+        the(active.get(0).get("first_name")).shouldEqual("Jane");
+    }
+
     @Test(expected = DBException.class)
     public void shouldRejectNonExistentScope() {
         Employee.scope("does-not-exist").all();
