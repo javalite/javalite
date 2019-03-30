@@ -149,7 +149,6 @@
         <module>db-migrator-integration-test</module>
         <module>git-info-maven-plugin</module>
         <module>app-config</module>
-        <module>activejdbc-gradle-plugin</module>
         <module>activejdbc-static-metadata-test</module>
     </modules>
 
