@@ -50,7 +50,7 @@ public class SessionPool {
             return session;
         } else {
             session = createNewSession();
-            LOGGER.info("Created new session: " + session + ". Pool size: " + sessions.size());
+            LOGGER.debug("Created new session: " + session + ". Pool size: " + sessions.size());
             return session;
         }
     }
@@ -103,7 +103,7 @@ public class SessionPool {
                             if (ageMillis > MAX_AGE_MILLIS) {
                                 session.reallyClose();
                                 iterator.remove();
-                                LOGGER.info("Session is " + ageMillis + " milliseconds old, closing: " + session);
+                                LOGGER.debug("Session is " + ageMillis + " milliseconds old, closing: " + session);
                             }else {
                                 break;
                             }
@@ -123,7 +123,7 @@ public class SessionPool {
         protected void start() {
             synchronized (sessions) {
                 cleanupExecutor.scheduleAtFixedRate(command, 5, 5, TimeUnit.SECONDS);
-                LOGGER.info("Starting to clean stale sessions...");
+                LOGGER.debug("Starting to clean stale sessions...");
             }
         }
     }
