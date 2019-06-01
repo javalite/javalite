@@ -37,7 +37,7 @@ public class ModelFinder {
         if (modelMap == null) {
             try {
                 modelMap = new HashMap<>();
-                Enumeration<URL> urls = Registry.instance().getClass().getClassLoader().getResources("activejdbc_models.properties");
+                Enumeration<URL> urls = Registry.instance().getClass().getClassLoader().getResources(Registry.instance().getModelFile());
                 while(urls.hasMoreElements()) {
                     URL url = urls.nextElement();
                     LogFilter.log(LOGGER, LogLevel.INFO, "Loading models from: {}", url.toExternalForm());
