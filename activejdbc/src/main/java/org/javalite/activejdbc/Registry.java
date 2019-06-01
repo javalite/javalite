@@ -15,18 +15,8 @@ limitations under the License.
 */
 package org.javalite.activejdbc;
 
-import org.javalite.activejdbc.annotations.BelongsTo;
-import org.javalite.activejdbc.annotations.BelongsToParents;
-import org.javalite.activejdbc.annotations.BelongsToPolymorphic;
-import org.javalite.activejdbc.annotations.HasMany;
-import org.javalite.activejdbc.annotations.Many2Manies;
-import org.javalite.activejdbc.annotations.Many2Many;
-import org.javalite.activejdbc.annotations.UnrelatedTo;
-import org.javalite.activejdbc.associations.BelongsToAssociation;
-import org.javalite.activejdbc.associations.BelongsToPolymorphicAssociation;
-import org.javalite.activejdbc.associations.Many2ManyAssociation;
-import org.javalite.activejdbc.associations.OneToManyAssociation;
-import org.javalite.activejdbc.associations.OneToManyPolymorphicAssociation;
+import org.javalite.activejdbc.annotations.*;
+import org.javalite.activejdbc.associations.*;
 import org.javalite.activejdbc.cache.CacheManager;
 import org.javalite.activejdbc.cache.QueryCache;
 import org.javalite.activejdbc.logging.LogFilter;
@@ -44,11 +34,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 
 /**
