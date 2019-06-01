@@ -536,4 +536,5 @@ public enum Registry {
 
     public void setModelFile(String modelFile) {
         this.modelFile = modelFile;
-    }}
+    }
+}
