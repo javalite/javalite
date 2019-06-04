@@ -23,7 +23,6 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.maven.cli.MavenCli;
 import static org.javalite.db_migrator.DbUtils.closeQuietly;
@@ -42,14 +41,9 @@ public abstract class AbstractIntegrationSpec {
             errps = new PrintStream(erros);
             MavenCli cli = new MavenCli();
 
-//            Properties props = System.getProperties();
-
-//            //if running on Travis, set a profile
-//            if(props.getProperty("user.name").equals("travis")){
-//                List<String> argsList =  new ArrayList<>(Arrays.asList(args));
-//                argsList.add("-Ptravis");
-//                args = argsList.toArray(new String[0]);
-//            }
+            List<String> argsList =  new ArrayList<>(Arrays.asList(args));
+            argsList.add(0, "-X");
+            args = argsList.toArray(new String[0]);
 
             int code = cli.doMain(args, dir, outps, errps);
             String out = outos.toString();
