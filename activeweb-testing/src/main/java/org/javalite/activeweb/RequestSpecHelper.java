@@ -66,7 +66,7 @@ public class RequestSpecHelper extends SpecHelper{
     protected String responseContent(){
         try{
             //content can be provided simply by respond() method
-            return ((MockHttpServletResponse) RequestContext.getHttpResponse()).getContentAsString();
+            return ((MockHttpServletResponse) RequestContext.getHttpResponse().getTarget()).getContentAsString();
         }
         catch(SpecException e){
             throw e;
@@ -83,7 +83,7 @@ public class RequestSpecHelper extends SpecHelper{
      */
     protected byte[] bytesContent(){
         try{
-            return ((MockHttpServletResponse) RequestContext.getHttpResponse()).getContentAsByteArray();
+            return ((MockHttpServletResponse) RequestContext.getHttpResponse().getTarget()).getContentAsByteArray();
         }
         catch(Exception e){
             throw new RuntimeException(e);
@@ -307,7 +307,7 @@ public class RequestSpecHelper extends SpecHelper{
      */
     protected Cookie[] getCookies(){
         if(RequestContext.getHttpResponse() == null) throw new IllegalStateException("response does not exist");
-        javax.servlet.http.Cookie[] servletCookies = ((MockHttpServletResponse) RequestContext.getHttpResponse()).getCookies();
+        javax.servlet.http.Cookie[] servletCookies = ((MockHttpServletResponse) RequestContext.getHttpResponse().getTarget()).getCookies();
         List<Cookie> cookies = new ArrayList<>();
         for(javax.servlet.http.Cookie cookie: servletCookies){
             cookies.add(Cookie.fromServletCookie(cookie));

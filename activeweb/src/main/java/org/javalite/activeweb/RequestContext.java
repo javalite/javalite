@@ -31,7 +31,7 @@ import java.util.Map;
 public class RequestContext {
 
     private static ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
-    private static ThreadLocal<HttpServletResponse> response = new ThreadLocal<>();
+    private static ThreadLocal<HttpServletResponseProxy> response = new ThreadLocal<>();
     private static ThreadLocal<FilterConfig> filterConfig = new ThreadLocal<>();
     private static ThreadLocal<ControllerResponse> controllerResponse = new ThreadLocal<>();
     private static ThreadLocal<AppContext> appContext = new ThreadLocal<>();
@@ -92,10 +92,10 @@ public class RequestContext {
     }
 
     static void setHttpResponse(HttpServletResponse resp){        
-        response.set(resp);
+        response.set(new HttpServletResponseProxy(resp));
     }
 
-    static HttpServletResponse getHttpResponse(){
+    static HttpServletResponseProxy getHttpResponse(){
         return response.get();
     }
 

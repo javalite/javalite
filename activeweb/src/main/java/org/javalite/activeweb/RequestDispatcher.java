@@ -27,6 +27,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 
 import static org.javalite.activeweb.Configuration.getDefaultLayout;
@@ -284,12 +285,33 @@ public class RequestDispatcher implements Filter {
         }catch(Throwable t){
 
             if(t instanceof IllegalStateException){
-                logger.error("Failed to render a template: '" + template + "' because templates are rendered with Writer, but you probably already used OutputStream");
+                logger.error("Failed to render a template: '" + template + "' because templates are rendered with Writer, but you probably already used OutputStream", t);
             }else{
                 logger.error("ActiveWeb internal error: ", t);
             }
             try{
-                RequestContext.getHttpResponse().getOutputStream().print("<div style='color:red'>internal error</div>");
+                HttpServletResponseProxy httpServletResponseProxy = RequestContext.getHttpResponse();
+                if(httpServletResponseProxy == null){
+                    throw new WebException("Catastrophic failure: failed to find HttpServletResponse...", t);
+                }
+
+                HttpServletResponseProxy.OutputType outputType = httpServletResponseProxy.getOutputType();
+                if(HttpServletResponseProxy.OutputType.OUTPUT_STREAM == outputType){
+                    ServletOutputStream outputStream = httpServletResponseProxy.getOutputStream();
+                    if(outputStream == null){
+                        throw new WebException("Catastrophic failure: failed to find OutputStream...", t);
+                    }else{
+                        outputStream.print("<div style='color:red'>internal error</div>");
+                    }
+                }else{
+                    PrintWriter writer = httpServletResponseProxy.getWriter();
+                    if(writer == null){
+                        throw new WebException("Catastrophic failure: failed to find Writer...", t);
+                    }else{
+                        writer.print("<div style='color:red'>internal error</div>");
+                    }
+                }
+                httpServletResponseProxy.setStatus(500);
             }catch(Exception ex){
                 logger.error(ex.toString(), ex);
             }
