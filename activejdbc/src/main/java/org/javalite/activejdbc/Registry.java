@@ -22,20 +22,19 @@ import org.javalite.activejdbc.cache.QueryCache;
 import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.activejdbc.logging.LogLevel;
 import org.javalite.activejdbc.statistics.StatisticsQueue;
-
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.sql.DatabaseMetaData;
-import java.util.*;
-import java.sql.SQLException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-
 import org.javalite.common.Inflector;
 import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
 
 /**
@@ -57,6 +56,7 @@ public enum Registry {
     private final StatisticsQueue statisticsQueue;
     private final Set<String> initedDbs = new HashSet<>();
     private int staticMetadataStatus = 0;
+    private String modelFile = "activejdbc_models.properties";
 
     Registry() {
         statisticsQueue = configuration.collectStatistics()
@@ -528,5 +528,24 @@ public enum Registry {
 
     private void registerColumnMetadata(String table, Map<String, ColumnMetadata> metaParams) {
         metaModels.setColumnMetadata(table, metaParams);
+    }
+
+    public String getModelFile() {
+        return modelFile;
+    }
+
+    /**
+     * Used to override the default model file, activejdbc_models.properties.
+     * Please note: After initial registration of the model classes in ActiveJDBC this method
+     * will not function. That means in order to utilize this method, you must call it before
+     * doing any work with models.
+     *
+     * Usage of this method is only advised if you know what you're doing, and understand the risks
+     * of improperly using the method.
+     *
+     * @param modelFile The name of the file to use as your models properties file.
+     */
+    public void setModelFile(String modelFile) {
+        this.modelFile = modelFile;
     }
 }
