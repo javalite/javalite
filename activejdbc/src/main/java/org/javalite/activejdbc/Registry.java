@@ -534,6 +534,17 @@ public enum Registry {
         return modelFile;
     }
 
+    /**
+     * Used to override the default model file, activejdbc_models.properties.
+     * Please note: After initial registration of the model classes in ActiveJDBC this method
+     * will not function. That means in order to utilize this method, you must call it before
+     * doing any work with models.
+     *
+     * Usage of this method is only advised if you know what you're doing, and understand the risks
+     * of improperly using the method.
+     *
+     * @param modelFile The name of the file to use as your models properties file.
+     */
     public void setModelFile(String modelFile) {
         this.modelFile = modelFile;
     }
