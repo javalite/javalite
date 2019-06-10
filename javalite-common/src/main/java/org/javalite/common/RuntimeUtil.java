@@ -1,20 +1,40 @@
 package org.javalite.common;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
 import java.util.LinkedList;
 
 import static org.javalite.common.Util.read;
 
 /**
- * Utility class to shell out system commands
+ * Utility class to shell out system commands. Use for quick execution of  external processes that will not generate a lot of output.
  *
  * @author igor on 1/20/17.
  */
 public class RuntimeUtil {
 
     private static int MAX_BUFFER_SIZE = 2048;
+
+
+    /**
+     * Executes an external command and provides results of execution at the current location.
+     * Will accumulate limited output from the external process.
+     *
+     * @param command array containing the command to call and its arguments.
+     * @param maxBuffer max size of buffers <code>out, err</code>. An external process may produce a
+     *                  lot of output, be careful setting to a large value. The buffer will not be allocated to this
+     *                  size at the start, but will grow until it reaches it. The program will continue toi execute, and the buffer
+     *                  will be 'tailing' the output of the external process.
+     *
+     *
+     * @return instance of {@link Response} with result of execution.
+     */
+    public static Response execute(int maxBuffer, String ... command) {
+        return execute(maxBuffer, null, command);
+    }
 
     /**
      * Executes an external command and provides results of execution.
@@ -25,10 +45,15 @@ public class RuntimeUtil {
      *                  lot of output, be careful setting to a large value. The buffer will not be allocated to this
      *                  this size at the start, but will grow until it reaches it. The program will continue toi execute, and the buffer
      *                  will be 'tailing' the output of the external process.
+     * @param dir - location of process execution. Pass <code>null</code> to execute at current location of the calling process.
      *
      * @return instance of {@link Response} with result of execution.
      */
-    public static Response execute(int maxBuffer, String ... command) {
+    public static Response execute(int maxBuffer, File dir, String ... command) {
+
+        if(dir != null && dir.isFile()){
+            throw new IllegalArgumentException("Location must be a directory, not a file ");
+        }
 
         if(command.length == 0){
             throw new IllegalArgumentException("Command must be provided.");
@@ -37,7 +62,7 @@ public class RuntimeUtil {
         String[]  commandAndArgs = command.length == 1 && command[0].contains(" ") ? Util.split(command[0], " ") : command;
 
         try {
-            Process process = Runtime.getRuntime().exec(commandAndArgs);
+            Process process = Runtime.getRuntime().exec(commandAndArgs, null, dir);
 
             OutputReader stdOutReader = new OutputReader(process.getInputStream(), maxBuffer);
             OutputReader stdErrReader = new OutputReader(process.getErrorStream(), maxBuffer);
