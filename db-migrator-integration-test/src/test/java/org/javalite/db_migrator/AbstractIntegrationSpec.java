@@ -59,7 +59,7 @@ public abstract class AbstractIntegrationSpec {
             System.out.print("Exit code: ");
             System.out.println(code);
             System.out.print(out);
-            System.err.print(err);
+            System.err.println(err);
             System.out.println("TEST MAVEN EXECUTION END <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 
             return out + err;

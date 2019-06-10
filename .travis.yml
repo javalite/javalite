@@ -12,6 +12,10 @@ services:
 - postgresql
 - docker # In order to run DBMS such as DB2, MSSQL and Oracle
 
+env:
+  global:
+    - M2_HOME=/usr/local/maven-3.5.2
+
 stages:
 - compile
 - test
@@ -33,7 +37,7 @@ jobs:
     - mysql -e "CREATE USER 'activejdbc'@'localhost' IDENTIFIED BY 'p@ssw0rd';"
     - mysql -e "GRANT ALL PRIVILEGES ON * . * TO 'activejdbc'@'localhost';"
 
-    script: mvn test -Dtest=!MySQLMigrationSpec,!org.javalite.db_migrator.* -DfailIfNoTests=false -V
+    script: mvn test -Dtest=!MySQLMigrationSpec,!org.javalite.db_migrator.* -DfailIfNoTests=false -V -Dmaven.multiModuleProjectDirectory=$M2_HOME
 
   - stage: test
 
