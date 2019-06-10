@@ -16,7 +16,6 @@ limitations under the License.
 
 package org.javalite.db_migrator;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
