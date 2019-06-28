@@ -9,7 +9,14 @@ Release steps:
 5. Update Gradle plugin resources to the latest version
 6. Search the project for previous snapshot version and switch to latest snapshot (test projects)
 7. Update and test all examples to the latest released version
-8. Create JavaDoc for released version and update new SNAPSHOT version
+8. Create JavaDoc for released version and update new SNAPSHOT version:
+   VERSION=2.0
+   mvn javadoc:aggregate
+   mkdir  ../javalite.github.io/activejdbc/$VERSION
+   cd ../javalite.github.io/
+   git add .
+   git commit -m "added version $VERSION"
+   git push
 
 generate release notes:
    git log --format=format:"* %ci %an [%s](https://github.com/javalite/activejdbc/commit/%h)" --since "2015-01-30" > release_notes-June-17-2015.txt
