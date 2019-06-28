@@ -9,5 +9,4 @@
    git add .
    git commit -m "added version $VERSION"
 
-   echo "Done creating the JavaDoc for $VERSION. Please, execute git push if you are happy"
-   git push
+   echo "Done creating the JavaDoc for $VERSION. Please, execute ***git push*** if you are happy"
