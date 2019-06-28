@@ -2,14 +2,14 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>activeweb-lessc-integration-test</artifactId>
-    <version>2.3-SNAPSHOT</version>
+    <version>2.3</version>
     <packaging>jar</packaging>
     <name>ActiveWeb - Lessc Maven Plugin Integration Test</name>
 
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>activeweb-root</artifactId>
-        <version>2.3-SNAPSHOT</version>
+        <version>2.3</version>
     </parent>
 
     <properties>
