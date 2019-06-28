@@ -8,7 +8,8 @@ Release steps:
 	Navigate to Staging repositories: https://oss.sonatype.org/index.html#stagingRepositories , close and release artifacts (personal email / dev ls pwd)
 5. Update Gradle plugin resources to the latest version
 6. Search the project for previous snapshot version and switch to latest snapshot (test projects)
-6. Update and test all examples to the latest released version
+7. Update and test all examples to the latest released version
+8. Create JavaDoc for released version and update new SNAPSHOT version
 
 generate release notes:
    git log --format=format:"* %ci %an [%s](https://github.com/javalite/activejdbc/commit/%h)" --since "2015-01-30" > release_notes-June-17-2015.txt
