@@ -77,7 +77,7 @@
               <configuration>
                   <stylesheetfile>javadoc/stylesheet.css</stylesheetfile>
                   <javadocDirectory>javadoc</javadocDirectory>
-                  <additionalparam>-Xdoclint:none</additionalparam>
+                  <doclint>none</doclint>
               </configuration>
             </plugin>
             <plugin>
