@@ -9,4 +9,6 @@
 8. Add release notes page to the site using command:
     git log --format=format:"* %ci %an [%s](https://github.com/javalite/activeweb/commit/%h)" --since "2015-01-30" > release_notes-June-17-2015.txt
 9. Switch dependency to the latest snapshot of ActiveJDBC
+10. Update to create released version of JavaDoc: 
+    scripts/release_javadoc.sh
 
