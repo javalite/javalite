@@ -1,14 +1,25 @@
 
 1. Switch to latest release version of ActiveJDBC
 2. mvn release:clean
-3. mvn release:prepare
+3. mvn release:prepare (ls pwd)
 4. mvn release:perform
 5. Log into https://oss.sonatype.org/index.html and login.
 6. Switch to https://oss.sonatype.org/index.html#stagingRepositories and make a release.
-7. Update examples to use latest released version
-8. Add release notes page to the site using command:
-    git log --format=format:"* %ci %an [%s](https://github.com/javalite/activeweb/commit/%h)" --since "2015-01-30" > release_notes-June-17-2015.txt
-9. Switch dependency to the latest snapshot of ActiveJDBC
-10. Update to create released version of JavaDoc: 
-    scripts/release_javadoc.sh
+7. Update examples to use latest released version (create a new issue on Github)
+8. Switch dependency to the latest snapshot of ActiveJDBC (create an  issue)
+9. Create  JavaDocs version:
 
+        ./scripts/release_javadoc.sh VERSION
+
+10. Update JavaDocs page:
+
+        javalite-site/content/src/activejdbc/javadoc.md
+
+11. Generate release notes:
+
+   git log --format=format:"* %ci %an [%s](https://github.com/javalite/activejdbc/commit/%h)" --since "2015-01-30" > aj-release-notes.txt
+   git log --format=format:"* %ci %an [%s](https://github.com/javalite/activeweb/commit/%h)" --since "2015-01-30" > aw-release-notes.txt
+
+12. Add release notes to the site
+
+   javalite-site/content/src/activejdbc/releases.md
