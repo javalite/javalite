@@ -33,5 +33,8 @@ public class HelloController extends AppController{
     public void ids(){
         respond(params("id").toString());
     }
+
+    public void multivalues(){}
+
 }
 

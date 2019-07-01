@@ -67,13 +67,13 @@ class ParamCopy {
     private static void copyRequestParamsInto(Map assigns) {
         Enumeration names = RequestContext.getHttpRequest().getParameterNames();
 
-        Map<String, String> requestParameterMap = new HashMap<>();
+        Map<String, Object> requestParameterMap = new HashMap<>();
         while (names.hasMoreElements()) {
             Object name = names.nextElement();
             String[] values = RequestContext.getHttpRequest().getParameterValues(name.toString());
             Object value = values != null && values.length == 1 ? values[0] : values;
             if(value != null)
-                requestParameterMap.put(name.toString(), value.toString());
+                requestParameterMap.put(name.toString(), value);
         }
         assigns.put("request", requestParameterMap);
     }

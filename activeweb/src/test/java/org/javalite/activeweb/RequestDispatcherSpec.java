@@ -439,4 +439,15 @@ public class RequestDispatcherSpec extends RequestSpec {
         the(response.getStatus()).shouldBeEqual(500);
         the(response.getContentAsString()).shouldBeEqual("null");
     }
+
+    @Test
+    public void shouldPassMultipleRequestValues() throws IOException, ServletException {
+        request.setServletPath("/hello/multivalues");
+        request.setMethod("GET");
+        request.addParameter("account", "123");
+        request.addParameter("account", "456");
+        dispatcher.doFilter(request, response, filterChain);
+        the(response.getContentAsString()).shouldContain("value: 123");
+        the(response.getContentAsString()).shouldContain("value: 456");
+    }
 }
