@@ -17,8 +17,8 @@
 
 11. Generate release notes:
 
-   git log --format=format:"* %ci %an [%s](https://github.com/javalite/activejdbc/commit/%h)" --since "2015-01-30" > aj-release-notes.txt
-   git log --format=format:"* %ci %an [%s](https://github.com/javalite/activeweb/commit/%h)" --since "2015-01-30" > aw-release-notes.txt
+   git log --format=format:"* %ci %an [%s](https://github.com/javalite/activejdbc/commit/%h)" --since "2018-08-28" > aj-release-notes.txt
+   git log --format=format:"* %ci %an [%s](https://github.com/javalite/activeweb/commit/%h)" --since "2018-08-29" > aw-release-notes.txt
 
 12. Add release notes to the site
 
