@@ -188,7 +188,14 @@ public enum Registry {
          */
         String[] names = table.split("\\.", 3);
 
-        String schema = databaseMetaData.getConnection().getSchema();
+        String schema = null; //
+
+        try {
+            if(databaseMetaData.getClass().getMethod("getSchema")!=null){
+                schema = databaseMetaData.getConnection().getSchema();
+            }
+        } catch (NoSuchMethodException e) {}
+
         String tableName;
 
         switch (names.length) {
@@ -207,8 +214,12 @@ public enum Registry {
         default:
             throw new DBException("invalid table name: " + table);
         }
-
-        String catalog = databaseMetaData.getConnection().getCatalog();
+        String catalog = null;
+        try {
+            if(databaseMetaData.getClass().getMethod("getCatalog")!=null){
+                catalog = databaseMetaData.getConnection().getCatalog();
+            }
+        } catch (NoSuchMethodException e) {}
 
         if(dbType.equalsIgnoreCase("h2")){
             // keep quoted table names as is, otherwise use uppercase
