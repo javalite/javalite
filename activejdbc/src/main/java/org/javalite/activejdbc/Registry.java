@@ -188,6 +188,7 @@ public enum Registry {
          */
         String[] names = table.split("\\.", 3);
 
+
         String schema = null; // Assign null for android SQLLite
 
         try {
@@ -216,6 +217,7 @@ public enum Registry {
             throw new DBException("invalid table name: " + table);
         }
         String catalog = null; // Assign null for android SQLLite
+
         try {
             // getSchema does not exist on android.
             if(databaseMetaData.getClass().getMethod("getCatalog")!=null){
