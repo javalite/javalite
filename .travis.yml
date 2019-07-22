@@ -110,7 +110,7 @@ jobs:
     # ensure we only attempt to deploy commits on master (excluding PRs)
     if: |
       repo = javalite/activejdbc AND \
-      branch = master            AND \
+      branch in (master, java8)  AND \
       type != pull_request
 
     before_install:
