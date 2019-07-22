@@ -1,58 +1,37 @@
 package org.javalite.activejdbc;
 
 
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Person;
 import org.javalite.activejdbc.test_models.Student;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.io.StringWriter;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static org.javalite.activejdbc.test.JdbcProperties.driver;
-import static org.javalite.common.Collections.map;
 
 /**
  * @author igor on 12/9/17.
  */
 public class FreemarkerSpec extends ActiveJDBCTest {
 
-    private freemarker.template.Configuration config = new freemarker.template.Configuration();
-
-    @Before
-    public void  beforeTest(){
-        config.setObjectWrapper(new DefaultObjectWrapper());
-        config.setAPIBuiltinEnabled(true);
-    }
 
 
     @Test
-    public void shouldRenderSingleInstance() throws IOException, TemplateException {
+    public void shouldRenderSingleInstance(){
         deleteAndPopulateTable("people");
 
         Person smith = Person.findFirst("last_name = ?", "Smith");
         smith.set("graduation_date", null).saveIt();
-
-        freemarker.template.Configuration config = new freemarker.template.Configuration();
-        Template template = config.getTemplate("target/test-classes/single.ftl");
-
         smith = Person.findFirst("last_name = ?", "Smith");
-
-        StringWriter writer = new StringWriter();
-        template.process(map("person", smith), writer);
-
-        the(writer.toString().trim()).shouldBeEqual("Person: John  Smith, graduation date:");
+        the(smith.get("graduation_date")).shouldBeNull();
     }
 
     @Test
-    public void shouldRenderList() throws IOException, TemplateException {
+    public void shouldRenderList() {
         deleteAndPopulateTable("people");
 
         Person smith = Person.findFirst("last_name = ?", "Smith");
@@ -60,22 +39,14 @@ public class FreemarkerSpec extends ActiveJDBCTest {
 
         List<Person> people = Person.findAll().orderBy("id");
 
-        Template template = config.getTemplate("target/test-classes/list.ftl");
-        StringWriter writer = new StringWriter();
-
-        template.process(map("people", people), writer);
-        String processedTemplate = writer.toString().trim();
-        if(System.getProperty("os.name").contains("indows")) {
-            processedTemplate = processedTemplate.replaceAll("\r\n", "\n");
-        }
-        the(processedTemplate).shouldBeEqual("Person: John  Smith, graduation date: \n" +
-                "Person: Leylah  Jonston, graduation date: Apr 3, 1974\n" +
-                "Person: Muhammad  Ali, graduation date: Jan 4, 1963\n" +
-                "Person: Joe  Pesci, graduation date: Feb 23, 1964");
+        the(people.get(0).get("name")).shouldBeEqual("John");
+        the(people.get(1).get("name")).shouldBeEqual("Leylah");
+        the(people.get(2).get("name")).shouldBeEqual("Muhammad");
+        the(people.get(3).get("name")).shouldBeEqual("Joe");
     }
 
     @Test
-    public void shouldRenderRowProcessor() throws IOException, TemplateException {
+    public void shouldRenderRowProcessor() {
         deleteAndPopulateTable("students");
 
         Student cary = Student.findFirst("last_name = ?", "Cary");
@@ -89,21 +60,19 @@ public class FreemarkerSpec extends ActiveJDBCTest {
             }
         });
 
-        Template template = config.getTemplate("target/test-classes/list_row.ftl");
 
-        StringWriter writer = new StringWriter();
-        template.process(map("students", students), writer);
-        String processedTemplate = writer.toString().trim();
-        if(System.getProperty("os.name").contains("indows")) {
-            processedTemplate = processedTemplate.replaceAll("\r\n", "\n");
-        }
+        the(students.get(0).get("first_name")).shouldBeEqual("Jim");
+        the(students.get(0).get("last_name")).shouldBeEqual("Cary");
+        the(students.get(0).get("enrollment_date")).shouldBeNull();
+
+        the(students.get(1).get("first_name")).shouldBeEqual("John");
+        the(students.get(1).get("last_name")).shouldBeEqual("Carpenter");
 
         if(driver().equals("org.sqlite.JDBC")){
-            the(processedTemplate).shouldBeEqual("Student: Jim  Cary, enrollment date:\n" +
-                    "Student: John  Carpenter, enrollment date: 1987-01-29 13:00:00");
+            the(students.get(1).get("enrollment_date")).shouldBeEqual("1987-01-29 13:00:00");
         }else {
-            the(processedTemplate).shouldBeEqual("Student: Jim  Cary, enrollment date:\n" +
-                    "Student: John  Carpenter, enrollment date: Jan 29, 1987 1:00:00 PM");
+            java.sql.Timestamp ts = Timestamp.valueOf("1987-01-29 13:00:00");
+            the(students.get(1).get("enrollment_date")).shouldBeEqual(ts);
         }
     }
 }

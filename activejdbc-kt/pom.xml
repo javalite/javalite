@@ -63,10 +63,10 @@
         <testSourceDirectory>${kotlin.test}</testSourceDirectory>
 
         <plugins>
-            <plugin>
+            <!--plugin>
                 <groupId>org.jetbrains.dokka</groupId>
                 <artifactId>dokka-maven-plugin</artifactId>
-                <version>0.9.17</version>
+                <version>0.9.18</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -75,7 +75,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin-->
 
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
@@ -83,7 +83,6 @@
                 <version>${kotlin.version}</version>
                 <configuration>
                     <nowarn>false</nowarn>
-                    <jvmTarget>${maven.compiler.target}</jvmTarget>
                 </configuration>
                 <executions>
                     <execution>

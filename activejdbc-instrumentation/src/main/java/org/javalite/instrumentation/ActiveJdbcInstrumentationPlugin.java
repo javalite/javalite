@@ -20,13 +20,12 @@ package org.javalite.instrumentation;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import org.javalite.activejdbc.StaticMetadataGenerator;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -35,13 +34,11 @@ import java.util.List;
 /**
  * @author Igor Polevoy
  * @goal instrument
- * @requiresDependencyResolution compile
+ * @requiresDependencyResolution compile+runtime
  * @execute phase="process-classes"
- * @requiresDependencyResolution runtime
  */
 
 public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
-
 
     /**
      * Output directory  - where to do instrumentation.
@@ -86,7 +83,7 @@ public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
     private boolean generateStaticMetadata = false;
 
 
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    public void execute() throws MojoExecutionException{
         Logger.setLog(new Log() {
             @Override
             public void info(String s) {
@@ -98,9 +95,8 @@ public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
             }
         });
         try {
-            addCP();//this will add a runtime classpath to the plugin
-            //TODO we should support set a filter for dependencies, and convert filtered dependency as Maven Project
-            // But I don't how to convert, so I use a temp solution: developer set outputDirectories(target path)
+            addProjectClassPathToPlugin();//this will add a runtime classpath to the plugin
+
             if( outputDirectories != null ){
                 for (String directory : outputDirectories) {
                     instrument(directory);
@@ -120,45 +116,38 @@ public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
             }
         }
         catch (Exception e) {
-            throw new MojoExecutionException("Failed to add output directory to classpath", e);
+            throw new MojoExecutionException("Failed to instrument...", e);
         }
     }
 
-    //man, what a hack!
-    private void addCP() throws DependencyResolutionRequiredException, MalformedURLException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    private void addProjectClassPathToPlugin() throws DependencyResolutionRequiredException, MalformedURLException {
         List runtimeClasspathElements = project.getRuntimeClasspathElements();
-
         for (Object runtimeClasspathElement : runtimeClasspathElements) {
             String element = (String) runtimeClasspathElement;
-            addUrl(new File(element).toURI().toURL());
+            URL url = new File(element).toURI().toURL();
+            addUrlToPluginClasspath(url);
         }
     }
 
-    private void addUrl(URL url) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        ClassLoader realmLoader = getClass().getClassLoader();
-        Method addUrlMethod = realmLoader.getClass().getSuperclass().getDeclaredMethod("addURL", URL.class);
-        addUrlMethod.setAccessible(true);
-        addUrlMethod.invoke(realmLoader, url);
+    private void addUrlToPluginClasspath(URL url) {
+        //Nice API, Maven :(
+        PluginDescriptor pluginDescriptor = (PluginDescriptor) getPluginContext().get("pluginDescriptor");
+        ClassRealm realm = pluginDescriptor.getClassRealm();
+        realm.addURL(url);
     }
 
-    private void instrument(String instrumentationDirectory) throws MalformedURLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {//this is an unbelievable hack I had to do in order to add output directory to classpath.
+    private void instrument(String instrumentationDirectory) throws MalformedURLException{
 
         if(!new File(instrumentationDirectory).exists()){
             Logger.info("Output directory " + instrumentationDirectory + " does not exist, skipping");
             return;
         }
-
-        //If anyone has a better idea, I will gladly listen...
-        //Basically, the plugin is running with a different classpath - I searched high and wide, wrote a lot of garbage code,
-        //but this is the only "solution" that works. Basically I need the instrumentationDirectory be on classpath
-        //Igor
         URL outDir = new File(instrumentationDirectory).toURI().toURL();
-        addUrl(outDir);
+        addUrlToPluginClasspath(outDir);
         Instrumentation instrumentation = new Instrumentation();
         instrumentation.setOutputDirectory(instrumentationDirectory);
         instrumentation.instrument();
     }
-
 
     private void generateStaticMetadata(String outputDirectory) {
         if(!new File(outputDirectory).exists()){
@@ -169,5 +158,4 @@ public class ActiveJdbcInstrumentationPlugin extends AbstractMojo {
         generator.setDBParameters(databases);
         generator.generate(outputDirectory);
     }
-
 }
