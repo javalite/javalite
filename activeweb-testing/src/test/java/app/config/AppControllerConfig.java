@@ -22,7 +22,7 @@ import app.filters.IncludeExcludeActionFilter;
 import app.filters.IncludeExcludeFilter;
 import org.javalite.activeweb.AbstractControllerConfig;
 import org.javalite.activeweb.AppContext;
-import org.javalite.activeweb.controller_filters.TimingFilter;
+
 import app.filters.InjectionRedirectFilter;
 
 /**
@@ -31,7 +31,7 @@ import app.filters.InjectionRedirectFilter;
 public class AppControllerConfig extends AbstractControllerConfig {
 
     public void init(AppContext appContext) {
-        add(new TimingFilter(), new InjectionRedirectFilter());
+        add(new InjectionRedirectFilter());
 
         //this filter will apply to the IncludeController
         add(new IncludeExcludeFilter()).exceptFor(ExcludeController.class);

@@ -123,15 +123,6 @@ public class FormItem {
         }
     }
 
-    /**
-     * Converts entire content of this item to String.
-     *
-     * @return content streamed from this field as string.
-     * @deprecated use {@link #getStreamAsString()}
-     */
-    public String getString() {
-         return getStreamAsString();
-    }
 
     /**
      * Converts entire content of this item to String.

@@ -85,16 +85,6 @@ public class ControllerSpec extends RequestSpecHelper {
         return new RequestBuilder(controllerPath, session());
     }
 
-    /**
-     * Version of {@link #request()} that also sets integrateViews == true
-     *
-     * @param integrateViews true to also generate response content
-     * @return instance of <code>RequestBuilder</code> with convenience methods.
-     * @deprecated does nothing, stop using. Will be deleted  soon. Use {@link #request()} instead.
-     */
-    protected RequestBuilder request(boolean integrateViews) {
-        return new RequestBuilder(controllerPath, session());
-    }
 
     /**
      * Returns a controller path - this includes packages if there are any after "app.controllers".

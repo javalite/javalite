@@ -21,7 +21,7 @@ import app.controllers.HomeController;
 import org.javalite.activeweb.controller_filters.DBConnectionFilter;
 import org.javalite.activeweb.controller_filters.HeadersLogFilter;
 import org.javalite.activeweb.controller_filters.HttpSupportFilter;
-import org.javalite.activeweb.controller_filters.TimingFilter;
+
 import org.javalite.activeweb.mock.*;
 import org.junit.After;
 import org.junit.Before;
@@ -333,10 +333,10 @@ public class AbstractControllerConfigSpec  extends RequestSpec{
                     }
                 });
 
-                add(new TimingFilter(){
+                add(new HeadersLogFilter(){
                     @Override
-                    public void before() {
-                        super.before();
+                    public void after() {
+                        super.after();
                     }
                 });
             }

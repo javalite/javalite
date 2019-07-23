@@ -255,28 +255,7 @@ public class RequestBuilder {
         return this;
     }
 
-    /**
-     * Call this method to cause generation of the view after execution of a controller.
-     * If this method is used, the content of generated HTML will be available with <code>responseContent()</code>.
-     *
-     * @return instance of RequestBuilder
-     * @deprecated  stop using, will delete soon. All tests are integrated by default.
-     */
-    public RequestBuilder integrateViews() {
-        return this;
-    }
 
-    /**
-     * Call this method to cause generation of the view after execution of a controller.
-     * If this method is used, the content of generated HTML will be available with <code>responseContent()</code>.
-     *
-     * @param integrateViews true to integrate views, false not to.
-     * @return instance of RequestBuilder
-     * @deprecated  stop using, will delete soon. All tests are integrated by default.
-     */
-    public RequestBuilder integrateViews(boolean integrateViews) {
-        return this;
-    }
 
     /**
      * Simulate HTTP GET call to an action of controller.

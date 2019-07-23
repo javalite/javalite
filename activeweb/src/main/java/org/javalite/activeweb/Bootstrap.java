@@ -34,10 +34,6 @@ public abstract class Bootstrap implements AppConfig{
 
     private static final Logger  LOGGER = LoggerFactory.getLogger(Bootstrap.class);
 
-    @Deprecated
-    protected void registerTag(String name, FreeMarkerTag tag){
-        ((FreeMarkerTemplateManager)Configuration.getTemplateManager()).registerTag(name, tag);
-    }
 
     /**
      * Called when application is bootstraps.
@@ -56,26 +52,6 @@ public abstract class Bootstrap implements AppConfig{
      */
     public void destroy(AppContext context){}
 
-    /**
-     *
-     * Sets a Google Guice Injector to use to inject dependencies into filters, controllers and tags.
-     *
-     * <p>
-     *     This method has no effect during testing. Each test class will set its own injector
-     *     with mocks for testing.
-     * </p>
-     *
-     * @deprecated This method will be removed in future versions. Instead, override {@link #getInjector()} method
-     * to produce your injector.
-     *
-     * @param injector Injector instance to use for dependency injection.
-     */
-    public void setInjector(Injector injector){
-        if(!Configuration.isTesting()){
-            LOGGER.warn("WARNING!!! Method Bootstrap#setInjector(Injector) is deprecated and will be removed in future versions. Please switch to Bootstrap#getInjector() instead.");
-            Configuration.setInjector(injector);
-        }
-    }
 
     /**
      * Subclasses need to override this method to return instance of Injector to use for dependency injection.

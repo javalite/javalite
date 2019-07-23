@@ -143,21 +143,6 @@ public abstract class AbstractControllerConfig<T extends AppController> implemen
         return new FilterBuilder(filters);
     }
 
-    /**
-     * Adds filters to all controllers globally.
-     * Example of usage:
-     * <pre>
-     * ...
-     *   addGlobalFilters(new TimingFilter(), new DBConnectionFilter());
-     * ...
-     * </pre>
-     *
-     * @param filters filters to be added.
-     * @deprecated use {@link #add(HttpSupportFilter[])}.
-     */
-    protected FilterBuilder addGlobalFilters(HttpSupportFilter... filters) {
-        return add(filters);
-    }
 
     @Override
     public void completeInit() {

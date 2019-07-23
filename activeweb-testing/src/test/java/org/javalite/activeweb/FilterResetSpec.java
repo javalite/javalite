@@ -12,7 +12,7 @@ public class FilterResetSpec extends AppIntegrationSpec{
 
     @Test
     public void shouldResetFilters(){
-        the(Configuration.getFilters().size()).shouldBeEqual(4);
+        the(Configuration.getFilters().size()).shouldBeEqual(3);
         resetFilters();
         the(Configuration.getFilters().size()).shouldBeEqual(0);
         addFilter(AbcPersonController.class, new HeadersLogFilter());
