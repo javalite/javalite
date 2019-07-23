@@ -78,11 +78,6 @@ public class StatisticsQueue {
         }
     }
 
-    /**
-     * @deprecated this method is deprecated and blank - does nothing. It will be removed in future versions
-     */
-    public void run() {}
-
     public void pause(boolean val) {
         paused = val;
     }

@@ -42,21 +42,6 @@ public class ConnectionJndiSpec implements ConnectionSpec {
         return dataSourceJndiName;
     }
 
-    /**
-     * @deprecated unused method, returns null
-     */
-    @Deprecated
-    public String getUser() {
-        return null;
-    }
-
-    /**
-     * @deprecated unused method, returns null
-     */
-    @Deprecated
-    public String getPassword() {
-        return null;
-    }
 
     public InitialContext getContext() {
         return context;

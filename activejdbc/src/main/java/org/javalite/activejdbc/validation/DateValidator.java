@@ -17,27 +17,25 @@ limitations under the License.
 
 package org.javalite.activejdbc.validation;
 
+import java.text.ParseException;
 import org.javalite.activejdbc.Model;
 
 import java.text.SimpleDateFormat;
-import java.sql.Timestamp;
-import java.text.ParseException;
 import java.util.Locale;
 
 import static org.javalite.common.Util.*;
 
 /**
  * @author Igor Polevoy
- * @deprecated use {@link org.javalite.activejdbc.conversion.DateToStringConverter} and
- * {@link org.javalite.activejdbc.conversion.StringToTimestampConverter} instead
+ *
  */
-@Deprecated
-public class TimestampConverter extends Converter {
+
+public class DateValidator extends ValidatorAdapter {
 
     private String attributeName, format;
     private SimpleDateFormat df;
 
-    public TimestampConverter(String attributeName, String format){
+    public DateValidator(String attributeName, String format){
         this.attributeName = attributeName;
         this.message = "attribute {0} does not conform to format: {1}";
         this.df = new SimpleDateFormat(format);
@@ -45,14 +43,15 @@ public class TimestampConverter extends Converter {
     }
 
     @Override
-    public void convert(Model m) {
+    public void validate(Model m) {
+
         Object val = m.get(attributeName);
-        if (!(val instanceof Timestamp) && !blank(val)) {
+        if (!(val instanceof java.util.Date) && !blank(val)) {
             try {
                 long time = df.parse(val.toString()).getTime();
-                Timestamp t = new Timestamp(time);
-                m.set(attributeName, t);
-            } catch(ParseException e) {
+                java.sql.Date d = new java.sql.Date(time);
+                m.set(attributeName, d);
+            } catch (ParseException e) {
                 m.addValidator(this, attributeName);
             }
         }

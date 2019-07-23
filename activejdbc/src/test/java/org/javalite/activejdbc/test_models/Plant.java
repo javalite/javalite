@@ -26,6 +26,6 @@ public class Plant extends Model {
 
     static {
         validatePresenceOf("plant_name", "category");
-        addCallbacks(PlantCallback.instance());
+        callbackWith(PlantCallback.instance());
     }
 }

@@ -28,7 +28,7 @@ public class CustomConverterTest extends ActiveJDBCTest {
     public void shouldConvertStringToInteger(){
         Page p = new Page();
         p.setInteger("word_count", "zero");
-        a(p.get("word_count") instanceof Integer).shouldBeTrue();
+        a(p.get("word_count")).shouldBeA(Integer.class);
         a(p.get("word_count")).shouldBeEqual(0);
     }
 }

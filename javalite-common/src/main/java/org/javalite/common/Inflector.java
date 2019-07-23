@@ -240,14 +240,6 @@ public class Inflector {
     }
 
 
-    /**
-     * @deprecated Use <tt>clazz.getSimpleName()</tt> instead of <tt>Inflector.shortName(clazz.getName())</tt>.
-     */
-    @Deprecated
-    public static String shortName(String className) {
-        return className.substring(className.lastIndexOf('.') + 1);
-    }
-
     public static String getIdName(String tableName) {
         return Inflector.singularize(tableName).toLowerCase() + "_id";
     }

@@ -16,15 +16,10 @@ limitations under the License.
 
 package org.javalite.http;
 
-import org.javalite.common.Collections;
 
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import static org.javalite.common.Collections.map;
 
 /**
  * Executes a POST request.
@@ -63,7 +58,7 @@ public class Post extends Request<Post> {
             }
             OutputStream out = connection.getOutputStream();
             if(params.size() > 0){
-                out.write(Http.map2Content(params).getBytes());
+                out.write(Http.map2URLEncoded(params).getBytes());
             }
             if(content != null){
                 out.write(content);

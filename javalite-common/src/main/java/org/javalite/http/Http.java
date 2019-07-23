@@ -276,12 +276,6 @@ public class Http {
         }
     }
 
-    /**
-     * @deprecated use {@link #map2URLEncoded(Map)};
-     */
-    public static String map2Content(Map params){
-        return map2URLEncoded(params);
-    }
 
     /**
      * Converts a map to URL- encoded string. This is a convenience method which can be used in combination

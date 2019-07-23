@@ -104,22 +104,6 @@ public final class Util {
         }
     }
 
-    /**
-     * @deprecated use {@link #closeQuietly(AutoCloseable)} instead. Two problems can arise if resources are not
-     * closed quietly in the finally block: (1) If there are multiple close() calls, and one of the first ones throws
-     * an Exception, then the following ones will never be called. (2) If an Exception is thrown inside the
-     * try { ... } catch block and another Exception is thrown by a close() call in the finally { ... } block, then the
-     * second Exception will hide the first one.
-     */
-    @Deprecated
-    public static void close(Closeable c) {
-        try {
-            if (c != null) { c.close(); }
-        } catch (IOException e) {
-            // If there is an exception, the developer needs to pay attention, right? :)
-            throw new RuntimeException(e);
-        }
-    }
 
     /**
      * Closes a resource and swallows exception if thrown during a close.

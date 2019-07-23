@@ -16,9 +16,15 @@ public class Page extends Model {
 
 class StringToIntegerConverter extends ConverterAdapter<String, Integer> {
 
-    @Override protected Class<String> sourceClass() { return String.class; }
+    @Override
+    protected Class<String> sourceClass() {
+        return String.class;
+    }
 
-    @Override protected Class<Integer> destinationClass() { return Integer.class; }
+    @Override
+    protected Class<Integer> destinationClass() {
+        return Integer.class;
+    }
 
     @Override
     protected Integer doConvert(String source) throws Exception {

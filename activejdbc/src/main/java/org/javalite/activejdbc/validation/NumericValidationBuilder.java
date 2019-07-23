@@ -85,9 +85,7 @@ public class NumericValidationBuilder extends ValidationBuilder<NumericValidator
      * sends in a form with inputs that are not filled because they are optional.
      *
      * @return NumericValidationBuilder.
-     * @deprecated use {@link org.javalite.activejdbc.Model#blankToNull(java.lang.String...)} instead
      */
-    @Deprecated
     public NumericValidationBuilder convertNullIfEmpty(){
         for(NumericValidator validator:validators){
             validator.convertNullIfEmpty(true);

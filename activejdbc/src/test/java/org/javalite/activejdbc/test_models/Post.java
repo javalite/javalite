@@ -27,9 +27,12 @@ import org.javalite.activejdbc.Model;
 public class Post extends Model {
 
     @Override
-    public void beforeClosingBrace(boolean pretty, String indent, StringWriter writer) {
-        writer.write(',');
-        if (pretty) { writer.write('\n'); writer.write(indent); }
-        writer.write("\"injected\":{\"secret_name\":\"Secret Name\"}");
+    public void beforeClosingBrace(StringBuilder sb, boolean pretty, String indent, String... attributeNames) {
+        sb.append(',');
+        if (pretty) {
+            sb.append('\n');
+            sb.append(indent);
+        }
+        sb.append("\"injected\":{\"secret_name\":\"Secret Name\"}");
     }
 }

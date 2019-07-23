@@ -141,10 +141,6 @@ public class NumericValidator extends ValidatorAdapter {
         this.onlyInteger = onlyInteger;
     }
 
-    /**
-     * @deprecated use {@link org.javalite.activejdbc.conversion.BlankToNullConverter} instead
-     */
-    @Deprecated
     public void convertNullIfEmpty(boolean convertNullIfEmpty) {
         this.convertNullIfEmpty = convertNullIfEmpty;
     }

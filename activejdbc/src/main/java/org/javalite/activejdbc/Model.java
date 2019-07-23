@@ -296,8 +296,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to this model.
      */
     public <T extends Model> T setDate(String attributeName, Object value) {
-        Converter<Object, java.sql.Date> converter = modelRegistryLocal.converterForValue(
-                attributeName, value, java.sql.Date.class);
+        Converter<Object, java.sql.Date> converter = modelRegistryLocal.converterForValue(attributeName, value, java.sql.Date.class);
         return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toSqlDate(value));
     }
 
@@ -317,22 +316,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return converter != null ? converter.convert(value) : Convert.toSqlDate(value);
     }
 
-    /**
-     * Performs a primitive conversion of <code>java.util.Date</code> to <code>java.sql.Timestamp</code>
-     * based on the time value.
-     *
-     * @param name name of field.
-     * @param date date value.
-     * @deprecated  use {@link #setTimestamp(String, Object)} instead.
-     */
-    @Deprecated
-    public void setTS(String name, java.util.Date date) {
-        if(date == null) {
-            set(name, null);
-        } else {
-            set(name, new java.sql.Timestamp(date.getTime()));
-        }
-    }
 
     /**
      * Sets values for this model instance. The sequence of values must correspond to sequence of names.
@@ -412,15 +395,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return isModified();
     }
 
-    /**
-     * Returns names of all attributes from this model.
-     * @return names of all attributes from this model.
-     * @deprecated use {@link #attributeNames()} instead
-     */
-    @Deprecated
-    public static List<String> attributes(){
-        return ModelDelegate.attributes(modelClass());
-    }
 
     /**
      * Returns names of all attributes from this model.
@@ -1008,20 +982,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         if (pretty) { sb.append('\n'); }
     }
 
-    /**
-     * Generates a XML document from content of this model.
-     *
-     * @param spaces by how many spaces to indent.
-     * @param declaration true to include XML declaration at the top
-     * @param attributeNames list of attributes to include. No arguments == include all attributes.
-     * @return generated XML.
-     *
-     * @deprecated use {@link #toXml(boolean, boolean, String...)} instead
-     */
-    @Deprecated
-    public String toXml(int spaces, boolean declaration, String... attributeNames) {
-        return toXml(spaces > 0, declaration, attributeNames);
-    }
+
 
     /**
      * Override in a subclass to inject custom content onto XML just before the closing tag.
@@ -1029,7 +990,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * <p>To keep the formatting, it is recommended to implement this method as the example below.
      *
      * <blockquote><pre>
-     * if (pretty) { sb.append(ident); }
+     * if (pretty) { sb.append(indent); }
      * sb.append("&lt;test&gt;...&lt;/test&gt;");
      * if (pretty) { sb.append('\n'); }
      * </pre></blockquote>
@@ -1040,23 +1001,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attributeNames list of attributes to include
      */
     public void beforeClosingTag(StringBuilder sb, boolean pretty, String indent, String... attributeNames) {
-        StringWriter writer = new StringWriter();
-        beforeClosingTag(indent.length(), writer, attributeNames);
-        sb.append(writer.toString());
-    }
 
-    /**
-     * Override in a subclass to inject custom content onto XML just before the closing tag.
-     *
-     * @param spaces number of spaces of indent
-     * @param writer to write content to.
-     * @param attributeNames list of attributes to include
-     *
-     * @deprecated use {@link #beforeClosingTag(StringBuilder, boolean, String, String...)} instead
-     */
-    @Deprecated
-    public void beforeClosingTag(int spaces, StringWriter writer, String... attributeNames) {
-        // do nothing
     }
 
     /**
@@ -1176,23 +1121,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attributeNames list of attributes to include
      */
     public void beforeClosingBrace(StringBuilder sb, boolean pretty, String indent, String... attributeNames) {
-        StringWriter writer = new StringWriter();
-        beforeClosingBrace(pretty, indent, writer);
-        sb.append(writer.toString());
+
     }
 
-    /**
-     * Override in subclasses in order to inject custom content into Json just before the closing brace.
-     *
-     * @param pretty pretty format (human readable), or one line text.
-     * @param indent indent at current level
-     * @param writer writer to write custom content to
-     * @deprecated use {@link #beforeClosingBrace(StringBuilder, boolean, String, String...)} instead
-     */
-    @Deprecated
-    public void beforeClosingBrace(boolean pretty, String indent, StringWriter writer) {
-        // do nothing
-    }
+
 
     private String[] attributeNamesLowerCased() {
         return ModelDelegate.lowerCased(attributes.keySet());
@@ -2047,16 +1979,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return ModelDelegate.validateWith(modelClass(), validator);
     }
 
-    /**
-     * Adds a custom converter to the model.
-     *
-     * @param converter custom converter
-     * @deprecated use {@link #convertWith(org.javalite.activejdbc.conversion.Converter, String...)} instead
-     */
-    @Deprecated
-    protected static ValidationBuilder convertWith(org.javalite.activejdbc.validation.Converter converter) {
-        return ModelDelegate.convertWith(modelClass(), converter);
-    }
 
     /**
      * Registers a custom converter for the specified attributes.
@@ -2075,9 +1997,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attributeName name of attribute to convert to <code>java.sql.Date</code>.
      * @param format format for conversion. Refer to {@link java.text.SimpleDateFormat}
      * @return message passing for custom validation message.
-     * @deprecated use {@link #dateFormat(String, String...) instead
      */
-    @Deprecated
     protected static ValidationBuilder convertDate(String attributeName, String format){
         return ModelDelegate.convertDate(modelClass(), attributeName, format);
     }
@@ -2089,9 +2009,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attributeName name of attribute to convert to <code>java.sql.Timestamp</code>.
      * @param format format for conversion. Refer to {@link java.text.SimpleDateFormat}
      * @return message passing for custom validation message.
-     * @deprecated use {@link #timestampFormat(String, String...) instead
      */
-    @Deprecated
     protected static ValidationBuilder convertTimestamp(String attributeName, String format){
         return ModelDelegate.convertTimestamp(modelClass(), attributeName, format);
     }
@@ -2208,13 +2126,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         return ModelDelegate.belongsTo(modelClass(), targetClass);
     }
 
-    /**
-     * @deprecated use {@link #callbackWith(CallbackListener...)} instead
-     */
-    @Deprecated
-    public static void addCallbacks(CallbackListener... listeners) {
-        ModelDelegate.callbackWith(modelClass(), listeners);
-    }
 
     /**
      * Sets  lifecycle listeners on current model. All previous listeners will be unregistered.
@@ -2489,18 +2400,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public static <T extends Model> T first(String subQuery, Object... params) {
         return ModelDelegate.findFirst(Model.<T>modelClass(), subQuery, params);
-    }
-
-    /**
-     * This method is for processing really large result sets. Results found by this method are never cached.
-     *
-     * @param query query text.
-     * @param listener this is a call back implementation which will receive instances of models found.
-     * @deprecated use {@link #findWith(ModelListener, String, Object...)}.
-     */
-    @Deprecated
-    public static void find(String query, final ModelListener listener) {
-        ModelDelegate.findWith(modelClass(), listener, query);
     }
 
     /**

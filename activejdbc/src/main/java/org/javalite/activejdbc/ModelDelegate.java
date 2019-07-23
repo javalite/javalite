@@ -16,32 +16,24 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
+import org.javalite.activejdbc.associations.BelongsToAssociation;
+import org.javalite.activejdbc.associations.Many2ManyAssociation;
 import org.javalite.activejdbc.cache.QueryCache;
+import org.javalite.activejdbc.conversion.BlankToNullConverter;
+import org.javalite.activejdbc.conversion.Converter;
+import org.javalite.activejdbc.conversion.ZeroToNullConverter;
+import org.javalite.activejdbc.logging.LogFilter;
+import org.javalite.activejdbc.validation.*;
+import org.javalite.common.Convert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.*;
 
-import org.javalite.activejdbc.associations.BelongsToAssociation;
-import org.javalite.activejdbc.associations.Many2ManyAssociation;
-import org.javalite.activejdbc.conversion.BlankToNullConverter;
-import org.javalite.activejdbc.conversion.Converter;
-import org.javalite.activejdbc.conversion.ZeroToNullConverter;
-import org.javalite.activejdbc.logging.LogFilter;
-import org.javalite.activejdbc.validation.DateConverter;
-import org.javalite.activejdbc.validation.EmailValidator;
-import org.javalite.activejdbc.validation.NumericValidationBuilder;
-import org.javalite.activejdbc.validation.RangeValidator;
-import org.javalite.activejdbc.validation.RegexpValidator;
-import org.javalite.activejdbc.validation.TimestampConverter;
-import org.javalite.activejdbc.validation.ValidationBuilder;
-import org.javalite.activejdbc.validation.Validator;
-import org.javalite.common.Convert;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static org.javalite.common.Util.*;
+import static org.javalite.common.Util.blank;
+import static org.javalite.common.Util.empty;
 
 /**
  * This class exists to offload some logic from {@link Model}  class.
@@ -65,13 +57,6 @@ public final class ModelDelegate {
         return metaModelOf(clazz).getAssociations();
     }
 
-    /**
-     * @deprecated use {@link #attributeNames(Class)} instead
-     */
-    @Deprecated
-    public static List<String> attributes(Class<? extends Model> clazz){
-        return Arrays.asList(lowerCased(attributeNames(clazz)));
-    }
 
     public static Set<String> attributeNames(Class<? extends Model> clazz) {
         return metaModelOf(clazz).getAttributeNames();
@@ -91,27 +76,14 @@ public final class ModelDelegate {
         modelRegistryOf(clazz).callbackWith(listeners);
     }
 
-    /**
-     * @deprecated use {@link #dateFormat(Class, String, String...) instead
-     */
-    @Deprecated
+
     public static ValidationBuilder convertDate(Class<? extends Model> clazz, String attributeName, String format) {
-        return modelRegistryOf(clazz).validateWith(new DateConverter(attributeName, format));
-    }
-    /**
-     * @deprecated use {@link #timestampFormat(Class, String, String...) instead
-     */
-    @Deprecated
-    public static ValidationBuilder convertTimestamp(Class<? extends Model> clazz, String attributeName, String format) {
-        return modelRegistryOf(clazz).validateWith(new TimestampConverter(attributeName, format));
+        return modelRegistryOf(clazz).validateWith(new DateValidator(attributeName, format));
     }
 
-    /**
-     * @deprecated use {@link #convertWith(Class, org.javalite.activejdbc.conversion.Converter, String...)} instead
-     */
-    @Deprecated
-    protected static ValidationBuilder convertWith(Class<? extends Model> clazz, org.javalite.activejdbc.validation.Converter converter) {
-        return validateWith(clazz, converter);
+
+    public static ValidationBuilder convertTimestamp(Class<? extends Model> clazz, String attributeName, String format) {
+        return modelRegistryOf(clazz).validateWith(new TimestampValidator(attributeName, format));
     }
 
     public static void convertWith(Class<? extends Model> clazz, Converter converter, String... attributeNames) {

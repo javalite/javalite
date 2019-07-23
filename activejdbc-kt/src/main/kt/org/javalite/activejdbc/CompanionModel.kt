@@ -57,17 +57,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
 
     private val clazz:Class<T> = entityClass
 
-    /**
-     * @deprecated use {@link #callbackWith(CallbackListener...)} instead
-     */
-    @Deprecated(
-        "use {@link #callbackWith(CallbackListener...)} instead",
-        ReplaceWith("CompanionModel#callbackWith(CallbackListener...)")
-    )
-    fun <M> addCallbacks(vararg listeners:CallbackListener<M>) where M:Model {
-        ModelDelegate.callbackWith(modelClass(), *listeners)
-    }
-
 
     /**
      * Adds a validator to the model.
@@ -85,20 +74,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      */
     fun associations():MutableList<Association?> {
         return ModelDelegate.associations(modelClass())
-    }
-
-
-    /**
-     * Returns names of all attributes from this model.
-     * @return names of all attributes from this model.
-     * @deprecated use {@link #attributeNames()} instead
-     */
-    @Deprecated(
-        "use {@link #attributeNames()} instead",
-        ReplaceWith("CompanionModel#attributeNames()")
-    )
-    fun attributes():MutableList<String> {
-        return ModelDelegate.attributes(modelClass())
     }
 
 
@@ -232,22 +207,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      */
     fun find(subquery:String, vararg params:Any?):LazyList<T> {
         return ModelDelegate.where(modelClass(), subquery, *params)
-    }
-
-
-    /**
-     * This method is for processing really large result sets. Results found by this method are never cached.
-     *
-     * @param query query text.
-     * @param listener this is a call back implementation which will receive instances of models found.
-     * @deprecated use {@link #findWith(ModelListener, String, Object...)}.
-     */
-    @Deprecated(
-        "use {@link #findWith(ModelListener, String, Object...)}.",
-        ReplaceWith("CompanionModel#findWith(ModelListener, String, Object...)")
-    )
-    fun find(query:String, listener:ModelListener<T>) {
-        ModelDelegate.findWith(modelClass(), listener, query)
     }
 
 
@@ -531,57 +490,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      */
     protected fun blankToNull(vararg attributeNames:String?) {
         ModelDelegate.blankToNull(modelClass(), *attributeNames)
-    }
-
-
-    /**
-     * Converts a named attribute to <code>java.sql.Date</code> if possible.
-     * Acts as a validator if cannot make a conversion.
-     *
-     * @param attributeName name of attribute to convert to <code>java.sql.Date</code>.
-     * @param format format for conversion. Refer to {@link java.text.SimpleDateFormat}
-     * @return message passing for custom validation message.
-     * @deprecated use {@link #dateFormat(String, String...) instead
-     */
-    @Deprecated(
-        "use {@link #dateFormat(String, String...) instead",
-        ReplaceWith("CompanionModel#dateFormat(String, String...)")
-    )
-    protected fun convertDate(attributeName:String, format:String):ValidationBuilder<Validator> {
-        return ModelDelegate.convertDate(modelClass(), attributeName, format)
-    }
-
-
-    /**
-     * Converts a named attribute to <code>java.sql.Timestamp</code> if possible.
-     * Acts as a validator if cannot make a conversion.
-     *
-     * @param attributeName name of attribute to convert to <code>java.sql.Timestamp</code>.
-     * @param format format for conversion. Refer to {@link java.text.SimpleDateFormat}
-     * @return message passing for custom validation message.
-     * @deprecated use {@link #timestampFormat(String, String...) instead
-     */
-    @Deprecated(
-        "use {@link #timestampFormat(String, String...) instead",
-        ReplaceWith("CompanionModel#timestampFormat(String, String...)")
-    )
-    protected fun convertTimestamp(attributeName:String, format:String):ValidationBuilder<Validator> {
-        return ModelDelegate.convertTimestamp(modelClass(), attributeName, format)
-    }
-
-
-    /**
-     * Adds a custom converter to the model.
-     *
-     * @param converter custom converter
-     * @deprecated use {@link #convertWith(org.javalite.activejdbc.conversion.Converter, String...)} instead
-     */
-    @Deprecated(
-        "use {@link #convertWith(org.javalite.activejdbc.conversion.Converter, String...)} instead",
-        ReplaceWith("CompanionModel#convertWith(org.javalite.activejdbc.conversion.Converter, String...)")
-    )
-    protected fun convertWith(converter:org.javalite.activejdbc.validation.Converter):ValidationBuilder<Validator> {
-        return ModelDelegate.convertWith(modelClass(), converter)
     }
 
 
