@@ -12,4 +12,7 @@ Release steps:
 7. Update and test all examples to the latest released version (create a new issue on Github)
 8. Create JavaDoc for released version and update new SNAPSHOT version by executing: 
 
-   scripts/release_javadoc.sh VERSION
+    scripts/release_javadoc.sh VERSION
+
+9. Generate release notes:
+      git log --format=format:"* %ci %an [%s](https://github.com/javalite/activejdbc/commit/%h)" --since "2015-01-30" > release_notes-June-17-2015.txt
