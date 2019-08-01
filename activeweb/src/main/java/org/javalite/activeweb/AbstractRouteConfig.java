@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * @author Igor Polevoy: 12/30/11 7:22 PM
  */
-public abstract class AbstractRouteConfig implements AppConfig{
+public abstract class AbstractRouteConfig implements InitConfig {
 
     private List<RouteBuilder> routes = new ArrayList<>();
 

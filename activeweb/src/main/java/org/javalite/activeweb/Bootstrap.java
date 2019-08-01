@@ -15,8 +15,6 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
-import org.javalite.activeweb.freemarker.FreeMarkerTag;
-import org.javalite.activeweb.freemarker.FreeMarkerTemplateManager;
 import com.google.inject.Injector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Igor Polevoy
  */
-public abstract class Bootstrap implements AppConfig{
+public abstract class Bootstrap implements InitConfig {
 
     private static final Logger  LOGGER = LoggerFactory.getLogger(Bootstrap.class);
 

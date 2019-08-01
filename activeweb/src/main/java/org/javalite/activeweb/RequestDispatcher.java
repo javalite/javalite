@@ -126,18 +126,18 @@ public class RequestDispatcher implements Filter {
     }
 
     private void initAppConfig(String configClassName, AppContext context, boolean fail){
-        AppConfig appConfig;
+        InitConfig initConfig;
         try {
             Class c = Class.forName(configClassName);
-            appConfig = (AppConfig) c.newInstance();
-            appConfig.init(context);
-            if(appConfig instanceof  Bootstrap){
-                appBootstrap = (Bootstrap) appConfig;
+            initConfig = (InitConfig) c.newInstance();
+            initConfig.init(context);
+            if(initConfig instanceof  Bootstrap){
+                appBootstrap = (Bootstrap) initConfig;
                 if (!Configuration.isTesting()) {
                     Configuration.setInjector(appBootstrap.getInjector());
                 }
             }
-            appConfig.completeInit();
+            initConfig.completeInit();
         }
         catch (Throwable e) {
             if(fail){

@@ -69,7 +69,7 @@ import org.javalite.activejdbc.connection_config.DbConfiguration;
  *
  * @author Igor Polevoy
  */
-public abstract class AbstractDBConfig extends DbConfiguration implements AppConfig {
+public abstract class AbstractDBConfig extends DbConfiguration implements InitConfig {
 
     /**
      * @param environment name of environment (corresponds to env var ACTIVE_ENV)

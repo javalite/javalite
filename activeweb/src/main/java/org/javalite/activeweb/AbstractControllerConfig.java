@@ -42,7 +42,7 @@ import java.util.List;
  *
  * @author Igor Polevoy
  */
-public abstract class AbstractControllerConfig<T extends AppController> implements AppConfig {
+public abstract class AbstractControllerConfig<T extends AppController> implements InitConfig {
 
     private List<HttpSupportFilter> allFilters = new ArrayList<>();
 

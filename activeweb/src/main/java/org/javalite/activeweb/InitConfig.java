@@ -19,7 +19,7 @@ package org.javalite.activeweb;
 /**
  * @author Igor Polevoy
  */
-public interface AppConfig {
+public interface InitConfig {
     void init(AppContext appContext);
     default void completeInit(){}
 }
