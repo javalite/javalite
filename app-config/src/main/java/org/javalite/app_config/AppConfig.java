@@ -1,6 +1,7 @@
 package org.javalite.app_config;
 
 import org.javalite.common.Convert;
+import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -368,7 +369,7 @@ public class AppConfig implements Map<String, String> {
      * @return true if class <code>org.junit.Test</code> is on classpath, otherwise returns <code>false</code>
      */
     public static boolean isInTestMode(){
-        return AppConfig.class.getResource("/org/junit/Test.class") != null;
+        return Util.getStackTraceString(new Exception()).contains("junit");
     }
 
     /**

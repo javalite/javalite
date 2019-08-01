@@ -67,4 +67,10 @@ public class AppConfigTest implements JSpecSupport {
         AppConfig.reload();
         the(p("phrase")).shouldBeEqual("And the name is John");
     }
+
+    @Test
+    public void shouldShouldDetectRunningInTestMode(){
+
+        the(AppConfig.isInTestMode()).shouldBeTrue();
+    }
 }
