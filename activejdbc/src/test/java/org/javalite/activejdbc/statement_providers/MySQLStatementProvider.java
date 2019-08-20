@@ -104,6 +104,12 @@ public class MySQLStatementProvider implements StatementProvider {
                     "INSERT INTO patients VALUES(2, 'John', 'Carpenter');",
                     "INSERT INTO patients VALUES(3, 'John', 'Krugg');"
             );
+        } else if (table.equals("patient_cards")) {
+            statements = Arrays.asList(
+                    "INSERT INTO patient_cards VALUES(1, 'Jim', 1)",
+                    "INSERT INTO patient_cards VALUES(2, 'John', 2)",
+                    "INSERT INTO patient_cards VALUES(3, 'John', 3)"
+            );
         } else if (table.equals("prescriptions")) {
             statements =  Arrays.asList(
                     "INSERT INTO prescriptions VALUES(1, 'Viagra', 1, 1);",

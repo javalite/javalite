@@ -56,6 +56,9 @@ CREATE TABLE shard1_patients (id  serial PRIMARY KEY, first_name VARCHAR(56), la
 DROP TABLE IF EXISTS prescriptions;
 CREATE TABLE prescriptions (id  serial PRIMARY KEY, name VARCHAR(56), patient_id INT, doctor_id INT);
 
+DROP TABLE IF EXISTS patient_cards;
+CREATE TABLE patient_cards (id  serial PRIMARY KEY, info VARCHAR(56), patient_id INT);
+
 DROP TABLE IF EXISTS doctors;
 CREATE TABLE doctors (id  serial PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), discipline varchar(56));
 

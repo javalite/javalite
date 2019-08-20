@@ -173,18 +173,23 @@ public class DeleteCascadeTest extends ActiveJDBCTest{
 
     @Test
     public void shouldDeleteMany2ManyShallow(){
-        deleteAndPopulateTables("doctors", "patients", "doctors_patients", "prescriptions");
+        deleteAndPopulateTables("doctors", "patients", "patient_cards", "doctors_patients", "prescriptions");
+        //drop column
         Registry.cacheManager().flush(CacheEvent.ALL);
 
         a(Prescription.count()).shouldBeEqual(5);
+        a(Patient.count()).shouldBeEqual(3);
+        a(PatientCard.count()).shouldBeEqual(3);
+        a(DoctorsPatients.count()).shouldBeEqual(4);
 
         Doctor.findById(3).deleteCascadeShallow();
 
         a(Doctor.count()).shouldBeEqual(3);
         a(DoctorsPatients.count()).shouldBeEqual(3);
-
+        a(Prescription.count()).shouldBeEqual(4);
         //so, prescriptions did not get deleted, hence orphaned
-        a(Prescription.count()).shouldBeEqual(5);
+        a(Patient.count()).shouldBeEqual(3);
+        a(PatientCard.count()).shouldBeEqual(3);
     }
 
     @Test

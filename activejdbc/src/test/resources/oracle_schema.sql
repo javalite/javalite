@@ -331,6 +331,22 @@ CREATE OR REPLACE TRIGGER prescriptions_trigger
 select coalesce(:new.id, prescriptions_seq.nextval) into :new.id from dual;
 end;
 
+-- BREAK
+CREATE TABLE patient_cards (id  NUMBER NOT NULL, info VARCHAR(56), patient_id NUMBER)
+-- BREAK
+ALTER TABLE patient_cards ADD CONSTRAINT patient_cards_pk PRIMARY KEY ( id )
+-- BREAK
+CREATE SEQUENCE patient_cards_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER patient_cards_trigger
+    BEFORE INSERT ON patient_cards REFERENCING
+    NEW AS new
+    OLD AS old
+    FOR EACH ROW
+    begin
+select coalesce(:new.id, patient_cards_seq.nextval) into :new.id from dual;
+end;
+
 
 
 
