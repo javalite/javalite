@@ -90,9 +90,9 @@ public class H2StatementProvider implements StatementProvider {
             );
         } else if (table.equals("patient_cards")) {
             statements = Arrays.asList(
-                    "INSERT INTO patient_cards VALUES(1, 'Jim', 1)",
-                    "INSERT INTO patient_cards VALUES(2, 'John', 2)",
-                    "INSERT INTO patient_cards VALUES(3, 'John', 3)"
+                    "INSERT INTO patient_cards VALUES(1, 'Jim', 1);",
+                    "INSERT INTO patient_cards VALUES(2, 'John', 2);",
+                    "INSERT INTO patient_cards VALUES(3, 'John', 3);"
             );
         } else if (table.equals("prescriptions")) {
             statements =  Arrays.asList(

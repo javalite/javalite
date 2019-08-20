@@ -97,11 +97,11 @@ public class OracleStatementProvider implements StatementProvider {
             );
         } else if (table.equals("prescriptions")) {
             statements =  Arrays.asList(
-                    "INSERT INTO prescriptions VALUES(1, 'Viagra', 1, 1);",
-                    "INSERT INTO prescriptions VALUES(2, 'Prozac', 1, 2);",
-                    "INSERT INTO prescriptions VALUES(3, 'Valium', 2, 1);",
-                    "INSERT INTO prescriptions VALUES(4, 'Marijuana (medicinal) ', 2, 1);",
-                    "INSERT INTO prescriptions VALUES(5, 'CML treatment', 3, 3);"
+                    "INSERT INTO prescriptions VALUES(1, 'Viagra', 1, 1)",
+                    "INSERT INTO prescriptions VALUES(2, 'Prozac', 1, 2)",
+                    "INSERT INTO prescriptions VALUES(3, 'Valium', 2, 1)",
+                    "INSERT INTO prescriptions VALUES(4, 'Marijuana (medicinal) ', 2, 1)",
+                    "INSERT INTO prescriptions VALUES(5, 'CML treatment', 3, 3)"
             );
         } else if (table.equals("doctors")) {
             statements =  Arrays.asList(
