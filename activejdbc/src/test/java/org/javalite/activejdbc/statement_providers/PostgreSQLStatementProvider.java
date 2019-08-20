@@ -91,11 +91,11 @@ public class PostgreSQLStatementProvider implements StatementProvider {
             );
         } else if (table.equals("prescriptions")) {
             statements =  Arrays.asList(
-                    "INSERT INTO prescriptions (name, patient_id) VALUES('Viagra', 1);",
-                    "INSERT INTO prescriptions (name, patient_id) VALUES('Prozac', 1);",
-                    "INSERT INTO prescriptions (name, patient_id) VALUES('Valium', 2);",
-                    "INSERT INTO prescriptions (name, patient_id) VALUES('Marijuana (medicinal) ', 2);",
-                    "INSERT INTO prescriptions (name, patient_id) VALUES('CML treatment', 3);"
+                    "INSERT INTO prescriptions (name, patient_id, doctor_id) VALUES('Viagra', 1, 1);",
+                    "INSERT INTO prescriptions (name, patient_id, doctor_id) VALUES('Prozac', 1, 2);",
+                    "INSERT INTO prescriptions (name, patient_id, doctor_id) VALUES('Valium', 2, 1);",
+                    "INSERT INTO prescriptions (name, patient_id, doctor_id) VALUES('Marijuana (medicinal) ', 2, 1);",
+                    "INSERT INTO prescriptions (name, patient_id, doctor_id) VALUES('CML treatment', 3, 3);"
             );
         } else if (table.equals("doctors")) {
             statements =  Arrays.asList(

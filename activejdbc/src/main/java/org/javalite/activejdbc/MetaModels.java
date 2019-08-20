@@ -57,7 +57,7 @@ class MetaModels {
             LogFilter.log(LOGGER, LogLevel.WARNING, "Double-register: {}: {}", modelClass, o);
         }
         o = metaModelsByTableName.put(mm.getTableName(), mm);
-        many2ManyAssociations.addAll(mm.getManyToManyAssociations(Collections.<Association>emptyList()));
+        many2ManyAssociations.addAll(mm.getManyToManyAssociations());
         if (o != null) {
             LogFilter.log(LOGGER, LogLevel.WARNING, "Double-register: {}: {}", mm.getTableName(), o);
         }

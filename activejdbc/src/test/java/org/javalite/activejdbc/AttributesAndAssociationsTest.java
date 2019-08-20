@@ -5,10 +5,7 @@ import java.util.List;
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
 import org.javalite.activejdbc.associations.OneToManyAssociation;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
-import org.javalite.activejdbc.test_models.Doctor;
-import org.javalite.activejdbc.test_models.DoctorsPatients;
-import org.javalite.activejdbc.test_models.Patient;
-import org.javalite.activejdbc.test_models.Person;
+import org.javalite.activejdbc.test_models.*;
 import org.junit.Test;
 
 /**
@@ -51,7 +48,11 @@ public class AttributesAndAssociationsTest extends ActiveJDBCTest{
         a(associations.get(0) instanceof OneToManyAssociation).shouldBeTrue();
 
         a(associations.get(1).getSourceClass()).shouldBeEqual(Doctor.class);
-        a(associations.get(1).getTargetClass()).shouldBeEqual(Patient.class);
-        a(associations.get(1) instanceof Many2ManyAssociation).shouldBeTrue();
+        a(associations.get(1).getTargetClass()).shouldBeEqual(Prescription.class);
+        a(associations.get(1) instanceof OneToManyAssociation).shouldBeTrue();
+
+        a(associations.get(2).getSourceClass()).shouldBeEqual(Doctor.class);
+        a(associations.get(2).getTargetClass()).shouldBeEqual(Patient.class);
+        a(associations.get(2) instanceof Many2ManyAssociation).shouldBeTrue();
     }
 }

@@ -21,29 +21,32 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.javalite.common.RuntimeUtil;
 import org.javalite.common.Util;
 
 public abstract class AbstractIntegrationSpec {
 
-    protected String execute(String dir, String... args){
+    private static final String MVN = SystemUtils.IS_OS_WINDOWS ? "mvn.cmd " : "mvn ";
 
-            List<String> argsList =  new ArrayList<>(Arrays.asList(args));
-            System.out.println("TEST MAVEN EXECUTION START >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-            System.out.println("-->> Executing: mvn " + Util.join(args, " "));
+    protected String execute(String dir, String... args) {
 
-            RuntimeUtil.Response response =  RuntimeUtil.execute(2048, new File(dir), "mvn " + Util.join(argsList, " "));
+        List<String> argsList = new ArrayList<>(Arrays.asList(args));
+        System.out.println("TEST MAVEN EXECUTION START >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        System.out.println("-->> Executing: mvn " + Util.join(args, " "));
 
-            String out = response.out;
-            String err = response.err;
+        RuntimeUtil.Response response = RuntimeUtil.execute(2048, new File(dir), MVN + Util.join(argsList, " "));
 
-            System.out.println();
-            System.out.print("Exit code: ");
-            System.out.println(response.exitValue);
-            System.out.print(response.out);
-            System.err.println(response.err);
-            System.out.println("TEST MAVEN EXECUTION END <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        String out = response.out;
+        String err = response.err;
 
-            return out + err;
+        System.out.println();
+        System.out.print("Exit code: ");
+        System.out.println(response.exitValue);
+        System.out.print(response.out);
+        System.err.println(response.err);
+        System.out.println("TEST MAVEN EXECUTION END <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+
+        return out + err;
     }
 }

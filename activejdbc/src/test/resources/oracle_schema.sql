@@ -316,7 +316,7 @@ FOR EACH ROW
 
 
 -- BREAK
-CREATE TABLE prescriptions (id  NUMBER NOT NULL, name VARCHAR(56), patient_id NUMBER)
+CREATE TABLE prescriptions (id  NUMBER NOT NULL, name VARCHAR(56), patient_id NUMBER, doctor_id NUMBER)
 -- BREAK
 ALTER TABLE prescriptions ADD CONSTRAINT prescriptions_pk PRIMARY KEY ( id )
 -- BREAK

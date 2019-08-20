@@ -394,34 +394,41 @@ public class MetaModel implements Serializable {
     }
 
     //TODO AY: add prepared association's lists by type
-    protected List<OneToManyAssociation> getOneToManyAssociations(List<Association> exclusions) {
+    protected List<OneToManyAssociation> getOneToManyAssociations(Association... excludedAssociations) {
         List<OneToManyAssociation> one2Manies = new ArrayList<>();
         for (Association association : associations) {
-            if(association.getClass().equals(OneToManyAssociation.class) && !exclusions.contains(association)){
+            if(association.getClass().equals(OneToManyAssociation.class) && !isExcluded(association, excludedAssociations)){
                 one2Manies.add((OneToManyAssociation)association);
             }
         }
         return one2Manies;
     }
 
-    protected List<OneToManyPolymorphicAssociation>  getPolymorphicAssociations(List<Association> exclusions) {
+    protected List<OneToManyPolymorphicAssociation>  getPolymorphicAssociations(Association... excludedAssociations) {
         List<OneToManyPolymorphicAssociation> one2Manies = new ArrayList<>();
         for (Association association : associations) {
-            if(association.getClass().equals(OneToManyPolymorphicAssociation.class) && !exclusions.contains(association)){
+            if(association.getClass().equals(OneToManyPolymorphicAssociation.class) && !isExcluded(association, excludedAssociations)){
                 one2Manies.add((OneToManyPolymorphicAssociation)association);
             }
         }
         return one2Manies;
     }
 
-    protected List<Many2ManyAssociation>  getManyToManyAssociations(List<Association> excludedAssociations) {
+    protected List<Many2ManyAssociation>  getManyToManyAssociations(Association... excludedAssociations) {
         List<Many2ManyAssociation> many2Manies = new ArrayList<>();
         for (Association association : associations) {
-            if(association.getClass().equals(Many2ManyAssociation.class) && !excludedAssociations.contains(association)){
+            if(association.getClass().equals(Many2ManyAssociation.class) && !isExcluded(association, excludedAssociations)){
                 many2Manies .add((Many2ManyAssociation)association);
             }
         }
         return many2Manies ;
+    }
+
+    private boolean isExcluded(Association association, Association... excludedAssociation) {
+        for(Association a : excludedAssociation) {
+            if (association.equals(a)) return true;
+        }
+        return false;
     }
 
     public String getDbType(){
