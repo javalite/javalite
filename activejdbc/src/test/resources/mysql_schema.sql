@@ -54,7 +54,10 @@ DROP TABLE IF EXISTS shard1_patients;
 CREATE TABLE shard1_patients (id  int(11) NOT NULL  auto_increment PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS prescriptions;
-CREATE TABLE prescriptions (id  int(11) NOT NULL  auto_increment PRIMARY KEY, name VARCHAR(56), patient_id int(11)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE prescriptions (id  int(11) NOT NULL  auto_increment PRIMARY KEY, name VARCHAR(56), patient_id int(11), doctor_id int(11)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS patient_cards;
+CREATE TABLE patient_cards (id  int(11) NOT NULL  auto_increment PRIMARY KEY, info VARCHAR(56), patient_id int(11)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS doctors;
 CREATE TABLE doctors (id  int(11) NOT NULL  auto_increment PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), discipline varchar(56)) ENGINE=InnoDB DEFAULT CHARSET=utf8;

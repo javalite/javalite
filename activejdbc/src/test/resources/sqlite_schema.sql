@@ -54,7 +54,10 @@ DROP TABLE IF EXISTS shard1_patients;
 CREATE TABLE shard1_patients (id  INTEGER PRIMARY KEY AUTOINCREMENT , first_name VARCHAR(56), last_name VARCHAR(56));
 
 DROP TABLE IF EXISTS prescriptions;
-CREATE TABLE prescriptions (id  INTEGER PRIMARY KEY AUTOINCREMENT , name VARCHAR(56), patient_id int(11));
+CREATE TABLE prescriptions (id  INTEGER PRIMARY KEY AUTOINCREMENT , name VARCHAR(56), patient_id int(11), doctor_id int(11));
+
+DROP TABLE IF EXISTS patient_cards;
+CREATE TABLE patient_cards (id  INTEGER PRIMARY KEY AUTOINCREMENT , info VARCHAR(56), patient_id int(11));
 
 DROP TABLE IF EXISTS doctors;
 CREATE TABLE doctors (id  INTEGER PRIMARY KEY AUTOINCREMENT , first_name VARCHAR(56), last_name VARCHAR(56), discipline varchar(56));

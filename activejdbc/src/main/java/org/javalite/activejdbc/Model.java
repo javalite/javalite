@@ -601,17 +601,16 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @see #deleteCascade()
      * @param excludedAssociations associations
      */
-    public void deleteCascadeExcept(Association ... excludedAssociations){
-        List<Association> excludedAssociationsList = Arrays.asList(excludedAssociations);
-        deleteMany2ManyDeep(metaModelLocal.getManyToManyAssociations(excludedAssociationsList));
-        deleteChildrenDeep(metaModelLocal.getOneToManyAssociations(excludedAssociationsList));
-        deleteChildrenDeep(metaModelLocal.getPolymorphicAssociations(excludedAssociationsList));
+    public void deleteCascadeExcept(Association... excludedAssociations){
+        deleteMany2ManyDeep(metaModelLocal.getManyToManyAssociations(excludedAssociations), excludedAssociations);
+        deleteChildrenDeep(metaModelLocal.getOneToManyAssociations(excludedAssociations), excludedAssociations);
+        deleteChildrenDeep(metaModelLocal.getPolymorphicAssociations(excludedAssociations), excludedAssociations);
         delete();
     }
 
 
 
-    private void deleteMany2ManyDeep(List<Many2ManyAssociation> many2ManyAssociations){
+    private void deleteMany2ManyDeep(List<Many2ManyAssociation> many2ManyAssociations, Association... excludedAssociations){
         List<Model>  allMany2ManyChildren = new ArrayList<>();
         for (Association association : many2ManyAssociations) {
             Class<? extends Model> targetModelClass = association.getTargetClass();
@@ -620,7 +619,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         deleteJoinsForManyToMany();
         for (Model model : allMany2ManyChildren) {
-            model.deleteCascade();
+            model.deleteCascadeExcept(excludedAssociations);
         }
     }
 
@@ -645,7 +644,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
 
     private void deleteJoinsForManyToMany() {
-        List<? extends Many2ManyAssociation> associations = metaModelLocal.getManyToManyAssociations(Collections.<Association>emptyList());
+        List<? extends Many2ManyAssociation> associations = metaModelLocal.getManyToManyAssociations();
         for (Many2ManyAssociation association : associations) {
             deleteManyToManyLinks(association);
         }
@@ -664,7 +663,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
 
     private void deleteOne2ManyChildrenShallow() {
-        List<OneToManyAssociation> childAssociations = metaModelLocal.getOneToManyAssociations(Collections.<Association>emptyList());
+        List<OneToManyAssociation> childAssociations = metaModelLocal.getOneToManyAssociations();
         for (OneToManyAssociation association : childAssociations) {
             deleteOne2ManyChildrenShallow(association);
         }
@@ -679,7 +678,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     private void deletePolymorphicChildrenShallow() {
-        List<OneToManyPolymorphicAssociation> polymorphics = metaModelLocal.getPolymorphicAssociations(new ArrayList<Association>());
+        List<OneToManyPolymorphicAssociation> polymorphics = metaModelLocal.getPolymorphicAssociations();
         for (OneToManyPolymorphicAssociation association : polymorphics) {
             deletePolymorphicChildrenShallow(association);
         }
@@ -694,7 +693,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         new DB(metaModelLocal.getDbName()).exec("DELETE FROM " + targetTable + " WHERE parent_id = ? AND parent_type = ?", getId(), parentType);
     }
 
-    private void deleteChildrenDeep(List<? extends Association> childAssociations){
+    private void deleteChildrenDeep(List<? extends Association> childAssociations, Association... excludedAssociations){
         for (Association association : childAssociations) {
             String targetTableName = metaModelOf(association.getTargetClass()).getTableName();
             Class c = Registry.instance().getModelClass(targetTableName, false);
@@ -706,7 +705,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             else{
                 List<Model> dependencies = getAll(c);
                 for (Model model : dependencies) {
-                    model.deleteCascade();
+                    model.deleteCascadeExcept(excludedAssociations);
                 }
             }
         }

@@ -114,7 +114,13 @@ IF object_id('dbo.prescriptions') IS NOT NULL
 BEGIN
     DROP TABLE [dbo].[prescriptions]
 END
-CREATE TABLE prescriptions (id  INT IDENTITY PRIMARY KEY, name VARCHAR(56), patient_id INT);
+CREATE TABLE prescriptions (id  INT IDENTITY PRIMARY KEY, name VARCHAR(56), patient_id INT, doctor_id INT);
+
+IF object_id('dbo.patient_cards') IS NOT NULL
+BEGIN
+    DROP TABLE [dbo].[patient_cards]
+END
+CREATE TABLE patient_cards (id  INT IDENTITY PRIMARY KEY, info VARCHAR(56), patient_id INT);
 
 IF object_id('dbo.doctors') IS NOT NULL
 BEGIN

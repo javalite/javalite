@@ -89,13 +89,19 @@ public class OracleStatementProvider implements StatementProvider {
                     "INSERT INTO patients VALUES(2, 'John', 'Carpenter')",
                     "INSERT INTO patients VALUES(3, 'John', 'Krugg')"
             );
+        } else if (table.equals("patient_cards")) {
+            statements = Arrays.asList(
+                    "INSERT INTO patient_cards VALUES(1, 'Jim', 1)",
+                    "INSERT INTO patient_cards VALUES(2, 'John', 2)",
+                    "INSERT INTO patient_cards VALUES(3, 'John', 3)"
+            );
         } else if (table.equals("prescriptions")) {
             statements =  Arrays.asList(
-                    "INSERT INTO prescriptions VALUES(1, 'Viagra', 1)",
-                    "INSERT INTO prescriptions VALUES(2, 'Prozac', 1)",
-                    "INSERT INTO prescriptions VALUES(3, 'Valium', 2)",
-                    "INSERT INTO prescriptions VALUES(4, 'Marijuana (medicinal) ', 2)",
-                    "INSERT INTO prescriptions VALUES(5, 'CML treatment', 3)"
+                    "INSERT INTO prescriptions VALUES(1, 'Viagra', 1, 1)",
+                    "INSERT INTO prescriptions VALUES(2, 'Prozac', 1, 2)",
+                    "INSERT INTO prescriptions VALUES(3, 'Valium', 2, 1)",
+                    "INSERT INTO prescriptions VALUES(4, 'Marijuana (medicinal) ', 2, 1)",
+                    "INSERT INTO prescriptions VALUES(5, 'CML treatment', 3, 3)"
             );
         } else if (table.equals("doctors")) {
             statements =  Arrays.asList(

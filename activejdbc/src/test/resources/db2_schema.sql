@@ -53,7 +53,10 @@ CALL dropTable('shard1_patients');
 CREATE TABLE shard1_patients (id int primary key GENERATED ALWAYS AS IDENTITY, first_name VARCHAR(56), last_name VARCHAR(56));
 
 CALL dropTable('prescriptions');
-CREATE TABLE prescriptions (id int primary key GENERATED ALWAYS AS IDENTITY, name VARCHAR(56), patient_id int);
+CREATE TABLE prescriptions (id int primary key GENERATED ALWAYS AS IDENTITY, name VARCHAR(56), patient_id int, doctor_id int);
+
+CALL dropTable('patient_cards');
+CREATE TABLE patient_cards (id int primary key GENERATED ALWAYS AS IDENTITY, info VARCHAR(56), patient_id int);
 
 CALL dropTable('doctors');
 CREATE TABLE doctors (id int primary key GENERATED ALWAYS AS IDENTITY, first_name VARCHAR(56), last_name VARCHAR(56), discipline varchar(56));
