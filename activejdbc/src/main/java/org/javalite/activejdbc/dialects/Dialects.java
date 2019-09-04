@@ -20,6 +20,9 @@ public class Dialects {
             else if(dbType.equalsIgnoreCase("MySQL")){
                 dialect = new MySQLDialect();
             }
+            else if(dbType.equalsIgnoreCase("MariaDB")){
+                dialect = new MySQLDialect();
+            }
             else if(dbType.equalsIgnoreCase("PostgreSQL")){
                 dialect = new PostgreSQLDialect();
             }
