@@ -29,15 +29,19 @@ import java.util.regex.Pattern;
 
 import org.javalite.activejdbc.CaseInsensitiveMap;
 import org.javalite.activejdbc.MetaModel;
-import org.javalite.activejdbc.Registry;
+
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
 import org.javalite.common.Convert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Igor Polevoy
  * @author Eric Nielsen
  */
 public class DefaultDialect implements Dialect {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(DefaultDialect.class.getSimpleName());
 
     protected static final Pattern ORDER_BY_PATTERN = Pattern.compile("^\\s*ORDER\\s+BY",
             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
@@ -119,6 +123,7 @@ public class DefaultDialect implements Dialect {
 
     @Override
     public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset) {
+        LOGGER.error("ERROR!!!! Limit and Offset are not supported by DefaultDialect");
         StringBuilder queryBuilder = new StringBuilder();
         appendSelect(queryBuilder, tableName, columns, null, subQuery, orderBys);
         return queryBuilder.toString();
