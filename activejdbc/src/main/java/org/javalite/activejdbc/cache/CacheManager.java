@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.javalite.activejdbc.ModelDelegate.metaModelFor;
+
 /**
  * Abstract method to be sub-classed by various caching technologies.
  *
@@ -113,8 +115,10 @@ public abstract class CacheManager {
      *
      * @param metaModel meta-model whose caches are to purge.
      */
-    public void purgeTableCache(MetaModel metaModel) {
-        flush(new CacheEvent(metaModel.getTableName(), getClass().getName()));
+    public final void purgeTableCache(MetaModel metaModel) {
+        if (metaModel.cached()) {
+            PurgeTableCache.purge(metaModel);
+        }
     }
 
     /**
@@ -122,8 +126,8 @@ public abstract class CacheManager {
      *
      * @param tableName name of table whose caches to purge.
      */
-    public void purgeTableCache(String tableName) {
-        flush(new CacheEvent(tableName, getClass().getName()));
+    public final void purgeTableCache(String tableName) {
+        purgeTableCache(metaModelFor(tableName));
     }
 
 

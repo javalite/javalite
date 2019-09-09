@@ -18,6 +18,7 @@ package org.javalite.activejdbc;
 import org.javalite.activejdbc.annotations.Cached;
 import org.javalite.activejdbc.annotations.CompositePK;
 import org.javalite.activejdbc.associations.*;
+import org.javalite.activejdbc.cache.PurgeTableCache;
 import org.javalite.activejdbc.cache.QueryCache;
 import org.javalite.activejdbc.conversion.BlankToNullConverter;
 import org.javalite.activejdbc.conversion.Converter;
@@ -468,10 +469,10 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
         if (1 == result) {
             frozen = true;
-            if (metaModelOf(getClass()).cached()) {
-                Registry.cacheManager().purgeTableCache(metaModelLocal);
+            try (PurgeTableCache ptc = new PurgeTableCache()) {
+                ptc.add(metaModelLocal);
+                ModelDelegate.purgeEdges(metaModelLocal);
             }
-            ModelDelegate.purgeEdges(metaModelLocal);
             fireAfterDelete();
             return true;
         }
@@ -601,11 +602,13 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @see #deleteCascade()
      * @param excludedAssociations associations
      */
-    public void deleteCascadeExcept(Association... excludedAssociations){
-        deleteMany2ManyDeep(metaModelLocal.getManyToManyAssociations(excludedAssociations), excludedAssociations);
-        deleteChildrenDeep(metaModelLocal.getOneToManyAssociations(excludedAssociations), excludedAssociations);
-        deleteChildrenDeep(metaModelLocal.getPolymorphicAssociations(excludedAssociations), excludedAssociations);
-        delete();
+    public void deleteCascadeExcept(Association... excludedAssociations) {
+        try (PurgeTableCache ptc = new PurgeTableCache()) {
+            deleteMany2ManyDeep(metaModelLocal.getManyToManyAssociations(excludedAssociations), excludedAssociations);
+            deleteChildrenDeep(metaModelLocal.getOneToManyAssociations(excludedAssociations), excludedAssociations);
+            deleteChildrenDeep(metaModelLocal.getPolymorphicAssociations(excludedAssociations), excludedAssociations);
+            delete();
+        }
     }
 
 
@@ -2462,7 +2465,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
         //TODO: refactor this method
         MetaModel childMetaModel = metaModelOf(child.getClass());
-        MetaModel metaModel = metaModelLocal;
+        MetaModel metaModel = metaModelLocal; //TODO AY: ??
         if (getId() != null) {
 
             if (metaModel.hasAssociation(child.getClass(), OneToManyAssociation.class)) {
@@ -2470,43 +2473,51 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 String fkName = ass.getFkName();
                 child.set(fkName, getId());
                 child.saveIt();//this will cause an exception in case validations fail.
-            }else if(metaModel.hasAssociation(child.getClass(), Many2ManyAssociation.class)){
-                Many2ManyAssociation ass = metaModel.getAssociationForTarget(child.getClass(), Many2ManyAssociation.class);
-                if (child.getId() == null) {
-                    child.saveIt();
-                }
-                MetaModel joinMetaModel = metaModelFor(ass.getJoin());
-                if (joinMetaModel == null) {
-                    new DB(metaModel.getDbName()).exec(metaModel.getDialect().insertManyToManyAssociation(ass),
-                            getId(), child.getId());
+            }else {
+                Many2ManyAssociation many2ManyAssociation = metaModel.getAssociationForTarget(child.getClass(), Many2ManyAssociation.class);
+                if (many2ManyAssociation != null) {
+                    try (PurgeTableCache ptc = new PurgeTableCache()) {
+                        if (child.getId() == null) {
+                            child.saveIt();
+                        }
+                        MetaModel joinMetaModel = metaModelFor(many2ManyAssociation.getJoin());
+                        if (joinMetaModel == null) {
+                            new DB(metaModel.getDbName()).exec(metaModel.getDialect().insertManyToManyAssociation(many2ManyAssociation),
+                                    getId(), child.getId());
+                        } else {
+                            //TODO: write a test to cover this case:
+                            //this is for Oracle, many 2 many, and all annotations used, including @IdGenerator. In this case,
+                            //it is best to delegate generation of insert to a model (sequences, etc.)
+                            try {
+                                Model joinModel = joinMetaModel.getModelClass().newInstance();
+                                joinModel.set(many2ManyAssociation.getSourceFkName(), getId());
+                                joinModel.set(many2ManyAssociation.getTargetFkName(), child.getId());
+                                joinModel.saveIt();
+                            } catch(InstantiationException e) {
+                                throw new InitException("failed to create a new instance of class: " + joinMetaModel.getClass()
+                                        + ", are you sure this class has a default constructor?", e);
+                            } catch(IllegalAccessException e) {
+                                throw new InitException(e);
+                            } finally {
+                                ptc.add(metaModel);
+                                ptc.add(childMetaModel);
+//                            Registry.cacheManager().purgeTableCache(many2ManyAssociation.getJoin()); // saveIt!!!
+//                            Registry.cacheManager().purgeTableCache(metaModel);
+//                            Registry.cacheManager().purgeTableCache(childMetaModel);
+                            }
+                        }
+                    }
                 } else {
-                    //TODO: write a test to cover this case:
-                    //this is for Oracle, many 2 many, and all annotations used, including @IdGenerator. In this case,
-                    //it is best to delegate generation of insert to a model (sequences, etc.)
-                    try {
-                        Model joinModel = joinMetaModel.getModelClass().newInstance();
-                        joinModel.set(ass.getSourceFkName(), getId());
-                        joinModel.set(ass.getTargetFkName(), child.getId());
-                        joinModel.saveIt();
-                    } catch (InstantiationException e) {
-                        throw new InitException("failed to create a new instance of class: " + joinMetaModel.getClass()
-                                + ", are you sure this class has a default constructor?", e);
-                    } catch (IllegalAccessException e) {
-                        throw new InitException(e);
-                    } finally {
-                        Registry.cacheManager().purgeTableCache(ass.getJoin());
-                        Registry.cacheManager().purgeTableCache(metaModel);
-                        Registry.cacheManager().purgeTableCache(childMetaModel);
+                    OneToManyPolymorphicAssociation oneToManyPolymorphicAssociation = metaModel.getAssociationForTarget(child.getClass(), OneToManyPolymorphicAssociation.class);
+                    if (oneToManyPolymorphicAssociation != null) {
+                        child.set("parent_id", getId());
+                        child.set("parent_type", oneToManyPolymorphicAssociation.getTypeLabel());
+                        child.saveIt();
+                    } else {
+                        throw new NotAssociatedException(getClass(), child.getClass());
                     }
                 }
-            } else if(metaModel.hasAssociation(child.getClass(), OneToManyPolymorphicAssociation.class)) {
-                OneToManyPolymorphicAssociation ass = metaModel.getAssociationForTarget(child.getClass(), OneToManyPolymorphicAssociation.class);
-                child.set("parent_id", getId());
-                child.set("parent_type", ass.getTypeLabel());
-                child.saveIt();
-
-            }else
-                throw new NotAssociatedException(getClass(), child.getClass());
+            }
         } else {
             throw new IllegalArgumentException("You can only add associated model to an instance that exists in DB. Save this instance first, then you will be able to add dependencies to it.");
         }
@@ -2573,12 +2584,14 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return  true if the model was saved, false if you set an ID value for the model, but such ID does not exist in DB.
      */
     public boolean saveIt() {
-        boolean result = save();
-        ModelDelegate.purgeEdges(metaModelLocal);
-        if (!errors.isEmpty()) {
-            throw new ValidationException(this);
+        try (PurgeTableCache ptc = new PurgeTableCache()) {
+            boolean result = save();
+            ModelDelegate.purgeEdges(metaModelLocal); //TODO AY: save not purgeEdges!!!
+            if (!errors.isEmpty()) {
+                throw new ValidationException(this);
+            }
+            return result;
         }
-        return result;
     }
 
 
@@ -2717,9 +2730,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 attributes.put(metaModel.getIdName(), id);
                 done = (id != null);
             }
-            if (metaModel.cached()) {
-                Registry.cacheManager().purgeTableCache(metaModel);
-            }
+
+            PurgeTableCache.purge(metaModel);
 
             if (metaModel.isVersioned()) {
                 attributes.put(metaModel.getVersionColumn(), 1);
@@ -2810,9 +2822,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }else if(metaModel.isVersioned()){
             set(metaModelLocal.getVersionColumn(), getLong(metaModelLocal.getVersionColumn()) + 1);
         }
-        if(metaModel.cached()){
-            Registry.cacheManager().purgeTableCache(metaModel);
-        }
+        PurgeTableCache.purge(metaModel);
         dirtyAttributeNames.clear();
         fireAfterUpdate();
         return updated > 0;
@@ -2984,7 +2994,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     /**
      * Use to force-purge cache associated with this table. If this table is not cached, this method has no side effect.
      */
-    public static void purgeCache(){
+    public static void purgeCache(){ //TODO purge cache cascade ?
         ModelDelegate.purgeCache(modelClass());
     }
 

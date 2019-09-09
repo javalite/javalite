@@ -18,6 +18,7 @@ package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.associations.BelongsToAssociation;
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
+import org.javalite.activejdbc.cache.PurgeTableCache;
 import org.javalite.activejdbc.cache.QueryCache;
 import org.javalite.activejdbc.conversion.BlankToNullConverter;
 import org.javalite.activejdbc.conversion.Converter;
@@ -158,20 +159,20 @@ public final class ModelDelegate {
         int count = (params == null || params.length == 0)
                 ? new DB(metaModel.getDbName()).exec("DELETE FROM " + metaModel.getTableName() + " WHERE " + query)
                 : new DB(metaModel.getDbName()).exec("DELETE FROM " + metaModel.getTableName() + " WHERE " + query, params);
-        if (metaModel.cached()) {
-            Registry.cacheManager().purgeTableCache(metaModel);
+        try (PurgeTableCache ptc = new PurgeTableCache()) {
+            ptc.add(metaModel);
+            purgeEdges(metaModel);
         }
-        purgeEdges(metaModel);
         return count;
     }
 
     public static int deleteAll(Class<? extends Model> clazz) {
         MetaModel metaModel = metaModelOf(clazz);
         int count = new DB(metaModel.getDbName()).exec("DELETE FROM " + metaModel.getTableName());
-        if (metaModel.cached()) {
-            Registry.cacheManager().purgeTableCache(metaModel);
+        try(PurgeTableCache ptc = new PurgeTableCache()) {
+            ptc.add(metaModel);
+            purgeEdges(metaModel);
         }
-        purgeEdges(metaModel);
         return count;
     }
 
@@ -284,10 +285,7 @@ public final class ModelDelegate {
     }
 
     public static void purgeCache(Class<? extends Model> clazz) {
-        MetaModel metaModel = metaModelOf(clazz);
-        if (metaModel.cached()) {
-            Registry.cacheManager().purgeTableCache(metaModel);
-        }
+        QueryCache.instance().purgeTableCache(metaModelOf(clazz));
     }
 
     static void purgeEdges(MetaModel metaModel) {
@@ -298,17 +296,19 @@ public final class ModelDelegate {
         // 2. Many to many. When a new join inserted, updated or deleted, the one.getAll(Other.class) should see the difference.
 
         //Purge associated targets
+        try (PurgeTableCache ptc = new PurgeTableCache()) {
+            List<Association> associations = metaModel.getAssociations();
+            for(Association association: associations) {
+                ptc.add(metaModelOf(association.getTargetClass()));
+            }
 
-        List<Association> associations = metaModel.getAssociations();
-        for(Association association: associations){
-            Registry.cacheManager().purgeTableCache(metaModelOf(association.getTargetClass()));
+            //Purge edges in case this model represents a join
+            List<String> edges = Registry.instance().getEdges(metaModel.getTableName());
+            for(String edge: edges){
+                ptc.add(metaModelFor(edge));
+            }
         }
 
-        //Purge edges in case this model represents a join
-        List<String> edges = Registry.instance().getEdges(metaModel.getTableName());
-        for(String edge: edges){
-            Registry.cacheManager().purgeTableCache(edge);
-        }
     }
 
     public static void removeValidator(Class<? extends Model> clazz, Validator validator) {
@@ -347,9 +347,7 @@ public final class ModelDelegate {
             sql.append(" WHERE ").append(conditions);
         }
         int count = new DB(metaModel.getDbName()).exec(sql.toString(), allParams);
-        if (metaModel.cached()) {
-            Registry.cacheManager().purgeTableCache(metaModel);
-        }
+        PurgeTableCache.purge(metaModel);
         return count;
     }
 

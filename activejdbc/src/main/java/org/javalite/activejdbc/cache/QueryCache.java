@@ -52,6 +52,7 @@ public enum QueryCache {
                 Class cmc = Class.forName(cacheManagerClass);
                 cacheManager = (CacheManager)cmc.newInstance();
                 enabled = true;
+                //TODO AY: drop all groups in external cache?
             }catch(InitException e){
                 throw e;
             }catch(Exception e){

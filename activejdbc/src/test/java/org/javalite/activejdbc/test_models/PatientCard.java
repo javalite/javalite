@@ -18,9 +18,11 @@ limitations under the License.
 package org.javalite.activejdbc.test_models;
 
 import org.javalite.activejdbc.Model;
+import org.javalite.activejdbc.annotations.Cached;
 
 /**
  * @author Andrey Yanchevsky
  */
+@Cached
 public class PatientCard extends Model {
 }
