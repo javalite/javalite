@@ -117,7 +117,7 @@ public abstract class CacheManager {
      */
     public final void purgeTableCache(MetaModel metaModel) {
         if (metaModel.cached()) {
-            PurgeTableCache.purge(metaModel);
+            CacheEventSquasher.purge(metaModel);
         }
     }
 

@@ -78,7 +78,7 @@ public class CacheEventListenerTest extends ActiveJDBCTest {
     }
 
     @Test
-    public void shouldBeSendEventsForCachedModelOnly() {
+    public void shouldSendSpecificNumberOfCacheEvents() {
         deleteAndPopulateTables("doctors", "patients", "doctors_patients", "prescriptions");
         class TestCacheEventListener implements CacheEventListener {
             Map<String, Integer> events = new HashMap<>();

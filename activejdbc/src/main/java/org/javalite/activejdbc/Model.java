@@ -18,7 +18,7 @@ package org.javalite.activejdbc;
 import org.javalite.activejdbc.annotations.Cached;
 import org.javalite.activejdbc.annotations.CompositePK;
 import org.javalite.activejdbc.associations.*;
-import org.javalite.activejdbc.cache.PurgeTableCache;
+import org.javalite.activejdbc.cache.CacheEventSquasher;
 import org.javalite.activejdbc.cache.QueryCache;
 import org.javalite.activejdbc.conversion.BlankToNullConverter;
 import org.javalite.activejdbc.conversion.Converter;
@@ -469,7 +469,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
         if (1 == result) {
             frozen = true;
-            try (PurgeTableCache ptc = new PurgeTableCache()) {
+            try (CacheEventSquasher ptc = new CacheEventSquasher()) {
                 ptc.add(metaModelLocal);
                 ModelDelegate.purgeEdges(metaModelLocal);
             }
@@ -603,7 +603,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param excludedAssociations associations
      */
     public void deleteCascadeExcept(Association... excludedAssociations) {
-        try (PurgeTableCache ptc = new PurgeTableCache()) {
+        try (CacheEventSquasher ptc = new CacheEventSquasher()) {
             deleteMany2ManyDeep(metaModelLocal.getManyToManyAssociations(excludedAssociations), excludedAssociations);
             deleteChildrenDeep(metaModelLocal.getOneToManyAssociations(excludedAssociations), excludedAssociations);
             deleteChildrenDeep(metaModelLocal.getPolymorphicAssociations(excludedAssociations), excludedAssociations);
@@ -2476,7 +2476,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             }else {
                 Many2ManyAssociation many2ManyAssociation = metaModel.getAssociationForTarget(child.getClass(), Many2ManyAssociation.class);
                 if (many2ManyAssociation != null) {
-                    try (PurgeTableCache ptc = new PurgeTableCache()) {
+                    try (CacheEventSquasher ptc = new CacheEventSquasher()) {
                         if (child.getId() == null) {
                             child.saveIt();
                         }
@@ -2584,7 +2584,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return  true if the model was saved, false if you set an ID value for the model, but such ID does not exist in DB.
      */
     public boolean saveIt() {
-        try (PurgeTableCache ptc = new PurgeTableCache()) {
+        try (CacheEventSquasher ptc = new CacheEventSquasher()) {
             boolean result = save();
             ModelDelegate.purgeEdges(metaModelLocal); //TODO AY: save not purgeEdges!!!
             if (!errors.isEmpty()) {
@@ -2731,7 +2731,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                 done = (id != null);
             }
 
-            PurgeTableCache.purge(metaModel);
+            CacheEventSquasher.purge(metaModel);
 
             if (metaModel.isVersioned()) {
                 attributes.put(metaModel.getVersionColumn(), 1);
@@ -2822,7 +2822,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }else if(metaModel.isVersioned()){
             set(metaModelLocal.getVersionColumn(), getLong(metaModelLocal.getVersionColumn()) + 1);
         }
-        PurgeTableCache.purge(metaModel);
+        CacheEventSquasher.purge(metaModel);
         dirtyAttributeNames.clear();
         fireAfterUpdate();
         return updated > 0;

@@ -18,7 +18,7 @@ package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.associations.BelongsToAssociation;
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
-import org.javalite.activejdbc.cache.PurgeTableCache;
+import org.javalite.activejdbc.cache.CacheEventSquasher;
 import org.javalite.activejdbc.cache.QueryCache;
 import org.javalite.activejdbc.conversion.BlankToNullConverter;
 import org.javalite.activejdbc.conversion.Converter;
@@ -159,7 +159,7 @@ public final class ModelDelegate {
         int count = (params == null || params.length == 0)
                 ? new DB(metaModel.getDbName()).exec("DELETE FROM " + metaModel.getTableName() + " WHERE " + query)
                 : new DB(metaModel.getDbName()).exec("DELETE FROM " + metaModel.getTableName() + " WHERE " + query, params);
-        try (PurgeTableCache ptc = new PurgeTableCache()) {
+        try (CacheEventSquasher ptc = new CacheEventSquasher()) {
             ptc.add(metaModel);
             purgeEdges(metaModel);
         }
@@ -169,7 +169,7 @@ public final class ModelDelegate {
     public static int deleteAll(Class<? extends Model> clazz) {
         MetaModel metaModel = metaModelOf(clazz);
         int count = new DB(metaModel.getDbName()).exec("DELETE FROM " + metaModel.getTableName());
-        try(PurgeTableCache ptc = new PurgeTableCache()) {
+        try(CacheEventSquasher ptc = new CacheEventSquasher()) {
             ptc.add(metaModel);
             purgeEdges(metaModel);
         }
@@ -296,7 +296,7 @@ public final class ModelDelegate {
         // 2. Many to many. When a new join inserted, updated or deleted, the one.getAll(Other.class) should see the difference.
 
         //Purge associated targets
-        try (PurgeTableCache ptc = new PurgeTableCache()) {
+        try (CacheEventSquasher ptc = new CacheEventSquasher()) {
             List<Association> associations = metaModel.getAssociations();
             for(Association association: associations) {
                 ptc.add(metaModelOf(association.getTargetClass()));
@@ -347,7 +347,7 @@ public final class ModelDelegate {
             sql.append(" WHERE ").append(conditions);
         }
         int count = new DB(metaModel.getDbName()).exec(sql.toString(), allParams);
-        PurgeTableCache.purge(metaModel);
+        CacheEventSquasher.purge(metaModel);
         return count;
     }
 

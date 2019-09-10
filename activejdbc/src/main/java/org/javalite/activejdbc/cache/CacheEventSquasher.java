@@ -8,14 +8,24 @@ import java.util.Set;
 
 import static org.javalite.activejdbc.ModelDelegate.metaModelFor;
 
-public class PurgeTableCache implements AutoCloseable {
+/**
+ * This class exists in order to collapse multiple similar cache purge events into one.
+ * This is especially crucial in cases of cascade deletes. In the absence of this  class, it the system would
+ * generate unnecessary duplicate cache purge events.
+ *
+ * @author yanchevsky
+ */
+public class CacheEventSquasher implements AutoCloseable {
 
+    /**
+     * Exist to have a single set on a single thread.
+     */
     private static class State {
 
-        private PurgeTableCache owner;
+        private CacheEventSquasher owner;
         private Set<String> tables;
 
-        private State(PurgeTableCache owner) {
+        private State(CacheEventSquasher owner) {
             this.owner = owner;
             tables = new HashSet<>();
         }
@@ -29,33 +39,33 @@ public class PurgeTableCache implements AutoCloseable {
         return "[" + elements[3].toString() + ", " + elements[4].toString() + "]";
     }
     
-    public PurgeTableCache() {
+    public CacheEventSquasher() {
         State state = stateTL.get();
         if (state == null) {
             state = new State(this);
-            System.err.println("\t\t\t\t" + state.hashCode() + " PurgeTableCache create new! " + codePoint());
+            System.err.println("\t\t\t\t" + state.hashCode() + " CacheEventSquasher create new! " + codePoint());
 //            new Exception().printStackTrace();
             stateTL.set(state);
         }
     }
 
-    public PurgeTableCache add(String tableName) {
+    public CacheEventSquasher add(String tableName) {
         return add(metaModelFor(tableName));
     }
 
-    public PurgeTableCache add(MetaModel metaModel) {
+    public CacheEventSquasher add(MetaModel metaModel) {
         if (metaModel.cached()) {
-            System.err.println("\t\t\t\t" + stateTL.get().hashCode() + " PurgeTableCache add '" + metaModel.getTableName() + "' " + codePoint());
+            System.err.println("\t\t\t\t" + stateTL.get().hashCode() + " CacheEventSquasher add '" + metaModel.getTableName() + "' " + codePoint());
             stateTL.get().tables.add(metaModel.getTableName());
         } else {
-            System.err.println("\t\t\t\t" + stateTL.get().hashCode() + " PurgeTableCache skip '" + metaModel.getTableName() + "' " + codePoint());
+            System.err.println("\t\t\t\t" + stateTL.get().hashCode() + " CacheEventSquasher skip '" + metaModel.getTableName() + "' " + codePoint());
         }
         return this;
     }
 
     public static void purge(MetaModel metaModel) {
         if (metaModel.cached()) {
-            try (PurgeTableCache ptc = new PurgeTableCache()) {
+            try (CacheEventSquasher ptc = new CacheEventSquasher()) {
                 ptc.add(metaModel);
             }
         }
@@ -66,7 +76,7 @@ public class PurgeTableCache implements AutoCloseable {
         if (state.owner == this) { //TODO should be NPE if not initialized (for DEV DEBUG)
             stateTL.remove();
             CacheManager cacheManager = Registry.cacheManager();
-            System.err.println("\t\t\t\t" + state.hashCode() + " PurgeTableCache close and purge " + state.tables + " " + codePoint());
+            System.err.println("\t\t\t\t" + state.hashCode() + " CacheEventSquasher close and purge " + state.tables + " " + codePoint());
             for(String table : state.tables) {
                 cacheManager.flush(new CacheEvent(table, getClass().getName()));
             }
