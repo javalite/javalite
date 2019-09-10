@@ -2128,6 +2128,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     /**
      * Sets  lifecycle listeners on current model. All previous listeners will be unregistered.
+     * In case you are using cache in the current model, it is recommended to reset this model's caches before calling this method
+     * in order to avoid a potential logical error.
      *
      * @param listeners list of lifecycle listeners
      */
