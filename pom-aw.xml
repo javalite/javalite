@@ -14,222 +14,43 @@
         </developer>
     </developers>
 
-    <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>7</version>
-    </parent>
 
-    <scm>
-        <connection>scm:git:git@github.com:javalite/activeweb.git</connection>
-        <developerConnection>scm:git:git@github.com:javalite/activeweb.git</developerConnection>
-        <url>git@github.com:javalite/activeweb.git</url>
-    </scm>
-
-    <modules>
-        <module>activeweb</module>
-        <module>activeweb-testing</module>
-        <module>activeweb-lessc</module>
-        <module>activeweb-lessc-integration-test</module>
-        <module>javalite-async</module>
-        <module>async-pool-test</module>
-    </modules>
-
-    <properties>
-        <activejdbc.version>3.0-SNAPSHOT</activejdbc.version>
-        <slf4j.version>1.7.25</slf4j.version>
-        <spring.version>5.1.4.RELEASE</spring.version>
-        <junit-vintage-engine.version>5.3.2</junit-vintage-engine.version>
-    </properties>
 
     <build>
         <pluginManagement>
             <plugins>
-                <plugin>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.0</version>
-                    <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
-                    </configuration>
-                </plugin>
 
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.1.0</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.apache.maven.shared</groupId>
-                            <artifactId>maven-filtering</artifactId>
-                            <version>3.1.1</version>
-                        </dependency>
-                    </dependencies>
-                </plugin>
+
+                <!-- not in AJ code: <plugin>-->
+                    <!--<groupId>org.apache.maven.plugins</groupId>-->
+                    <!--<artifactId>maven-resources-plugin</artifactId>-->
+                    <!--<version>3.1.0</version>-->
+                    <!--<dependencies>-->
+                        <!--<dependency>-->
+                            <!--<groupId>org.apache.maven.shared</groupId>-->
+                            <!--<artifactId>maven-filtering</artifactId>-->
+                            <!--<version>3.1.1</version>-->
+                        <!--</dependency>-->
+                    <!--</dependencies>-->
+                <!--</plugin>-->
             </plugins>
 
         </pluginManagement>
         <plugins>
-             <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-javadoc-plugin</artifactId>
-              <version>3.0.1</version>
-              <configuration>
-                  <stylesheetfile>javadoc/stylesheet.css</stylesheetfile>
-                  <javadocDirectory>javadoc</javadocDirectory>
-                  <doclint>none</doclint>
-              </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M3</version>
-                <configuration>
-                    <reportFormat>brief</reportFormat>
-                    <trimStackTrace>true</trimStackTrace>
-                    <useFile>false</useFile>
-                    <includes>
-                        <include>**/*Spec.java</include>
-                        <include>**/*Test*.java</include>
-                    </includes>
-                    <useSystemClassLoader>false</useSystemClassLoader>
-                </configuration>
-            </plugin>
 
         </plugins>
     </build>
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.12</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>javax.servlet-api</artifactId>
-                <version>4.0.1</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.javalite</groupId>
-                <artifactId>javalite-common</artifactId>
-                <version>${activejdbc.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.javalite</groupId>
-                <artifactId>activejdbc</artifactId>
-                <version>${activejdbc.version}</version>
-            </dependency>
-
-
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-log4j12</artifactId>
-                <version>${slf4j.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-simple</artifactId>
-                <version>${slf4j.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-                <version>1.2.17</version>
-                <scope>test</scope>
-            </dependency>
 
 
 
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-core</artifactId>
-                <version>${spring.version}</version>
-                <scope>test</scope>
-            </dependency>
 
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-web</artifactId>
-                <version>${spring.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-test</artifactId>
-                <version>${spring.version}</version>
-                <scope>test</scope>
-            </dependency>
 
-            <dependency>
-                <groupId>org.freemarker</groupId>
-                <artifactId>freemarker</artifactId>
-                <version>2.3.28</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.inject</groupId>
-                <artifactId>guice</artifactId>
-                <version>4.2.2</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-fileupload</groupId>
-                <artifactId>commons-fileupload</artifactId>
-                <version>1.4</version>
-            </dependency>
 
-            <dependency>
-                <groupId>org.jsoup</groupId>
-                <artifactId>jsoup</artifactId>
-                <version>1.11.3</version>
-            </dependency>
 
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-core</artifactId>
-                <version>3.6.0</version>
-            </dependency>
 
-            <dependency>
-                <groupId>org.apache.maven.plugin-tools</groupId>
-                <artifactId>maven-plugin-annotations</artifactId>
-                <version>3.6.0</version>
-                <scope>provided</scope>
-            </dependency>
 
-            <dependency>
-                <groupId>org.apache.maven.shared</groupId>
-                <artifactId>maven-invoker</artifactId>
-                <version>3.0.1</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-plugin-api</artifactId>
-                <version>3.6.0</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-project</artifactId>
-                <version>3.0-alpha-2</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>junit</groupId>
-                        <artifactId>junit</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
 
         </dependencies>
     </dependencyManagement>

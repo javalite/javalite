@@ -8,13 +8,9 @@
 
     <parent>
         <groupId>org.javalite</groupId>
-        <artifactId>activeweb-root</artifactId>
+        <artifactId>activejdbc-root</artifactId>
         <version>3.0-SNAPSHOT</version>
     </parent>
-
-    <properties>
-        <proj_version>${project.version}</proj_version>
-    </properties>
 
     <build>
         <plugins>
@@ -84,6 +80,7 @@
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>javalite-common</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
 

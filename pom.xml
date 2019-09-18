@@ -5,8 +5,20 @@
     <artifactId>activejdbc-root</artifactId>
     <packaging>pom</packaging>
     <version>3.0-SNAPSHOT</version>
-    <name>JavaLite - ActiveJDBC Root</name>
-    <url>https://github.com/javalite/activejdbc/</url>
+    <name>JavaLite - Java, light as a feather</name>
+    <url>http://javalite.io</url>
+
+    <developers>
+        <developer>
+            <name>Igor Polevoy</name>
+            <email>igor at javalite dot io</email>
+        </developer>
+    </developers>
+
+    <organization>
+        <name>JavaLite</name>
+        <url>http://javalite.io</url>
+    </organization>
 
     <parent>
         <groupId>org.sonatype.oss</groupId>
@@ -14,10 +26,7 @@
         <version>7</version>
     </parent>
 
-    <organization>
-        <name>JavaLite</name>
-        <url>http://javalite.io</url>
-    </organization>
+
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -27,6 +36,7 @@
         <junit.version>4.12</junit.version>
         <junit-vintage-engine.version>5.3.2</junit-vintage-engine.version>
         <mysql.connector.version>8.0.16</mysql.connector.version>
+        <spring.version>5.1.4.RELEASE</spring.version>
     </properties>
 
     <licenses>
@@ -101,7 +111,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.22.0</version>
+                    <version>3.0.0-M3</version>
                     <configuration>
                         <useFile>false</useFile>
                         <skipTests>${skipTests}</skipTests>
@@ -115,6 +125,7 @@
                             <oracle.jdbc.J2EE13Compliant>true</oracle.jdbc.J2EE13Compliant>
                             <activejdbc.log/>
                         </systemPropertyVariables>
+                        <useSystemClassLoader>false</useSystemClassLoader>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -135,14 +146,14 @@
         </pluginManagement>
         <plugins>
             <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-javadoc-plugin</artifactId>
-              <version>2.10.4</version>
-              <configuration>
-                 <stylesheetfile>javadoc/stylesheet.css</stylesheetfile>
-                 <javadocDirectory>javadoc</javadocDirectory>
-                 <additionalparam>-Xdoclint:none</additionalparam>
-              </configuration>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <stylesheetfile>javadoc/stylesheet.css</stylesheetfile>
+                    <javadocDirectory>javadoc</javadocDirectory>
+                    <doclint>none</doclint>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -157,6 +168,12 @@
         <module>git-info-maven-plugin</module>
         <module>app-config</module>
         <module>activejdbc-static-metadata-test</module>
+        <module>activeweb</module>
+        <module>activeweb-testing</module>
+        <module>activeweb-lessc-maven-plugin</module>
+        <module>activeweb-lessc-integration-test</module>
+        <module>javalite-async</module>
+        <module>async-pool-test</module>
     </modules>
 
     <dependencyManagement>
@@ -192,7 +209,14 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
                 <version>${slf4j.version}</version>
-                <scope>provided</scope>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>${slf4j.version}</version>
+                <scope>test</scope>
             </dependency>
 
             <dependency>
@@ -258,6 +282,108 @@
                 <groupId>javax.activation</groupId>
                 <artifactId>activation</artifactId>
                 <version>1.1.1</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.8.1</version>
+                <scope>test</scope>
+            </dependency>
+
+
+            <!--AW deps below:-->
+
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>4.0.1</version>
+                <scope>provided</scope>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>${spring.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>${spring.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${spring.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.freemarker</groupId>
+                <artifactId>freemarker</artifactId>
+                <version>2.3.28</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice</artifactId>
+                <version>4.2.2</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>1.4</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>1.11.3</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-core</artifactId>
+                <version>3.6.0</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.maven.plugin-tools</groupId>
+                <artifactId>maven-plugin-annotations</artifactId>
+                <version>3.6.0</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.maven.shared</groupId>
+                <artifactId>maven-invoker</artifactId>
+                <version>3.0.1</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-plugin-api</artifactId>
+                <version>3.6.0</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-project</artifactId>
+                <version>3.0-alpha-2</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>junit</groupId>
+                        <artifactId>junit</artifactId>
+                    </exclusion>
+                </exclusions>
+                <scope>provided</scope>
             </dependency>
 
         </dependencies>

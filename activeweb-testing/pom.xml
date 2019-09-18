@@ -7,24 +7,18 @@
     <version>3.0-SNAPSHOT</version>
     <name>ActiveWeb - Testing</name>
     <description>Testing dependency for building controller, view and integration specs.</description>
-    <developers>
-        <developer>
-            <name>Igor Polevoy</name>
-            <email>igor at polevoy.org</email>
-        </developer>
-    </developers>
 
     <parent>
         <groupId>org.javalite</groupId>
-        <artifactId>activeweb-root</artifactId>
+        <artifactId>activejdbc-root</artifactId>
         <version>3.0-SNAPSHOT</version>
     </parent>
-
 
     <dependencies>
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>javalite-common</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

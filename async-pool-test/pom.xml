@@ -10,7 +10,7 @@
 
     <parent>
         <groupId>org.javalite</groupId>
-        <artifactId>activeweb-root</artifactId>
+        <artifactId>activejdbc-root</artifactId>
         <version>3.0-SNAPSHOT</version>
     </parent>
 
