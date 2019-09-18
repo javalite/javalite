@@ -1,0 +1,1 @@
+<@wrap with="/wrap/wrapper_without_placeholder">inner content</@wrap>

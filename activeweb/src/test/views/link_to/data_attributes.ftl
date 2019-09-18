@@ -1,0 +1,1 @@
+<@link_to controller="book" action="read" id=2 controller="book"  destination="hello" form="form1" method="post" class="red_button">Click here to read book 2</@>

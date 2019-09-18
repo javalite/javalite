@@ -1,0 +1,1 @@
+<@link_to controller="/rest/book"  id=2 >Click here to read book 2</@>

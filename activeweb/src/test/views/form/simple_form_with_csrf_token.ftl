@@ -1,0 +1,1 @@
+<form action="/simple_context/simple/index" method="post"><@csrf_token /></form>

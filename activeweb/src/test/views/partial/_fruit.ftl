@@ -1,0 +1,1 @@
+and the fruit is: ${fruit} 

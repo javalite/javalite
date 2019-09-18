@@ -1,0 +1,63 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.javalite</groupId>
+    <artifactId>activeweb-lessc</artifactId>
+    <packaging>war</packaging>
+    <version>1.1-SNAPSHOT</version>
+    <name>Lessc Test Project</name>
+
+    <properties>
+        <activeweb.version>${proj_version}</activeweb.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.javalite</groupId>
+                <artifactId>activeweb-lessc-maven-plugin</artifactId>
+                <version>${proj_version}</version>
+                <configuration>
+                    <lesscMain>src/main/webapp/less/bootstrap.less</lesscMain>
+                    <targetDirectory>target/web</targetDirectory>
+                    <targetFileName>bootstrap.css</targetFileName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.javalite</groupId>
+            <artifactId>activeweb</artifactId>
+            <version>${proj_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.javalite</groupId>
+            <artifactId>activeweb-testing</artifactId>
+            <version>${proj_version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.0</version>
+        </dependency>
+    </dependencies>
+</project>

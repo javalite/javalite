@@ -1,0 +1,1 @@
+<@link_to controller="/abc_person">ABC Person</@link_to>

@@ -1,0 +1,149 @@
+./scripts/new_migration.sh create_articles_table
+ 
+CREATE TABLE articles (
+  id  int(11) DEFAULT NULL auto_increment PRIMARY KEY,
+  author VARCHAR(128),
+  title VARCHAR(128),
+  content TEXT,
+  created_at DATETIME,
+  updated_at DATETIME
+)ENGINE=InnoDB;
+
+
+public class Article extends Model {
+
+    static {
+        validatePresenceOf("author", "title", "content");
+    }
+
+    public void setAuthor(String author){
+        set("author", author);
+    }
+
+    public String getAuthor(){
+        return getString("author");
+    }
+
+    public void setTitle(String title){
+        set("title", title);
+    }
+
+    public String getTitle(){
+        return getString("title");
+    }
+
+    public void setContent(String content){
+        set("content", content);
+    }
+
+    public String getContent(){
+        return getString("content");
+    }
+}
+
+
+public class ArticleSpec extends DBSpec {
+
+    @Test
+    public void shouldValidateAttributes(){
+
+        Article article = new Article();
+        the(article).shouldNotBe("valid");
+
+        article.setAuthor("Shakespeare");
+        article.setTitle("Much ado about nothing");
+        article.setContent("ACT I\n" + "SCENE I. Before LEONATO'S house....");
+
+        the(article).shouldBe("valid");
+    }
+}
+
+
+
+public class ArticlesControllerSpec extends DBControllerSpec {
+
+    @Test
+    public void shouldListArticles(){
+
+        Article.createIt("title", "title 1", "author", "author 1", "content", "content 1");
+        Article.createIt("title", "title 2", "author", "author 2", "content", "content 2");
+
+        request().get("index");
+
+        a(statusCode()).shouldEqual(200);
+
+        List<Article> articles = val("articles", List.class);
+
+        the(articles.size()).shouldEqual(2);
+        the(articles.get(0).getAuthor()).shouldEqual("author 1");
+        the(articles.get(1).getAuthor()).shouldEqual("author 2");
+    }
+
+
+    @Test
+    public void shouldAddArticle(){
+
+        request().params("title", "title 1", "author", "author 1", "content", "this is a test content").post("add");
+
+        a(Article.count()).shouldEqual(1);
+
+        a(redirected()).shouldBeTrue();
+        a(redirectValue()).shouldEqual("/test_context/articles");
+    }
+}
+
+
+public class ArticlesController extends AppController{
+    public void index(){
+        view("articles", Article.findAll().orderBy("created_at desc"));
+    }
+
+    @POST
+    public void add(){
+        Article a = new Article();
+        a.fromMap(params1st());
+        if(a.save()){
+            flash("message", "new article was added");
+            redirect(ArticlesController.class);
+        }else{
+            view("article", a);
+            view("errors", a.errors());
+            render("new_form");
+        }
+    }
+
+    public void newForm(){}
+}
+
+================== new_form.ftl ======================
+<h3>Add new article</h3>
+
+<@form action="add" method="post">
+<h4>Author</h4>
+<input name="author" value="${(article.author)!""}">
+<span class="error">${(errors.author)!""}</span>
+<br/>
+
+<h4>Title</h4>
+
+<input name="title" value="${(article.title)!""}">
+<span class="error">${(errors.title)!""}</span>
+
+<h4>Content</h4>
+<input name="content" value="${(article.content)!""}">
+<span class="error">${(errors.content)!""}</span>
+<br/>
+<input type="submit" value="Add form">
+</@form>
+
+================== index.ftl ======================
+<h4>Articles:</h4>
+<@render partial="article" collection=articles spacer="spacer"/>
+
+
+================== _article.ftl ======================
+Author: ${article.author}, Title: ${article.title}, Content: ${article.content
+
+
+================== _spacer.ftl ======================
+<hr/>

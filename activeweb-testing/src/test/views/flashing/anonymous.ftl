@@ -1,0 +1,1 @@
+<@flash>Hello, anonymous flash!</@flash>
