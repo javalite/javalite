@@ -16,9 +16,7 @@ limitations under the License.
 
 package org.javalite.activeweb;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockFilterConfig;
 
 import static org.javalite.test.jspec.JSpec.a;
 import static org.javalite.test.jspec.JSpec.the;
@@ -30,10 +28,6 @@ import static org.javalite.test.jspec.JSpec.the;
 public class RouterRestfulSpec {
 
     Router r = new Router("home");
-    @Before
-    public void before(){
-        Configuration.setFilterConfig(new MockFilterConfig());
-    }
 
 
     /**

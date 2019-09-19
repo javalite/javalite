@@ -19,9 +19,7 @@ import app.controllers.BookController;
 import app.controllers.VehicleRegistrationController;
 import app.controllers.admin.special2.special3.Special3Controller;
 import org.javalite.test.jspec.JSpecSupport;
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockFilterConfig;
 
 import java.util.HashMap;
 
@@ -31,11 +29,6 @@ import static org.javalite.common.Collections.map;
  * @author Igor Polevoy
  */
 public class RouteGenerationSpec implements JSpecSupport {
-
-    @Before
-    public void before(){
-        Configuration.setFilterConfig(new MockFilterConfig());
-    }
 
     @Test
     public void shouldGenerateSimpleStandardRoutes(){

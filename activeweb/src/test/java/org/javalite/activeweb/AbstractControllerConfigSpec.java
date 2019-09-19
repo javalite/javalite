@@ -43,8 +43,7 @@ public class AbstractControllerConfigSpec  extends RequestSpec{
     private AbstractControllerConfig config;
 
     @Before
-    public void setUp() throws Exception {
-        Configuration.setFilterConfig(new MockFilterConfig());
+    public void setUp() throws IOException {
         OutputCollector.reset();
     }
 
@@ -56,6 +55,8 @@ public class AbstractControllerConfigSpec  extends RequestSpec{
 
     @Test
     public void shouldAddGlobalFilters() {
+
+
 
         //create mock config
         config = new AbstractControllerConfig() {

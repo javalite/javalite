@@ -78,8 +78,8 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.1</version>
                     <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
+                        <source>11</source>
+                        <target>11</target>
                         <!--
                             Alternate config, working on Java11
                             <release>11</release>
@@ -113,12 +113,14 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.0.0-M3</version>
                     <configuration>
+                        <detail>true</detail>
                         <useFile>false</useFile>
                         <skipTests>${skipTests}</skipTests>
                         <includes>
                             <include>**/*Spec*.java</include>
                             <include>**/*Test*.java</include>
                         </includes>
+                        <trimStackTrace>false</trimStackTrace>
                         <!-- fails with DE Locale as system default -->
                         <argLine>-Duser.country=US -Duser.language=en</argLine>
                         <systemPropertyVariables>

@@ -50,7 +50,6 @@ public class RequestDispatcher implements Filter {
 
     public void init(FilterConfig filterConfig) throws ServletException {
         this.filterConfig = filterConfig;
-        Configuration.setFilterConfig(filterConfig);
 
         Configuration.getTemplateManager().setServletContext(filterConfig.getServletContext());
         appContext = new AppContext();

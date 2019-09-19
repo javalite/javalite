@@ -17,10 +17,7 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import org.junit.Test;
-import org.springframework.mock.web.MockFilterConfig;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.javalite.test.jspec.JSpec.a;
@@ -28,34 +25,15 @@ import static org.javalite.test.jspec.JSpec.a;
 /**
  * @author Igor Polevoy
  */
-public class ControllerPackageLocatorSpec {
-
+public class ConfigurationSpec {
 
     @Test
-    public void shouldDiscoverPackagesInDirectories(){
-        List<String> controllerPackages =  ControllerPackageLocator.locateControllerPackages(new MockFilterConfig());
+    public void shouldDiscoverPackagesInDirectories() {
+        List<String> controllerPackages =  Configuration.locateControllerSubPackages();
         a(controllerPackages.contains("admin")).shouldBeTrue();
         a(controllerPackages.contains("admin.special2")).shouldBeTrue();
         a(controllerPackages.contains("admin.special2.special3")).shouldBeTrue();
         a(controllerPackages.contains("admin.special")).shouldBeTrue();
         a(controllerPackages.contains("rest")).shouldBeTrue();
     }
-
-
-    @Test
-    public void shouldDiscoverPackagesInJars(){
-
-
-        File jar = new File("src/test/resources/test.jar");
-
-        List<String> controllerPackages = new ArrayList<>();
-
-        ControllerPackageLocator.discoverInJar(jar, controllerPackages);
-
-        a(controllerPackages.contains("admin")).shouldBeTrue();
-        a(controllerPackages.contains("admin.special2")).shouldBeTrue();
-        a(controllerPackages.contains("admin.special2.special3")).shouldBeTrue();
-        a(controllerPackages.contains("admin.special")).shouldBeTrue();
-    }
-
 }

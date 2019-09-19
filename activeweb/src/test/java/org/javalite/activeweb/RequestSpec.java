@@ -50,7 +50,7 @@ public abstract class RequestSpec implements JSpecSupport {
     protected MockFilterConfig config;
 
     @Before
-    public final void setup() throws ServletException, IOException, IllegalAccessException, InstantiationException {
+    public final void setup() throws ServletException{
         replaceError();
         config = new MockFilterConfig();
         dispatcher = new RequestDispatcher();
@@ -59,7 +59,6 @@ public abstract class RequestSpec implements JSpecSupport {
         dispatcher.init(config);
         response = new MockHttpServletResponse();
         RequestContext.clear();
-        Configuration.setFilterConfig(config);
         RequestContext.setTLs(request, response, config, new AppContext(), new RequestVo(), null);
         Configuration.getTemplateManager().setTemplateLocation("src/test/views");
     }

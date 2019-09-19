@@ -16,13 +16,16 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import com.google.inject.Injector;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ClassInfo;
+import io.github.classgraph.ScanResult;
 import org.javalite.activeweb.controller_filters.HttpSupportFilter;
 import org.javalite.activeweb.freemarker.AbstractFreeMarkerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.FilterConfig;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
@@ -55,8 +58,6 @@ public class Configuration {
     private static AbstractFreeMarkerConfig freeMarkerConfig;
     private static boolean useDefaultLayoutForErrors = true;
 
-    // these are not full package names, just parti al package names between "app.controllers"
-    // and simple name of controller class
     private static List<String> controllerPackages;
     private static List<HttpSupportFilter> filters  = new ArrayList<>();
 
@@ -82,7 +83,8 @@ public class Configuration {
                 props.put(name, overrides.get(name));
             }
             checkInitProperties();
-            initTemplateManager();            
+            initTemplateManager();
+            controllerPackages = locateControllerSubPackages();
         }
         catch (Exception e) {
             throw new InitException(e);
@@ -288,9 +290,6 @@ public class Configuration {
         filters = allFilters;
     }
 
-    protected static void setFilterConfig(FilterConfig config) {
-        controllerPackages = ControllerPackageLocator.locateControllerPackages(config);
-    }
 
     protected static List<HttpSupportFilter> getFilters() {
         return filters;
@@ -355,4 +354,27 @@ public class Configuration {
         return logHeaders;
     }
 
+    /**
+     * A sub-package is what you find between "app.controller" and a controller simple class name.
+     * <p>
+     * For instance, if the name of the controller class is <code>app.controllers.pack1.pack2.HomeController</code>,
+     * then <code>pack1.pack2</code> will be returned.
+     *
+     * @return a list of  of sub-package names
+     * @throws IOException
+     */
+    static List<String> locateControllerSubPackages() {
+
+        List<String> subpackages = new ArrayList<>();
+        String controllerRootPackage = Configuration.getRootPackage() + ".controllers";
+        try (ScanResult scanResult = new ClassGraph().whitelistPackages(controllerRootPackage).scan()) {
+            for (ClassInfo routeClassInfo : scanResult.getSubclasses(AppController.class.getName())) {
+                String className = routeClassInfo.getName();
+                if (className.chars().filter(ch -> ch == '.').count() > 2) {
+                    subpackages.add(className.substring(className.indexOf("controllers." ) + 12, className.lastIndexOf('.')));
+                }
+            }
+        }
+        return subpackages;
+    }
 }
