@@ -1,0 +1,9 @@
+INSERT INTO books VALUES (1, '112345678901', 'Book A', null);
+INSERT INTO books VALUES (2, '112345678902', 'Book B', null);
+INSERT INTO books VALUES (3, '112345678903', 'Book C', null);
+INSERT INTO books VALUES (4, '112345678904', 'Book D', null);
+INSERT INTO books VALUES (5, '112345678905', 'Book E', null);
+INSERT INTO books VALUES (6, '112345678906', 'Book F', null);
+INSERT INTO books VALUES (7, '112345678907', 'Book G', null);
+INSERT INTO books VALUES (8, '112345678908', 'Book H', null);
+INSERT INTO books VALUES (9, '112345678909', 'Book I', null);
