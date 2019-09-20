@@ -109,7 +109,7 @@ jobs:
   - stage: deploy
     # ensure we only attempt to deploy commits on master (excluding PRs)
     if: |
-      repo = javalite/activejdbc AND \
+      repo = javalite/javalite AND \
       branch = master            AND \
       type != pull_request
 

@@ -3,7 +3,7 @@
     <artifactId>app-config</artifactId>
     <packaging>jar</packaging>
     <version>3.0-SNAPSHOT</version>
-    <name>JavaLite - AppConfig</name>
+    <name>JavaLite - AppConfig For All Your Environments</name>
 
     <parent>
         <groupId>org.javalite</groupId>

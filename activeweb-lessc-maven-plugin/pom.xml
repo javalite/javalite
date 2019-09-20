@@ -5,7 +5,7 @@
     <artifactId>activeweb-lessc-maven-plugin</artifactId>
     <version>3.0-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
-    <name>ActiveWeb - Lessc Maven Plugin</name>
+    <name>JavaLite - ActiveWeb Lessc Maven Plugin</name>
 
     <parent>
         <groupId>org.javalite</groupId>

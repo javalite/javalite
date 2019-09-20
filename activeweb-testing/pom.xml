@@ -5,8 +5,8 @@
     <artifactId>activeweb-testing</artifactId>
     <packaging>jar</packaging>
     <version>3.0-SNAPSHOT</version>
-    <name>ActiveWeb - Testing</name>
-    <description>Testing dependency for building controller, view and integration specs.</description>
+    <name>JavaLite - ActiveWeb Testing Framework</name>
+    <description>Testing framework for writing controller, view and integration specs.</description>
 
     <parent>
         <groupId>org.javalite</groupId>

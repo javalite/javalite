@@ -4,7 +4,7 @@
     <artifactId>activeweb-lessc-integration-test</artifactId>
     <version>3.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>ActiveWeb - Lessc Maven Plugin Integration Test</name>
+    <name>JavaLite - ActiveWeb Lessc Maven Plugin Test</name>
 
     <parent>
         <groupId>org.javalite</groupId>
