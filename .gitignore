@@ -78,17 +78,12 @@ local.properties
 # PDT-specific
 .buildpath
 
-# sbteclipse plugin 
-.target
 
 # TeXlipse plugin
 .texlipse
 
 
-### Intellij ###
-# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm
 
-*.iml
 
 ## Directory-based project format:
 .idea/
@@ -164,3 +159,16 @@ release.properties
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+*.class
+**/**/.DS_Store
+
+# Package Files #
+
+### Intellij ###
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm
+*.iml
+.idea/
+*.ipr
+
+

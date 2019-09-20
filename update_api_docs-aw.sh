@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 mvn javadoc:aggregate
 cp -rf target/site/apidocs/* ../javalite.github.io/activeweb/snapshot
 cd ../javalite.github.io/activeweb/snapshot

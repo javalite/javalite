@@ -1,3 +1,3 @@
-# need Java 6 for this 
+#!/usr/bin/env bash
 
 mvn clean javadoc:aggregate
