@@ -152,7 +152,6 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.0.1</version>
                 <configuration>
-                    <stylesheetfile>javadoc/stylesheet.css</stylesheetfile>
                     <javadocDirectory>javadoc</javadocDirectory>
                     <doclint>none</doclint>
                 </configuration>
