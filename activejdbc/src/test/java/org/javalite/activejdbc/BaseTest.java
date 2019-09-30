@@ -128,4 +128,20 @@ public class BaseTest extends ActiveJDBCTest {
     public void testCount(){
         a(Base.count("people")).shouldBeEqual(4);
     }
+
+
+    @Test
+    public void shouldUseResultSetParams(){
+
+       ArrayList<Map<String, Object>> list =  new ArrayList<>();
+
+       Base.find(RowProcessor.ResultSetType.FORWARD_ONLY, RowProcessor.ResultSetConcur.READ_ONLY, 0, "select * from people").with(row -> {
+           list.add(row);
+           return true;
+       });
+
+       the(list.size()).shouldEqual(4);
+    }
+
+
 }

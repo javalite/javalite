@@ -443,7 +443,7 @@ public class DB implements Closeable{
      * This method returns entire resultset with one column as a list. Do not use it for large result sets.
      * Example:
      * <pre>
-     *  List ssns = Base.firstColumn("select ssn from people where first_name = ?", "John");
+     *  List ssns = new DB("default").firstColumn("select ssn from people where first_name = ?", "John");
      *  for(Object ssn: ssns)
      *      System.out.println(ssn);
      * </pre>
@@ -505,9 +505,16 @@ public class DB implements Closeable{
     }
 
     /**
+     *
+     * Convenience method, same as {@link #find(RowProcessor.ResultSetType, RowProcessor.ResultSetConcur, int, String, Object...)}, but passes in default values:
+     *
+     * <pre>
+     *     RowProcessor.ResultSetType.FORWARD_ONLY, RowProcessor.ResultSetConcur.READ_ONLY, 0
+     * </pre>
+     *
      * Executes a raw query and returns an instance of {@link RowProcessor}. Use it in the following pattern:
      * <pre>
-     * Base.find("select first_name, last_name from really_large_table").with(new RowListenerAdapter() {
+     * new DB("default").find("select first_name, last_name from really_large_table").with(new RowListenerAdapter() {
             public void onNext(Map row) {
                 ///write your code here
                 Object o1 = row.get("first_name");
@@ -516,11 +523,36 @@ public class DB implements Closeable{
         });
      </pre>
      *
-     * @param query raw SQL.
+     * @param query raw SQL, parametrized if needed
      * @param params list of parameters if query is parametrized.
      * @return instance of <code>RowProcessor</code> which has with() method for convenience.
      */
-    public RowProcessor find(String query, Object ... params) {
+    public RowProcessor find(String query, Object... params) {
+        return find(RowProcessor.ResultSetType.FORWARD_ONLY, RowProcessor.ResultSetConcur.READ_ONLY, 0,  query, params);
+    }
+
+    /**
+     * Executes a raw query and returns an instance of {@link RowProcessor}. Use it in the following pattern:
+     * <pre>
+     *   new DB("default").find("select first_name, last_name from really_large_table", ....).with(new RowListenerAdapter() {
+         public void onNext(Map row) {
+                 ///write your code here
+                 Object o1 = row.get("first_name");
+                 Object o2 = row.get("last_name");
+             }
+         });
+     </pre>
+     *
+     * See <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/ResultSet.html">ResultSet Docs</a></a>
+     *
+     * @param query raw SQL.
+     * @param type type of result set
+     * @param concur concurrent mode of result set
+     * @param fetchSize size of result set
+     * @param params list of parameters if query is parametrized.
+     * @return instance of <code>RowProcessor</code> which has with() method for convenience.
+     */
+    public RowProcessor find(RowProcessor.ResultSetType type, RowProcessor.ResultSetConcur concur, int fetchSize, String query, Object ... params) {
 
         //TODO: count ? signs and number of params, throw exception if do not match
 
@@ -530,7 +562,7 @@ public class DB implements Closeable{
         PreparedStatement ps;
         ResultSet rs;
         try {
-            ps = createStreamingPreparedStatement(query);
+            ps = createStreamingPreparedStatement(query, type, concur, fetchSize);
             setParameters(ps, params);
             rs = ps.executeQuery();
             return new RowProcessor(rs, ps);
@@ -538,15 +570,10 @@ public class DB implements Closeable{
         } catch (SQLException e) { throw new DBException(query, params, e); }
     }
 
-    private PreparedStatement createStreamingPreparedStatement(String query) throws SQLException {
+    private PreparedStatement createStreamingPreparedStatement(String query, RowProcessor.ResultSetType type, RowProcessor.ResultSetConcur concur, int fetchSize) throws SQLException {
         Connection conn = connection();
-        PreparedStatement res;
-        if ("mysql".equalsIgnoreCase(conn.getMetaData().getDatabaseProductName())) {
-            res = conn.prepareStatement(query, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            res.setFetchSize(Integer.MIN_VALUE);
-        } else {
-            res = conn.prepareStatement(query);
-        }
+        PreparedStatement res = conn.prepareStatement(query, type.getValue(), concur.getValue());
+        res.setFetchSize(fetchSize);
         return res;
     }
 

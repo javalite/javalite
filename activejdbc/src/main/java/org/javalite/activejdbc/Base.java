@@ -246,6 +246,32 @@ public class Base {
       return new DB(DB.DEFAULT_NAME).find(query, params);       
     }
 
+
+    /**
+     * Executes a raw query and returns an instance of {@link RowProcessor}. Use it in the following pattern:
+     * <pre>
+     *   Base.find("select first_name, last_name from really_large_table", ....).with(new RowListenerAdapter() {
+     public void onNext(Map row) {
+     ///write your code here
+     Object o1 = row.get("first_name");
+     Object o2 = row.get("last_name");
+     }
+     });
+     </pre>
+     *
+     * See <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/ResultSet.html">ResultSet Docs</a></a>
+     *
+     * @param query raw SQL.
+     * @param type type of result set
+     * @param concur concurrent mode of result set
+     * @param fetchSize size of result set
+     * @param params list of parameters if query is parametrized.
+     * @return instance of <code>RowProcessor</code> which has with() method for convenience.
+     */
+    public static RowProcessor find(RowProcessor.ResultSetType type, RowProcessor.ResultSetConcur concur, int fetchSize, String query, Object ... params) {
+        return new DB(DB.DEFAULT_NAME).find(type, concur, fetchSize, query, params);
+    }
+
     /**
      * Executes a raw query and calls instance of <code>RowListener</code> with every row found.
      * Use this method for very large result sets.
