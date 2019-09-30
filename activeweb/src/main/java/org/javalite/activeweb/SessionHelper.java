@@ -33,16 +33,21 @@ class SessionHelper {
      *
      * @return all session attributes in a map.
      */
-     protected static Map<String, Object> getSessionAttributes(){
-        //TODO: cache session attributes map since this method can be called multiple times during a request.
+     static Map<String, Object> getSessionAttributes(){
 
-        HttpSession session = RequestContext.getHttpRequest().getSession(true);
-        Enumeration names = session.getAttributeNames();
-        Map<String, Object> values = new HashMap<>();
-        while (names.hasMoreElements()) {
-            Object name = names.nextElement();
-            values.put(name.toString(), session.getAttribute(name.toString()));
-        }
-        return values;
+          try{
+              HttpSession session = RequestContext.getHttpRequest().getSession(true);
+              Enumeration names = session.getAttributeNames();
+              Map<String, Object> values = new HashMap<>();
+              while (names.hasMoreElements()) {
+                  Object name = names.nextElement();
+                  values.put(name.toString(), session.getAttribute(name.toString()));
+              }
+              return values;
+          }catch (IllegalStateException ex){
+              // there is a possibility that the controller or filter wrote response  back directly,
+              // which will invalidate the session, so we need to protect from  that.
+              return new HashMap<>();
+          }
     }
 }

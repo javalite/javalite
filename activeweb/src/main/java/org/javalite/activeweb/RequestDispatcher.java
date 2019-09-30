@@ -312,7 +312,8 @@ public class RequestDispatcher implements Filter {
                 }
                 httpServletResponseProxy.setStatus(500);
             }catch(Exception ex){
-                logger.error(ex.toString(), ex);
+                logger.error("Exception trying to render error response", ex);
+                logger.error("Original error", t);
             }
         }
     }
