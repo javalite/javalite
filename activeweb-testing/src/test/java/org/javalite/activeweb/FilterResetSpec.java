@@ -2,8 +2,11 @@ package org.javalite.activeweb;
 
 import app.controllers.AbcPersonController;
 import app.controllers.XyzController;
+import app.filters.HelloFilter;
 import org.javalite.activeweb.controller_filters.HeadersLogFilter;
 import org.junit.Test;
+
+import java.util.List;
 
 /**
  * @author igor on 7/1/17.
@@ -30,5 +33,13 @@ public class FilterResetSpec extends AppIntegrationSpec{
         FilterMetadata fm = Configuration.getFilterMetadata(f);
         //should match any random controller, since this is a global filter.
         the(fm.matches(new Route(new XyzController(), "", HttpMethod.GET))).shouldBeTrue();
+    }
+
+    @Test
+    public void shouldInvokeFilter(){
+        resetFilters();
+        addFilter(new HelloFilter());
+        controller("format").get("index"); // any controller will do, since filter will respond first
+        the(responseContent()).shouldEqual("hello");
     }
 }
