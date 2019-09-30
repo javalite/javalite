@@ -221,12 +221,10 @@ public class AppConfig implements Map<String, String> {
             Property previous = props.put(key, property);
 
             if (previous != null) {
-                LOGGER.warn("\n************************************************************\n"
-                        + "Duplicate property defined. Property: '" + key + "' found in files: \n"
-                        + previous.getPropertyFile() + ", \n" + url.getPath()
-                        + "\nUsing value '" + property.getValue() + "' from:\n"
-                        + property.getPropertyFile()
-                        + "\n************************************************************");
+                LOGGER.warn("Duplicate property defined. Property: '" + key + "' found in files:"
+                        + previous.getPropertyFile() + ", " + url.getPath()
+                        + ", Using value '" + property.getValue() + "' from:"
+                        + property.getPropertyFile());
             }
         }
     }
