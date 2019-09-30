@@ -144,6 +144,11 @@
                         </execution>
                     </executions>
                 </plugin>
+
+                <plugin>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.8.2</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
