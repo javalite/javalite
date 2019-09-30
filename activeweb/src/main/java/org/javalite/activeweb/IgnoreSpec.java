@@ -1,5 +1,7 @@
 package org.javalite.activeweb;
 
+import org.javalite.app_config.AppConfig;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -24,7 +26,7 @@ public class IgnoreSpec {
             Matcher m = pattern.matcher(path);
             matches = m.matches();
             if (matches && exceptEnvironment != null
-                    && exceptEnvironment.equals(Configuration.getEnv())) {
+                    && exceptEnvironment.equals(AppConfig.activeEnv())) {
                 matches = false; //-- need to ignore
             }
         }

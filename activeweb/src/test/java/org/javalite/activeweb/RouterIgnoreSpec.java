@@ -1,6 +1,7 @@
 package org.javalite.activeweb;
 
 import app.config.RouteConfig;
+import org.javalite.app_config.AppConfig;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,19 +34,19 @@ public class RouterIgnoreSpec extends RequestSpec  {
     public void shouldNotIgnoreURIInEnv() throws IOException, ServletException {
         request.setServletPath("/ignore234/show");
         request.setMethod("GET");
-        Configuration.setEnv("staging");
+        AppConfig.setActiveEnv("staging");
         dispatcher.doFilter(request, response, filterChain);
         a(response.getContentAsString()).shouldContain("java.lang.NoSuchMethodException: app.controllers.Ignore234Controller.show(); app.controllers.Ignore234Controller.show()");
-        Configuration.setEnv("development");//reset for other tests
+        AppConfig.setActiveEnv("development");//reset for other tests
     }
 
     @Test
     public void shouldIgnoreURIInAnotherEnv() throws IOException, ServletException {
         request.setServletPath("/ignore234/show");
         request.setMethod("GET");
-        Configuration.setEnv("on moon"); //this will be ignored, since all ignored, except staging
+        AppConfig.setActiveEnv("on moon"); //this will be ignored, since all ignored, except staging
         dispatcher.doFilter(request, response, filterChain);
         a(response.getContentAsString()).shouldBeEqual("");
-        Configuration.setEnv("development");//reset for other tests
+        AppConfig.setActiveEnv("development");//reset for other tests
     }
 }

@@ -98,7 +98,7 @@ public class AppConfig implements Map<String, String> {
     private static Logger LOGGER = LoggerFactory.getLogger(AppConfig.class);
     private static HashMap<String, Property> props;
 
-    private static final String activeEnv;
+    private static String activeEnv;
 
     static {
         String env = System.getenv("ACTIVE_ENV");
@@ -108,6 +108,16 @@ public class AppConfig implements Map<String, String> {
         }
         activeEnv = env;
         init();
+    }
+
+
+    /**
+     * You can change the environment dynamically. Attention!!! This method should only be used for tests!
+     *
+     * @param activeEnv new environment value
+     */
+    public static void setActiveEnv(String activeEnv){
+        AppConfig.activeEnv = activeEnv;
     }
 
     public static synchronized void init() {

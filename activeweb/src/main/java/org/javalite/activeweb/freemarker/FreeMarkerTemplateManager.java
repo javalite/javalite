@@ -20,6 +20,7 @@ import org.javalite.activeweb.InitException;
 import org.javalite.activeweb.TemplateManager;
 import org.javalite.activeweb.ViewException;
 import org.javalite.activeweb.ViewMissingException;
+import org.javalite.app_config.AppConfig;
 import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +80,7 @@ public class FreeMarkerTemplateManager extends TemplateManager {
         String templateName = blank(format)? template + ".ftl" : template + "." + format + ".ftl";
         try {
             logger.info("Rendering template: " + getTemplateDescription(templateName, layout));
-            if(org.javalite.activeweb.Configuration.getEnv().equals("development")){
+            if(AppConfig.isInDevelopment()){
                 config.clearTemplateCache();
             }
             ContentTL.reset();

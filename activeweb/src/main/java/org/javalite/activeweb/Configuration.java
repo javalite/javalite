@@ -53,7 +53,7 @@ public class Configuration {
     private static TemplateManager templateManager;
 
     private static boolean testing;
-    private static String ENV;
+
     private static boolean activeReload = !blank(System.getProperty("active_reload")) && System.getProperty("active_reload").equals("true");
     private static AbstractFreeMarkerConfig freeMarkerConfig;
     private static boolean useDefaultLayoutForErrors = true;
@@ -144,49 +144,6 @@ public class Configuration {
         return logRequest != null && logRequest.equals("true");
     }
 
-
-    /**
-     * Returns true if the environment is the same as argument.
-     *
-     * @param environment name of environment in question.
-     * @return true if argument equals value of environment variable <code>ACTIVE_ENV</code>, false if not.
-     */
-    public static boolean runningIn(String environment){
-        return getEnv().equals(environment);
-    }
-
-    /**
-     * Returns name of environment, such as "development", "production", etc.
-     * This is a value that is usually setup with an environment variable <code>ACTIVE_ENV</code>.
-     *
-     * @return name of environment
-     */
-    public static String getEnv(){
-        if(ENV == null){
-            if(!blank(System.getenv("ACTIVE_ENV"))) {
-                ENV = System.getenv("ACTIVE_ENV");
-            }
-
-            if(!blank(System.getProperty("ACTIVE_ENV"))) {
-                ENV = System.getProperty("ACTIVE_ENV");
-            }
-
-            if(!blank(System.getProperty("active_env"))) {
-                ENV = System.getProperty("active_env");
-            }
-
-            if(blank(ENV)){                
-                ENV = "development";
-                LOGGER.warn("Environment variable ACTIVE_ENV not provided, defaulting to '" + ENV + "'");
-            }
-        }
-        return ENV;
-    }
-
-    //only for testing!
-    protected static void setEnv(String env){
-        ENV = env;
-    }
 
     /**
      * This method is used internally by ActiveWeb tests. Do not use in  your projects.

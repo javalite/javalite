@@ -17,6 +17,7 @@ package org.javalite.activeweb;
 
 import org.javalite.activejdbc.DB;
 
+import org.javalite.app_config.AppConfig;
 import org.javalite.common.JsonHelper;
 import org.javalite.common.Util;
 import org.javalite.logging.Context;
@@ -64,7 +65,7 @@ public class RequestDispatcher implements Filter {
         }
         initApp(appContext);
         encoding = filterConfig.getInitParameter("encoding");
-        logger.info("ActiveWeb: starting the app in environment: " + Configuration.getEnv());
+        logger.info("ActiveWeb: starting the app in environment: " + AppConfig.activeEnv());
     }
 
     protected void initApp(AppContext context){
