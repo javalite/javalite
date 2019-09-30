@@ -16,6 +16,8 @@ limitations under the License.
 
 package org.javalite.activeweb;
 
+import org.javalite.app_config.AppConfig;
+
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +45,7 @@ class ParamCopy {
         //in some cases the Route is missing - for example, when exception happened before Router was invoked.
         Route route = RequestContext.getRoute();
 
-        Map params = map("environment", Configuration.getEnv());
+        Map params = map("environment", AppConfig.activeEnv());
 
         if(route != null){
             params.put("controller", RequestContext.getRoute().getControllerPath());

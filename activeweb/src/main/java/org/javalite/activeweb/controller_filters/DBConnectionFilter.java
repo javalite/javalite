@@ -21,6 +21,7 @@ import org.javalite.activejdbc.connection_config.DbConfiguration;
 import org.javalite.activeweb.Configuration;
 import org.javalite.activeweb.InitException;
 import org.javalite.activeweb.RequestContext;
+import org.javalite.app_config.AppConfig;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -79,7 +80,7 @@ public class DBConnectionFilter extends AppControllerFilter {
         List<ConnectionSpecWrapper> connectionWrappers = getConnectionWrappers();
 
         if (connectionWrappers.isEmpty()) {
-            throw new InitException("There are no connection specs in '" + Configuration.getEnv() + "' environment");
+            throw new InitException("There are no connection specs in '" + AppConfig.activeEnv() + "' environment");
         }
 
         for (ConnectionSpecWrapper connectionWrapper : connectionWrappers) {

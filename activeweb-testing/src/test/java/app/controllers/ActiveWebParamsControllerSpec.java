@@ -18,6 +18,7 @@ package app.controllers;
 
 import org.javalite.activeweb.Configuration;
 import org.javalite.activeweb.ControllerSpec;
+import org.javalite.app_config.AppConfig;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -40,6 +41,6 @@ public class ActiveWebParamsControllerSpec extends ControllerSpec {
         a(response.contains("restful = false")).shouldBeTrue();
         a(response.contains("action = index")).shouldBeTrue();
         a(response.contains("controller = /active_web_params")).shouldBeTrue();
-        a(response.contains("environment = " + Configuration.getEnv())).shouldBeTrue();
+        a(response.contains("environment = " + AppConfig.activeEnv())).shouldBeTrue();
     }
 }
