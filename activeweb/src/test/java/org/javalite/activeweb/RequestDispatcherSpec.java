@@ -450,4 +450,15 @@ public class RequestDispatcherSpec extends RequestSpec {
         the(response.getContentAsString()).shouldContain("value: 123");
         the(response.getContentAsString()).shouldContain("value: 456");
     }
+
+    @Test
+    public void shouldReturn404ForUnknownMethod() throws IOException, ServletException {
+
+        request.setServletPath("/hello/multivalues");
+        request.setMethod("PROPFIND");
+        dispatcher.doFilter(request, response, filterChain);
+
+        the(response.getContentAsString()).shouldContain("Method not supported: PROPFIND");
+        the(response.getStatus()).shouldEqual(404);
+    }
 }

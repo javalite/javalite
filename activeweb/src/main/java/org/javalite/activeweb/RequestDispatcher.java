@@ -189,7 +189,13 @@ public class RequestDispatcher implements Filter {
             }
 
             Router router = getRouter(appContext);
-            Route route = router.recognize(uri, HttpMethod.getMethod(request));
+            Route route;
+            try{
+                route = router.recognize(uri, HttpMethod.getMethod(request));
+            }catch(IllegalArgumentException e){
+                throw  new RouteException("Method not supported: " + request.getMethod());
+            }
+
 
             if(route != null && route.ignores(path)){
                 chain.doFilter(req, resp);
