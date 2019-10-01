@@ -42,13 +42,13 @@ public class RenderTagSpec implements JSpecSupport {
     }
 
     @Test(expected = ViewException.class)
-    public void shouldThrowExceptionIfPartialAttributeMissing() throws IOException, TemplateException {
+    public void shouldThrowExceptionIfPartialAttributeMissing() {
         StringWriter sw = new StringWriter();
         manager.merge(new HashMap(), "/partial/main_missing_partial_attribute", sw);
     }
 
     @Test
-    public void shouldRenderPartialRelativeToContainerTemplate() throws IOException, TemplateException {
+    public void shouldRenderPartialRelativeToContainerTemplate() {
 
         StringWriter sw = new StringWriter();
         manager.merge(map("fruit", "apple"), "/partial/main_with_simple_partial", sw);
@@ -56,7 +56,7 @@ public class RenderTagSpec implements JSpecSupport {
     }
 
     @Test
-    public void shouldRenderSharedPartial() throws IOException, TemplateException {
+    public void shouldRenderSharedPartial() {
 
         StringWriter sw = new StringWriter();
         manager.merge(map("fruit", "apple"), "/partial/main_with_shared_partial", sw);
@@ -65,7 +65,7 @@ public class RenderTagSpec implements JSpecSupport {
 
 
     @Test(expected = ViewException.class)
-    public void shouldRejectIncorrectlyNamedSharedPartial() throws IOException, TemplateException {
+    public void shouldRejectIncorrectlyNamedSharedPartial() {
 
         StringWriter sw = new StringWriter();
         manager.merge(map("fruit", "apple"), "/partial/main_with_incorrectly_named_shared_partial", sw);
@@ -74,14 +74,14 @@ public class RenderTagSpec implements JSpecSupport {
     }
 
     @Test
-    public void shouldRenderPartialWithCollection() throws IOException, TemplateException {
+    public void shouldRenderPartialWithCollection() {
         StringWriter sw = new StringWriter();
         manager.merge(map("fruits", li("apple", "prune", "pear")), "/partial/main_with_collection_partial", sw);
         a(sw.toString()).shouldBeEqual("and the fruit is: apple and the fruit is: prune and the fruit is: pear ");
     }
 
     @Test
-    public void shouldRenderPartialWithCollectionAndCounter() throws IOException, TemplateException {
+    public void shouldRenderPartialWithCollectionAndCounter() {
         StringWriter sw = new StringWriter();
         manager.merge(map("fruits", li("apple", "prune", "pear")), "/partial/main_with_collection_partial_and_counter", sw);
         a(sw.toString()).shouldBeEqual("and the fruit is: apple and the count is: 0   " +
@@ -90,7 +90,7 @@ public class RenderTagSpec implements JSpecSupport {
     }
 
     @Test
-    public void shouldRenderSharedPartialWithCollection() throws IOException, TemplateException {
+    public void shouldRenderSharedPartialWithCollection(){
 
         StringWriter sw = new StringWriter();
         manager.merge(map("fruits", li("apple", "prune", "pear")), "/partial/main_with_shared_collection_partial", sw);
@@ -98,7 +98,7 @@ public class RenderTagSpec implements JSpecSupport {
     }
 
     @Test
-    public void shouldRenderSpacerWithCollectionPartial() throws IOException, TemplateException {
+    public void shouldRenderSpacerWithCollectionPartial(){
         StringWriter sw = new StringWriter();
         manager.merge(map("fruits", li("apple", "prune", "pear")), "/partial/main_with_collection_partial_and_spacer", sw);
         a(sw.toString()).shouldBeEqual("and the fruit is: apple " +
@@ -109,14 +109,14 @@ public class RenderTagSpec implements JSpecSupport {
     }
 
     @Test
-    public void shouldPassSimpleParameterToPartial() throws IOException, TemplateException {
+    public void shouldPassSimpleParameterToPartial(){
         StringWriter sw = new StringWriter();
         manager.merge(map("fruit_name", "pear"), "/partial/main_with_simple_partial_and_parameter", sw);
         a(sw.toString()).shouldEqual("and the fruit name is: pear");
     }
 
     @Test
-    public void shouldPassSimpleParameterToPartialWithCollection() throws IOException, TemplateException {
+    public void shouldPassSimpleParameterToPartialWithCollection(){
         StringWriter sw = new StringWriter();
         manager.merge(map("fruits", li("apple", "prune", "pear")), "/partial/main_with_collection_and_simple_parameters_for_partial", sw);
         a(sw.toString()).shouldEqual("and the fruit is: apple, berry: blueberry " +
@@ -126,15 +126,11 @@ public class RenderTagSpec implements JSpecSupport {
 
 
     @Test
-    public void shouldCheckFirstAndLastWithCollection() throws IOException, TemplateException {        
+    public void shouldCheckFirstAndLastWithCollection(){        
         StringWriter sw = new StringWriter();
         manager.merge(map("fruits", li("apple", "prune", "pear")), "/partial/main_with_collection_partial_with_first_and_last", sw);
         a(sw.toString()).shouldBeEqual( "and the fruit is: apple, first: true, last: false " +
                                         "and the fruit is: prune, first: false, last: false " +
                                         "and the fruit is: pear, first: false, last: true");
     }
-
-
-
-
 }

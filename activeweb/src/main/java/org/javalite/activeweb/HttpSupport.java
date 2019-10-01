@@ -816,6 +816,33 @@ public class HttpSupport {
         return multipartFormItems(encoding, Configuration.getMaxUploadSize());
     }
 
+
+    /**
+     * @return {@link MultipartForm} object for convenience.
+     */
+    protected MultipartForm multipartForm(){
+        return multipartForm("UTF-8", Configuration.getMaxUploadSize());
+    }
+
+    /**
+     * @param encoding encoding to use to read values from request
+     * @param maxUploadSize set max upload size
+     *
+     * @return {@link MultipartForm} object for convenience.
+     */
+    protected MultipartForm multipartForm(String encoding, long maxUploadSize){
+        MultipartForm multipartForm = new MultipartForm();
+        List<FormItem> formItems = multipartFormItems(encoding, maxUploadSize);
+        for (FormItem formItem : formItems) {
+            if(formItem instanceof org.javalite.activeweb.FileItem){
+                multipartForm.addFileItem((org.javalite.activeweb.FileItem) formItem);
+            }else {
+                multipartForm.addFormItem(formItem);
+            }
+        }
+        return multipartForm;
+    }
+
     /**
      * Returns a collection of uploaded files and form fields from a multi-part request.
      * This method uses <a href="http://commons.apache.org/proper/commons-fileupload/apidocs/org/apache/commons/fileupload/disk/DiskFileItemFactory.html">DiskFileItemFactory</a>.
