@@ -19,11 +19,10 @@ package app.controllers;
 import org.javalite.activeweb.AppController;
 import org.javalite.activeweb.FileItem;
 import org.javalite.activeweb.FormItem;
+import org.javalite.activeweb.MultipartForm;
 import org.javalite.activeweb.annotations.POST;
 import org.javalite.common.Util;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +34,7 @@ import static org.javalite.common.Collections.map;
  * @author Igor Polevoy
  */
 public class UploadController extends AppController {
+
     @POST
     public void save(){
         view("content", new String(uploadedFiles().next().getBytes()));
@@ -98,13 +98,19 @@ public class UploadController extends AppController {
     }
 
     @POST
-    public void getFile() throws IOException {
+    public void getFile() {
         FileItem file = getFile("file", multipartFormItems());
         respond(file.getStreamAsString());
     }
 
     @POST
-    public void multipleArguments() throws IOException {
+    public void multipleArguments() {
         respond(param("first_name", multipartFormItems()) + " " + param("last_name", multipartFormItems()));
+    }
+
+    @POST
+    public void useMultiPartFormAPI(){
+        MultipartForm form = multipartForm();
+        respond(form.getFileItems().get(0).getStreamAsString() + " " + form.param("name")  );
     }
 }

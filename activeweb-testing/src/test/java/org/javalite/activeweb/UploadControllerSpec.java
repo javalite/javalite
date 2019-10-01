@@ -160,4 +160,14 @@ public class UploadControllerSpec extends IntegrationSpec{
                 .post("multiple-arguments");
         a(responseContent()).shouldBeEqual("John Doe");
     }
+
+    @Test
+    public void shouldUseMultiPartFormAPI(){
+        controller("upload")
+                .contentType("multipart/form-data")
+                .formItem(new FileItem("hello.txt", "file", "text/plain", "hello".getBytes()))
+                .formItem("name", "John")
+                .post("Use-Multi-Part-Form-API");
+        a(responseContent()).shouldBeEqual("hello John");
+    }
 }
