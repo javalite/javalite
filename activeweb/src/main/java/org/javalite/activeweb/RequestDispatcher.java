@@ -391,6 +391,7 @@ public class RequestDispatcher implements Filter {
 
     public void destroy() {
         if(appBootstrap != null){ // failed start?
+            appBootstrap.destroy();
             appBootstrap.destroy(appContext);
         }
     }
