@@ -110,7 +110,7 @@ jobs:
     # ensure we only attempt to deploy commits on master (excluding PRs)
     if: |
       repo = javalite/javalite AND \
-      branch = master            AND \
+      ( branch = master ) OR ( branch = java8 )  AND \
       type != pull_request
 
     before_install:
