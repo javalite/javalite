@@ -15,9 +15,13 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
+import com.google.inject.Binding;
 import com.google.inject.Injector;
+import com.google.inject.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 /**
  * This is an abstract class designed to be overridden in the application. The name for a subclass is:
@@ -75,4 +79,24 @@ public abstract class Bootstrap implements InitConfig {
     public Injector getInjector(){
         return null;
     };
+
+    /**
+     * Close all services from Guice that implement {@link Destroyable} interface.
+     */
+    synchronized void destroy(){
+        Injector injector = getInjector();
+        if(injector != null){
+            Map<Key<?>, Binding<?>> bindings = getInjector().getAllBindings();
+            bindings.forEach((key, binding) -> {
+                Object service = binding.getProvider().get();
+                if(Destroyable.class.isAssignableFrom(service.getClass())){
+                    try{
+                        ((Destroyable) service).destroy();
+                    }catch (Exception ex){
+                        LOGGER.error("Failed to gracefully destroy " + service + ". Moving on to destroy the rest.", ex);
+                    }
+                }
+            });
+        }
+    }
 }

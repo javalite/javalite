@@ -46,17 +46,11 @@ public class RequestDispatcherSpec extends RequestSpec {
 
     @Before
     public void beforeStart() {
-        filterChain = new FilterChain() {
-            public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse) throws IOException, ServletException {
-                fellThrough = true;
-            }
-        };
 
+        filterChain = (servletRequest, servletResponse) -> fellThrough = true;
 
-        badFilterChain = new FilterChain() {
-            public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse) throws IOException, ServletException {
-                throw new RuntimeException("I'm a bad... bad exception!");
-            }
+        badFilterChain = (servletRequest, servletResponse) -> {
+            throw new RuntimeException("I'm a bad... bad exception!");
         };
         Configuration.setUseDefaultLayoutForErrors(true);
         SystemStreamUtil.replaceOut();
@@ -332,8 +326,11 @@ public class RequestDispatcherSpec extends RequestSpec {
 
     @Test
     public void shouldCallDestroyOnAppBootstrap() throws ServletException, IOException {
+
+        dispatcher.init(config);
         dispatcher.destroy();
-        a(getSystemErr()).shouldBeEqual("ahrrr! destroyed!");
+        a(getSystemErr()).shouldBeEqual("HelloService destroyed!\n"
+                                      + "AppBootstrap destroyed!");
     }
 
     @Test

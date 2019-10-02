@@ -16,13 +16,22 @@ limitations under the License.
 
 package app.config;
 
+import app.services.TestModule;
+import com.google.inject.*;
 import org.javalite.activeweb.AppContext;
 import org.javalite.activeweb.Bootstrap;
+import org.javalite.activeweb.Destroyable;
+
+import java.util.Map;
+import java.util.function.BiConsumer;
 
 /**
  * @author Igor Polevoy
  */
 public class AppBootstrap extends Bootstrap {
+
+    private Injector injector;
+
     @Override
     public void init(AppContext context) {
         
@@ -30,6 +39,15 @@ public class AppBootstrap extends Bootstrap {
 
     @Override
     public void destroy(AppContext context) {
-        System.err.print("ahrrr! destroyed!");
+        System.err.print("AppBootstrap destroyed!");
+    }
+
+    @Override
+    public Injector getInjector() {
+
+        if(injector == null){
+            injector = Guice.createInjector(new TestModule());
+        }
+        return injector;
     }
 }
