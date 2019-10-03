@@ -26,4 +26,8 @@ public class XyzController extends AppController {
     public void index(){
         assign("path", path());
     }
+
+    public void hello(){
+        redirect("/blah");
+    }
 }

@@ -27,11 +27,13 @@ class RedirectResponse extends ControllerResponse {
     protected RedirectResponse(URL url) {
         if(url == null) throw new IllegalArgumentException("url can't be null");
         this.url = url;
+        setStatus(302);
     }
 
     protected RedirectResponse(String path) {
         if(path == null) throw new IllegalArgumentException("url can't be null");
         this.path = path;
+        setStatus(302);
     }
 
     @Override
