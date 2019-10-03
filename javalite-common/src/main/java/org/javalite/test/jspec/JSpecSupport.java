@@ -32,6 +32,10 @@ public interface JSpecSupport {
         return JSpec.the(o1);
     }
 
+    default Expectation<Object> $(Object o1){
+        return JSpec.$(o1);
+    }
+
     /**
      * Wrapper for {@link org.javalite.test.jspec.JSpec#it}
      */

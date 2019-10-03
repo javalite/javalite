@@ -30,4 +30,13 @@ public class XyzControllerSpec extends TemplateIntegrationSpec {
         controller("xyz").get("index");
         a(vals().get("path").toString().startsWith("/")).shouldBeTrue();
     }
+
+    @Test
+    public void shouldRedirect(){
+        controller("xyz").get("hello");
+        $(redirected()).shouldBeTrue();
+        the(redirectValue()).shouldEqual("/blah");
+        the(statusCode()).shouldEqual(302);
+    }
+
 }
