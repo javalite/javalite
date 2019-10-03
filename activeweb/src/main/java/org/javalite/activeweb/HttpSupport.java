@@ -515,9 +515,8 @@ public class HttpSupport {
      * @param file file to download.
      * @param delete true to delete the file after processing
      * @return builder instance.
-     * @throws FileNotFoundException thrown if file not found.
      */
-    protected HttpBuilder sendFile(File file, boolean delete) throws FileNotFoundException {
+    protected HttpBuilder sendFile(File file, boolean delete)  {
         try{
             FileResponse resp = new FileResponse(file, delete);
             RequestContext.setControllerResponse(resp);
@@ -536,9 +535,8 @@ public class HttpSupport {
      *
      * @param file file to download.
      * @return builder instance.
-     * @throws FileNotFoundException thrown if file not found.
      */
-    protected HttpBuilder sendFile(File file) throws FileNotFoundException {
+    protected HttpBuilder sendFile(File file) {
        return sendFile(file, false);
     }
 
@@ -1030,11 +1028,14 @@ public class HttpSupport {
      * Sets character encoding for request. Has to be called before reading any parameters of getting input
      * stream.
      * @param encoding encoding to be set.
-     *
-     * @throws UnsupportedEncodingException
      */
-    protected void setRequestEncoding(String encoding) throws UnsupportedEncodingException {
-        RequestContext.getHttpRequest().setCharacterEncoding(encoding);
+    protected void setRequestEncoding(String encoding) {
+
+        try{
+            RequestContext.getHttpRequest().setCharacterEncoding(encoding);
+        }catch(Exception e){
+            throw new WebException(e);
+        }
     }
 
 
@@ -1779,17 +1780,25 @@ public class HttpSupport {
      *
      * @return InputStream of the request
      */
-    protected InputStream getRequestInputStream() throws IOException {
-        return RequestContext.getHttpRequest().getInputStream();
+    protected InputStream getRequestInputStream() {
+        try {
+            return RequestContext.getHttpRequest().getInputStream();
+        } catch (IOException e) {
+            throw new WebException(e);
+        }
     }
 
     /**
      * Alias to {@link #getRequestInputStream()}.
      * @return input stream to read data sent by client.
-     * @throws IOException
+     *
      */
-    protected InputStream getRequestStream() throws IOException {
-        return RequestContext.getHttpRequest().getInputStream();
+    protected InputStream getRequestStream() {
+        try {
+            return RequestContext.getHttpRequest().getInputStream();
+        } catch (IOException e) {
+            throw new WebException(e);
+        }
     }
 
     /**
@@ -1797,10 +1806,13 @@ public class HttpSupport {
      * memory issues, instead use {@link #getRequestInputStream()}.
      *
      * @return data sent by client as string.
-     * @throws IOException
      */
-    protected String getRequestString() throws IOException {
-        return Util.read(RequestContext.getHttpRequest().getInputStream());
+    protected String getRequestString() {
+        try {
+            return Util.read(RequestContext.getHttpRequest().getInputStream());
+        } catch (IOException e) {
+            throw new WebException(e);
+        }
     }
 
     /**
@@ -1808,10 +1820,14 @@ public class HttpSupport {
      * memory issues.
      *
      * @return data sent by client as string.
-     * @throws IOException
      */
-    protected byte[] getRequestBytes() throws IOException {
-        return Util.bytes(RequestContext.getHttpRequest().getInputStream());
+    protected byte[] getRequestBytes() {
+
+        try {
+            return Util.bytes(RequestContext.getHttpRequest().getInputStream());
+        } catch (IOException e) {
+            throw new WebException(e);
+        }
     }
 
 
@@ -1822,11 +1838,7 @@ public class HttpSupport {
      */
     protected List jsonList() {
         checkJsonContentType();
-        try {
-            return JsonHelper.toList(getRequestString());
-        } catch (IOException e) {
-            throw new WebException(e);
-        }
+        return JsonHelper.toList(getRequestString());
     }
 
     private void checkJsonContentType(){
@@ -1842,11 +1854,8 @@ public class HttpSupport {
      */
     protected Map jsonMap() {
         checkJsonContentType();
-        try {
-            return JsonHelper.toMap(getRequestString());
-        } catch (IOException e) {
-            throw new WebException(e);
-        }
+        return JsonHelper.toMap(getRequestString());
+
     }
 
 
@@ -1857,11 +1866,7 @@ public class HttpSupport {
      */
     protected Map[] jsonMaps() {
         checkJsonContentType();
-        try {
-            return JsonHelper.toMaps(getRequestString());
-        } catch (IOException e) {
-            throw new WebException(e);
-        }
+        return JsonHelper.toMaps(getRequestString());
     }
 
 

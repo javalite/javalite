@@ -144,8 +144,7 @@ public class RequestDispatcher implements Filter {
                 logger.error("Failed to create and init a new instance of class: " + configClassName + ". Application failed to start, so it will not run.");
                 throw new InitException(e);
             }else{
-                logger.warn("Failed to create and init a new instance of class: " + configClassName
-                        + ", proceeding without it.");
+                logger.info("Did not find a class named: " + configClassName + ", proceeding without it.");
             }
         }
     }
