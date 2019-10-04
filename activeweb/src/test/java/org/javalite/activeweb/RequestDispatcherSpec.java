@@ -329,8 +329,7 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         dispatcher.init(config);
         dispatcher.destroy();
-        a(getSystemErr()).shouldBeEqual("HelloService destroyed!\n"
-                                      + "AppBootstrap destroyed!");
+        a(getSystemErr()).shouldBeEqual("AppBootstrap destroyed!");
     }
 
     @Test
