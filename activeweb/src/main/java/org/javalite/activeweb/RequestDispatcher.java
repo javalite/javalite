@@ -390,7 +390,12 @@ public class RequestDispatcher implements Filter {
 
     public void destroy() {
         if(appBootstrap != null){ // failed start?
-            appBootstrap.destroy();
+            if (!AppConfig.isInTestMode()){
+                appBootstrap.destroy();
+            }else{
+                logger.warn("Omitting destruction of "  + appBootstrap + " in tests");
+            }
+
             appBootstrap.destroy(appContext);
         }
     }
