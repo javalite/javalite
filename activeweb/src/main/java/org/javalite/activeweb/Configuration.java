@@ -325,10 +325,12 @@ public class Configuration {
         List<String> subpackages = new ArrayList<>();
         String controllerRootPackage = Configuration.getRootPackage() + ".controllers";
         try (ScanResult scanResult = new ClassGraph().whitelistPackages(controllerRootPackage).scan()) {
-            for (ClassInfo routeClassInfo : scanResult.getSubclasses(AppController.class.getName())) {
-                String className = routeClassInfo.getName();
-                if (className.chars().filter(ch -> ch == '.').count() > 2) {
-                    subpackages.add(className.substring(className.indexOf("controllers." ) + 12, className.lastIndexOf('.')));
+            for (ClassInfo classInfo : scanResult.getSubclasses(AppController.class.getName())) {
+                if(!classInfo.isAbstract()){
+                    String className = classInfo.getName();
+                    if (className.chars().filter(ch -> ch == '.').count() > 2) {
+                        subpackages.add(className.substring(className.indexOf("controllers." ) + 12, className.lastIndexOf('.')));
+                    }
                 }
             }
         }
