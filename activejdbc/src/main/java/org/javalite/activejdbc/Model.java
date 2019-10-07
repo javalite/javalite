@@ -40,6 +40,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.sql.Clob;
 import java.sql.Time;
@@ -1197,7 +1198,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             return null;
         } else {
             try {
-                P parent = parentClass.newInstance();
+                P parent = parentClass.getDeclaredConstructor().newInstance();
                 parent.hydrate(results.get(0), true);
                 if (parentMM.cached()) {
                     QueryCache.instance().addItem(parentTable, query, new Object[]{fkValue}, parent);
@@ -2486,11 +2487,11 @@ public abstract class Model extends CallbackSupport implements Externalizable {
                     //this is for Oracle, many 2 many, and all annotations used, including @IdGenerator. In this case,
                     //it is best to delegate generation of insert to a model (sequences, etc.)
                     try {
-                        Model joinModel = joinMetaModel.getModelClass().newInstance();
+                        Model joinModel = joinMetaModel.getModelClass().getDeclaredConstructor().newInstance();
                         joinModel.set(ass.getSourceFkName(), getId());
                         joinModel.set(ass.getTargetFkName(), child.getId());
                         joinModel.saveIt();
-                    } catch (InstantiationException e) {
+                    } catch (InstantiationException | NoSuchMethodException | InvocationTargetException e) {
                         throw new InitException("failed to create a new instance of class: " + joinMetaModel.getClass()
                                 + ", are you sure this class has a default constructor?", e);
                     } catch (IllegalAccessException e) {

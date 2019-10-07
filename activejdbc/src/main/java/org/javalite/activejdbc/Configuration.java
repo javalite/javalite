@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import org.javalite.common.Convert;
 
@@ -69,8 +70,13 @@ public class Configuration {
         String loggerClass = properties.getProperty(PropertyName.ActiveJdbcLogger.name);
         if(loggerClass != null){
             try {
-                activeLogger = (ActiveJDBCLogger) Class.forName(loggerClass).newInstance();
-            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+                activeLogger = (ActiveJDBCLogger) Class.forName(loggerClass).getDeclaredConstructor().newInstance();
+            } catch (InstantiationException
+                | IllegalAccessException
+                | ClassNotFoundException
+                | InvocationTargetException
+                | NoSuchMethodException e
+            ) {
                 throw new InitException("Failed to initialize a ActiveJDBCLogger. Please, ensure that the property " +
                         "'activejdbc.logger' points to correct class which extends '" + ActiveJDBCLogger.class.getName()
                         + "' and provides a default constructor.", e);

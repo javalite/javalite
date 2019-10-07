@@ -184,7 +184,9 @@ public class LinkToTag extends FreeMarkerTag {
         Boolean restful;
         if (params.get("controller") != null) {
             controller = params.get("controller").toString();
-            AppController controllerInstance = (AppController) Class.forName(ControllerFactory.getControllerClassName(controller)).newInstance();
+            AppController controllerInstance = (AppController) Class.forName(
+                ControllerFactory.getControllerClassName(controller)
+            ).getDeclaredConstructor().newInstance();
             restful = controllerInstance.restful();
         } else if (get("activeweb") != null) {
             Map activeweb = (Map) getUnwrapped("activeweb");
