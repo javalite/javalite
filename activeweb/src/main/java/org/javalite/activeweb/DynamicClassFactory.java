@@ -20,7 +20,7 @@ abstract public class DynamicClassFactory {
 
     public static <T> T createInstance(String className, Class<T> expectedType) throws ClassLoadException {
         try {
-            Object o = getCompiledClass(className).newInstance();
+            Object o = getCompiledClass(className).getDeclaredConstructor().newInstance();
             T instance = expectedType.cast(o);
             return instance ;
         } catch (CompilationException | ClassLoadException e) {

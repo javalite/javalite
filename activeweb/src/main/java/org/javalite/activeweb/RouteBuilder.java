@@ -223,7 +223,7 @@ public class RouteBuilder {
 
     protected AppController getController() {
         try {
-            return controller == null? controller = type.newInstance(): controller ;
+            return controller == null? controller = type.getDeclaredConstructor().newInstance(): controller ;
         } catch (Exception e) {
             throw new ControllerException(e);
         }

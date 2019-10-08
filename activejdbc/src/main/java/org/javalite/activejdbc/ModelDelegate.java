@@ -28,6 +28,7 @@ import org.javalite.common.Convert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.*;
@@ -126,7 +127,7 @@ public final class ModelDelegate {
 
     public static <T extends Model> T create(Class<T> clazz, Object... namesAndValues) {
         try {
-            return clazz.newInstance().set(namesAndValues);
+            return clazz.getDeclaredConstructor().newInstance().set(namesAndValues);
         } catch (IllegalArgumentException e) {
             throw e;
         } catch (ClassCastException e) {
@@ -236,10 +237,10 @@ public final class ModelDelegate {
 
     static <T extends Model> T instance(Map<String, Object> map, MetaModel metaModel, Class<T> clazz) {
         try {
-            T instance = clazz.newInstance();
+            T instance = clazz.getDeclaredConstructor().newInstance();
             instance.hydrate(map, true);
             return instance;
-        } catch(InstantiationException e) {
+        } catch(InstantiationException | NoSuchMethodException | InvocationTargetException e) {
             throw new InitException("Failed to create a new instance of: " + metaModel.getModelClass() + ", are you sure this class has a default constructor?");
         } catch(DBException e) {
             throw e;
@@ -436,7 +437,7 @@ public final class ModelDelegate {
                 return createIt(clazz, namesAndValues);
             }else {
                 try {
-                    T m = clazz.newInstance();
+                    T m = clazz.getDeclaredConstructor().newInstance();
                     m.set(namesAndValues);
                     return m;
                 } catch (Exception e) {
