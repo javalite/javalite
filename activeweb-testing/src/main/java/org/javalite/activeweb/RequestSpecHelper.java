@@ -65,6 +65,10 @@ public class RequestSpecHelper extends SpecHelper{
      */
     protected String responseContent(){
         try{
+
+            if(RequestContext.getControllerResponse().getClass() == RedirectResponse.class){
+                return "No content here, because you redirected";
+            }
             //content can be provided simply by respond() method
             return ((MockHttpServletResponse) RequestContext.getHttpResponse().getTarget()).getContentAsString();
         }

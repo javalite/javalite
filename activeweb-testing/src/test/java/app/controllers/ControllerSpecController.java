@@ -27,4 +27,8 @@ public class ControllerSpecController extends AppController {
         assign("last_name", "Silverman");
         assign("age", 32);
     }
+
+    public void redirect1(){
+        redirect("/");
+    }
 }

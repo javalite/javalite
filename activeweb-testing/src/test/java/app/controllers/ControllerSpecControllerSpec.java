@@ -61,4 +61,14 @@ public class ControllerSpecControllerSpec extends TemplateControllerSpec {
 //        a(templateManager.getValues().get("message").toString().contains("Cannot access action app.controllers.AbcPersonController.index " +
 //                "with HTTP method: 'POST' because it is configured for method: 'GET'")).shouldBeTrue();
 //    }
+
+
+    @Test
+    public void shouldWarnIfGettingContentAfterRedirect() {
+
+        request().get("redirect1");
+        the(redirected()).shouldBeTrue();
+        the(responseContent()).shouldEqual("No content here, because you redirected");
+    }
+
 }
