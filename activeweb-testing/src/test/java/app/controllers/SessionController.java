@@ -18,6 +18,8 @@ package app.controllers;
 
 import org.javalite.activeweb.AppController;
 
+import java.io.Serializable;
+
 /**
  * @author Igor Polevoy
  */
@@ -30,4 +32,19 @@ public class SessionController extends AppController {
     public void badAction(){
         view("session", "bad idea");        
     }
+
+    class Dumb implements Serializable {}
+
+    public void addToSession(){
+        session("greeting", "hello");
+        session("dumb-object", new Dumb());
+        respond("ok");
+    }
+
+    public void removeFromSession(){
+        session().remove("greeting");
+        Object x = session().remove((Object)"dumb-object");
+        respond(x.toString());
+    }
 }
+
