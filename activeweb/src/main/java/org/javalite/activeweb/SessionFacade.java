@@ -69,8 +69,12 @@ public class SessionFacade implements Map {
      * Removes object from session.
      * @param name name of object
      */
-    public void remove(String name){
-        RequestContext.getHttpRequest().getSession(true).removeAttribute(name);
+    public Object remove(String name){
+        return remove((Object)name);
+
+//        Object val = get(name);
+//        RequestContext.getHttpRequest().getSession(true).removeAttribute(name);
+//        return val;
     }
 
     /**
