@@ -1,12 +1,14 @@
 package org.javalite.activeweb;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import io.github.classgraph.ClassGraph;
+
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.net.URLDecoder;
+import java.util.*;
 
 import static org.javalite.common.Collections.list;
 import static org.javalite.common.Util.join;
@@ -18,7 +20,7 @@ import static org.javalite.common.Util.join;
  */
 abstract public class DynamicClassFactory {
 
-    public static <T> T createInstance(String className, Class<T> expectedType) throws ClassLoadException {
+    static <T> T createInstance(String className, Class<T> expectedType) throws ClassLoadException {
         try {
             Object o = getCompiledClass(className).newInstance();
             T instance = expectedType.cast(o);
@@ -32,8 +34,9 @@ abstract public class DynamicClassFactory {
         }
     }
 
+    private static Map<String, Class> cachedClasses = new HashMap<>();
 
-    public static Class getCompiledClass(String className) throws ClassLoadException{
+    static Class getCompiledClass(String className) throws ClassLoadException{
         Class theClass;
         try {
             if (Configuration.activeReload()) {
@@ -44,15 +47,20 @@ abstract public class DynamicClassFactory {
                 if (compilationResult.contains("error")) {
                     throw new CompilationException(compilationResult);
                 }
-
-                DynamicClassLoader dynamicClassLoader = new DynamicClassLoader(ControllerFactory.class.getClassLoader(),
-                        Configuration.getTargetDir());
+                DynamicClassLoader dynamicClassLoader = new DynamicClassLoader(ControllerFactory.class.getClassLoader(), Configuration.getTargetDir());
                 theClass = dynamicClassLoader.loadClass(className);
             } else {
-                //TODO: in case there is no active_reload, cache instance of controller class - optimization!
-                theClass = Class.forName(className);
+                if(cachedClasses.containsKey(className)){
+                    theClass =  cachedClasses.get(className);
+                }else{
+                    theClass = Class.forName(className);
+                    try{
+                        cachedClasses.put(className, theClass);
+                    }catch(ConcurrentModificationException ignore){
+                        //class already there, skipping
+                    }
+                }
             }
-
             return theClass;
         } catch (CompilationException e) {
             throw e;
@@ -61,31 +69,22 @@ abstract public class DynamicClassFactory {
         }
     }
 
-    protected synchronized static String compileClass(String className) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    private synchronized static String compileClass(String className) {
 
         String controllerFileName = className.replace(".", System.getProperty("file.separator")) + ".java";
+        String classpath = getClasspath(new ClassGraph().getClasspathURLs());
 
-        URLClassLoader loader = ((URLClassLoader) Thread.currentThread().getContextClassLoader());
-        URL[] urls = loader.getURLs();
-
-        String classpath = getClasspath(urls);
-
-        StringWriter writer = new StringWriter();
-        PrintWriter out = new PrintWriter(writer);
         String targetClasses = join(list("target", "classes"), System.getProperty("file.separator"));
         String srcMainJava = join(list("src", "main", "java"), System.getProperty("file.separator"));
-
-        String[] args = {"-g:lines,source,vars", "-d", targetClasses, "-cp", classpath, srcMainJava + System.getProperty("file.separator") + controllerFileName};
-
-        Class cl = Class.forName("com.sun.tools.javac.Main");
-        Method compile = cl.getMethod("compile", String[].class, PrintWriter.class);
-        compile.invoke(null, args, out);
-        out.flush();
-        return writer.toString();
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        String sourceFile = srcMainJava + System.getProperty("file.separator") + controllerFileName;
+        OutputStream errorStream = new ByteArrayOutputStream();
+        compiler.run(null, errorStream, errorStream, "-g:lines,source,vars" , "-g:lines,source,vars", "-d", targetClasses, "-cp", classpath, sourceFile);
+        return "Compiling: " + sourceFile + ", output: " + errorStream.toString();
     }
 
-    private static String getClasspath(URL[] urls) {
-        String classpath = "";
+    private static String getClasspath(List<URL> urls) {
+        StringBuilder classpath = new StringBuilder();
         for (URL url : urls) {
             String path = url.getPath();
             if(System.getProperty("os.name").contains("Windows")){
@@ -97,9 +96,8 @@ abstract public class DynamicClassFactory {
                 }catch(java.io.UnsupportedEncodingException e){/*ignore*/}
                 path = path.replace("/", "\\");//boy, do I dislike windoz!
             }
-            classpath += path + System.getProperty("path.separator");
+            classpath.append(path).append(System.getProperty("path.separator"));
         }
-
-        return classpath;
+        return classpath.toString();
     }
 }
