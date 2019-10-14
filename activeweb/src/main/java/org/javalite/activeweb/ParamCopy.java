@@ -52,6 +52,9 @@ class ParamCopy {
             params.put("action", RequestContext.getRoute().getActionName());
             params.put("restful", RequestContext.getRoute().getController().restful());
         }
+
+        assigns.put("app_context", RequestContext.getAppContext());
+
         assigns.put("activeweb", params);
     }
 
