@@ -352,6 +352,9 @@ public class RequestDispatcher implements Filter {
 
         if (redirectTarget != null) {
             log.put("redirect_target", redirectTarget);
+            if(RequestContext.getValues().size() > 0){
+                log.put("WARNING", "You passed values to a view and redirected! Are you sure you know what you are doing?");
+            }
         }
 
         if (throwable != null) {
