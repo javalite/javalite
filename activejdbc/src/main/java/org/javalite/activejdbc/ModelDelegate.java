@@ -29,6 +29,7 @@ import org.javalite.common.Convert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.*;
@@ -75,6 +76,13 @@ public final class ModelDelegate {
 
     public static void callbackWith(Class<? extends Model> clazz, CallbackListener... listeners) {
         modelRegistryOf(clazz).callbackWith(listeners);
+        MetaModel metaModel = metaModelOf(clazz);
+        if (metaModel != null) {
+            try (CacheEventSquasher ces = new CacheEventSquasher()) {
+                ces.add(metaModel);
+                ModelDelegate.purgeEdges(metaModel);
+            }
+        }
     }
 
 
@@ -237,17 +245,21 @@ public final class ModelDelegate {
 
     static <T extends Model> T instance(Map<String, Object> map, MetaModel metaModel, Class<T> clazz) {
         try {
-            T instance = clazz.newInstance();
+            T instance = clazz.getDeclaredConstructor().newInstance();
             instance.hydrate(map, true);
             return instance;
-        } catch(InstantiationException e) {
-            throw new InitException("Failed to create a new instance of: " + metaModel.getModelClass() + ", are you sure this class has a default constructor?");
         } catch(DBException e) {
             throw e;
         } catch(InitException e) {
             throw e;
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e.getMessage(), e);
+        } catch (Exception e) {
+            if (e instanceof NoSuchMethodException || e instanceof InvocationTargetException || e instanceof InstantiationException) {
+                throw new InitException("Failed to create a new instance of: " + metaModel.getModelClass() + ", are you sure this class has a default constructor?");
+            } else {
+                throw new RuntimeException(e.getMessage(), e);
+            }
         }
     }
 
@@ -296,16 +308,16 @@ public final class ModelDelegate {
         // 2. Many to many. When a new join inserted, updated or deleted, the one.getAll(Other.class) should see the difference.
 
         //Purge associated targets
-        try (CacheEventSquasher ptc = new CacheEventSquasher()) {
+        try (CacheEventSquasher ces = new CacheEventSquasher()) {
             List<Association> associations = metaModel.getAssociations();
             for(Association association: associations) {
-                ptc.add(metaModelOf(association.getTargetClass()));
+                ces.add(metaModelOf(association.getTargetClass()));
             }
 
             //Purge edges in case this model represents a join
             List<String> edges = Registry.instance().getEdges(metaModel.getTableName());
             for(String edge: edges){
-                ptc.add(metaModelFor(edge));
+                ces.add(metaModelFor(edge));
             }
         }
 

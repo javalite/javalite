@@ -237,7 +237,6 @@ public class CacheTest extends ActiveJDBCTest {
     @Test
     public void shouldNotChangePreviousResultOfQuery() {
         deleteAndPopulateTables("doctors", "patients", "doctors_patients");
-        System.out.println("#############################################################################################");
         List<Doctor> doctors = Doctor.findAll();
         int size1 = doctors.size();
 

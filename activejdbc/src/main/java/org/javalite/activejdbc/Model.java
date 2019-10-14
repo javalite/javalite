@@ -469,8 +469,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
         if (1 == result) {
             frozen = true;
-            try (CacheEventSquasher ptc = new CacheEventSquasher()) {
-                ptc.add(metaModelLocal);
+            try (CacheEventSquasher ces = new CacheEventSquasher()) {
+                ces.add(metaModelLocal);
                 ModelDelegate.purgeEdges(metaModelLocal);
             }
             fireAfterDelete();
@@ -1896,7 +1896,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     /**
-     * Use in a static block of a model definotion to add a scope.
+     * Use in a static block of a model definition to add a scope.
      *
      * @param name name of scope
      * @param criteria SQL criteria for the scope filter
@@ -2584,14 +2584,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return  true if the model was saved, false if you set an ID value for the model, but such ID does not exist in DB.
      */
     public boolean saveIt() {
-        try (CacheEventSquasher ptc = new CacheEventSquasher()) {
-            boolean result = save();
-            ModelDelegate.purgeEdges(metaModelLocal); //TODO AY: save not purgeEdges!!!
-            if (!errors.isEmpty()) {
-                throw new ValidationException(this);
-            }
-            return result;
+        boolean result = save();
+        ModelDelegate.purgeEdges(metaModelLocal);
+        if (!errors.isEmpty()) {
+            throw new ValidationException(this);
         }
+        return result;
     }
 
 
@@ -2660,10 +2658,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         }
 
         boolean result;
-        if (getId() == null && !compositeKeyPersisted) {
-            result = insert();
-        } else {
-            result = update();
+        try (CacheEventSquasher ces = new CacheEventSquasher()) {  //TODO AY: save not purgeEdges!!!
+            if (getId() == null && !compositeKeyPersisted) {
+                result = insert();
+            } else {
+                result = update();
+            }
         }
         fireAfterSave();
         return result;

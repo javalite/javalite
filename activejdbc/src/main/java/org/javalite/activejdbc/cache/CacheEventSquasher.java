@@ -65,8 +65,8 @@ public class CacheEventSquasher implements AutoCloseable {
 
     public static void purge(MetaModel metaModel) {
         if (metaModel.cached()) {
-            try (CacheEventSquasher ptc = new CacheEventSquasher()) {
-                ptc.add(metaModel);
+            try (CacheEventSquasher ces = new CacheEventSquasher()) {
+                ces.add(metaModel);
             }
         }
     }

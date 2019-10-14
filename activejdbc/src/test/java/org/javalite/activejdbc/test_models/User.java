@@ -18,9 +18,11 @@ limitations under the License.
 package org.javalite.activejdbc.test_models;
 
 import org.javalite.activejdbc.Model;
+import org.javalite.activejdbc.annotations.Cached;
 import org.javalite.activejdbc.validation.UniquenessValidator;
 
 
+@Cached
 public class User extends Model {
     static{
         validateRegexpOf("email", "\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b");
