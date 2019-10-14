@@ -22,5 +22,7 @@ import org.javalite.activeweb.AppController;
  * @author Igor Polevoy
  */
 public class ActiveWebParamsController extends AppController {
-    public void index(){}
+    public void index(){
+        appContext().set("name", "javalight");
+    }
 }

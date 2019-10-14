@@ -33,14 +33,17 @@ public class ActiveWebParamsControllerSpec extends ControllerSpec {
     }
     
     @Test
-    public void shouldAssignAWMapToView(){
+    public void shouldDisplayBuiltInValues(){
 
         request().get("index");
         String response = responseContent();
 
-        a(response.contains("restful = false")).shouldBeTrue();
-        a(response.contains("action = index")).shouldBeTrue();
-        a(response.contains("controller = /active_web_params")).shouldBeTrue();
-        a(response.contains("environment = " + AppConfig.activeEnv())).shouldBeTrue();
+        the(response).shouldContain("restful = false");
+        the(response).shouldContain("action = index");
+        the(response).shouldContain("controller = /active_web_params");
+        the(response).shouldContain("environment = " + AppConfig.activeEnv());
+        the(response).shouldContain("Context path: /test_context");
+        the(response).shouldContain("AppContext: org.javalite.activeweb.AppContext");
+        the(response).shouldContain("AppContext Value: javalight");
     }
 }
