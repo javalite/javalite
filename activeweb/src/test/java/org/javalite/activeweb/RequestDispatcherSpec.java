@@ -220,9 +220,23 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         String html = response.getContentAsString();
 
+        the(response.getStatus()).shouldEqual(404);
         a(XPathHelper.count("//div", html)).shouldBeEqual(3);
         a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("java.lang.NoSuchMethodException: app.controllers.HelloController.hello(); app.controllers.HelloController.hello()");
     }
+
+
+    @Test
+    public void shouldSend404IfActionMissingOnRESTfulController() throws ServletException, IOException {
+
+        request.setServletPath("/restful1/blah");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+        the(response.getStatus()).shouldEqual(404);
+        String html = response.getContentAsString();
+        the(html).shouldContain("java.lang.NoSuchMethodException: app.controllers.Restful1Controller.show()");
+   }
+
 
     @Test
     public void shouldSend404IfTemplateIsMissing() throws ServletException, IOException {
