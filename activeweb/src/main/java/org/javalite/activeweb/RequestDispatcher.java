@@ -220,7 +220,7 @@ public class RequestDispatcher implements Filter {
             }
         } catch (CompilationException e) {
             renderSystemError(e);
-        } catch (ClassLoadException | ActionNotFoundException | ViewMissingException | RouteException e) {
+        } catch (ClassLoadException | ActionNotFoundException | ViewMissingException | RouteException | ControllerException e) {
             renderSystemError("/system/404", useDefaultLayoutForErrors() ? getDefaultLayout():null, 404, e);
         } catch (Throwable e) {
             renderSystemError("/system/error", useDefaultLayoutForErrors() ? getDefaultLayout():null, 500, e);
