@@ -169,54 +169,44 @@ public enum Registry {
         return metaModels.toJSON();
     }
 
+
     /**
-     * Returns a hash keyed off a column name.
+     * Some databases will improve the search of metadata if you give them the schema name
+     *
+     * @return  may return null
+     *
      */
-    private Map<String, ColumnMetadata> fetchMetaParams(DatabaseMetaData databaseMetaData, String dbType, String table) throws SQLException {
-
-        /*
-         * Valid table name format: tablename or schemaname.tablename
-         */
-        String[] names = table.split("\\.", 3);
-
-
-        String schema = null; // Assign null for android SQLLite
-
+    private String getConnectionSchema(DatabaseMetaData databaseMetaData) throws SQLException {
         try {
-            // getSchema does not exist on android.
-            if(databaseMetaData.getClass().getMethod("getSchema")!=null){
-                schema = databaseMetaData.getConnection().getSchema();
-            }
-        } catch (NoSuchMethodException e) {}
+            return databaseMetaData.getConnection().getSchema();
+        } catch (SQLException e) {
+            throw e;
+        } catch (Exception ignore) {} // getSchema does not exist on android.
+        return null;
+    }
 
-        String tableName;
 
-        switch (names.length) {
-        case 1:
-            tableName = names[0];
-            break;
-        case 2:
-            if (!schema.equalsIgnoreCase(names[0])) {
-                throw new DBException("invalid schema name : " + names[0] + ", current scheme: " + schema);
-            }
-            tableName = names[1];
-            if (tableName.isEmpty()) {
-                throw new DBException("invalid table name : " + table);
-            }
-            break;
-        default:
-            throw new DBException("invalid table name: " + table);
-        }
-        String catalog = null; // Assign null for android SQLLite
-
+    /**
+     * Some databases will improve the search of metadata if you give them the catalog name
+     *
+     * @return  may return null
+     *
+     */
+    private String getConnectionCatalog(DatabaseMetaData databaseMetaData) throws SQLException {
         try {
-            // getSchema does not exist on android.
-            if(databaseMetaData.getClass().getMethod("getCatalog")!=null){
-                catalog = databaseMetaData.getConnection().getCatalog();
-            }
-        } catch (NoSuchMethodException e) {}
+            return databaseMetaData.getConnection().getCatalog();
+        } catch (SQLException e) {
+            throw e;
+        } catch (Exception ignore) {} // getCatalog does not exist on android.
+        return null;
+    }
 
-        if(dbType.equalsIgnoreCase("h2")){
+
+    /**
+     * Workarounds for some DB idiosyncrasies
+     */
+    private String mangleTableName(String tableName, String dbType) {
+        if(dbType.toLowerCase().contains("h2")){
             // keep quoted table names as is, otherwise use uppercase
             if (!tableName.contains("\"")) {
                 tableName = tableName.toUpperCase();
@@ -226,6 +216,41 @@ public enum Registry {
         } else if(dbType.toLowerCase().contains("postgres") && tableName.startsWith("\"") && tableName.endsWith("\"")) {
             tableName = tableName.substring(1, tableName.length() - 1);
         }
+        return tableName;
+    }
+
+    /**
+     * Returns a hash keyed off a column name.
+     */
+    private Map<String, ColumnMetadata> fetchMetaParams(DatabaseMetaData databaseMetaData, String dbType, String table) throws SQLException {
+
+        /*
+         * Valid table name format: tablename or schemaname.tablename
+         */
+        String[] parts = table.split("\\.", 3);
+
+        String schema = null;
+
+        String tableName = null;
+
+        switch (parts.length) {
+            case 1:
+                schema = getConnectionSchema(databaseMetaData);
+                tableName = parts[0];
+                break;
+            case 2:
+                schema = parts[0];
+                tableName = parts[1];
+                break;
+        }
+
+        if (Util.blank(tableName) || (schema != null && schema.trim().length() == 0)) {
+            throw new DBException("invalid table name : " + table);
+        }
+
+        String catalog = getConnectionCatalog(databaseMetaData);
+
+        tableName = mangleTableName(tableName, dbType);
 
         ResultSet rs = databaseMetaData.getColumns(catalog, schema, tableName, null);
         Map<String, ColumnMetadata> columns = getColumns(rs, dbType);
@@ -233,26 +258,26 @@ public enum Registry {
 
         //try upper case table name - Oracle uses upper case
         if (columns.isEmpty()) {
-            rs = databaseMetaData.getColumns(null, schema, tableName.toUpperCase(), null);
+            rs = databaseMetaData.getColumns(catalog, schema, tableName.toUpperCase(), null);
             columns = getColumns(rs, dbType);
             rs.close();
         }
 
         //if upper case not found, try lower case.
         if (columns.isEmpty()) {
-            rs = databaseMetaData.getColumns(null, schema, tableName.toLowerCase(), null);
+            rs = databaseMetaData.getColumns(catalog, schema, tableName.toLowerCase(), null);
             columns = getColumns(rs, dbType);
             rs.close();
         }
 
-        if(columns.size() > 0){
+        if (columns.size() > 0) {
             LogFilter.log(LOGGER, LogLevel.INFO, "Fetched metadata for table: {}", table);
-        }
-        else{
+        } else {
             LogFilter.log(LOGGER, LogLevel.WARNING, "Failed to retrieve metadata for table: '{}'."
                     + " Are you sure this table exists? For some databases table names are case sensitive.",
                     table);
         }
+
         return columns;
     }
 
