@@ -211,12 +211,13 @@ public enum Registry {
          */
         String[] parts = table.split("\\.", 3);
 
-        String schema = getConnectionSchema(databaseMetaData);
+        String schema = null;
 
         String tableName = null;
 
         switch (parts.length) {
             case 1:
+                schema = getConnectionSchema(databaseMetaData);
                 tableName = parts[0];
                 break;
             case 2:
@@ -239,26 +240,26 @@ public enum Registry {
 
         //try upper case table name - Oracle uses upper case
         if (columns.isEmpty()) {
-            rs = databaseMetaData.getColumns(null, schema, tableName.toUpperCase(), null);
+            rs = databaseMetaData.getColumns(catalog, schema, tableName.toUpperCase(), null);
             columns = getColumns(rs, dbType);
             rs.close();
         }
 
         //if upper case not found, try lower case.
         if (columns.isEmpty()) {
-            rs = databaseMetaData.getColumns(null, schema, tableName.toLowerCase(), null);
+            rs = databaseMetaData.getColumns(catalog, schema, tableName.toLowerCase(), null);
             columns = getColumns(rs, dbType);
             rs.close();
         }
 
-        if(columns.size() > 0){
+        if (columns.size() > 0) {
             LogFilter.log(LOGGER, LogLevel.INFO, "Fetched metadata for table: {}", table);
-        }
-        else{
+        } else {
             LogFilter.log(LOGGER, LogLevel.WARNING, "Failed to retrieve metadata for table: '{}'."
                     + " Are you sure this table exists? For some databases table names are case sensitive.",
                     table);
         }
+
         return columns;
     }
 
