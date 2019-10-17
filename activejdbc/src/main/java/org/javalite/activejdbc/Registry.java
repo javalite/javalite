@@ -169,26 +169,44 @@ public enum Registry {
         return metaModels.toJSON();
     }
 
+
+    /**
+     * Some databases will improve the search of metadata if you give them the schema name
+     *
+     * @return  may return null
+     *
+     */
     private String getConnectionSchema(DatabaseMetaData databaseMetaData) throws SQLException {
         try {
             return databaseMetaData.getConnection().getSchema();
         } catch (SQLException e) {
             throw e;
-        } catch (Exception e) {} // getSchema does not exist on android.
+        } catch (Exception ignore) {} // getSchema does not exist on android.
         return null;
     }
 
+
+    /**
+     * Some databases will improve the search of metadata if you give them the catalog name
+     *
+     * @return  may return null
+     *
+     */
     private String getConnectionCatalog(DatabaseMetaData databaseMetaData) throws SQLException {
         try {
             return databaseMetaData.getConnection().getCatalog();
         } catch (SQLException e) {
             throw e;
-        } catch (Exception e) {} // getSchema does not exist on android.
+        } catch (Exception ignore) {} // getCatalog does not exist on android.
         return null;
     }
 
-    private String prepareTableName(String tableName, String dbType) {
-        if(dbType.equalsIgnoreCase("h2")){
+
+    /**
+     * Workarounds for some DB idiosyncrasies
+     */
+    private String mangleTableName(String tableName, String dbType) {
+        if(dbType.toLowerCase().contains("h2")){
             // keep quoted table names as is, otherwise use uppercase
             if (!tableName.contains("\"")) {
                 tableName = tableName.toUpperCase();
@@ -232,7 +250,7 @@ public enum Registry {
 
         String catalog = getConnectionCatalog(databaseMetaData);
 
-        tableName = prepareTableName(tableName, dbType);
+        tableName = mangleTableName(tableName, dbType);
 
         ResultSet rs = databaseMetaData.getColumns(catalog, schema, tableName, null);
         Map<String, ColumnMetadata> columns = getColumns(rs, dbType);
