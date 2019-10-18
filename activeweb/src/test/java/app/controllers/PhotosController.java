@@ -22,4 +22,16 @@ import org.javalite.activeweb.annotations.RESTful;
  * @author Igor Polevoy
  */
 @RESTful
-public class PhotosController extends AppController {}
+public class PhotosController extends AppController {
+    public void update(){}
+    public void options(){}
+    public void show(){}
+    public void editForm(){}
+    public void index(){}
+    public void destroy(){}
+    public void newForm(){}
+    public void create(){}
+
+}
+
+

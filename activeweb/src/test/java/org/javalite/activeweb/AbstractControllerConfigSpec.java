@@ -26,7 +26,6 @@ import org.javalite.activeweb.mock.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockFilterConfig;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
@@ -102,19 +101,19 @@ public class AbstractControllerConfigSpec  extends RequestSpec{
         the(filters.get(2)).shouldBeTheSameAs(filter3);
 
         //lets check the matches:
-        the(matches(filters.get(0), new PersonController(), "")).shouldBeTrue();
-        the(matches(filters.get(0), new BookController(), "")).shouldBeTrue();
+        the(matches(filters.get(0), new PersonController(), "gallery")).shouldBeTrue();
+        the(matches(filters.get(0), new BookController(), "index")).shouldBeTrue();
 
-        the(matches(filters.get(1), new PersonController(), "")).shouldBeTrue();
-        the(matches(filters.get(1), new BookController(), "")).shouldBeTrue();
+        the(matches(filters.get(1), new PersonController(), "gallery")).shouldBeTrue();
+        the(matches(filters.get(1), new BookController(), "index")).shouldBeTrue();
 
-        the(matches(filters.get(2), new LibraryController(), "")).shouldBeTrue();
+        the(matches(filters.get(2), new LibraryController(), "index")).shouldBeTrue();
 
         //lets check the non-matches:
-        the(matches(filters.get(0), new LibraryController(), "")).shouldBeFalse();
-        the(matches(filters.get(1), new LibraryController(), "")).shouldBeFalse();
-        the(matches(filters.get(2), new PersonController(), "")).shouldBeFalse();
-        the(matches(filters.get(2), new BookController(), "")).shouldBeFalse();
+        the(matches(filters.get(0), new LibraryController(), "index")).shouldBeFalse();
+        the(matches(filters.get(1), new LibraryController(), "index")).shouldBeFalse();
+        the(matches(filters.get(2), new PersonController(), "gallery")).shouldBeFalse();
+        the(matches(filters.get(2), new BookController(), "index")).shouldBeFalse();
     }
 
     @Test
@@ -144,21 +143,21 @@ public class AbstractControllerConfigSpec  extends RequestSpec{
         the(filters.get(2)).shouldBeTheSameAs(filter3);
 
         //lets check the wildcard matches (some random controller):
-        the(matches(filters.get(0), new PersonController(), "")).shouldBeTrue();
-        the(matches(filters.get(0), new BookController(), "")).shouldBeTrue();
+        the(matches(filters.get(0), new PersonController(), "gallery")).shouldBeTrue();
+        the(matches(filters.get(0), new BookController(), "index")).shouldBeTrue();
 
-        the(matches(filters.get(1), new PersonController(), "")).shouldBeTrue();
-        the(matches(filters.get(1), new BookController(), "")).shouldBeTrue();
+        the(matches(filters.get(1), new PersonController(), "gallery")).shouldBeTrue();
+        the(matches(filters.get(1), new BookController(), "index")).shouldBeTrue();
 
         //filter 3
-        the(matches(filters.get(2), new BookController(), "")).shouldBeFalse();
-        the(matches(filters.get(2), new PersonController(), "")).shouldBeFalse();
-        the(matches(filters.get(2), new LibraryController(), "")).shouldBeTrue();
+        the(matches(filters.get(2), new BookController(), "index")).shouldBeFalse();
+        the(matches(filters.get(2), new PersonController(), "gallery")).shouldBeFalse();
+        the(matches(filters.get(2), new LibraryController(), "index")).shouldBeTrue();
 
         //lets check the matches to specialized :
-        the(matches(filters.get(0), new LibraryController(), "")).shouldBeTrue();// global
-        the(matches(filters.get(1), new LibraryController(), "")).shouldBeTrue();// global
-        the(matches(filters.get(2), new LibraryController(), "")).shouldBeTrue();//special
+        the(matches(filters.get(0), new LibraryController(), "index")).shouldBeTrue();// global
+        the(matches(filters.get(1), new LibraryController(), "index")).shouldBeTrue();// global
+        the(matches(filters.get(2), new LibraryController(), "index")).shouldBeTrue();//special
 
     }
 
@@ -288,11 +287,11 @@ public class AbstractControllerConfigSpec  extends RequestSpec{
 
     @Test
     public void shouldExecuteAfterEvenIfException() throws IOException, ServletException {
-        request.setServletPath("/do-filters/does-not-exist");
+        request.setServletPath("/do-filters/bad-boy");
         request.setMethod("GET");
         dispatcher.doFilter(request, response, filterChain);
 
-        a(response.getContentAsString()).shouldContain("java.lang.NoSuchMethodException: app.controllers.DoFiltersController.doesNotExist(); app.controllers.DoFiltersController.doesNotExist()");
+        a(response.getContentAsString()).shouldContain("I'm a bad boy!");
 
         the(getLine(0)).shouldBeEqual("GlobalFilter1 before");
         the(getLine(1)).shouldBeEqual("GlobalFilter2 before");

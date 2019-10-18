@@ -12,4 +12,8 @@ public class DoFiltersController extends AppController {
         OutputCollector.addLine("-->" + getClass().getSimpleName());
         respond("ok");
     }
+
+    public void badBoy(){
+        throw  new RuntimeException("I'm a bad boy!");
+    }
 }

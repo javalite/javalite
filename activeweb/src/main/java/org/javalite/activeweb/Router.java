@@ -62,7 +62,7 @@ public class Router {
      * @param httpMethod http method of the request.
      * @return instance of a <code>Route</code> if one is found, null if not.
      */
-    protected Route recognize(String uri, HttpMethod httpMethod) throws ClassLoadException {
+    Route recognize(String uri, HttpMethod httpMethod) throws ClassLoadException {
 
         if (uri.endsWith("/") && uri.length() > 1) {
             uri = uri.substring(0, uri.length() - 1);

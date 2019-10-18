@@ -216,13 +216,13 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
-        a(getSystemOut().contains("java.lang.NoSuchMethodException: app.controllers.HelloController.hello(")).shouldBeTrue();
+        a(getSystemOut().contains("Method not found: app.controllers.HelloController.hello()")).shouldBeTrue();
 
         String html = response.getContentAsString();
 
         the(response.getStatus()).shouldEqual(404);
         a(XPathHelper.count("//div", html)).shouldBeEqual(3);
-        a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("java.lang.NoSuchMethodException: app.controllers.HelloController.hello(); app.controllers.HelloController.hello()");
+        a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("Method not found: app.controllers.HelloController.hello()");
     }
 
 
@@ -234,7 +234,7 @@ public class RequestDispatcherSpec extends RequestSpec {
         dispatcher.doFilter(request, response, filterChain);
         the(response.getStatus()).shouldEqual(404);
         String html = response.getContentAsString();
-        the(html).shouldContain("java.lang.NoSuchMethodException: app.controllers.Restful1Controller.show()");
+        the(html).shouldContain("Method not found: app.controllers.Restful1Controller.show()");
    }
 
 
@@ -462,7 +462,7 @@ public class RequestDispatcherSpec extends RequestSpec {
     }
 
     @Test
-    public void shouldReturn404ForUnknownMethod() throws IOException, ServletException {
+    public void shouldReturn404ForUnknownHTTPMethod() throws IOException, ServletException {
 
         request.setServletPath("/hello/multivalues");
         request.setMethod("PROPFIND");

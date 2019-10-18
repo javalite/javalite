@@ -16,15 +16,12 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import com.google.inject.Injector;
-import org.javalite.activeweb.annotations.POST;
 import org.javalite.activeweb.controller_filters.HttpSupportFilter;
 import org.javalite.activeweb.freemarker.AbstractFreeMarkerConfig;
 import org.javalite.activeweb.freemarker.FreeMarkerTemplateManager;
-import org.javalite.common.Inflector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -68,12 +65,10 @@ class ControllerRunner {
 
     private void executeController(Route route) throws IllegalAccessException, InstantiationException {
         if (RequestContext.getControllerResponse() == null) {//execute controller... only if a filter did not respond
-
-            String actionMethod = Inflector.camelize(route.getActionName().replace('-', '_'), false);
-            if (checkActionMethod(route.getController(), actionMethod) || route.isCustom()) {
+            if (route.actionSupportsHTTPMethod() || route.isCustom()) {
                 injectController(route.getController());
-                LOGGER.debug("Executing: " + route.getController() + "#" + actionMethod);
-                executeAction(route.getController(), actionMethod);
+                LOGGER.debug("Executing: " + route.getController() + "#" + route.getActionMethod().getName());
+                executeAction(route);
             }
         }
 
@@ -85,13 +80,13 @@ class ControllerRunner {
         processFlash();
     }
 
-    private void executeAction(Object controller, String actionName) {
+    private void executeAction(Route route) {
         try{
-            Method m = controller.getClass().getMethod(actionName);
+            Method m = route.getActionMethod();
             if(!AppController.class.isAssignableFrom(m.getDeclaringClass())){ // see https://github.com/javalite/activeweb/issues/272
-                throw new ActionNotFoundException("Cannot execute action '" + actionName + "' on controller: " + controller);
+                throw new ActionNotFoundException("Cannot execute action '" + route.getActionName() + "' on controller: " + route.getControllerClassName());
             }
-            m.invoke(controller);
+            m.invoke(route.getController());
         }catch(InvocationTargetException e){
             if(e.getCause() != null && e.getCause() instanceof  WebException){
                 throw (WebException)e.getCause();
@@ -207,25 +202,6 @@ class ControllerRunner {
         }
     }
 
-    /**
-     * Checks if the action method supports requested HTTP method
-     */
-    private boolean checkActionMethod(AppController controller, String actionMethod) {
-        HttpMethod method = HttpMethod.getMethod(RequestContext.getHttpRequest());
-        if (!controller.actionSupportsHttpMethod(actionMethod, method)) {
-            DirectResponse res = new DirectResponse("");
-            //see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
-            res.setStatus(405);
-            LOGGER.warn("Requested action does not support HTTP method: " + method.name() + ", returning status code 405.");
-            RequestContext.setControllerResponse(res);
-
-            //TODO: candidate for caching below, list of allowed HTTP methods
-            //see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
-            RequestContext.getHttpResponse().setHeader("Allow", join(controller.allowedActions(actionMethod), ", "));
-            return false;
-        }
-        return true;
-    }
 
     private boolean exceptionHandled(Exception e, Route route) throws Exception{
         for(HttpSupportFilter filter: Configuration.getFilters()){

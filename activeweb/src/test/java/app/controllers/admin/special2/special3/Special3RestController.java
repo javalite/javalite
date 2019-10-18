@@ -25,4 +25,9 @@ import org.javalite.activeweb.annotations.RESTful;
  * @author Igor Polevoy
  */
 @RESTful
-public class Special3RestController extends AppController {}
+public class Special3RestController extends AppController {
+    public void options(){}
+    public void update(){}
+    public void destroy(){}
+
+}

@@ -23,4 +23,8 @@ import org.javalite.activeweb.annotations.RESTful;
  * @author Igor Polevoy
  */
 @RESTful
-public class Special2RestController  extends AppController {}
+public class Special2RestController  extends AppController {
+    public void newForm(){}
+    public void create(){}
+}
+

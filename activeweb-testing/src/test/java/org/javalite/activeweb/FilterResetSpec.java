@@ -32,7 +32,7 @@ public class FilterResetSpec extends AppIntegrationSpec{
         the(Configuration.getFilters().size()).shouldBeEqual(1);
         FilterMetadata fm = Configuration.getFilterMetadata(f);
         //should match any random controller, since this is a global filter.
-        the(fm.matches(new Route(new XyzController(), "", HttpMethod.GET))).shouldBeTrue();
+        the(fm.matches(new Route(new XyzController(), "index", HttpMethod.GET))).shouldBeTrue();
     }
 
     @Test

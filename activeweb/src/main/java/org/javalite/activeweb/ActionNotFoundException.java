@@ -27,4 +27,9 @@ public class ActionNotFoundException extends WebException{
     public ActionNotFoundException(String message) {
         super(message);
     }
+
+    @Override
+    public String getMessage() {
+        return getCause() != null? "Method not found: " + getCause().getMessage() : super.getMessage();
+    }
 }
