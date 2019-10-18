@@ -1,6 +1,7 @@
 package app.controllers;
 
 import org.javalite.activeweb.AppController;
+import org.javalite.activeweb.annotations.PATCH;
 import org.javalite.activeweb.annotations.POST;
 
 /**
@@ -12,4 +13,9 @@ public class Route2Controller extends AppController {
 
     @POST
     public void save(){}
+
+    @PATCH
+    public void patch(){
+        redirect("/hello");
+    }
 }
