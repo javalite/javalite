@@ -35,6 +35,7 @@ import org.apache.activemq.artemis.jms.server.config.impl.ConnectionFactoryConfi
 import org.apache.activemq.artemis.jms.server.config.impl.JMSConfigurationImpl;
 import org.apache.activemq.artemis.jms.server.config.impl.JMSQueueConfigurationImpl;
 import org.apache.activemq.artemis.jms.server.embedded.EmbeddedJMS;
+import org.javalite.common.JsonHelper;
 import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -343,6 +344,7 @@ public class Async {
     public void send(String queueName, Command command, int deliveryMode, int priority, int timeToLive) {
         checkStarted();
 
+        long now  = System.currentTimeMillis();
         try(Session session = senderSessionPool.getSession()) {
             checkInRange(deliveryMode, 1, 2, "delivery mode");
             checkInRange(priority, 0, 9, "priority");
@@ -370,6 +372,8 @@ public class Async {
             throw e;
         } catch (Exception e) {
             throw new AsyncException("Failed to send message", e);
+        }finally {
+            LOGGER.debug(JsonHelper.toJsonString(map("message", "completed sending command", "time_millis", now - System.currentTimeMillis(), "command", command.getClass(), "queue", queueName)));
         }
     }
 
@@ -496,7 +500,7 @@ public class Async {
      */
     public void sendTextMessage(String queueName, String text, int deliveryMode, int priority, int timeToLive) {
         checkStarted();
-
+        long now  = System.currentTimeMillis();
         try(Session session = producerConnection.createSession()) {
             checkInRange(deliveryMode, 1, 2, "delivery mode");
             checkInRange(priority, 0, 9, "priority");
@@ -514,7 +518,10 @@ public class Async {
             throw e;
         } catch (Exception e) {
             throw new AsyncException("Failed to send message", e);
+        }finally {
+            LOGGER.debug(JsonHelper.toJsonString(map("message", "completed sending text message", "time_millis", now - System.currentTimeMillis(), "queue", queueName)));
         }
+
     }
 
     /**
