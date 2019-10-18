@@ -175,6 +175,19 @@ public class RouteBuilder {
     }
 
     /**
+     * Specifies that this route is mapped to HTTP PATCH method.
+     *
+     * @return instance of {@link RouteBuilder}.
+     */
+    public RouteBuilder patch(){
+
+        if(!methods.contains(HttpMethod.PATCH)){
+            methods.add(HttpMethod.PATCH);
+        }
+        return this;
+    }
+
+    /**
      * Specifies that this route is mapped to HTTP OPTIONS method.
      *
      * @return instance of {@link RouteBuilder}.

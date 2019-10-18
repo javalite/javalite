@@ -272,6 +272,22 @@ public class RouterCustomSpec extends RequestSpec {
         a(responseContent()).shouldContain("this is a save.ftl");
     }
 
+    @Test
+    public void shouldMatchWithWithPATCH(){
+
+        routeConfig = new AbstractRouteConfig() {
+            public void init(AppContext appContext) {
+                route("/greeting/{action}").patch().to(Route2Controller.class);
+            }
+        };
+        request.setServletPath("/greeting/patch");
+        request.setMethod("patch");
+        execDispatcher();
+
+        the(response.getStatus()).shouldBeEqual(302);
+        the(response.getRedirectedUrl()).shouldBeEqual("/hello");
+    }
+
 
     @Test
     public void shouldResetControllerWhenMatchingRoute_defect_109() {
