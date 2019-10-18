@@ -22,4 +22,7 @@ import org.javalite.activeweb.AppController;
  * @author Igor Polevoy
  */
 public class HomeController extends AppController {
+    public void gallery(){}
+    public void index(){}
+    public void copy(){}
 }

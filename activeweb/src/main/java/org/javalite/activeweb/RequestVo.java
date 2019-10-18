@@ -8,7 +8,7 @@ import java.util.Map;
  *
  * @author Igor Polevoy: 1/5/12 6:27 PM
  */
-public class RequestVo {
+class RequestVo {
 
     private Map<String, Object> values = new HashMap<>();
 

@@ -20,4 +20,6 @@ import org.javalite.activeweb.AppController;
 /**
 * @author Igor Polevoy
 */
-public class PersonController extends AppController {}
+public class PersonController extends AppController {
+    public void gallery(){}
+}

@@ -12,7 +12,7 @@ public class CSRFFilter extends HttpSupportFilter {
     @Override
     public void before() {
         if (CSRF.verificationEnabled()) {
-            HttpMethod method = getRoute().getMethod();
+            HttpMethod method = getRoute().getHttpMethod();
             if (method == HttpMethod.POST || method == HttpMethod.DELETE || method == HttpMethod.PUT) {
                 verify();
             }

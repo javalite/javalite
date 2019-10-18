@@ -207,7 +207,7 @@ public class RequestDispatcher implements Filter {
                 if (Configuration.logRequestParams()) {
                     logger.info("{\"info\":\"executing controller\",\"controller\":\"" + route.getController().getClass().getName()
                             + "\",\"action\":\""     + route.getActionName()
-                            + "\",\"method\":\""     + route.getMethod()
+                            + "\",\"method\":\""     + route.getHttpMethod()
                             + "\"}");
                 }
                 runner.run(route);

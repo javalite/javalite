@@ -20,4 +20,9 @@ import org.javalite.activeweb.AppController;
 /**
 * @author Igor Polevoy
 */
-public class BookController extends AppController {}
+public class BookController extends AppController {
+    public void index(){}
+    public void show(){}
+    public void list(){}
+}
+

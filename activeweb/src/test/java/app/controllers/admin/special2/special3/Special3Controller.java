@@ -21,4 +21,6 @@ import org.javalite.activeweb.AppController;
 /**
  * @author Igor Polevoy
  */
-public class Special3Controller extends AppController {}
+public class Special3Controller extends AppController {
+    public void index(){}
+}

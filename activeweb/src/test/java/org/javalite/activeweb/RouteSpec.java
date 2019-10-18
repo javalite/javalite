@@ -17,17 +17,13 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import app.controllers.RestfulController;
-import app.controllers.ImagesController;
 import app.controllers.SimpleController;
-import app.controllers.SubImagesController;
 import org.junit.Test;
-
-import static org.javalite.test.jspec.JSpec.a;
 
 /**
  * @author Igor Polevoy
  */
-public class AppControllerSpec {
+public class RouteSpec extends RequestSpec {
 
     SimpleController simpleController = new SimpleController();
     RestfulController restfulController = new RestfulController();
@@ -35,17 +31,19 @@ public class AppControllerSpec {
     //////////////// START STANDARD ACTIONS //////////////////////////////
     @Test
     public void shouldReturnGETMethodForActionWithoutAnnotation(){
-        a(simpleController.actionSupportsHttpMethod("index", HttpMethod.GET)).shouldBeTrue();
-        a(simpleController.actionSupportsHttpMethod("new1",HttpMethod.GET)).shouldBeTrue();
-        a(simpleController.actionSupportsHttpMethod("destroy", HttpMethod.DELETE)).shouldBeTrue();
-        a(simpleController.actionSupportsHttpMethod("create", HttpMethod.POST)).shouldBeTrue();
-        a(simpleController.actionSupportsHttpMethod("update", HttpMethod.PUT)).shouldBeTrue();
-        a(simpleController.actionSupportsHttpMethod("destroy", HttpMethod.DELETE)).shouldBeTrue();
+        request.setMethod("GET"); // any method will do, avoiding NPE
+
+        a(new Route(simpleController, "index", HttpMethod.GET).actionSupportsHTTPMethod()).shouldBeTrue();
+        a(new Route(simpleController, "new1",HttpMethod.GET).actionSupportsHTTPMethod()).shouldBeTrue();
+        a(new Route(simpleController, "destroy", HttpMethod.DELETE).actionSupportsHTTPMethod()).shouldBeTrue();
+        a(new Route(simpleController, "create", HttpMethod.POST).actionSupportsHTTPMethod()).shouldBeTrue();
+        a(new Route(simpleController, "update", HttpMethod.PUT).actionSupportsHTTPMethod()).shouldBeTrue();
+        a(new Route(simpleController, "destroy", HttpMethod.DELETE).actionSupportsHTTPMethod()).shouldBeTrue();
     }
 
     @Test(expected = ActionNotFoundException.class)
     public void shouldThrowExceptionForNonExistentAction(){
-        simpleController.actionSupportsHttpMethod("blah", HttpMethod.GET);
+        the(new Route(simpleController, "blah", HttpMethod.GET).actionSupportsHTTPMethod()).shouldBeTrue();
     }
 
 
@@ -70,13 +68,15 @@ public class AppControllerSpec {
 
     @Test
     public void shouldDetectRestfulControllers(){
-        a(restfulController.actionSupportsHttpMethod("index", HttpMethod.GET)).shouldBeTrue();
-        a(restfulController.actionSupportsHttpMethod("newForm", HttpMethod.GET)).shouldBeTrue();
-        a(restfulController.actionSupportsHttpMethod("create", HttpMethod.POST)).shouldBeTrue();
-        a(restfulController.actionSupportsHttpMethod("show", HttpMethod.GET)).shouldBeTrue();
-        a(restfulController.actionSupportsHttpMethod("editForm", HttpMethod.GET)).shouldBeTrue();
-        a(restfulController.actionSupportsHttpMethod("update", HttpMethod.PUT)).shouldBeTrue();
-        a(restfulController.actionSupportsHttpMethod("destroy", HttpMethod.DELETE)).shouldBeTrue();
-        a(restfulController.actionSupportsHttpMethod("options", HttpMethod.OPTIONS)).shouldBeTrue();
+        request.setMethod("GET"); // any method will do, avoiding NPE
+
+        a(new Route(restfulController, "index", HttpMethod.GET).actionSupportsHTTPMethod()).shouldBeTrue();
+        a(new Route(restfulController, "newForm", HttpMethod.GET).actionSupportsHTTPMethod()).shouldBeTrue();
+        a(new Route(restfulController, "show", HttpMethod.GET).actionSupportsHTTPMethod()).shouldBeTrue();
+        a(new Route(restfulController, "editForm", HttpMethod.GET).actionSupportsHTTPMethod()).shouldBeTrue();
+        a(new Route(restfulController, "create", HttpMethod.POST).actionSupportsHTTPMethod()).shouldBeTrue();
+        a(new Route(restfulController, "update", HttpMethod.PUT).actionSupportsHTTPMethod()).shouldBeTrue();
+        a(new Route(restfulController, "destroy", HttpMethod.DELETE).actionSupportsHTTPMethod()).shouldBeTrue();
+        a(new Route(restfulController, "options", HttpMethod.OPTIONS).actionSupportsHTTPMethod()).shouldBeTrue();
     }
 }

@@ -21,4 +21,6 @@ import org.javalite.activeweb.AppController;
 /**
  * @author Igor Polevoy
  */
-public class PermissionsController extends AppController {}
+public class PermissionsController extends AppController {
+    public void index(){}
+}
