@@ -30,3 +30,18 @@
 10. Write a blog article
 
     Highlight major  new features  
+    
+    
+    
+        
+## If you messed up the release
+
+ 
+1. Drop it from Sonatype.
+2. Delete tags/releases: [tags/releases](https://github.com/javalite/javalite/releases)
+3. Perform:  `git fetch --tags` because your local repo still have old tags
+4. Erase release commits: 
+    `git reset --hard HEAD~X` - depending how many you want  to kill
+5. Push to repo: 
+       `git push origin [branch] -f` - this will erace history, BE CAREFUL!
+6. Start afresh
