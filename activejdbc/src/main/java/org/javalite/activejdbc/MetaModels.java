@@ -39,7 +39,7 @@ class MetaModels {
     private static final String MODEL_CLASS = "modelClass";
     private static final String COLUMN_METADATA = "columnMetadata";
     private static final String COLUMN_METADATA_NAME = "columnName";
-    private static final String COLUMN_METADATA_TYPE = "columnType";
+    private static final String COLUMN_METADATA_TYPE = "typeName";
     private static final String COLUMN_METADATA_SIZE = "columnSize";
     private static final String ASSOCIATIONS = "associations";
 
