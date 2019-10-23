@@ -1,7 +1,7 @@
-dist: xenial
 language: java
-jdk:
-  - openjdk11
+
+sudo: required # So we can use docker and a beefier machine
+dist: trusty
 
 git:
   depth: 1 # an optimization since we won't be committing anything
