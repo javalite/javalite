@@ -21,6 +21,7 @@ import org.javalite.activejdbc.connection_config.ConnectionJndiSpec;
 import org.javalite.activejdbc.connection_config.ConnectionSpec;
 import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.activejdbc.logging.LogLevel;
+import org.javalite.app_config.AppConfig;
 import org.javalite.common.Convert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,7 +161,7 @@ public class DB implements Closeable{
         Configuration config = Registry.instance().getConfiguration();
         ConnectionSpec spec = config.getCurrentConnectionSpec();
         if(spec == null){
-            throw new DBException("Could not find configuration in a property file for environment: " + config.getEnvironment() +
+            throw new DBException("Could not find configuration in a property file for environment: " + AppConfig.activeEnv() +
                     ". Are you sure you have a database.properties file configured?");
         }
         return open(spec);

@@ -21,6 +21,7 @@ import org.javalite.activejdbc.connection_config.ConnectionSpec;
 import org.javalite.activejdbc.logging.ActiveJDBCLogger;
 import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.activejdbc.logging.LogLevel;
+import org.javalite.app_config.AppConfig;
 import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,12 +141,12 @@ public class Configuration {
         String  password = System.getenv("ACTIVEJDBC.PASSWORD");
         String  driver = System.getenv("ACTIVEJDBC.DRIVER");
         if(!blank(url) && !blank(user) && !blank(password) && !blank(driver)){
-            connectionSpecMap.put(getEnvironment(), new ConnectionJdbcSpec(driver, url, user, password));
+            connectionSpecMap.put(AppConfig.activeEnv(), new ConnectionJdbcSpec(driver, url, user, password));
         }
 
         String  jndi = System.getenv("ACTIVEJDBC.JNDI");
         if(!blank(jndi)){
-            connectionSpecMap.put(getEnvironment(), new ConnectionJndiSpec(jndi));
+            connectionSpecMap.put(AppConfig.activeEnv(), new ConnectionJndiSpec(jndi));
         }
     }
 
@@ -158,12 +159,12 @@ public class Configuration {
         String  password = System.getProperty("activejdbc.password");
         String  driver = System.getProperty("activejdbc.driver");
         if(!blank(url) && !blank(user) && !blank(driver)){
-            connectionSpecMap.put(getEnvironment(), new ConnectionJdbcSpec(driver, url, user, password));
+            connectionSpecMap.put(AppConfig.activeEnv(), new ConnectionJdbcSpec(driver, url, user, password));
         }
 
         String  jndi = System.getProperty("activejdbc.jndi");
         if(!blank(jndi)){
-            connectionSpecMap.put(getEnvironment(), new ConnectionJndiSpec(jndi));
+            connectionSpecMap.put(AppConfig.activeEnv(), new ConnectionJndiSpec(jndi));
         }
     }
 
@@ -180,27 +181,7 @@ public class Configuration {
      * @return {@link ConnectionSpec} used by {@link DB#open()} to open a "default" connection, as well as {@link Base#open()} methods.
      */
     public  ConnectionSpec getCurrentConnectionSpec(){
-        return getConnectionSpec(getEnvironment());
-    }
-
-
-    /**
-     * @return current environment as specified by environment variable <code>ACTIVE_ENV</code>
-     * of <code>active_env</code> system property. System property value overrides environment variable.
-     *
-     * Defaults to "development" if no environment variable provided.
-     */
-    public String getEnvironment(){
-        String env = "development";
-
-        if(!blank(System.getenv("ACTIVE_ENV"))){
-            env = System.getenv("ACTIVE_ENV");
-        }
-
-        if(!blank(System.getProperty("active_env"))){
-            env = System.getProperty("active_env");
-        }
-        return env;
+        return getConnectionSpec(AppConfig.activeEnv());
     }
 
     //get environments defined in properties
