@@ -81,7 +81,10 @@ public abstract class AbstractDBConfig extends DbConfiguration implements InitCo
 
     /**
      * @param environment name of environment (corresponds to env var ACTIVE_ENV)
-     * @param override true to override any previous configuration for the same environment.
+     * @param override true to override any previous configuration for the same environment. For instance, you may have a file
+     *                 <code>database.properties</code> with JDBC configuration for production environment. That file will be used by the
+     *                 DB-Migrator  plugin to upgrade the DB schema. However,  in a running app you want to override that with a pool-based JNDI connection for your app at runtime.
+     *
      * @return builder instance
      */
     public ConnectionBuilder environment(String environment, boolean override) {

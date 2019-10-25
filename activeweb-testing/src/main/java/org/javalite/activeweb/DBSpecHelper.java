@@ -16,7 +16,7 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import org.javalite.activejdbc.DB;
-import org.javalite.activejdbc.connection_config.ConnectionSpecWrapper;
+import org.javalite.activejdbc.connection_config.ConnectionConfig;
 import org.javalite.activejdbc.connection_config.DbConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,30 +50,30 @@ public class DBSpecHelper {
         }
     }
 
-    public static void clearConnectionWrappers() {
-        DbConfiguration.clearConnectionWrappers();
+    public static void clearConnectionConfigs() {
+        DbConfiguration.clearConnectionConfigs();
     }
 
 
     public static void openTestConnections(){
-        List<ConnectionSpecWrapper> connectionWrappers = getTestConnectionWrappers();
-        if(connectionWrappers.isEmpty()){
+        List<ConnectionConfig> connectionConfigs = getTestConnectionConfigs();
+        if(connectionConfigs.isEmpty()){
             LOGGER.warn("no DB connections are configured, none opened");
             return;
         }
 
-        for (ConnectionSpecWrapper connectionWrapper : connectionWrappers) {
-            DB db = new DB(connectionWrapper.getDbName());
-            db.open(connectionWrapper.getConnectionSpec());
+        for (ConnectionConfig connectionConfig : connectionConfigs) {
+            DB db = new DB(connectionConfig.getDbName());
+            db.open(connectionConfig);
             if (Configuration.rollback())
                 db.openTransaction();            
         }
     }
 
     public static void closeTestConnections() {
-        List<ConnectionSpecWrapper> connectionWrappers = getTestConnectionWrappers();
-        for (ConnectionSpecWrapper connectionWrapper : connectionWrappers) {
-            String dbName = connectionWrapper.getDbName();
+        List<ConnectionConfig> connectionConfigs = getTestConnectionConfigs();
+        for (ConnectionConfig connectionConfig : connectionConfigs) {
+            String dbName = connectionConfig.getDbName();
             DB db = new DB(dbName);
             if (Configuration.rollback()) {
                 db.rollbackTransaction();
@@ -83,13 +83,13 @@ public class DBSpecHelper {
         }
     }
 
-    private static List<ConnectionSpecWrapper> getTestConnectionWrappers() {
-        List<ConnectionSpecWrapper> allConnections = DbConfiguration.getConnectionSpecWrappers();
-        List<ConnectionSpecWrapper> result = new LinkedList<>();
+    private static List<ConnectionConfig> getTestConnectionConfigs() {
+        List<ConnectionConfig> allConnections = DbConfiguration.getConnectionConfigs();
+        List<ConnectionConfig> result = new LinkedList<>();
 
-        for (ConnectionSpecWrapper connectionWrapper : allConnections) {
-            if (connectionWrapper.isTesting())
-                result.add(connectionWrapper);
+        for (ConnectionConfig connectionConfig : allConnections) {
+            if (connectionConfig.isTesting())
+                result.add(connectionConfig);
         }
 
         return result;

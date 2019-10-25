@@ -15,22 +15,20 @@ limitations under the License.
 */
 package org.javalite.activejdbc;
 
-import org.javalite.activejdbc.connection_config.ConnectionJdbcSpec;
-import org.javalite.activejdbc.connection_config.ConnectionJndiSpec;
-import org.javalite.activejdbc.connection_config.ConnectionSpec;
 import org.javalite.activejdbc.logging.ActiveJDBCLogger;
 import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.activejdbc.logging.LogLevel;
-import org.javalite.app_config.AppConfig;
+import org.javalite.common.Convert;
 import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import org.javalite.common.Convert;
 
-import static org.javalite.common.Util.*;
+import static org.javalite.common.Util.blank;
 
 /**
  * @author Igor Polevoy
@@ -59,19 +57,21 @@ public class Configuration {
     private static String ENV;
     private static ActiveJDBCLogger activeLogger;
 
-    private Map<String, ConnectionSpec> connectionSpecMap = new HashMap<>();
-
     protected Configuration(){
 
         loadProjectProperties();
         loadOverridesFromSystemProperties();
-        loadConnectionsSpecs();
 
         String loggerClass = properties.getProperty(PropertyName.ActiveJdbcLogger.name);
         if(loggerClass != null){
             try {
-                activeLogger = (ActiveJDBCLogger) Class.forName(loggerClass).newInstance();
-            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+                activeLogger = (ActiveJDBCLogger) Class.forName(loggerClass).getDeclaredConstructor().newInstance();
+            } catch (InstantiationException
+                | IllegalAccessException
+                | ClassNotFoundException
+                | InvocationTargetException
+                | NoSuchMethodException e
+            ) {
                 throw new InitException("Failed to initialize a ActiveJDBCLogger. Please, ensure that the property " +
                         "'activejdbc.logger' points to correct class which extends '" + ActiveJDBCLogger.class.getName()
                         + "' and provides a default constructor.", e);
@@ -94,6 +94,9 @@ public class Configuration {
         }
     }
 
+    /**
+     * Loads default properties from <code>activejdbc.properties</code>.
+     */
     private void loadProjectProperties() {
         try {
             InputStream in = getClass().getResourceAsStream("/activejdbc.properties");
@@ -103,86 +106,7 @@ public class Configuration {
         }
     }
 
-    private void loadConnectionsSpecs() {
-        try{
-            String propertyFileName = properties == null ? "database.properties"
-                    : properties.getProperty(PropertyName.EnvConnectionsFile.name, "database.properties");
 
-            Properties connectionProps = readPropertyFile(propertyFileName);
-            for (String env : getEnvironments(connectionProps)) {
-                String jndiName = env + "." + "jndi";
-                if (connectionProps.containsKey(jndiName)) {
-                    connectionSpecMap.put(env, new ConnectionJndiSpec(connectionProps.getProperty(jndiName)));
-                } else {
-                    String driver = connectionProps.getProperty(env + ".driver");
-                    String userName = connectionProps.getProperty(env + ".username");
-                    String password = connectionProps.getProperty(env + ".password");
-                    String url = connectionProps.getProperty(env + ".url");
-                    if (driver == null || userName == null || password == null || url == null) {
-                        throw new InitException("Four JDBC properties are expected: driver, username, password, url for environment: " + env);
-                    }
-                    connectionSpecMap.put(env, new ConnectionJdbcSpec(driver, url, userName, password));
-                }
-            }
-        }catch(Exception e){
-            // in case property file not found, do nothing
-        }
-
-        overrideFromEnvironmentVariables();
-        overrideFromSystemProperties();
-    }
-
-    /**
-     * Overrides current environment's connection spec from system properties.
-     */
-    private void overrideFromEnvironmentVariables() {
-        String  url = System.getenv("ACTIVEJDBC.URL");
-        String  user = System.getenv("ACTIVEJDBC.USER");
-        String  password = System.getenv("ACTIVEJDBC.PASSWORD");
-        String  driver = System.getenv("ACTIVEJDBC.DRIVER");
-        if(!blank(url) && !blank(user) && !blank(password) && !blank(driver)){
-            connectionSpecMap.put(AppConfig.activeEnv(), new ConnectionJdbcSpec(driver, url, user, password));
-        }
-
-        String  jndi = System.getenv("ACTIVEJDBC.JNDI");
-        if(!blank(jndi)){
-            connectionSpecMap.put(AppConfig.activeEnv(), new ConnectionJndiSpec(jndi));
-        }
-    }
-
-    /**
-     * Overrides current environment's connection spec from system properties.
-     */
-    private void overrideFromSystemProperties() {
-        String  url = System.getProperty("activejdbc.url");
-        String  user = System.getProperty("activejdbc.user");
-        String  password = System.getProperty("activejdbc.password");
-        String  driver = System.getProperty("activejdbc.driver");
-        if(!blank(url) && !blank(user) && !blank(driver)){
-            connectionSpecMap.put(AppConfig.activeEnv(), new ConnectionJdbcSpec(driver, url, user, password));
-        }
-
-        String  jndi = System.getProperty("activejdbc.jndi");
-        if(!blank(jndi)){
-            connectionSpecMap.put(AppConfig.activeEnv(), new ConnectionJndiSpec(jndi));
-        }
-    }
-
-    public ConnectionSpec getConnectionSpec(String environment){
-        return connectionSpecMap.get(environment);
-    }
-
-    /**
-     * Finds a connection {@link ConnectionSpec} that corresponds to system properties,
-     * environment variables of <code>database.properties</code> configuration, whichever is found first.
-     * Configuration of system properties overrides environment variables, which overrides
-     * <code>database.properties</code>.
-     *
-     * @return {@link ConnectionSpec} used by {@link DB#open()} to open a "default" connection, as well as {@link Base#open()} methods.
-     */
-    public  ConnectionSpec getCurrentConnectionSpec(){
-        return getConnectionSpec(AppConfig.activeEnv());
-    }
 
     //get environments defined in properties
     private Set<String> getEnvironments(Properties props) {

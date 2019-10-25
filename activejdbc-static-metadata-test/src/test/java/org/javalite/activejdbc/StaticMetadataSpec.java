@@ -1,5 +1,6 @@
 package org.javalite.activejdbc;
 
+import org.javalite.activejdbc.connection_config.DbConfiguration;
 import org.javalite.activejdbc.models.Book;
 import org.javalite.activejdbc.models.Library;
 import org.junit.Test;
@@ -19,6 +20,8 @@ public class StaticMetadataSpec {
 
     @Test
     public void shouldStoreAndReceiveModel() {
+
+        DbConfiguration.loadConfiguration("/database.properties");
 
         Book book = Book.create("title", "Test title", "author", "me");
         book.validate();

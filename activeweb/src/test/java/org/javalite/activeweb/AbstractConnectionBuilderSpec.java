@@ -1,8 +1,9 @@
 package org.javalite.activeweb;
 
-import org.javalite.activejdbc.connection_config.ConnectionJdbcSpec;
-import org.javalite.activejdbc.connection_config.ConnectionJndiSpec;
-import org.javalite.activejdbc.connection_config.ConnectionSpecWrapper;
+import org.javalite.activejdbc.connection_config.ConnectionConfig;
+import org.javalite.activejdbc.connection_config.ConnectionJdbcConfig;
+import org.javalite.activejdbc.connection_config.ConnectionJndiConfig;
+
 import org.javalite.activejdbc.connection_config.DbConfiguration;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +20,7 @@ public class AbstractConnectionBuilderSpec  {
 
     @Before
     public void before(){
-        DbConfiguration.resetConnectionWrappers();
+        DbConfiguration.resetConnectionConfigs();
     }
 
     @Test
@@ -33,18 +34,18 @@ public class AbstractConnectionBuilderSpec  {
         DBConfig config = new DBConfig();
         config.init(null);
 
-        ConnectionSpecWrapper wrapper = DbConfiguration.getConnectionSpecWrappers().get(0);
+        ConnectionJdbcConfig connectionConfig = (ConnectionJdbcConfig) DbConfiguration.getConnectionConfigs().get(0);
 
-        a(wrapper.getDbName()).shouldBeEqual("default");
-        a(wrapper.isTesting()).shouldBeTrue();
-        a(wrapper.getEnvironment()).shouldBeEqual("development");
+        a(connectionConfig.getDbName()).shouldBeEqual("default");
+        a(connectionConfig.isTesting()).shouldBeTrue();
+        a(connectionConfig.getEnvironment()).shouldBeEqual("development");
 
-        ConnectionJdbcSpec connectionSpec = (ConnectionJdbcSpec) wrapper.getConnectionSpec();
 
-        a(connectionSpec.getDriver()).shouldBeEqual("com.mysql.jdbc.Driver");
-        a(connectionSpec.getUrl()).shouldBeEqual("jdbc:mysql://localhost/test123");
-        a(connectionSpec.getUser()).shouldBeEqual("root");
-        a(connectionSpec.getPassword()).shouldBeEqual("****");
+
+        a(connectionConfig.getDriver()).shouldBeEqual("com.mysql.jdbc.Driver");
+        a(connectionConfig.getUrl()).shouldBeEqual("jdbc:mysql://localhost/test123");
+        a(connectionConfig.getUser()).shouldBeEqual("root");
+        a(connectionConfig.getPassword()).shouldBeEqual("****");
     }
 
     @Test
@@ -59,14 +60,13 @@ public class AbstractConnectionBuilderSpec  {
         DBConfig config = new DBConfig();
         config.init(null);
 
-        ConnectionSpecWrapper wrapper = DbConfiguration.getConnectionSpecWrappers("prod").get(0);
+        ConnectionJndiConfig jndiConfig= (ConnectionJndiConfig) DbConfiguration.getConnectionConfigs("prod").get(0);
 
-        a(wrapper.getDbName()).shouldBeEqual("second");
-        a(wrapper.isTesting()).shouldBeFalse();
-        a(wrapper.getEnvironment()).shouldBeEqual("prod");
+        a(jndiConfig.getDbName()).shouldBeEqual("second");
+        a(jndiConfig.isTesting()).shouldBeFalse();
+        a(jndiConfig.getEnvironment()).shouldBeEqual("prod");
 
-        ConnectionJndiSpec connectionSpec = (ConnectionJndiSpec) wrapper.getConnectionSpec();
-        a(connectionSpec.getDataSourceJndiName()).shouldBeEqual("jdbc/123_dev");
+        a(jndiConfig.getDataSourceJndiName()).shouldBeEqual("jdbc/123_dev");
     }
 
     @Test
@@ -81,14 +81,13 @@ public class AbstractConnectionBuilderSpec  {
         DBConfig config = new DBConfig();
         config.init(null);
 
-        ConnectionSpecWrapper wrapper = DbConfiguration.getConnectionSpecWrappers("production").get(0);
+        ConnectionJndiConfig jndiConfig = (ConnectionJndiConfig) DbConfiguration.getConnectionConfigs("production").get(0);
 
-        a(wrapper.getDbName()).shouldBeEqual("default");
-        a(wrapper.isTesting()).shouldBeFalse();
-        a(wrapper.getEnvironment()).shouldBeEqual("production");
+        a(jndiConfig.getDbName()).shouldBeEqual("default");
+        a(jndiConfig.isTesting()).shouldBeFalse();
+        a(jndiConfig.getEnvironment()).shouldBeEqual("production");
 
-        ConnectionJndiSpec connectionSpec = (ConnectionJndiSpec) wrapper.getConnectionSpec();
-        a(connectionSpec.getDataSourceJndiName()).shouldBeEqual("java:comp/env/jdbc/prod");
+        a(jndiConfig.getDataSourceJndiName()).shouldBeEqual("java:comp/env/jdbc/prod");
     }
 
     @Test
@@ -104,30 +103,28 @@ public class AbstractConnectionBuilderSpec  {
         config.init(null);
 
         //test first connection spec
-        ConnectionSpecWrapper wrapper = DbConfiguration.getConnectionSpecWrappers("development").get(0);
-        a(wrapper.getDbName()).shouldBeEqual("default");
-        a(wrapper.getEnvironment()).shouldBeEqual("development");
-        a(wrapper.isTesting()).shouldBeFalse();
+        ConnectionJdbcConfig jdbcConfig = (ConnectionJdbcConfig) DbConfiguration.getConnectionConfigs("development").get(0);
+        a(jdbcConfig.getDbName()).shouldBeEqual("default");
+        a(jdbcConfig.getEnvironment()).shouldBeEqual("development");
+        a(jdbcConfig.isTesting()).shouldBeFalse();
 
-        ConnectionJdbcSpec connectionSpec = (ConnectionJdbcSpec) wrapper.getConnectionSpec();
 
-        a(connectionSpec.getDriver()).shouldBeEqual("com.mysql.jdbc.Driver");
-        a(connectionSpec.getUrl()).shouldBeEqual("jdbc:mysql://localhost/proj_dev");
-        a(connectionSpec.getUser()).shouldBeEqual("john");
-        a(connectionSpec.getPassword()).shouldBeEqual("pwd");
+        a(jdbcConfig.getDriver()).shouldBeEqual("com.mysql.jdbc.Driver");
+        a(jdbcConfig.getUrl()).shouldBeEqual("jdbc:mysql://localhost/proj_dev");
+        a(jdbcConfig.getUser()).shouldBeEqual("john");
+        a(jdbcConfig.getPassword()).shouldBeEqual("pwd");
 
         //test second connection spec
-        wrapper = DbConfiguration.getConnectionSpecWrappers("development").get(1);
-        a(wrapper.getDbName()).shouldBeEqual("default");
-        a(wrapper.getEnvironment()).shouldBeEqual("development");
-        a(wrapper.isTesting()).shouldBeTrue();
+        jdbcConfig = (ConnectionJdbcConfig) DbConfiguration.getConnectionConfigs("development").get(1);
+        a(jdbcConfig.getDbName()).shouldBeEqual("default");
+        a(jdbcConfig.getEnvironment()).shouldBeEqual("development");
+        a(jdbcConfig.isTesting()).shouldBeTrue();
 
-        connectionSpec = (ConnectionJdbcSpec) wrapper.getConnectionSpec();
 
-        a(connectionSpec.getDriver()).shouldBeEqual("com.mysql.jdbc.Driver");
-        a(connectionSpec.getUrl()).shouldBeEqual("jdbc:mysql://localhost/test");
-        a(connectionSpec.getUser()).shouldBeEqual("mary");
-        a(connectionSpec.getPassword()).shouldBeEqual("pwd1");
+        a(jdbcConfig.getDriver()).shouldBeEqual("com.mysql.jdbc.Driver");
+        a(jdbcConfig.getUrl()).shouldBeEqual("jdbc:mysql://localhost/test");
+        a(jdbcConfig.getUser()).shouldBeEqual("mary");
+        a(jdbcConfig.getPassword()).shouldBeEqual("pwd1");
     }
 
 
@@ -145,12 +142,12 @@ public class AbstractConnectionBuilderSpec  {
         DBConfig config = new DBConfig();
         config.init(null);
 
-        List<ConnectionSpecWrapper> wrappers = DbConfiguration.getConnectionSpecWrappers("production");
+        List<ConnectionConfig> wrappers = DbConfiguration.getConnectionConfigs("production");
 
         //we configured two for production, one in file, one in class. But the class config overrides one in file.
         the(wrappers.size()).shouldBeEqual(1);
 
-        ConnectionJndiSpec connectionSpec = (ConnectionJndiSpec)  wrappers.get(0).getConnectionSpec();
+        ConnectionJndiConfig connectionSpec = (ConnectionJndiConfig)  wrappers.get(0);
         the(connectionSpec.getDataSourceJndiName()).shouldBeEqual("java:comp/env/jdbc/prod_new");
     }
 
@@ -175,23 +172,23 @@ public class AbstractConnectionBuilderSpec  {
         DBConfig config = new DBConfig();
         config.init(null);
 
-        List<ConnectionSpecWrapper> wrappers = DbConfiguration.getConnectionSpecWrappers("development");
+        List<ConnectionConfig> connectionConfigs = DbConfiguration.getConnectionConfigs("development");
 
-        the(wrappers.size()).shouldBeEqual(2);
+        the(connectionConfigs.size()).shouldBeEqual(2);
 
 
-        ConnectionSpecWrapper dev = null;
-        ConnectionSpecWrapper test = null;
+        ConnectionConfig dev = null;
+        ConnectionConfig test = null;
 
         //have to do this because the order of specs is not deterministic
-        for (ConnectionSpecWrapper connectionSpecWrapper : wrappers) {
-            if(connectionSpecWrapper.isTesting()){
-                test = connectionSpecWrapper;
+        for (ConnectionConfig connectionConfig : connectionConfigs) {
+            if(connectionConfig.isTesting()){
+                test = connectionConfig;
             }else {
-                dev = connectionSpecWrapper;
+                dev = connectionConfig;
             }
         }
-        the(((ConnectionJdbcSpec)test.getConnectionSpec()).getUrl()).shouldBeEqual("jdbc:mysql://localhost/test");
-        the(((ConnectionJdbcSpec)dev.getConnectionSpec()).getUrl()).shouldBeEqual("jdbc:mysql://localhost/dev");
+        the(((ConnectionJdbcConfig)test).getUrl()).shouldBeEqual("jdbc:mysql://localhost/test");
+        the(((ConnectionJdbcConfig)dev).getUrl()).shouldBeEqual("jdbc:mysql://localhost/dev");
     }
 }

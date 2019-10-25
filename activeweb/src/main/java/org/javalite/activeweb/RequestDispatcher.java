@@ -71,8 +71,8 @@ public class RequestDispatcher implements Filter {
     protected void initApp(AppContext context){
         initAppConfig(Configuration.getBootstrapClassName(), context, true);
         //these are optional config classes:
-        initAppConfig(Configuration.getControllerConfigClassName(), context, false);
         initAppConfig(Configuration.getDbConfigClassName(), context, false);
+        initAppConfig(Configuration.getControllerConfigClassName(), context, false);
     }
 
     public AppContext getContext() {

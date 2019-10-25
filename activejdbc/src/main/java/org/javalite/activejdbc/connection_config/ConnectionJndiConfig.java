@@ -24,16 +24,16 @@ import javax.naming.InitialContext;
  *
  * @author Igor Polevoy
  */
-public class ConnectionJndiSpec implements ConnectionSpec {
+public class ConnectionJndiConfig extends ConnectionConfig {
     private final InitialContext context;
     private final String dataSourceJndiName;
 
-    public ConnectionJndiSpec(String dataSourceJndiName) {
+    public ConnectionJndiConfig(String dataSourceJndiName) {
         this.context = null;
         this.dataSourceJndiName = dataSourceJndiName;
     }
 
-    public ConnectionJndiSpec(InitialContext context) {
+    public ConnectionJndiConfig(InitialContext context) {
         this.context = context;
         this.dataSourceJndiName = null;
     }

@@ -16,14 +16,13 @@ limitations under the License.
 package org.javalite.activeweb.controller_filters;
 
 import org.javalite.activejdbc.DB;
-import org.javalite.activejdbc.connection_config.ConnectionSpecWrapper;
+import org.javalite.activejdbc.connection_config.ConnectionConfig;
 import org.javalite.activejdbc.connection_config.DbConfiguration;
 import org.javalite.activeweb.Configuration;
 import org.javalite.activeweb.InitException;
 import org.javalite.activeweb.RequestContext;
 import org.javalite.app_config.AppConfig;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -34,13 +33,15 @@ import java.util.List;
  */
 public class DBConnectionFilter extends AppControllerFilter {
 
-    private String dbName;
     private boolean manageTransaction;
+    private List<ConnectionConfig> connectionConfigs;
 
     /**
      * This constructor is used to open all configured connections for a current environment.
      */
-    public DBConnectionFilter() {}
+    public DBConnectionFilter() {
+        this.connectionConfigs = DbConfiguration.getConnectionConfigsExceptTesting(DB.DEFAULT_NAME);
+    }
 
 
     /**
@@ -49,7 +50,7 @@ public class DBConnectionFilter extends AppControllerFilter {
      * @param dbName name of DB to open
      */
     public DBConnectionFilter(String dbName) {
-        this.dbName = dbName;
+        this.connectionConfigs = DbConfiguration.getConnectionConfigsExceptTesting(dbName);
     }
 
     /**
@@ -68,7 +69,7 @@ public class DBConnectionFilter extends AppControllerFilter {
      */
     public DBConnectionFilter(String dbName, boolean manageTransaction) {
         this.manageTransaction = manageTransaction;
-        this.dbName = dbName;
+        this.connectionConfigs = DbConfiguration.getConnectionConfigsExceptTesting(dbName);
     }
 
     @Override
@@ -77,15 +78,15 @@ public class DBConnectionFilter extends AppControllerFilter {
         if(Configuration.isTesting())
             return;
 
-        List<ConnectionSpecWrapper> connectionWrappers = getConnectionWrappers();
 
-        if (connectionWrappers.isEmpty()) {
+
+        if (connectionConfigs.isEmpty()) {
             throw new InitException("There are no connection specs in '" + AppConfig.activeEnv() + "' environment");
         }
 
-        for (ConnectionSpecWrapper connectionWrapper : connectionWrappers) {
-            DB db = new DB(connectionWrapper.getDbName());
-            db.open(connectionWrapper.getConnectionSpec());
+        for (ConnectionConfig connectionConfig : connectionConfigs) {
+            DB db = new DB(connectionConfig.getDbName());
+            db.open(connectionConfig);
             if(manageTransaction){
                 db.openTransaction();
             }
@@ -96,11 +97,10 @@ public class DBConnectionFilter extends AppControllerFilter {
     public void after() {
         if(Configuration.isTesting())
             return;
-        
-        List<ConnectionSpecWrapper> connectionWrappers = getConnectionWrappers();
-        if (connectionWrappers != null && !connectionWrappers.isEmpty()) {
-            for (ConnectionSpecWrapper connectionWrapper : connectionWrappers) {
-                DB db = new DB(connectionWrapper.getDbName());
+
+        if (connectionConfigs != null && !connectionConfigs.isEmpty()) {
+            for (ConnectionConfig connectionConfig : connectionConfigs) {
+                DB db = new DB(connectionConfig.getDbName());
                 if(db.hasConnection()){
                     if(manageTransaction){
                         if (RequestContext.exceptionHappened()) {
@@ -120,10 +120,9 @@ public class DBConnectionFilter extends AppControllerFilter {
         if(Configuration.isTesting())
             return;
 
-        List<ConnectionSpecWrapper> connectionWrappers = getConnectionWrappers();
-        if (connectionWrappers != null && !connectionWrappers.isEmpty()) {
-            for (ConnectionSpecWrapper connectionWrapper : connectionWrappers) {
-                DB db = new DB(connectionWrapper.getDbName());
+        if (connectionConfigs != null && !connectionConfigs.isEmpty()) {
+            for (ConnectionConfig connectionConfig : connectionConfigs) {
+                DB db = new DB(connectionConfig.getDbName());
                 if (db.hasConnection()) {
                     if (manageTransaction) {
                         db.rollbackTransaction();
@@ -135,19 +134,4 @@ public class DBConnectionFilter extends AppControllerFilter {
         }
     }
 
-    /**
-     * Returns all connections which correspond dbName  of this filter and not for testing
-     * 
-     * @return all connections which correspond dbName  of this filter and not for testing.
-     */
-    private List<ConnectionSpecWrapper> getConnectionWrappers() {
-        List<ConnectionSpecWrapper> allConnections = DbConfiguration.getConnectionSpecWrappers();
-        List<ConnectionSpecWrapper> result = new LinkedList<>();
-
-        for (ConnectionSpecWrapper connectionWrapper : allConnections) {
-            if (!connectionWrapper.isTesting() && (dbName == null || dbName.equals(connectionWrapper.getDbName())))
-                result.add(connectionWrapper);
-        }
-        return result;
-    }    
 }

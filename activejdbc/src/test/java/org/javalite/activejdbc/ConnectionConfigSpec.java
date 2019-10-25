@@ -19,9 +19,9 @@ package org.javalite.activejdbc;
 
 import static org.javalite.activejdbc.test.JdbcProperties.*;
 
-import org.javalite.activejdbc.connection_config.ConnectionJdbcSpec;
-import org.javalite.activejdbc.connection_config.ConnectionJndiSpec;
-import org.javalite.activejdbc.connection_config.ConnectionSpec;
+import org.javalite.activejdbc.connection_config.ConnectionJdbcConfig;
+import org.javalite.activejdbc.connection_config.ConnectionJndiConfig;
+import org.javalite.activejdbc.connection_config.ConnectionConfig;
 import org.junit.Test;
 
 import javax.naming.NamingException;
@@ -33,11 +33,11 @@ import static org.javalite.test.jspec.JSpec.a;
 /**
  * @author Igor Polevoy
  */
-public class ConnectionSpecTest  {
+public class ConnectionConfigSpec {
 
     @Test
     public void testJdbc() {
-        ConnectionJdbcSpec spec = new ConnectionJdbcSpec(driver(), url(), user(), password());
+        ConnectionJdbcConfig spec = new ConnectionJdbcConfig(driver(), url(), user(), password());
         jdbcWithSpec(spec);
     }
     @Test
@@ -46,11 +46,11 @@ public class ConnectionSpecTest  {
         Properties p = new Properties();
         p.setProperty("user", user());
         p.setProperty("password", password());
-        ConnectionJdbcSpec spec = new ConnectionJdbcSpec(driver(), url(), p);
+        ConnectionJdbcConfig spec = new ConnectionJdbcConfig(driver(), url(), p);
         jdbcWithSpec(spec);
     }
 
-    private void jdbcWithSpec(ConnectionSpec spec){
+    private void jdbcWithSpec(ConnectionConfig spec){
     
         DB db = new DB("default");
         db.open(spec);
@@ -71,7 +71,7 @@ public class ConnectionSpecTest  {
     @Test
     public void testJndi() throws NamingException, SQLException {
 
-        ConnectionJndiSpec spec = new ConnectionJndiSpec("java/jdbc/DefaultDS");
+        ConnectionJndiConfig spec = new ConnectionJndiConfig("java/jdbc/DefaultDS");
         DB db = new DB("default");
         db.open(spec);
 
