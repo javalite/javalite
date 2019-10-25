@@ -452,7 +452,7 @@ public class Base {
     /**
      * Same as {@link DB#withDb(Supplier)}, but with db name {@link DB#DEFAULT_NAME}.
      */
-    public <T> T withDb(Supplier<T> supplier) {
+    public static  <T> T withDb(Supplier<T> supplier) {
         return new DB(DB.DEFAULT_NAME).withDb(supplier);
     }
 }
