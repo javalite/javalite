@@ -24,14 +24,14 @@ import java.util.Properties;
  *
  * @author Igor Polevoy
  */
-public class ConnectionJdbcSpec implements ConnectionSpec {
+public class ConnectionJdbcConfig extends ConnectionConfig {
     private final String driver;
     private final String url;
     private final String user;
     private final String password;
     private final Properties properties;
 
-    public ConnectionJdbcSpec(String driver, String url, String user, String password) {
+    public ConnectionJdbcConfig(String driver, String url, String user, String password) {
         this.driver = driver;
         this.url = url;
         this.user = user;
@@ -39,7 +39,7 @@ public class ConnectionJdbcSpec implements ConnectionSpec {
         this.properties = null;
     }
 
-    public ConnectionJdbcSpec(String driver, String url, Properties properties) {
+    public ConnectionJdbcConfig(String driver, String url, Properties properties) {
         this.driver = driver;
         this.url = url;
         this.user = null;

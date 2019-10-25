@@ -491,7 +491,7 @@ public final class Util {
 
     /**
      * Reads  a property file from classpath or from a file system to a properties object.
-     * The path can look like: <code>/opt/database.properties</code>. If this is found on classath, it is loaded first.
+     * The path can look like: <code>/opt/database.properties</code>. If this is found on classpath, it is loaded first.
      * If not found on classpath,  it will look for the file on te file system using the same path.
      *
      * @param fileOrResource full path to a property file on classpath or a path  to a file on file system. Classpath

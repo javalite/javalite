@@ -49,7 +49,7 @@ public class DBControllerSpec extends ControllerSpec {
 
     @AfterClass @AfterAll
     public static void tearDown() {
-        DBSpecHelper.clearConnectionWrappers();
+        DBSpecHelper.clearConnectionConfigs();
     }
     
 }

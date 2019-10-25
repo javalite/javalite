@@ -36,6 +36,6 @@ public class DBIntegrationSpec extends IntegrationSpec{
     @After
     public void after() {
         DBSpecHelper.closeTestConnections();
-        DBSpecHelper.clearConnectionWrappers();
+        DBSpecHelper.clearConnectionConfigs();
     }    
 }

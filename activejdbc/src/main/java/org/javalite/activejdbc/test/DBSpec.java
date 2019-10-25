@@ -18,7 +18,7 @@ package org.javalite.activejdbc.test;
 
 import org.javalite.activejdbc.DB;
 import org.javalite.activejdbc.InitException;
-import org.javalite.activejdbc.connection_config.ConnectionSpecWrapper;
+import org.javalite.activejdbc.connection_config.ConnectionConfig;
 import org.javalite.activejdbc.connection_config.DbConfiguration;
 import org.javalite.test.jspec.JSpecSupport;
 import org.junit.After;
@@ -53,6 +53,8 @@ public class DBSpec extends DbConfiguration implements JSpecSupport {
     private static Logger LOGGER = LoggerFactory.getLogger(DBSpec.class.getSimpleName());
     private boolean rollback = true;
     private boolean suppressDb = false;
+    private List<ConnectionConfig> testConnectionConfigs;
+
 
     public boolean suppressedDb() {
         return suppressDb;
@@ -107,18 +109,18 @@ public class DBSpec extends DbConfiguration implements JSpecSupport {
 
         if(!suppressDb){
             loadConfiguration("/database.properties");
-            List<ConnectionSpecWrapper> connectionWrappers = getTestConnectionWrappers();
-            if (connectionWrappers.isEmpty()) {
+            testConnectionConfigs = getTestConnectionConfigs();
+            if (testConnectionConfigs.isEmpty()) {
                 LOGGER.warn("no DB connections are configured, none opened");
-                return;
-            }
 
-            for (ConnectionSpecWrapper connectionWrapper : connectionWrappers) {
-                DB db = new DB(connectionWrapper.getDbName());
-                db.open(connectionWrapper.getConnectionSpec());
-                if (rollback()){
-                    db.openTransaction();
-                }
+            }else {
+                testConnectionConfigs.forEach(connectionConfig -> {
+                    DB db = new DB(connectionConfig.getDbName());
+                    db.open(connectionConfig);
+                    if (rollback) {
+                        db.openTransaction();
+                    }
+                });
             }
         }
     }
@@ -126,16 +128,16 @@ public class DBSpec extends DbConfiguration implements JSpecSupport {
     @After @AfterEach
     public final void closeTestConnections() {
         if(!suppressDb){
-            List<ConnectionSpecWrapper> connectionWrappers = getTestConnectionWrappers();
-            for (ConnectionSpecWrapper connectionWrapper : connectionWrappers) {
-                String dbName = connectionWrapper.getDbName();
+
+            for (ConnectionConfig connectionConfig : testConnectionConfigs) {
+                String dbName = connectionConfig.getDbName();
                 DB db = new DB(dbName);
-                if (rollback()) {
+                if (rollback) {
                     db.rollbackTransaction();
                 }
                 db.close();
             }
-            clearConnectionWrappers();
+            clearConnectionConfigs();
         }
     }
 }

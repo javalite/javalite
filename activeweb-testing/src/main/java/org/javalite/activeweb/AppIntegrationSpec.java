@@ -56,7 +56,7 @@ public abstract class AppIntegrationSpec extends IntegrationSpec{
 
         if(!suppressDb){
             DBSpecHelper.closeTestConnections();
-            DBSpecHelper.clearConnectionWrappers();
+            DBSpecHelper.clearConnectionConfigs();
         }
 
         requestDispatcher.destroy();

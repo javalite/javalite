@@ -28,19 +28,20 @@ import java.util.Properties;
  * @author Igor Polevoy
  */
 public class ConnectionBuilder {
-    
-    private ConnectionSpecWrapper connectionWrapper;
+
+    private String environment;
+    private String dbName = "default";
+    private boolean testing, override = false;
+
     
     ConnectionBuilder(String environment) {
-        connectionWrapper = new ConnectionSpecWrapper();
-        connectionWrapper.setEnvironment(environment);
-        DbConfiguration.addConnectionWrapper(connectionWrapper, false);
+        this.environment = environment;
     }
 
     ConnectionBuilder(String environment, boolean override) {
-        connectionWrapper = new ConnectionSpecWrapper();
-        connectionWrapper.setEnvironment(environment);
-        DbConfiguration.addConnectionWrapper(connectionWrapper, override);
+        this.environment = environment;
+        this.override = override;
+
     }
 
     /**
@@ -48,7 +49,11 @@ public class ConnectionBuilder {
      * @param jndi name of a JNDI datasource 
      */
     public void jndi(String jndi) {
-        connectionWrapper.setConnectionSpec(new ConnectionJndiSpec(jndi));
+        ConnectionJndiConfig connectionConfig = new ConnectionJndiConfig(jndi);
+        connectionConfig.setDbName(dbName);
+        connectionConfig.setEnvironment(environment);
+        connectionConfig.setTesting(testing);
+        DbConfiguration.addConnectionConfig(connectionConfig, override);
     }
 
     /**
@@ -60,7 +65,12 @@ public class ConnectionBuilder {
      * @param password password
      */
     public void jdbc(String driver, String url, String user, String password) {
-        connectionWrapper.setConnectionSpec(new ConnectionJdbcSpec(driver, url, user, password));
+
+        ConnectionJdbcConfig connectionConfig = new ConnectionJdbcConfig(driver, url, user, password);
+        connectionConfig.setDbName(dbName);
+        connectionConfig.setEnvironment(environment);
+        connectionConfig.setTesting(testing);
+        DbConfiguration.addConnectionConfig(connectionConfig, override);
     }
 
     /**
@@ -71,7 +81,11 @@ public class ConnectionBuilder {
      * @param props properties with additional parameters a driver can take.
      */
     public void jdbc(String driver, String url, Properties props) {
-        connectionWrapper.setConnectionSpec(new ConnectionJdbcSpec(driver, url, props));
+        ConnectionJdbcConfig connectionConfig = new ConnectionJdbcConfig(driver, url, props);
+        connectionConfig.setDbName(dbName);
+        connectionConfig.setEnvironment(environment);
+        connectionConfig.setTesting(testing);
+        DbConfiguration.addConnectionConfig(connectionConfig, override);
     }
 
     /**
@@ -80,28 +94,32 @@ public class ConnectionBuilder {
      * @return self
      */
     public ConnectionBuilder db(String dbName) {
-        connectionWrapper.setDbName(dbName);
+        this.dbName = dbName;
         return this;
     }
 
     /**
-     * Marks this connection to be used for testing. When you use any of the testing classes, such as DBSpec, DBControllerSpec,
-     * DBIntegrationSpec and AppIntegrationSpec from activeweb-testing package, they all will use a connection that is marked
+     * Marks this connection to be used for testing. When you use any of the testing classes, such as <code>DBSpec, DBControllerSpec,
+     * DBIntegrationSpec, AppIntegrationSpec</code> from <code>activeweb-testing</code> module, they all will use a connection that is marked
      * by this method.
      *
      * @return self
      */
     public ConnectionBuilder testing() {
-        connectionWrapper.setTesting(true);
+         this.testing = true;
         return this;
     }
 
     /**
      * Sets a <code>DataSource</code> to be used by this configuration.
      *
-     * @param dataSource instance of a datadource
+     * @param dataSource instance of a datasource
      */
     public void dataSource(DataSource dataSource) {
-        connectionWrapper.setConnectionSpec(new ConnectionDataSourceSpec(dataSource));
+        ConnectionDataSourceConfig connectionConfig = new ConnectionDataSourceConfig(dataSource);
+        connectionConfig.setDbName(dbName);
+        connectionConfig.setEnvironment(environment);
+        connectionConfig.setTesting(testing);
+        DbConfiguration.addConnectionConfig(connectionConfig, override);
     }
 }

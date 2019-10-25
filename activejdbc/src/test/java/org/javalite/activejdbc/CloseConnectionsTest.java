@@ -1,6 +1,9 @@
 package org.javalite.activejdbc;
 
+import org.javalite.activejdbc.connection_config.DbConfiguration;
+import org.javalite.activejdbc.test.DBSpec;
 import org.javalite.test.jspec.JSpecSupport;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.javalite.activejdbc.test.JdbcProperties.*;
@@ -9,6 +12,11 @@ import static org.javalite.activejdbc.test.JdbcProperties.*;
  * @author Igor Polevoy
  */
 public class CloseConnectionsTest implements JSpecSupport {
+
+    @Before
+    public void setup(){
+        DbConfiguration.loadConfiguration("/database.properties");
+    }
 
     @Test
     public void shouldCloseAllConnections(){

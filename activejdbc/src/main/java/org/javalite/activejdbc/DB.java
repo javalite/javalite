@@ -15,10 +15,7 @@ limitations under the License.
 */
 package org.javalite.activejdbc;
 
-import org.javalite.activejdbc.connection_config.ConnectionDataSourceSpec;
-import org.javalite.activejdbc.connection_config.ConnectionJdbcSpec;
-import org.javalite.activejdbc.connection_config.ConnectionJndiSpec;
-import org.javalite.activejdbc.connection_config.ConnectionSpec;
+import org.javalite.activejdbc.connection_config.*;
 import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.activejdbc.logging.LogLevel;
 import org.javalite.app_config.AppConfig;
@@ -153,18 +150,18 @@ public class DB implements Closeable{
      * If this variable is not defined, it defaults to 'development' environment.
      *
      * <p></p>
-     * If there is JUnit on classpath, this method assumes it is running under test, and defaults to 'test'.
+     * It is expected to find a single connection configuration in a current environment.
      *
-     * @see Configuration#getEnvironment()
+     * @see AppConfig#activeEnv()
      */
     public DB open(){
-        Configuration config = Registry.instance().getConfiguration();
-        ConnectionSpec spec = config.getCurrentConnectionSpec();
-        if(spec == null){
+
+        List<ConnectionConfig> connectionConfigs = DbConfiguration.getConnectionConfigsExceptTesting(this.name);
+        if(connectionConfigs.isEmpty()){
             throw new DBException("Could not find configuration in a property file for environment: " + AppConfig.activeEnv() +
-                    ". Are you sure you have a database.properties file configured?");
+                    ". Are you sure you called org.javalite.activejdbc.connection_config.DBConfiguration.loadConfiguration(\"/database.properties\") or similar? You can also call org.javalite.activejdbc.connection_config.DbConfiguration.addConnectionConfig(...) directly");
         }
-        return open(spec);
+        return open(connectionConfigs.get(0)); // since this is based  on the 'database.properties' file, we assume
     }
 
     /**
@@ -240,18 +237,18 @@ public class DB implements Closeable{
     /**
      * This method is used internally by the framework.
      *
-     * @param spec specification for a JDBC connection.
+     * @param config specification for a JDBC connection.
      */
-    public DB open(ConnectionSpec spec) {
+    public DB open(ConnectionConfig config) {
         checkExistingConnection(name);
-        if (spec instanceof ConnectionJdbcSpec) {
-            return openJdbc((ConnectionJdbcSpec) spec);
-        } else if (spec instanceof ConnectionJndiSpec) {
-            return openJndi((ConnectionJndiSpec) spec);
-        } else if (spec instanceof ConnectionDataSourceSpec) {
-            return openDataSource((ConnectionDataSourceSpec) spec);
+        if (config instanceof ConnectionJdbcConfig) {
+            return openJdbc((ConnectionJdbcConfig) config);
+        } else if (config instanceof ConnectionJndiConfig) {
+            return openJndi((ConnectionJndiConfig) config);
+        } else if (config instanceof ConnectionDataSourceConfig) {
+            return openDataSource((ConnectionDataSourceConfig) config);
         } else {
-            throw new IllegalArgumentException("this spec not supported: " + spec.getClass());
+            throw new IllegalArgumentException("this spec not supported: " + config.getClass());
         }
     }
 
@@ -265,32 +262,32 @@ public class DB implements Closeable{
     /**
      * This method is used internally by framework.
      *
-     * @param spec specification for a JDBC connection.
+     * @param config specification for a JDBC connection.
      */
-    private DB openJdbc(ConnectionJdbcSpec spec) {
+    private DB openJdbc(ConnectionJdbcConfig config) {
 
-        if(spec.getProps()!= null){
-            return open(spec.getDriver(), spec.getUrl(), spec.getProps());
+        if(config.getProps()!= null){
+            return open(config.getDriver(), config.getUrl(), config.getProps());
         }else{
-            return open(spec.getDriver(), spec.getUrl(), spec.getUser(), spec.getPassword());
+            return open(config.getDriver(), config.getUrl(), config.getUser(), config.getPassword());
         }
     }
 
     /**
      * This method is used internally by framework.
      *
-     * @param spec specification for a JDBC connection.
+     * @param config specification for a JDBC connection.
      */
-    private DB openJndi(ConnectionJndiSpec spec) {
-        if(spec.getContext() != null){
-            return openContext(spec.getContext(), spec.getDataSourceJndiName());
+    private DB openJndi(ConnectionJndiConfig config) {
+        if(config.getContext() != null){
+            return openContext(config.getContext(), config.getDataSourceJndiName());
         }else{
-            return open(spec.getDataSourceJndiName());
+            return open(config.getDataSourceJndiName());
         }
     }
 
-    private DB openDataSource(ConnectionDataSourceSpec spec) {
-        return open(spec.getDataSource());
+    private DB openDataSource(ConnectionDataSourceConfig config) {
+        return open(config.getDataSource());
     }
 
     /**
