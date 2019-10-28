@@ -1073,7 +1073,7 @@ public class DB implements Closeable{
      *
      * Example of usage:
      * <pre>
-     Object result = withDb(() -> {
+     Object result = new DB("events").withDb(() -> {
         //place code here
         return res; // whatever it is
      });
