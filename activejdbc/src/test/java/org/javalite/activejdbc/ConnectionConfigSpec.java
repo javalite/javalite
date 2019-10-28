@@ -22,6 +22,7 @@ import static org.javalite.activejdbc.test.JdbcProperties.*;
 import org.javalite.activejdbc.connection_config.ConnectionJdbcConfig;
 import org.javalite.activejdbc.connection_config.ConnectionJndiConfig;
 import org.javalite.activejdbc.connection_config.ConnectionConfig;
+import org.javalite.activejdbc.connection_config.DbConfiguration;
 import org.junit.Test;
 
 import javax.naming.NamingException;
@@ -69,7 +70,7 @@ public class ConnectionConfigSpec {
     }
 
     @Test
-    public void testJndi() throws NamingException, SQLException {
+    public void testJndi()  {
 
         ConnectionJndiConfig spec = new ConnectionJndiConfig("java/jdbc/DefaultDS");
         DB db = new DB("default");
@@ -94,6 +95,7 @@ public class ConnectionConfigSpec {
      */
     @Test
     public void shouldOpenConnectionFromPropertiesFile(){
+        DbConfiguration.loadConfiguration("/database.properties");
         DB db = new DB("default");
         db.open();
         a(db.connection()).shouldNotBeNull();
