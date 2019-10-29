@@ -16,7 +16,7 @@ limitations under the License.
 package org.javalite.activeweb;
 
 
-import org.javalite.activejdbc.connection_config.DbConfiguration;
+import org.javalite.activejdbc.connection_config.DBConfiguration;
 
 /**
  * This class is designed to be sub-classed by an application level class called <code>app.config.DbConfig</code>.
@@ -69,7 +69,7 @@ import org.javalite.activejdbc.connection_config.DbConfiguration;
  *
  * @author Igor Polevoy
  */
-public abstract class AbstractDBConfig extends DbConfiguration implements InitConfig {
+public abstract class AbstractDBConfig extends DBConfiguration implements InitConfig {
 
     /**
      * @param environment name of environment (corresponds to env var ACTIVE_ENV)

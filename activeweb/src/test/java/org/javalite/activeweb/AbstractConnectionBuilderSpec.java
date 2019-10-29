@@ -4,7 +4,7 @@ import org.javalite.activejdbc.connection_config.ConnectionConfig;
 import org.javalite.activejdbc.connection_config.ConnectionJdbcConfig;
 import org.javalite.activejdbc.connection_config.ConnectionJndiConfig;
 
-import org.javalite.activejdbc.connection_config.DbConfiguration;
+import org.javalite.activejdbc.connection_config.DBConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,7 +20,7 @@ public class AbstractConnectionBuilderSpec  {
 
     @Before
     public void before(){
-        DbConfiguration.resetConnectionConfigs();
+        DBConfiguration.resetConnectionConfigs();
     }
 
     @Test
@@ -34,7 +34,7 @@ public class AbstractConnectionBuilderSpec  {
         DBConfig config = new DBConfig();
         config.init(null);
 
-        ConnectionJdbcConfig connectionConfig = (ConnectionJdbcConfig) DbConfiguration.getConnectionConfigs().get(0);
+        ConnectionJdbcConfig connectionConfig = (ConnectionJdbcConfig) DBConfiguration.getConnectionConfigs().get(0);
 
         a(connectionConfig.getDbName()).shouldBeEqual("default");
         a(connectionConfig.isTesting()).shouldBeTrue();
@@ -60,7 +60,7 @@ public class AbstractConnectionBuilderSpec  {
         DBConfig config = new DBConfig();
         config.init(null);
 
-        ConnectionJndiConfig jndiConfig= (ConnectionJndiConfig) DbConfiguration.getConnectionConfigs("prod").get(0);
+        ConnectionJndiConfig jndiConfig= (ConnectionJndiConfig) DBConfiguration.getConnectionConfigs("prod").get(0);
 
         a(jndiConfig.getDbName()).shouldBeEqual("second");
         a(jndiConfig.isTesting()).shouldBeFalse();
@@ -81,7 +81,7 @@ public class AbstractConnectionBuilderSpec  {
         DBConfig config = new DBConfig();
         config.init(null);
 
-        ConnectionJndiConfig jndiConfig = (ConnectionJndiConfig) DbConfiguration.getConnectionConfigs("production").get(0);
+        ConnectionJndiConfig jndiConfig = (ConnectionJndiConfig) DBConfiguration.getConnectionConfigs("production").get(0);
 
         a(jndiConfig.getDbName()).shouldBeEqual("default");
         a(jndiConfig.isTesting()).shouldBeFalse();
@@ -103,7 +103,7 @@ public class AbstractConnectionBuilderSpec  {
         config.init(null);
 
         //test first connection spec
-        ConnectionJdbcConfig jdbcConfig = (ConnectionJdbcConfig) DbConfiguration.getConnectionConfigs("development").get(0);
+        ConnectionJdbcConfig jdbcConfig = (ConnectionJdbcConfig) DBConfiguration.getConnectionConfigs("development").get(0);
         a(jdbcConfig.getDbName()).shouldBeEqual("default");
         a(jdbcConfig.getEnvironment()).shouldBeEqual("development");
         a(jdbcConfig.isTesting()).shouldBeFalse();
@@ -115,7 +115,7 @@ public class AbstractConnectionBuilderSpec  {
         a(jdbcConfig.getPassword()).shouldBeEqual("pwd");
 
         //test second connection spec
-        jdbcConfig = (ConnectionJdbcConfig) DbConfiguration.getConnectionConfigs("development").get(1);
+        jdbcConfig = (ConnectionJdbcConfig) DBConfiguration.getConnectionConfigs("development").get(1);
         a(jdbcConfig.getDbName()).shouldBeEqual("default");
         a(jdbcConfig.getEnvironment()).shouldBeEqual("development");
         a(jdbcConfig.isTesting()).shouldBeTrue();
@@ -142,7 +142,7 @@ public class AbstractConnectionBuilderSpec  {
         DBConfig config = new DBConfig();
         config.init(null);
 
-        List<ConnectionConfig> wrappers = DbConfiguration.getConnectionConfigs("production");
+        List<ConnectionConfig> wrappers = DBConfiguration.getConnectionConfigs("production");
 
         //we configured two for production, one in file, one in class. But the class config overrides one in file.
         the(wrappers.size()).shouldBeEqual(1);
@@ -172,7 +172,7 @@ public class AbstractConnectionBuilderSpec  {
         DBConfig config = new DBConfig();
         config.init(null);
 
-        List<ConnectionConfig> connectionConfigs = DbConfiguration.getConnectionConfigs("development");
+        List<ConnectionConfig> connectionConfigs = DBConfiguration.getConnectionConfigs("development");
 
         the(connectionConfigs.size()).shouldBeEqual(2);
 

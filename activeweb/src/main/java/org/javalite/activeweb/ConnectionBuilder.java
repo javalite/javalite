@@ -53,7 +53,7 @@ public class ConnectionBuilder {
         connectionConfig.setDbName(dbName);
         connectionConfig.setEnvironment(environment);
         connectionConfig.setTesting(testing);
-        DbConfiguration.addConnectionConfig(connectionConfig, override);
+        DBConfiguration.addConnectionConfig(connectionConfig, override);
     }
 
     /**
@@ -70,7 +70,7 @@ public class ConnectionBuilder {
         connectionConfig.setDbName(dbName);
         connectionConfig.setEnvironment(environment);
         connectionConfig.setTesting(testing);
-        DbConfiguration.addConnectionConfig(connectionConfig, override);
+        DBConfiguration.addConnectionConfig(connectionConfig, override);
     }
 
     /**
@@ -85,7 +85,7 @@ public class ConnectionBuilder {
         connectionConfig.setDbName(dbName);
         connectionConfig.setEnvironment(environment);
         connectionConfig.setTesting(testing);
-        DbConfiguration.addConnectionConfig(connectionConfig, override);
+        DBConfiguration.addConnectionConfig(connectionConfig, override);
     }
 
     /**
@@ -120,6 +120,6 @@ public class ConnectionBuilder {
         connectionConfig.setDbName(dbName);
         connectionConfig.setEnvironment(environment);
         connectionConfig.setTesting(testing);
-        DbConfiguration.addConnectionConfig(connectionConfig, override);
+        DBConfiguration.addConnectionConfig(connectionConfig, override);
     }
 }

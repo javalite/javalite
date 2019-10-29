@@ -17,7 +17,7 @@ package org.javalite.activeweb.controller_filters;
 
 import org.javalite.activejdbc.DB;
 import org.javalite.activejdbc.connection_config.ConnectionConfig;
-import org.javalite.activejdbc.connection_config.DbConfiguration;
+import org.javalite.activejdbc.connection_config.DBConfiguration;
 import org.javalite.activeweb.Configuration;
 import org.javalite.activeweb.InitException;
 import org.javalite.activeweb.RequestContext;
@@ -40,7 +40,7 @@ public class DBConnectionFilter extends AppControllerFilter {
      * This constructor is used to open all configured connections for a current environment.
      */
     public DBConnectionFilter() {
-        this.connectionConfigs = DbConfiguration.getConnectionConfigsExceptTesting(DB.DEFAULT_NAME);
+        this.connectionConfigs = DBConfiguration.getConnectionConfigsExceptTesting(DB.DEFAULT_NAME);
     }
 
 
@@ -50,7 +50,7 @@ public class DBConnectionFilter extends AppControllerFilter {
      * @param dbName name of DB to open
      */
     public DBConnectionFilter(String dbName) {
-        this.connectionConfigs = DbConfiguration.getConnectionConfigsExceptTesting(dbName);
+        this.connectionConfigs = DBConfiguration.getConnectionConfigsExceptTesting(dbName);
     }
 
     /**
@@ -69,7 +69,7 @@ public class DBConnectionFilter extends AppControllerFilter {
      */
     public DBConnectionFilter(String dbName, boolean manageTransaction) {
         this.manageTransaction = manageTransaction;
-        this.connectionConfigs = DbConfiguration.getConnectionConfigsExceptTesting(dbName);
+        this.connectionConfigs = DBConfiguration.getConnectionConfigsExceptTesting(dbName);
     }
 
     @Override

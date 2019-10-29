@@ -156,10 +156,10 @@ public class DB implements Closeable{
      */
     public DB open(){
 
-        List<ConnectionConfig> connectionConfigs = DbConfiguration.getConnectionConfigsExceptTesting(this.name);
+        List<ConnectionConfig> connectionConfigs = DBConfiguration.getConnectionConfigsExceptTesting(this.name);
         if(connectionConfigs.isEmpty()){
             throw new DBException("Could not find configuration in a property file for environment: " + AppConfig.activeEnv() +
-                    ". Are you sure you called org.javalite.activejdbc.connection_config.DBConfiguration.loadConfiguration(\"/database.properties\") or similar? You can also call org.javalite.activejdbc.connection_config.DbConfiguration.addConnectionConfig(...) directly");
+                    ". Are you sure you called org.javalite.activejdbc.connection_config.DBConfiguration.loadConfiguration(\"/database.properties\") or similar? You can also call org.javalite.activejdbc.connection_config.DBConfiguration.addConnectionConfig(...) directly");
         }
         return open(connectionConfigs.get(0)); // since this is based  on the 'database.properties' file, we assume
     }
