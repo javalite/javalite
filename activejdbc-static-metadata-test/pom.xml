@@ -15,7 +15,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdbc.driver>org.h2.Driver</jdbc.driver>
-        <jdbc.url>jdbc:h2:${project.basedir}/target/test-db;DATABASE_TO_UPPER=false</jdbc.url>
+        <jdbc.url>jdbc:h2:${project.basedir}/target/test-db</jdbc.url>
         <jdbc.user>sa</jdbc.user>
         <jdbc.password />
         <db>h2</db>
