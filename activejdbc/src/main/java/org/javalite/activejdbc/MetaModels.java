@@ -147,7 +147,7 @@ class MetaModels {
                         (String) metaModelMap.get(DB_TYPE)
                 );
 
-                Map<String, ColumnMetadata> columnMetadataMap = new HashMap<>();
+                Map<String, ColumnMetadata> columnMetadataMap = new CaseInsensitiveMap<>();
                 ((Map) metaModelMap.getOrDefault(COLUMN_METADATA, map())).forEach((column, map) -> {
                     Map metadata = (Map) map;
                     columnMetadataMap.put(
