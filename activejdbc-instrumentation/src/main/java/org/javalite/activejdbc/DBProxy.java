@@ -33,6 +33,7 @@ public class DBProxy {
     private MethodHandle open;
     private MethodHandle name;
     private MethodHandle open4;
+    private MethodHandle loadConfiguration;
     private MethodHandle close;
     private boolean opened = false;
 
@@ -43,6 +44,7 @@ public class DBProxy {
     DBProxy(String dbName) {
         try {
             MethodHandles.Lookup lookup = MethodHandles.lookup();
+            loadConfiguration = lookup.findStatic( Classes.DBConfiguration, "loadConfiguration", methodType(void.class, String.class));
             db = dbName == null
                     ? lookup.findConstructor(Classes.DB, methodType(void.class)).invoke()
                     : lookup.findConstructor(Classes.DB, methodType(void.class, String.class)).invoke(dbName);
@@ -65,6 +67,7 @@ public class DBProxy {
 
     protected DBProxy open() {
         try {
+            loadConfiguration.invoke("/database.properties");
             open.invoke(db);
             opened = true;
             return this;

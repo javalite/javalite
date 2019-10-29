@@ -19,7 +19,7 @@ package org.javalite.activejdbc.test;
 import org.javalite.activejdbc.DB;
 import org.javalite.activejdbc.InitException;
 import org.javalite.activejdbc.connection_config.ConnectionConfig;
-import org.javalite.activejdbc.connection_config.DbConfiguration;
+import org.javalite.activejdbc.connection_config.DBConfiguration;
 import org.javalite.test.jspec.JSpecSupport;
 import org.junit.After;
 import org.junit.Before;
@@ -48,7 +48,7 @@ import java.util.Map;
  *
  * @author igor on 12/2/16.
  */
-public class DBSpec extends DbConfiguration implements JSpecSupport {
+public class DBSpec extends DBConfiguration implements JSpecSupport {
 
     private static Logger LOGGER = LoggerFactory.getLogger(DBSpec.class.getSimpleName());
     private boolean rollback = true;

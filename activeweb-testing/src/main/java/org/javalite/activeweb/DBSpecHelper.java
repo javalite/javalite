@@ -17,7 +17,7 @@ package org.javalite.activeweb;
 
 import org.javalite.activejdbc.DB;
 import org.javalite.activejdbc.connection_config.ConnectionConfig;
-import org.javalite.activejdbc.connection_config.DbConfiguration;
+import org.javalite.activejdbc.connection_config.DBConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +51,7 @@ public class DBSpecHelper {
     }
 
     public static void clearConnectionConfigs() {
-        DbConfiguration.clearConnectionConfigs();
+        DBConfiguration.clearConnectionConfigs();
     }
 
 
@@ -84,7 +84,7 @@ public class DBSpecHelper {
     }
 
     private static List<ConnectionConfig> getTestConnectionConfigs() {
-        List<ConnectionConfig> allConnections = DbConfiguration.getConnectionConfigs();
+        List<ConnectionConfig> allConnections = DBConfiguration.getConnectionConfigs();
         List<ConnectionConfig> result = new LinkedList<>();
 
         for (ConnectionConfig connectionConfig : allConnections) {

@@ -31,7 +31,7 @@ import static org.javalite.common.Util.blank;
 /**
  * @author igor on 12/2/16.
  */
-public class DbConfiguration {
+public class DBConfiguration {
 
     /**
      * Key is environment, such as 'development', 'production'
@@ -39,7 +39,15 @@ public class DbConfiguration {
     private static HashMap<String, List<ConnectionConfig>> connectionConfigs = new HashMap<>();
 
 
+    /**
+     * Adds a new connection config for an environment.
+     *
+     * @param connectionConfig connection configuration object
+     * @param override true to override a previous config  for the same environment
+     */
     public static void addConnectionConfig(ConnectionConfig connectionConfig, boolean override) {
+
+        //TODO: what to do for multiple connections in the same environment??
         String connectionEnv = connectionConfig.getEnvironment();
         List<ConnectionConfig> connectionConfigList = connectionConfigs.get(connectionEnv);
         if(connectionConfigList == null || override) {

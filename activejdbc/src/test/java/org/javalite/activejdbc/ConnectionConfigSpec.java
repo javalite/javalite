@@ -22,11 +22,9 @@ import static org.javalite.activejdbc.test.JdbcProperties.*;
 import org.javalite.activejdbc.connection_config.ConnectionJdbcConfig;
 import org.javalite.activejdbc.connection_config.ConnectionJndiConfig;
 import org.javalite.activejdbc.connection_config.ConnectionConfig;
-import org.javalite.activejdbc.connection_config.DbConfiguration;
+import org.javalite.activejdbc.connection_config.DBConfiguration;
 import org.junit.Test;
 
-import javax.naming.NamingException;
-import java.sql.SQLException;
 import java.util.Properties;
 import static org.javalite.test.jspec.JSpec.a;
 
@@ -95,7 +93,7 @@ public class ConnectionConfigSpec {
      */
     @Test
     public void shouldOpenConnectionFromPropertiesFile(){
-        DbConfiguration.loadConfiguration("/database.properties");
+        DBConfiguration.loadConfiguration("/database.properties");
         DB db = new DB("default");
         db.open();
         a(db.connection()).shouldNotBeNull();

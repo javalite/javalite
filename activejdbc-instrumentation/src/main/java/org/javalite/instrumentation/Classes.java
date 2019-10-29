@@ -25,6 +25,7 @@ public class Classes {
     public static final Class DB = find("org.javalite.activejdbc.DB");
     public static final Class DbName = find("org.javalite.activejdbc.annotations.DbName");
     public static final Class ModelFinder = find("org.javalite.activejdbc.ModelFinder");
+    public static final Class DBConfiguration = find("org.javalite.activejdbc.connection_config.DBConfiguration");
 
 
     private static Class find(String name) {

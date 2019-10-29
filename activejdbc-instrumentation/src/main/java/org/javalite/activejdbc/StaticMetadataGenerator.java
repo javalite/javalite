@@ -59,7 +59,7 @@ public class StaticMetadataGenerator {
                 registry.init(dbProxy.name());
                 dbProxy.close();
             } catch(Throwable e) {
-                if (dbParameters.isEmpty()) {
+                if (dbParameters == null || dbParameters.isEmpty()) {
                     throw e;
                 } else {
                     Logger.info(e.getMessage());
