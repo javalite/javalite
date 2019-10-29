@@ -8,6 +8,7 @@ import org.junit.Test;
 import java.util.List;
 
 import static org.javalite.test.jspec.JSpec.a;
+import static org.javalite.test.jspec.JSpec.the;
 
 public class StaticMetadataSpec {
 
@@ -34,6 +35,8 @@ public class StaticMetadataSpec {
         Library.deleteAll();
 
         library.saveIt();
+
+        the(library.getLongId()).shouldNotBeNull();
 
         library.add(book);
         a(Book.find("author = ?", "me").size()).shouldEqual(1);
