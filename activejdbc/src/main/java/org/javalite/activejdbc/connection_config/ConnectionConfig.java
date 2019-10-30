@@ -52,4 +52,9 @@ public abstract class ConnectionConfig {
     public void setTesting(boolean testing) {
         this.testing = testing;
     }
+
+    @Override
+    public int hashCode() {
+        return (getClass().getName() + environment + dbName).hashCode();
+    }
 }
