@@ -36,7 +36,7 @@ public class DBConfiguration {
     /**
      * Key is environment, such as 'development', 'production'
      */
-    private static HashMap<String, List<ConnectionConfig>> connectionConfigs = new HashMap<>();
+    private static HashMap<String, HashSet<ConnectionConfig>> connectionConfigs = new HashMap<>();
 
 
     /**
@@ -49,12 +49,12 @@ public class DBConfiguration {
 
         //TODO: what to do for multiple connections in the same environment??
         String connectionEnv = connectionConfig.getEnvironment();
-        List<ConnectionConfig> connectionConfigList = connectionConfigs.get(connectionEnv);
-        if(connectionConfigList == null || override) {
-            connectionConfigList = new ArrayList<>();
-            connectionConfigs.put(connectionEnv, connectionConfigList);
+        HashSet<ConnectionConfig> connectionConfigSet = connectionConfigs.get(connectionEnv);
+        if(connectionConfigSet == null || override) {
+            connectionConfigSet = new HashSet<>();
+            connectionConfigs.put(connectionEnv, connectionConfigSet);
         }
-        connectionConfigList.add(connectionConfig);
+        connectionConfigSet.add(connectionConfig);
     }
 
     /**
@@ -62,7 +62,7 @@ public class DBConfiguration {
      *
      * @return  a list of all connection configs corresponding to a current environment.
      */
-    public static List<ConnectionConfig> getConnectionConfigs() {
+    public static Set<ConnectionConfig> getConnectionConfigs() {
         return getConnectionConfigs(Configuration.getEnv());
     }
 
@@ -73,8 +73,9 @@ public class DBConfiguration {
      *
      * @return  a list of all connection configs corresponding to a given environment.
      */
-    public static List<ConnectionConfig> getConnectionConfigs(String env) {
-        return connectionConfigs.get(env) == null? new ArrayList<>() : connectionConfigs.get(env);
+    @SuppressWarnings("unchecked")
+    public static Set<ConnectionConfig> getConnectionConfigs(String env) {
+        return connectionConfigs.get(env) == null? new HashSet<>() : (Set<ConnectionConfig>) connectionConfigs.get(env).clone();
     }
 
 
@@ -90,7 +91,7 @@ public class DBConfiguration {
             throw new IllegalArgumentException("dbName cannot be null");
         }
 
-        List<ConnectionConfig> allConnections = getConnectionConfigs();
+        Set<ConnectionConfig> allConnections = getConnectionConfigs();
         List<ConnectionConfig> result = new LinkedList<>();
 
         for (ConnectionConfig connectionConfig : allConnections) {

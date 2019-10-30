@@ -8,7 +8,7 @@ import org.javalite.activejdbc.connection_config.DBConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
+import java.util.Set;
 
 import static org.javalite.test.jspec.JSpec.a;
 import static org.javalite.test.jspec.JSpec.the;
@@ -34,7 +34,7 @@ public class AbstractConnectionBuilderSpec  {
         DBConfig config = new DBConfig();
         config.init(null);
 
-        ConnectionJdbcConfig connectionConfig = (ConnectionJdbcConfig) DBConfiguration.getConnectionConfigs().get(0);
+        ConnectionJdbcConfig connectionConfig = (ConnectionJdbcConfig) DBConfiguration.getConnectionConfigs().toArray()[0];
 
         a(connectionConfig.getDbName()).shouldBeEqual("default");
         a(connectionConfig.isTesting()).shouldBeTrue();
@@ -60,7 +60,7 @@ public class AbstractConnectionBuilderSpec  {
         DBConfig config = new DBConfig();
         config.init(null);
 
-        ConnectionJndiConfig jndiConfig= (ConnectionJndiConfig) DBConfiguration.getConnectionConfigs("prod").get(0);
+        ConnectionJndiConfig jndiConfig= (ConnectionJndiConfig) DBConfiguration.getConnectionConfigs("prod").toArray()[0];
 
         a(jndiConfig.getDbName()).shouldBeEqual("second");
         a(jndiConfig.isTesting()).shouldBeFalse();
@@ -81,7 +81,7 @@ public class AbstractConnectionBuilderSpec  {
         DBConfig config = new DBConfig();
         config.init(null);
 
-        ConnectionJndiConfig jndiConfig = (ConnectionJndiConfig) DBConfiguration.getConnectionConfigs("production").get(0);
+        ConnectionJndiConfig jndiConfig = (ConnectionJndiConfig) DBConfiguration.getConnectionConfigs("production").toArray()[0];
 
         a(jndiConfig.getDbName()).shouldBeEqual("default");
         a(jndiConfig.isTesting()).shouldBeFalse();
@@ -103,7 +103,7 @@ public class AbstractConnectionBuilderSpec  {
         config.init(null);
 
         //test first connection spec
-        ConnectionJdbcConfig jdbcConfig = (ConnectionJdbcConfig) DBConfiguration.getConnectionConfigs("development").get(0);
+        ConnectionJdbcConfig jdbcConfig = (ConnectionJdbcConfig) DBConfiguration.getConnectionConfigs("development").toArray()[0];
         a(jdbcConfig.getDbName()).shouldBeEqual("default");
         a(jdbcConfig.getEnvironment()).shouldBeEqual("development");
         a(jdbcConfig.isTesting()).shouldBeFalse();
@@ -115,7 +115,7 @@ public class AbstractConnectionBuilderSpec  {
         a(jdbcConfig.getPassword()).shouldBeEqual("pwd");
 
         //test second connection spec
-        jdbcConfig = (ConnectionJdbcConfig) DBConfiguration.getConnectionConfigs("development").get(1);
+        jdbcConfig = (ConnectionJdbcConfig) DBConfiguration.getConnectionConfigs("development").toArray()[1];
         a(jdbcConfig.getDbName()).shouldBeEqual("default");
         a(jdbcConfig.getEnvironment()).shouldBeEqual("development");
         a(jdbcConfig.isTesting()).shouldBeTrue();
@@ -142,12 +142,12 @@ public class AbstractConnectionBuilderSpec  {
         DBConfig config = new DBConfig();
         config.init(null);
 
-        List<ConnectionConfig> wrappers = DBConfiguration.getConnectionConfigs("production");
+        Set<ConnectionConfig> wrappers = DBConfiguration.getConnectionConfigs("production");
 
         //we configured two for production, one in file, one in class. But the class config overrides one in file.
         the(wrappers.size()).shouldBeEqual(1);
 
-        ConnectionJndiConfig connectionSpec = (ConnectionJndiConfig)  wrappers.get(0);
+        ConnectionJndiConfig connectionSpec = (ConnectionJndiConfig)  wrappers.toArray()[0];
         the(connectionSpec.getDataSourceJndiName()).shouldBeEqual("java:comp/env/jdbc/prod_new");
     }
 
@@ -172,7 +172,7 @@ public class AbstractConnectionBuilderSpec  {
         DBConfig config = new DBConfig();
         config.init(null);
 
-        List<ConnectionConfig> connectionConfigs = DBConfiguration.getConnectionConfigs("development");
+        Set<ConnectionConfig> connectionConfigs = DBConfiguration.getConnectionConfigs("development");
 
         the(connectionConfigs.size()).shouldBeEqual(2);
 

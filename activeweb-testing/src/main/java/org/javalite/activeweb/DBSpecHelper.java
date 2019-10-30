@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Used by test classes as a helper to open/close DB connection, start and rollback transactions.
@@ -84,7 +85,7 @@ public class DBSpecHelper {
     }
 
     private static List<ConnectionConfig> getTestConnectionConfigs() {
-        List<ConnectionConfig> allConnections = DBConfiguration.getConnectionConfigs();
+        Set<ConnectionConfig> allConnections = DBConfiguration.getConnectionConfigs();
         List<ConnectionConfig> result = new LinkedList<>();
 
         for (ConnectionConfig connectionConfig : allConnections) {
