@@ -139,43 +139,6 @@ public class Configuration {
     }
 
     /**
-     * Returns name of environment, such as "development", "production", etc.
-     * This is a value that is usually setup with an environment variable <code>ACTIVE_ENV</code>.
-     *
-     * @return name of environment
-     */
-    public static String getEnv(){
-        if(ENV == null){
-            if(!blank(System.getenv("ACTIVE_ENV"))) {
-                ENV = System.getenv("ACTIVE_ENV");
-            }
-
-            if(!blank(System.getProperty("ACTIVE_ENV"))) {
-                ENV = System.getProperty("ACTIVE_ENV");
-            }
-
-            if(!blank(System.getProperty("active_env"))) {
-                ENV = System.getProperty("active_env");
-            }
-
-            if(blank(ENV)){
-                ENV = "development";
-                LogFilter.log(LOGGER, LogLevel.INFO, "Environment variable ACTIVE_ENV not provided, defaulting to '" + ENV + "'");
-            }
-        }
-        return ENV;
-    }
-
-    /**
-     * This method must ony be used in tests. Use in other environments at your own peril.
-     *
-     * @param env name of environment (development, staging, production, etc.).
-     */
-    public static void setEnv(String env){
-        ENV = env;
-    }
-
-    /**
      * @return true if a custom logger is defined, false ther
      */
     public static boolean hasActiveLogger() {

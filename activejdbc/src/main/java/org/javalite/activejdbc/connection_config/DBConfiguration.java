@@ -17,10 +17,11 @@ limitations under the License.
 
 package org.javalite.activejdbc.connection_config;
 
-import org.javalite.activejdbc.Configuration;
 import org.javalite.activejdbc.InitException;
 import org.javalite.app_config.AppConfig;
 import org.javalite.common.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,37 +34,57 @@ import static org.javalite.common.Util.blank;
  */
 public class DBConfiguration {
 
+    private static Logger LOGGER = LoggerFactory.getLogger(DBConfiguration.class);
+
     /**
      * Key is environment, such as 'development', 'production'
      */
-    private static HashMap<String, HashSet<ConnectionConfig>> connectionConfigs = new HashMap<>();
+    private static HashMap<String, ArrayList<ConnectionConfig>> connectionConfigs = new HashMap<>();
 
 
     /**
-     * Adds a new connection config for an environment.
+     * @param override is irrelevant. This method will always override previous configurations for the same environment and with the same name.
      *
-     * @param connectionConfig connection configuration object
-     * @param override true to override a previous config  for the same environment
+     * @deprecated use {@link #addConnectionConfig(ConnectionConfig)}.
      */
     public static void addConnectionConfig(ConnectionConfig connectionConfig, boolean override) {
-
-        //TODO: what to do for multiple connections in the same environment??
-        String connectionEnv = connectionConfig.getEnvironment();
-        HashSet<ConnectionConfig> connectionConfigSet = connectionConfigs.get(connectionEnv);
-        if(connectionConfigSet == null || override) {
-            connectionConfigSet = new HashSet<>();
-            connectionConfigs.put(connectionEnv, connectionConfigSet);
-        }
-        connectionConfigSet.add(connectionConfig);
+        addConnectionConfig(connectionConfig);
     }
+
+    /**
+     * Adds a new connection config for an environment. This method will always override previous configurations for the same environment and with the same name
+     * and marked for testing  or not.
+     *
+     * @param connectionConfig connection configuration object
+     */
+    @SuppressWarnings("unchecked")
+    public static void addConnectionConfig(ConnectionConfig connectionConfig) {
+        String connectionEnv = connectionConfig.getEnvironment();
+        ArrayList<ConnectionConfig> connectionConfigList = connectionConfigs.computeIfAbsent(connectionEnv, k -> new ArrayList<>());
+
+        for(ConnectionConfig config : (List<ConnectionConfig>)connectionConfigList.clone()){
+            if (config.getDbName().equals(connectionConfig.getDbName())
+                    && config.getEnvironment().equals(connectionConfig.getEnvironment())
+                    && config.isTesting() == connectionConfig.isTesting()) {
+
+                LOGGER.info("Removing: " + connectionConfig);
+                connectionConfigList.remove(config);
+            }
+        }
+
+        LOGGER.info("Adding: " + connectionConfig);
+        connectionConfigList.add(connectionConfig);
+    }
+
+
 
     /**
      * Provides a list of all connection configs corresponding to a current environment.
      *
      * @return  a list of all connection configs corresponding to a current environment.
      */
-    public static Set<ConnectionConfig> getConnectionConfigs() {
-        return getConnectionConfigs(Configuration.getEnv());
+    public static List<ConnectionConfig> getConnectionConfigsForCurrentEnv() {
+        return getConnectionConfigs(AppConfig.activeEnv());
     }
 
     /**
@@ -74,8 +95,8 @@ public class DBConfiguration {
      * @return  a list of all connection configs corresponding to a given environment.
      */
     @SuppressWarnings("unchecked")
-    public static Set<ConnectionConfig> getConnectionConfigs(String env) {
-        return connectionConfigs.get(env) == null? new HashSet<>() : (Set<ConnectionConfig>) connectionConfigs.get(env).clone();
+    public static List<ConnectionConfig> getConnectionConfigs(String env) {
+        return connectionConfigs.get(env) == null? new ArrayList<>() : (List<ConnectionConfig>) connectionConfigs.get(env).clone();
     }
 
 
@@ -91,7 +112,7 @@ public class DBConfiguration {
             throw new IllegalArgumentException("dbName cannot be null");
         }
 
-        Set<ConnectionConfig> allConnections = getConnectionConfigs();
+        List<ConnectionConfig> allConnections = getConnectionConfigsForCurrentEnv();
         List<ConnectionConfig> result = new LinkedList<>();
 
         for (ConnectionConfig connectionConfig : allConnections) {
@@ -102,8 +123,11 @@ public class DBConfiguration {
     }
 
 
+    /**
+     * Clears connection configs for current environment
+     */
     public static void clearConnectionConfigs() {
-        clearConnectionConfigs(Configuration.getEnv());
+        clearConnectionConfigs(AppConfig.activeEnv());
     }
 
 
@@ -212,20 +236,20 @@ public class DBConfiguration {
             connectionJdbcConfig.setEnvironment(env);
         }
 
-        addConnectionConfig(connectionJdbcConfig, false);
+        addConnectionConfig(connectionJdbcConfig);
     }
 
     private static void createJndiConfig(String env, String jndiName) {
         ConnectionJndiConfig connectionJndiConfig = new ConnectionJndiConfig(jndiName);
         connectionJndiConfig.setEnvironment(env);
-        addConnectionConfig(connectionJndiConfig, false);
+        addConnectionConfig(connectionJndiConfig);
     }
 
     /**
      * @return list of {@link ConnectionConfig} objects that are marked for testing.
      */
     public List<ConnectionConfig> getTestConnectionConfigs() {
-        return getConnectionConfigs().stream().filter(ConnectionConfig::isTesting).collect(Collectors.toList());
+        return getConnectionConfigsForCurrentEnv().stream().filter(ConnectionConfig::isTesting).collect(Collectors.toList());
     }
 
 
@@ -241,14 +265,14 @@ public class DBConfiguration {
 
             ConnectionJdbcConfig jdbcConfig = new ConnectionJdbcConfig(driver, url, user, password);
             jdbcConfig.setEnvironment(AppConfig.activeEnv());
-            addConnectionConfig(jdbcConfig, true);
+            addConnectionConfig(jdbcConfig);
         }
 
         String  jndi = System.getenv("ACTIVEJDBC.JNDI");
         if(!blank(jndi)){
             ConnectionJndiConfig jndiConfig = new ConnectionJndiConfig(jndi);
             jndiConfig.setEnvironment(AppConfig.activeEnv());
-            addConnectionConfig(jndiConfig, true);
+            addConnectionConfig(jndiConfig);
         }
     }
 
@@ -263,14 +287,14 @@ public class DBConfiguration {
         if(!blank(url) && !blank(user) && !blank(driver)){
             ConnectionJdbcConfig jdbcConfig = new ConnectionJdbcConfig(driver, url, user, password);
             jdbcConfig.setEnvironment(AppConfig.activeEnv());
-            addConnectionConfig(jdbcConfig, true);
+            addConnectionConfig(jdbcConfig);
         }
 
         String  jndi = System.getProperty("activejdbc.jndi");
         if(!blank(jndi)){
             ConnectionJndiConfig jndiConfig = new ConnectionJndiConfig(jndi);
             jndiConfig.setEnvironment(AppConfig.activeEnv());
-            addConnectionConfig(jndiConfig, true);
+            addConnectionConfig(jndiConfig);
         }
     }
 

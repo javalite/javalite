@@ -6,7 +6,7 @@ import javax.sql.DataSource;
 /**
  * @author Alex Saluk
  */
-public class ConnectionDataSourceConfig extends ConnectionConfig {
+public final class ConnectionDataSourceConfig extends ConnectionConfig {
 
     private final DataSource dataSource;
 

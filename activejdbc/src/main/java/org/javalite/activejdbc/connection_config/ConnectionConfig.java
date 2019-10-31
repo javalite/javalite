@@ -17,6 +17,10 @@ limitations under the License.
 
 package org.javalite.activejdbc.connection_config;
 
+import org.javalite.common.JsonHelper;
+
+import static org.javalite.common.Collections.map;
+
 /**
  * Super class for all connection configuration instances
  *
@@ -54,7 +58,7 @@ public abstract class ConnectionConfig {
     }
 
     @Override
-    public int hashCode() {
-        return (getClass().getName() + environment + dbName).hashCode();
+    public String toString() {
+        return JsonHelper.toJsonString(map("class", getClass(), "environment", environment, "db_name", dbName, "testing", testing));
     }
 }

@@ -31,17 +31,18 @@ public class ConnectionBuilder {
 
     private String environment;
     private String dbName = "default";
-    private boolean testing, override = false;
+    private boolean testing;
 
     
     ConnectionBuilder(String environment) {
         this.environment = environment;
     }
 
+    /**
+     * @deprecated
+     */
     ConnectionBuilder(String environment, boolean override) {
         this.environment = environment;
-        this.override = override;
-
     }
 
     /**
@@ -53,7 +54,7 @@ public class ConnectionBuilder {
         connectionConfig.setDbName(dbName);
         connectionConfig.setEnvironment(environment);
         connectionConfig.setTesting(testing);
-        DBConfiguration.addConnectionConfig(connectionConfig, override);
+        DBConfiguration.addConnectionConfig(connectionConfig);
     }
 
     /**
@@ -70,7 +71,7 @@ public class ConnectionBuilder {
         connectionConfig.setDbName(dbName);
         connectionConfig.setEnvironment(environment);
         connectionConfig.setTesting(testing);
-        DBConfiguration.addConnectionConfig(connectionConfig, override);
+        DBConfiguration.addConnectionConfig(connectionConfig);
     }
 
     /**
@@ -85,7 +86,7 @@ public class ConnectionBuilder {
         connectionConfig.setDbName(dbName);
         connectionConfig.setEnvironment(environment);
         connectionConfig.setTesting(testing);
-        DBConfiguration.addConnectionConfig(connectionConfig, override);
+        DBConfiguration.addConnectionConfig(connectionConfig);
     }
 
     /**
@@ -120,6 +121,6 @@ public class ConnectionBuilder {
         connectionConfig.setDbName(dbName);
         connectionConfig.setEnvironment(environment);
         connectionConfig.setTesting(testing);
-        DBConfiguration.addConnectionConfig(connectionConfig, override);
+        DBConfiguration.addConnectionConfig(connectionConfig);
     }
 }
