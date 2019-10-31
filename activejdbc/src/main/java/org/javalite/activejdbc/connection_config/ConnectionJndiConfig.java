@@ -24,7 +24,7 @@ import javax.naming.InitialContext;
  *
  * @author Igor Polevoy
  */
-public class ConnectionJndiConfig extends ConnectionConfig {
+public final class ConnectionJndiConfig extends ConnectionConfig {
     private final InitialContext context;
     private final String dataSourceJndiName;
 

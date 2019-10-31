@@ -24,7 +24,7 @@ import java.util.Properties;
  *
  * @author Igor Polevoy
  */
-public class ConnectionJdbcConfig extends ConnectionConfig {
+public final class ConnectionJdbcConfig extends ConnectionConfig {
     private final String driver;
     private final String url;
     private final String user;

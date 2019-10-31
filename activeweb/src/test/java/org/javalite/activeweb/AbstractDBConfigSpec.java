@@ -8,7 +8,7 @@ import org.javalite.activejdbc.connection_config.DBConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Set;
+import java.util.List;
 
 import static org.javalite.test.jspec.JSpec.a;
 import static org.javalite.test.jspec.JSpec.the;
@@ -16,7 +16,7 @@ import static org.javalite.test.jspec.JSpec.the;
 /**
  * @author Igor Polevoy on 12/1/14.
  */
-public class AbstractConnectionBuilderSpec  {
+public class AbstractDBConfigSpec {
 
     @Before
     public void before(){
@@ -34,7 +34,7 @@ public class AbstractConnectionBuilderSpec  {
         DBConfig config = new DBConfig();
         config.init(null);
 
-        ConnectionJdbcConfig connectionConfig = (ConnectionJdbcConfig) DBConfiguration.getConnectionConfigs().toArray()[0];
+        ConnectionJdbcConfig connectionConfig = (ConnectionJdbcConfig) DBConfiguration.getConnectionConfigsForCurrentEnv().toArray()[0];
 
         a(connectionConfig.getDbName()).shouldBeEqual("default");
         a(connectionConfig.isTesting()).shouldBeTrue();
@@ -142,7 +142,7 @@ public class AbstractConnectionBuilderSpec  {
         DBConfig config = new DBConfig();
         config.init(null);
 
-        Set<ConnectionConfig> wrappers = DBConfiguration.getConnectionConfigs("production");
+        List<ConnectionConfig> wrappers = DBConfiguration.getConnectionConfigs("production");
 
         //we configured two for production, one in file, one in class. But the class config overrides one in file.
         the(wrappers.size()).shouldBeEqual(1);
@@ -172,7 +172,7 @@ public class AbstractConnectionBuilderSpec  {
         DBConfig config = new DBConfig();
         config.init(null);
 
-        Set<ConnectionConfig> connectionConfigs = DBConfiguration.getConnectionConfigs("development");
+        List<ConnectionConfig> connectionConfigs = DBConfiguration.getConnectionConfigs("development");
 
         the(connectionConfigs.size()).shouldBeEqual(2);
 

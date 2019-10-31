@@ -112,7 +112,6 @@ public class DBSpec extends DBConfiguration implements JSpecSupport {
             testConnectionConfigs = getTestConnectionConfigs();
             if (testConnectionConfigs.isEmpty()) {
                 LOGGER.warn("no DB connections are configured, none opened");
-
             }else {
                 testConnectionConfigs.forEach(connectionConfig -> {
                     DB db = new DB(connectionConfig.getDbName());
