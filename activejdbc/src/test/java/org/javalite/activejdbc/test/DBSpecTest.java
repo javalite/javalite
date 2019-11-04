@@ -28,7 +28,7 @@ import java.sql.SQLException;
  *
  * @author igor on 12/3/16.
  */
-@FixMethodOrder(MethodSorters.NAME_ASCENDING) @Ignore
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class DBSpecTest extends DBSpec{
 
     @Before
