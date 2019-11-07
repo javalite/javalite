@@ -19,21 +19,25 @@
 
 9. Generate release notes:
 
-   Generate commmit log:
+       gren release -t new-tag previous-tag --override
 
-        git log --format=format:"* %ci %an [%s](https://github.com/javalite/activejdbc/commit/%h)" --since "2015-01-30" > release_notes.txt
 
-   Add release notes to:
+where `new-tag` and `previous-tag` are looked on  the [Github Releases Page](https://github.com/javalite/javalite/releases)
+
+    Ensure that issues  in the release are properly categorized by tags. If needed, make 
+    corrections and re-run the same command again...and again...and again...  
+
+
+
+   Add release notes link to:
 
         javalite-site/content/src/activejdbc/releases.md
 
 10. Write a blog article
 
-    Highlight major  new features  
+    Highlight major new features  
     
     
-    
-        
 ## If you messed up the release
 
  
@@ -43,5 +47,8 @@
 4. Erase release commits: 
     `git reset --hard HEAD~X` - depending how many you want  to kill
 5. Push to repo: 
-       `git push origin [branch] -f` - this will erace history, BE CAREFUL!
+       `git push origin [branch] -f` - this will erase history, BE CAREFUL!
+       
+       Remember that the release notes now are based on issues, not  commits.
+        
 6. Start afresh
