@@ -238,3 +238,12 @@ CREATE TABLE employees (
   department VARCHAR(56),
   created_at DATETIME,
   updated_at DATETIME);
+
+DROP TABLE IF EXISTS customers;
+CREATE TABLE customers (customer_id int(11) NOT NULL auto_increment PRIMARY KEY, first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL, salutation VARCHAR(56) NOT NULL);
+
+DROP TABLE IF EXISTS postal_addresses;
+CREATE TABLE postal_addresses (id  int(11) NOT NULL  auto_increment PRIMARY KEY, address1 VARCHAR(56), address2 VARCHAR(56), city VARCHAR(56), zip VARCHAR(56), country VARCHAR(56), scope VARCHAR(56), customer_id int(11));
+
+DROP TABLE IF EXISTS phone_numbers;
+CREATE TABLE phone_numbers (id  int(11) NOT NULL  auto_increment PRIMARY KEY, number VARCHAR(56), type VARCHAR(56), scope VARCHAR(56), customer_id int(11));

@@ -194,6 +194,19 @@ public class IncludesTest extends ActiveJDBCTest{
     }
 
     @Test
+    public void shouldIncludeMultipleHasManyOverridesOnOneModel() {
+        deleteAndPopulateTable("customers");
+        populateTable("postal_addresses");
+        populateTable("phone_numbers");
+
+        List<Customer> customers = Customer.findAll().include(PostalAddress.class, PhoneNumber.class);
+        List<PostalAddress> addresses = customers.get(0).getAll(PostalAddress.class);
+        a(addresses.size()).shouldBeEqual(2);
+        List<PhoneNumber> phoneNumbers = customers.get(0).getAll(PhoneNumber.class);
+        a(phoneNumbers.size()).shouldBeEqual(2);
+    }
+
+    @Test
     public void shouldFixDefect163NeedsToIncludeChildrenAndParentsInTreeStructure(){
         Node car = new Node("Car");
         car.saveIt();

@@ -309,6 +309,13 @@ public enum Registry {
                 }
             }
 
+            HasManies hasManiesAnnotation = modelClass.getAnnotation(HasManies.class);
+            if (hasManiesAnnotation != null) {
+                for (HasMany hasMany : hasManiesAnnotation.value()) {
+                    processOverridesHasMany(modelClass, hasMany);
+                }
+            }
+
             HasMany hasManyAnnotation = modelClass.getAnnotation(HasMany.class);
             processOverridesHasMany(modelClass, hasManyAnnotation);
 
