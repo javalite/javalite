@@ -216,3 +216,12 @@ CREATE TABLE bands_musicians (the_id  int primary key GENERATED ALWAYS AS IDENTI
 
 CALL dropTable('employees');
 CREATE TABLE employees (id int primary key GENERATED ALWAYS AS IDENTITY, first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56), position VARCHAR(56), active INT, department VARCHAR(56), created_at TIMESTAMP, updated_at TIMESTAMP);
+
+CALL dropTable('customers');
+CREATE TABLE customers (customer_id int primary key GENERATED ALWAYS AS IDENTITY, first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL, salutation VARCHAR(56) NOT NULL);
+
+CALL dropTable('postal_addresses');
+CREATE TABLE postal_addresses (id  int primary key GENERATED ALWAYS AS IDENTITY, address1 VARCHAR(56), address2 VARCHAR(56), city VARCHAR(56), zip VARCHAR(56), country VARCHAR(56), scope VARCHAR(56), customer_id int);
+
+CALL dropTable('phone_numbers');
+CREATE TABLE phone_numbers (id  int primary key GENERATED ALWAYS AS IDENTITY, number VARCHAR(56), type VARCHAR(56), scope VARCHAR(56), customer_id int);

@@ -462,3 +462,21 @@ IF object_id('dbo.employees') IS NOT NULL
         DROP TABLE [dbo].[employees]
     END
 CREATE TABLE employees ( id INT IDENTITY PRIMARY KEY, first_name VARCHAR(56), last_name VARCHAR(56), position  VARCHAR(56),  active INT,  department VARCHAR(56), created_at DATETIME2, updated_at DATETIME2);
+
+IF object_id('dbo.customers') IS NOT NULL
+  BEGIN
+    DROP TABLE [dbo].[customers]
+  END
+CREATE TABLE customers ( customer_id INT IDENTITY PRIMARY KEY, first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL, salutation  VARCHAR(56) NOT NULL);
+
+IF object_id('postal_addresses') IS NOT NULL
+    BEGIN
+        DROP TABLE [dbo].[postal_addresses]
+    END
+CREATE TABLE postal_addresses ( id INT IDENTITY PRIMARY KEY, address1 VARCHAR(56), address2 VARCHAR(56), city  VARCHAR(56) NOT NULL, zip VARCHAR(56), country VARCHAR(56), scope VARCHAR(56), customer_id INT);
+
+IF object_id('phone_numbers') IS NOT NULL
+    BEGIN
+        DROP TABLE [dbo].[phone_numbers]
+    END
+CREATE TABLE phone_numbers ( id INT IDENTITY PRIMARY KEY, number VARCHAR(56), type VARCHAR(56), scope VARCHAR(56), customer_id INT);
