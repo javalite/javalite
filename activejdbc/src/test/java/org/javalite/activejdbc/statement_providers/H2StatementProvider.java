@@ -213,20 +213,6 @@ public class H2StatementProvider implements StatementProvider {
             statements = Arrays.asList();
         } else if (table.equals("bands_musicians")) {
             statements = Arrays.asList();
-        } else if (table.equals("customers")) {
-            statements =  Arrays.asList(
-                    "INSERT INTO customers VALUES (1, 'Alan', 'Turing', 'Mr.');"
-            );
-        } else if (table.equals("postal_addresses")) {
-            statements =  Arrays.asList(
-                    "INSERT INTO postal_addresses VALUES (1, 'The Old Schools', 'Trinity Lane', 'Cambridge', 'CB2 1TN', 'United Kingdom', 'business', 1);",
-                    "INSERT INTO postal_addresses VALUES (2, 'Histon Rd', null, 'Cambridge', 'CB4 3JD', 'United Kingdom', 'private', 1);"
-            );
-        } else if (table.equals("phone_numbers")) {
-            statements =  Arrays.asList(
-                    "INSERT INTO phone_numbers VALUES (1, '+44 (0)1223 337733', 'fixed', 'business', 1);",
-                    "INSERT INTO phone_numbers VALUES (2, '+44 800 042 0800', 'mobile', 'private', 1);"
-            );
         } else {
             statements = Arrays.asList();
         }
