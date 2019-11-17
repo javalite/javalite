@@ -479,4 +479,4 @@ IF object_id('phone_numbers') IS NOT NULL
     BEGIN
         DROP TABLE [dbo].[phone_numbers]
     END
-CREATE TABLE phone_numbers ( id INT IDENTITY PRIMARY KEY, number VARCHAR(56), type VARCHAR(56), scope VARCHAR(56), customer_id INT);
+CREATE TABLE phone_numbers ( id INT IDENTITY PRIMARY KEY, the_number VARCHAR(56), type VARCHAR(56), scope VARCHAR(56), customer_id INT);

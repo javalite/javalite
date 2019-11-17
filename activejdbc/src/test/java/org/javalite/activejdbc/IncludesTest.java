@@ -216,9 +216,9 @@ public class IncludesTest extends ActiveJDBCTest{
                 "zip", "CB2 1TN", "country", "United Kingdom", "scope", "business", "customer_id", alanTuring.getId());
         PostalAddress.createIt("address1", "Histon Rd", "city", "Cambridge",
                 "zip", "CB4 3JD", "country", "United Kingdom", "scope", "private", "customer_id", alanTuring.getId());
-        PhoneNumber.createIt("number", "+44 (0)1223 337733", "type", "fixed", "scope", "business", "customer_id",
+        PhoneNumber.createIt("the_number", "+44 (0)1223 337733", "type", "fixed", "scope", "business", "customer_id",
                 alanTuring.getId());
-        PhoneNumber.createIt("number", "+44 800 042 0800", "type", "mobile", "scope", "private", "customer_id",
+        PhoneNumber.createIt("the_number", "+44 800 042 0800", "type", "mobile", "scope", "private", "customer_id",
                 alanTuring.getId());
 
         List<Customer> customers = Customer.findAll().include(PostalAddress.class, PhoneNumber.class);

@@ -237,4 +237,4 @@ DROP TABLE IF EXISTS postal_addresses;
 CREATE TABLE postal_addresses (id INTEGER PRIMARY KEY AUTOINCREMENT, address1 VARCHAR(56), address2 VARCHAR(56), city VARCHAR(56), zip VARCHAR(56), country VARCHAR(56), scope VARCHAR(56), customer_id INT(11));
 
 DROP TABLE IF EXISTS phone_numbers;
-CREATE TABLE phone_numbers (id INTEGER PRIMARY KEY AUTOINCREMENT, number VARCHAR(56), type VARCHAR(56), scope VARCHAR(56), customer_id INT(11));
+CREATE TABLE phone_numbers (id INTEGER PRIMARY KEY AUTOINCREMENT, the_number VARCHAR(56), type VARCHAR(56), scope VARCHAR(56), customer_id INT(11));
