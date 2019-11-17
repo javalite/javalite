@@ -224,4 +224,4 @@ CALL dropTable('postal_addresses');
 CREATE TABLE postal_addresses (id  int primary key GENERATED ALWAYS AS IDENTITY, address1 VARCHAR(56), address2 VARCHAR(56), city VARCHAR(56), zip VARCHAR(56), country VARCHAR(56), scope VARCHAR(56), customer_id int);
 
 CALL dropTable('phone_numbers');
-CREATE TABLE phone_numbers (id  int primary key GENERATED ALWAYS AS IDENTITY, number VARCHAR(56), type VARCHAR(56), scope VARCHAR(56), customer_id int);
+CREATE TABLE phone_numbers (id  int primary key GENERATED ALWAYS AS IDENTITY, the_number VARCHAR(56), type VARCHAR(56), scope VARCHAR(56), customer_id int);

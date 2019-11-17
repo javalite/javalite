@@ -239,4 +239,4 @@ DROP TABLE IF EXISTS postal_addresses;
 CREATE TABLE postal_addresses (id serial PRIMARY KEY, address1 VARCHAR(56), address2 VARCHAR(56), city VARCHAR(56), zip VARCHAR(56), country VARCHAR(56), scope VARCHAR(56), customer_id INT);
 
 DROP TABLE IF EXISTS phone_numbers;
-CREATE TABLE phone_numbers (id serial PRIMARY KEY, number VARCHAR(56), type VARCHAR(56), scope VARCHAR(56), customer_id INT);
+CREATE TABLE phone_numbers (id serial PRIMARY KEY, the_number VARCHAR(56), type VARCHAR(56), scope VARCHAR(56), customer_id INT);

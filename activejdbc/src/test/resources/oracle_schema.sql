@@ -1284,7 +1284,7 @@ CREATE OR REPLACE TRIGGER postal_addresses_trigger
   end;
 -- BREAK
 
-CREATE TABLE phone_numbers (id NUMBER NOT NULL, "NUMBER" VARCHAR(56), type VARCHAR(56), scope VARCHAR(56), customer_id NUMBER)
+CREATE TABLE phone_numbers (id NUMBER NOT NULL, the_number VARCHAR(56), type VARCHAR(56), scope VARCHAR(56), customer_id NUMBER)
 -- BREAK
 ALTER TABLE phone_numbers ADD CONSTRAINT phone_numbers_pk PRIMARY KEY (id)
 -- BREAK
