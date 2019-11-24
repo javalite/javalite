@@ -25,7 +25,7 @@ public class Logger {
 
     private static Log log = new Log();
 
-    static void setLog(Log l) {
+    public static void setLog(Log l) {
         log = l;
     }
 
