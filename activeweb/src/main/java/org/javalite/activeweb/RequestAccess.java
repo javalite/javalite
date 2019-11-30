@@ -12,18 +12,16 @@ import static org.apache.commons.fileupload.FileUploadBase.MULTIPART;
 import static org.javalite.common.Collections.list;
 
 /**
- * 
- * TODO: this needs to become a default interface, once we move the project to java 8
- * 
+ * Provides access to request values.
+ *
  * @author igor, on 6/16/14.
  */
-public class RequestUtils {
+public interface RequestAccess {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RequestUtils.class);
-    
-    private RequestUtils() {}
+    Logger LOGGER = LoggerFactory.getLogger(RequestAccess.class);
 
-    public static boolean isMultipartContent() {
+
+    default boolean isMultipartContent() {
         String contentType = RequestContext.getHttpRequest().getContentType();
         return contentType != null && contentType.toLowerCase(Locale.ENGLISH).startsWith(MULTIPART);
     }
@@ -35,7 +33,7 @@ public class RequestUtils {
      * @param name name of parameter.
      * @return value of routing user segment, or route wild card value, or request parameter.
      */
-    public static String param(String name){
+    default String param(String name){
         if(name.equals("id")){
             return getId();
         }else if(RequestContext.getRequestVo().getUserSegments().get(name) != null){
@@ -58,7 +56,7 @@ public class RequestUtils {
      * @param formItems form items retrieved from <code>multipart/form-data</code> request.
      * @return value of request parameter  from <code>multipart/form-data</code> request or null if not found.
      */
-    public static String param(String name, List<FormItem> formItems) {
+    default  String param(String name, List<FormItem> formItems) {
         for (FormItem formItem : formItems) {
             if(formItem.isFormField() && formItem.getFieldName().equals(name)){
                 return formItem.getStreamAsString();
@@ -73,7 +71,7 @@ public class RequestUtils {
      *
      * @return ID value from URI is one exists, null if not.
      */
-    public static String getId(){
+    default String getId(){
         String paramId = RequestContext.getHttpRequest().getParameter("id");
         if(paramId != null && RequestContext.getHttpRequest().getAttribute("id") != null){
             LOGGER.warn("WARNING: probably you have 'id' supplied both as a HTTP parameter, as well as in the URI. Choosing parameter over URI value.");
@@ -98,7 +96,7 @@ public class RequestUtils {
      *
      * @return format part of the URI, or nul if URI does not have it.
      */
-    public static String format(){
+    default String format(){
         return RequestContext.getFormat();
     }
 
@@ -108,7 +106,7 @@ public class RequestUtils {
      *
      * @return instance of {@link AppContext}.
      */
-    public static AppContext appContext(){
+    default AppContext appContext(){
         return RequestContext.getAppContext();
     }
 
@@ -119,7 +117,7 @@ public class RequestUtils {
      * @see <a href="http://en.wikipedia.org/wiki/List_of_HTTP_header_fields">List_of_HTTP_header_fields</a>
      * @return true if this request is Ajax.
      */
-    public static boolean isXhr(){
+    default boolean isXhr(){
         String xhr = header("X-Requested-With");
         if(xhr == null) {
             xhr = header("x-requested-with");
@@ -133,7 +131,7 @@ public class RequestUtils {
      *
      * @return user-agent header of the request.
      */
-    public static String userAgent(){
+    default String userAgent(){
         String camel = header("User-Agent");
         return camel != null ? camel : header("user-agent");
     }
@@ -141,7 +139,7 @@ public class RequestUtils {
     /**
      * Synonym for {@link #isXhr()}.
      */
-    public static boolean xhr(){
+    default boolean xhr(){
         return isXhr();
     }
 
@@ -151,7 +149,7 @@ public class RequestUtils {
      *
      * @return instance of {@link Route}
      */
-    public static Route getRoute(){
+    default Route getRoute(){
         return RequestContext.getRoute();
     }
 
@@ -163,7 +161,7 @@ public class RequestUtils {
      * @param name name of request parameter to test.
      * @return true if parameter exists, false if not.
      */
-    public static boolean exists(String name){
+    default boolean exists(String name){
         return param(name) != null;
     }
 
@@ -173,7 +171,7 @@ public class RequestUtils {
      * @param name name of request parameter to test.
      * @return true if parameter exists, false if not.
      */
-    public static boolean requestHas(String name){
+    default boolean requestHas(String name){
         return param(name) != null;
     }
 
@@ -183,7 +181,7 @@ public class RequestUtils {
      *
      * @return local host name on which request was received.
      */
-    public static String host() {
+    default String host() {
         return RequestContext.getHttpRequest().getLocalName();
     }
 
@@ -193,12 +191,9 @@ public class RequestUtils {
      *
      * @return local IP address on which request was received.
      */
-    public static  String ipAddress() {
+    default String ipAddress() {
         return RequestContext.getHttpRequest().getLocalAddr();
     }
-
-
-
 
 
     /**
@@ -209,10 +204,12 @@ public class RequestUtils {
      * @return protocol of web server request if <code>X-Forwarded-Proto</code> header is found, otherwise current
      * protocol.
      */
-    public static String getRequestProtocol(){
+    default String getRequestProtocol(){
         String protocol = header("X-Forwarded-Proto");
         return Util.blank(protocol)? protocol(): protocol;
     }
+
+    //TODO: provide methods for: X-Forwarded-Proto and X-Forwarded-Port
 
     /**
      * This method returns a port of a web server if this Java container is fronted by one, such that
@@ -221,7 +218,7 @@ public class RequestUtils {
      *
      * @return port of web server request if <code>X-Forwarded-Port</code> header is found, otherwise port of the Java container.
      */
-    public static int getRequestPort(){
+    default int getRequestPort(){
         String port = header("X-Forwarded-Port");
         return Util.blank(port)? port(): Integer.parseInt(port);
     }
@@ -233,7 +230,7 @@ public class RequestUtils {
      *
      * @return port on which the of the server received current request.
      */
-    public static int port(){
+    default int port(){
         return RequestContext.getHttpRequest().getLocalPort();
     }
 
@@ -243,7 +240,7 @@ public class RequestUtils {
      *
      * @return protocol of request
      */
-    public static String protocol(){
+    default String protocol(){
         return RequestContext.getHttpRequest().getProtocol();
     }
 
@@ -255,7 +252,7 @@ public class RequestUtils {
      *
      * @return host name of web server if <code>X-Forwarded-Host</code> header is found, otherwise local host name.
      */
-    public static String getRequestHost() {
+    default String getRequestHost() {
         String forwarded = header("X-Forwarded-Host");
         if (Util.blank(forwarded)) {
             return host();
@@ -269,7 +266,7 @@ public class RequestUtils {
      *
      * @return IP address that the web server forwarded request for.
      */
-    public static String ipForwardedFor() {
+    default String ipForwardedFor() {
         String h = header("X-Forwarded-For");
         return !Util.blank(h) ? h : remoteAddress();
     }
@@ -281,7 +278,7 @@ public class RequestUtils {
      * @param name name of multiple values from request.
      * @return multiple request values for a name.
      */
-    public static List<String> params(String name){
+    default List<String> params(String name){
         String[] values = RequestContext.getHttpRequest().getParameterValues(name);
         List<String>valuesList = null;
         if (name.equals("id")) {
@@ -309,7 +306,7 @@ public class RequestUtils {
      * @param formItems form items retrieved from <code>multipart/form-data</code> request.
      * @return multiple request values for a name. Will ignore files, and only return form fields.
      */
-    public static List<String> params(String name, List<FormItem> formItems) {
+    default List<String> params(String name, List<FormItem> formItems) {
         List<String> vals = new ArrayList<>();
         for (FormItem formItem : formItems) {
             if(formItem.isFormField() && formItem.getFieldName().equals(name)){
@@ -326,7 +323,7 @@ public class RequestUtils {
      * @return a map where keys are names of all parameters, while values are first value for each parameter, even
      * if such parameter has more than one value submitted.
      */
-    public static Map<String, String> params1st(){
+    default Map<String, String> params1st(){
         //TODO: candidate for performance optimization
         Map<String, String> params = new HashMap<>();
         Enumeration names = RequestContext.getHttpRequest().getParameterNames();
@@ -352,7 +349,7 @@ public class RequestUtils {
      * @return a map where keys are names of all parameters, while values are first value for each parameter, even
      * if such parameter has more than one value submitted.
      */
-    public static Map<String, String> params1st(List<FormItem> formItems) {
+    default Map<String, String> params1st(List<FormItem> formItems) {
         Map<String, String> vals = new HashMap<>();
         for (FormItem formItem : formItems) {
             if(formItem.isFormField() && !vals.containsKey(formItem.getFieldName())){
@@ -370,7 +367,7 @@ public class RequestUtils {
      * @return an instance <code>java.util.Map</code> containing parameter names as keys and parameter values as map values.
      * The keys in the parameter map are of type String. The values in the parameter map are of type String array.
      */
-    public static Map<String, String[]> params(){
+    default Map<String, String[]> params(){
         SimpleHash params = new SimpleHash(RequestContext.getHttpRequest().getParameterMap());
         if(getId() != null)
             params.put("id", new String[]{getId()});
@@ -391,7 +388,7 @@ public class RequestUtils {
      *
      * @return locale of request.
      */
-    public static Locale locale(){
+    default Locale locale(){
         return RequestContext.getHttpRequest().getLocale();
     }
 
@@ -400,7 +397,7 @@ public class RequestUtils {
      *
      * @return locale of request.
      */
-    public static Locale getLocale(){
+    default Locale getLocale(){
         return RequestContext.getHttpRequest().getLocale();
     }
 
@@ -409,7 +406,7 @@ public class RequestUtils {
      *
      * @return collection of all cookies browser sent.
      */
-    public static List<Cookie> cookies(){
+    default List<Cookie> cookies(){
         javax.servlet.http.Cookie[] servletCookies = RequestContext.getHttpRequest().getCookies();
         if(servletCookies == null)
             return new ArrayList<>();
@@ -428,7 +425,7 @@ public class RequestUtils {
      * @param name name of a cookie.
      * @return a cookie by name, null if not found.
      */
-    public static Cookie cookie(String name){
+    default Cookie cookie(String name){
         javax.servlet.http.Cookie[] servletCookies = RequestContext.getHttpRequest().getCookies();
         if (servletCookies != null) {
             for (javax.servlet.http.Cookie servletCookie : servletCookies) {
@@ -447,7 +444,7 @@ public class RequestUtils {
      * @param name name of cookie.
      * @return cookie value.
      */
-    public static String cookieValue(String name){
+    default String cookieValue(String name){
         return cookie(name).getValue();
     }
 
@@ -458,7 +455,7 @@ public class RequestUtils {
      *
      * @return a path of the request.
      */
-    public static String path(){
+    default String path(){
         return RequestContext.getHttpRequest().getServletPath();
     }
 
@@ -467,7 +464,7 @@ public class RequestUtils {
      *
      * @return a full URL of the request, all except a query string.
      */
-    public  static String url(){
+    default String url(){
         return RequestContext.getHttpRequest().getRequestURL().toString();
     }
 
@@ -476,7 +473,7 @@ public class RequestUtils {
      *
      * @return query string of the request.
      */
-    public  static String queryString(){
+    default String queryString(){
         return RequestContext.getHttpRequest().getQueryString();
     }
 
@@ -485,7 +482,7 @@ public class RequestUtils {
      *
      * @return an HTTP method from the request.
      */
-    public static String method(){
+    default String method(){
         return RequestContext.getHttpRequest().getMethod();
     }
 
@@ -494,7 +491,7 @@ public class RequestUtils {
      *
      * @return True if this request uses HTTP GET method, false otherwise.
      */
-    public static boolean isGet() {
+    default boolean isGet() {
         return isMethod("get");
     }
 
@@ -504,7 +501,7 @@ public class RequestUtils {
      *
      * @return True if this request uses HTTP POST method, false otherwise.
      */
-    public static boolean isPost() {
+    default boolean isPost() {
         return isMethod("post");
     }
 
@@ -514,7 +511,7 @@ public class RequestUtils {
      *
      * @return True if this request uses HTTP PUT method, false otherwise.
      */
-    public static boolean isPut() {
+    default boolean isPut() {
         return isMethod("put");
     }
 
@@ -524,12 +521,12 @@ public class RequestUtils {
      *
      * @return True if this request uses HTTP DELETE method, false otherwise.
      */
-    public static boolean isDelete() {
+    default boolean isDelete() {
         return isMethod("delete");
     }
 
 
-    public static boolean isMethod(String method){
+    default boolean isMethod(String method){
         return HttpMethod.getMethod(RequestContext.getHttpRequest()).name().equalsIgnoreCase(method);
     }
 
@@ -539,7 +536,7 @@ public class RequestUtils {
      *
      * @return True if this request uses HTTP HEAD method, false otherwise.
      */
-    public static boolean isHead() {
+    default boolean isHead() {
         return isMethod("head");
     }
 
@@ -549,7 +546,7 @@ public class RequestUtils {
      *
      * @return a context of the request - usually an app name (as seen on URL of request).
      */
-    public static String context(){
+    default String context(){
         return RequestContext.getHttpRequest().getContextPath();
     }
 
@@ -558,7 +555,7 @@ public class RequestUtils {
      * Examlpe: <code>/mywebapp/controller/action/id</code>
      * @return  URI, or a full path of request.
      */
-    public static String uri(){
+    default String uri(){
         return RequestContext.getHttpRequest().getRequestURI();
     }
 
@@ -567,7 +564,7 @@ public class RequestUtils {
      *
      * @return host name of the requesting client.
      */
-    public static String remoteHost(){
+    default String remoteHost(){
         return RequestContext.getHttpRequest().getRemoteHost();
     }
 
@@ -576,7 +573,7 @@ public class RequestUtils {
      *
      * @return IP address of the requesting client.
      */
-    public static String remoteAddress(){
+    default String remoteAddress(){
         return RequestContext.getHttpRequest().getRemoteAddr();
     }
 
@@ -588,7 +585,7 @@ public class RequestUtils {
      * @param name name of header
      * @return header value.
      */
-    public static String header(String name){
+    default String header(String name){
         return RequestContext.getHttpRequest().getHeader(name);
     }
 
@@ -597,7 +594,7 @@ public class RequestUtils {
      *
      * @return all headers from a request keyed by header name.
      */
-    public static Map<String, String> headers(){
+    default Map<String, String> headers(){
         Map<String, String> headers = new HashMap<>();
         Enumeration<String> names = RequestContext.getHttpRequest().getHeaderNames();
         while (names.hasMoreElements()) {
@@ -612,7 +609,7 @@ public class RequestUtils {
      *
      * @return object in session, or null.
      */
-    public Object session(String name){
+    default Object session(String name){
         return RequestContext.getHttpRequest().getSession().getAttribute(name);
     }
 
@@ -622,11 +619,11 @@ public class RequestUtils {
      * @param name name of object
      * @param value value of object
      */
-    public void session(String name, Object value){
+    default void session(String name, Object value){
         RequestContext.getHttpRequest().getSession().getAttribute(name);
     }
 
-    public static String getRequestProperties(){
+    default String getRequestProperties(){
         StringBuilder sb = new StringBuilder();
         HttpServletRequest request = RequestContext.getHttpRequest();
         sb.append("Request URL: ").append(request.getRequestURL()).append("\n");
@@ -636,5 +633,9 @@ public class RequestUtils {
         sb.append("URI Path: ").append(request.getServletPath()).append("\n");
         sb.append("Method: ").append(request.getMethod()).append("\n");
         return sb.toString();
+    }
+
+    default String servletPath() {
+        return RequestContext.getHttpRequest().getServletPath();
     }
 }

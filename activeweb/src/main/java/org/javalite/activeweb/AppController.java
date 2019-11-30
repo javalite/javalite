@@ -67,16 +67,6 @@ public abstract class AppController extends HttpSupport {
     }
 
 
-    protected String servletPath() {
-        return RequestContext.getHttpRequest().getServletPath();
-    }
-
-    @Override
-    protected String queryString() {
-        return RequestContext.getHttpRequest().getQueryString();
-    }
-
-
 
 
     /**

@@ -27,7 +27,7 @@ public class CSRFFilter extends HttpSupportFilter {
             if (token == null) {
                 token = header(CSRF.HTTP_HEADER_NAME);
             }
-            if (token == null && RequestUtils.isMultipartContent()) {
+            if (token == null && isMultipartContent()) {
                 int i = 0;
                 for(FormItem fi : multipartFormItems()) {
                     if (fi.isFormField() && sessionName.equals(fi.getFieldName())) {
