@@ -55,7 +55,6 @@ public class StatisticsQueueTest {
             futures.add(queue.enqueue(new QueryExecutionEvent("test1", 20 + i)));
             futures.add(queue.enqueue(new QueryExecutionEvent("test2", 30 + i)));
         }
-        //TODO: Shouldn't the StatisticsQueue have a isDone() or done() method?
         //lets wait till all jobs are complete
         for (Future future : futures) {
             wait(future);
@@ -84,7 +83,6 @@ public class StatisticsQueueTest {
         a(report.get(1).getCount()).shouldBeEqual(10);
         a(report.get(1).getMin()).shouldBeEqual(20);
         a(report.get(1).getMax()).shouldBeEqual(29);
-        //TODO: add checks of all values - total, avg, count, etc.
 
         a(report.get(2).getQuery()).shouldBeEqual("test");
         a(report.get(2).getAvg()).shouldBeEqual(15);

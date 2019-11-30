@@ -101,6 +101,14 @@ public class Many2ManyRelationshipTest extends ActiveJDBCTest {
         programmer.add(project2);
 
         List<Project> projects = programmer.get(Project.class, "duration_weeks = ?", 3);
+
+
+        Programmer.findAll().dump();
+        Project.findAll().dump();
+        Assignment.findAll().dump();
+
         a(projects.size()).shouldBeEqual(1);
+
+
     }
 }

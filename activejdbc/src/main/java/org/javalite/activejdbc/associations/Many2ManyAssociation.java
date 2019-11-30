@@ -17,7 +17,6 @@ limitations under the License.
 
 package org.javalite.activejdbc.associations;
 
-import org.javalite.activejdbc.Association;
 import org.javalite.activejdbc.Model;
 
 import java.util.Map;
@@ -25,7 +24,6 @@ import java.util.Map;
 /**
  * @author Igor Polevoy
  */
-//TODO: rename to ManyToManyAssociation, using "To" instead of "2" as the other class names?
 public class Many2ManyAssociation extends Association {
 
     public static final String SOURCE_FK = "sourceFK";

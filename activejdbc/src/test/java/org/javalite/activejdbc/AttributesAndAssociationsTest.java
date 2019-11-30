@@ -2,6 +2,8 @@ package org.javalite.activejdbc;
 
 import java.util.Collection;
 import java.util.List;
+
+import org.javalite.activejdbc.associations.Association;
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
 import org.javalite.activejdbc.associations.OneToManyAssociation;
 import org.javalite.activejdbc.test.ActiveJDBCTest;

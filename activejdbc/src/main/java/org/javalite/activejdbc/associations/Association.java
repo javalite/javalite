@@ -15,7 +15,9 @@ limitations under the License.
 */
 
 
-package org.javalite.activejdbc;
+package org.javalite.activejdbc.associations;
+
+import org.javalite.activejdbc.Model;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -29,7 +31,6 @@ import static org.javalite.common.Collections.map;
  *
  * @author Igor Polevoy
  */
-//TODO: move this class to associations package, but also see InstrumentationModelFinder:51
 public abstract class Association implements Serializable {
 
     public static final String SOURCE = "source";
@@ -75,8 +76,6 @@ public abstract class Association implements Serializable {
 
     @Override
     public int hashCode() {
-        //TODO: improve hashCode() implementation in the subclasses instead of using this?
-        // The toString() is already unique across every subclass, so should be OK
         return toString().hashCode();
     }
 }

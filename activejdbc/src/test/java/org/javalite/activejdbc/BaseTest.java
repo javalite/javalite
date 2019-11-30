@@ -142,6 +142,4 @@ public class BaseTest extends ActiveJDBCTest {
 
        the(list.size()).shouldEqual(4);
     }
-
-
 }

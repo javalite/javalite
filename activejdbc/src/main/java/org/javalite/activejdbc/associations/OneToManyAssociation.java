@@ -17,7 +17,6 @@ limitations under the License.
 
 package org.javalite.activejdbc.associations;
 
-import org.javalite.activejdbc.Association;
 import org.javalite.activejdbc.Model;
 
 import java.util.Map;

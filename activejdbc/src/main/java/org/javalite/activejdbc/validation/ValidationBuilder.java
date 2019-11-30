@@ -33,7 +33,6 @@ public class ValidationBuilder<T extends Validator> {
         validators.add(validator);
     }
 
-    //TODO implement resource bundles here so that the argument cam be either literal string or key to the message
     public void message(String message){
         for (T validator : validators) {
             validator.setMessage(message);

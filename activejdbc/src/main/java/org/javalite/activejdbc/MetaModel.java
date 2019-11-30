@@ -224,7 +224,6 @@ public class MetaModel implements Serializable {
      * <code>record_version</code>, depending on argument.
      */
     public Set<String> getAttributeNamesSkipGenerated(boolean managed) {
-        //TODO: can cache this, but will need a cache for managed=true an another for managed=false
         Set<String> attributesNames = new CaseInsensitiveSet(getAttributeNamesSkipId());
 
         if(managed){
