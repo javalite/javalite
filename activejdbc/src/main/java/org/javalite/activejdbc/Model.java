@@ -15,7 +15,6 @@ limitations under the License.
 */
 package org.javalite.activejdbc;
 
-import com.sun.jdi.Method;
 import org.javalite.activejdbc.annotations.Cached;
 import org.javalite.activejdbc.annotations.CompositePK;
 import org.javalite.activejdbc.associations.*;
@@ -892,7 +891,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
 
     /**
-     * Parses XML into a model. It expects the same structure of XML as the method {@link #toXml(int, boolean, String...)}.
+     * Parses XML into a model. It expects the same structure of XML as the method {@link #toXml(boolean, boolean, String...)}.
      * It ignores children and dependencies (for now) if any. This method  will parse the model attributes
      * from the XML document, and will then call {@link #fromMap(java.util.Map)} method. It does not save data into a database, just sets the
      * attributes.
