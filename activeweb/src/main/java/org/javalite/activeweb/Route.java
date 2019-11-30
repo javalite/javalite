@@ -166,8 +166,6 @@ public class Route {
             res.setStatus(405);
             LOGGER.warn("Requested action does not support HTTP method: " + method.name() + ", returning status code 405.");
             RequestContext.setControllerResponse(res);
-
-            //TODO: candidate for caching below, list of allowed HTTP methods
             //see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
             RequestContext.getHttpResponse().setHeader("Allow", join(allowedActions(), ", "));
             return false;
@@ -215,26 +213,17 @@ public class Route {
     }
 
     private boolean restfulActionSupportsHttpMethod() {
-        if (actionName.equals("index") && httpMethod.equals(HttpMethod.GET)) {
-            return true;
-        } else if (actionName.equals("newForm") && httpMethod.equals(HttpMethod.GET)) {
-            return true;
-        } else if (actionName.equals("create") && httpMethod.equals(HttpMethod.POST)) {
-            return true;
-        } else if (actionName.equals("show") && httpMethod.equals(HttpMethod.GET)) {
-            return true;
-        } else if (actionName.equals("editForm") && httpMethod.equals(HttpMethod.GET)) {
-            return true;
-        } else if (actionName.equals("update") && httpMethod.equals(HttpMethod.PUT)) {
-            return true;
-        } else if (actionName.equals("destroy") && httpMethod.equals(HttpMethod.DELETE)) {
-            return true;
-        } else if (actionName.equals("options") && httpMethod.equals(HttpMethod.OPTIONS)) {
+        if (       actionName.equals("index") && httpMethod.equals(HttpMethod.GET)
+                || actionName.equals("newForm") && httpMethod.equals(HttpMethod.GET)
+                || actionName.equals("create") && httpMethod.equals(HttpMethod.POST)
+                || actionName.equals("show") && httpMethod.equals(HttpMethod.GET)
+                || actionName.equals("editForm") && httpMethod.equals(HttpMethod.GET)
+                || actionName.equals("update") && httpMethod.equals(HttpMethod.PUT)
+                || actionName.equals("destroy") && httpMethod.equals(HttpMethod.DELETE)
+                || actionName.equals("options") && httpMethod.equals(HttpMethod.OPTIONS)) {
             return true;
         } else {
-            LOGGER.warn("You may execute a non-restful action on a restful controller. It is recommended that you " +
-                    "use the following methods on restful controllers: index, newForm, create, show, editForm, update, destroy." +
-                    "This feature maybe pulled in the future."); //TODO - consider pulling this.
+            LOGGER.warn("Cannot execute a non-restful action on a restful controller.");
             return false;
         }
     }

@@ -34,6 +34,7 @@ import java.util.*;
 import static org.javalite.activeweb.Configuration.getDefaultLayout;
 import static org.javalite.activeweb.Configuration.useDefaultLayoutForErrors;
 import static org.javalite.common.Collections.map;
+import static org.javalite.common.Util.getCauseMessage;
 
 /**
  * @author Igor Polevoy
@@ -115,15 +116,7 @@ public class RequestDispatcher implements Filter {
         return router;
     }
 
-    //TODO: refactor to some util class. This is stolen...ehrr... borrowed from Apache ExceptionUtils
-    static String getCauseMessage(Throwable throwable) {
-        List<Throwable> list = new ArrayList<>();
-        while (throwable != null && list.contains(throwable) == false) {
-            list.add(throwable);
-            throwable = throwable.getCause();
-        }
-        return list.get(0).getMessage();
-    }
+
 
     private void initAppConfig(String configClassName, AppContext context, boolean fail){
         InitConfig initConfig;
@@ -213,8 +206,6 @@ public class RequestDispatcher implements Filter {
                 runner.run(route);
                 logDone(null);
             } else {
-                //TODO: theoretically this will never happen, because if the route was not excluded, the router.recognize() would throw some kind
-                // of exception, leading to the a system error page.
                 logger.warn("No matching route for servlet path: " + request.getServletPath() + ", passing down to container.");
                 chain.doFilter(req, resp);//let it fall through
             }
