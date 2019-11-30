@@ -1247,7 +1247,6 @@ public class HttpSupport implements RequestAccess {
      * @return true if any request parameter is blank.
      */
     protected boolean blank(String ... names){
-        //TODO: write test, move elsewhere - some helper
         for(String name:names){
             if(Util.blank(param(name))){
                 return true;

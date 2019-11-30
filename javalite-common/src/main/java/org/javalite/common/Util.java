@@ -408,6 +408,22 @@ public final class Util {
         }
     }
 
+    /**
+     * This is stolen...ehrr... borrowed from Apache ExceptionUtils
+     *
+     * @param throwable
+     * @return
+     */
+    public static String getCauseMessage(Throwable throwable) {
+        List<Throwable> list = new ArrayList<>();
+        while (throwable != null && list.contains(throwable) == false) {
+            list.add(throwable);
+            throwable = throwable.getCause();
+        }
+        return list.get(0).getMessage();
+    }
+
+
 
     /**
      * Converts stack trace to string.

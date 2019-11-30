@@ -134,7 +134,7 @@ public class Router {
         String[] parts;
         try {
             String tail = theUri.substring(controllerPath.length() + 1);
-            parts = split(tail, "/");
+            parts = split(tail);
         } catch (Exception e) {
             throw new RouteException("Failed to parse route from: '" + uri + "'", e);
         }
@@ -167,7 +167,7 @@ public class Router {
         String theUri = uri.endsWith("/") ? uri.substring(0, uri.length() - 1) : uri;
         String controllerPath = (controllerPathObject.getControllerPackage() != null ? "/" + controllerPathObject.getControllerPackage().replace(".", "/") : "") + "/" + controllerPathObject.getControllerName();
         String tail = theUri.length() > controllerPath.length() ? theUri.substring(controllerPath.length() + 1) : "";
-        String[] parts = split(tail, "/");
+        String[] parts = split(tail);
 
         //GET 	/photos 	            index 	display a list of all photos
         if (controllerPath.equals(theUri) && method.equals(HttpMethod.GET)) {
@@ -431,9 +431,8 @@ public class Router {
         return !candidates.isEmpty() ? candidates.get(resultIndex) : null;
     }
 
-    //todo: write a regexp one day
-    private static String[] split(String value, String delimeter) {
-        StringTokenizer st = new StringTokenizer(value, delimeter);
+    private static String[] split(String value) {
+        StringTokenizer st = new StringTokenizer(value, "/");
         String[] res = new String[st.countTokens()];
         for (int i = 0; st.hasMoreTokens(); i++) {
             res[i] = st.nextToken();

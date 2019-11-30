@@ -209,7 +209,6 @@ public interface RequestAccess {
         return Util.blank(protocol)? protocol(): protocol;
     }
 
-    //TODO: provide methods for: X-Forwarded-Proto and X-Forwarded-Port
 
     /**
      * This method returns a port of a web server if this Java container is fronted by one, such that
@@ -244,7 +243,6 @@ public interface RequestAccess {
         return RequestContext.getHttpRequest().getProtocol();
     }
 
-    //TODO: provide methods for: X-Forwarded-Proto and X-Forwarded-Port
     /**
      * This method returns a host name of a web server if this container is fronted by one, such that
      * it sets a header <code>X-Forwarded-Host</code> on the request and forwards it to the Java container.
@@ -324,19 +322,26 @@ public interface RequestAccess {
      * if such parameter has more than one value submitted.
      */
     default Map<String, String> params1st(){
-        //TODO: candidate for performance optimization
-        Map<String, String> params = new HashMap<>();
-        Enumeration names = RequestContext.getHttpRequest().getParameterNames();
-        while (names.hasMoreElements()) {
-            String name = names.nextElement().toString();
-            params.put(name, RequestContext.getHttpRequest().getParameter(name));
-        }
-        if(getId() != null)
-            params.put("id", getId());
+        Map<String, String> params;
+        if(RequestContext.getParams1st() == null){
+            params = new HashMap<>();
+            Enumeration names = RequestContext.getHttpRequest().getParameterNames();
+            while (names.hasMoreElements()) {
+                String name = names.nextElement().toString();
+                params.put(name, RequestContext.getHttpRequest().getParameter(name));
+            }
 
-        Map<String, String> userSegments = RequestContext.getRequestVo().getUserSegments();
-        params.putAll(userSegments);
-        return params;
+            if(getId() != null){
+                params.put("id", getId());
+            }
+
+            Map<String, String> userSegments = RequestContext.getRequestVo().getUserSegments();
+            params.putAll(userSegments);
+            RequestContext.setParams1st(params);
+            return params;
+        }else{
+            return RequestContext.getParams1st();
+        }
     }
 
     /**

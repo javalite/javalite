@@ -1,8 +1,7 @@
 package app.controllers;
 
-import app.services.RedirectorModule;
-import com.google.inject.Guice;
 import org.javalite.activeweb.AppIntegrationSpec;
+import org.javalite.test.SystemStreamUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,15 +13,19 @@ public class MyRestfulControllerSpec extends AppIntegrationSpec {
     @Before
     public void before(){
         setTemplateLocation("src/test/views");
-        setInjector(Guice.createInjector(new RedirectorModule()));// this is a hack, does not belong in this test, but the filter requires it.
     }
 
     @Test
     public void shouldFixDefect106(){
-
         controller("/my_restful").get("index");
+    }
 
-        System.out.println(responseContent());
-
+    @Test
+    public void should_prevent_wrong_HTTP_method(){
+        SystemStreamUtil.replaceError();
+        controller("/my_restful").post("index");
+        the(statusCode()).shouldEqual(405);
+        the(SystemStreamUtil.getSystemErr()).shouldContain("Cannot execute a non-restful action on a restful controller.");
+        SystemStreamUtil.restoreSystemErr();
     }
 }

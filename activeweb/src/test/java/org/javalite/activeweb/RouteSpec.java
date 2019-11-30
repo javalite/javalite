@@ -78,5 +78,7 @@ public class RouteSpec extends RequestSpec {
         a(new Route(restfulController, "update", HttpMethod.PUT).actionSupportsHTTPMethod()).shouldBeTrue();
         a(new Route(restfulController, "destroy", HttpMethod.DELETE).actionSupportsHTTPMethod()).shouldBeTrue();
         a(new Route(restfulController, "options", HttpMethod.OPTIONS).actionSupportsHTTPMethod()).shouldBeTrue();
+
+        a(new Route(restfulController, "index", HttpMethod.POST).actionSupportsHTTPMethod()).shouldBeFalse();
     }
 }

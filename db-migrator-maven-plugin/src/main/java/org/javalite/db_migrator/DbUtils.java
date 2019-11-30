@@ -112,8 +112,8 @@ public class DbUtils {
      * @param url a JDBC connection URL
      * @return the database name
      */
-    //TODO: man, this is ugly - igor
     public static String extractDatabaseName(String url) {
+        //this code came from Carbon5, I hold no responsibility for it :)
         int leftIndex = url.lastIndexOf("/");
         if (leftIndex == -1) {
             leftIndex = url.lastIndexOf(":");
@@ -138,19 +138,29 @@ public class DbUtils {
     public static String extractServerUrl(String url)
     {
         int rightIndex = url.length();
-        if (url.lastIndexOf("/") != -1) { rightIndex = url.lastIndexOf("/"); }
-        else if (url.lastIndexOf(":") != -1) { rightIndex = url.lastIndexOf(":"); }
+        if (url.lastIndexOf("/") != -1) {
+            rightIndex = url.lastIndexOf("/");
+        } else if (url.lastIndexOf(":") != -1) {
+            rightIndex = url.lastIndexOf(":");
+        }
         
         StringBuilder baseUrl = new StringBuilder();
         baseUrl.append(url.substring(0, rightIndex));
 
         // TODO This next line is pretty ugly, but it works for nearly every postgresql server.
         // If we have to add another exception to this for another database server, then I highly recommend refactoring this to a more elegant solution.
-        if (POSTGRESQL.equals(databaseType(url))) { baseUrl.append("/postgres"); }
+        if (POSTGRESQL.equals(databaseType(url))) {
+            baseUrl.append("/postgres");
+        }
 
         int optionsIndex = url.indexOf("?");
-        if (optionsIndex == -1) { optionsIndex = url.indexOf(";"); }
-        if (optionsIndex != -1) { baseUrl.append(url.substring(optionsIndex)); }
+
+        if (optionsIndex == -1) {
+            optionsIndex = url.indexOf(";");
+        }
+        if (optionsIndex != -1) {
+            baseUrl.append(url.substring(optionsIndex));
+        }
 
         return baseUrl.toString();
     }

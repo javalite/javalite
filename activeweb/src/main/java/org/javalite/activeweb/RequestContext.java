@@ -42,9 +42,19 @@ public class RequestContext {
     private static ThreadLocal<Map<String, Object>> values = new ThreadLocal<>();
     private static ThreadLocal<Boolean> exceptionHappened = new ThreadLocal<>();
     private static ThreadLocal<List<FormItem>> formItems = new ThreadLocal<>();
+    private static ThreadLocal<Map<String, String>> params1st = new ThreadLocal<>();
 
 
     private RequestContext() {}
+
+
+    static Map<String, String> getParams1st() {
+        return params1st.get();
+    }
+
+    static void setParams1st(Map<String, String> params1st) {
+        RequestContext.params1st.set(params1st);
+    }
 
     static Map<String, Object> getValues() {
         return values.get();
@@ -174,5 +184,6 @@ public class RequestContext {
         values.set(null);
         exceptionHappened.set(false);
         formItems.set(null);
+        params1st.set(null);
     }
 }

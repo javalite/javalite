@@ -15,6 +15,7 @@ limitations under the License.
 */
 package org.javalite.test.jspec;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -52,12 +53,15 @@ public class Expectation<T> {
         if (actual == null) {
             if (expected != null) { throw newShouldBeEqualException(expected); }
         } else {
-            if (expected == null) { throw newShouldBeEqualException(expected); }
-            //TODO: improve Number comparison, see http://stackoverflow.com/questions/2683202/comparing-the-values-of-two-generic-numbers
+            if (expected == null) {
+                throw newShouldBeEqualException(null);
+            }
+
             if (actual instanceof Number && expected instanceof Number) {
-                if (((Number) actual).doubleValue() != ((Number) expected).doubleValue()) {
+                if(new BigDecimal(actual.toString()).compareTo(new BigDecimal(expected.toString())) != 0){
                     throw newShouldBeEqualException(expected);
                 }
+
             } else if (!actual.equals(expected)) {
                 throw newShouldBeEqualException(expected);
             }
