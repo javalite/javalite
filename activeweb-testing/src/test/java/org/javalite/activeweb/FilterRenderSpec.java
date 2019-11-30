@@ -37,6 +37,4 @@ public class FilterRenderSpec extends IntegrationSpec{
         controller("abc_person").param("user", "Jim").get("index");
         a(responseContent()).shouldBeEqual("Jim");
     }
-
-    //TODO: write test for redirect as well.
 }
