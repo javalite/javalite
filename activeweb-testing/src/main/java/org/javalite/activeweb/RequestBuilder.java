@@ -311,8 +311,31 @@ public class RequestBuilder {
     private void submitRequest(String actionName, HttpMethod method) throws RuntimeException {
 
         checkParamAndMultipart();
+        createAndConfigureRequest(method);
 
-        //TODO: refactor this method, getting out of control        
+        try{
+            AppController controller = createControllerInstance(getControllerClassName(controllerPath));
+            RequestContext.setRoute(new Route(controller, realAction, id, method));
+            Injector injector = Configuration.getInjector();
+
+            if(injector != null){
+                 injector.injectMembers(controller);
+            }
+            ControllerRunner runner = new ControllerRunner();
+
+            //must reset these two because in tests, we can execute multiple controllers in the same test method.
+            RequestContext.setControllerResponse(null);
+            RequestContext.setHttpResponse(new MockHttpServletResponse());
+
+            runner.run(new Route(controller, actionName, method));
+        } catch(RuntimeException e){
+            throw e;
+        } catch(Exception e){
+            throw new SpecException(e);
+        }
+    }
+
+    private void createAndConfigureRequest(HttpMethod method) {
         if(contentType != null && contentType.equals(MULTIPART) && !formItems.isEmpty()){
             request = new MockMultipartHttpServletRequestImpl();
             for (FormItem item : formItems) {
@@ -325,6 +348,7 @@ public class RequestBuilder {
         request.setContextPath("/test_context");
         RequestContext.setHttpRequest(request);
         RequestContext.setFormat(format);
+
 
         if(remoteAddress != null){
             request.setRemoteAddr(remoteAddress);
@@ -347,7 +371,6 @@ public class RequestBuilder {
         request.setRequestURI(path);
         request.setAttribute("id", id);
         request.setQueryString(queryString);
-
         addCookiesInternal(request);
 
         //this is to fake the PUT and DELETE methods, just like a browser
@@ -359,26 +382,6 @@ public class RequestBuilder {
         }
         addHeaders(request);
         addParameterValues(request);
-        try{
-            AppController controller = createControllerInstance(getControllerClassName(controllerPath));
-            RequestContext.setRoute(new Route(controller, realAction, id, method));
-            Injector injector = Configuration.getInjector();
-
-            if(injector != null){
-                 injector.injectMembers(controller);
-            }
-            ControllerRunner runner = new ControllerRunner();
-
-            //must reset these two because in tests, we can execute multiple controllers in the same test method.
-            RequestContext.setControllerResponse(null);
-            RequestContext.setHttpResponse(new MockHttpServletResponse());
-
-            runner.run(new Route(controller, actionName, method));
-        } catch(RuntimeException e){
-            throw e;
-        } catch(Exception e){
-            throw new SpecException(e);
-        }
     }
 
     private void addHeaders(MockHttpServletRequest request) {        
