@@ -351,7 +351,6 @@ public abstract class FreeMarkerTag implements TemplateDirectiveModel {
         return RequestUtils.protocol();
     }
 
-    //TODO: provide methods for: X-Forwarded-Proto and X-Forwarded-Port
     /**
      * This method returns a host name of a web server if this container is fronted by one, such that
      * it sets a header <code>X-Forwarded-Host</code> on the request and forwards it to the Java container.

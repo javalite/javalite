@@ -20,17 +20,13 @@ import static org.javalite.activejdbc.test.JdbcProperties.*;
 public class RaceConditionTest extends ActiveJDBCTest{
 
     @Test
-    //TODO: what is test testing?
     public void shouldNotGetRaceCondition() throws ExecutionException, InterruptedException {
-        Callable<Person> task = new Callable<Person>() {
-            @Override
-            public Person call() throws Exception {
-                Base.open(driver(), url(), user(), password());
-                Person p = new Person();
-                p.set("name", "Igor");
-                Base.close();
-                return p;
-            }
+        Callable<Person> task = () -> {
+            Base.open(driver(), url(), user(), password());
+            Person p = new Person();
+            p.set("name", "Igor");
+            Base.close();
+            return p;
         };
         ExecutorService executor = Executors.newFixedThreadPool(10);
         try {

@@ -17,6 +17,7 @@ package org.javalite.activejdbc
 
 import org.javalite.activejdbc.ModelDelegate.metaModelOf
 import org.javalite.activejdbc.annotations.Cached
+import org.javalite.activejdbc.associations.Association
 import org.javalite.activejdbc.conversion.Converter
 import org.javalite.activejdbc.validation.NumericValidationBuilder
 import org.javalite.activejdbc.validation.ValidationBuilder

@@ -15,6 +15,7 @@ limitations under the License.
 */
 package org.javalite.activejdbc;
 
+import com.sun.jdi.Method;
 import org.javalite.activejdbc.annotations.Cached;
 import org.javalite.activejdbc.annotations.CompositePK;
 import org.javalite.activejdbc.associations.*;
@@ -1399,7 +1400,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             throw new IllegalArgumentException("attributeName cannot be null");
         }
         metaModelLocal.checkAttribute(attributeName);
-        return attributes.get(attributeName);// TODO: this should account for nulls too!
+        return attributes.get(attributeName);
     }
 
 
@@ -1483,7 +1484,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @param attributeName name of attribute
      * @return value as bytes.
      */
-    //TODO: use converters here?
     public byte[] getBytes(String attributeName) {
         Object value = get(attributeName);
         return Convert.toBytes(value);
@@ -1925,7 +1925,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         ModelDelegate.removeValidator(modelClass(), validator);
     }
 
-    //TODO: missing no-arg getValidators()?
     public static List<Validator> getValidators(Class<? extends Model> clazz) {
         return ModelDelegate.validatorsOf(clazz);
     }
@@ -2461,57 +2460,68 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      */
     public void add(Model child) {
 
-        if(child == null) throw new IllegalArgumentException("cannot add what is null");
+        if (child == null) {
+            throw new IllegalArgumentException("cannot add what is null");
+        }
 
-        //TODO: refactor this method
         MetaModel childMetaModel = metaModelOf(child.getClass());
         MetaModel metaModel = metaModelLocal;
         if (getId() != null) {
-
             if (metaModel.hasAssociation(child.getClass(), OneToManyAssociation.class)) {
-                OneToManyAssociation ass = metaModel.getAssociationForTarget(child.getClass(), OneToManyAssociation.class);
-                String fkName = ass.getFkName();
-                child.set(fkName, getId());
-                child.saveIt();//this will cause an exception in case validations fail.
+                addOne2ManyChild(metaModel, child);
             }else if(metaModel.hasAssociation(child.getClass(), Many2ManyAssociation.class)){
-                Many2ManyAssociation ass = metaModel.getAssociationForTarget(child.getClass(), Many2ManyAssociation.class);
-                if (child.getId() == null) {
-                    child.saveIt();
-                }
-                MetaModel joinMetaModel = metaModelFor(ass.getJoin());
-                if (joinMetaModel == null) {
-                    new DB(metaModel.getDbName()).exec(metaModel.getDialect().insertManyToManyAssociation(ass),
-                            getId(), child.getId());
-                } else {
-                    //TODO: write a test to cover this case:
-                    //this is for Oracle, many 2 many, and all annotations used, including @IdGenerator. In this case,
-                    //it is best to delegate generation of insert to a model (sequences, etc.)
-                    try {
-                        Model joinModel = joinMetaModel.getModelClass().getDeclaredConstructor().newInstance();
-                        joinModel.set(ass.getSourceFkName(), getId());
-                        joinModel.set(ass.getTargetFkName(), child.getId());
-                        joinModel.saveIt();
-                    } catch (InstantiationException | NoSuchMethodException | InvocationTargetException e) {
-                        throw new InitException("failed to create a new instance of class: " + joinMetaModel.getClass()
-                                + ", are you sure this class has a default constructor?", e);
-                    } catch (IllegalAccessException e) {
-                        throw new InitException(e);
-                    } finally {
-                        Registry.cacheManager().purgeTableCache(ass.getJoin());
-                        Registry.cacheManager().purgeTableCache(metaModel);
-                        Registry.cacheManager().purgeTableCache(childMetaModel);
-                    }
-                }
+                addMany2ManyChild(metaModel, child, childMetaModel);
             } else if(metaModel.hasAssociation(child.getClass(), OneToManyPolymorphicAssociation.class)) {
-                OneToManyPolymorphicAssociation ass = metaModel.getAssociationForTarget(child.getClass(), OneToManyPolymorphicAssociation.class);
-                child.set("parent_id", getId());
-                child.set("parent_type", ass.getTypeLabel());
-                child.saveIt();
-
+                addPolymorphicChild(metaModel, child);
             }else
                 throw new NotAssociatedException(getClass(), child.getClass());
         } else {
             throw new IllegalArgumentException("You can only add associated model to an instance that exists in DB. Save this instance first, then you will be able to add dependencies to it.");
+        }
+    }
+
+    private void addPolymorphicChild(MetaModel metaModel, Model child){
+        OneToManyPolymorphicAssociation ass = metaModel.getAssociationForTarget(child.getClass(), OneToManyPolymorphicAssociation.class);
+        child.set("parent_id", getId());
+        child.set("parent_type", ass.getTypeLabel());
+        child.saveIt();
+    }
+
+    private void addOne2ManyChild(MetaModel metaModel, Model child){
+        OneToManyAssociation ass = metaModel.getAssociationForTarget(child.getClass(), OneToManyAssociation.class);
+        String fkName = ass.getFkName();
+        child.set(fkName, getId());
+        child.saveIt();//this will cause an exception in case validations fail.
+    }
+
+    private void addMany2ManyChild(MetaModel metaModel, Model child, MetaModel childMetaModel){
+        Many2ManyAssociation ass = metaModel.getAssociationForTarget(child.getClass(), Many2ManyAssociation.class);
+        if (child.getId() == null) {
+            child.saveIt();
+        }
+        MetaModel joinMetaModel = metaModelFor(ass.getJoin());
+        if (joinMetaModel == null) {
+            new DB(metaModel.getDbName()).exec(metaModel.getDialect().insertManyToManyAssociation(ass),
+                    getId(), child.getId());
+        } else {
+            //TODO: write a test to cover this case:
+            //this is for Oracle, many 2 many, and all annotations used, including @IdGenerator. In this case,
+            //it is best to delegate generation of insert to a model (sequences, etc.)
+            try {
+                Model joinModel = joinMetaModel.getModelClass().getDeclaredConstructor().newInstance();
+                joinModel.set(ass.getSourceFkName(), getId());
+                joinModel.set(ass.getTargetFkName(), child.getId());
+                joinModel.saveIt();
+            } catch (InstantiationException | NoSuchMethodException | InvocationTargetException e) {
+                throw new InitException("failed to create a new instance of class: " + joinMetaModel.getClass()
+                        + ", are you sure this class has a default constructor?", e);
+            } catch (IllegalAccessException e) {
+                throw new InitException(e);
+            } finally {
+                Registry.cacheManager().purgeTableCache(ass.getJoin());
+                Registry.cacheManager().purgeTableCache(metaModel);
+                Registry.cacheManager().purgeTableCache(childMetaModel);
+            }
         }
     }
 
@@ -2681,15 +2691,19 @@ public abstract class Model extends CallbackSupport implements Externalizable {
 
     /**
      * This method will save a model as new. In other words, it will not try to guess if this is a
-     * new record or a one that exists in the table. It does not have "belt and suspenders", it will
-     * simply generate and execute insert statement, assuming that developer knows what he/she is doing.
+     * new record or a one that exists in the table. It does not have the "belt and suspenders" protections. It will
+     * simply generate and execute an insert statement, assuming that developer knows what he/she is doing.
+     *
+     * <p></p>
+     * Additionally, this method will set the <code>updated_at</code> and <code>created_at</code> attributes on this instance to current time.
+     * In case the insertion fails, these attributes will stay changed anyway.
      *
      * @return true if model was saved, false if not
      */
     public boolean insert() {
 
         fireBeforeCreate();
-        //TODO: fix this as created_at and updated_at attributes will be set even if insertion failed
+
         doCreatedAt();
         doUpdatedAt();
 
@@ -2706,8 +2720,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             columns.add(metaModel.getVersionColumn());
             values.add(1);
         }
-
-        //TODO: need to invoke checkAttributes here too, and maybe rely on MetaModel for this.
 
         try {
             boolean containsId = (attributes.get(metaModel.getIdName()) != null); // do not use containsKey

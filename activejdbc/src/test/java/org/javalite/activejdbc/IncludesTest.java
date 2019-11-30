@@ -156,6 +156,22 @@ public class IncludesTest extends ActiveJDBCTest{
     }
 
     @Test
+    public void shouldBeAbleToUseIncludeMultipleTimes() {
+        deleteAndPopulateTables("libraries", "books", "readers");
+        List<Book> books = Book.findAll().orderBy(Book.getMetaModel().getIdName()).include(Reader.class).include(Library.class);
+        Map book = books.get(0).toMap();
+
+        List<Map> readers = (List<Map>)book.get("readers");
+        a(readers.get(0).get("last_name")).shouldBeEqual("Smith");
+        a(readers.get(1).get("last_name")).shouldBeEqual("Doe");
+
+        Map library = (Map)book.get("library");
+        a(library.get("address")).shouldBeEqual("124 Pine Street");
+    }
+
+
+
+    @Test
     public void shouldIncludeMany2ManyInCaseJoinTableHasUnconventionalPKName() {
         Ingredient sugar = Ingredient.createIt("ingredient_name", "sugar");
         sugar.add(Recipe.create("recipe_name", "pie"));

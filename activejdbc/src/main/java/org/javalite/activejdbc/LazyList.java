@@ -73,7 +73,9 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
         this.forPaginator = forPaginator;
     }
 
-    //TODO: this is only used by SuperLazyList, to be reviewed?
+    /**
+     * This is only used by SuperLazyList
+     */
     protected LazyList() {
         delegate = new ArrayList<>();
         this.fullQuery = null;
@@ -147,6 +149,13 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
      * <pre>
      * List<Post> todayPosts = Post.where("post_date = ?", today).include(Author.class, Comment.class);
      * </pre>
+     *
+     * or:
+     *
+     * <pre>
+     * List<Post> todayPosts = Post.where("post_date = ?", today).include(Author.class).include(Comment.class);
+     * </pre>
+     *
      * will generate only three queries to database - one per model. All the dependencies (includes) will be
      * eagerly loaded, and iteration via the <code>todayPosts</code> list will not generate any more queries,
      * even when a post author and comments are requested. Use this with caution as this method can allocate
@@ -162,8 +171,6 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
      * @return instance of this <code>LazyList</code>
      */
     public <E extends Model> LazyList<E> include(Class<? extends Model>... classes) {
-        //TODO: why cannot call include() more than once?
-        if (!includes.isEmpty()) { throw new IllegalArgumentException("Can't call include() more than once!"); }
 
         for (Class<? extends Model> clazz : classes) {
             if(!metaModel.isAssociatedTo(clazz)) throw new IllegalArgumentException("Model: " + clazz.getName() + " is not associated with: " + metaModel.getModelClass().getName());
@@ -256,7 +263,6 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
      *
      * @return fully loaded list.
      */
-    //TODO: write test, and also test for exception.
     public <E extends Model> LazyList<E> load() {
         if (hydrated()) { throw new DBException("load() must be the last on the chain of methods"); }
         hydrate();

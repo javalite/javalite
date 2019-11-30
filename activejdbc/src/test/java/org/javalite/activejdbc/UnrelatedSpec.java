@@ -1,5 +1,6 @@
 package org.javalite.activejdbc;
 
+import org.javalite.activejdbc.associations.Association;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Box;
 import org.javalite.activejdbc.test_models.Fruit;

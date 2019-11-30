@@ -552,11 +552,10 @@ public class DB implements Closeable{
      */
     public RowProcessor find(RowProcessor.ResultSetType type, RowProcessor.ResultSetConcur concur, int fetchSize, String query, Object ... params) {
 
-        //TODO: count ? signs and number of params, throw exception if do not match
+        if(query.indexOf('?') == -1 && params.length != 0) {
+            throw new IllegalArgumentException("you passed arguments, but the query does not have placeholders: (?)");
+        }
 
-        if(query.indexOf('?') == -1 && params.length != 0) throw new IllegalArgumentException("you passed arguments, but the query does not have placeholders: (?)");
-
-        //TODO: cache prepared statements here too
         PreparedStatement ps;
         ResultSet rs;
         try {
@@ -729,7 +728,6 @@ public class DB implements Closeable{
             throw new DBException(query, params, e);
         } finally {
             // don't close ps as it could have come from the cache!
-            //TODO: close ps if not cached?
         }
     }
 

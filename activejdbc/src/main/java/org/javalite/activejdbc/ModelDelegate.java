@@ -16,6 +16,7 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
+import org.javalite.activejdbc.associations.Association;
 import org.javalite.activejdbc.associations.BelongsToAssociation;
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
 import org.javalite.activejdbc.cache.QueryCache;
@@ -155,7 +156,6 @@ public final class ModelDelegate {
 
     public static int delete(Class<? extends Model> clazz, String query, Object... params) {
         MetaModel metaModel = metaModelOf(clazz);
-        //TODO: refactor this:
         int count = (params == null || params.length == 0)
                 ? new DB(metaModel.getDbName()).exec("DELETE FROM " + metaModel.getTableName() + " WHERE " + query)
                 : new DB(metaModel.getDbName()).exec("DELETE FROM " + metaModel.getTableName() + " WHERE " + query, params);

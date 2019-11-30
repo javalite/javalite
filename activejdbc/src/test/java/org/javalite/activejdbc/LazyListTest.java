@@ -2,6 +2,7 @@ package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Person;
+import org.javalite.test.SystemStreamUtil;
 import org.junit.Test;
 
 /**
@@ -25,4 +26,13 @@ public class LazyListTest extends ActiveJDBCTest {
         deleteAndPopulateTable("people");
         the(Person.findAll().equals(Person.findAll())).shouldBeTrue();
     }
+//
+//    @Test
+//    public void shouldLoadList(){
+//        SystemStreamUtil.replaceOut();
+//        Person.where("name = ?", "John").load();
+//        String out = SystemStreamUtil.getSystemOut();
+//        SystemStreamUtil.restoreSystemOut();
+//        the(out).shouldContain("Loading models");
+//    }
 }

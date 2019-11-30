@@ -72,7 +72,6 @@ public class RowProcessor {
         } catch(SQLException e) {
             throw new DBException(e);
         } finally {
-            //TODO: shouldn't these be closed in the same scope they were created?
             closeQuietly(rs);
             closeQuietly(s);
         }

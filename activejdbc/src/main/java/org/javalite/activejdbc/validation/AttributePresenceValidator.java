@@ -35,7 +35,6 @@ public class AttributePresenceValidator extends ValidatorAdapter {
     @Override
     public void validate(Model m) {
         if (blank(m.get(attribute))) {
-            //TODO: use resource bundles for messages
             m.addValidator(this, attribute);
         }
     }
