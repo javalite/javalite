@@ -1193,18 +1193,22 @@ public class HttpSupport implements RequestAccess {
      */
     protected OutputStream outputStream(String contentType, Map headers, int status) {
         try {
-            RequestContext.setControllerResponse(new NopResponse(contentType, status));
-
-            if (headers != null) {
-                for (Object key : headers.keySet()) {
-                    if (headers.get(key) != null)
-                        RequestContext.getHttpResponse().addHeader(key.toString(), headers.get(key).toString());
-                }
-            }
-
+            addHeaders(contentType, headers, status);
             return RequestContext.getHttpResponse().getOutputStream();
         }catch(Exception e){
             throw new ControllerException(e);
+        }
+    }
+
+
+    private void addHeaders(String contentType, Map headers, int status){
+        RequestContext.setControllerResponse(new NopResponse(contentType, status));
+
+        if (headers != null) {
+            for (Object key : headers.keySet()) {
+                if (headers.get(key) != null)
+                    RequestContext.getHttpResponse().addHeader(key.toString(), headers.get(key).toString());
+            }
         }
     }
 
@@ -1229,15 +1233,7 @@ public class HttpSupport implements RequestAccess {
      */
     protected PrintWriter writer(String contentType, Map headers, int status){
         try{
-            RequestContext.setControllerResponse(new NopResponse(contentType, status));
-
-            if (headers != null) {
-                for (Object key : headers.keySet()) {
-                    if (headers.get(key) != null)
-                        RequestContext.getHttpResponse().addHeader(key.toString(), headers.get(key).toString());
-                }
-            }
-
+            addHeaders(contentType, headers, status);
             return RequestContext.getHttpResponse().getWriter();
         }catch(Exception e){
             throw new ControllerException(e);
