@@ -19,23 +19,25 @@ package org.javalite.activeweb;
 
 import app.controllers.AbcPersonController;
 import app.filters.PassValueFilter;
+import app.filters.RedirectFilter;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
  * @author Igor Polevoy
  */
-public class FilterPassValuesSpec  extends IntegrationSpec{
+public class FilterRedirectSpec extends IntegrationSpec{
 
     @Before
     public void before(){
         setTemplateLocation("src/test/views");
-        addFilter(AbcPersonController.class, new PassValueFilter());
+        addFilter(AbcPersonController.class, new RedirectFilter());
     }
 
     @Test
-    public void shouldPassValueFromFilterToView(){
-        controller("abc-person").get("pass_values");
-        a(responseContent()).shouldBeEqual("Alec Boldwin");
+    public void shouldRedirect(){
+        controller("abc-person").get("index");
+        $(redirected()).shouldBeTrue();
+        $(redirectValue()).shouldEqual("https://yahoo.com");
     }
 }

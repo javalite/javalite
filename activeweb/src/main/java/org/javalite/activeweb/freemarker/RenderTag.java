@@ -66,7 +66,6 @@ public class RenderTag implements TemplateDirectiveModel {
             envValues.putAll(params);
             partialTemplate.process(envValues, env.getOut());
         }else{
-            //TODO: check the type
             if(params.get("collection") == null){
                 throw new IllegalArgumentException("collection must be provided!");
             }
