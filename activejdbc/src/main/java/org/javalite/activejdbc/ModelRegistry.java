@@ -34,7 +34,7 @@ import org.javalite.activejdbc.validation.Validator;
  *
  * @author ericbn
  */
-class ModelRegistry {
+public class ModelRegistry {
     private final List<CallbackListener> callbacks = new ArrayList<>();
     private final Map<String, List<Converter>> attributeConverters = new CaseInsensitiveMap<>();
     private final List<Validator> validators = new ArrayList<>();
