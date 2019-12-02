@@ -17,9 +17,18 @@ limitations under the License.
 
 package org.javalite.activejdbc.test_models;
 
+import org.javalite.activejdbc.MetaModel;
 import org.javalite.activejdbc.Model;
+import org.javalite.activejdbc.ModelRegistry;
 import org.javalite.activejdbc.annotations.Cached;
 
 @Cached
 public class Library extends Model {
+
+    public Library() {
+    }
+
+    public Library(MetaModel metaModel, ModelRegistry modelRegistry) {
+        super(metaModel, modelRegistry);
+    }
 }

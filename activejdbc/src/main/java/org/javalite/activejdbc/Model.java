@@ -81,6 +81,12 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         modelRegistryLocal = Registry.instance().modelRegistryOf(this.getClass());
     }
 
+    protected Model(MetaModel metaModel, ModelRegistry modelRegistry)
+    {
+        this.metaModelLocal = Objects.requireNonNull(metaModel, "metaModel is null");
+        this.modelRegistryLocal = Objects.requireNonNull(modelRegistry, "modelRegistry is null");
+    }
+
     private void fireAfterLoad() {
         afterLoad();
         for (CallbackListener callback : modelRegistryLocal.callbacks()) {
