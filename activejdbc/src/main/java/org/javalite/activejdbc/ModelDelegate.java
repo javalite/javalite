@@ -292,10 +292,6 @@ public final class ModelDelegate {
 
     static void purgeEdges(MetaModel metaModel) {
         //this is to eliminate side effects of cache on associations.
-        //TODO: Need to write tests for cases;
-        // 1. One to many relationship. Parent and child are cached.
-        //      When a new child inserted, the parent.getAll(Child.class) should see that
-        // 2. Many to many. When a new join inserted, updated or deleted, the one.getAll(Other.class) should see the difference.
 
         //Purge associated targets
 

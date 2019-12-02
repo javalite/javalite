@@ -2509,7 +2509,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
             new DB(metaModel.getDbName()).exec(metaModel.getDialect().insertManyToManyAssociation(ass),
                     getId(), child.getId());
         } else {
-            //TODO: write a test to cover this case:
             //this is for Oracle, many 2 many, and all annotations used, including @IdGenerator. In this case,
             //it is best to delegate generation of insert to a model (sequences, etc.)
             try {
