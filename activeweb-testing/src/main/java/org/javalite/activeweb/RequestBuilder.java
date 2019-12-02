@@ -49,6 +49,7 @@ public class RequestBuilder {
     private String remoteAddress;
 
     public RequestBuilder(String controllerPath, SessionTestFacade sessionFacade) {
+        RequestContext.setParams1st(null);
         this.controllerPath = controllerPath;
         this.sessionFacade = sessionFacade;
     }
