@@ -181,13 +181,6 @@ public class DBConfiguration {
      *             then on file system.
      */
     public static void loadConfiguration(String file) {
-
-        /*
-         *  TODO:  it needs to be documented that in order for https://github.com/javalite/javalite/issues/469 to work, this
-         *   method should be called explicitly from a non-ActiveWeb app to pickup configuration from the property file
-         *   as well as overrides from system properties as well as from environment variables
-         */
-
         try {
             Properties props = Util.readProperties(file);
             Set<String> environments = props.stringPropertyNames().stream().map(n -> n.substring(0, n.lastIndexOf("."))).collect(toSet());
