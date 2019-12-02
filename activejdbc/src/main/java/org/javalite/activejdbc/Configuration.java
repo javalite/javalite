@@ -16,8 +16,7 @@ limitations under the License.
 package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.logging.ActiveJDBCLogger;
-import org.javalite.activejdbc.logging.LogFilter;
-import org.javalite.activejdbc.logging.LogLevel;
+
 import org.javalite.common.Convert;
 import org.javalite.common.Util;
 import org.slf4j.Logger;
@@ -28,7 +27,6 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-import static org.javalite.common.Util.blank;
 
 /**
  * @author Igor Polevoy
@@ -41,7 +39,6 @@ public class Configuration {
     public enum PropertyName {
         CacheManager("cache.manager"),
         ActiveJdbcLogger("activejdbc.logger"),
-        EnvConnectionsFile("env.connections.file"),
         CollectStatistics("collectStatistics"),
         CollectStatisticsOnHold("collectStatisticsOnHold");
 
@@ -54,7 +51,6 @@ public class Configuration {
 
     private Properties properties = new Properties();
     private static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
-    private static String ENV;
     private static ActiveJDBCLogger activeLogger;
 
     protected Configuration(){
