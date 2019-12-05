@@ -50,7 +50,7 @@ import java.util.Map;
  */
 public class DBSpec extends DBConfiguration implements JSpecSupport {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(DBSpec.class.getSimpleName());
+    private static Logger LOGGER = LoggerFactory.getLogger(DBSpec.class);
     private boolean rollback = true;
     private boolean suppressDb = false;
     private List<ConnectionConfig> testConnectionConfigs;
