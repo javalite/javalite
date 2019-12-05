@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DefaultDialect implements Dialect {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(DefaultDialect.class.getSimpleName());
+    private static Logger LOGGER = LoggerFactory.getLogger(DefaultDialect.class);
 
     protected static final Pattern ORDER_BY_PATTERN = Pattern.compile("^\\s*ORDER\\s+BY",
             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);

@@ -66,7 +66,7 @@ import static org.javalite.common.Util.closeQuietly;
  */
 public class Async {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("JavaLite Async");
+    private static final Logger LOGGER = LoggerFactory.getLogger(Async.class);
     private static final int MIN_LARGE_MESSAGE_SIZE = 819200;
     private static final String QUEUE_NAMESPACE = "/queue/";
 
