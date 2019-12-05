@@ -224,6 +224,8 @@ public class H2StatementProvider implements StatementProvider {
             all.add("ALTER TABLE " + table + " ALTER COLUMN animal_id RESTART WITH 1;");
         } else if (table.equals("teams")) {
             all.add("ALTER TABLE " + table + " ALTER COLUMN team_id RESTART WITH 1;");
+        } else if (table.equals("customers")) {
+            all.add("ALTER TABLE " + table + " ALTER COLUMN customer_id RESTART WITH 1;");
         } else {
             all.add("ALTER TABLE " + table + " ALTER COLUMN id RESTART WITH 1;");
         }

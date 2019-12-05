@@ -231,3 +231,12 @@ CREATE TABLE bands_musicians (the_id  serial PRIMARY KEY, band_id INT, musician_
 
 DROP TABLE IF EXISTS employees;
 CREATE TABLE employees (  id  serial PRIMARY KEY,  first_name VARCHAR(56) NOT NULL,  last_name VARCHAR(56),  position  VARCHAR(56),  active INT,  department VARCHAR(56),  created_at TIMESTAMP,  updated_at TIMESTAMP);
+
+DROP TABLE IF EXISTS customers;
+CREATE TABLE customers (customer_id serial PRIMARY KEY, first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL, salutation VARCHAR(56) NOT NULL);
+
+DROP TABLE IF EXISTS postal_addresses;
+CREATE TABLE postal_addresses (id serial PRIMARY KEY, address1 VARCHAR(56), address2 VARCHAR(56), city VARCHAR(56), zip VARCHAR(56), country VARCHAR(56), scope VARCHAR(56), customer_id INT);
+
+DROP TABLE IF EXISTS phone_numbers;
+CREATE TABLE phone_numbers (id serial PRIMARY KEY, the_number VARCHAR(56), type VARCHAR(56), scope VARCHAR(56), customer_id INT);

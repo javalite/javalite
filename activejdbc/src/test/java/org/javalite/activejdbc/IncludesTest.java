@@ -210,6 +210,25 @@ public class IncludesTest extends ActiveJDBCTest{
     }
 
     @Test
+    public void shouldIncludeMultipleHasManyOverridesOnOneModel() {
+        Model alanTuring = Customer.createIt("first_name", "Alan", "last_name", "Turing", "salutation", "Mr.");
+        PostalAddress.createIt("address1", "The Old Schools", "address2", "Trinity Lane", "city", "Cambridge",
+                "zip", "CB2 1TN", "country", "United Kingdom", "scope", "business", "customer_id", alanTuring.getId());
+        PostalAddress.createIt("address1", "Histon Rd", "city", "Cambridge",
+                "zip", "CB4 3JD", "country", "United Kingdom", "scope", "private", "customer_id", alanTuring.getId());
+        PhoneNumber.createIt("the_number", "+44 (0)1223 337733", "type", "fixed", "scope", "business", "customer_id",
+                alanTuring.getId());
+        PhoneNumber.createIt("the_number", "+44 800 042 0800", "type", "mobile", "scope", "private", "customer_id",
+                alanTuring.getId());
+
+        List<Customer> customers = Customer.findAll().include(PostalAddress.class, PhoneNumber.class);
+        List<PostalAddress> addresses = customers.get(0).getAll(PostalAddress.class);
+        a(addresses.size()).shouldBeEqual(2);
+        List<PhoneNumber> phoneNumbers = customers.get(0).getAll(PhoneNumber.class);
+        a(phoneNumbers.size()).shouldBeEqual(2);
+    }
+
+    @Test
     public void shouldFixDefect163NeedsToIncludeChildrenAndParentsInTreeStructure(){
         Node car = new Node("Car");
         car.saveIt();

@@ -1251,3 +1251,51 @@ CREATE OR REPLACE TRIGGER employees_trigger
         select coalesce(:new.id, employees_seq.nextval) into :new.id from dual;
     end;
 -- BREAK
+
+CREATE TABLE customers (customer_id NUMBER NOT NULL, first_name VARCHAR(56) NOT NULL, last_name VARCHAR(56) NOT NULL, salutation VARCHAR(56) NOT NULL )
+-- BREAK
+ALTER TABLE customers ADD CONSTRAINT customers_pk PRIMARY KEY (customer_id)
+-- BREAK
+CREATE SEQUENCE customers_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER customers_trigger
+  BEFORE INSERT ON customers REFERENCING
+  NEW AS new
+  OLD AS old
+  FOR EACH ROW
+  begin
+    select coalesce(:new.customer_id, customers_seq.nextval) into :new.customer_id from dual;
+  end;
+-- BREAK
+
+CREATE TABLE postal_addresses (id NUMBER NOT NULL, address1 VARCHAR(56), address2 VARCHAR(56), city VARCHAR(56), zip VARCHAR(56), country VARCHAR(56), scope VARCHAR(56), customer_id NUMBER)
+-- BREAK
+ALTER TABLE postal_addresses ADD CONSTRAINT postal_addresses_pk PRIMARY KEY (id)
+-- BREAK
+CREATE SEQUENCE postal_addresses_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER postal_addresses_trigger
+  BEFORE INSERT ON postal_addresses REFERENCING
+  NEW AS new
+  OLD AS old
+  FOR EACH ROW
+  begin
+    select coalesce(:new.id, postal_addresses_seq.nextval) into :new.id from dual;
+  end;
+-- BREAK
+
+CREATE TABLE phone_numbers (id NUMBER NOT NULL, the_number VARCHAR(56), type VARCHAR(56), scope VARCHAR(56), customer_id NUMBER)
+-- BREAK
+ALTER TABLE phone_numbers ADD CONSTRAINT phone_numbers_pk PRIMARY KEY (id)
+-- BREAK
+CREATE SEQUENCE phone_numbers_seq START WITH 1 INCREMENT BY 1
+-- BREAK
+CREATE OR REPLACE TRIGGER phone_numbers_trigger
+    BEFORE INSERT ON phone_numbers REFERENCING
+    NEW AS new
+    OLD AS old
+    FOR EACH ROW
+begin
+    select coalesce(:new.id, phone_numbers_seq.nextval) into :new.id from dual;
+end;
+-- BREAK
