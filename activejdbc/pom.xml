@@ -160,22 +160,15 @@
                     <db>db2</db>
                 </properties>
 			-->
-			<repositories>
-				<repository>
-					<id>alfresco</id>
-					<name>Alfresco Public </name>
-					<url>https://artifacts.alfresco.com/nexus/content/repositories/public/</url>
-				</repository>
-			</repositories>
 			<dependencies>
-				<!-- https://mvnrepository.com/artifact/com.ibm.db2.jcc/db2jcc4 -->
-				<dependency>
-					<groupId>com.ibm.db2.jcc</groupId>
-					<artifactId>db2jcc4</artifactId>
-					<version>10.1</version>
-					<scope>test</scope>
-				</dependency>
-			</dependencies>
+                <!-- https://mvnrepository.com/artifact/com.ibm.db2/jcc -->
+                <dependency>
+                    <groupId>com.ibm.db2</groupId>
+                    <artifactId>jcc</artifactId>
+                    <version>11.5.0.0</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
 		</profile>
 
         <!-- TravisCI Profiles -->
