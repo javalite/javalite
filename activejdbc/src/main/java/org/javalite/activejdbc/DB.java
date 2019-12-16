@@ -114,7 +114,7 @@ public class DB implements Closeable{
             Connection connection;
             connection = properties == null ?  DriverManager.getConnection(url, user, password)
                     : DriverManager.getConnection(url, properties);
-            LogFilter.log(LOGGER, LogLevel.DEBUG, "Opened connection: " + connection);
+            LogFilter.log(LOGGER, LogLevel.DEBUG, "Opened connection: {}, URL: {}", connection, url);
             ConnectionsAccess.attach(name, connection, url);
             return this;
         } catch (Exception e) {
@@ -134,7 +134,7 @@ public class DB implements Closeable{
             Context ctx = new InitialContext();
             DataSource ds = (DataSource) ctx.lookup(jndiName);
             Connection connection = ds.getConnection();
-            LogFilter.log(LOGGER, LogLevel.DEBUG, "Opened connection: " + connection);
+            LogFilter.log(LOGGER, LogLevel.DEBUG, "Opened connection: {}, JNDI: {}", connection, jndiName);
             ConnectionsAccess.attach(name, connection, jndiName);
             return this;
         } catch (Exception e) {
@@ -224,7 +224,7 @@ public class DB implements Closeable{
             Context ctx = new InitialContext(jndiProperties);
             DataSource ds = (DataSource) ctx.lookup(jndiName);
             Connection connection = ds.getConnection();
-            LogFilter.log(LOGGER, LogLevel.DEBUG, "Opened connection: " + connection);
+            LogFilter.log(LOGGER, LogLevel.DEBUG, "Opened connection: {}, JNDI: {}", connection, jndiName);
             ConnectionsAccess.attach(name, connection,
                     jndiProperties.contains("url") ? jndiProperties.getProperty("url") : jndiName);
             return this;
@@ -300,7 +300,7 @@ public class DB implements Closeable{
         try {
             DataSource ds = (DataSource) context.lookup(jndiName);
             Connection connection = ds.getConnection();
-            LogFilter.log(LOGGER, LogLevel.DEBUG, "Opened connection: " + connection);
+            LogFilter.log(LOGGER, LogLevel.DEBUG, "Opened connection: {}, JNDI: ", connection, jndiName);
             ConnectionsAccess.attach(name, connection, jndiName);
             return this;
         } catch (Exception e) {

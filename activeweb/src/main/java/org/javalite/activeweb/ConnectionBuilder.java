@@ -16,6 +16,8 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import org.javalite.activejdbc.connection_config.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.util.Properties;
@@ -29,6 +31,8 @@ import java.util.Properties;
  */
 public class ConnectionBuilder {
 
+    private static Logger LOGGER = LoggerFactory.getLogger(ConnectionBuilder.class);
+
     private String environment;
     private String dbName = "default";
     private boolean testing;
@@ -36,6 +40,7 @@ public class ConnectionBuilder {
     
     ConnectionBuilder(String environment) {
         this.environment = environment;
+        LOGGER.info("Configuring connection in environment {}", environment);
     }
 
     /**
@@ -43,6 +48,7 @@ public class ConnectionBuilder {
      */
     ConnectionBuilder(String environment, boolean override) {
         this.environment = environment;
+        LOGGER.info("Configuring connection in environment {}", environment);
     }
 
     /**
@@ -55,6 +61,7 @@ public class ConnectionBuilder {
         connectionConfig.setEnvironment(environment);
         connectionConfig.setTesting(testing);
         DBConfiguration.addConnectionConfig(connectionConfig);
+        LOGGER.info("Configuring JNDI connection in environment {}, JNDI: {}", environment, jndi);
     }
 
     /**
@@ -72,6 +79,7 @@ public class ConnectionBuilder {
         connectionConfig.setEnvironment(environment);
         connectionConfig.setTesting(testing);
         DBConfiguration.addConnectionConfig(connectionConfig);
+        LOGGER.info("Configuring JDBC connection in environment {}, URL: {}", environment, url);
     }
 
     /**
@@ -87,6 +95,7 @@ public class ConnectionBuilder {
         connectionConfig.setEnvironment(environment);
         connectionConfig.setTesting(testing);
         DBConfiguration.addConnectionConfig(connectionConfig);
+        LOGGER.info("configuring JDBC connection in environment {}, URL: {}", environment, url);
     }
 
     /**
@@ -96,6 +105,7 @@ public class ConnectionBuilder {
      */
     public ConnectionBuilder db(String dbName) {
         this.dbName = dbName;
+        LOGGER.info("Using database name: " + dbName);
         return this;
     }
 
@@ -108,6 +118,7 @@ public class ConnectionBuilder {
      */
     public ConnectionBuilder testing() {
          this.testing = true;
+        LOGGER.info("Using test mode.");
         return this;
     }
 
@@ -122,5 +133,6 @@ public class ConnectionBuilder {
         connectionConfig.setEnvironment(environment);
         connectionConfig.setTesting(testing);
         DBConfiguration.addConnectionConfig(connectionConfig);
+        LOGGER.info("Configuring JDBC connection using data source: {}", dataSource.toString());
     }
 }
