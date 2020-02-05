@@ -18,13 +18,23 @@ limitations under the License.
 package org.javalite.instrumentation;
 
 import javassist.*;
+import javassist.bytecode.AnnotationsAttribute;
+import javassist.bytecode.ConstPool;
 import javassist.bytecode.SignatureAttribute;
+import javassist.bytecode.annotation.Annotation;
+import javassist.bytecode.annotation.StringMemberValue;
+
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
+ *
  * @author Igor Polevoy
  * @author Eric Nielsen
  */
 public class ModelInstrumentation {
+
+    private static final String GENERATED_DATE_PATTERN = "yyyy-MM-dd'T'hh:mm:ss.SSSZZZ";
 
     private final CtClass modelClass;
 
@@ -83,6 +93,7 @@ public class ModelInstrumentation {
                             newMethod.getMethodInfo().addAttribute((SignatureAttribute) attr);
                         }
                     }
+                    addGeneratedAnnotation(newMethod, target);
                     target.addMethod(newMethod);
                 }
             }
@@ -96,5 +107,21 @@ public class ModelInstrumentation {
             }
         }
         return false;
+    }
+
+    private void addGeneratedAnnotation(CtMethod generatedMethod, CtClass target)
+    {
+        ConstPool constPool = target.getClassFile().getConstPool();
+        AnnotationsAttribute attr = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
+
+        Annotation annot = new Annotation("javax.annotation.Generated", constPool);
+        annot.addMemberValue("value", new StringMemberValue("org.javalite.instrumentation.ModelInstrumentation", constPool));
+
+        ZonedDateTime now = ZonedDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(GENERATED_DATE_PATTERN);
+        annot.addMemberValue("date", new StringMemberValue(now.format(formatter), constPool));
+
+        attr.addAnnotation(annot);
+        generatedMethod.getMethodInfo().addAttribute(attr);
     }
 }
