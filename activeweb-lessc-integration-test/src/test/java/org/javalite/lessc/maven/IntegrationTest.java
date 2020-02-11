@@ -15,7 +15,7 @@ import static org.javalite.test.jspec.JSpec.the;
  */
 public class IntegrationTest {
 
-    protected String execute(String root, boolean offline, String... args) throws IOException, InterruptedException, MavenInvocationException {
+    protected String execute(String root, boolean offline, String... args) throws MavenInvocationException {
         InvocationRequest request = new DefaultInvocationRequest();
         request.setPomFile( new File( root + "/pom.xml" ) );
         request.setGoals(Arrays.asList(args));
@@ -38,7 +38,7 @@ public class IntegrationTest {
     }
 
     @Test @Ignore
-    public void shouldCompileProjectWithSingleLessFile() throws IOException, InterruptedException, MavenInvocationException {
+    public void shouldCompileProjectWithSingleLessFile() throws MavenInvocationException {
 
         String root = "target/test-project";
 
@@ -53,7 +53,7 @@ public class IntegrationTest {
     }
 
     @Test @Ignore
-    public void shouldCompileProjectWithMultipleLessFile() throws IOException, InterruptedException, MavenInvocationException {
+    public void shouldCompileProjectWithMultipleLessFile() throws MavenInvocationException {
         String root = "target/test-project-list";
         String output = execute(root, true, "clean");
         the(output).shouldContain("BUILD SUCCESS");

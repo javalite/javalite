@@ -20,6 +20,7 @@ package org.javalite.activeweb;
 import app.controllers.AbcPersonController;
 import app.controllers.TemplateIntegrationSpec;
 import org.javalite.activeweb.controller_filters.RequestPropertiesLogFilter;
+import org.javalite.test.SystemStreamUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -39,18 +40,10 @@ public class RequestPropertiesLogFilterSpec extends TemplateIntegrationSpec {
 
     @Test
     public void shouldPrintRequestParamsToLog(){
-
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        PrintStream pout = new PrintStream(bout);
-        System.setErr(pout) ;
-
+        SystemStreamUtil.replaceOut();
         controller("abc-person").param("bogus","val1").get("pass_values");
-        pout.flush();
-        pout.close();
-        System.out.println(bout.toString());
-        String res = bout.toString();
-        a(res).shouldContain("uri_full_path=/abc-person/pass_values");
-        a(res).shouldContain("request_url=http://localhost/abc-person/pass_values");
-        a(res).shouldContain("query_string=null");
+        a(SystemStreamUtil.getSystemOut()).shouldContain("uri_full_path=/abc-person/pass_values");
+        a(SystemStreamUtil.getSystemOut()).shouldContain("request_url=http://localhost/abc-person/pass_values");
+        a(SystemStreamUtil.getSystemOut()).shouldContain("query_string=null");
     }
 }

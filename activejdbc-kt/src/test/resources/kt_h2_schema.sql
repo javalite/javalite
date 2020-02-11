@@ -13,5 +13,5 @@ create table ADDRESSES (
     STREET      varchar(128)    not null,
     PERSON_ID   bigint          not null,
 
-    constraint FK_ADDRESSES_PERSON_ID foreign key (PERSON_ID) references PEOPLE(ID),
+    constraint FK_ADDRESSES_PERSON_ID foreign key (PERSON_ID) references PEOPLE(ID)
 );

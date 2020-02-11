@@ -22,10 +22,10 @@ public class MyRestfulControllerSpec extends AppIntegrationSpec {
 
     @Test
     public void should_prevent_wrong_HTTP_method(){
-        SystemStreamUtil.replaceError();
+        SystemStreamUtil.replaceOut();
         controller("/my_restful").post("index");
         the(statusCode()).shouldEqual(405);
-        the(SystemStreamUtil.getSystemErr()).shouldContain("Cannot execute a non-restful action on a restful controller.");
-        SystemStreamUtil.restoreSystemErr();
+        the(SystemStreamUtil.getSystemOut()).shouldContain("Cannot execute a non-restful action on a restful controller.");
+        SystemStreamUtil.restoreSystemOut();
     }
 }

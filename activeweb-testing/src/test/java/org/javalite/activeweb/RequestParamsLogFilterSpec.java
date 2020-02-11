@@ -21,6 +21,7 @@ package org.javalite.activeweb;
 import app.controllers.AbcPersonController;
 import app.controllers.TemplateIntegrationSpec;
 import org.javalite.activeweb.controller_filters.RequestParamsLogFilter;
+import org.javalite.test.SystemStreamUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,13 +43,12 @@ public class RequestParamsLogFilterSpec extends TemplateIntegrationSpec {
     @Test
     public void shouldPrintRequestPropertiesToLog(){
 
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        PrintStream pout = new PrintStream(bout);
-        System.setErr(pout) ;
+        SystemStreamUtil.replaceOut();
 
         controller("abc-person").param("bogus","val1").get("pass_values");
-        pout.flush();
-        pout.close();
-        a(bout.toString().contains("{bogus: [val1]}")).shouldBeTrue();
+
+        a(SystemStreamUtil.getSystemOut().contains("{bogus: [val1]}")).shouldBeTrue();
+
+        SystemStreamUtil.restoreSystemOut();;
     }
 }
