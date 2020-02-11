@@ -81,8 +81,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         modelRegistryLocal = Registry.instance().modelRegistryOf(this.getClass());
     }
 
-    protected Model(MetaModel metaModel, ModelRegistry modelRegistry)
-    {
+
+    protected Model(MetaModel metaModel, ModelRegistry modelRegistry) {
         this.metaModelLocal = Objects.requireNonNull(metaModel, "metaModel is null");
         this.modelRegistryLocal = Objects.requireNonNull(modelRegistry, "modelRegistry is null");
     }
@@ -240,7 +240,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return the set of changed (i.e. dirty) attribute names
      */
     protected Set<String> hydrate(Map<String, Object> attributesMap, boolean fireAfterLoad) {
-
         Set<String> changedAttributeNames = new HashSet<>();
         Set<String> attributeNames = metaModelLocal.getAttributeNames();
         for (Map.Entry<String, Object> entry : attributesMap.entrySet()) {
@@ -265,7 +264,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         if (getCompositeKeys() != null){
             compositeKeyPersisted = true;
         }
-        if(fireAfterLoad){
+        if (fireAfterLoad) {
             fireAfterLoad();
         }
 
@@ -276,7 +275,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * Verifies if the passed value for attributeName will set this instance to modified state.
      */
     private boolean willAttributeModifyModel(String attributeName, Object newValue) {
-
         Object currentValue = get(attributeName);
         return currentValue != null ? !currentValue.equals(newValue) : newValue != null;
     }
@@ -351,7 +349,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return reference to self, so you can string these methods one after another.
      */
     public <T extends Model> T set(String attributeName, Object value) {
-        if(isFrozen()){
+        if (isFrozen()) {
             throw new FrozenException(this);
         }
         Converter<Object, Object> converter = modelRegistryLocal.converterForValue(attributeName, value, Object.class);
@@ -446,7 +444,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      * @return true if a record was deleted, false if not.
      */
     public boolean delete() {
-
         fireBeforeDelete();
         int result;
         if (getCompositeKeys() != null) {
@@ -492,8 +489,8 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @param cascade true to call {@link #deleteCascade()}, false to call {@link #delete()}.
      */
-    public void delete(boolean cascade){
-        if(cascade){
+    public void delete(boolean cascade) {
+        if (cascade) {
             deleteCascade();
         }else{
             delete();
@@ -777,7 +774,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @return true if corresponding record exists in DB, false if it does not.
      */
-    public boolean exists(){
+    public boolean exists() {
         return null != new DB(metaModelLocal.getDbName()).firstCell(metaModelLocal.getDialect().selectExists(metaModelLocal), getId());
     }
 
@@ -848,7 +845,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
      *
      * @return all values of the model with all attribute names converted to lower case.
      */
-    public Map<String, Object> toMap(){
+    public Map<String, Object> toMap() {
         Map<String, Object> retVal = new TreeMap<>();
         for (Map.Entry<String, Object> entry : attributes.entrySet()) {
             Object v = entry.getValue();
@@ -953,7 +950,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
     }
 
     protected void toXmlP(StringBuilder sb, boolean pretty, String indent, String... attributeNames) {
-
         String topTag = underscore(getClass().getSimpleName());
         if (pretty) { sb.append(indent); }
         sb.append('<').append(topTag).append('>');
@@ -3027,6 +3023,4 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         attributes = (Map<String, Object>) in.readObject();
         dirtyAttributeNames = (Set<String>) in.readObject();
     }
-
-
 }

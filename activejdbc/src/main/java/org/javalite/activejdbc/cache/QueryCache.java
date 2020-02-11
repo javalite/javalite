@@ -50,7 +50,7 @@ public enum QueryCache {
 
             try{
                 Class cmc = Class.forName(cacheManagerClass);
-                cacheManager = (CacheManager)cmc.newInstance();
+                cacheManager = (CacheManager)cmc.getDeclaredConstructor().newInstance();
                 enabled = true;
             }catch(InitException e){
                 throw e;

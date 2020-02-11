@@ -8,6 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static org.javalite.common.Collections.list;
@@ -22,7 +23,7 @@ abstract public class DynamicClassFactory {
 
     static <T> T createInstance(String className, Class<T> expectedType) throws ClassLoadException {
         try {
-            Object o = getCompiledClass(className).newInstance();
+            Object o = getCompiledClass(className).getDeclaredConstructor().newInstance();
             T instance = expectedType.cast(o);
             return instance ;
         } catch (CompilationException | ClassLoadException e) {
@@ -91,9 +92,7 @@ abstract public class DynamicClassFactory {
                 if(path.startsWith("/")){
                     path = path.substring(1);//loose leading slash
                 }
-                try{
-                    path = URLDecoder.decode(path, "UTF-8");// fill in the spaces
-                }catch(java.io.UnsupportedEncodingException e){/*ignore*/}
+                path = URLDecoder.decode(path, StandardCharsets.UTF_8);// fill in the spaces
                 path = path.replace("/", "\\");//boy, do I dislike windoz!
             }
             classpath.append(path).append(System.getProperty("path.separator"));

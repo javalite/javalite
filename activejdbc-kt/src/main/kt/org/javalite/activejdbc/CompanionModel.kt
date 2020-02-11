@@ -58,7 +58,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
 
     private val clazz:Class<T> = entityClass
 
-
     /**
      * Adds a validator to the model.
      *
@@ -68,7 +67,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         return ModelDelegate.validateWith(modelClass(), validator)
     }
 
-
     /**
      * Returns all associations of this model.
      * @return all associations of this model.
@@ -76,7 +74,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
     fun associations():MutableList<Association?> {
         return ModelDelegate.associations(modelClass())
     }
-
 
     /**
      * Returns names of all attributes from this model.
@@ -86,11 +83,9 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         return ModelDelegate.attributeNames(modelClass())
     }
 
-
     fun <M> belongsTo(targetClass:Class<out M>):Boolean where M:Model {
         return ModelDelegate.belongsTo(modelClass(), targetClass)
     }
-
 
     /**
      * Sets  lifecycle listeners on current model. All previous listeners will be unregistered.
@@ -101,7 +96,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         ModelDelegate.callbackWith(modelClass(), *listeners)
     }
 
-
     /**
      * Returns total count of records in table.
      *
@@ -110,7 +104,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
     fun count():Long {
         return ModelDelegate.count(modelClass())
     }
-
 
     /**
      * Returns count of records in table under a condition.
@@ -122,7 +115,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
     fun count(query:String, vararg params:Any?):Long {
         return ModelDelegate.count(modelClass(), query, *params)
     }
-
 
     /**
      * This is a convenience method to create a model instance already initialized with values.
@@ -144,7 +136,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         return ModelDelegate.create(modelClass(), *namesAndValues)
     }
 
-
     /**
      * This is a convenience method to {@link #create(Object...)}. It will create a new model and will save it
      * to DB. It has the same semantics as {@link #saveIt()}.
@@ -156,7 +147,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
     fun createIt(vararg namesAndValues:Any?):T {
         return ModelDelegate.createIt(modelClass(), *namesAndValues)
     }
-
 
     /**
      * Deletes some records from associated table. This method does not follow any associations.
@@ -176,7 +166,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         return ModelDelegate.delete(modelClass(), query, *params)
     }
 
-
     /**
      * Deletes all records from associated table. This methods does not take associations into account.
      *
@@ -185,7 +174,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
     fun deleteAll():Int {
         return ModelDelegate.deleteAll(modelClass())
     }
-
 
     /**
      * Returns true if record corresponding to the id passed exists in the DB.
@@ -196,7 +184,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
     fun exists(id:Any?):Boolean {
         return ModelDelegate.exists(modelClass(), id)
     }
-
 
     /**
      * Synonym of {@link #where(String, Object...)}
@@ -210,7 +197,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         return ModelDelegate.where(modelClass(), subquery, *params)
     }
 
-
     /**
      * This method returns all records from this table. If you need to get a subset, look for variations of "find()".
      *
@@ -219,7 +205,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
     fun findAll():LazyList<T> {
         return ModelDelegate.findAll(modelClass())
     }
-
 
     /**
      * Composite PK values in exactly the same order as specified  in {@link CompositePK}.
@@ -232,11 +217,9 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         return ModelDelegate.findByCompositeKeys(modelClass(), *values)
     }
 
-
     fun findById(id:Any?):T? {
         return ModelDelegate.findById(modelClass(), id)
     }
-
 
     /**
      * Free form query finder. Example:
@@ -255,7 +238,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         return ModelDelegate.findBySql(modelClass(), fullQuery, *params)
     }
 
-
     /**
      * This is a convenience method to fetch existing model from db or to create and insert new record.
      * @param namesAndValues names and values. elements at indexes 0, 2, 4, 8... are attribute names, and elements at
@@ -267,6 +249,18 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         return ModelDelegate.findOrCreateIt(modelClass(), *namesAndValues)
     }
 
+    /**
+     * A convenience method to fetch existing model from db or to create a new instance in memory initialized with
+     * some attribute values.
+     *
+     * @param namesAndValues names and values. elements at indexes 0, 2, 4, 8... are attribute names, and elements at
+     * indexes 1, 3, 5... are values. Element at index 1 is a value for attribute at index 0 and so on.
+     *
+     *@return Model fetched from the db or newly created and initialized object.
+     */
+    fun findOrInit(vararg namesAndValues:Any?):T? {
+        return ModelDelegate.findOrInit(modelClass(), *namesAndValues)
+    }
 
     /**
      * Synonym of {@link #first(String, Object...)}.
@@ -286,7 +280,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         return ModelDelegate.findFirst(modelClass(), subQuery, *params)
     }
 
-
     /**
      * This method is for processing really large result sets. Results found by this method are never cached.
      *
@@ -297,7 +290,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
     fun findWith(listener:ModelListener<T>, query:String, vararg params:Any?) {
         ModelDelegate.findWith(modelClass(), listener, query, *params)
     }
-
 
     /**
      * Returns a first result for this condition. May return null if nothing found.
@@ -328,7 +320,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         return ModelDelegate.findFirst(modelClass(), subQuery, *params)
     }
 
-
     /**
      * <p>
      * Provides {@link MetaModel} object related to this model class.
@@ -341,7 +332,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         return metaModelOf(modelClass())
     }
 
-
     /**
      * Returns name of corresponding table.
      *
@@ -351,16 +341,13 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         return ModelDelegate.tableNameOf(modelClass())
     }
 
-
     fun getValidators():MutableList<Validator> {
         return ModelDelegate.validatorsOf(clazz)
     }
 
-
     fun getValidators(klass:Class<T>):MutableList<Validator> {
         return ModelDelegate.validatorsOf(klass)
     }
-
 
     /**
      * @return true if this models has a {@link Cached} annotation.
@@ -368,7 +355,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
     fun isCached():Boolean {
         return modelClass().getAnnotation(Cached::class.java) != null
     }
-
 
     /**
      * Synonym of {@link #getMetaModel()}.
@@ -379,11 +365,9 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         return metaModelOf(modelClass())
     }
 
-
     fun modelClass():Class<T> {
         return clazz
     }
-
 
     /**
      * Use to force-purge cache associated with this table. If this table is not cached, this method has no side effect.
@@ -391,7 +375,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
     fun purgeCache() {
         ModelDelegate.purgeCache(modelClass())
     }
-
 
     /**
      * Removes a validator from model.
@@ -404,6 +387,35 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         ModelDelegate.removeValidator(modelClass(), validator)
     }
 
+    /**
+     * Allows to specify multiple scopes as filters such as:
+     *
+     * <pre>
+     *     List<Employee> activeDevelopers = Employee.scopes("developers", "active").all();
+     * </pre>
+     *
+     * @param scopes list of scopes to use as filters.
+     *
+     * @return selected objects from database based on scope filters.
+     */
+    fun scopes(vararg scopes:String):ScopeBuilder<T> {
+        return ScopeBuilder(modelClass(), scopes)
+    }
+
+    /**
+     * Allows to specify multiple scopes as filters such as:
+     *
+     * <pre>
+     *     List<Employee> developers = Employee.scope("developers").all();
+     * </pre>
+     *
+     * @param scope a scope to use as a filter.
+     *
+     * @return selected objects from database based on scope filters.
+     */
+    fun scope(scope:String):ScopeBuilder<T> {
+        return ScopeBuilder<T>(modelClass(), arrayOf(scope))
+    }
 
     /**
      * Updates records associated with this model.
@@ -426,7 +438,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         return ModelDelegate.update(modelClass(), updates, conditions, *params)
     }
 
-
     /**
      * Updates all records associated with this model.
      *
@@ -445,7 +456,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
     fun updateAll(updates:String, vararg params:Any?):Int {
         return ModelDelegate.updateAll(modelClass(), updates, *params)
     }
-
 
     /**
      * Finder method for DB queries based on table represented by this model. Usually the SQL starts with:
@@ -482,6 +492,15 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         return ModelDelegate.where(modelClass(), subQuery, *params)
     }
 
+    /**
+     * Use in a static block of a model definotion to add a scope.
+     *
+     * @param name name of scope
+     * @param criteria SQL criteria for the scope filter
+     */
+    protected fun addScope(name:String, criteria:String) {
+        ModelDelegate.addScope(modelClass().getName(), name, criteria)
+    }
 
     /**
      * Registers {@link BlankToNullConverter} for specified attributes. This will convert instances of <tt>String</tt>
@@ -493,6 +512,29 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         ModelDelegate.blankToNull(modelClass(), *attributeNames)
     }
 
+    /**
+     * Converts a named attribute to <code>java.sql.Date</code> if possible.
+     * Acts as a validator if cannot make a conversion.
+     *
+     * @param attributeName name of attribute to convert to <code>java.sql.Date</code>.
+     * @param format format for conversion. Refer to {@link java.text.SimpleDateFormat}
+     * @return message passing for custom validation message.
+     */
+    protected fun convertDate(attributeName:String, format:String):ValidationBuilder<Validator> {
+        return ModelDelegate.convertDate(modelClass(), attributeName, format)
+    }
+
+    /**
+     * Converts a named attribute to <code>java.sql.Timestamp</code> if possible.
+     * Acts as a validator if cannot make a conversion.
+     *
+     * @param attributeName name of attribute to convert to <code>java.sql.Timestamp</code>.
+     * @param format format for conversion. Refer to {@link java.text.SimpleDateFormat}
+     * @return message passing for custom validation message.
+     */
+    protected fun convertTimestamp(attributeName:String, format:String):ValidationBuilder<Validator> {
+        return ModelDelegate.convertTimestamp(modelClass(), attributeName, format)
+    }
 
     /**
      * Registers a custom converter for the specified attributes.
@@ -503,7 +545,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
     protected fun convertWith(converter:Converter<Any, Any>, vararg attributeNames:String?) {
         ModelDelegate.convertWith(modelClass(), converter, *attributeNames)
     }
-
 
     /**
      * Registers date format for specified attributes. This format will be used to convert between
@@ -536,7 +577,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         ModelDelegate.dateFormat(modelClass(), pattern, *attributeNames)
     }
 
-
     /**
      * Registers date format for specified attributes. This format will be used to convert between
      * Date -> String -> java.sql.Date when using the appropriate getters and setters.
@@ -549,7 +589,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
     protected fun dateFormat(format:DateFormat, vararg attributeNames:String?) {
         ModelDelegate.dateFormat(modelClass(), format, *attributeNames)
     }
-
 
     /**
      * Registers date format for specified attributes. This format will be used to convert between
@@ -582,7 +621,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         ModelDelegate.timestampFormat(modelClass(), pattern, *attributeNames)
     }
 
-
     /**
      * Registers date format for specified attributes. This format will be used to convert between
      * Date -> String -> java.sql.Timestamp when using the appropriate getters and setters.
@@ -596,7 +634,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         ModelDelegate.timestampFormat(modelClass(), format, *attributeNames)
     }
 
-
     /**
      * Validates email format.
      *
@@ -606,11 +643,9 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         return ModelDelegate.validateEmailOf(modelClass(), attributeName)
     }
 
-
     protected fun validateNumericalityOf(vararg attributeNames:String?):NumericValidationBuilder {
         return ModelDelegate.validateNumericalityOf(modelClass(), *attributeNames)
     }
-
 
     /**
      * The validation will not pass if the value is either an empty string "", or null.
@@ -620,7 +655,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
     protected fun validatePresenceOf(vararg attributeNames:String?):ValidationBuilder<Validator> {
         return ModelDelegate.validatePresenceOf(modelClass(), *attributeNames)
     }
-
 
     /**
      * Validates range. Accepted types are all java.lang.Number subclasses:
@@ -634,7 +668,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         return ModelDelegate.validateRange(modelClass(), attributeName, min, max)
     }
 
-
     /**
      * Validates an attribite format with a ree hand regular expression.
      *
@@ -645,7 +678,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         return ModelDelegate.validateRegexpOf(modelClass(), attributeName, pattern)
     }
 
-
     /**
      * Add a custom validator to the model.
      *
@@ -654,7 +686,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
     protected fun validateWith(validator:Validator):ValidationBuilder<Validator> {
         return ModelDelegate.validateWith(modelClass(), validator)
     }
-
 
     /**
      * Registers {@link ZeroToNullConverter} for specified attributes. This will convert instances of <tt>Number</tt>

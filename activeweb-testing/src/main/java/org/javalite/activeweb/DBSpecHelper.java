@@ -39,7 +39,7 @@ public class DBSpecHelper {
 
         String dbConfigClassName = Configuration.get("dbconfig");
         try {
-            Object dbconfig = Class.forName(dbConfigClassName).newInstance();
+            Object dbconfig = Class.forName(dbConfigClassName).getDeclaredConstructor().newInstance();
             dbconfig.getClass().getMethod("init", AppContext.class).invoke(dbconfig, new AppContext());
         } catch (ClassNotFoundException e) {
             LOGGER.warn("Failed to locate class: " + dbConfigClassName + ", proceeding without it...");

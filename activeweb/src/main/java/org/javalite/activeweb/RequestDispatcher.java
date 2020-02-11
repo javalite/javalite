@@ -97,7 +97,7 @@ public class RequestDispatcher implements Filter {
                 routeConfigLocal = routeConfigTest;
             }else{
                 Class configClass = DynamicClassFactory.getCompiledClass(routeConfigClassName);
-                routeConfigLocal = (AbstractRouteConfig) configClass.newInstance();
+                routeConfigLocal = (AbstractRouteConfig) configClass.getDeclaredConstructor().newInstance();
             }
             routeConfigLocal.clear();
             routeConfigLocal.init(context);
@@ -122,7 +122,7 @@ public class RequestDispatcher implements Filter {
         InitConfig initConfig;
         try {
             Class c = Class.forName(configClassName);
-            initConfig = (InitConfig) c.newInstance();
+            initConfig = (InitConfig) c.getDeclaredConstructor().newInstance();
             initConfig.init(context);
             if(initConfig instanceof  Bootstrap){
                 appBootstrap = (Bootstrap) initConfig;

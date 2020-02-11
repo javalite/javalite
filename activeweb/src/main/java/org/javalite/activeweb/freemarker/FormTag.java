@@ -161,7 +161,10 @@ public class FormTag  extends FreeMarkerTag{
         }
 
         if(restful == null){// using current controller
-            AppController controllerInstance = (AppController) Class.forName(ControllerFactory.getControllerClassName(controllerPath)).newInstance();
+            AppController controllerInstance = (AppController) Class.forName(
+                ControllerFactory.getControllerClassName(controllerPath)
+            ).getDeclaredConstructor().newInstance();
+
             restful = controllerInstance.restful();
         }
 
