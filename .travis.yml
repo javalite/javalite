@@ -60,8 +60,8 @@ jobs:
     - echo 'Waiting for Oracle to boot...' && while ! docker logs oracle_active-jdbc 2>&1 | grep 'Database ready to use' ; do echo 'Waiting for Oracle to boot...'; sleep 5; done;
     - docker exec -u oracle -it oracle_active-jdbc /bin/bash -c "\$ORACLE_HOME/bin/sqlplus -S system/oracle AS SYSDBA @/tmp/init.sql"
     script:
-    - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then echo "Starting Oracle tests"; fi'
-    - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then sh .travisci/run_tests.sh; fi'
+      - echo "Starting Oracle tests"
+      - sh .travisci/run_tests.sh
 
   - # ----------------------- mssql -----------------------
     env: DB=mssql_travis-ci
