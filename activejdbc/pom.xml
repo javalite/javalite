@@ -82,26 +82,14 @@
                 and db properties in your ~/.m2/settings.xml
             -->
             <dependencies>
+                <!-- https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc10 -->
                 <dependency>
-                    <groupId>com.oracle.jdbc</groupId>
-                    <artifactId>ojdbc8</artifactId>
-                    <version>12.2.0.1</version>
+                    <groupId>com.oracle.database.jdbc</groupId>
+                    <artifactId>ojdbc10</artifactId>
+                    <version>19.3.0.0</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
-
-            <repositories>
-                <repository>
-                    <id>maven.oracle.com</id>
-                    <name>oracle-maven-repo</name>
-                    <url>https://maven.oracle.com</url>
-                    <layout>default</layout>
-                    <releases>
-                        <enabled>true</enabled>
-                        <updatePolicy>always</updatePolicy>
-                    </releases>
-                </repository>
-            </repositories>
         </profile>
         <profile>
             <id>postgresql</id>
@@ -224,10 +212,11 @@
                 <db>oracle</db>
             </properties>
             <dependencies>
+                <!-- https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc10 -->
                 <dependency>
-                    <groupId>com.oracle.jdbc</groupId>
-                    <artifactId>ojdbc8</artifactId>
-                    <version>12.2.0.1</version>
+                    <groupId>com.oracle.database.jdbc</groupId>
+                    <artifactId>ojdbc10</artifactId>
+                    <version>19.3.0.0</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
