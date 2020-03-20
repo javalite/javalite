@@ -116,6 +116,29 @@ public final class Util {
         } catch (Exception ignore) {}
     }
 
+    /**
+     * Close multiple resources. Calls {@link #closeQuietly(AutoCloseable)} under the hood.
+     *
+     * @param autoCloseable array of instances of <code>java.lang.AutoCloseable</code>.
+     */
+    public static void closeQuietly(AutoCloseable ... autoCloseable) {
+        for (AutoCloseable closeable : autoCloseable) {
+            closeQuietly(closeable);
+        }
+    }
+
+
+    /**
+     * Close multiple resources. Calls {@link #closeQuietly(AutoCloseable)} under the hood.
+     *
+     * @param autoCloseable array of instances of <code>java.lang.AutoCloseable</code>.
+     */
+    public static <T extends  AutoCloseable>  void closeQuietly(List<T> autoCloseable) {
+        for (AutoCloseable closeable : autoCloseable) {
+            closeQuietly(closeable);
+        }
+    }
+
 
     /**
      * Reads contents of the input stream fully and returns it as String. Sets UTF-8 encoding internally.

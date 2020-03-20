@@ -77,6 +77,12 @@ public class QueueConfig {
         return listenerCount;
     }
 
+    /**
+     *
+     *
+     * @return True is the queue  itself  is durable (persistent from one broker instance to another) as well as
+     *      capable to accept persistent messages.
+     */
     public boolean isDurable() {
         return durable;
     }

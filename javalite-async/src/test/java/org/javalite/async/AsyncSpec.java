@@ -5,6 +5,7 @@ import com.google.inject.Injector;
 import org.javalite.async.services.GreetingModule;
 import org.javalite.common.JsonHelper;
 import org.javalite.common.Util;
+import org.javalite.common.Wait;
 import org.javalite.test.SystemStreamUtil;
 import org.junit.After;
 import org.junit.Before;
@@ -41,7 +42,7 @@ public class AsyncSpec {
     }
 
     @Test
-    public void shouldProcessCommands() throws IOException, InterruptedException {
+    public void shouldProcessCommands()  {
 
         Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
 
@@ -52,9 +53,7 @@ public class AsyncSpec {
             async.send(QUEUE_NAME, new HelloCommand("Hello, Dolly " + i));
         }
 
-        //messages will execute in about 2 seconds, because we send 100 messages, but only have 50 threads.
-        //lets wait for 3 seconds, then validate result
-        Thread.sleep(10000);
+        Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
 
 
         async.stop();
@@ -80,7 +79,7 @@ public class AsyncSpec {
         //drain queue
         async.resume(QUEUE_NAME);
 
-        Thread.sleep(2000);
+        Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
 
         commands = async.getTopCommands(10, QUEUE_NAME);
         a(commands.size()).shouldBeEqual(0);
@@ -143,7 +142,7 @@ public class AsyncSpec {
 
         async.send(QUEUE_NAME, new HelloInjectedCommand("The greeting is: "));
 
-        Thread.sleep(2000);
+        Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
 
         async.stop();
         a(HelloInjectedCommand.result).shouldBeEqual("The greeting is: hi");
@@ -158,7 +157,7 @@ public class AsyncSpec {
             async.send(QUEUE_NAME, new HelloCommand("Message: " + i));
         }
 
-        Thread.sleep(3000);
+        Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
 
         async.stop();
         a(HelloCommand.counter()).shouldBeEqual(10);
@@ -170,7 +169,8 @@ public class AsyncSpec {
             async.send(QUEUE_NAME, new HelloCommand("Message: " + i));
         }
 
-        Thread.sleep(3000);
+        Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
+
         async.stop();
         a(HelloCommand.counter()).shouldBeEqual(20);
     }
@@ -186,7 +186,7 @@ public class AsyncSpec {
 
         //SEE ASSERTION INSIDE HelloCommandListener.
 
-        Thread.sleep(1000);
+        Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
         async.stop();
     }
 
@@ -213,7 +213,53 @@ public class AsyncSpec {
         m2 = async.lookupMessage("queue2");
         the(m2).shouldNotBeNull();
 
-        Thread.sleep(1000);
+        Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
+        async.stop();
+    }
+
+    @Test
+    public void shouldMoveMessagesToOtherQueue() throws InterruptedException, JMSException {
+
+        String queue1  = "queue1", queue2 = "queue2";
+        Async async = new Async(filePath, false, new QueueConfig(queue1), new QueueConfig(queue2));
+        async.start();
+
+        the(async.getMessageCount(queue1)).shouldBeEqual(0);
+        the(async.getMessageCount(queue2)).shouldBeEqual(0);
+
+        async.sendTextMessage(queue1, "message test 1");
+        async.sendTextMessage(queue1, "message test 2");
+
+        the(async.getMessageCount(queue1)).shouldBeEqual(2);
+
+        int count = async.moveMessages(queue1, queue2);
+
+        the(count).shouldBeEqual(2);
+
+        the(async.getMessageCount(queue1)).shouldBeEqual(0);
+        the(async.getMessageCount(queue2)).shouldBeEqual(2);
+
+        async.stop();
+    }
+
+    @Test
+    public void shouldGetMessageCounts(){
+
+        String queue1  = "queue1", queue2 = "queue2";
+        Async async = new Async(filePath, false, new QueueConfig(queue1), new QueueConfig(queue2));
+        async.start();
+
+
+        async.sendTextMessage(queue1, "message test 1");
+        async.sendTextMessage(queue1, "message test 2");
+
+        async.sendTextMessage(queue2, "message test 3");
+
+        Map<String, Long> counts = async.getMessageCounts();
+
+        the(counts.get(queue1)).shouldBeEqual(2);
+        the(counts.get(queue2)).shouldBeEqual(1);
+
         async.stop();
     }
 
@@ -225,7 +271,7 @@ public class AsyncSpec {
         async.send(QUEUE_NAME, new ContextCommand(true));
         async.send(QUEUE_NAME, new ContextCommand(false));
 
-        Thread.sleep(5000);
+        Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
 
         async.stop();
 
@@ -263,3 +309,5 @@ public class AsyncSpec {
         return null;
     }
 }
+
+
