@@ -27,9 +27,9 @@ public class HelloCommand extends Command {
 
     @Override
     public void execute() {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ignore) {}
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException ignore) {}
 
         synchronized (counter){
             counter.incrementAndGet();

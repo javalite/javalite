@@ -3,6 +3,7 @@ package org.javalite.async;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.javalite.async.services.GreetingModule;
+import org.javalite.common.Wait;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,6 +12,7 @@ import java.nio.file.Files;
 import java.util.List;
 
 import static org.javalite.test.jspec.JSpec.a;
+import static org.javalite.test.jspec.JSpec.the;
 
 /**
  * @author Igor Polevoy on 4/5/15.
@@ -39,9 +41,7 @@ public class AsyncBinarySpec {
             async.send(QUEUE_NAME, new HelloCommand("Hello, Dolly " + i));
         }
 
-        //messages will execute in about 2 seconds, because we send 100 messages, but only have 50 threads.
-        //lets wait for 5 seconds, then validate result
-        Thread.sleep(10000);
+        Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
 
 
         async.stop();
@@ -68,7 +68,8 @@ public class AsyncBinarySpec {
         //drain queue
         async.resume(QUEUE_NAME);
 
-        Thread.sleep(2000);
+        Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
+
 
         commands = async.getTopCommands(10, QUEUE_NAME);
         a(commands.size()).shouldBeEqual(0);
@@ -113,7 +114,9 @@ public class AsyncBinarySpec {
         List<Command> commands = async.getTopCommands(10, QUEUE_NAME);
         a(commands.size()).shouldBeEqual(2);
 
-        async.removeAllMessages(QUEUE_NAME);
+        int count = async.removeAllMessages(QUEUE_NAME);
+
+        the(count).shouldBeEqual(2);
 
         commands = async.getTopCommands(10, QUEUE_NAME);
         a(commands.size()).shouldBeEqual(0);
@@ -132,7 +135,7 @@ public class AsyncBinarySpec {
 
         async.send(QUEUE_NAME, new HelloInjectedCommand("The greeting is: "));
 
-        Thread.sleep(2000);
+        Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
 
         async.stop();
         a(HelloInjectedCommand.result).shouldBeEqual("The greeting is: hi");
@@ -148,7 +151,7 @@ public class AsyncBinarySpec {
             async.send(QUEUE_NAME, new HelloCommand("Message: " + i));
         }
 
-        Thread.sleep(3000);
+        Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
 
         async.stop();
         a(HelloCommand.counter()).shouldBeEqual(10);
@@ -160,7 +163,7 @@ public class AsyncBinarySpec {
             async.send(QUEUE_NAME, new HelloCommand("Message: " + i));
         }
 
-        Thread.sleep(3000);
+        Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
         async.stop();
         a(HelloCommand.counter()).shouldBeEqual(20);
     }
@@ -177,7 +180,7 @@ public class AsyncBinarySpec {
 
         //SEE ASSERTION INSIDE HelloCommandListener.
 
-        Thread.sleep(1000);
+        Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
         async.stop();
     }
 }
