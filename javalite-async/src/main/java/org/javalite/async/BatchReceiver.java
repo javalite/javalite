@@ -35,9 +35,12 @@ public class BatchReceiver implements Closeable {
     private long timeout;
     private Session session;
     private MessageConsumer consumer;
-    protected BatchReceiver(Queue queue, long timeout, Connection connection) throws JMSException {
+
+
+    protected BatchReceiver(String queueName, long timeout, Connection connection) throws JMSException {
         this.timeout = timeout;
         this.session = connection.createSession(true, Session.SESSION_TRANSACTED);
+        Queue queue = session.createQueue(queueName);
         this.consumer = session.createConsumer(queue);
     }
 

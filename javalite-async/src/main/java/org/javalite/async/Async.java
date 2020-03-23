@@ -18,36 +18,35 @@ limitations under the License.
 package org.javalite.async;
 
 import com.google.inject.Injector;
+import org.apache.activemq.artemis.api.core.RoutingType;
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
+import org.apache.activemq.artemis.api.core.management.ActiveMQServerControl;
 import org.apache.activemq.artemis.api.core.management.QueueControl;
 import org.apache.activemq.artemis.core.config.Configuration;
+import org.apache.activemq.artemis.core.config.CoreQueueConfiguration;
 import org.apache.activemq.artemis.core.config.impl.ConfigurationImpl;
 import org.apache.activemq.artemis.core.remoting.impl.invm.InVMAcceptorFactory;
 import org.apache.activemq.artemis.core.remoting.impl.invm.InVMConnectorFactory;
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyAcceptorFactory;
 import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants;
 import org.apache.activemq.artemis.core.server.JournalType;
+import org.apache.activemq.artemis.core.server.embedded.EmbeddedActiveMQ;
 import org.apache.activemq.artemis.core.settings.impl.AddressFullMessagePolicy;
 import org.apache.activemq.artemis.core.settings.impl.AddressSettings;
-import org.apache.activemq.artemis.jms.server.config.ConnectionFactoryConfiguration;
-import org.apache.activemq.artemis.jms.server.config.JMSConfiguration;
-import org.apache.activemq.artemis.jms.server.config.impl.ConnectionFactoryConfigurationImpl;
-import org.apache.activemq.artemis.jms.server.config.impl.JMSConfigurationImpl;
-import org.apache.activemq.artemis.jms.server.config.impl.JMSQueueConfigurationImpl;
-import org.apache.activemq.artemis.jms.server.embedded.EmbeddedJMS;
+import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.javalite.common.JsonHelper;
 import org.javalite.common.Util;
+import org.javalite.common.Wait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jms.*;
 import javax.jms.Queue;
+import javax.jms.*;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import java.io.File;
 import java.util.*;
 
-import static java.util.Collections.singletonList;
-import org.apache.activemq.artemis.api.core.management.ActiveMQServerControl;
-import org.apache.activemq.artemis.core.management.impl.ActiveMQServerControlImpl;
 import static org.javalite.common.Collections.map;
 import static org.javalite.common.Util.closeQuietly;
 
@@ -57,7 +56,7 @@ import static org.javalite.common.Util.closeQuietly;
  * but specifically useful in web apps for processing asynchronous jobs without delaying
  * rendering web responses.
  *
- * It sets many configuration parameters of Artemis {@link org.apache.activemq.artemis.jms.server.embedded.EmbeddedJMS} to
+ * It sets many configuration parameters of Artemis {@link org.apache.activemq.artemis.core.server.embedded.EmbeddedActiveMQ} to
  * sensible values so you do not have to.
  *
  * This class also implements a Command Pattern for ease of writing asynchronous code.
@@ -68,18 +67,18 @@ public class Async {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Async.class);
     private static final int MIN_LARGE_MESSAGE_SIZE = 819200;
-    private static final String QUEUE_NAMESPACE = "/queue/";
+    private static final String QUEUE_NAMESPACE = "queue/";
 
     private Injector injector;
-    private final Configuration config;
-    private final JMSConfiguration jmsConfig;
+    private final Configuration config = new ConfigurationImpl();
     private Connection consumerConnection;
     private Connection producerConnection;
-    private EmbeddedJMS jmsServer;
+    private EmbeddedActiveMQ artemisServer;
     private boolean binaryMode;
 
     private List<QueueConfig> queueConfigsList = new ArrayList<>();
     private boolean started;
+    private InitialContext initialContext;
 
     /**
      * sessions that are used by listeners
@@ -119,13 +118,10 @@ public class Async {
     public Async(String dataDirectory, boolean useLibAio, Injector injector, QueueConfig... queueConfigs) {
         try {
             this.injector = injector;
-            jmsServer = new EmbeddedJMS();
-            config = new ConfigurationImpl();
-            jmsConfig = new JMSConfigurationImpl();
+
             Collections.addAll(queueConfigsList, queueConfigs);
             configureLocations(dataDirectory);
             configureAcceptor();
-            configureConnectionFactory();
             configurePaging();
             configureQueues(queueConfigs);
             configureJournal(useLibAio);
@@ -162,24 +158,12 @@ public class Async {
         config.getConnectorConfigurations().put("connector", new TransportConfiguration(InVMConnectorFactory.class.getName()));
     }
 
-    private void configureConnectionFactory() {
-
-        ConnectionFactoryConfiguration cfConfig = new ConnectionFactoryConfigurationImpl();
-        cfConfig.setName("cf").setConnectorNames(singletonList("connector")).setBindings("/cf");
-
-        cfConfig.setClientFailureCheckPeriod(Long.MAX_VALUE);
-        cfConfig.setConnectionTTL(-1);
-        cfConfig.setReconnectAttempts(-1);
-        cfConfig.setCompressLargeMessages(true);
-        cfConfig.setMinLargeMessageSize(MIN_LARGE_MESSAGE_SIZE);
-        jmsConfig.getConnectionFactoryConfigurations().add(cfConfig);
-    }
 
     private void configurePaging() {
         AddressSettings addressSettings = new AddressSettings();
         addressSettings.setAddressFullMessagePolicy(AddressFullMessagePolicy.PAGE);
         addressSettings.setMaxSizeBytes(30 * 1024 * 1024L);
-        addressSettings.setPageSizeBytes(10 * 1024 * 1024L);
+        addressSettings.setPageSizeBytes(10 * 1024 * 1024);
         addressSettings.setPageCacheMaxSize(20);
         config.getAddressesSettings().put("jms.queue.*", addressSettings);
     }
@@ -190,15 +174,21 @@ public class Async {
     public void start(){
 
         try {
-            jmsServer.setConfiguration(config);
-            jmsServer.setJmsConfiguration(jmsConfig);
+            artemisServer = new EmbeddedActiveMQ();
+            artemisServer.setConfiguration(config);
+            artemisServer.start();
 
-            jmsServer.start();
+            //somehow this only works after start of the server, lol.
+            artemisServer.getActiveMQServer().getAddressSettingsRepository()
+                    .addMatch("#", new AddressSettings()
+                    .setAutoCreateQueues(false)
+                    .setAutoCreateAddresses(false)
+                    .setAutoDeleteQueues(false)
+                    .setAutoDeleteAddresses(false));
 
-            ConnectionFactory connectionFactory = (ConnectionFactory) jmsServer.lookup("/cf");
-            if(connectionFactory == null){
-                throw new AsyncException("Failed to start EmbeddedJMS server due to previous errors.");
-            }
+            Wait.waitFor(() -> artemisServer.getActiveMQServer().isStarted());
+
+            ConnectionFactory connectionFactory = new ActiveMQConnectionFactory("vm://0");
 
             consumerConnection = connectionFactory.createConnection();
             receiverSessionPool = new SessionPool("Consumer", consumerConnection);
@@ -227,7 +217,7 @@ public class Async {
         closeQuietly(consumerConnection);
 
         try {
-            ActiveMQServerControl control = jmsServer.getActiveMQServer().getActiveMQServerControl();
+            ActiveMQServerControl control = artemisServer.getActiveMQServer().getActiveMQServerControl();
             String[] remoteAddresses = control.listRemoteAddresses();
             for (String address : remoteAddresses) {
                 control.closeConnectionsForAddress(address);
@@ -236,7 +226,11 @@ public class Async {
             LOGGER.warn("exception trying to close remote connections.", e);
         }
         try {
-            jmsServer.stop();
+            artemisServer.stop();
+
+//            TimeUnit.SECONDS.sleep(20);
+//            Wait.waitFor(() -> !artemisServer.getActiveMQServer().isActive());
+
         } catch (Exception e) {
             LOGGER.warn("exception trying to stop broker.", e);
         }
@@ -255,17 +249,31 @@ public class Async {
         }
     }
 
-    private void configureQueues(QueueConfig... queueConfigs) throws JMSException, IllegalAccessException, InstantiationException {
+
+    private void configureQueues(QueueConfig... queueConfigs) throws NamingException {
+
+        Hashtable<String, String> jndi = new Hashtable<>();
+        jndi.put("java.naming.factory.initial", "org.apache.activemq.artemis.jndi.ActiveMQInitialContextFactory");
+
         for (QueueConfig queueConfig : queueConfigs) {
-            JMSQueueConfigurationImpl configuration = new JMSQueueConfigurationImpl();
-            configuration.setName(queueConfig.getName()).setSelector("").setDurable(queueConfig.isDurable()).setBindings(QUEUE_NAMESPACE + queueConfig.getName());
-            jmsConfig.getQueueConfigurations().add(configuration);
+            CoreQueueConfiguration coreQueueConfiguration = new CoreQueueConfiguration();
+            coreQueueConfiguration
+                    .setName(queueConfig.getName())
+                    .setDurable(queueConfig.isDurable())
+                    .setAddress(queueConfig.getName()).
+                    setRoutingType(RoutingType.ANYCAST);
+            config.addQueueConfiguration(coreQueueConfiguration);
+
+            //# queue.[jndiName] = [physicalName]
+            jndi.put("queue.queue/" + queueConfig.getName(), queueConfig.getName());
         }
+
+        initialContext = new InitialContext(jndi);
     }
 
-    private void configureListeners(Injector injector, List<QueueConfig> queueConfigs) throws JMSException, IllegalAccessException, InstantiationException {
+    private void configureListeners(Injector injector, List<QueueConfig> queueConfigs) throws JMSException{
         for (QueueConfig queueConfig : queueConfigs) {
-            Queue queue = (Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueConfig.getName());
+
             CommandListener listener = queueConfig.getCommandListener();
             if(listener != null){
                 listener.setInjector(injector);
@@ -275,6 +283,7 @@ public class Async {
 
                 for (int i = 0; i < queueConfig.getListenerCount(); i++) {
                     Session session = consumerConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+                    Queue queue = session.createQueue(queueConfig.getName());
                     MessageConsumer consumer = session.createConsumer(queue);
                     consumer.setMessageListener(listener);
                     listenerSessions.add(session);
@@ -351,7 +360,8 @@ public class Async {
             if (timeToLive < 0)
                 throw new AsyncException("time to live cannot be negative");
 
-            Queue queue = (Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueName);
+            Queue queue = (Queue) initialContext.lookup(QUEUE_NAMESPACE + queueName);
+
             if (queue == null)
                 throw new AsyncException("Failed to find queue: " + queueName);
 
@@ -387,7 +397,7 @@ public class Async {
      * @param queueName name of queue
      * @return command if found. If command not found, this method will block till a command is present in queue.
      *
-     * @see {@link #receiveCommand(String, long)}
+     * see {@link #receiveCommand(String, long)}
      */
     public Command receiveCommand(String queueName) {
         return receiveCommand(queueName, 0);
@@ -401,7 +411,7 @@ public class Async {
      * @param type expected class of a command
      * @return command if found. If command not found, this method will block till a command is present in queue.
      *
-     * @see {@link #receiveCommand(String, long)}
+     * see {@link #receiveCommand(String, long)}
      */
     @SuppressWarnings("unchecked")
     public <T extends Command> T receiveCommand(String queueName, Class<T> type) {
@@ -417,7 +427,7 @@ public class Async {
      * @param type expected class of a command
      * @return command if found. If command not found, this method will block till a command is present in queue.
      *
-     * @see {@link #receiveCommand(String, long)}
+     * see {@link #receiveCommand(String, long)}
      */
     @SuppressWarnings("unchecked")
     public <T extends Command> T receiveCommand(String queueName,  int timeout, Class<T> type) {
@@ -468,15 +478,13 @@ public class Async {
     public Message receiveMessage(String queueName, long timeout) {
         checkStarted();
         try(Session session = receiverSessionPool.getSession()){
-            Queue queue = (Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueName);
-            try(MessageConsumer consumer = session.createConsumer(queue)) {
+            try(MessageConsumer consumer = session.createConsumer(lookupQueue(queueName))) {
                 return consumer.receive(timeout);
             }
         } catch (Exception e) {
             throw new AsyncException("Could not get message", e);
         }
     }
-
 
     /**
      * Sends a non-expiring {@link TextMessage} with average priority.
@@ -506,13 +514,9 @@ public class Async {
             checkInRange(priority, 0, 9, "priority");
             if (timeToLive < 0)
                 throw new AsyncException("time to live cannot be negative");
-
-            Queue queue = (Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueName);
-            if (queue == null)
-                throw new AsyncException("Failed to find queue: " + queueName);
             Message message = session.createTextMessage(text);
 
-            MessageProducer p = session.createProducer(queue);
+            MessageProducer p = session.createProducer(lookupQueue(queueName));
             p.send(message, deliveryMode, priority, timeToLive);
         } catch (AsyncException e) {
             throw e;
@@ -534,7 +538,7 @@ public class Async {
      */
     public BatchReceiver getBatchReceiver(String queueName, long timeout){
         try {
-            return new BatchReceiver((Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueName), timeout, consumerConnection);
+            return new BatchReceiver(queueName, timeout, consumerConnection);
         } catch (Exception e) {
             throw new AsyncException(e);
         }
@@ -552,8 +556,8 @@ public class Async {
         List<Command> res = new ArrayList<>();
 
         try(Session session = consumerConnection.createSession()) {
-            Queue queue = (Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueName);
-            Enumeration messages = session.createBrowser(queue).getEnumeration();
+
+            Enumeration messages = session.createBrowser(lookupQueue(queueName)).getEnumeration();
             for(int i = 0; i < count && messages.hasMoreElements(); i++) {
                 Command command;
                 Message message = (Message) messages.nextElement();
@@ -582,8 +586,7 @@ public class Async {
         checkStarted();
         List<String> res = new ArrayList<>();
         try(Session session = consumerConnection.createSession()) {
-            Queue queue = (Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueName);
-            Enumeration messages = session.createBrowser(queue).getEnumeration();
+            Enumeration messages = session.createBrowser(lookupQueue(queueName)).getEnumeration();
             for(int i = 0; i < maxSize && messages.hasMoreElements(); i++) {
                 TextMessage message = (TextMessage) messages.nextElement();
                 res.add(message.getText());
@@ -594,16 +597,18 @@ public class Async {
         }
     }
 
+    private Queue lookupQueue(String queueName) throws NamingException {
+        return (Queue) initialContext.lookup(QUEUE_NAMESPACE + queueName);
+    }
 
     /**
-     * This method exists for testing
+     * This method exists for testing. Uses browser to retrieve the message first in queue to deliver.
      */
-    protected Message lookupMessage(String queueName)  {
+    Message lookupMessage(String queueName)  {
         checkStarted();
 
         try(Session session = consumerConnection.createSession()) {
-            Queue queue = (Queue) jmsServer.lookup(QUEUE_NAMESPACE + queueName);
-            Enumeration messages = session.createBrowser(queue).getEnumeration();
+            Enumeration messages = session.createBrowser(lookupQueue(queueName)).getEnumeration();
             return (Message) messages.nextElement();
         }catch (NoSuchElementException e){
             return null;
@@ -621,11 +626,15 @@ public class Async {
         return bytes;
     }
 
-    private QueueControl getQueueControl(String queue) throws Exception {
+    private QueueControl getQueueControl(String queueName) {
         checkStarted();
-        //TODO: this is a dirty hack that exists because I have no idea how to get the QueueControl properly out of Artemis 2.2.0!
-        String res = QUEUE_NAMESPACE.replace('/', ' ').trim() + '.' + queue;
-        return (QueueControl) jmsServer.getActiveMQServer().getManagementService().getResource(res);
+        for (Object resource : artemisServer.getActiveMQServer().getManagementService().getResources(QueueControl.class)) {
+
+            if(resource instanceof QueueControl && ((QueueControl)resource).getName().equals(queueName)){
+                return (QueueControl) resource;
+            }
+        }
+        throw  new AsyncException("Failed to find queue: " + queueName);
     }
 
 
@@ -652,7 +661,8 @@ public class Async {
     public long getMessageCount(String queue){
         try {
             return getQueueControl(queue).getMessageCount();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new AsyncException(e);
         }
     }
@@ -759,14 +769,6 @@ public class Async {
         } catch (Exception e) {
             throw new AsyncException(e);
         }
-    }
-
-
-    /**
-     * Get additional JMS configuration.
-     */
-    public JMSConfiguration getJmsConfig() {
-        return jmsConfig;
     }
 
     /**
