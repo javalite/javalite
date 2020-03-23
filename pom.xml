@@ -4,7 +4,7 @@
     <groupId>org.javalite</groupId>
     <artifactId>javalite</artifactId>
     <packaging>pom</packaging>
-    <version>2.3.2-j8</version>
+    <version>2.3.3-j8-SNAPSHOT</version>
     <name>JavaLite - Java, light as a feather</name>
     <url>http://javalite.io</url>
 
@@ -53,7 +53,7 @@
        <connection>scm:git:git@github.com:javalite/activejdbc.git</connection>
        <developerConnection>scm:git:git@github.com:javalite/activejdbc.git</developerConnection>
        <url>git@github.com:javalite/activejdbc.git</url>
-       <tag>javalite-2.3.2-j8</tag>
+       <tag>HEAD</tag>
   </scm>
 
     <profiles>
