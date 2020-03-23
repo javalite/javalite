@@ -175,7 +175,6 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>3.0.0-M1</version>
                 <configuration>
-                    <
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                 </configuration>
             </plugin>
