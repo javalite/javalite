@@ -144,9 +144,8 @@ public class DB implements Closeable{
 
 
     /**
-     * This method will open a connection defined in the file 'database.properties' located at
-     * root of classpath. The connection picked up from the file is defined by <code>ACTIVE_ENV</code>
-     * environment variable or <code>active_env</code> system property.
+     * This method will open a connection defined in the file 'database.properties' set by an initial  previous call to {@link DBConfiguration#loadConfiguration(String)}.
+     * The connection picked up from the file is defined by <code>ACTIVE_ENV</code> environment variable or <code>active_env</code> system property.
      * If this variable is not defined, it defaults to 'development' environment.
      *
      * <p></p>
