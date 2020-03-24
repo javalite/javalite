@@ -15,6 +15,8 @@ limitations under the License.
 */
 package org.javalite.activejdbc;
 
+import org.javalite.activejdbc.connection_config.DBConfiguration;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -40,9 +42,11 @@ public class Base {
     private Base() {}
     
     /**
-     * This method will open a connection defined in the file 'database.properties' located at
-     * root of classpath. The connection picked from the file is defined by <code>ACTIVE_ENV</code>
-     * environment variable. If this variable is not defined, it defaults to 'development' environment.
+     *
+     * This method will open a connection defined in the file 'database.properties' set by an initial  previous call to {@link DBConfiguration#loadConfiguration(String)}.
+     * The connection picked up from the file is defined by <code>ACTIVE_ENV</code> environment variable or <code>active_env</code> system property.
+     * If this variable is not defined, it defaults to 'development' environment.
+     *
      *
      * If there is JUnit on classpath, this method assumes it is running under test, and defaults to 'test'.
      *
