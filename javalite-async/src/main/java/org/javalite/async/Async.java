@@ -119,6 +119,7 @@ public class Async {
         try {
             this.injector = injector;
 
+
             Collections.addAll(queueConfigsList, queueConfigs);
             configureLocations(dataDirectory);
             configureAcceptor();
@@ -128,6 +129,9 @@ public class Async {
             config.setThreadPoolMaxSize(-1);
             config.setGracefulShutdownEnabled(true);
             config.setScheduledThreadPoolMaxSize(10);
+
+
+
         } catch (AsyncException e) {
             throw e;
         } catch (Exception e) {

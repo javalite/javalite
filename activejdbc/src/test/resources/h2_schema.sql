@@ -247,3 +247,13 @@ CREATE TABLE postal_addresses (id  int(11) NOT NULL  auto_increment PRIMARY KEY,
 
 DROP TABLE IF EXISTS phone_numbers;
 CREATE TABLE phone_numbers (id  int(11) NOT NULL  auto_increment PRIMARY KEY, the_number VARCHAR(56), type VARCHAR(56), scope VARCHAR(56), customer_id int(11));
+
+
+
+DROP TABLE IF EXISTS actions;
+CREATE TABLE actions (ID  int(11) NOT NULL  auto_increment PRIMARY KEY, NAME VARCHAR(56), USER_GROUP_ID int(11));
+
+
+
+DROP TABLE IF EXISTS user_groups;
+CREATE TABLE user_groups (id  int(11) NOT NULL  auto_increment PRIMARY KEY, NAME VARCHAR(56));
