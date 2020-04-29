@@ -156,21 +156,20 @@
                     <artifactId>maven-site-plugin</artifactId>
                     <version>3.8.2</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.2.0</version>
+                    <configuration>
+                        <javadocDirectory>javadoc</javadocDirectory>
+                        <doclint>none</doclint>
+                        <additionalJOption>--no-module-directories</additionalJOption>
+                    </configuration>
+                </plugin>
             </plugins>
+
         </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.1.1</version>
-                <configuration>
-                    <!--<stylesheetfile>javadoc/stylesheet.css</stylesheetfile>-->
-                    <javadocDirectory>javadoc</javadocDirectory>
-                    <doclint>none</doclint>
-                    <additionalJOption>--no-module-directories</additionalJOption>
-                </configuration>
-            </plugin>
-        </plugins>
+
     </build>
 
     <modules>
