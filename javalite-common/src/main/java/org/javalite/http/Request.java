@@ -65,9 +65,9 @@ public abstract class Request<T extends Request> {
     /**
      * Configures this request to follow redirects. Default is <code>false</code>.
      *
+     * @see <a href="https://docs.oracle.com/javase/7/docs/api/java/net/HttpURLConnection.html#instanceFollowRedirects">HttpURLConnection.html#instanceFollowRedirects</a>
      * @param redirect true to follow, false to not.
      * @return self
-     * @see <a href="https://docs.oracle.com/javase/7/docs/api/java/net/HttpURLConnection.html#instanceFollowRedirects">HttpURLConnection.html#instanceFollowRedirects</a>
      */
     public T redirect(boolean redirect) {
         this.redirect = redirect;
@@ -82,10 +82,10 @@ public abstract class Request<T extends Request> {
     public InputStream getInputStream() {
         try {
             return connection.getInputStream();
-        } catch (SocketTimeoutException e) {
+        }catch(SocketTimeoutException e){
             throw new HttpException("Failed URL: " + url +
-                    ", waited for: " + connection.getReadTimeout() + " milliseconds", e);
-        } catch (Exception e) {
+                    ", waited for: " + connection.getConnectTimeout() + " milliseconds", e);
+        }catch (Exception e) {
             throw new HttpException("Failed URL: " + url, e);
         }
     }
@@ -133,7 +133,7 @@ public abstract class Request<T extends Request> {
      *
      * @return response content from server as bytes.
      */
-    public byte[] bytes() {
+    public byte[]  bytes() {
 
         connect();
 
@@ -146,12 +146,9 @@ public abstract class Request<T extends Request> {
             while ((count = in.read(bytes)) != -1) {
                 bout.write(bytes, 0, count);
             }
-        } catch (SocketTimeoutException e) {
-            throw new HttpException("Failed URL: " + url +
-                    ", waited for: " + connection.getReadTimeout() + " milliseconds", e);
         } catch (Exception e) {
             throw new HttpException("Failed URL: " + url, e);
-        } finally {
+        }finally {
             dispose();
         }
 
@@ -167,12 +164,9 @@ public abstract class Request<T extends Request> {
         try {
             connect();
             return responseCode() >= 400 ? read(connection.getErrorStream()) : read(connection.getInputStream());
-        } catch (SocketTimeoutException e) {
-            throw new HttpException("Failed URL: " + url +
-                    ", waited for: " + connection.getReadTimeout() + " milliseconds", e);
         } catch (IOException e) {
             throw new HttpException("Failed URL: " + url, e);
-        } finally {
+        }finally {
             dispose();
         }
     }
@@ -181,18 +175,16 @@ public abstract class Request<T extends Request> {
      * Fetches response content from server as String.
      *
      * @param encoding - name of supported charset to apply when reading data.
+     *
      * @return response content from server as String.
      */
     public String text(String encoding) {
         try {
             connect();
             return responseCode() >= 400 ? read(connection.getErrorStream()) : read(connection.getInputStream(), encoding);
-        } catch (SocketTimeoutException e) {
-            throw new HttpException("Failed URL: " + url +
-                    ", waited for: " + connection.getReadTimeout() + " milliseconds", e);
         } catch (IOException e) {
             throw new HttpException("Failed URL: " + url, e);
-        } finally {
+        }finally {
             dispose();
         }
     }
@@ -213,19 +205,16 @@ public abstract class Request<T extends Request> {
         //according to this: http://download.oracle.com/javase/1.5.0/docs/guide/net/http-keepalive.html
         //should read all data from connection to make it happy.
         byte[] bytes = new byte[1024];
-        try (InputStream in = connection.getInputStream()) {
-            if (in != null) {
-                while ((in.read(bytes)) > 0) {
-                }//do nothing
+        try (InputStream in = connection.getInputStream()){
+            if(in != null){
+                while ((in.read(bytes)) > 0) {}//do nothing
             }
         } catch (Exception ignore) {
-            try (InputStream errorStream = connection.getErrorStream()) {
-                if (errorStream != null) {
-                    while ((errorStream.read(bytes)) > 0) {
-                    }//do nothing
+            try(InputStream errorStream = connection.getErrorStream()) {
+                if(errorStream != null){
+                    while ((errorStream.read(bytes)) > 0) {}//do nothing
                 }
-            } catch (IOException ignoreToo) {
-            }
+            } catch (IOException ignoreToo) {}
         }
     }
 
@@ -251,11 +240,11 @@ public abstract class Request<T extends Request> {
     /**
      * Sets a user and password for basic authentication.
      *
-     * @param user     user.
+     * @param user user.
      * @param password password.
      * @return self.
      */
-    public T basic(String user, String password) {
+    public T basic(String user, String password){
         connection.setRequestProperty("Authorization", "Basic " + toBase64((user + ":" + password).getBytes()));
         return (T) this;
     }
@@ -266,7 +255,7 @@ public abstract class Request<T extends Request> {
      * @param user user
      * @return self
      */
-    public T basic(String user) {
+    public T basic(String user){
         connection.setRequestProperty("Authorization", "Basic " + toBase64((user).getBytes()));
         return (T) this;
     }
