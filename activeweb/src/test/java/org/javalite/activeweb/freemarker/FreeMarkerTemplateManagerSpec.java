@@ -40,12 +40,12 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
     FreeMarkerTemplateManager manager = new FreeMarkerTemplateManager();
 
     @Before
-    public void before() throws IOException {
+    public void before() {
         manager.setTemplateLocation("src/test/views");
     }
 
     @Test
-    public void shouldOverrideDefaultFreeMarkerNumberFormat() throws IOException, TemplateException {
+    public void shouldOverrideDefaultFreeMarkerNumberFormat() {
         StringWriter sw = new StringWriter();
         manager.merge(map("number", 1234567), "/partial/number_format", sw);
         a(sw.toString()).shouldBeEqual("hello: 1234567");
@@ -56,7 +56,7 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
     public void shouldRenderTemplateInLayout() {
 
         manager.setDefaultLayout("/layouts/default_layout");
-        Map values = new HashMap();
+        Map<String, Object> values = new HashMap<>();
         values.put("name", "Jim");
 
         StringWriter sw = new StringWriter();
@@ -72,7 +72,7 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
     public void yieldShouldRenderContentFor()  {
 
         manager.setDefaultLayout("/layouts/default_layout_with_yeld");
-        Map values = new HashMap();
+        Map<String, Object> values = new HashMap<>();
         values.put("name", "Jim");
 
         StringWriter sw = new StringWriter();
@@ -86,7 +86,7 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
     public void yieldShouldRenderContentForWithBlankContent() {
 
         manager.setDefaultLayout("/layouts/default_layout_with_yeld");
-        Map values = new HashMap();
+        Map<String, Object> values = new HashMap<>();
         values.put("name", "Jim");
 
         StringWriter sw = new StringWriter();
@@ -99,7 +99,7 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
     public void yieldShouldFailGracefullyIfNoContentProvided() {
 
         manager.setDefaultLayout("/layouts/default_layout_with_yeld");
-        Map values = new HashMap();
+        Map<String, Object> values = new HashMap<>();
         values.put("name", "Jim");
 
         StringWriter sw = new StringWriter();
@@ -119,7 +119,7 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
     public void yieldShouldRenderMultipleChinksOfContentForSameName(){
 
         manager.setDefaultLayout("/layouts/default_layout_with_yeld_js");
-        Map values = new HashMap();
+        Map<String, Object> values = new HashMap<>();
         values.put("name", "Jim");
 
         StringWriter sw = new StringWriter();
@@ -136,7 +136,7 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
 
         StringWriter sw = new StringWriter();
 
-        manager.merge(new HashMap(), "/formatting/index", sw);
+        manager.merge(new HashMap<>(), "/formatting/index", sw);
         String generated = sw.toString();
 
         a(generated).shouldContain("default format - format value missing");
@@ -146,7 +146,7 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
     public void shouldSelectTemplateForProvidedFormat(){
 
         StringWriter sw = new StringWriter();
-        manager.merge(new HashMap(), "/formatting/index", "/layouts/default_layout", "xml", sw);
+        manager.merge(new HashMap<>(), "/formatting/index", "/layouts/default_layout", "xml", sw);
         a(sw.toString()).shouldContain("XML");
     }
 
@@ -154,9 +154,9 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
     public void shouldThrowCorrectExceptionIfPartialNotFound(){
         StringWriter sw = new StringWriter();
         try {
-            manager.merge(new HashMap(), "/partial/missing-partial", sw);
+            manager.merge(new HashMap<>(), "/partial/missing-partial", sw);
         } catch (Exception e) {
-            the(e.getMessage()).shouldContain("Failed to render template: '/partial/missing-partial.ftl' without layout.  Template not found for name \"/partial/_missing.ftl\".");
+            the(e.getMessage()).shouldContain("Failed to render template: '/partial/missing-partial.ftl' without layout. Template not found for name \"/partial/_missing.ftl\".");
         }
     }
 }

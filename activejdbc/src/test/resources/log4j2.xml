@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO" packages="org.javalite.logging" name="JsonLog4j2Layout">
+    <Appenders>
+
+        <SystemOutAppender name="SystemOutAppender" >
+            <JsonLog4j2Layout   dateFormat="yyyy-MM-dd HH:mm:ss.SSS"/>
+        </SystemOutAppender>
+
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="SystemOutAppender"/>
+        </Root>
+    </Loggers>
+</Configuration>

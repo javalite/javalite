@@ -53,7 +53,7 @@ public class JsonLog4jLayoutSpec {
     }
 
     @Test
-    public void shouldLogJson() throws IOException {
+    public void shouldLogJson(){
         Logger logger = LoggerFactory.getLogger(getClass());
         logger.info("hello");
         logger.info("world");
@@ -78,6 +78,6 @@ public class JsonLog4jLayoutSpec {
         try {
             SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
             sf.parse(timestamp); // should not  generate exception
-        } catch (ParseException e) {throw new RuntimeException(); }
+        } catch (ParseException e) {throw new RuntimeException("Invalid timestamp format"); }
     }
 }
