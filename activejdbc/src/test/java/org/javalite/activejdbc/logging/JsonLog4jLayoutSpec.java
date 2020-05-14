@@ -27,7 +27,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +41,7 @@ import java.util.Map;
 public class JsonLog4jLayoutSpec  extends ActiveJDBCTest{
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         SystemStreamUtil.replaceOut();
     }
 
@@ -53,7 +52,7 @@ public class JsonLog4jLayoutSpec  extends ActiveJDBCTest{
     }
 
     @Test
-    public void shouldLogJson() throws IOException {
+    public void shouldLogJson() {
 
         Logger logger = LoggerFactory.getLogger(getClass());
 

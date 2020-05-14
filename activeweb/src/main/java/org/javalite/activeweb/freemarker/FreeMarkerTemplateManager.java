@@ -119,7 +119,7 @@ public class FreeMarkerTemplateManager extends TemplateManager {
 
 
     private String getTemplateDescription(String templateName, String layout) {
-        return "'" + templateName + (layout == null ? "' without layout" : "' with layout: '" + layout + ".ftl'") + ". ";
+        return "'" + templateName + (layout == null ? "' without layout" : "' with layout: '" + layout + ".ftl'") + ".";
     }
     
     @Override
