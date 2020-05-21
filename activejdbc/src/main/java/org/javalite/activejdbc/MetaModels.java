@@ -121,7 +121,9 @@ class MetaModels {
     protected String toJSON() {
         List models = new ArrayList();
         metaModelsByTableName.values().forEach(metaModel -> {
-            List associations = new ArrayList();
+            
+            try {
+                List associations = new ArrayList();
             metaModel.getAssociations().forEach(association -> associations.add(association.toMap()));
             models.add(map(
                     MODEL_CLASS, metaModel.getModelClass().getName(),
@@ -130,6 +132,12 @@ class MetaModels {
                     COLUMN_METADATA, metaModel.getColumnMetadata(),
                     ASSOCIATIONS, associations
             ));
+            } catch(InitException ex) {
+                LogFilter.log(LOGGER, LogLevel.WARNING, "Failed to retrieve metadata for table: '{}'."
+                    + " Are you sure this table exists? For some databases table names are case sensitive.",
+                    metaModel.getTableName());
+            }
+            
         });
         return JsonHelper.toJsonString(models,false);
     }
