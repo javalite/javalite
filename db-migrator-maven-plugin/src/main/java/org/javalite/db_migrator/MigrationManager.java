@@ -1,6 +1,7 @@
 package org.javalite.db_migrator;
 
 import org.apache.maven.plugin.logging.Log;
+import org.javalite.activejdbc.Base;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -8,7 +9,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import static org.javalite.db_migrator.DbUtils.connection;
+
 import static org.javalite.db_migrator.DbUtils.databaseType;
 
 public class MigrationManager {
@@ -40,7 +41,7 @@ public class MigrationManager {
         List<String> appliedMigrations = getAppliedMigrationVersions();
 
         List<Migration> allMigrations = migrationResolver.resolve();
-        List<Migration> pendingMigrations = new ArrayList<Migration>();
+        List<Migration> pendingMigrations = new ArrayList<>();
         for (Migration migration : allMigrations) {
             if(!appliedMigrations.contains(migration.getVersion())){
                 pendingMigrations.add(migration);
@@ -66,7 +67,7 @@ public class MigrationManager {
         Migration currentMigration = null;
 
         try {
-            connection().setAutoCommit(false);
+            Base.connection().setAutoCommit(false);
             for (Migration migration : pendingMigrations) {
                 currentMigration = migration;
                 log.info("Running migration " + currentMigration.getName());
@@ -74,10 +75,10 @@ public class MigrationManager {
 
                 currentMigration.migrate(encoding);
                 versionStrategy.recordMigration(currentMigration.getVersion(), new Date(start), (start - System.currentTimeMillis()));
-                connection().commit();
+                Base.connection().commit();
             }
         } catch (Exception e) {
-            try{connection().rollback();}catch(Exception ex){throw new MigrationException(e);}
+            try{Base.connection().rollback();}catch(Exception ex){throw new MigrationException(e);}
             assert currentMigration != null;
             throw new MigrationException("Migration for version " + currentMigration.getVersion() + " failed, rolling back and terminating migration.", e);
         }
@@ -85,7 +86,7 @@ public class MigrationManager {
     }
 
     protected DatabaseType determineDatabaseType() throws SQLException {
-        return databaseType(connection().getMetaData().getURL());
+        return databaseType(Base.connection().getMetaData().getURL());
 
     }
 

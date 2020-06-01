@@ -20,7 +20,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static org.javalite.db_migrator.SpecBuilder.the;
+import static org.javalite.test.jspec.JSpec.the;
 
 public class MojoIntegrationEnvironmentsSpec extends AbstractIntegrationSpec {
 

@@ -1,10 +1,11 @@
 package org.javalite.db_migrator;
 
 
+import org.javalite.activejdbc.Base;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.*;
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.Date;
 
@@ -52,37 +53,16 @@ public class VersionStrategy {
         return true;
     }
 
-    public List<String> getAppliedMigrations()  {
-        Statement st = null;
-        ResultSet rs = null;
-        try{
-            st = connection().createStatement();
-            rs = st.executeQuery("select " + VERSION_COLUMN + " from " + VERSION_TABLE);
-            List<String> migrations = new ArrayList<String>();
-            while (rs.next()){
-                migrations.add(rs.getString(1));
-            }
-            return migrations;
-        }catch(SQLException e){
-            throw new MigrationException(e);
-        }finally {
-            closeQuietly(rs);
-            closeQuietly(st);
-        }
+    public List<String> getAppliedMigrations() {
+        return Base.firstColumn("select " + VERSION_COLUMN + " from " + VERSION_TABLE);
     }
 
     public void recordMigration(String version, Date startTime, long duration) {
-        PreparedStatement st = null;
+
         try{
-            st = connection().prepareStatement("insert into " + VERSION_TABLE + " values (?, ?, ?)");
-            st.setString(1, version);
-            st.setTimestamp(2, new Timestamp(startTime.getTime()));
-            st.setLong(3, duration);
-            st.execute();
+            Base.exec("insert into " + VERSION_TABLE + " values (?, ?, ?)", version, new Timestamp(startTime.getTime()), duration);
         }catch(Exception e){
             throw  new MigrationException(e);
-        }finally {
-            closeQuietly(st);
         }
     }
 }

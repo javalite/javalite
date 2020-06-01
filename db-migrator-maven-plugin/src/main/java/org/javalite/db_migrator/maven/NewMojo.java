@@ -43,8 +43,9 @@ public class NewMojo extends AbstractMigrationMojo {
             fileName.append('_').append(name);
         }
 
-        fileName.append(".sql");
-
+        if(!fileName.toString().endsWith("groovy")){
+            fileName.append(".sql");
+        }
         return fileName.toString();
     }
 

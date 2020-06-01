@@ -75,7 +75,6 @@
             <groupId>org.javalite</groupId>
             <artifactId>db-migrator-maven-plugin</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
 
 

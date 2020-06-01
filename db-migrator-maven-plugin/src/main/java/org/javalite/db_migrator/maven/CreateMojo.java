@@ -1,6 +1,7 @@
 package org.javalite.db_migrator.maven;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.javalite.activejdbc.Base;
 import org.javalite.db_migrator.DbUtils;
 import org.javalite.db_migrator.MigrationManager;
 
@@ -35,7 +36,7 @@ public class CreateMojo extends AbstractDbMigrationMojo {
         } catch (Exception e) {
             throw new MojoExecutionException("Failed to create database: " + getUrl(), e);
         } finally {
-            closeConnection();
+            Base.close();
         }
 
         try{
@@ -45,7 +46,7 @@ public class CreateMojo extends AbstractDbMigrationMojo {
         }catch(Exception e){
             throw  new MojoExecutionException("failed to create SCHEMA_VERSION table", e);
         }finally {
-            closeConnection();
+            Base.close();
         }
     }
 }

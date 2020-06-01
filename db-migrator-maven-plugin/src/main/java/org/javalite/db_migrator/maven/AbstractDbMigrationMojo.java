@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.javalite.activejdbc.Base;
 import org.javalite.db_migrator.DbUtils;
 import static org.javalite.db_migrator.DbUtils.blank;
 import static org.javalite.db_migrator.DbUtils.closeQuietly;
@@ -175,6 +176,6 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
      */
     protected void openConnection(boolean root){
         String url = root? DbUtils.extractServerUrl(getUrl()): getUrl();
-        DbUtils.openConnection(getDriver(), url, getUsername(), getPassword());
+        Base.open(getDriver(), url, getUsername(), getPassword());
     }
 }

@@ -20,29 +20,31 @@ limitations under the License.
 
 package org.javalite.db_migrator;
 
+import org.javalite.activejdbc.Base;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 
 import static org.javalite.db_migrator.JdbcPropertiesOverride.*;
+import static org.javalite.test.jspec.JSpec.the;
 import static org.junit.Assert.*;
 import static org.javalite.db_migrator.DbUtils.*;
-import static org.javalite.db_migrator.SpecBuilder.the;
+
 
 public class MojoIntegrationSpec extends AbstractIntegrationSpec {
 
     @Test
     public void shouldRunTestProject() throws IOException, InterruptedException {
-        run("target/test-project");
+        run("target/test-project", "The book is: Hello, Book A!");
     }
 
     @Test
     public void shouldRunTestProjectWithProperties() throws IOException, InterruptedException {
-        run("target/test-project-properties");
+        run("target/test-project-properties", null);
     }
 
-    private void run(String dir) throws IOException, InterruptedException {
+    private void run(String dir, String val) throws IOException, InterruptedException {
         // drop
         execute(dir, "db-migrator:drop");
 
@@ -55,10 +57,14 @@ public class MojoIntegrationSpec extends AbstractIntegrationSpec {
         output = execute(dir, "db-migrator:migrate");
         the(output).shouldContain("BUILD SUCCESS");
 
-        openConnection(driver(), "jdbc:mysql://localhost/test_project", user(), password());
-        assertEquals(countRows("books"), 9);
-        assertEquals(countRows("authors"), 2);
-        closeConnection();
+        if(val != null){
+            the(output).shouldContain(val);
+        }
+
+        Base.open(driver(), "jdbc:mysql://localhost/test_project", user(), password());
+        the(countRows("books")).shouldBeEqual(9);
+        the(countRows("authors")).shouldBeEqual(2);
+        Base.close();
 
         // drop, create and validate
         output = execute(dir, "db-migrator:drop");
