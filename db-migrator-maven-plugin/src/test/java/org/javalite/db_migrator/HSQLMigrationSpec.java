@@ -1,6 +1,7 @@
 package org.javalite.db_migrator;
 
 
+import org.javalite.activejdbc.Base;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,13 +16,13 @@ public class HSQLMigrationSpec {
 
     @Before
     public void setup() throws Exception {
-        openConnection("org.hsqldb.jdbcDriver", "jdbc:hsqldb:file:./target/tmp/hsql-migration-test", "sa", "");
+        Base.open("org.hsqldb.jdbcDriver", "jdbc:hsqldb:file:./target/tmp/hsql-migration-test", "sa", "");
         migrationManager = new MigrationManager("src/test/resources/test_migrations/hsql/");
     }
 
     @After
     public void tearDown() throws Exception {
-        closeConnection();
+        Base.close();
     }
 
     @Test

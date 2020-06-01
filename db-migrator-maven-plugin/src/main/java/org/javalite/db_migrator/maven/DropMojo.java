@@ -1,6 +1,7 @@
 package org.javalite.db_migrator.maven;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.javalite.activejdbc.Base;
 import org.javalite.db_migrator.DbUtils;
 
 import static java.lang.String.format;
@@ -18,7 +19,7 @@ public class DropMojo extends AbstractDbMigrationMojo {
             exec(format(dropSql, DbUtils.extractDatabaseName(getUrl())));
             getLog().info("Dropped database " + getUrl());
         } finally {
-            closeConnection();
+            Base.close();
         }
     }
 }

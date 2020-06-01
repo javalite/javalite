@@ -1,5 +1,6 @@
 package org.javalite.db_migrator;
 
+import org.javalite.activejdbc.Base;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -169,22 +170,13 @@ public class DbUtils {
     //////////// DB Connection methods below
 
 
-    public static Connection connection(){
-        return connectionTL.get();
-    }
 
     public static int exec(String statement){
-        Statement s = null;
         try {
-            s = connection().createStatement();
             LOGGER.info("Executing: " + statement);
-            int count = s.executeUpdate(statement);
-
-            return count;
-        } catch (SQLException e) {
+            return Base.exec(statement);
+        } catch (Exception e) {
             throw new RuntimeException(e);
-        } finally {
-            closeQuietly(s);
         }
     }
 
@@ -194,29 +186,6 @@ public class DbUtils {
         }catch(Exception quiet){/*ignore*/}
     }
 
-    public static void openConnection(String driver, String url, String username, String password){
-        try{
-            Class.forName(driver);
-            attach(DriverManager.getConnection(url, username, password));
-        }catch(Exception e){
-            throw new MigrationException(e);
-        }
-    }
-
-    public static void attach(Connection connection){
-        connectionTL.set(connection);
-    }
-
-    public static void detach(){
-        connectionTL.set(null);
-    }
-
-    public static void closeConnection(){
-        try{
-            connection().close();
-            detach();
-        }catch(Exception ignore){}
-    }
 
     public static boolean blank(String str) {
         if (str != null && str.length() > 0) {
@@ -229,25 +198,11 @@ public class DbUtils {
         return true;
     }
 
-    public static int countMigrations(){
+    public static long countMigrations(){
         return countRows(VersionStrategy.VERSION_TABLE);
     }
 
-    public static int countRows(String table){
-
-        Statement st = null;
-        ResultSet rs = null;
-        try{
-            st = connection().createStatement();
-            rs = st.executeQuery("select count(*) from " + table);
-            if (rs.next())
-                return rs.getInt(1);
-            return 0;
-        }catch(SQLException e){
-            throw new MigrationException(e);
-        }finally {
-            closeQuietly(rs);
-            closeQuietly(st);
-        }
+    public static Long countRows(String table) {
+        return Base.count(table);
     }
 }

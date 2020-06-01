@@ -1,5 +1,6 @@
 package org.javalite.db_migrator;
 
+import org.javalite.activejdbc.Base;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,13 +19,13 @@ public class SimpleVersionStrategySpec {
     @Before
     public void setup() {
         strategy = new VersionStrategy();
-        openConnection("org.h2.Driver", "jdbc:h2:mem:h2-migration-test;DB_CLOSE_DELAY=-1", "sa", "");
+        Base.open("org.h2.Driver", "jdbc:h2:mem:h2-migration-test;DB_CLOSE_DELAY=-1", "sa", "");
         try {exec("drop table " + VersionStrategy.VERSION_TABLE);} catch (Exception e) {/* ignore*/}
     }
 
     @After
     public void tearDown() {
-        closeConnection();
+        Base.close();
     }
 
     @Test

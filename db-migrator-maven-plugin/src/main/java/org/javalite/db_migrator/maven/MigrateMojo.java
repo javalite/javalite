@@ -1,11 +1,11 @@
 package org.javalite.db_migrator.maven;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.javalite.activejdbc.Base;
 import org.javalite.db_migrator.MigrationManager;
 
 import java.sql.SQLException;
 
-import static org.javalite.db_migrator.DbUtils.closeConnection;
 
 /**
  * Migrate to latest schema version.
@@ -23,7 +23,7 @@ public class MigrateMojo extends AbstractDbMigrationMojo {
         } catch(SQLException e){
             throw new MojoExecutionException("Failed to migrate database " + getUrl(), e);
         } finally {
-            closeConnection();
+            Base.close();
         }
     }
 }

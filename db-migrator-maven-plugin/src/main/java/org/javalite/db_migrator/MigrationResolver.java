@@ -13,7 +13,7 @@ public class MigrationResolver {
     private static final Logger LOGGER = LoggerFactory.getLogger(MigrationResolver.class);
     private String migrationsLocation;
 
-    private static Pattern MIGRATION_FILE_PATTERN = Pattern.compile("^(\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d)_.*\\.sql");
+    private static Pattern MIGRATION_FILE_PATTERN = Pattern.compile("^(\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d)_.*\\.(sql|groovy)");
 
     public MigrationResolver(String migrationsLocation) {
         this.migrationsLocation = migrationsLocation;
@@ -38,12 +38,19 @@ public class MigrationResolver {
         checkDuplicateVersions(migrationsFiles);
 
 
-        List<Migration> migrations = new ArrayList<Migration>();
+        List<Migration> migrations = new ArrayList<>();
 
         // Extract versions and create executable migrations for each resource.
         for (File migrationFile: migrationsFiles) {
             String version = extractVersion(migrationFile.getName());
-            migrations.add(new Migration(version, migrationFile));
+
+            if(migrationFile.getName().endsWith("sql")){
+                migrations.add(new SQLMigration(version, migrationFile));
+            }else if(migrationFile.getName().endsWith("groovy")){
+                migrations.add(new GroovyMigration(version, migrationFile));
+            }else {
+                throw new RuntimeException("file type not supported");
+            }
         }
 
         Collections.sort(migrations);
