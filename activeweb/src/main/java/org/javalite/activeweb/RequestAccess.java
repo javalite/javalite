@@ -625,7 +625,7 @@ public interface RequestAccess {
      * @param value value of object
      */
     default void session(String name, Object value){
-        RequestContext.getHttpRequest().getSession().setAttribute(name);
+        RequestContext.getHttpRequest().getSession().setAttribute(name, value);
     }
 
     default String getRequestProperties(){
