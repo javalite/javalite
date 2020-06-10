@@ -46,6 +46,7 @@ public class MetaModel implements Serializable {
     private Set<String> attributeNamesNoId;
     private final String versionColumn;
     private String[] partitionIDs = null;
+    private String fkName;
 
     protected MetaModel(String dbName, Class<? extends Model> modelClass, String dbType) {
         this.modelClass = modelClass;
@@ -389,7 +390,7 @@ public class MetaModel implements Serializable {
      * @return foreign key name used in relationships as a foreign key column in a child table.
      */
     public String getFKName() {
-        return singularize(getTableName()).toLowerCase() + "_id";
+        return fkName == null? singularize(getTableName()).toLowerCase() + "_id": fkName;
     }
 
     //TODO AY: add prepared association's lists by type
@@ -499,5 +500,9 @@ public class MetaModel implements Serializable {
         if(association != null){
             associations.remove(association);
         }
+    }
+
+    public void setFKName(String fkName) {
+        this.fkName = fkName;
     }
 }
