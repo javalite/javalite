@@ -28,7 +28,15 @@ import java.util.*;
  * In all cases the files need to be on the classpath in package <code>/app_config</code>.
  * <p></p>
  *
- * Environment-specific file will have an "environment" part of the file name match to an environment variable called "ACTIVE_ENV".
+ * Environment-specific file will have an "environment" part of the file name match to an environment variable called
+ * <strong><code>ACTIVE_ENV</code></strong>
+ * or system property <strong><code>active_env</code></strong>.
+ *
+ * <strong>The system property will override the environment variable!</strong>
+ * <p></p>
+ *
+ *
+ *
  * Such configuration is easy to achieve in Unix shell:
  *
  * <p></p>
@@ -101,18 +109,23 @@ public class AppConfig implements Map<String, String> {
     private static String activeEnv;
 
     static {
-        String env = System.getenv("ACTIVE_ENV");
-        if (env == null) {
-            LOGGER.warn("Environment variable 'ACTIVE_ENV' not found, defaulting to 'development'");
-            env = "development";
+        String envVar = System.getenv("ACTIVE_ENV");
+        String sysProp = System.getProperty("active_env");
+        if (envVar == null && sysProp == null) {
+            LOGGER.warn("Environment variable 'ACTIVE_ENV' as well as ststem property `active_env` are not found, defaulting to 'development' environment.");
+            envVar = "development";
+        }else if(sysProp != null){
+            activeEnv = sysProp;
+        }else if(envVar != null){
+            activeEnv = envVar;
         }
-        activeEnv = env;
         init();
     }
 
 
     /**
      * You can change the environment dynamically. Attention!!! This method should only be used for tests!
+     * Careful out there...
      *
      * @param activeEnv new environment value
      */
@@ -126,6 +139,9 @@ public class AppConfig implements Map<String, String> {
         }
     }
 
+    /**
+     * Used in tests.
+     */
     public static void reload(){
         try {
 
@@ -177,18 +193,7 @@ public class AppConfig implements Map<String, String> {
             registerProperties(globalUrl);
         }
 
-        //get env - specific file, first from a system property, than from env var.
-        String activeEnv = System.getProperty("active_env");
-        if (activeEnv == null) {
-            activeEnv = System.getenv("ACTIVE_ENV");
-        }
-
-        if (activeEnv == null) {
-            LOGGER.warn("Environment variable 'ACTIVE_ENV' not found, defaulting to 'development'");
-            activeEnv = "development";
-        }
-
-        String file = "/app_config/" + activeEnv + ".properties";
+        String file = "/app_config/" + activeEnv() + ".properties";
         URL url = AppConfig.class.getResource(file);
         if (url == null) {
             LOGGER.warn("Property file not found: '" + file + "'");

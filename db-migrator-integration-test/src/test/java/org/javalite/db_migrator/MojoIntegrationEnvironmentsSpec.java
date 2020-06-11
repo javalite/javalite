@@ -25,7 +25,7 @@ import static org.javalite.test.jspec.JSpec.the;
 public class MojoIntegrationEnvironmentsSpec extends AbstractIntegrationSpec {
 
     @Test
-    public void shouldRunInEnvironments() throws IOException, InterruptedException {
+    public void shouldRunInEnvironments(){
         String dir = "target/test-project-environments";
         // drop
         execute(dir, "db-migrator:drop");
