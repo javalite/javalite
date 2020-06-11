@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.file.Path;
 import java.util.LinkedList;
+import java.util.List;
 
 import static org.javalite.common.Util.read;
 
@@ -46,11 +46,13 @@ public class RuntimeUtil {
      *                  this size at the start, but will grow until it reaches it. The program will continue toi execute, and the buffer
      *                  will be 'tailing' the output of the external process.
      * @param dir - location of process execution. Pass <code>null</code> to execute at current location of the calling process.
+     * @param envVars a list  of environment variables  to pass to the process. The format for each string in a list: "name=value".
+     *
+     *
      *
      * @return instance of {@link Response} with result of execution.
      */
-    public static Response execute(int maxBuffer, File dir, String ... command) {
-
+    public static Response execute(int maxBuffer, File dir, List<String> envVars, String ... command) {
         if(dir != null && dir.isFile()){
             throw new IllegalArgumentException("Location must be a directory, not a file ");
         }
@@ -62,7 +64,9 @@ public class RuntimeUtil {
         String[]  commandAndArgs = command.length == 1 && command[0].contains(" ") ? Util.split(command[0], " ") : command;
 
         try {
-            Process process = Runtime.getRuntime().exec(commandAndArgs, null, dir);
+            String[] localEnv = envVars == null ? null: envVars.toArray(new String[envVars.size()]);
+
+            Process process = Runtime.getRuntime().exec(commandAndArgs, localEnv, dir);
 
             OutputReader stdOutReader = new OutputReader(process.getInputStream(), maxBuffer);
             OutputReader stdErrReader = new OutputReader(process.getErrorStream(), maxBuffer);
@@ -86,6 +90,24 @@ public class RuntimeUtil {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * Executes an external command and provides results of execution.
+     * Will accumulate limited output from the external process.
+     *
+     * @param command array containing the command to call and its arguments.
+     * @param maxBuffer max size of buffers <code>out, err</code>. An external process may produce a
+     *                  lot of output, be careful setting to a large value. The buffer will not be allocated to this
+     *                  this size at the start, but will grow until it reaches it. The program will continue toi execute, and the buffer
+     *                  will be 'tailing' the output of the external process.
+     * @param dir - location of process execution. Pass <code>null</code> to execute at current location of the calling process.
+     *
+     * @return instance of {@link Response} with result of execution.
+     */
+    public static Response execute(int maxBuffer, File dir, String ... command) {
+        return execute(maxBuffer, dir, null, command);
+    }
+
 
     /**
      * Executes an external command and provides results of execution.
