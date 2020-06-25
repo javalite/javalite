@@ -19,11 +19,19 @@ import com.google.inject.Injector;
 import org.javalite.activeweb.controller_filters.HttpSupportFilter;
 import org.javalite.activeweb.freemarker.AbstractFreeMarkerConfig;
 import org.javalite.activeweb.freemarker.FreeMarkerTemplateManager;
+import org.javalite.common.Convert;
+import org.javalite.common.Inflector;
+import org.javalite.common.JsonHelper;
+import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpSession;
@@ -86,7 +94,13 @@ class ControllerRunner {
             if(!AppController.class.isAssignableFrom(m.getDeclaringClass())){ // see https://github.com/javalite/activeweb/issues/272
                 throw new ActionNotFoundException("Cannot execute action '" + route.getActionName() + "' on controller: " + route.getControllerClassName());
             }
-            m.invoke(route.getController());
+
+            if(route.hasArgument()){
+                Object b = getRequestBean(route);
+                m.invoke(route.getController(), b);
+            }else {
+                m.invoke(route.getController());
+            }
         }catch(InvocationTargetException e){
             if(e.getCause() != null && e.getCause() instanceof  WebException){
                 throw (WebException)e.getCause();
@@ -100,6 +114,84 @@ class ControllerRunner {
         }catch(Exception e){
             throw new ControllerException(e);
         }
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private Object getRequestBean(Route route) throws IllegalAccessException, InstantiationException, IOException, InvocationTargetException {
+        String contentType = RequestContext.getHttpRequest().getContentType();
+        boolean jsonRequest = contentType != null && contentType.equals("application/json");
+        Map<String, String> requestMap;
+        if(jsonRequest){
+            InputStream in = route.getController().getRequestInputStream();
+            String body = Util.read(in);
+            //todo: what happens if we get an array: '[1,2, 3]' ?
+            try{
+                requestMap = JsonHelper.toMap(body);
+            }catch(RuntimeException e){
+                throw new ControllerException("Failed to convert JSON request to JSON document", e.getCause());
+            }
+        }else {
+            requestMap = route.getController().params1st();
+        }
+
+        return getBeanWithValues(route, requestMap);
+    }
+
+    private Object getBeanWithValues(Route route, Map<String, String> requestMap) throws IllegalAccessException, InstantiationException, InvocationTargetException {
+
+        Class argumentClass = route.getArgumentClass();
+        Object requestBean = argumentClass.newInstance();
+        Map translatedRequestMap = translateMapToJava(requestMap);
+        Field[] fields = argumentClass.getDeclaredFields();
+
+        for (Field field : fields) {
+            if(field.getType().equals(String.class)){
+                field.set(requestBean, translatedRequestMap.get(field.getName()));
+            }
+
+            if(field.getType().equals(Integer.class) || field.getType().getName().equals("int")){
+                Object value = translatedRequestMap.get(field.getName());
+                if(value != null){
+                    field.set(requestBean, Convert.toInteger(value));
+                }
+            }
+
+            if(field.getType().equals(Double.class) || field.getType().getName().equals("double")){
+                Object value = translatedRequestMap.get(field.getName());
+                if(value != null) {
+                    field.set(requestBean, Convert.toDouble(value));
+                }
+            }
+
+            if(field.getType().equals(Float.class) || field.getType().getName().equals("float")){
+                Object value = translatedRequestMap.get(field.getName());
+                if(value != null) {
+                    field.set(requestBean, Convert.toFloat(value));
+                }
+            }
+
+            if(field.getType().equals(Boolean.class) || field.getType().getName().equals("boolean")){
+                Object value = translatedRequestMap.get(field.getName());
+                if(value != null) {
+                    field.set(requestBean, Convert.toBoolean(value));
+                }
+            }
+        }
+
+        return requestBean;
+    }
+
+    /**
+     * Translates names from underscores and hyphens to Java CamelCase.
+     *
+     */
+    private Map translateMapToJava(Map<String, String> requestMap) {
+        Map<String, Object> translatedMap = new HashMap<>();
+        requestMap.keySet().forEach(key -> {
+            translatedMap.put(Inflector.camelize(key, false), requestMap.get(key));
+        });
+        return translatedMap;
     }
 
     /**

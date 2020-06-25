@@ -122,7 +122,7 @@ public class JSONLogSpec extends RequestSpec {
         the(log0.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
 
         Map message = (Map) log0.get("message");
-        the(message.get("error")).shouldBeEqual("Method not found: app.controllers.LoggingController.notfound()");
+        the(message.get("error")).shouldBeEqual("Failed to find an action method for action: 'notfound' in controller: app.controllers.LoggingController");
         the(message.get("status")).shouldBeEqual(404);
 
 
