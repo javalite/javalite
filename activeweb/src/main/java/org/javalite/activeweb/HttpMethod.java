@@ -63,4 +63,13 @@ public enum HttpMethod {
         requestMethod = requestMethod.equalsIgnoreCase("POST") && request.getHeader("X-HTTP-Method-Override") != null && request.getHeader("X-HTTP-Method-Override").equalsIgnoreCase("PATCH") ? "PATCH" : requestMethod;
         return HttpMethod.valueOf(requestMethod.toUpperCase());
     }
+
+
+    /**
+     * @return true if a method has an intention to change a resource.
+     */
+    public boolean destructive(){
+        return this.equals(PUT) || this.equals(POST) || this.equals(DELETE) || this.equals(PATCH);
+    }
+
 }

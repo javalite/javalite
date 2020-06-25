@@ -216,13 +216,13 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
-        a(getSystemOut().contains("Method not found: app.controllers.HelloController.hello()")).shouldBeTrue();
+        the(getSystemOut()).shouldContain("Failed to find an action method for action: 'hello' in controller: app.controllers.HelloController");
 
         String html = response.getContentAsString();
 
         the(response.getStatus()).shouldEqual(404);
         a(XPathHelper.count("//div", html)).shouldBeEqual(3);
-        a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("Method not found: app.controllers.HelloController.hello()");
+        a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("Failed to find an action method for action: 'hello' in controller: app.controllers.HelloController");
     }
 
 
@@ -234,7 +234,7 @@ public class RequestDispatcherSpec extends RequestSpec {
         dispatcher.doFilter(request, response, filterChain);
         the(response.getStatus()).shouldEqual(404);
         String html = response.getContentAsString();
-        the(html).shouldContain("Method not found: app.controllers.Restful1Controller.show()");
+        the(html).shouldContain("Failed to find an action method for action: 'show' in controller: app.controllers.Restful1Controller");
    }
 
 
@@ -438,7 +438,7 @@ public class RequestDispatcherSpec extends RequestSpec {
         request.addHeader("X-Requested-With", "baaad header");
         dispatcher.doFilter(request, response, filterChain);
         the(response.getStatus()).shouldBeEqual(404);
-        the(response.getContentAsString()).shouldContain("Cannot execute action 'wait' on controller: app.controllers.AjaxController");
+        the(response.getContentAsString()).shouldContain("Failed to find an action method for action: 'wait' in controller: app.controllers.AjaxController");
     }
 
     @Test

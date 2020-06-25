@@ -6,9 +6,8 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.lang.reflect.Modifier;
+import java.util.*;
 
 import static org.javalite.common.Util.blank;
 import static org.javalite.common.Util.join;
@@ -27,6 +26,7 @@ public class Route {
     private HttpMethod httpMethod;
     private boolean custom = false;
     private Method actionMethod;
+    private Class argumentClass;
 
     public Route(AppController controller, String actionName, HttpMethod method) {
         this.controller = controller;
@@ -61,19 +61,54 @@ public class Route {
 
 
     private void initActionMethod(String actionName) {
-
         if(blank(actionName)){
             throw new IllegalArgumentException("Action name cannot be blank");
         }
 
         this.actionName = actionName;
-        try {
-            String actionMethodName = Inflector.camelize(actionName.replace('-', '_'), false);
-            actionMethod = controller.getClass().getMethod(actionMethodName);
-        } catch (NoSuchMethodException e) {
-            throw new ActionNotFoundException(e);
+        String actionMethodName = Inflector.camelize(actionName.replace('-', '_'), false);
+
+        actionMethod = getPublicMethodForName(controller, actionMethodName);
+
+        if (actionMethod == null) {
+            throw new ActionNotFoundException("Failed to find an action method for action: '" + actionName + "' in controller: " + controller.getClass().getName());
         }
     }
+
+
+    /**
+     * Finds a first method that has one argument. If not found, will find a method that has no arguments.
+     * If not found, will return null;
+     */
+    private Method getPublicMethodForName(AppController controller, String actionMethodName){
+
+        //TODO: implement caching  of methods in ThreadLocal by key: class name, method name and argument type name (maybe one string or a hash?)
+        List<Method> methods = new ArrayList<>();
+
+        for (Method m : controller.getClass().getDeclaredMethods()) {
+            if (Modifier.isPublic(m.getModifiers()) && m.getName().equals(actionMethodName)) {
+                methods.add(m);
+            }
+        }
+
+        if(methods.size()== 0){
+            return null;
+        }
+
+        for (Method method : methods) {
+            if (method.getParameterCount() == 1) {
+                argumentClass = method.getParameterTypes()[0];
+                if (!argumentClass.getName().startsWith("java")) { // we do not need primitives, shooting for a class defined in the project.
+                    return method;
+                }
+            }
+            if (method.getParameterCount() == 0) {
+                return method;
+            }
+        }
+        return null;
+    }
+
 
     boolean isWildCard() {
         return wildCardName != null;
@@ -96,6 +131,13 @@ public class Route {
         return actionMethod;
     }
 
+    public Class getArgumentClass(){
+        return this.argumentClass;
+    }
+
+    public boolean hasArgument(){
+        return this.argumentClass != null;
+    }
 
     public String getActionName() {
         return actionName;
