@@ -75,7 +75,6 @@ class ControllerRunner {
         if (RequestContext.getControllerResponse() == null) {//execute controller... only if a filter did not respond
             if (route.actionSupportsHTTPMethod() || route.isCustom()) {
                 injectController(route.getController());
-                LOGGER.debug("Executing: " + route.getController() + "#" + route.getActionMethod().getName());
                 executeAction(route);
             }
         }
@@ -97,8 +96,10 @@ class ControllerRunner {
 
             if(route.hasArgument()){
                 Object b = getRequestBean(route);
+                LOGGER.debug("Executing: " + route.getController() + "#" + route.getActionMethod().getName() + " with argument: " + b.getClass());
                 m.invoke(route.getController(), b);
             }else {
+                LOGGER.debug("Executing: " + route.getController() + "#" + route.getActionMethod().getName());
                 m.invoke(route.getController());
             }
         }catch(InvocationTargetException e){
