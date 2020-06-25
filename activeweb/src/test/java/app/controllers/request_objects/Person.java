@@ -1,4 +1,4 @@
-package app.controllers;
+package app.controllers.request_objects;
 
 public class Person {
     public String  firstName, lastName;
