@@ -3,6 +3,7 @@ package org.javalite.activejdbc;
 import org.javalite.activejdbc.Model;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Person;
+import org.javalite.activejdbc.validation.Validatable;
 import org.javalite.activejdbc.validation.ValidatorAdapter;
 import org.junit.Test;
 
@@ -23,11 +24,12 @@ public class CustomValidatorTest extends ActiveJDBCTest {
                 setMessage("invalid.dob.message");
             }
             @Override
-            public void validate(Model m) {
-                Date dob = m.getDate("dob");
+            public void validate(Validatable validatable) {
+
+                Date dob = ((Model)validatable).getDate("dob");
                 Date now = new java.sql.Date(System.currentTimeMillis());
                 if(dob.after(now)){
-                    m.addValidator(this, "invalid.dob");//add validator to errors with a key
+                    validatable.addValidator(this, "invalid.dob");//add validator to errors with a key
                 }
             }
         }

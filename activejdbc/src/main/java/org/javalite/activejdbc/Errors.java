@@ -16,6 +16,7 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
+import org.javalite.activejdbc.validation.Validatable;
 import org.javalite.activejdbc.validation.Validator;
 import org.javalite.activejdbc.validation.ValidatorAdapter;
 
@@ -116,7 +117,7 @@ public class Errors implements Map<String, String> {
 
     class NopValidator extends ValidatorAdapter {
         @Override
-        public void validate(Model m) {}
+        public void validate(Validatable validatable) {}
     }
 
     @Override

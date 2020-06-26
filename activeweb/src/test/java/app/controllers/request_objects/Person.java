@@ -1,9 +1,9 @@
 package app.controllers.request_objects;
 
 public class Person {
-    public String  firstName, lastName;
-    public int yearOfBirth = -1;
-    public boolean married = false;
+    private String  firstName, lastName;
+    private int yearOfBirth = -1;
+    private boolean married = false;
 
 
     /**

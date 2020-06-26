@@ -78,14 +78,6 @@ public final class ModelDelegate {
     }
 
 
-    public static ValidationBuilder convertDate(Class<? extends Model> clazz, String attributeName, String format) {
-        return modelRegistryOf(clazz).validateWith(new DateValidator(attributeName, format));
-    }
-
-
-    public static ValidationBuilder convertTimestamp(Class<? extends Model> clazz, String attributeName, String format) {
-        return modelRegistryOf(clazz).validateWith(new TimestampValidator(attributeName, format));
-    }
 
     public static void convertWith(Class<? extends Model> clazz, Converter converter, String... attributeNames) {
         modelRegistryOf(clazz).convertWith(converter, attributeNames);

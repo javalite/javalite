@@ -18,12 +18,15 @@ limitations under the License.
 package org.javalite.activejdbc.test_models;
 
 import org.javalite.activejdbc.Model;
+import org.javalite.activejdbc.conversion.BlankToNullConverter;
 
 public class Account extends Model {
 
     static{
         validatePresenceOf("amount");
-        validateNumericalityOf("amount").convertNullIfEmpty();
+
+        validateNumericalityOf("amount");
+        convertWith(BlankToNullConverter.instance(), "amount");
         validateNumericalityOf("total")
                 .allowNull(true).greaterThan(0)
                 .lessThan(100).onlyInteger()

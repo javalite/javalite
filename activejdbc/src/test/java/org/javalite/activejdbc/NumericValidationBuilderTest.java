@@ -48,7 +48,9 @@ public class NumericValidationBuilderTest extends ActiveJDBCTest {
         Account account = new Account();
         account.set("amount", 1);
         account.set("total", -1);
-        a(account).shouldNotBe("valid");
+        account.validate();
+        the(account).shouldNotBe("valid");
+        the(account.errors().get("total")).shouldBeEqual("incorrect 'total'");
     }
 
     @Test
@@ -57,6 +59,7 @@ public class NumericValidationBuilderTest extends ActiveJDBCTest {
         account.set("amount", 1);
         account.set("total", 101);
         a(account).shouldNotBe("valid");
+        the(account.errors().get("total")).shouldBeEqual("incorrect 'total'");
     }
 
     @Test
@@ -73,15 +76,34 @@ public class NumericValidationBuilderTest extends ActiveJDBCTest {
         account.set("amount", 1);
         account.set("total", 1.1);
         a(account).shouldNotBe("valid");
+        the(account.errors().get("total")).shouldBeEqual("incorrect 'total'");
     }
 
     @Test
     public void shouldFixDefect66() {
 
         Page page = new Page();
-		a(page).shouldNotBe("valid");
+		the(page).shouldNotBe("valid");
 
         a(page.errors().size()).shouldBeEqual(1);
-        a(page.errors().get("word_count")).shouldBeEqual("value is missing");
+        a(page.errors().get("word_count")).shouldBeEqual("'word_count' must be an integer greater than 10");
+
+
+        page.set("word_count", 4);
+        the(page).shouldNotBe("valid");
+        the(page.errors().size()).shouldBeEqual(1);
+        the(page.errors().get("word_count")).shouldBeEqual("'word_count' must be an integer greater than 10");
+
+
+        page.set("word_count", 11);
+        the(page).shouldBe("valid");
+        the(page.errors().size()).shouldBeEqual(0);
+
+
+        page.set("word_count", 21.2);
+        the(page).shouldNotBe("valid");
+        the(page.errors().size()).shouldBeEqual(1);
+        the(page.errors().get("word_count")).shouldBeEqual("'word_count' must be an integer greater than 10");
+
     }
 }

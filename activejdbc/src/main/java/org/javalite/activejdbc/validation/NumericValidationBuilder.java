@@ -78,18 +78,4 @@ public class NumericValidationBuilder extends ValidationBuilder<NumericValidator
         }
         return this;
     }
-
-    /**
-     * Converts an empty string to null before validation.
-     * This method is useful in web applications when an HTTP requests
-     * sends in a form with inputs that are not filled because they are optional.
-     *
-     * @return NumericValidationBuilder.
-     */
-    public NumericValidationBuilder convertNullIfEmpty(){
-        for(NumericValidator validator:validators){
-            validator.convertNullIfEmpty(true);
-        }
-        return this;
-    }
 }

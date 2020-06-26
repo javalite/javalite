@@ -17,36 +17,34 @@ limitations under the License.
 
 package org.javalite.activejdbc.validation;
 
-import org.javalite.activejdbc.Model;
-
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
-public class RegexpValidator extends ValidatorAdapter{
+public class RegexpValidator extends ValidatorAdapter {
 
     private final Pattern pattern;
     private final String attribute;
 
-    public RegexpValidator(String attribute, String rule){
+    public RegexpValidator(String attribute, String rule) {
         this.pattern = Pattern.compile(rule, Pattern.CASE_INSENSITIVE);
         this.attribute = attribute;
         setMessage("value does not match given format");
     }
 
     @Override
-    public void validate(Model m) {
-        if(m.get(attribute) == null){
-            m.addValidator(this, attribute);
+    public void validate(Validatable validatable) {
+        if (validatable.get(attribute) == null) {
+            validatable.addValidator(this, attribute);
             return;
         }
-        Object value = m.get(attribute);
+        Object value = validatable.get(attribute);
         if (!(value instanceof String)) {
             throw new IllegalArgumentException("attribute " + attribute + " is not String");
         }
         Matcher matcher = pattern.matcher((String) value);
-        if(!matcher.matches()){
-           m.addValidator(this, attribute);
+        if (!matcher.matches()) {
+            validatable.addValidator(this, attribute);
         }
     }
 }
