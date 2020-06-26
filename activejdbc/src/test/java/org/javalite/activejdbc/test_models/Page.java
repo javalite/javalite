@@ -9,7 +9,7 @@ import org.javalite.common.Convert;
  */
 public class Page extends Model {
     static {
-        validateNumericalityOf("word_count").greaterThan(10).onlyInteger().message("'word_count' must be a number greater than 10");
+        validateNumericalityOf("word_count").greaterThan(10).onlyInteger().message("'word_count' must be an integer greater than 10");
         convertWith(new StringToIntegerConverter(), "word_count");
     }
 }

@@ -25,10 +25,7 @@ import org.javalite.activejdbc.conversion.ZeroToNullConverter;
 import org.javalite.activejdbc.dialects.Dialect;
 import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.activejdbc.logging.LogLevel;
-import org.javalite.activejdbc.validation.NumericValidationBuilder;
-import org.javalite.activejdbc.validation.ValidationBuilder;
-import org.javalite.activejdbc.validation.ValidationException;
-import org.javalite.activejdbc.validation.Validator;
+import org.javalite.activejdbc.validation.*;
 import org.javalite.common.Convert;
 import org.javalite.common.Escape;
 import org.javalite.common.JsonHelper;
@@ -61,7 +58,7 @@ import static org.javalite.common.Util.*;
  * @author Igor Polevoy
  * @author Eric Nielsen
  */
-public abstract class Model extends CallbackSupport implements Externalizable {
+public abstract class Model extends CallbackSupport implements Externalizable, Validatable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Model.class);
 
@@ -1993,29 +1990,6 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         ModelDelegate.convertWith(modelClass(), converter, attributeNames);
     }
 
-    /**
-     * Converts a named attribute to <code>java.sql.Date</code> if possible.
-     * Acts as a validator if cannot make a conversion.
-     *
-     * @param attributeName name of attribute to convert to <code>java.sql.Date</code>.
-     * @param format format for conversion. Refer to {@link java.text.SimpleDateFormat}
-     * @return message passing for custom validation message.
-     */
-    protected static ValidationBuilder convertDate(String attributeName, String format){
-        return ModelDelegate.convertDate(modelClass(), attributeName, format);
-    }
-
-    /**
-     * Converts a named attribute to <code>java.sql.Timestamp</code> if possible.
-     * Acts as a validator if cannot make a conversion.
-     *
-     * @param attributeName name of attribute to convert to <code>java.sql.Timestamp</code>.
-     * @param format format for conversion. Refer to {@link java.text.SimpleDateFormat}
-     * @return message passing for custom validation message.
-     */
-    protected static ValidationBuilder convertTimestamp(String attributeName, String format){
-        return ModelDelegate.convertTimestamp(modelClass(), attributeName, format);
-    }
 
     /**
      * Registers date format for specified attributes. This format will be used to convert between
@@ -2592,7 +2566,7 @@ public abstract class Model extends CallbackSupport implements Externalizable {
         boolean result = save();
         ModelDelegate.purgeEdges(metaModelLocal);
         if (!errors.isEmpty()) {
-            throw new ValidationException(this);
+            throw new ValidationException(this.errors().toString());
         }
         return result;
     }

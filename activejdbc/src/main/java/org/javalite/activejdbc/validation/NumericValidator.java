@@ -18,39 +18,34 @@ limitations under the License.
 package org.javalite.activejdbc.validation;
 
 import org.javalite.common.Convert;
-import org.javalite.activejdbc.Model;
-
 
 import java.text.NumberFormat;
 import java.text.ParsePosition;
-import java.util.Locale;
 
 public class NumericValidator extends ValidatorAdapter {
     private final String attribute;
 
     private Double min;
     private Double max;
-    private boolean allowNull, onlyInteger, convertNullIfEmpty;
+    private boolean allowNull, onlyInteger;
+
 
 
     public NumericValidator(String attribute) {
         this.attribute = attribute;
-        setMessage("value is not a number");
     }
 
     @Override
-    public void validate(Model m) {
-        Object value = m.get(attribute);
+    public void validate(Validatable validatable) {
 
-        if(!present(value, m)){
+        Object value = validatable.get(attribute);
+
+        if(!present(value)){
+            setMessage("value is missing");
+            validatable.addValidator(this, attribute);
             return;
         }
 
-        // validators should not also do conversion
-        if(convertNullIfEmpty && "".equals(value)){
-            m.set(attribute, null);
-            value = null;
-        }
 
         if(value == null && allowNull){
             return;
@@ -67,61 +62,58 @@ public class NumericValidator extends ValidatorAdapter {
                 nf.setParseIntegerOnly(onlyInteger);
                 nf.parse(input, pp);
                 if (pp.getIndex() != (input.length())) {
-                    m.addValidator(this, attribute);
+                    validatable.addValidator(this, attribute);
+                    setMessage("value is not a number");
                 }
             } else {
-                    m.addValidator(this, attribute);
+                validatable.addValidator(this, attribute);
             }
         }
 
         if(min != null){
-            validateMin(Convert.toDouble(value), m);
+            validateMin(Convert.toDouble(value), validatable);
         }
 
         if(max != null){
-            validateMax(Convert.toDouble(value), m);
+            validateMax(Convert.toDouble(value), validatable);
         }
 
         if(onlyInteger){
-            validateIntegerOnly(value, m);
+            validateIntegerOnly(value, validatable);
         }
     }
 
-    private void validateMin(Double value, Model m){
+    private void validateMin(Double value, Validatable validatable){
 
         if(value <= min){
-            m.addValidator(this, attribute);
+            setMessage("value is less than " + min);
+            validatable.addValidator(this, attribute);
         }
     }
 
-    private boolean present(Object value, Model m){
+    private boolean present(Object value){
 
         if(allowNull){
             return true;
         }
-
-        if(value == null){
-            setMessage("value is missing");
-            m.addValidator(this, attribute);
-            return false;
-        }else{
-            return true;
-        }
+        return value != null;
     }
 
-    private void validateIntegerOnly(Object value, Model m){
+    private void validateIntegerOnly(Object value, Validatable validatable){
         try{
             Integer.valueOf(value.toString());
         } catch(NumberFormatException e) {
-            m.addValidator(this, attribute);
+            setMessage("value is not an integer");
+            validatable.addValidator(this, attribute);
         }
     }
 
 
 
-    private void validateMax(Double value, Model m){
+    private void validateMax(Double value, Validatable validatable){
         if(value >= max){
-            m.addValidator(this, attribute);
+            setMessage("value is greater than " + max);
+            validatable.addValidator(this, attribute);
         }
     }
 
@@ -141,7 +133,4 @@ public class NumericValidator extends ValidatorAdapter {
         this.onlyInteger = onlyInteger;
     }
 
-    public void convertNullIfEmpty(boolean convertNullIfEmpty) {
-        this.convertNullIfEmpty = convertNullIfEmpty;
-    }
 }

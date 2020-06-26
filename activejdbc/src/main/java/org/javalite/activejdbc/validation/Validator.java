@@ -17,18 +17,16 @@ limitations under the License.
 
 package org.javalite.activejdbc.validation;
 
-import org.javalite.activejdbc.Model;
-
 import java.util.Locale;
 
 
 public interface Validator {
     /**
-     * Called by framework when a {@link Model#validate()} method called.
+     * Called by framework when validation  is required
      * 
-     * @param m model being validated. 
+     * @param validatable map being validated.
      */
-    void validate(Model m);
+    void validate(Validatable validatable);
 
     /**
      * Sets an message on this validator.
@@ -45,4 +43,9 @@ public interface Validator {
      * @return formatted message
      */
     String formatMessage(Locale locale, Object ... params);
+
+    /**
+     * Will pin the current message
+     */
+    void pinMessage();
 }

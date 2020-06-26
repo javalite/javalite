@@ -33,11 +33,12 @@ public class AttributeConverterTest extends ActiveJDBCTest {
         p.set("last_name", "Monroe");
         p.set("graduation_date", "1.2.1975");//wrong format
         p.validate();
-        a(p.errors().size()).shouldBeEqual(1);
+        the(p.errors().size()).shouldBeEqual(1);
+        the(p.errors().get("graduation_date")).shouldBeEqual("attribute graduation_date does not conform to format: yyyy-MM-dd");
 
 
         p.set("graduation_date", "1975-12-06");//right format
-        p.validate();
+        the(p).shouldBe("valid");
         a(p.errors().size()).shouldBeEqual(0);
     }
 }

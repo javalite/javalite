@@ -19,14 +19,22 @@ package org.javalite.activejdbc.test_models;
 
 import org.javalite.activejdbc.Model;
 import org.javalite.activejdbc.annotations.Cached;
+import org.javalite.activejdbc.conversion.StringToSqlDateConverter;
+import org.javalite.activejdbc.conversion.StringToTimestampConverter;
+import org.javalite.activejdbc.validation.DateValidator;
+import org.javalite.activejdbc.validation.TimestampValidator;
 
 
 @Cached
 public class Person extends Model {
     static{
         validatePresenceOf("name", "last_name");
-        convertDate("dob", "yyyy-MM-dd");
-        convertTimestamp("graduation_date", "yyyy-MM-dd");
+        validateWith(new DateValidator("dob", "yyyy-MM-dd"));
+        validateWith(new TimestampValidator("dob", "yyyy-MM-dd"));
+        convertWith(new StringToSqlDateConverter("yyyy-MM-dd"), "dob");
+
+        validateWith(new DateValidator("graduation_date", "yyyy-MM-dd"));
+        convertWith(new StringToTimestampConverter("yyyy-MM-dd"), "graduation_date");
     }
 
     @Override

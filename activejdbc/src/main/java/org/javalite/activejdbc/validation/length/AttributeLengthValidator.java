@@ -1,44 +1,46 @@
 package org.javalite.activejdbc.validation.length;
 
-import org.javalite.activejdbc.Model;
+
+import org.javalite.activejdbc.validation.Validatable;
 import org.javalite.activejdbc.validation.ValidatorAdapter;
 
 import java.util.Locale;
+
 
 /**
  * Attribute length validator.
  */
 public class AttributeLengthValidator extends ValidatorAdapter {
-    private final String attribute;
+    private final String attributeName;
     private LengthOption lengthOption;
     private boolean allowBlank;
 
-    private AttributeLengthValidator(String attribute) {
-        this.attribute = attribute;
+    private AttributeLengthValidator(String attributeName) {
+        this.attributeName = attributeName;
     }
 
     public static AttributeLengthValidator on(String attribute) {
         return new AttributeLengthValidator(attribute);
     }
 
-    public void validate(Model m) {
-        Object value = m.get(this.attribute);
+    public void validate(Validatable m) {
+        Object value = m.get(this.attributeName);
 
         if(allowBlank && (null == value || "".equals(value))) {
             return;
         }
 
         if(null == value) {
-            m.addValidator(this, this.attribute);
+            m.addValidator(this, this.attributeName);
             return;
         }
 
         if(!(value instanceof String)) {
             throw new IllegalArgumentException("Attribute must be a String");
         } else {
-            if(!this.lengthOption.validate((String)((String)m.get(this.attribute)))) {
+            if(!this.lengthOption.validate((String)((String)m.get(this.attributeName)))) {
                 //somewhat confusingly this adds an error for a validator.
-                m.addValidator(this, this.attribute);
+                m.addValidator(this, this.attributeName);
             }
 
         }

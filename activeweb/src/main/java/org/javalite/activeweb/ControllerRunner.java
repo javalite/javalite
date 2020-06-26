@@ -119,7 +119,7 @@ class ControllerRunner {
 
 
     @SuppressWarnings("unchecked")
-    private Object getRequestBean(Route route) throws IllegalAccessException, InstantiationException, IOException, InvocationTargetException {
+    private Object getRequestBean(Route route) throws IllegalAccessException, InstantiationException, IOException, InvocationTargetException, NoSuchMethodException {
         String contentType = RequestContext.getHttpRequest().getContentType();
         boolean jsonRequest = contentType != null && contentType.equals("application/json");
         Map<String, String> requestMap;
@@ -139,14 +139,22 @@ class ControllerRunner {
         return getBeanWithValues(route, requestMap);
     }
 
-    private Object getBeanWithValues(Route route, Map<String, String> requestMap) throws IllegalAccessException, InstantiationException, InvocationTargetException {
+    private Object getBeanWithValues(Route route, Map<String, String> requestMap) throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
 
         Class argumentClass = route.getArgumentClass();
-        Object requestBean = argumentClass.newInstance();
+        Object requestBean = argumentClass.getDeclaredConstructor().newInstance();
         Map translatedRequestMap = translateMapToJava(requestMap);
         Field[] fields = argumentClass.getDeclaredFields();
 
         for (Field field : fields) {
+
+            boolean needRevert = false;
+
+            if(!field.isAccessible()){
+                field.setAccessible(true);
+                needRevert = true;
+            }
+
             if(field.getType().equals(String.class)){
                 field.set(requestBean, translatedRequestMap.get(field.getName()));
             }
@@ -177,6 +185,10 @@ class ControllerRunner {
                 if(value != null) {
                     field.set(requestBean, Convert.toBoolean(value));
                 }
+            }
+
+            if(needRevert){
+                field.setAccessible(false);
             }
         }
 

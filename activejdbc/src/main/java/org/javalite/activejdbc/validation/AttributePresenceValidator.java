@@ -17,7 +17,6 @@ limitations under the License.
 
 package org.javalite.activejdbc.validation;
 
-import org.javalite.activejdbc.Model;
 
 import static org.javalite.common.Util.*;
 
@@ -33,9 +32,9 @@ public class AttributePresenceValidator extends ValidatorAdapter {
 
 
     @Override
-    public void validate(Model m) {
-        if (blank(m.get(attribute))) {
-            m.addValidator(this, attribute);
+    public void validate(Validatable validatable) {
+        if (blank(validatable.get(attribute))) {
+            validatable.addValidator(this, attribute);
         }
     }
 

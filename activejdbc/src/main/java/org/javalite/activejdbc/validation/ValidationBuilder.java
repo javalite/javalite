@@ -36,6 +36,7 @@ public class ValidationBuilder<T extends Validator> {
     public void message(String message){
         for (T validator : validators) {
             validator.setMessage(message);
+            validator.pinMessage();
         }
     }
 }

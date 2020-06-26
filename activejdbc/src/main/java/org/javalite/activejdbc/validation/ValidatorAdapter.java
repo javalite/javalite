@@ -10,11 +10,14 @@ import java.util.Locale;
  * @author Igor Polevoy
  */
 public abstract class ValidatorAdapter implements Validator {
-    String message;
+    private String message;
+    private boolean pinMessage = false;
 
     @Override
     public final void setMessage(String message) {
-        this.message = message;
+        if(!pinMessage){
+            this.message = message;
+        }
     }
 
     /**
@@ -32,5 +35,10 @@ public abstract class ValidatorAdapter implements Validator {
 
     public final String getMessage() {
         return message;
+    }
+
+    @Override
+    public void pinMessage() {
+        this.pinMessage = true;
     }
 }

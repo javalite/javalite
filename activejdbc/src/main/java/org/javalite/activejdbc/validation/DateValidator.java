@@ -17,8 +17,8 @@ limitations under the License.
 
 package org.javalite.activejdbc.validation;
 
+import java.text.DateFormat;
 import java.text.ParseException;
-import org.javalite.activejdbc.Model;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -26,33 +26,42 @@ import java.util.Locale;
 import static org.javalite.common.Util.*;
 
 /**
+ *
+ * If you are looking conversion, use {@link org.javalite.activejdbc.conversion.DateToStringConverter}.
+ *
+ *
  * @author Igor Polevoy
  *
  */
-
 public class DateValidator extends ValidatorAdapter {
+
 
     private String attributeName, format;
     private SimpleDateFormat df;
 
+    // Calendar and DateFormat are not thread safe: http://www.javacodegeeks.com/2010/07/java-best-practices-dateformat-in.html
+    private final ThreadLocal<DateFormat> threadLocalFormat = new ThreadLocal<DateFormat>() {
+        @Override protected DateFormat initialValue() {
+            return (DateFormat) df.clone();
+        }
+    };
+
     public DateValidator(String attributeName, String format){
         this.attributeName = attributeName;
-        this.message = "attribute {0} does not conform to format: {1}";
+        setMessage("attribute {0} does not conform to format: {1}");
         this.df = new SimpleDateFormat(format);
         this.format = format;
     }
 
     @Override
-    public void validate(Model m) {
+    public void validate(Validatable validatable) {
 
-        Object val = m.get(attributeName);
+        Object val = validatable.get(attributeName);
         if (!(val instanceof java.util.Date) && !blank(val)) {
             try {
-                long time = df.parse(val.toString()).getTime();
-                java.sql.Date d = new java.sql.Date(time);
-                m.set(attributeName, d);
+                threadLocalFormat.get().parse(val.toString()).getTime();
             } catch (ParseException e) {
-                m.addValidator(this, attributeName);
+                validatable.addValidator(this, attributeName);
             }
         }
     }
