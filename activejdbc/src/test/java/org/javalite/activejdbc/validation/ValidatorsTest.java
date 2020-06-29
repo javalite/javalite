@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 
-package org.javalite.activejdbc;
+package org.javalite.activejdbc.validation;
 
 import java.text.DecimalFormatSymbols;
 import org.javalite.activejdbc.test.ActiveJDBCTest;

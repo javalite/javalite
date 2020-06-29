@@ -42,7 +42,7 @@ public class NumericValidator extends ValidatorAdapter {
 
         if(!present(value)){
             setMessage("value is missing");
-            validatable.addValidator(this, attribute);
+            validatable.addFailedValidator(this, attribute);
             return;
         }
 
@@ -62,11 +62,11 @@ public class NumericValidator extends ValidatorAdapter {
                 nf.setParseIntegerOnly(onlyInteger);
                 nf.parse(input, pp);
                 if (pp.getIndex() != (input.length())) {
-                    validatable.addValidator(this, attribute);
+                    validatable.addFailedValidator(this, attribute);
                     setMessage("value is not a number");
                 }
             } else {
-                validatable.addValidator(this, attribute);
+                validatable.addFailedValidator(this, attribute);
             }
         }
 
@@ -87,7 +87,7 @@ public class NumericValidator extends ValidatorAdapter {
 
         if(value <= min){
             setMessage("value is less than " + min);
-            validatable.addValidator(this, attribute);
+            validatable.addFailedValidator(this, attribute);
         }
     }
 
@@ -104,7 +104,7 @@ public class NumericValidator extends ValidatorAdapter {
             Integer.valueOf(value.toString());
         } catch(NumberFormatException e) {
             setMessage("value is not an integer");
-            validatable.addValidator(this, attribute);
+            validatable.addFailedValidator(this, attribute);
         }
     }
 
@@ -113,7 +113,7 @@ public class NumericValidator extends ValidatorAdapter {
     private void validateMax(Double value, Validatable validatable){
         if(value >= max){
             setMessage("value is greater than " + max);
-            validatable.addValidator(this, attribute);
+            validatable.addFailedValidator(this, attribute);
         }
     }
 

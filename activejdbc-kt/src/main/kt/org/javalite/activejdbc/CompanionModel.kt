@@ -512,29 +512,6 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
         ModelDelegate.blankToNull(modelClass(), *attributeNames)
     }
 
-    /**
-     * Converts a named attribute to <code>java.sql.Date</code> if possible.
-     * Acts as a validator if cannot make a conversion.
-     *
-     * @param attributeName name of attribute to convert to <code>java.sql.Date</code>.
-     * @param format format for conversion. Refer to {@link java.text.SimpleDateFormat}
-     * @return message passing for custom validation message.
-     */
-    protected fun convertDate(attributeName:String, format:String):ValidationBuilder<Validator> {
-        return ModelDelegate.convertDate(modelClass(), attributeName, format)
-    }
-
-    /**
-     * Converts a named attribute to <code>java.sql.Timestamp</code> if possible.
-     * Acts as a validator if cannot make a conversion.
-     *
-     * @param attributeName name of attribute to convert to <code>java.sql.Timestamp</code>.
-     * @param format format for conversion. Refer to {@link java.text.SimpleDateFormat}
-     * @return message passing for custom validation message.
-     */
-    protected fun convertTimestamp(attributeName:String, format:String):ValidationBuilder<Validator> {
-        return ModelDelegate.convertTimestamp(modelClass(), attributeName, format)
-    }
 
     /**
      * Registers a custom converter for the specified attributes.

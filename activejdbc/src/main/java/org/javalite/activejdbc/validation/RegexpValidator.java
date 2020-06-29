@@ -35,7 +35,7 @@ public class RegexpValidator extends ValidatorAdapter {
     @Override
     public void validate(Validatable validatable) {
         if (validatable.get(attribute) == null) {
-            validatable.addValidator(this, attribute);
+            validatable.addFailedValidator(this, attribute);
             return;
         }
         Object value = validatable.get(attribute);
@@ -44,7 +44,7 @@ public class RegexpValidator extends ValidatorAdapter {
         }
         Matcher matcher = pattern.matcher((String) value);
         if (!matcher.matches()) {
-            validatable.addValidator(this, attribute);
+            validatable.addFailedValidator(this, attribute);
         }
     }
 }

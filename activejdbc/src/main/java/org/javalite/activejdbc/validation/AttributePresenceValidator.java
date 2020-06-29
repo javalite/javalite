@@ -34,7 +34,7 @@ public class AttributePresenceValidator extends ValidatorAdapter {
     @Override
     public void validate(Validatable validatable) {
         if (blank(validatable.get(attribute))) {
-            validatable.addValidator(this, attribute);
+            validatable.addFailedValidator(this, attribute);
         }
     }
 

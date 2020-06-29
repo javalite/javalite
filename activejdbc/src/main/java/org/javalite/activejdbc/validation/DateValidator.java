@@ -61,7 +61,7 @@ public class DateValidator extends ValidatorAdapter {
             try {
                 threadLocalFormat.get().parse(val.toString()).getTime();
             } catch (ParseException e) {
-                validatable.addValidator(this, attributeName);
+                validatable.addFailedValidator(this, attributeName);
             }
         }
     }

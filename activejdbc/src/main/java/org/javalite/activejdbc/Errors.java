@@ -65,7 +65,7 @@ public class Errors implements Map<String, String> {
      */
     @Override
     public String get(Object attributeName) {
-        if(attributeName == null) throw new NullPointerException("attributeName cannot be null");
+        if(attributeName == null) throw new IllegalArgumentException("attributeName cannot be null");
         Validator v = validators.get(attributeName);
         return v == null? null:v.formatMessage(locale);
     }
