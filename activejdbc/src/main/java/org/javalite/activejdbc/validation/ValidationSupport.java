@@ -6,20 +6,22 @@ import org.javalite.activejdbc.conversion.DateToStringConverter;
 import org.javalite.activejdbc.conversion.StringToSqlDateConverter;
 import org.javalite.activejdbc.conversion.StringToTimestampConverter;
 
+import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
  * Manages validators and converters.
  */
-public class ValidationSupport {
+public class ValidationSupport implements Validatable {
 
     private final Map<String, List<Converter>> attributeConverters = new CaseInsensitiveMap<>();
     private final List<Validator> validators = new ArrayList<>();
-
+    private Errors errors = new Errors();
     /**
      * Registers converter for specified model attribute.
      */
@@ -53,11 +55,13 @@ public class ValidationSupport {
                 value != null ? (Class<Object>) value.getClass() : Object.class, destinationClass);
     }
 
+    @SuppressWarnings("unchecked")
     public ValidationBuilder validateWith(Validator validator) {
         validators.add(validator);
         return new ValidationBuilder(validator);
     }
 
+    @SuppressWarnings("unchecked")
     public ValidationBuilder validateWith(List<Validator> list) {
         this.validators.addAll(list);
         return new ValidationBuilder(list);
@@ -129,4 +133,71 @@ public class ValidationSupport {
             convertWith(converter, attribute);
         }
     }
+
+
+    /**
+     * Returns a value of an attribute. The cuirrent implementation  uses reflection to get to
+     * a private or public attribute. Subclasses may override this behavior however they like.
+     * @param attributeName name of attribute. For a standard class it would be an actual name  of a field retrievable
+     *                      by reflection.
+     *
+     * @return value of attribute.
+     */
+    public Object get(String attributeName) {
+        try {
+            boolean needRevert = false;
+            Field field = getClass().getDeclaredField(attributeName);
+            if (!field.isAccessible()) {
+                field.setAccessible(true);
+                needRevert = true;
+            }
+
+            Object value = field.get(this);
+
+            if (needRevert) {
+                field.setAccessible(false);
+            }
+            return value;
+        } catch (Exception e) {
+            throw new ValidationException(e);
+        }
+    }
+
+    public void addFailedValidator(Validator validator, String errorKey) {
+        errors.addValidator(errorKey, validator);
+    }
+
+    public boolean isValid() {
+        validate();
+        return errors.size() == 0;
+    }
+
+    public void validate() {
+        errors = new Errors();
+        for (Validator validator : validators()) {
+            validator.validate(this);
+        }
+    }
+
+    /**
+     * Provides an instance of <code>Errors</code> object, filled with error messages after validation.
+     *
+     * @return an instance of <code>Errors</code> object, filled with error messages after validation.
+     */
+    public Errors errors() {
+        //TODO: needs to   clone before returning?
+        return errors;
+    }
+
+    /**
+     * Provides an instance of localized <code>Errors</code> object, filled with error messages after validation.
+     *
+     * @param locale locale.
+     * @return an instance of localized <code>Errors</code> object, filled with error messages after validation.
+     */
+    public Errors errors(Locale locale) {
+        errors.setLocale(locale);
+        return errors;
+    }
+
 }

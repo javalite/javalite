@@ -50,4 +50,33 @@ public class RequestArgumentSpec extends RequestSpec {
         String result = response.getContentAsString();
         a(result).shouldBeEqual("Person{firstName='John', lastName='Doe', yearOfBirth=1234, married=true}");
     }
+
+
+
+    @Test
+    public void shouldInValidateRequestObject() throws IOException, ServletException {
+        request.setServletPath("/request_argument/plant");
+        request.setMethod("GET");
+
+        request.addParameter("name", "Apple");
+//        request.addParameter("group", "Fruit");
+
+        dispatcher.doFilter(request, response, filterChain);
+        String result = response.getContentAsString();
+        a(result).shouldBeEqual("Validators: { group=<value is missing> }");
+    }
+
+
+    @Test
+    public void shouldValidateRequestObject() throws IOException, ServletException {
+        request.setServletPath("/request_argument/plant");
+        request.setMethod("GET");
+
+        request.addParameter("name", "Apple");
+        request.addParameter("group", "Fruit");
+
+        dispatcher.doFilter(request, response, filterChain);
+        String result = response.getContentAsString();
+        a(result).shouldBeEqual("Validators: { }"); // no validators that did not pass
+    }
 }

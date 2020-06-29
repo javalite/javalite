@@ -16,14 +16,12 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import org.javalite.activejdbc.conversion.Converter;
-import org.javalite.activejdbc.conversion.DateToStringConverter;
-import org.javalite.activejdbc.conversion.StringToSqlDateConverter;
-import org.javalite.activejdbc.conversion.StringToTimestampConverter;
-import org.javalite.activejdbc.validation.*;
+import org.javalite.activejdbc.validation.ValidationSupport;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Stores metadata for a Model: converters, etc.
