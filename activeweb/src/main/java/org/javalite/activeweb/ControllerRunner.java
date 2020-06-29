@@ -16,6 +16,7 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import com.google.inject.Injector;
+import org.javalite.activejdbc.validation.ValidationSupport;
 import org.javalite.activeweb.controller_filters.HttpSupportFilter;
 import org.javalite.activeweb.freemarker.AbstractFreeMarkerConfig;
 import org.javalite.activeweb.freemarker.FreeMarkerTemplateManager;
@@ -95,9 +96,14 @@ class ControllerRunner {
             }
 
             if(route.hasArgument()){
-                Object b = getRequestBean(route);
-                LOGGER.debug("Executing: " + route.getController() + "#" + route.getActionMethod().getName() + " with argument: " + b.getClass());
-                m.invoke(route.getController(), b);
+                Object requestBean = getRequestBean(route);
+                LOGGER.debug("Executing: " + route.getController() + "#" + route.getActionMethod().getName() + " with argument: " + requestBean.getClass());
+
+                if( requestBean instanceof ValidationSupport){
+                    ((ValidationSupport)requestBean).validate();
+                }
+
+                m.invoke(route.getController(), requestBean);
             }else {
                 LOGGER.debug("Executing: " + route.getController() + "#" + route.getActionMethod().getName());
                 m.invoke(route.getController());

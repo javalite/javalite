@@ -14,8 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package org.javalite.activejdbc;
+package org.javalite.activejdbc.validation;
 
+import org.javalite.activejdbc.CaseInsensitiveMap;
+import org.javalite.activejdbc.Messages;
 import org.javalite.activejdbc.validation.Validatable;
 import org.javalite.activejdbc.validation.Validator;
 import org.javalite.activejdbc.validation.ValidatorAdapter;
@@ -41,7 +43,7 @@ public class Errors implements Map<String, String> {
      * @param attributeName name of attribute for which validation failed.
      * @param validator validator.
      */
-    protected void addValidator(String attributeName, Validator validator){
+    public void addValidator(String attributeName, Validator validator){
         validators.put(attributeName, validator);
     }
 
@@ -195,6 +197,7 @@ public class Errors implements Map<String, String> {
 
     @Override
     public String toString() {
+
         StringBuilder res = new StringBuilder().append("{ ");
         for (Map.Entry<String, Validator> entry : validators.entrySet()) {
             res.append(entry.getKey()).append("=<").append(entry.getValue().formatMessage(null)).append("> ");

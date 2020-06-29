@@ -45,7 +45,8 @@ public interface Validator {
     String formatMessage(Locale locale, Object ... params);
 
     /**
-     * Will pin the current message
+     * Will pin the current message. It will ignore any messages generated duringt validation and
+     * will use a current message.
      */
     void pinMessage();
 }

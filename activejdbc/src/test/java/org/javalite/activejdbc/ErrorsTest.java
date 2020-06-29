@@ -3,6 +3,7 @@ package org.javalite.activejdbc;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.javalite.activejdbc.validation.Errors;
 import org.junit.Before;
 import org.junit.Test;
 
