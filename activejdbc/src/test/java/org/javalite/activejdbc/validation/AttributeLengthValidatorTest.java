@@ -1,4 +1,4 @@
-package org.javalite.activejdbc;
+package org.javalite.activejdbc.validation;
 
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.User;

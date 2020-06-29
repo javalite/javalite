@@ -31,16 +31,16 @@ public class AttributeLengthValidator extends ValidatorAdapter {
         }
 
         if(null == value) {
-            m.addValidator(this, this.attributeName);
+            m.addFailedValidator(this, this.attributeName);
             return;
         }
 
         if(!(value instanceof String)) {
             throw new IllegalArgumentException("Attribute must be a String");
         } else {
-            if(!this.lengthOption.validate((String)((String)m.get(this.attributeName)))) {
+            if(!this.lengthOption.validate((String) m.get(this.attributeName))) {
                 //somewhat confusingly this adds an error for a validator.
-                m.addValidator(this, this.attributeName);
+                m.addFailedValidator(this, this.attributeName);
             }
 
         }

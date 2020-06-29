@@ -2153,7 +2153,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      *
      * @param validator -validator that failed validation.
      */
-    public void addValidator(Validator validator, String errorKey) {
+    public void addFailedValidator(Validator validator, String errorKey) {
         if(!errors.containsKey(errorKey))
             errors.addValidator(errorKey, validator);
     }

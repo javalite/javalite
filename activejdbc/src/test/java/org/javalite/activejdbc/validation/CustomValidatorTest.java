@@ -1,4 +1,4 @@
-package org.javalite.activejdbc;
+package org.javalite.activejdbc.validation;
 
 import org.javalite.activejdbc.Model;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
@@ -29,7 +29,7 @@ public class CustomValidatorTest extends ActiveJDBCTest {
                 Date dob = ((Model)validatable).getDate("dob");
                 Date now = new java.sql.Date(System.currentTimeMillis());
                 if(dob.after(now)){
-                    validatable.addValidator(this, "invalid.dob");//add validator to errors with a key
+                    validatable.addFailedValidator(this, "invalid.dob");//add validator to errors with a key
                 }
             }
         }
