@@ -67,11 +67,4 @@ public class RequestArgumentControllerModelSpec extends RequestSpec {
         a(result).shouldBeEqual("Model: app.models.Account, table: 'accounts', attributes: {amount=50, total=30}, errors: { }");
     }
 
-    @Test
-    public void shouldRejectOverloadedMethods(){
-
-        //case1: two methods (or more), one with argument, another without
-        //case2: two methods , both with arguments.
-    }
-
 }

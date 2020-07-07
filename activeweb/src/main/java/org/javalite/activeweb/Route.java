@@ -93,19 +93,25 @@ public class Route {
 
         if(methods.size()== 0){
             return null;
+        }else if(methods.size() > 1){ // must have exactly one method with the same name, regardless of arguments.
+            throw new AmbiguousActionException("Ambiguous overloaded method: " + actionMethodName + ".");
         }
 
-        for (Method method : methods) {
-            if (method.getParameterCount() == 1) {
-                argumentClass = method.getParameterTypes()[0];
-                if (!argumentClass.getName().startsWith("java")) { // we do not need primitives, shooting for a class defined in the project.
-                    return method;
-                }
-            }
-            if (method.getParameterCount() == 0) {
+        Method method = methods.get(0);
+
+        if (method.getParameterCount() == 1) {
+            argumentClass = methods.get(0).getParameterTypes()[0];
+            // we do not need primitives, shooting for a class defined in the project.
+            if (!argumentClass.getName().startsWith("java")) {
                 return method;
+            }else{
+                LOGGER.debug("Skipping method '" + method.getName() + "' because the argument seems to be a primitive");
+                return null;
             }
+        }else  if (method.getParameterCount() == 0) {
+            return method;
         }
+
         return null;
     }
 
