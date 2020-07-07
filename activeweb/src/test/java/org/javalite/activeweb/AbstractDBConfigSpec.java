@@ -110,9 +110,9 @@ public class AbstractDBConfigSpec {
 
 
         a(jdbcConfig.getDriver()).shouldBeEqual("com.mysql.jdbc.Driver");
-        a(jdbcConfig.getUrl()).shouldBeEqual("jdbc:mysql://localhost/proj_dev");
-        a(jdbcConfig.getUser()).shouldBeEqual("john");
-        a(jdbcConfig.getPassword()).shouldBeEqual("pwd");
+        a(jdbcConfig.getUrl()).shouldBeEqual("jdbc:mysql://localhost/activejdbc");
+        a(jdbcConfig.getUser()).shouldBeEqual("root");
+        a(jdbcConfig.getPassword()).shouldBeEqual("p@ssw0rd");
 
         //test second connection spec
         jdbcConfig = (ConnectionJdbcConfig) DBConfiguration.getConnectionConfigs("development").toArray()[1];

@@ -2,9 +2,11 @@ package app.config;
 
 import app.controllers.DbExceptionController;
 import app.controllers.DoFiltersController;
+import app.controllers.RequestArgumentController;
 import app.controllers.filters.*;
 import org.javalite.activeweb.AbstractControllerConfig;
 import org.javalite.activeweb.AppContext;
+import org.javalite.activeweb.controller_filters.DBConnectionFilter;
 
 
 /**
