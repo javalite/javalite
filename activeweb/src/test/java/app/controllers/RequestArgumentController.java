@@ -19,5 +19,7 @@ public class RequestArgumentController extends AppController {
         respond(account + ", errors: " + account.errors().toString());
     }
 
+    public void overloaded1(){}
+    public void overloaded1(Person person){}
 
 }

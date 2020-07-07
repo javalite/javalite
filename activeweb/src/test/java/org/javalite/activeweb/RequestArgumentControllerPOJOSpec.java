@@ -78,4 +78,16 @@ public class RequestArgumentControllerPOJOSpec extends RequestSpec {
 
 
 
+    @Test
+    public void shouldRejectOverloadedMethods() throws IOException, ServletException {
+
+        request.setServletPath("/request_argument/overloaded1");
+        request.setMethod("GET");
+        request.setContentType("application/json");
+
+        request.setContent(Util.readResource("/person.json").getBytes());
+        dispatcher.doFilter(request, response, filterChain);
+        the(response.getStatus()).shouldBeEqual(500);
+        the(response.getContentAsString()).shouldContain("org.javalite.activeweb.AmbiguousActionException: Ambiguous overloaded method: overloaded1");
+    }
 }
