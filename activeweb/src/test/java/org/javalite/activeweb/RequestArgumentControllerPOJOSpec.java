@@ -6,11 +6,10 @@ import org.junit.Test;
 import javax.servlet.ServletException;
 import java.io.IOException;
 
-public class RequestArgumentSpec extends RequestSpec {
-
+public class RequestArgumentControllerPOJOSpec extends RequestSpec {
 
     @Test
-    public void shouldConvertJSONToArgument() throws IOException, ServletException {
+    public void shouldConvertJSONToPOJO() throws IOException, ServletException {
         request.setServletPath("/request_argument/person");
         request.setMethod("GET");
         request.setContentType("application/json");
@@ -22,13 +21,12 @@ public class RequestArgumentSpec extends RequestSpec {
     }
 
     @Test
-    public void shouldConvertParamsToArgumentWithOneMissing() throws IOException, ServletException {
+    public void shouldConvertParamsToPOJOWithOneMissing() throws IOException, ServletException {
         request.setServletPath("/request_argument/person");
         request.setMethod("GET");
 
         request.addParameter("first_name", "John");
         request.addParameter("last_name", "Doe");
-
 
         dispatcher.doFilter(request, response, filterChain);
         String result = response.getContentAsString();
@@ -36,7 +34,7 @@ public class RequestArgumentSpec extends RequestSpec {
     }
 
     @Test
-    public void shouldConvertParamsToArgument() throws IOException, ServletException {
+    public void shouldConvertParamsToPOJO() throws IOException, ServletException {
         request.setServletPath("/request_argument/person");
         request.setMethod("GET");
 
@@ -44,7 +42,6 @@ public class RequestArgumentSpec extends RequestSpec {
         request.addParameter("last_name", "Doe");
         request.addParameter("year_of_birth", "1234");
         request.addParameter("married", "yes");
-
 
         dispatcher.doFilter(request, response, filterChain);
         String result = response.getContentAsString();
@@ -54,21 +51,20 @@ public class RequestArgumentSpec extends RequestSpec {
 
 
     @Test
-    public void shouldInValidateRequestObject() throws IOException, ServletException {
+    public void shouldInValidateRequestPOJO() throws IOException, ServletException {
         request.setServletPath("/request_argument/plant");
         request.setMethod("GET");
 
         request.addParameter("name", "Apple");
-//        request.addParameter("group", "Fruit");
 
         dispatcher.doFilter(request, response, filterChain);
         String result = response.getContentAsString();
-        a(result).shouldBeEqual("Validators: { group=<value is missing> }");
+        a(result).shouldBeEqual("Errors: { group=<value is missing> }");
     }
 
 
     @Test
-    public void shouldValidateRequestObject() throws IOException, ServletException {
+    public void shouldValidateRequestPOJO() throws IOException, ServletException {
         request.setServletPath("/request_argument/plant");
         request.setMethod("GET");
 
@@ -77,6 +73,9 @@ public class RequestArgumentSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
         String result = response.getContentAsString();
-        a(result).shouldBeEqual("Validators: { }"); // no validators that did not pass
+        a(result).shouldBeEqual("Errors: { }"); // no validators that did not pass
     }
+
+
+
 }

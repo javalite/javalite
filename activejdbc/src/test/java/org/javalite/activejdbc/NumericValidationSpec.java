@@ -26,8 +26,7 @@ import org.junit.Test;
 /**
  * @author Igor Polevoy
  */
-public class NumericValidationBuilderTest extends ActiveJDBCTest {
-
+public class NumericValidationSpec extends ActiveJDBCTest {
     @Before
     public void setup() throws Exception {
         deleteAndPopulateTable("accounts");
@@ -105,5 +104,15 @@ public class NumericValidationBuilderTest extends ActiveJDBCTest {
         the(page.errors().size()).shouldBeEqual(1);
         the(page.errors().get("word_count")).shouldBeEqual("'word_count' must be an integer greater than 10");
 
+    }
+
+    @Test
+    public void should_fail_conversion_with_custom_message() {
+        Account account = new Account();
+        account.set("amount", 1);
+        account.set("total", "blah");
+        the(account).shouldNotBe("valid");
+        the(account.errors().size()).shouldBeEqual(1);
+        the(account.errors().get("total")).shouldBeEqual("incorrect 'total'");
     }
 }

@@ -17,6 +17,7 @@ limitations under the License.
 
 package org.javalite.activejdbc.validation;
 
+import org.javalite.common.ConversionException;
 import org.javalite.common.Convert;
 
 import java.text.NumberFormat;
@@ -71,11 +72,21 @@ public class NumericValidator extends ValidatorAdapter {
         }
 
         if(min != null){
-            validateMin(Convert.toDouble(value), validatable);
+            try{
+                validateMin(Convert.toDouble(value), validatable);
+            }catch(ConversionException e){
+                validatable.addFailedValidator(this, attribute);
+                setMessage(e.getMessage());
+            }
         }
 
         if(max != null){
-            validateMax(Convert.toDouble(value), validatable);
+            try{
+                validateMax(Convert.toDouble(value), validatable);
+            }catch(ConversionException e){
+                validatable.addFailedValidator(this, attribute);
+                setMessage(e.getMessage());
+            }
         }
 
         if(onlyInteger){

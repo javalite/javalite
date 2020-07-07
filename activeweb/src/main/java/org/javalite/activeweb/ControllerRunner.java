@@ -16,7 +16,8 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import com.google.inject.Injector;
-import org.javalite.activejdbc.validation.ValidationSupport;
+import org.javalite.activejdbc.Model;
+import org.javalite.activejdbc.validation.Validatable;
 import org.javalite.activeweb.controller_filters.HttpSupportFilter;
 import org.javalite.activeweb.freemarker.AbstractFreeMarkerConfig;
 import org.javalite.activeweb.freemarker.FreeMarkerTemplateManager;
@@ -37,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpSession;
 
-import static org.javalite.common.Util.join;
 
 /**
  * One of the main classes of the framework, responsible for execution of controllers and filters.
@@ -96,14 +96,14 @@ class ControllerRunner {
             }
 
             if(route.hasArgument()){
-                Object requestBean = getRequestBean(route);
-                LOGGER.debug("Executing: " + route.getController() + "#" + route.getActionMethod().getName() + " with argument: " + requestBean.getClass());
+                Object requestValue = getRequestObject(route);
+                LOGGER.debug("Executing: " + route.getController() + "#" + route.getActionMethod().getName() + " with argument: " + requestValue.getClass());
 
-                if( requestBean instanceof ValidationSupport){
-                    ((ValidationSupport)requestBean).validate();
+                if( requestValue instanceof Validatable){
+                    ((Validatable)requestValue).validate();
                 }
 
-                m.invoke(route.getController(), requestBean);
+                m.invoke(route.getController(), requestValue);
             }else {
                 LOGGER.debug("Executing: " + route.getController() + "#" + route.getActionMethod().getName());
                 m.invoke(route.getController());
@@ -125,7 +125,7 @@ class ControllerRunner {
 
 
     @SuppressWarnings("unchecked")
-    private Object getRequestBean(Route route) throws IllegalAccessException, InstantiationException, IOException, InvocationTargetException, NoSuchMethodException {
+    private Object getRequestObject(Route route) throws IllegalAccessException, InstantiationException, IOException, InvocationTargetException, NoSuchMethodException {
         String contentType = RequestContext.getHttpRequest().getContentType();
         boolean jsonRequest = contentType != null && contentType.equals("application/json");
         Map<String, String> requestMap;
@@ -142,68 +142,73 @@ class ControllerRunner {
             requestMap = route.getController().params1st();
         }
 
-        return getBeanWithValues(route, requestMap);
+        return getObjectWithValues(route, requestMap);
     }
 
-    private Object getBeanWithValues(Route route, Map<String, String> requestMap) throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
+        @SuppressWarnings("unchecked")
+    private Object getObjectWithValues(Route route, Map<String, String> requestMap) throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
 
         Class argumentClass = route.getArgumentClass();
-        Object requestBean = argumentClass.getDeclaredConstructor().newInstance();
-        Map translatedRequestMap = translateMapToJava(requestMap);
-        Field[] fields = argumentClass.getDeclaredFields();
+        Object requestObject = argumentClass.getDeclaredConstructor().newInstance();
 
-        for (Field field : fields) {
+        if(requestObject instanceof Model){
+            ((Model)requestObject).fromMap(requestMap);
+        }else{
+            Map translatedRequestMap = translateMapToJava(requestMap);
+            Field[] fields = argumentClass.getDeclaredFields();
 
-            boolean needRevert = false;
+            for (Field field : fields) {
 
-            if(!field.isAccessible()){
-                field.setAccessible(true);
-                needRevert = true;
-            }
+                boolean needRevert = false;
 
-            if(field.getType().equals(String.class)){
-                field.set(requestBean, translatedRequestMap.get(field.getName()));
-            }
-
-            if(field.getType().equals(Integer.class) || field.getType().getName().equals("int")){
-                Object value = translatedRequestMap.get(field.getName());
-                if(value != null){
-                    field.set(requestBean, Convert.toInteger(value));
+                if(!field.isAccessible()){
+                    field.setAccessible(true);
+                    needRevert = true;
                 }
-            }
 
-            if(field.getType().equals(Double.class) || field.getType().getName().equals("double")){
-                Object value = translatedRequestMap.get(field.getName());
-                if(value != null) {
-                    field.set(requestBean, Convert.toDouble(value));
+                if(field.getType().equals(String.class)){
+                    field.set(requestObject, translatedRequestMap.get(field.getName()));
                 }
-            }
 
-            if(field.getType().equals(Float.class) || field.getType().getName().equals("float")){
-                Object value = translatedRequestMap.get(field.getName());
-                if(value != null) {
-                    field.set(requestBean, Convert.toFloat(value));
+                if(field.getType().equals(Integer.class) || field.getType().getName().equals("int")){
+                    Object value = translatedRequestMap.get(field.getName());
+                    if(value != null){
+                        field.set(requestObject, Convert.toInteger(value));
+                    }
                 }
-            }
 
-            if(field.getType().equals(Boolean.class) || field.getType().getName().equals("boolean")){
-                Object value = translatedRequestMap.get(field.getName());
-                if(value != null) {
-                    field.set(requestBean, Convert.toBoolean(value));
+                if(field.getType().equals(Double.class) || field.getType().getName().equals("double")){
+                    Object value = translatedRequestMap.get(field.getName());
+                    if(value != null) {
+                        field.set(requestObject, Convert.toDouble(value));
+                    }
                 }
-            }
 
-            if(needRevert){
-                field.setAccessible(false);
+                if(field.getType().equals(Float.class) || field.getType().getName().equals("float")){
+                    Object value = translatedRequestMap.get(field.getName());
+                    if(value != null) {
+                        field.set(requestObject, Convert.toFloat(value));
+                    }
+                }
+
+                if(field.getType().equals(Boolean.class) || field.getType().getName().equals("boolean")){
+                    Object value = translatedRequestMap.get(field.getName());
+                    if(value != null) {
+                        field.set(requestObject, Convert.toBoolean(value));
+                    }
+                }
+
+                if(needRevert){
+                    field.setAccessible(false);
+                }
             }
         }
 
-        return requestBean;
+        return requestObject;
     }
 
     /**
      * Translates names from underscores and hyphens to Java CamelCase.
-     *
      */
     private Map translateMapToJava(Map<String, String> requestMap) {
         Map<String, String> translatedMap = new HashMap<>();
