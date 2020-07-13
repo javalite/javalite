@@ -2129,8 +2129,22 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      * Executes all validators attached to this model.
      */
     public void validate() {
+        validate(true);
+    }
+
+
+    /**
+     * Executes all validators attached to this model.
+     */
+    public void validate(boolean reset) {
+
+        if(reset){
+            errors = new Errors();
+        }
+
         fireBeforeValidation();
-        errors = new Errors();
+
+
         List<Validator> validators = modelRegistryLocal.validators();
         if (validators != null) {
             for (Validator validator : validators) {
@@ -2139,6 +2153,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
         }
         fireAfterValidation();
     }
+
 
     public boolean hasErrors() {
         return errors != null && errors.size() > 0;
@@ -2565,7 +2580,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
         boolean result = save();
         ModelDelegate.purgeEdges(metaModelLocal);
         if (!errors.isEmpty()) {
-            throw new ValidationException(this.errors().toString());
+            throw new ValidationException(this);
         }
         return result;
     }

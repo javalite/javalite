@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package org.javalite.activejdbc;
+package org.javalite.activejdbc.validation;
 
 import java.text.MessageFormat;
 import java.util.Locale;

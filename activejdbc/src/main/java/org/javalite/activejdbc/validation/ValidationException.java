@@ -18,16 +18,41 @@ limitations under the License.
 package org.javalite.activejdbc.validation;
 
 
+import java.util.Locale;
+
 /**
  * @author Igor Polevoy
  */
 public class ValidationException extends RuntimeException {
-    public ValidationException(String message) {
-        super(message);
+    private final String message;
+    private final Validatable source;
+
+    public ValidationException(Validatable validatable){
+        message = validatable.errors().toString();
+        this.source = validatable;
     }
 
+    @Override
+    public String getMessage() {
+        return message;
+    }
 
-    public ValidationException(Exception e) {
-        super(e);
+    /**
+     * Convenience method, returns the same object with errors that is attached to a model generated this exception.
+     *
+     * @return the same object wit errors that is attached to a model generated this exception
+     */
+    public Errors errors(){
+        return source.errors();
+    }
+
+    /**
+     * Convenience method, returns the same object with errors that is attached to a model generated this exception.
+     *
+     * @param locale locale in case messages are localized.
+     * @return the same object wit errors that is attached to a model generated this exception
+     */
+    public Errors errors(Locale locale){
+        return source.errors(locale);
     }
 }

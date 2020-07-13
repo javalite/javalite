@@ -9,6 +9,9 @@ import org.junit.Test;
 import javax.servlet.ServletException;
 import java.io.IOException;
 
+/**
+ * Tests validations and conversions for ActiveJDBC Model objects.
+ */
 public class RequestArgumentControllerModelSpec extends RequestSpec {
 
 
