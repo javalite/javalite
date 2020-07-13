@@ -1,7 +1,5 @@
 package org.javalite.activejdbc.validation;
 
-import org.javalite.activejdbc.Messages;
-
 import java.util.Locale;
 
 /**

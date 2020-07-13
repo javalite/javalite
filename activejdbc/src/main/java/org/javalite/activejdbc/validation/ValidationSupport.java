@@ -136,7 +136,7 @@ public class ValidationSupport implements Validatable {
 
 
     /**
-     * Returns a value of an attribute. The cuirrent implementation  uses reflection to get to
+     * Returns a value of an attribute. The current implementation  uses reflection to get to
      * a private or public attribute. Subclasses may override this behavior however they like.
      * @param attributeName name of attribute. For a standard class it would be an actual name  of a field retrievable
      *                      by reflection.
@@ -159,7 +159,7 @@ public class ValidationSupport implements Validatable {
             }
             return value;
         } catch (Exception e) {
-            throw new ValidationException(e);
+            throw new ValidationException(this);
         }
     }
 
@@ -172,8 +172,16 @@ public class ValidationSupport implements Validatable {
         return errors.size() == 0;
     }
 
+
     public void validate() {
-        errors = new Errors();
+        validate(true);
+    }
+
+    public void validate(boolean reset) {
+        if(reset){
+            errors = new Errors();
+        }
+
         for (Validator validator : validators()) {
             validator.validate(this);
         }

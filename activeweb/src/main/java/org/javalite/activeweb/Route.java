@@ -1,5 +1,6 @@
 package org.javalite.activeweb;
 
+import org.javalite.activeweb.annotations.FailedValidationReply;
 import org.javalite.common.Inflector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -246,11 +247,14 @@ public class Route {
         Annotation[] annotations = actionMethod.getAnnotations();
 
         //default behavior: GET method!
-        if (annotations.length == 0) {
+        if (annotations.length == 0 || (annotations.length == 1  && annotations[0] instanceof FailedValidationReply)) {
             return Collections.singletonList(HttpMethod.GET);
         } else {
             List<HttpMethod> res = new ArrayList<>();
             for (Annotation annotation : annotations) {
+                if(annotation instanceof FailedValidationReply){
+                    continue;
+                }
                 try {
                     res.add(HttpMethod.valueOf(annotation.annotationType().getSimpleName()));
                 } catch (IllegalArgumentException ignore) {

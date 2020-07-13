@@ -17,10 +17,7 @@ limitations under the License.
 package org.javalite.activejdbc.validation;
 
 import org.javalite.activejdbc.CaseInsensitiveMap;
-import org.javalite.activejdbc.Messages;
-import org.javalite.activejdbc.validation.Validatable;
-import org.javalite.activejdbc.validation.Validator;
-import org.javalite.activejdbc.validation.ValidatorAdapter;
+import org.javalite.common.Util;
 
 import java.util.*;
 
@@ -117,6 +114,14 @@ public class Errors implements Map<String, String> {
         return validators.containsValue(value);
     }
 
+    public String toJSON() {
+        List<String> jsonParts  = new ArrayList<>();
+        for(String attribute: validators.keySet()){
+            jsonParts.add("\"" + attribute+ "\":\""+ validators.get(attribute).formatMessage(null) + "\"");
+        }
+        return "{" + Util.join(jsonParts, ",") + "}";
+    }
+
     class NopValidator extends ValidatorAdapter {
         @Override
         public void validate(Validatable validatable) {}
@@ -154,7 +159,7 @@ public class Errors implements Map<String, String> {
     public Collection<String> values() {
         List<String> messageList = new ArrayList<>();
         for(java.util.Map.Entry<String, Validator> v: validators.entrySet()){
-            messageList.add(((Validator)v.getValue()).formatMessage(locale));
+            messageList.add(v.getValue().formatMessage(locale));
         }
         return messageList;
     }

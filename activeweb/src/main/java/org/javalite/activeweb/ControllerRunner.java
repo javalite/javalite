@@ -17,17 +17,17 @@ package org.javalite.activeweb;
 
 import com.google.inject.Injector;
 import org.javalite.activejdbc.Model;
+import org.javalite.activejdbc.validation.ImplicitConversionValidator;
 import org.javalite.activejdbc.validation.Validatable;
+import org.javalite.activeweb.annotations.FailedValidationReply;
 import org.javalite.activeweb.controller_filters.HttpSupportFilter;
 import org.javalite.activeweb.freemarker.AbstractFreeMarkerConfig;
 import org.javalite.activeweb.freemarker.FreeMarkerTemplateManager;
-import org.javalite.common.Convert;
-import org.javalite.common.Inflector;
-import org.javalite.common.JsonHelper;
-import org.javalite.common.Util;
+import org.javalite.common.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -36,7 +36,6 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpSession;
 
 
 /**
@@ -100,10 +99,27 @@ class ControllerRunner {
                 LOGGER.debug("Executing: " + route.getController() + "#" + route.getActionMethod().getName() + " with argument: " + requestValue.getClass());
 
                 if( requestValue instanceof Validatable){
-                    ((Validatable)requestValue).validate();
+
+                    Validatable v =((Validatable)requestValue);
+                    v.validate(false);
+
+                    FailedValidationReply autoReply = route.getController().getClass().getAnnotation(FailedValidationReply.class);
+                    if(autoReply == null){
+                        autoReply = route.getActionMethod().getAnnotation(FailedValidationReply.class);
+                    }
+
+                    if(autoReply != null){
+                        //TODO: shall we get a Locale for errors() from the HTTP request?
+                        DirectResponse dr = new DirectResponse(v.errors().toJSON());
+                        dr.setStatus(autoReply.value());
+                        dr.setContentType("application/json");
+                        RequestContext.setControllerResponse(dr);
+                    }
                 }
 
-                m.invoke(route.getController(), requestValue);
+                if(RequestContext.getControllerResponse() == null){
+                    m.invoke(route.getController(), requestValue);
+                }
             }else {
                 LOGGER.debug("Executing: " + route.getController() + "#" + route.getActionMethod().getName());
                 m.invoke(route.getController());
@@ -116,9 +132,9 @@ class ControllerRunner {
             }else if(e.getCause() != null){
                 throw new ControllerException(e.getCause());
             }
-        }catch(WebException e){
+        }catch(WebException | ConversionException e){
             throw e;
-        }catch(Exception e){
+        } catch(Exception e){
             throw new ControllerException(e);
         }
     }
@@ -158,53 +174,64 @@ class ControllerRunner {
             Field[] fields = argumentClass.getDeclaredFields();
 
             for (Field field : fields) {
-
-                boolean needRevert = false;
-
-                if(!field.isAccessible()){
-                    field.setAccessible(true);
-                    needRevert = true;
-                }
-
-                if(field.getType().equals(String.class)){
-                    field.set(requestObject, translatedRequestMap.get(field.getName()));
-                }
-
-                if(field.getType().equals(Integer.class) || field.getType().getName().equals("int")){
-                    Object value = translatedRequestMap.get(field.getName());
-                    if(value != null){
-                        field.set(requestObject, Convert.toInteger(value));
-                    }
-                }
-
-                if(field.getType().equals(Double.class) || field.getType().getName().equals("double")){
-                    Object value = translatedRequestMap.get(field.getName());
-                    if(value != null) {
-                        field.set(requestObject, Convert.toDouble(value));
-                    }
-                }
-
-                if(field.getType().equals(Float.class) || field.getType().getName().equals("float")){
-                    Object value = translatedRequestMap.get(field.getName());
-                    if(value != null) {
-                        field.set(requestObject, Convert.toFloat(value));
-                    }
-                }
-
-                if(field.getType().equals(Boolean.class) || field.getType().getName().equals("boolean")){
-                    Object value = translatedRequestMap.get(field.getName());
-                    if(value != null) {
-                        field.set(requestObject, Convert.toBoolean(value));
-                    }
-                }
-
-                if(needRevert){
-                    field.setAccessible(false);
-                }
+                //TODO: create an ImplicitValidator and  return control of implicit conversions to developer
+               setField(field, translatedRequestMap, requestObject);
             }
         }
 
         return requestObject;
+    }
+
+    private void setField(Field field, Map translatedRequestMap, Object requestObject) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        boolean needRevert = false;
+        if (!field.isAccessible()) {
+            field.setAccessible(true);
+            needRevert = true;
+        }
+
+        String typeName = field.getType().getName();
+
+
+        //TODO: cache Convert.toXX methods.
+        Object value = translatedRequestMap.get(field.getName());
+        if (value != null) {
+            if (typeName.equalsIgnoreCase("int") || typeName.contains("Integer")) {
+                setField(requestObject, Convert.class.getMethod("toInteger", Object.class), value, field);
+            } else if (typeName.equals("double") || typeName.equals(Double.class.getName())) {
+                setField(requestObject, Convert.class.getMethod("toDouble", Object.class), value, field);
+            } else if (typeName.equals("float") || typeName.equals(Float.class.getName())) {
+                setField(requestObject, Convert.class.getMethod("toFloat", Object.class), value, field);
+            } else if (typeName.equals("boolean") || typeName.equals(Boolean.class.getName())) {
+                setField(requestObject, Convert.class.getMethod("toBoolean", Object.class), value, field);
+            } else if (typeName.equals(String.class.getName())) {
+                setField(requestObject, Convert.class.getMethod("toString", Object.class), value, field);
+            }
+        }
+
+        if (needRevert) {
+            field.setAccessible(false);
+        }
+
+    }
+
+
+    private void setField(Object requestObject, Method method, Object value, Field field) throws IllegalAccessException, InvocationTargetException {
+        try{
+            Object convertedValue = method.invoke(requestObject, value);
+            field.set(requestObject, convertedValue);
+
+        }catch(InvocationTargetException e){
+            if(e.getCause() != null && e.getCause() instanceof ConversionException){
+                ConversionException conversionException = (ConversionException) e.getCause();
+                if(requestObject instanceof Validatable){
+                    ((Validatable)requestObject).addFailedValidator(new ImplicitConversionValidator(conversionException.getMessage()), field.getName());
+                }else {
+                    throw conversionException;
+                }
+            }else {
+                throw e;
+            }
+        }
     }
 
     /**

@@ -34,9 +34,16 @@ public interface Validatable {
     boolean isValid();
 
     /**
-     * Runs  validation.
+     * Runs  validation. Will blow away any  previous validation errors.
      */
     void validate();
+
+    /**
+     * Runs  validation.
+     *
+     * @param reset true to reset all previous validation errors.
+     */
+    void validate(boolean reset);
 
 
     /**
