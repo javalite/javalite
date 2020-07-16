@@ -78,7 +78,7 @@ public class RequestArgumentControllerPOJOSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
         String result = response.getContentAsString();
-        a(result).shouldBeEqual("Errors: { }"); // no validators that did not pass
+        a(result).shouldBeEqual("Errors: { }"); // all validators passed
     }
 
     @Test
@@ -138,8 +138,7 @@ public class RequestArgumentControllerPOJOSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
-        String x = response.getContentAsString();
-//        the(response.getHeader("Content-type")).shouldEqual("application/json");
+        the(response.getHeader("Content-type")).shouldEqual("application/json");
         Map result = JsonHelper.toMap(response.getContentAsString());
         the(result.get("group")).shouldBeEqual("value is missing");
         the(result.get("name")).shouldBeEqual("value is missing");
@@ -165,5 +164,24 @@ public class RequestArgumentControllerPOJOSpec extends RequestSpec {
 
         the(response.getStatus()).shouldBeEqual(400);
     }
+
+    @Test
+    public void should_check_FailedValidationReply_at_controller_level() throws IOException, ServletException {
+        request.setServletPath("/request_argument/plant3");
+        request.setMethod("GET");
+
+        request.addParameter("temperature", "blah");
+
+        dispatcher.doFilter(request, response, filterChain);
+
+        Map resultMap = JsonHelper.toMap(response.getContentAsString());
+        the(resultMap.get("group")).shouldBeEqual("value is missing");
+        the(resultMap.get("name")).shouldBeEqual("value is missing");
+        the(resultMap.get("temperature")).shouldBeEqual("failed to convert: 'blah' to Integer");
+
+        the(response.getStatus()).shouldBeEqual(400);
+
+    }
+
 }
 
