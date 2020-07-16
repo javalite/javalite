@@ -21,7 +21,9 @@ public class RequestArgumentController extends AppController {
     }
 
     @FailedValidationReply(400)
-    public void plant2(Plant2 plant){respond("ok");}
+    public void plant2(Plant2 plant){
+        respond("ok");
+    }
 
     @FailedValidationReply(400)
     public void plant3(Plant3 plant){}
