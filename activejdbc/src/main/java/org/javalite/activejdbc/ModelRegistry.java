@@ -16,7 +16,7 @@ limitations under the License.
 
 package org.javalite.activejdbc;
 
-import org.javalite.activejdbc.validation.ValidationSupport;
+import org.javalite.validation.ValidationSupport;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -19,7 +19,7 @@ package org.javalite.activejdbc.validation;
 
 import java.text.DecimalFormatSymbols;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
-import org.javalite.activejdbc.validation.ValidationException;
+import org.javalite.validation.ValidationException;
 import org.javalite.test.jspec.ExceptionExpectation;
 import org.javalite.activejdbc.test_models.*;
 import org.junit.Test;

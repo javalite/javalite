@@ -18,10 +18,10 @@ package org.javalite.activejdbc
 import org.javalite.activejdbc.ModelDelegate.metaModelOf
 import org.javalite.activejdbc.annotations.Cached
 import org.javalite.activejdbc.associations.Association
-import org.javalite.activejdbc.conversion.Converter
-import org.javalite.activejdbc.validation.NumericValidationBuilder
-import org.javalite.activejdbc.validation.ValidationBuilder
-import org.javalite.activejdbc.validation.Validator
+import org.javalite.conversion.Converter
+import org.javalite.validation.NumericValidationBuilder
+import org.javalite.validation.ValidationBuilder
+import org.javalite.validation.Validator
 import java.text.DateFormat
 import kotlin.reflect.KClass
 
@@ -63,7 +63,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      *
      * @param validator new validator.
      */
-    fun addValidator(validator:Validator):ValidationBuilder<Validator> {
+    fun addValidator(validator: Validator): ValidationBuilder<Validator> {
         return ModelDelegate.validateWith(modelClass(), validator)
     }
 
@@ -383,7 +383,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      *                  remove. If argument was not added to this model before, this method will
      *                  do nothing.
      */
-    fun removeValidator(validator:Validator) {
+    fun removeValidator(validator: Validator) {
         ModelDelegate.removeValidator(modelClass(), validator)
     }
 
@@ -616,11 +616,11 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      *
      * @param attributeName name of attribute that holds email value.
      */
-    protected fun validateEmailOf(attributeName:String):ValidationBuilder<Validator> {
+    protected fun validateEmailOf(attributeName:String): ValidationBuilder<Validator> {
         return ModelDelegate.validateEmailOf(modelClass(), attributeName)
     }
 
-    protected fun validateNumericalityOf(vararg attributeNames:String?):NumericValidationBuilder {
+    protected fun validateNumericalityOf(vararg attributeNames:String?): NumericValidationBuilder {
         return ModelDelegate.validateNumericalityOf(modelClass(), *attributeNames)
     }
 
@@ -629,7 +629,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      *
      * @param attributeNames list of attributes to validate.
      */
-    protected fun validatePresenceOf(vararg attributeNames:String?):ValidationBuilder<Validator> {
+    protected fun validatePresenceOf(vararg attributeNames:String?): ValidationBuilder<Validator> {
         return ModelDelegate.validatePresenceOf(modelClass(), *attributeNames)
     }
 
@@ -641,7 +641,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      * @param min min value of range.
      * @param max max value of range.
      */
-    protected fun validateRange(attributeName:String, min:Number, max:Number):ValidationBuilder<Validator> {
+    protected fun validateRange(attributeName:String, min:Number, max:Number): ValidationBuilder<Validator> {
         return ModelDelegate.validateRange(modelClass(), attributeName, min, max)
     }
 
@@ -651,7 +651,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      * @param attributeName attribute to validate.
      * @param pattern regexp pattern which must match  the value.
      */
-    protected fun validateRegexpOf(attributeName:String, pattern:String):ValidationBuilder<Validator> {
+    protected fun validateRegexpOf(attributeName:String, pattern:String): ValidationBuilder<Validator> {
         return ModelDelegate.validateRegexpOf(modelClass(), attributeName, pattern)
     }
 
@@ -660,7 +660,7 @@ open class CompanionModel<T:Model>(entityClass:Class<T>) {
      *
      * @param validator  custom validator.
      */
-    protected fun validateWith(validator:Validator):ValidationBuilder<Validator> {
+    protected fun validateWith(validator: Validator): ValidationBuilder<Validator> {
         return ModelDelegate.validateWith(modelClass(), validator)
     }
 

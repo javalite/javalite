@@ -3,8 +3,8 @@ package org.javalite.activejdbc.validation;
 import org.javalite.activejdbc.Model;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Person;
-import org.javalite.activejdbc.validation.Validatable;
-import org.javalite.activejdbc.validation.ValidatorAdapter;
+import org.javalite.validation.Validatable;
+import org.javalite.validation.ValidatorAdapter;
 import org.junit.Test;
 
 import java.sql.Date;

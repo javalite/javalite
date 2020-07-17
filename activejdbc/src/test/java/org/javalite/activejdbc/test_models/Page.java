@@ -1,7 +1,7 @@
 package org.javalite.activejdbc.test_models;
 
 import org.javalite.activejdbc.Model;
-import org.javalite.activejdbc.conversion.ConverterAdapter;
+import org.javalite.conversion.ConverterAdapter;
 import org.javalite.common.Convert;
 
 /**

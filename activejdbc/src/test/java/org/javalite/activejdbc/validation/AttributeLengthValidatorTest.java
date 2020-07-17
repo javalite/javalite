@@ -2,7 +2,7 @@ package org.javalite.activejdbc.validation;
 
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.User;
-import org.javalite.activejdbc.validation.length.*;
+import org.javalite.validation.length.*;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -1,6 +1,6 @@
 package org.javalite.activejdbc.dialects;
 
-import org.javalite.activejdbc.CaseInsensitiveMap;
+import org.javalite.common.CaseInsensitiveMap;
 
 import java.util.Map;
 

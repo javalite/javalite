@@ -19,16 +19,15 @@ import org.javalite.activejdbc.annotations.Cached;
 import org.javalite.activejdbc.annotations.CompositePK;
 import org.javalite.activejdbc.associations.*;
 import org.javalite.activejdbc.cache.QueryCache;
-import org.javalite.activejdbc.conversion.BlankToNullConverter;
-import org.javalite.activejdbc.conversion.Converter;
-import org.javalite.activejdbc.conversion.ZeroToNullConverter;
+import org.javalite.common.*;
+import org.javalite.conversion.BlankToNullConverter;
+import org.javalite.conversion.Converter;
+import org.javalite.conversion.ZeroToNullConverter;
 import org.javalite.activejdbc.dialects.Dialect;
 import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.activejdbc.logging.LogLevel;
-import org.javalite.activejdbc.validation.*;
-import org.javalite.common.Convert;
-import org.javalite.common.Escape;
-import org.javalite.common.JsonHelper;
+
+import org.javalite.validation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +43,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.*;
+import java.util.Collections;
 import java.util.Map.Entry;
 
 import static org.javalite.activejdbc.ModelDelegate.metaModelFor;
@@ -2572,7 +2572,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
     }
 
     /**
-     * This method will not exit silently like {@link #save()}, it instead will throw {@link org.javalite.activejdbc.validation.ValidationException}
+     * This method will not exit silently like {@link #save()}, it instead will throw {@link ValidationException}
      * if validations did not pass.
      *
      * @return  true if the model was saved, false if you set an ID value for the model, but such ID does not exist in DB.

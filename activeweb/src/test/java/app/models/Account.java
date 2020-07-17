@@ -18,7 +18,7 @@ limitations under the License.
 package app.models;
 
 import org.javalite.activejdbc.Model;
-import org.javalite.activejdbc.conversion.BlankToNullConverter;
+
 
 public class Account extends Model {
 

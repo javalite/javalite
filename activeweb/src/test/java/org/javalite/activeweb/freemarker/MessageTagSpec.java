@@ -4,13 +4,8 @@ import org.javalite.activeweb.RequestSpec;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.servlet.ServletException;
-import java.io.IOException;
 import java.io.StringWriter;
-import java.util.HashMap;
 import java.util.Locale;
-
-import static org.javalite.common.Collections.map;
 
 /**
  * @author Igor Polevoy: 8/15/12 3:47 PM
@@ -21,8 +16,9 @@ public class MessageTagSpec extends RequestSpec {
     StringWriter sw = new StringWriter();
 
     @Before
-    public void before() throws IOException, ServletException, IllegalAccessException, InstantiationException {
+    public void before() {
         manager.setTemplateLocation("src/test/views");
+
     }
 
     @Test

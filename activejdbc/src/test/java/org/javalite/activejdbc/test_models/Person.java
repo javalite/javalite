@@ -19,10 +19,10 @@ package org.javalite.activejdbc.test_models;
 
 import org.javalite.activejdbc.Model;
 import org.javalite.activejdbc.annotations.Cached;
-import org.javalite.activejdbc.conversion.StringToSqlDateConverter;
-import org.javalite.activejdbc.conversion.StringToTimestampConverter;
-import org.javalite.activejdbc.validation.DateValidator;
-import org.javalite.activejdbc.validation.TimestampValidator;
+import org.javalite.conversion.StringToSqlDateConverter;
+import org.javalite.conversion.StringToTimestampConverter;
+import org.javalite.validation.DateValidator;
+import org.javalite.validation.TimestampValidator;
 
 
 @Cached

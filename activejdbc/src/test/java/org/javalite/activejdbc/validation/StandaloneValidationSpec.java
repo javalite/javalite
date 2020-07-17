@@ -1,5 +1,6 @@
 package org.javalite.activejdbc.validation;
 
+import org.javalite.validation.AttributePresenceValidator;
 import org.junit.Test;
 
 import static org.javalite.test.jspec.JSpec.the;

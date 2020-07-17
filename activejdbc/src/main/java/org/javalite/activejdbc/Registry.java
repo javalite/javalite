@@ -22,6 +22,7 @@ import org.javalite.activejdbc.cache.QueryCache;
 import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.activejdbc.logging.LogLevel;
 import org.javalite.activejdbc.statistics.StatisticsQueue;
+import org.javalite.common.CaseInsensitiveMap;
 import org.javalite.common.Inflector;
 import org.javalite.common.Util;
 import org.slf4j.Logger;

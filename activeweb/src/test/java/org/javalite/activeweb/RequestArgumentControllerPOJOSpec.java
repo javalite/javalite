@@ -167,7 +167,7 @@ public class RequestArgumentControllerPOJOSpec extends RequestSpec {
 
     @Test
     public void should_check_FailedValidationReply_at_controller_level() throws IOException, ServletException {
-        request.setServletPath("/request_argument/plant3");
+        request.setServletPath("/request_argument2/plant3");
         request.setMethod("GET");
 
         request.addParameter("temperature", "blah");
@@ -182,6 +182,5 @@ public class RequestArgumentControllerPOJOSpec extends RequestSpec {
         the(response.getStatus()).shouldBeEqual(400);
 
     }
-
 }
 

@@ -17,8 +17,8 @@ package org.javalite.activeweb;
 
 import com.google.inject.Injector;
 import org.javalite.activejdbc.Model;
-import org.javalite.activejdbc.validation.ImplicitConversionValidator;
-import org.javalite.activejdbc.validation.Validatable;
+import org.javalite.validation.ImplicitConversionValidator;
+import org.javalite.validation.Validatable;
 import org.javalite.activeweb.annotations.FailedValidationReply;
 import org.javalite.activeweb.controller_filters.HttpSupportFilter;
 import org.javalite.activeweb.freemarker.AbstractFreeMarkerConfig;
