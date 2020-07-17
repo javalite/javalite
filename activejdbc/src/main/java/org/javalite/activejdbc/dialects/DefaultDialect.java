@@ -27,10 +27,11 @@ import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 
-import org.javalite.activejdbc.CaseInsensitiveMap;
+
 import org.javalite.activejdbc.MetaModel;
 
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
+import org.javalite.common.CaseInsensitiveMap;
 import org.javalite.common.Convert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

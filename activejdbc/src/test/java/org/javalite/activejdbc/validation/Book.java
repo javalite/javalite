@@ -1,5 +1,7 @@
 package org.javalite.activejdbc.validation;
 
+import org.javalite.validation.ValidationSupport;
+
 public class Book extends ValidationSupport {
 
     private String title, isbn, authorFirstName, authorLastName;

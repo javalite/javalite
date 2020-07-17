@@ -15,7 +15,7 @@ limitations under the License.
 */
 package org.javalite.activejdbc.dialects;
 
-import org.javalite.activejdbc.CaseInsensitiveMap;
+import org.javalite.common.CaseInsensitiveMap;
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Assignment;

@@ -3,13 +3,13 @@ package org.javalite.activejdbc;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.javalite.activejdbc.validation.Errors;
+import org.javalite.validation.Errors;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.javalite.test.jspec.JSpec.a;
 
-import org.javalite.activejdbc.validation.AttributePresenceValidator;
+import org.javalite.validation.AttributePresenceValidator;
 
 public class ErrorsTest {
 

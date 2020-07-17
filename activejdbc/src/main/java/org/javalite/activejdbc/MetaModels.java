@@ -19,6 +19,7 @@ import org.javalite.activejdbc.associations.Association;
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
 import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.activejdbc.logging.LogLevel;
+import org.javalite.common.CaseInsensitiveMap;
 import org.javalite.common.JsonHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

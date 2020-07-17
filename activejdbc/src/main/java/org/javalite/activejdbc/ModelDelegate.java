@@ -20,12 +20,13 @@ import org.javalite.activejdbc.associations.Association;
 import org.javalite.activejdbc.associations.BelongsToAssociation;
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
 import org.javalite.activejdbc.cache.QueryCache;
-import org.javalite.activejdbc.conversion.BlankToNullConverter;
-import org.javalite.activejdbc.conversion.Converter;
-import org.javalite.activejdbc.conversion.ZeroToNullConverter;
+import org.javalite.conversion.BlankToNullConverter;
+import org.javalite.conversion.Converter;
+import org.javalite.conversion.ZeroToNullConverter;
 import org.javalite.activejdbc.logging.LogFilter;
-import org.javalite.activejdbc.validation.*;
+
 import org.javalite.common.Convert;
+import org.javalite.validation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -21,6 +21,7 @@ import org.javalite.activejdbc.dialects.Dialect;
 import org.javalite.activejdbc.dialects.Dialects;
 import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.activejdbc.logging.LogLevel;
+import org.javalite.common.CaseInsensitiveSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

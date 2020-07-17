@@ -15,6 +15,8 @@ limitations under the License.
 */
 package org.javalite.activejdbc;
 
+import org.javalite.common.CaseInsensitiveMap;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.ResultSetMetaData;
