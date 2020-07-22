@@ -103,54 +103,54 @@ public class ConvertTest implements JSpecSupport {
     public void shouldCovertToBigDecimal() {
 
         //integer
-        Object o = Convert.toBigDecimal(1);
-        a(o instanceof BigDecimal).shouldBeTrue();
-        a(o).shouldBeEqual(1);
+        Object object = Convert.toBigDecimal(1);
+        the(object).shouldBeA(BigDecimal.class);
+        a(object).shouldBeEqual(1);
 
         //string
-        o = Convert.toBigDecimal("1");
-        a(o instanceof BigDecimal).shouldBeTrue();
-        a(o).shouldBeEqual(1);
+        object = Convert.toBigDecimal("1");
+        the(object).shouldBeA(BigDecimal.class);
+        a(object).shouldBeEqual(1);
 
         //double
-        o = Convert.toBigDecimal(1d);
-        a(o instanceof BigDecimal).shouldBeTrue();
-        a(o).shouldBeEqual(1);
+        object = Convert.toBigDecimal(1d);
+        the(object).shouldBeA(BigDecimal.class);
+        a(object).shouldBeEqual(1);
 
         //long
-        o = Convert.toBigDecimal(1L);
-        a(o instanceof BigDecimal).shouldBeTrue();
-        a(o).shouldBeEqual(1);
+        object = Convert.toBigDecimal(1L);
+        the(object).shouldBeA(BigDecimal.class);
+        a(object).shouldBeEqual(1);
     }
 
     @Test
     public void shouldCovertToLong() {
 
         //integer
-        Object o = Convert.toLong(1);
-        a(o instanceof Long).shouldBeTrue();
-        a(o).shouldBeEqual(1);
+        Object object = Convert.toLong(1);
+        the(object).shouldBeA(Long.class);
+        a(object).shouldBeEqual(1);
 
         //string
-        o = Convert.toLong("1");
-        a(o instanceof Long).shouldBeTrue();
-        a(o).shouldBeEqual(1);
+        object = Convert.toLong("1");
+        the(object).shouldBeA(Long.class);
+        a(object).shouldBeEqual(1);
 
         //double
-        o = Convert.toLong(1d);
-        a(o instanceof Long).shouldBeTrue();
-        a(o).shouldBeEqual(1);
+        object = Convert.toLong(1d);
+        the(object).shouldBeA(Long.class);
+        a(object).shouldBeEqual(1);
 
         //BigDecimal
-        o = Convert.toLong(new BigDecimal(1));
-        a(o instanceof Long).shouldBeTrue();
-        a(o).shouldBeEqual(1);
+        object = Convert.toLong(new BigDecimal(1));
+        the(object).shouldBeA(Long.class);
+        a(object).shouldBeEqual(1);
 
         //java.util.Date
         Date date = new Date(1416127392928L);
-        o = Convert.toLong(date);
-        a(o instanceof Long).shouldBeTrue();
-        a(o).shouldBeEqual(1416127392928L);
+        object = Convert.toLong(date);
+        the(object).shouldBeA(Long.class);
+        a(object).shouldBeEqual(1416127392928L);
 
     }
 
@@ -159,72 +159,72 @@ public class ConvertTest implements JSpecSupport {
     public void shouldCovertToDouble() {
 
         //integer
-        Object o = Convert.toDouble(1);
-        a(o instanceof Double).shouldBeTrue();
-        a(o).shouldBeEqual(1);
+        Object object = Convert.toDouble(1);
+        the(object).shouldBeA(Double.class);
+        a(object).shouldBeEqual(1);
 
         //string
-        o = Convert.toDouble("1");
-        a(o instanceof Double).shouldBeTrue();
-        a(o).shouldBeEqual(1);
+        object = Convert.toDouble("1");
+        the(object).shouldBeA(Double.class);
+        a(object).shouldBeEqual(1);
 
         //long
-        o = Convert.toDouble(1L);
-        a(o instanceof Double).shouldBeTrue();
-        a(o).shouldBeEqual(1);
+        object = Convert.toDouble(1L);
+        the(object).shouldBeA(Double.class);
+        a(object).shouldBeEqual(1);
 
         //BigDecimal
-        o = Convert.toDouble(new BigDecimal(1));
-        a(o instanceof Double).shouldBeTrue();
-        a(o).shouldBeEqual(1);
+        object = Convert.toDouble(new BigDecimal(1));
+        the(object).shouldBeA(Double.class);
+        a(object).shouldBeEqual(1);
     }
 
     @Test
     public void shouldCovertToFloat() {
 
         //float
-        Object o = Convert.toFloat(1F);
-        a(o instanceof Float).shouldBeTrue();
-        a(o).shouldBeEqual(1);
+        Object object = Convert.toFloat(1F);
+        the(object).shouldBeA(Float.class);
+        a(object).shouldBeEqual(1);
 
         //string
-        o = Convert.toFloat("1");
-        a(o instanceof Float).shouldBeTrue();
-        a(o).shouldBeEqual(1);
+        object = Convert.toFloat("1");
+        the(object).shouldBeA(Float.class);
+        a(object).shouldBeEqual(1);
 
         //long
-        o = Convert.toFloat(1L);
-        a(o instanceof Float).shouldBeTrue();
-        a(o).shouldBeEqual(1);
+        object = Convert.toFloat(1L);
+        the(object).shouldBeA(Float.class);
+        a(object).shouldBeEqual(1);
 
         //BigDecimal
-        o = Convert.toFloat(new BigDecimal(1));
-        a(o instanceof Float).shouldBeTrue();
-        a(o).shouldBeEqual(1);
+        object = Convert.toFloat(new BigDecimal(1));
+        the(object).shouldBeA(Float.class);
+        a(object).shouldBeEqual(1);
     }
 
     @Test
     public void shouldCovertToShort() {
 
         //float
-        Object o = Convert.toShort(1F);
-        a(o instanceof Short).shouldBeTrue();
-        a(o).shouldBeEqual(1);
+        Object object = Convert.toShort(1F);
+        the(object).shouldBeA(Short.class);
+        a(object).shouldBeEqual(1);
 
         //string
-        o = Convert.toShort("1");
-        a(o instanceof Short).shouldBeTrue();
-        a(o).shouldBeEqual(1);
+        object = Convert.toShort("1");
+        the(object).shouldBeA(Short.class);
+        a(object).shouldBeEqual(1);
 
         //long
-        o = Convert.toShort(1L);
-        a(o instanceof Short).shouldBeTrue();
-        a(o).shouldBeEqual(1);
+        object = Convert.toShort(1L);
+        the(object).shouldBeA(Short.class);
+        a(object).shouldBeEqual(1);
 
         //BigDecimal
-        o = Convert.toShort(new BigDecimal(1));
-        a(o instanceof Short).shouldBeTrue();
-        a(o).shouldBeEqual(1);
+        object = Convert.toShort(new BigDecimal(1));
+        the(object).shouldBeA(Short.class);
+        a(object).shouldBeEqual(1);
 
     }
 

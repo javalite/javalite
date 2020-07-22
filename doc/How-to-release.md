@@ -11,7 +11,7 @@
 7. Update and test all examples to the latest released version (create a new issue on Github)
 8. Create JavaDoc for released version and update new SNAPSHOT version by executing: 
 
-        scripts/release_javadoc.sh VERSION
+        scripts/javadoc.sh VERSION
 
     Update JavaDocs page:
 
