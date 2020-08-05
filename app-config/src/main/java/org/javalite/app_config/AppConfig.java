@@ -112,12 +112,14 @@ public class AppConfig implements Map<String, String> {
         String envVar = System.getenv("ACTIVE_ENV");
         String sysProp = System.getProperty("active_env");
         if (envVar == null && sysProp == null) {
-            LOGGER.warn("Environment variable 'ACTIVE_ENV' as well as ststem property `active_env` are not found, defaulting to 'development' environment.");
-            envVar = "development";
+            activeEnv = "development";
+            LOGGER.warn("Environment variable 'ACTIVE_ENV' as well as system property `active_env` are not found, defaulting to 'development' environment.");
         }else if(sysProp != null){
             activeEnv = sysProp;
+            LOGGER.warn("Setting environment to: '" + activeEnv + "' from a system property 'active_env'.");
         }else if(envVar != null){
             activeEnv = envVar;
+            LOGGER.warn("Setting environment to: '" + activeEnv + "' from an environment variable '" + envVar + "'.");
         }
         init();
     }
