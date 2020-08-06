@@ -181,6 +181,7 @@
         <module>db-migrator-maven-plugin</module>
         <module>db-migrator-integration-test</module>
         <module>app-config</module>
+        <module>app-config-spec</module>
         <module>activejdbc-static-metadata-test</module>
         <module>activeweb</module>
         <module>activeweb-testing</module>

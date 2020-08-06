@@ -9,6 +9,11 @@ import java.util.List;
 
 import static org.javalite.test.jspec.JSpec.the;
 
+
+//TODO: need to move this to the ActiveJDBC  module because this test has a dependency  on  it from the tested projects
+
+
+
 public class EnvironmentSpec {
     private File location =  new File("target/test-project");
     @Test
