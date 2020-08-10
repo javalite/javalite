@@ -21,6 +21,18 @@ import static org.javalite.common.Util.join;
 public class Route {
     private static Logger LOGGER = LoggerFactory.getLogger(Route.class);
 
+    private static Set<String> PRIMITIVES = new HashSet<>();
+    static {
+        PRIMITIVES.add("byte");
+        PRIMITIVES.add("short");
+        PRIMITIVES.add("int");
+        PRIMITIVES.add("long");
+        PRIMITIVES.add("float");
+        PRIMITIVES.add("double");
+        PRIMITIVES.add("char");
+        PRIMITIVES.add("boolean");
+    }
+
     private AppController controller;
     private String actionName, id, wildCardName, wildCardValue, targetAction;
     private List<IgnoreSpec> ignoreSpecs;
@@ -76,6 +88,59 @@ public class Route {
         }
     }
 
+    /**
+     * Methods by class name
+     */
+    private static ThreadLocal<Map<String, List<Method>>> methodsTL = new ThreadLocal<>();
+
+
+
+    /**
+     * Gets methods matching an action name. Excludes: methods of superclasses from JavaLite and all non-public methods
+     *
+     *
+     * This method exists for caching controller methods.
+     *
+     * @return all methods matching a method name.
+     */
+    private List<Method> getNamedMethods(AppController controller, String actionMethodName){
+
+        Map<String, List<Method>> controllerMap  =  methodsTL.get();
+
+        if(controllerMap == null){
+            methodsTL.set(controllerMap = new HashMap<>());
+        }
+        List<Method> discoveredMethods;
+
+        String controllerName = controller.getClass().getName();
+
+        //we do not want cached methods in case we are in development or reloading controllers on the fly
+        if (!controllerMap.containsKey(controllerName) || Configuration.activeReload()) {
+            discoveredMethods = new ArrayList<>();
+            controllerMap.put(controllerName, discoveredMethods);
+
+            for (Method m : controller.getClass().getMethods()) {
+                if (Modifier.isPublic(m.getModifiers()) &&
+                        !m.getDeclaringClass().equals(Object.class) &&
+                        !m.getDeclaringClass().equals(RequestAccess.class) &&
+                        !m.getDeclaringClass().equals(HttpSupport.class) &&
+                        !m.getDeclaringClass().equals(AppController.class)) {
+                    discoveredMethods.add(m);
+                }
+            }
+
+        } else {
+            discoveredMethods = controllerMap.get(controllerName);
+        }
+
+        List<Method> nameMatchMethods = new ArrayList<>();
+        for (Method discoveredMethod : discoveredMethods) {
+            if(discoveredMethod.getName().equals(actionMethodName)){
+                nameMatchMethods.add(discoveredMethod);
+            }
+        }
+        return nameMatchMethods;
+    }
 
     /**
      * Finds a first method that has one argument. If not found, will find a method that has no arguments.
@@ -83,16 +148,9 @@ public class Route {
      */
     private Method getPublicMethodForName(AppController controller, String actionMethodName){
 
-        //TODO: implement caching  of methods in ThreadLocal by key: class name, method name and argument type name (maybe one string or a hash?)
-        List<Method> methods = new ArrayList<>();
+        List<Method> methods = getNamedMethods(controller, actionMethodName);
 
-        for (Method m : controller.getClass().getDeclaredMethods()) {
-            if (Modifier.isPublic(m.getModifiers()) && m.getName().equals(actionMethodName)) {
-                methods.add(m);
-            }
-        }
-
-        if(methods.size()== 0){
+        if (methods.size() == 0) {
             return null;
         }else if(methods.size() > 1){ // must have exactly one method with the same name, regardless of arguments.
             throw new AmbiguousActionException("Ambiguous overloaded method: " + actionMethodName + ".");
@@ -105,8 +163,8 @@ public class Route {
             // we do not need primitives, shooting for a class defined in the project.
             if (!argumentClass.getName().startsWith("java")) {
                 return method;
-            }else{
-                LOGGER.debug("Skipping method '" + method.getName() + "' because the argument seems to be a primitive");
+            }else if(PRIMITIVES.contains(argumentClass.getName())){
+                LOGGER.debug("Skipping method '" + method.getName() + "' because the argument is a primitive");
                 return null;
             }
         }else  if (method.getParameterCount() == 0) {

@@ -96,4 +96,26 @@ public class ControllerRunnerSpec extends RequestSpec{
         a(response.getStatus()).shouldBeEqual(405);
         a(response.getHeader("Allow")).shouldBeEqual("GET, POST");
     }
+
+    @Test
+    public void shouldFindAndCallInheritedActionMethods() throws IOException, ServletException {
+
+        request.setServletPath("/real/index");
+        request.setMethod("GET");
+
+        dispatcher.doFilter(request, response, filterChain);
+        a(response.getContentAsString()).shouldBeEqual("OK");
+    }
+
+    /**
+     * Reject methods defined in the java.lang.Object class
+     */
+    @Test
+    public void should404_OnObjectMethods() throws IOException, ServletException {
+        request.setServletPath("/ajax/wait");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, response, filterChain);
+        the(response.getStatus()).shouldBeEqual(404);
+        the(response.getContentAsString()).shouldContain("Failed to find an action method for action: 'wait' in controller: app.controllers.AjaxController");
+    }
 }

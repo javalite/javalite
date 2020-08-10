@@ -431,15 +431,6 @@ public class RequestDispatcherSpec extends RequestSpec {
         a(response.getContentAsString()).shouldBeEqual("false");
     }
 
-    @Test
-    public void should404_OnObjectMethods() throws IOException, ServletException {
-        request.setServletPath("/ajax/wait");
-        request.setMethod("GET");
-        request.addHeader("X-Requested-With", "baaad header");
-        dispatcher.doFilter(request, response, filterChain);
-        the(response.getStatus()).shouldBeEqual(404);
-        the(response.getContentAsString()).shouldContain("Failed to find an action method for action: 'wait' in controller: app.controllers.AjaxController");
-    }
 
     @Test
     public void shouldRespondNullGracefully() throws IOException, ServletException {
