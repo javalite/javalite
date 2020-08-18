@@ -14,7 +14,7 @@
     </parent>
 
     <properties>
-        <artemis.version>2.11.0</artemis.version>
+        <artemis.version>2.14.0</artemis.version>
     </properties>
 
     <dependencies>
