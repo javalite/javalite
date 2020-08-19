@@ -363,20 +363,6 @@ public class Async {
      * @param queueName name of queue
      * @param command command to process
      * @param deliveryMode delivery mode: {@link javax.jms.DeliveryMode}.
-     * @param priority priority of the message. Correct values are from 0 to 9, with higher number denoting a
-     *                 higher priority.
-     * @param timeToLive the message's lifetime (in milliseconds, where 0 is to never expire)
-     */
-    public void send(String queueName, Command command, int deliveryMode, int priority, int timeToLive){
-        send(queueName, command, deliveryMode, priority, timeToLive, -1L);
-    }
-
-    /**
-     * Sends a command into a queue for processing
-     *
-     * @param queueName name of queue
-     * @param command command to process
-     * @param deliveryMode delivery mode: {@link javax.jms.DeliveryMode}.
      * @param deliveryTime delivery time in milliseconds
      */
     public void send(String queueName, Command command, int deliveryMode, long deliveryTime) {
