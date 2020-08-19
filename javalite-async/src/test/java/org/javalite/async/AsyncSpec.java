@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
 import static org.javalite.test.jspec.JSpec.a;
 import static org.javalite.test.jspec.JSpec.the;
@@ -80,7 +79,7 @@ public class AsyncSpec {
 
         async.start();
 
-        long requiredTime = System.currentTimeMillis() + 5000;
+        long requiredTime = System.currentTimeMillis();
 
         for(int i = 0; i < 3; i++){
             requiredTime += 5000;
@@ -102,7 +101,7 @@ public class AsyncSpec {
 
 
     @Test
-    public void shouldListTopCommands() throws Exception {
+    public void shouldListTopCommands() {
         Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 100));
 
         async.start();
@@ -129,7 +128,7 @@ public class AsyncSpec {
 
 
     @Test
-    public void shouldGetCommandsSynchronously() throws Exception {
+    public void shouldGetCommandsSynchronously() {
 
         Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 0));
 
@@ -149,7 +148,7 @@ public class AsyncSpec {
 
 
     @Test
-    public void shouldRemoveMessages() throws Exception {
+    public void shouldRemoveMessages() {
 
         Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 0));
 
@@ -173,7 +172,7 @@ public class AsyncSpec {
     }
 
     @Test
-    public void shouldInjectDependencyIntoCommand() throws InterruptedException {
+    public void shouldInjectDependencyIntoCommand(){
 
         Injector injector = Guice.createInjector(new GreetingModule());
         Async async = new Async(filePath, false, injector, new QueueConfig(QUEUE_NAME, new CommandListener(), 1));
@@ -189,7 +188,7 @@ public class AsyncSpec {
     }
 
     @Test
-    public void shouldStartStopBroker() throws IOException, InterruptedException {
+    public void shouldStartStopBroker() {
 
         Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
         async.start();
@@ -216,7 +215,7 @@ public class AsyncSpec {
     }
 
     @Test
-    public void shouldInjectDependencyIntoCommandListener() throws InterruptedException {
+    public void shouldInjectDependencyIntoCommandListener() {
 
         Injector injector = Guice.createInjector(new GreetingModule());
         Async async = new Async(filePath, false, injector, new QueueConfig(QUEUE_NAME, new HelloCommandListener(), 1));
@@ -231,7 +230,7 @@ public class AsyncSpec {
     }
 
     @Test
-    public void shouldMoveMessageToOtherQueue() throws InterruptedException, JMSException {
+    public void shouldMoveMessageToOtherQueue() throws JMSException {
 
         Async async = new Async(filePath, false, new QueueConfig("queue1"), new QueueConfig("queue2"));
         async.start();
@@ -258,7 +257,7 @@ public class AsyncSpec {
     }
 
     @Test
-    public void shouldMoveMessagesToOtherQueue() throws InterruptedException, JMSException {
+    public void shouldMoveMessagesToOtherQueue() {
 
         String queue1  = "queue1", queue2 = "queue2";
         Async async = new Async(filePath, false, new QueueConfig(queue1), new QueueConfig(queue2));
@@ -304,7 +303,7 @@ public class AsyncSpec {
     }
 
     @Test
-    public void shouldLogContext() throws IOException, InterruptedException {
+    public void shouldLogContext() {
 
         Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
         async.start();

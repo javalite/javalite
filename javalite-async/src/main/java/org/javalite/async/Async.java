@@ -18,12 +18,12 @@ limitations under the License.
 package org.javalite.async;
 
 import com.google.inject.Injector;
+import org.apache.activemq.artemis.api.core.QueueConfiguration;
 import org.apache.activemq.artemis.api.core.RoutingType;
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
 import org.apache.activemq.artemis.api.core.management.ActiveMQServerControl;
 import org.apache.activemq.artemis.api.core.management.QueueControl;
 import org.apache.activemq.artemis.core.config.Configuration;
-import org.apache.activemq.artemis.core.config.CoreQueueConfiguration;
 import org.apache.activemq.artemis.core.config.impl.ConfigurationImpl;
 import org.apache.activemq.artemis.core.remoting.impl.invm.InVMAcceptorFactory;
 import org.apache.activemq.artemis.core.remoting.impl.invm.InVMConnectorFactory;
@@ -261,13 +261,11 @@ public class Async {
         jndi.put("java.naming.factory.initial", "org.apache.activemq.artemis.jndi.ActiveMQInitialContextFactory");
 
         for (QueueConfig queueConfig : queueConfigs) {
-            CoreQueueConfiguration coreQueueConfiguration = new CoreQueueConfiguration();
-            coreQueueConfiguration
-                    .setName(queueConfig.getName())
-                    .setDurable(queueConfig.isDurable())
+            QueueConfiguration queueConfiguration = new QueueConfiguration(queueConfig.getName());
+            queueConfiguration.setDurable(queueConfig.isDurable())
                     .setAddress(queueConfig.getName()).
                     setRoutingType(RoutingType.ANYCAST);
-            config.addQueueConfiguration(coreQueueConfiguration);
+            config.addQueueConfiguration(queueConfiguration);
 
             //# queue.[jndiName] = [physicalName]
             jndi.put("queue.queue/" + queueConfig.getName(), queueConfig.getName());
@@ -544,9 +542,26 @@ public class Async {
      * @param text body of message
      */
     public void sendTextMessage(String queueName, String text){
-        sendTextMessage(queueName, text, DeliveryMode.NON_PERSISTENT, 4, 0);
+        sendTextMessage(queueName, text, DeliveryMode.NON_PERSISTENT, 4, 0, -1);
     }
 
+    /**
+     * Sends a non-expiring {@link TextMessage} with average priority.
+     *
+     * @param queueName name of queue
+     * @param text body of message
+     * @param deliveryTime The specified value must be a positive long corresponding to the time
+     *                            the message must be delivered (in milliseconds). For instance, <code>System.currentTimeMillis() + 5000</code>
+     *                            would be 5 seconds from now.
+     */
+    public void sendTextMessage(String queueName, String text, long deliveryTime ){
+        sendTextMessage(queueName, text, DeliveryMode.NON_PERSISTENT, 4, 0, deliveryTime);
+    }
+
+
+    public void sendTextMessage(String queueName, String text, int deliveryMode, int priority, long timeToLive) {
+        sendTextMessage(queueName, text, deliveryMode, priority, timeToLive, -1);
+    }
     /**
      * Sends a {@link TextMessage}.
      *
@@ -556,8 +571,11 @@ public class Async {
      * @param priority priority of the message. Correct values are from 0 to 9, with higher number denoting a
      *                 higher priority.
      * @param timeToLive the message's lifetime (in milliseconds, where 0 is to never expire)
+     * @param deliveryTime The specified value must be a positive long corresponding to the time
+     *                      the message must be delivered (in milliseconds). For instance, <code>System.currentTimeMillis() + 5000</code>
+     *                      would be 5 seconds from now.
      */
-    public void sendTextMessage(String queueName, String text, int deliveryMode, int priority, int timeToLive) {
+    public void sendTextMessage(String queueName, String text, int deliveryMode, int priority, long timeToLive, long deliveryTime) {
         checkStarted();
         long now  = System.currentTimeMillis();
         try(Session session = producerConnection.createSession()) {
@@ -565,7 +583,12 @@ public class Async {
             checkInRange(priority, 0, 9, "priority");
             if (timeToLive < 0)
                 throw new AsyncException("time to live cannot be negative");
+
             Message message = session.createTextMessage(text);
+
+            if (deliveryTime > 0) {
+                message.setLongProperty(HDR_SCHEDULED_DELIVERY_TIME.toString(), deliveryTime);
+            }
 
             MessageProducer p = session.createProducer(lookupQueue(queueName));
             p.send(message, deliveryMode, priority, timeToLive);
