@@ -47,6 +47,7 @@ import javax.naming.NamingException;
 import java.io.File;
 import java.util.*;
 
+import static org.apache.activemq.artemis.api.core.Message.HDR_SCHEDULED_DELIVERY_TIME;
 import static org.javalite.common.Collections.map;
 import static org.javalite.common.Util.closeQuietly;
 
@@ -337,6 +338,17 @@ public class Async {
      * Sends a command into a queue for processing
      *
      * @param queueName name of queue
+     * @param command  command instance.
+     * @param deliveryTime delivery time in milliseconds
+     */
+    public void send(String queueName, Command command, long deliveryTime) {
+        send(queueName, command, DeliveryMode.NON_PERSISTENT, 4, 0, deliveryTime);
+    }
+
+    /**
+     * Sends a command into a queue for processing
+     *
+     * @param queueName name of queue
      * @param command command to process
      * @param deliveryMode delivery mode: {@link javax.jms.DeliveryMode}.
      */
@@ -350,11 +362,39 @@ public class Async {
      * @param queueName name of queue
      * @param command command to process
      * @param deliveryMode delivery mode: {@link javax.jms.DeliveryMode}.
+     * @param deliveryTime delivery time in milliseconds
+     */
+    public void send(String queueName, Command command, int deliveryMode, long deliveryTime) {
+        send(queueName, command, deliveryMode, 4, 0, deliveryTime);
+    }
+
+    /**
+     * Sends a command into a queue for processing
+     *
+     * @param queueName name of queue
+     * @param command command to process
+     * @param deliveryMode delivery mode: {@link javax.jms.DeliveryMode}.
      * @param priority priority of the message. Correct values are from 0 to 9, with higher number denoting a
      *                 higher priority.
      * @param timeToLive the message's lifetime (in milliseconds, where 0 is to never expire)
      */
-    public void send(String queueName, Command command, int deliveryMode, int priority, int timeToLive) {
+    public void send(String queueName, Command command, int deliveryMode, int priority, long timeToLive) {
+        send(queueName, command, deliveryMode, priority, timeToLive, -1);
+    }
+
+    /**
+     * Sends a command into a queue for processing
+     *
+     * @param queueName name of queue
+     * @param command command to process
+     * @param deliveryMode delivery mode: {@link javax.jms.DeliveryMode}.
+     * @param priority priority of the message. Correct values are from 0 to 9, with higher number denoting a
+     *                 higher priority.
+     * @param timeToLive the message's lifetime (in milliseconds, where 0 is to never expire)
+     * @param deliveryTime corresponds to the message delivery time (in milliseconds, when less than 1 is never used).
+     */
+    public void send(String queueName, Command command, int deliveryMode, int priority, long timeToLive, long deliveryTime) {
+
         checkStarted();
 
         long now  = System.currentTimeMillis();
@@ -376,6 +416,10 @@ public class Async {
                 message = msg;
             }else{
                 message = session.createTextMessage(command.toXml());
+            }
+
+            if (deliveryTime > 0) {
+                message.setLongProperty(HDR_SCHEDULED_DELIVERY_TIME.toString(), deliveryTime);
             }
 
             try(MessageProducer producer = session.createProducer(queue);) {

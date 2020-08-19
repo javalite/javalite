@@ -15,8 +15,11 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.javalite.test.jspec.JSpec.a;
 import static org.javalite.test.jspec.JSpec.the;
@@ -58,6 +61,43 @@ public class AsyncSpec {
 
         async.stop();
         a(HelloCommand.counter()).shouldBeEqual(100);
+    }
+
+    @Test
+    public void shouldProcessCommandAtRequiredTime() {
+
+        final List<Long> deliveredTimes = Collections.synchronizedList(new ArrayList<>());
+
+        CommandListener listener = new CommandListener() {
+            @Override
+            public <T extends Command> void onCommand(T command) {
+                super.onCommand(command);
+                deliveredTimes.add(0, System.currentTimeMillis());
+            }
+        };
+
+        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, listener, 1));
+
+        async.start();
+
+        long requiredTime = System.currentTimeMillis() + 5000;
+
+        for(int i = 0; i < 3; i++){
+            requiredTime += 5000;
+            async.send(QUEUE_NAME, new HelloCommand("Hello " + i), requiredTime);
+        }
+
+        Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
+
+        async.stop();
+
+        a(deliveredTimes.size()).shouldBeEqual(3);
+
+        for(Long time : deliveredTimes) {
+            a(time >= requiredTime && time < requiredTime + 500).shouldBeTrue();
+            requiredTime -= 5000;
+        }
+
     }
 
 
