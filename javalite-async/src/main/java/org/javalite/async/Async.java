@@ -356,6 +356,21 @@ public class Async {
         send(queueName, command, deliveryMode, 4, 0);
     }
 
+
+    /**
+     * Sends a command into a queue for processing
+     *
+     * @param queueName name of queue
+     * @param command command to process
+     * @param deliveryMode delivery mode: {@link javax.jms.DeliveryMode}.
+     * @param priority priority of the message. Correct values are from 0 to 9, with higher number denoting a
+     *                 higher priority.
+     * @param timeToLive the message's lifetime (in milliseconds, where 0 is to never expire)
+     */
+    public void send(String queueName, Command command, int deliveryMode, int priority, int timeToLive){
+        send(queueName, command, deliveryMode, priority, timeToLive, -1L);
+    }
+
     /**
      * Sends a command into a queue for processing
      *
@@ -387,11 +402,13 @@ public class Async {
      *
      * @param queueName name of queue
      * @param command command to process
-     * @param deliveryMode delivery mode: {@link javax.jms.DeliveryMode}.
+     * @param deliveryMode delivery mode: {@link javax.jms.DeliveryMode}. 1 for non-persistent, 2 for persistent.
      * @param priority priority of the message. Correct values are from 0 to 9, with higher number denoting a
      *                 higher priority.
      * @param timeToLive the message's lifetime (in milliseconds, where 0 is to never expire)
-     * @param deliveryTime corresponds to the message delivery time (in milliseconds, when less than 1 is never used).
+     * @param deliveryTime The specified value must be a positive long corresponding to the time
+     *                     the message must be delivered (in milliseconds). For instance, <code>System.currentTimeMillis() + 5000</code>
+     *                     would be 5 seconds from now.
      */
     public void send(String queueName, Command command, int deliveryMode, int priority, long timeToLive, long deliveryTime) {
 
