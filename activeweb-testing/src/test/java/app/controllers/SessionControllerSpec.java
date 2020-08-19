@@ -16,7 +16,7 @@ limitations under the License.
 
 package app.controllers;
 
-import org.javalite.activeweb.ControllerException;
+
 import org.javalite.activeweb.ControllerSpec;
 import org.javalite.activeweb.freemarker.UserTag;
 import org.junit.Before;
