@@ -333,10 +333,11 @@ public class Async {
      *
      * @param queueName name of queue
      * @param command  command instance.
-     * @param deliveryTime delivery time in milliseconds
+     * @param deliveryTime delivery time in the future. If <code>null</code>, or in the past, the message
+     *                     will be delivered as usual.
      */
     public void send(String queueName, Command command, Date deliveryTime) {
-        send(queueName, command, DeliveryMode.NON_PERSISTENT, 4, 0, deliveryTime.getTime());
+        send(queueName, command, DeliveryMode.NON_PERSISTENT, 4, 0, deliveryTime == null? -1: deliveryTime.getTime());
     }
 
     /**
