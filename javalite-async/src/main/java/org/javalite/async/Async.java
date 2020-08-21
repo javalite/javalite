@@ -335,8 +335,8 @@ public class Async {
      * @param command  command instance.
      * @param deliveryTime delivery time in milliseconds
      */
-    public void send(String queueName, Command command, long deliveryTime) {
-        send(queueName, command, DeliveryMode.NON_PERSISTENT, 4, 0, deliveryTime);
+    public void send(String queueName, Command command, Date deliveryTime) {
+        send(queueName, command, DeliveryMode.NON_PERSISTENT, 4, 0, deliveryTime.getTime());
     }
 
     /**
