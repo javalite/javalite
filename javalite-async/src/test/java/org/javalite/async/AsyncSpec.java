@@ -15,10 +15,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.javalite.test.jspec.JSpec.a;
 import static org.javalite.test.jspec.JSpec.the;
@@ -83,7 +80,7 @@ public class AsyncSpec {
 
         for(int i = 0; i < 3; i++){
             requiredTime += 5000;
-            async.send(QUEUE_NAME, new HelloCommand("Hello " + i), requiredTime);
+            async.send(QUEUE_NAME, new HelloCommand("Hello " + i), new Date(requiredTime));
         }
 
         Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
