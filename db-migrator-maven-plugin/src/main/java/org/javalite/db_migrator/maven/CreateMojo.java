@@ -16,10 +16,9 @@ public class CreateMojo extends AbstractDbMigrationMojo {
 
     public void executeMojo() throws MojoExecutionException {
 
+        String databaseName = DbUtils.extractDatabaseName(getUrl());
         try {
-
             String createSql = blank(getCreateSql()) ? "create database %s" : getCreateSql();
-            String databaseName = DbUtils.extractDatabaseName(getUrl());
             switch (DbUtils.databaseType(getUrl())) {
                 case MYSQL:
                     break;
@@ -41,8 +40,7 @@ public class CreateMojo extends AbstractDbMigrationMojo {
 
         try{
             openConnection();
-            new MigrationManager(getMigrationsPath()).createSchemaVersionTable();
-
+            new MigrationManager(getMigrationsPath(), getUrl()).createSchemaVersionTableIfDoesNotExist();
         }catch(Exception e){
             throw  new MojoExecutionException("failed to create SCHEMA_VERSION table", e);
         }finally {

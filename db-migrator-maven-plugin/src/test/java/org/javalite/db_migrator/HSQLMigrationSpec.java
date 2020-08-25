@@ -16,8 +16,9 @@ public class HSQLMigrationSpec {
 
     @Before
     public void setup() throws Exception {
-        Base.open("org.hsqldb.jdbcDriver", "jdbc:hsqldb:file:./target/tmp/hsql-migration-test", "sa", "");
-        migrationManager = new MigrationManager("src/test/resources/test_migrations/hsql/");
+        String url = "jdbc:hsqldb:file:./target/tmp/hsql-migration-test";
+        Base.open("org.hsqldb.jdbcDriver", url, "sa", "");
+        migrationManager = new MigrationManager("src/test/resources/test_migrations/hsql/", url);
     }
 
     @After
@@ -28,6 +29,6 @@ public class HSQLMigrationSpec {
     @Test
     public void shouldApplyPendingMigrations() {
         migrationManager.migrate(new MockLog(), null);
-        assertEquals(countMigrations(), 2);
+        assertEquals(countMigrations("schema_version"), 2);
     }
 }

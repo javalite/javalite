@@ -25,7 +25,7 @@ public class CheckMojo extends AbstractDbMigrationMojo {
         List<Migration> pendingMigrations;
         try {
             openConnection();
-            MigrationManager manager = new MigrationManager(getMigrationsPath());
+            MigrationManager manager = new MigrationManager(getMigrationsPath(), getUrl());
             pendingMigrations = manager.getPendingMigrations();
         } catch (Exception e) {
             throw new MojoExecutionException("Failed to check " + getUrl(), e);

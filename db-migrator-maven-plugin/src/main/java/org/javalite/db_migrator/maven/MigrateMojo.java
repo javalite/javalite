@@ -19,7 +19,7 @@ public class MigrateMojo extends AbstractDbMigrationMojo {
         getLog().info("Migrating " + getUrl() + " using migrations at " + getMigrationsPath());
         try {
             openConnection();
-            new MigrationManager(getMigrationsPath()).migrate(getLog(), getEncoding());
+            new MigrationManager(getMigrationsPath(), getUrl()).migrate(getLog(), getEncoding());
         } catch(SQLException e){
             throw new MojoExecutionException("Failed to migrate database " + getUrl(), e);
         } finally {

@@ -20,7 +20,7 @@ public class ValidateMojo extends AbstractDbMigrationMojo {
         getLog().info("Validating " + getUrl() + " using migrations from " + getMigrationsPath());
         try {
             openConnection();
-            MigrationManager manager = new MigrationManager(getMigrationsPath());
+            MigrationManager manager = new MigrationManager(getMigrationsPath(), getUrl());
             List<Migration> pendingMigrations = manager.getPendingMigrations();
 
             getLog().info("Database: " + getUrl());
