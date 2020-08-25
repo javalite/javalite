@@ -13,8 +13,9 @@ public class H2MigrationSpec {
 
     @Before
     public void setup() throws Exception {
-        Base.open("org.h2.Driver", "jdbc:h2:mem:h2-migration-test;DB_CLOSE_DELAY=-1", "sa", "");
-        migrationManager = new MigrationManager("src/test/resources/test_migrations/h2/");
+        String url = "jdbc:h2:mem:h2-migration-test;DB_CLOSE_DELAY=-1";
+        Base.open("org.h2.Driver", url , "sa", "");
+        migrationManager = new MigrationManager("src/test/resources/test_migrations/h2/", url);
     }
 
     @After
@@ -25,6 +26,6 @@ public class H2MigrationSpec {
     @Test
     public void shouldApplyPendingMigrations() {
         migrationManager.migrate(new MockLog(), null);
-        assertEquals(countMigrations(), 2);
+        assertEquals(countMigrations("schema_version"), 2);
     }
 }

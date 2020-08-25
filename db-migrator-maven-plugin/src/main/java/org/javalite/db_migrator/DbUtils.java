@@ -1,6 +1,8 @@
 package org.javalite.db_migrator;
 
 import org.javalite.activejdbc.Base;
+import org.javalite.common.Convert;
+import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +27,7 @@ public class DbUtils {
     private static final String DB2_FRAGMENT = ":db2:";
     private static final String ORACLE_FRAGMENT = ":oracle:";
     private static final String CLICKHOUSE_FRAGMENT = ":clickhouse:";
+    private static final String CASSANDRA_FRAGMENT = "javalite-cassandra";
 
     private DbUtils() {
         
@@ -66,6 +69,9 @@ public class DbUtils {
         if (url.contains(ORACLE_FRAGMENT)) {
             return "oracle.jdbc.driver.OracleDriver";
         }
+        if (url.contains(CASSANDRA_FRAGMENT)) {
+            return "org.javalite.cassandra.jdbc.CassandraJDBCDriver";
+        }
 
         return null;
     }
@@ -103,6 +109,9 @@ public class DbUtils {
         if (url.contains(CLICKHOUSE_FRAGMENT)) {
             return CLICKHOUSE;
         }
+        if (url.contains(CASSANDRA_FRAGMENT)) {
+            return CASSANDRA;
+        }
 
         return UNKNOWN;
     }
@@ -114,20 +123,35 @@ public class DbUtils {
      * @return the database name
      */
     public static String extractDatabaseName(String url) {
-        //this code came from Carbon5, I hold no responsibility for it :)
-        int leftIndex = url.lastIndexOf("/");
-        if (leftIndex == -1) {
-            leftIndex = url.lastIndexOf(":");
-        }
-        leftIndex++;
+        if(url.contains("jdbc:javalite-cassandra//ignored")){
+            return getCassandraDatabase(url);
+        }else{
+            //this code came from Carbon5, I hold no responsibility for it :)
+            int leftIndex = url.lastIndexOf("/");
+            if (leftIndex == -1) {
+                leftIndex = url.lastIndexOf(":");
+            }
+            leftIndex++;
 
-        int rightIndex = url.length();
-        if (url.contains("?")) {
-            rightIndex = url.indexOf("?");
-        } else if (url.contains(";")) {
-            rightIndex = url.indexOf(";");
+            int rightIndex = url.length();
+            if (url.contains("?")) {
+                rightIndex = url.indexOf("?");
+            } else if (url.contains(";")) {
+                rightIndex = url.indexOf(";");
+            }
+            return url.substring(leftIndex, rightIndex);
         }
-        return url.substring(leftIndex, rightIndex);
+
+    }
+
+    private static String getCassandraDatabase(String url) {
+        //jdbc:javalite-cassandra://ignored/javalite?src/application.conf
+        if(!url.contains("?")){
+            throw new IllegalArgumentException("URL must be in format: jdbc:javalite-cassandra//ignored/keyspacename?src/application.conf");
+        }
+        String[]  parts = Util.split(url,'?');
+        String[] parts2 = Util.split(parts[0], '/');
+        return parts2[2];
     }
 
     /**
@@ -138,6 +162,11 @@ public class DbUtils {
      */
     public static String extractServerUrl(String url)
     {
+
+        if(url.contains("jdbc:javalite-cassandra")){
+            return url;
+        }
+
         int rightIndex = url.length();
         if (url.lastIndexOf("/") != -1) {
             rightIndex = url.lastIndexOf("/");
@@ -198,11 +227,11 @@ public class DbUtils {
         return true;
     }
 
-    public static long countMigrations(){
-        return countRows(VersionStrategy.VERSION_TABLE);
+    public static long countMigrations(String table){
+        return countRows(table);
     }
 
     public static Long countRows(String table) {
-        return Base.count(table);
+        return Convert.toLong(Base.firstCell("SELECT COUNT(*) FROM " + table));
     }
 }

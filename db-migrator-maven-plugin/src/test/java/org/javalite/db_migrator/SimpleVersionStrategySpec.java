@@ -18,9 +18,9 @@ public class SimpleVersionStrategySpec {
 
     @Before
     public void setup() {
-        strategy = new VersionStrategy();
+        strategy = new VersionStrategy("unused", DatabaseType.H2);
         Base.open("org.h2.Driver", "jdbc:h2:mem:h2-migration-test;DB_CLOSE_DELAY=-1", "sa", "");
-        try {exec("drop table " + VersionStrategy.VERSION_TABLE);} catch (Exception e) {/* ignore*/}
+        try {exec("drop table schema_version");} catch (Exception e) {/* ignore*/}
     }
 
     @After
@@ -31,7 +31,7 @@ public class SimpleVersionStrategySpec {
     @Test
     public void shouldCreateSchemaVersionTable() throws SQLException {
         strategy.createSchemaVersionTable(DatabaseType.H2);
-        assertEquals(countMigrations(), 0);
+        assertEquals(countMigrations("schema_version"), 0);
     }
 
     @Test
@@ -49,10 +49,10 @@ public class SimpleVersionStrategySpec {
         strategy.createSchemaVersionTable(DatabaseType.H2);
         strategy.recordMigration(v1, new Date(), 768);
 
-        assertEquals(countMigrations(), 1);
+        assertEquals(countMigrations("schema_version"), 1);
 
         strategy.recordMigration(v2, new Date(), 231);
-        assertEquals(countMigrations(), 2);
+        assertEquals(countMigrations("schema_version"), 2);
 
         List<String> appliedMigrations = strategy.getAppliedMigrations();
         assertEquals(appliedMigrations.size(), 2);

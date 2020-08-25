@@ -2,7 +2,8 @@ package org.javalite.db_migrator;
 
 import org.apache.maven.plugin.logging.Log;
 import org.javalite.activejdbc.Base;
-
+import org.javalite.cassandra.jdbc.CassandraJDBCConnection;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,12 +16,20 @@ import static org.javalite.db_migrator.DbUtils.databaseType;
 public class MigrationManager {
 
     private DatabaseType dbType;
-    private VersionStrategy versionStrategy = new VersionStrategy();
+    private VersionStrategy versionStrategy;
     private MigrationResolver migrationResolver;
+    private String databaseName;
 
-    public MigrationManager(String migrationLocation) throws SQLException {
+
+    public MigrationManager(String migrationLocation, String url) throws SQLException {
         this.dbType = determineDatabaseType();
         migrationResolver = new MigrationResolver(migrationLocation);
+        if(url != null){
+            this.databaseName = DbUtils.extractDatabaseName(url);
+        }else{
+            throw new IllegalArgumentException("URL cannot be null");
+        }
+        versionStrategy = new VersionStrategy(databaseName, dbType);
     }
 
     /**
@@ -55,7 +64,7 @@ public class MigrationManager {
      */
     public void migrate(Log log, String encoding) {
 
-        createSchemaVersionTable();
+        createSchemaVersionTableIfDoesNotExist();
 
         final Collection<Migration> pendingMigrations = getPendingMigrations();
 
@@ -85,22 +94,23 @@ public class MigrationManager {
         log.info("Migrated database");
     }
 
-    protected DatabaseType determineDatabaseType() throws SQLException {
-        return databaseType(Base.connection().getMetaData().getURL());
-
+    private DatabaseType determineDatabaseType() throws SQLException {
+        Connection connection =  Base.connection();
+        return connection instanceof CassandraJDBCConnection ? DatabaseType.CASSANDRA
+                : databaseType(Base.connection().getMetaData().getURL());
     }
 
-    protected boolean versionTableExists() {
+    private boolean versionTableExists() {
         return versionStrategy.versionTableExists();
     }
 
-    public void createSchemaVersionTable() {
+    public void createSchemaVersionTableIfDoesNotExist() {
         if (!versionTableExists()) {
             versionStrategy.createSchemaVersionTable(dbType);
         }
     }
 
-    protected List<String> getAppliedMigrationVersions() {
+    private List<String> getAppliedMigrationVersions() {
         return versionStrategy.getAppliedMigrations();
     }
 }

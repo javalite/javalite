@@ -24,8 +24,10 @@ public class MySQLMigrationSpec {
         } catch (Exception e) {/*ignore*/}
         exec("create database mysql_migration_test");
         Base.close();
-        Base.open(driver(), "jdbc:mysql://localhost/mysql_migration_test", user(), password());
-        migrationManager = new MigrationManager("src/test/resources/test_migrations/mysql/");
+
+        String url = "jdbc:mysql://localhost/mysql_migration_test";
+        Base.open(driver(), url, user(), password());
+        migrationManager = new MigrationManager("src/test/resources/test_migrations/mysql/", url);
     }
 
     @After
@@ -39,7 +41,7 @@ public class MySQLMigrationSpec {
     @Test
     public void shouldApplyPendingMigrations() {
         migrationManager.migrate(new MockLog(), null);
-        assertEquals(countMigrations(), 4);
+        assertEquals(countMigrations("schema_version"), 4);
         the(countRows("books")).shouldBeEqual(9);
         the(countRows("authors")).shouldBeEqual(2);
     }

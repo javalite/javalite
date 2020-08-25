@@ -4,10 +4,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.DriverManager;
 import java.util.Properties;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.javalite.activejdbc.Base;
+import org.javalite.cassandra.jdbc.CassandraJDBCDriver;
 import org.javalite.db_migrator.DbUtils;
+import org.javalite.db_migrator.MigrationException;
+
 import static org.javalite.db_migrator.DbUtils.blank;
 import static org.javalite.db_migrator.DbUtils.closeQuietly;
 
@@ -106,15 +110,18 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
             throw new MojoExecutionException("No database url. Specify one in the plugin configuration.");
         }
 
-        if (blank(username)) {
-            throw new MojoExecutionException("No database username. Specify one in the plugin configuration.");
+        if(!driver.equals(CassandraJDBCDriver.class.getName())){
+            if (blank(username)) {
+                throw new MojoExecutionException("No database username. Specify one in the plugin configuration.");
+            }
+
+            try {
+                Class.forName(driver);
+            } catch (ClassNotFoundException e) {
+                throw new MojoExecutionException("Can't load driver class " + driver + ". Be sure to include it as a plugin dependency.");
+            }
         }
 
-        try {
-            Class.forName(driver);
-        } catch (ClassNotFoundException e) {
-            throw new MojoExecutionException("Can't load driver class " + driver + ". Be sure to include it as a plugin dependency.");
-        }
     }
 
     public abstract void executeMojo() throws MojoExecutionException;
@@ -176,6 +183,14 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
      */
     protected void openConnection(boolean root){
         String url = root? DbUtils.extractServerUrl(getUrl()): getUrl();
+
+        if(getDriver().equals(CassandraJDBCDriver.class.getName())){
+            try{
+                DriverManager.registerDriver(new CassandraJDBCDriver());
+            }catch(Exception e){
+                throw new MigrationException(e);
+            }
+        }
         Base.open(getDriver(), url, getUsername(), getPassword());
     }
 }

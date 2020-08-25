@@ -112,6 +112,7 @@ public class DB implements Closeable{
         try {
             Class.forName(driver);
             Connection connection;
+            LogFilter.log(LOGGER, LogLevel.DEBUG, "Opening connection to URL: {}", url);
             connection = properties == null ?  DriverManager.getConnection(url, user, password)
                     : DriverManager.getConnection(url, properties);
             LogFilter.log(LOGGER, LogLevel.DEBUG, "Opened connection: {}, URL: {}", connection, url);
