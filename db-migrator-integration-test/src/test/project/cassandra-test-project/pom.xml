@@ -12,6 +12,50 @@
 
     <build>
         <plugins>
+
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.33.0</version>
+                <configuration>
+                    <images>
+                        <image>
+                            <name>cassandra:2.1</name>
+                            <build>
+                                <from>cassandra:2.1</from>
+                            </build>
+                            <run>
+                                <ports>
+                                    <port>9043:9042</port>
+                                </ports>
+                                <wait>
+                                    <tcp>
+                                        <mode>direct</mode>
+                                        <ports>
+                                            <port>9043</port>
+                                        </ports>
+                                    </tcp>
+                                    <time>10000</time>
+                                    <kill>1000</kill>
+                                    <shutdown>500</shutdown>
+                                </wait>
+                            </run>
+                        </image>
+                    </images>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>docker:start</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+
             <plugin>
                 <groupId>org.javalite</groupId>
                 <artifactId>db-migrator-maven-plugin</artifactId>

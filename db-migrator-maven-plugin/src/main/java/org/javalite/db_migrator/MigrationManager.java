@@ -3,13 +3,13 @@ package org.javalite.db_migrator;
 import org.apache.maven.plugin.logging.Log;
 import org.javalite.activejdbc.Base;
 import org.javalite.cassandra.jdbc.CassandraJDBCConnection;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
 
 import static org.javalite.db_migrator.DbUtils.databaseType;
 
@@ -18,27 +18,18 @@ public class MigrationManager {
     private DatabaseType dbType;
     private VersionStrategy versionStrategy;
     private MigrationResolver migrationResolver;
-    private String databaseName;
 
 
     public MigrationManager(String migrationLocation, String url) throws SQLException {
         this.dbType = determineDatabaseType();
         migrationResolver = new MigrationResolver(migrationLocation);
+        String databaseName;
         if(url != null){
-            this.databaseName = DbUtils.extractDatabaseName(url);
+            databaseName = DbUtils.extractDatabaseName(url);
         }else{
             throw new IllegalArgumentException("URL cannot be null");
         }
         versionStrategy = new VersionStrategy(databaseName, dbType);
-    }
-
-    /**
-     * Validates whether the database is currently up-to-date.
-     *
-     * @return true if the database is up-to-date, false if it is not or is unversioned
-     */
-    public boolean validate() {
-        return getPendingMigrations().isEmpty();
     }
 
     /**
