@@ -62,8 +62,8 @@ public class MojoIntegrationSpec extends AbstractIntegrationSpec {
         }
 
         Base.open(driver(), "jdbc:mysql://localhost/test_project", user(), password());
-        the(countRows("books")).shouldBeEqual(9);
-        the(countRows("authors")).shouldBeEqual(2);
+        the(Base.count("books")).shouldBeEqual(9);
+        the(Base.count("authors")).shouldBeEqual(2);
         Base.close();
 
         // drop, create and validate

@@ -1,16 +1,17 @@
 package org.javalite.db_migrator.maven;
 
+import org.apache.maven.plugin.MojoExecutionException;
+import org.javalite.activejdbc.Base;
+import org.javalite.cassandra.jdbc.CassandraJDBCDriver;
+import org.javalite.db_migrator.DbUtils;
+import org.javalite.db_migrator.MigrationException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.DriverManager;
 import java.util.Properties;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.javalite.activejdbc.Base;
-import org.javalite.cassandra.jdbc.CassandraJDBCDriver;
-import org.javalite.db_migrator.DbUtils;
-import org.javalite.db_migrator.MigrationException;
 
 import static org.javalite.db_migrator.DbUtils.blank;
 import static org.javalite.db_migrator.DbUtils.closeQuietly;

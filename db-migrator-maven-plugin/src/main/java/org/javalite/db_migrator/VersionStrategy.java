@@ -8,12 +8,16 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.*;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 import static org.javalite.db_migrator.DatabaseType.*;
-import static org.javalite.db_migrator.DbUtils.*;
+
+import static org.javalite.db_migrator.DbUtils.countMigrations;
+import static org.javalite.db_migrator.DbUtils.exec;
 
 
 /**
@@ -58,7 +62,7 @@ class VersionStrategy {
 
     boolean versionTableExists() {
         try {
-            countRows(getTableName());
+            countMigrations(getTableName());
         } catch (Exception e) {
             return false;
         }

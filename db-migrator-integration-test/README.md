@@ -7,7 +7,7 @@ for [JavaLite DB-Migrator](https://github.com/javalite/activejdbc/tree/master/db
 
 Starting a container for the first time: 
 
-        docker run  --name=javalite_cassandra   --publish 127.0.0.1:9043:9042 cassandra:2.1
+        docker run  --name=javalite-cassandra   --publish 127.0.0.1:9043:9042 cassandra:2.1
 
 Note,  the external port is mapped to 9043 so as not to conflict with a local instance 
 

@@ -6,7 +6,7 @@ import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.*;
+import java.sql.Connection;
 
 import static org.javalite.db_migrator.DatabaseType.*;
 
@@ -227,11 +227,8 @@ public class DbUtils {
         return true;
     }
 
-    public static long countMigrations(String table){
-        return countRows(table);
-    }
-
-    public static Long countRows(String table) {
+    static long countMigrations(String table){
         return Convert.toLong(Base.firstCell("SELECT COUNT(*) FROM " + table));
     }
+
 }

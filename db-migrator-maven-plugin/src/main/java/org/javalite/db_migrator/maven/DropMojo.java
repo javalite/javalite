@@ -5,7 +5,8 @@ import org.javalite.activejdbc.Base;
 import org.javalite.db_migrator.DbUtils;
 
 import static java.lang.String.format;
-import static org.javalite.db_migrator.DbUtils.*;
+import static org.javalite.db_migrator.DbUtils.blank;
+import static org.javalite.db_migrator.DbUtils.exec;
 
 
 /**

@@ -31,7 +31,7 @@ public class MySQLMigrationSpec {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         try {
             exec("drop database mysql_migration_test");
         } catch (Exception e) {/*ignore*/}
@@ -42,7 +42,7 @@ public class MySQLMigrationSpec {
     public void shouldApplyPendingMigrations() {
         migrationManager.migrate(new MockLog(), null);
         assertEquals(countMigrations("schema_version"), 4);
-        the(countRows("books")).shouldBeEqual(9);
-        the(countRows("authors")).shouldBeEqual(2);
+        the(Base.count("books")).shouldBeEqual(9);
+        the(Base.count("authors")).shouldBeEqual(2);
     }
 }
