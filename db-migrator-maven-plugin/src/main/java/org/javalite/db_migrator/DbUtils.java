@@ -200,10 +200,11 @@ public class DbUtils {
 
 
 
-    public static int exec(String statement){
+    public static int exec(String statement, Object ... params){
         try {
             LOGGER.info("Executing: " + statement);
-            return Base.exec(statement);
+            return params.length == 0 ? Base.exec(statement) : Base.exec(statement, params);
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

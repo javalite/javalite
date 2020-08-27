@@ -3,6 +3,7 @@ package org.javalite.db_migrator.maven;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.javalite.activejdbc.Base;
 import org.javalite.cassandra.jdbc.CassandraJDBCDriver;
+import org.javalite.db_migrator.DatabaseType;
 import org.javalite.db_migrator.DbUtils;
 import org.javalite.db_migrator.MigrationException;
 
@@ -13,8 +14,7 @@ import java.io.InputStream;
 import java.sql.DriverManager;
 import java.util.Properties;
 
-import static org.javalite.db_migrator.DbUtils.blank;
-import static org.javalite.db_migrator.DbUtils.closeQuietly;
+import static org.javalite.db_migrator.DbUtils.*;
 
 public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
 
@@ -175,14 +175,17 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
         this.configFile = configFile;
     }
 
-    protected void openConnection(){
+    /**
+     * Opens a connection as specified in the URL
+     */
+    void openConnection(){
         openConnection(false);
     }
 
     /**
      * @param root open connection to root URL
      */
-    protected void openConnection(boolean root){
+    void openConnection(boolean root){
         String url = root? DbUtils.extractServerUrl(getUrl()): getUrl();
 
         if(getDriver().equals(CassandraJDBCDriver.class.getName())){
@@ -192,6 +195,13 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
                 throw new MigrationException(e);
             }
         }
+
         Base.open(getDriver(), url, getUsername(), getPassword());
+
+        try{ // Ignoring this is needed for the CreateMojo, since the keyspace does not exist yet
+            if(DatabaseType.CASSANDRA.equals(DbUtils.databaseType(url))){
+                exec("USE " + DbUtils.extractDatabaseName(url));
+            }
+        }catch(Exception ignore){}
     }
 }
