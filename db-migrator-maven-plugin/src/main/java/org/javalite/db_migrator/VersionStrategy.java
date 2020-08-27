@@ -50,9 +50,7 @@ class VersionStrategy {
 
     void createSchemaVersionTable(DatabaseType dbType) {
         LOGGER.info("Creating schema version table for {} DB", dbType);
-        //yuk - cassandra is crapping all over the code
-        String ddl = format(CREATE_VERSION_TABLE_MAP.getOrDefault(dbType, DEFAULT_VALUE), getTableName(), "version", "applied_on", "duration");
-        exec(ddl);
+        exec(format(CREATE_VERSION_TABLE_MAP.getOrDefault(dbType, DEFAULT_VALUE), getTableName(), "version", "applied_on", "duration"));
     }
 
 
@@ -76,9 +74,15 @@ class VersionStrategy {
     }
 
     void recordMigration(String version, Date startTime, long duration) {
+        if(databaseType.equals(CASSANDRA)){
+            String useKeyspace = "USE " + this.databaseName;
+            LOGGER.info("Executing: " + useKeyspace);
+            exec(useKeyspace);
+        }
+
         try{
             Object now = this.databaseType.equals(CASSANDRA) ? Instant.now() : new Timestamp(startTime.getTime());
-            Base.exec("insert into " + getTableName() + " (version, applied_on, duration) values (?, ?, ?)", version, now, Convert.toInteger(duration));
+            exec("insert into " + getTableName() + " (version, applied_on, duration) values (?, ?, ?)", version, now, Convert.toInteger(duration));
         }catch(Exception e){
             throw  new MigrationException(e);
         }

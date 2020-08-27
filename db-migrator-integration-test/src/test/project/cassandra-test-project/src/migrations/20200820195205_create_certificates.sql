@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS javalite.certificates(
+CREATE TABLE IF NOT EXISTS certificates(
   id    varchar,
   owner varchar,
   data  varchar,
