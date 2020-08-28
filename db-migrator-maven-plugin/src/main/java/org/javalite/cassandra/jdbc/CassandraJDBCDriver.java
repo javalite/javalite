@@ -2,7 +2,6 @@ package org.javalite.cassandra.jdbc;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
-import org.javalite.common.Util;
 
 import java.io.File;
 import java.sql.*;
@@ -11,20 +10,9 @@ import java.util.logging.Logger;
 
 public class CassandraJDBCDriver implements Driver {
     @Override
-    public Connection connect(String url, Properties info) throws SQLException {
-        
-        /*
-            jdbc:javalite-cassandra://ignored/keyspace?src/test/application.conf
-         */
+    public Connection connect(String urlString, Properties info) throws SQLException {
 
-
-        String[] parts = Util.split(url, '?');
-        if (parts.length != 2) {
-            throw new IllegalArgumentException("The URL needs to have a format: jdbc:javalite-cassandra//ignored/keyspace?path-to-application.conf. " +
-                    "However, the URL is: " + url);
-        }
-
-        File applicationConfFile = new File(parts[1]);
+        File applicationConfFile = new File(new CassandraURI(urlString).getConfigFile());
 
         if (!applicationConfFile.exists()) {
             throw new IllegalArgumentException("The file " + applicationConfFile + " must exist");
@@ -47,8 +35,13 @@ public class CassandraJDBCDriver implements Driver {
      * @throws SQLException
      */
     @Override
-    public boolean acceptsURL(String url) throws SQLException {
-        return url.contains("jdbc:javalite-cassandra://");
+    public boolean acceptsURL(String url) throws SQLException{
+        try{
+            new CassandraURI(url);
+            return true;
+        }catch(Exception e){
+            return false;
+        }
     }
 
     @Override

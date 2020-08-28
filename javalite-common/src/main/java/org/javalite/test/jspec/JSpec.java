@@ -19,9 +19,7 @@ package org.javalite.test.jspec;
 
 public final class JSpec{
     
-    private JSpec() {
-        
-    }
+    private JSpec() {}
     
     public static Expectation<Object> a(Object o1){
         return new Expectation<>(o1);
@@ -69,13 +67,45 @@ public final class JSpec{
     }
 
     public static <T> void expect(ExceptionExpectation<T> expectation){
-        
+        expect(expectation, null);
+    }
+
+    /**
+     * Expect an exception.
+     *
+     * @param type  class of exception  to expect
+     * @param message message to expect. This can be null
+     * @param runnable instance of <code>java.lang.Runnable</code> to execute
+     */
+    public static <T> void expect(Class<T> type, String message, Runnable runnable){
+
+        try{
+            runnable.run();
+        }catch(Exception e){
+            if(!e.getClass().getName().equals(type.getName())){
+                throw new TestException("Expected exception: " + type + ", but instead got: " + e, e);
+            }
+            if(message != null &&  e.getMessage() != null && !e.getMessage().equals(message)){
+                throw new TestException("Expected message: <" + message + ">, but instead got: <" + e.getMessage()+ ">", e) ;
+            }
+
+            return;
+        }
+        throw new  TestException("Expected exception: " + type + ", but instead got nothing");
+    }
+
+
+    public static <T> void expect(ExceptionExpectation<T> expectation, String message){
+
         try{
             expectation.exec();
         }catch(Exception e){
             if(!e.getClass().getName().equals(expectation.getClazz().getName())){
                 e.printStackTrace();
                 throw new TestException("Expected exception: " + expectation.getClazz() + ", but instead got: " + e);
+            }
+            if(message != null &&  e.getMessage() != null && !e.getMessage().equals(message)){
+                throw new TestException("Expected message: " + message + ", but instead got: " + e.getMessage());
             }
 
             return;

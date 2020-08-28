@@ -21,7 +21,7 @@ public class DatabaseUtilsSpec
         the(extractDatabaseName("jdbc:mysql://127.0.0.1:3306/dbname;OPTION1=A;OPTION2=B")).shouldBeEqual("dbname");
         the(extractDatabaseName("jdbc:mysql://localhost/dbname?OPTION1=A&OPTION2=B")).shouldBeEqual("dbname");
         the(extractDatabaseName("jdbc:mysql://127.0.0.1:3306/dbname?OPTION1=A&OPTION2=B")).shouldBeEqual("dbname");
-        the(extractDatabaseName("jdbc:javalite-cassandra//ignored/javalite?src/application.conf")).shouldBeEqual("javalite");
+        the(extractDatabaseName("jdbc:cassandra:///javalite?config_file=src/application.conf")).shouldBeEqual("javalite");
         //
     }
 
