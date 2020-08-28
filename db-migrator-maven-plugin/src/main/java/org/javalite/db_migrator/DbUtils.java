@@ -1,6 +1,7 @@
 package org.javalite.db_migrator;
 
 import org.javalite.activejdbc.Base;
+import org.javalite.cassandra.jdbc.CassandraURI;
 import org.javalite.common.Convert;
 import org.javalite.common.Util;
 import org.slf4j.Logger;
@@ -27,7 +28,7 @@ public class DbUtils {
     private static final String DB2_FRAGMENT = ":db2:";
     private static final String ORACLE_FRAGMENT = ":oracle:";
     private static final String CLICKHOUSE_FRAGMENT = ":clickhouse:";
-    private static final String CASSANDRA_FRAGMENT = "javalite-cassandra";
+    private static final String CASSANDRA_FRAGMENT = "cassandra";
 
     private DbUtils() {
         
@@ -123,7 +124,7 @@ public class DbUtils {
      * @return the database name
      */
     public static String extractDatabaseName(String url) {
-        if(url.contains("jdbc:javalite-cassandra//ignored")){
+        if(url.contains("jdbc:cassandra")){
             return getCassandraDatabase(url);
         }else{
             //this code came from Carbon5, I hold no responsibility for it :)
@@ -145,13 +146,7 @@ public class DbUtils {
     }
 
     private static String getCassandraDatabase(String url) {
-        //jdbc:javalite-cassandra://ignored/javalite?src/application.conf
-        if(!url.contains("?")){
-            throw new IllegalArgumentException("URL must be in format: jdbc:javalite-cassandra//ignored/keyspacename?src/application.conf");
-        }
-        String[]  parts = Util.split(url,'?');
-        String[] parts2 = Util.split(parts[0], '/');
-        return parts2[2];
+        return new CassandraURI(url).getKeyspace();
     }
 
     /**
@@ -163,7 +158,7 @@ public class DbUtils {
     public static String extractServerUrl(String url)
     {
 
-        if(url.contains("jdbc:javalite-cassandra")){
+        if(url.contains("jdbc:cassandra")){
             return url;
         }
 

@@ -38,7 +38,7 @@ public class ControllerFactorySpec {
         a(ControllerFactory.getControllerClassName("admin")).shouldBeEqual("app.controllers.AdminController");
         expect(new ExceptionExpectation<IllegalArgumentException>(IllegalArgumentException.class) {
             @Override
-            public void exec() throws Exception {
+            public void exec(){
                 //when controller is in a sub-package, controller name not acceptable, require slash upfront 
                 ControllerFactory.getControllerClassName("admin/special");
             }
