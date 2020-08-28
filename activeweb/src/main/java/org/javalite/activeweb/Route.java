@@ -268,7 +268,7 @@ public class Route {
     boolean actionSupportsHTTPMethod() {
         HttpMethod method = HttpMethod.getMethod(RequestContext.getHttpRequest());
         if (!actionSupportsHttpMethod()) {
-            DirectResponse res = new DirectResponse("");
+            DirectResponse res = new DirectResponse("405 - Method not allowed");
             //see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
             res.setStatus(405);
             LOGGER.warn("Requested action does not support HTTP method: " + method.name() + ", returning status code 405.");
