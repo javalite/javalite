@@ -50,4 +50,20 @@ public class CassandraURISpec {
         the(uri.getKeyspace()).shouldEqual("javalite");
     }
 
+    @Test
+    public void shouldAcceptWindowsPath(){
+        //this is in case Maven project uses ${project.baseDir} in the file path:
+        CassandraURI uri = new CassandraURI("jdbc:cassandra:///javalite?config_file=d:\\Work\\Projects\\src/application.conf");
+        the(uri.getConfigFile()).shouldEqual("d:/Work/Projects/src/application.conf");
+        the(uri.getKeyspace()).shouldEqual("javalite");
+    }
+
+
+    @Test
+    public void shouldFailIfProtocolNotSpecified(){
+        expect(MigrationException.class, "must use protocol: cassandra",
+                () -> new CassandraURI("jdbc:cassandra///javalite?config_file=src/application.conf"));
+        //this should succeed:
+        new CassandraURI("jdbc:CaSSandra:///javalite?config_file=src/application.conf");
+    }
 }
