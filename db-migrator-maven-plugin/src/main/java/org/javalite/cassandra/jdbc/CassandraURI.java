@@ -23,9 +23,8 @@ public class CassandraURI {
                 throw new MigrationException("must start with jdbc:");
             }
 
-            URI uri = new URI(uriString.substring(5));
-
-            if (!uri.getScheme().equals("cassandra")) {
+            URI uri = new URI(uriString.substring(5).replaceAll("\\\\", "/"));
+            if (!"cassandra".equalsIgnoreCase(uri.getScheme())) {
                 throw new MigrationException("must use protocol: cassandra");
             }
 
