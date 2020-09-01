@@ -32,10 +32,10 @@
                                     <tcp>
                                         <mode>direct</mode>
                                         <ports>
-                                            <port>9043</port>
+                                            <port>9042</port>
                                         </ports>
                                     </tcp>
-                                    <time>10000</time>
+                                    <time>30000</time>
                                     <kill>1000</kill>
                                     <shutdown>500</shutdown>
                                 </wait>
@@ -46,9 +46,16 @@
                 <executions>
                     <execution>
                         <id>docker:start</id>
-                        <phase>test</phase>
+                        <phase>validate</phase>
                         <goals>
-                            <goal>run</goal>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>docker:stop</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>stop</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -66,6 +73,22 @@
                     <createSql>CREATE KEYSPACE %s WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1 };</createSql>
                     <dropSql>DROP KEYSPACE IF EXISTS %s</dropSql>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>create_keyspace</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>migrate</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>migrate</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <dependencies>
                     <dependency>
                         <groupId>com.datastax.oss</groupId>
