@@ -84,7 +84,7 @@ public class ControllerRunnerSpec extends RequestSpec{
         request.setServletPath("/invalid_method/get");
         request.setMethod("POST");
         dispatcher.doFilter(request, response, filterChain);
-        a(response.getContentAsString()).shouldBeEqual("");
+        a(response.getContentAsString()).shouldBeEqual("405 - Method not allowed");
         a(response.getStatus()).shouldBeEqual(405);
         a(response.getHeader("Allow")).shouldBeEqual("GET");
 
@@ -92,7 +92,7 @@ public class ControllerRunnerSpec extends RequestSpec{
         request.setServletPath("/invalid_method/get_post");
         request.setMethod("PUT");
         dispatcher.doFilter(request, response, filterChain);
-        a(response.getContentAsString()).shouldBeEqual("");
+        a(response.getContentAsString()).shouldBeEqual("405 - Method not allowed");
         a(response.getStatus()).shouldBeEqual(405);
         a(response.getHeader("Allow")).shouldBeEqual("GET, POST");
     }
