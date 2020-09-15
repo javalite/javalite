@@ -29,6 +29,7 @@
                                     <port>9043:9042</port>
                                 </ports>
                                 <wait>
+                                    <!--FYI: apparently this is not working on Windows: https://github.com/fabric8io/docker-maven-plugin/issues/549 -->
                                     <tcp>
                                         <mode>direct</mode>
                                         <ports>
