@@ -88,6 +88,7 @@ public class ControllerRunnerSpec extends RequestSpec{
         a(response.getStatus()).shouldBeEqual(405);
         a(response.getHeader("Allow")).shouldBeEqual("GET");
 
+        setup(); //  more than one HTTP request in the same test!
 
         request.setServletPath("/invalid_method/get_post");
         request.setMethod("PUT");
