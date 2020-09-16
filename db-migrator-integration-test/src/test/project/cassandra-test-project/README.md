@@ -1,5 +1,6 @@
 
 
+# The instructions below are not necessary anymore, since the docker-maven-plugin does everything
 
 ## Run Docker  
 
