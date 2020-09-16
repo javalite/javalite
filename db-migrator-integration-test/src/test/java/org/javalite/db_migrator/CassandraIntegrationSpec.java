@@ -26,8 +26,20 @@ import static org.javalite.test.jspec.JSpec.the;
 public class CassandraIntegrationSpec extends AbstractIntegrationSpec {
 
     @Test
-    public void shouldRunTestProject() throws IOException, InterruptedException {
+    public void shouldRunTestProject() {
         String out = execute("target/cassandra-test-project", "test");
+        the(out).shouldContain("BUILD SUCCESS");
+    }
+
+    @Test
+    public void shouldRunTestProjectWithTwoDatabases()  {
+        String out = execute("target/cassandra-mysql-test-project", "test", "-e");
+
+
+        System.out.println("++++++++++++++++++++++++++");
+
+         System.out.println(out);
+        System.out.println("++++++++++++++++++++++++++");
         the(out).shouldContain("BUILD SUCCESS");
     }
 

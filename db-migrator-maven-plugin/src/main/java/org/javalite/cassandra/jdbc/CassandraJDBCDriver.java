@@ -11,8 +11,15 @@ import java.util.logging.Logger;
 public class CassandraJDBCDriver implements Driver {
     @Override
     public Connection connect(String urlString, Properties info) throws SQLException {
+        CassandraURI cassandraURI;
 
-        File applicationConfFile = new File(new CassandraURI(urlString).getConfigFile());
+         try{
+             cassandraURI = new CassandraURI(urlString);
+         }catch(Exception e){
+             return null;
+         }
+
+        File applicationConfFile = new File(cassandraURI.getConfigFile());
 
         if (!applicationConfFile.exists()) {
             throw new IllegalArgumentException("The file " + applicationConfFile + " must exist");
