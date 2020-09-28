@@ -42,7 +42,7 @@ public class ToFromXmlSpec extends ActiveJDBCTest {
     @Test
     public void shouldGenerateSimpleXml(){
         deleteAndPopulateTable("people");
-        Person p  = Person.findById(1);
+        Person p  = Person.findFirst("name = ?", "John");
         String xml = p.toXml(true, true);
         a(XPathHelper.selectText("//name", xml)).shouldEqual("John");
         a(XPathHelper.selectText("//last_name", xml)).shouldEqual("Smith");

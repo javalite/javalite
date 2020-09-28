@@ -28,7 +28,7 @@ public class Defect104Test extends ActiveJDBCTest {
     @Test
     public void shouldNotReturnNullAttributesInMap(){
         deleteAndPopulateTable("people");
-        Person p = (Person) Person.findAll().get(0);
+        Person p = Person.findFirst("name = ? ", "John");
         a(p.toMap().size()).shouldBeEqual(7);
         p.set("name", null);
         a(p.toMap().size()).shouldBeEqual(6);

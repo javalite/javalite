@@ -15,7 +15,7 @@
             <plugin>
                 <groupId>org.javalite</groupId>
                 <artifactId>db-migrator-maven-plugin</artifactId>
-                <version>1.4.13.j7-SNAPSHOT</version>
+                <version>1.4.14.j7-SNAPSHOT</version>
                 <configuration>
                     <environments>development</environments>
                 </configuration>
