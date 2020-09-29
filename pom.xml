@@ -157,12 +157,4 @@
 			</snapshots>
 		</pluginRepository>
     </pluginRepositories>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>myrepository</id>
-            <url>file:///var/www/</url>
-        </snapshotRepository>
-    </distributionManagement>
-
 </project>
