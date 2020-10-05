@@ -2,13 +2,13 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>activejdbc-instrumentation</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>2.3.3-j8-SNAPSHOT</version>
+    <version>2.4-j8</version>
     <name>JavaLite - ActiveJDBC Instrumentation Plugin</name>
 
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>javalite</artifactId>
-        <version>2.3.3-j8-SNAPSHOT</version>
+        <version>2.4-j8</version>
     </parent>
 
     <profiles>
