@@ -43,6 +43,10 @@
  
 1. Drop it from Sonatype.
 2. Delete tags/releases: [tags/releases](https://github.com/javalite/javalite/releases)
+    Example: 
+	git tag -d javalite-2.4-j8
+	git push origin :refs/tags/javalite-2.4-j8
+
 3. Perform:  `git fetch --tags` because your local repo still have old tags
 4. Erase release commits: 
     `git reset --hard HEAD~X` - depending how many you want  to kill
@@ -52,3 +56,4 @@
        Remember that the release notes now are based on issues, not  commits.
         
 6. Start afresh
+
