@@ -77,7 +77,7 @@
             <plugin>
                 <groupId>org.javalite</groupId>
                 <artifactId>db-migrator-maven-plugin</artifactId>
-                <version>2.3.3-j8-SNAPSHOT</version>
+                <version>2.5-j8-SNAPSHOT</version>
                 <configuration>
                     <createSql>CREATE KEYSPACE %s WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};</createSql>
                     <dropSql>DROP KEYSPACE IF EXISTS %s</dropSql>
