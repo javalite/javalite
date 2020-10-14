@@ -14,7 +14,7 @@
     </parent>
 
     <properties>
-        <artemis.version>2.14.0</artemis.version>
+        <artemis.version>2.15.0</artemis.version>
     </properties>
 
     <dependencies>
@@ -70,7 +70,7 @@
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
-            <version>1.4.11.1</version>
+            <version>1.4.13</version>
         </dependency>
 
     </dependencies>
