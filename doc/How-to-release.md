@@ -13,9 +13,9 @@
 
         scripts/javadoc.sh VERSION
 
-    Update JavaDocs page:
+9. Ensure no issues have the "In-Progress" label
 
-        javalite-site/content/src/activejdbc/javadoc.md
+	https://github.com/javalite/javalite/labels/In-Progress
 
 9. Generate release notes:
 
@@ -25,7 +25,7 @@
 where `new-tag` and `previous-tag` are looked on  the [Github Releases Page](https://github.com/javalite/javalite/releases)
 
     Ensure that issues  in the release are properly categorized by tags. If needed, make 
-    corrections and re-run the same command again...and again...and again...  
+    corrections and re-run the same command again...and again...and again... 
 
 
 
@@ -35,7 +35,7 @@ where `new-tag` and `previous-tag` are looked on  the [Github Releases Page](htt
 
 10. Write a blog article
 
-    Highlight major new features  
+    Highlight major new features 
     
     
 ## If you messed up the release
