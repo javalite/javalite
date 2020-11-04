@@ -15,6 +15,7 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
+import com.google.inject.CreationException;
 import org.javalite.activejdbc.DB;
 
 import org.javalite.app_config.AppConfig;
@@ -106,10 +107,8 @@ public class RequestDispatcher implements Filter {
 
             logger.debug("Loaded routes from: " + routeConfigClassName);
 
-        } catch (IllegalArgumentException e) {
+        } catch (RuntimeException e) {
             throw e;
-        }catch(ConfigurationException e){
-            throw  e;
         } catch (Exception e) {
             logger.debug("Did not find custom routes. Going with built in defaults: " + getCauseMessage(e));
         }
@@ -118,6 +117,7 @@ public class RequestDispatcher implements Filter {
 
 
 
+    @SuppressWarnings("unchecked")
     private void initAppConfig(String configClassName, AppContext context, boolean fail){
         InitConfig initConfig;
         try {
@@ -133,16 +133,20 @@ public class RequestDispatcher implements Filter {
             initConfig.completeInit();
         }
         catch (Throwable e) {
+            Throwable realException = e;
+            if(e instanceof  CreationException){
+                logger.error("Initialization of Guice module failed with: " + e.getClass());
+                realException = e.getCause();
+            }
+
             if(fail){
-                logger.error("Failed to create and init a new instance of class: " + configClassName + ". Application failed to start, so it will not run.");
-                throw new InitException(e);
+                logger.error("Failed to create and init a new instance of class: " + configClassName + ". Application failed to start, so it will not run.", realException);
+                throw new InitException(realException);
             }else{
-                logger.warn("Failed to init a class name: " + configClassName + ", proceeding without it.", e);
+                logger.warn("Failed to init a class name: " + configClassName + ", proceeding without it.", realException);
             }
         }
     }
-
-
 
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
         try {
