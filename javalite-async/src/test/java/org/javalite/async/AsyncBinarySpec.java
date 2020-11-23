@@ -3,13 +3,17 @@ package org.javalite.async;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.javalite.async.services.GreetingModule;
+import org.javalite.common.Util;
 import org.javalite.common.Wait;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 import static org.javalite.test.jspec.JSpec.a;
 import static org.javalite.test.jspec.JSpec.the;
@@ -20,18 +24,23 @@ import static org.javalite.test.jspec.JSpec.the;
 public class AsyncBinarySpec {
 
     private static final String QUEUE_NAME = "queue1";
-    private String filePath;
+    private String asyncRoot;
 
     @Before
     public void before() throws IOException {
-        filePath = Files.createTempDirectory("async").toFile().getCanonicalPath();
+        asyncRoot = Files.createTempDirectory(UUID.randomUUID().toString()).toFile().getCanonicalPath();
         HelloCommand.reset();
+    }
+
+    @After
+    public void after() throws IOException {
+        Util.recursiveDelete(Paths.get(asyncRoot));
     }
 
     @Test
     public void shouldProcessCommands() throws IOException, InterruptedException {
 
-        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
+        Async async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
 
         async.setBinaryMode(true);
         async.start();
@@ -51,7 +60,7 @@ public class AsyncBinarySpec {
 
     @Test
     public void shouldListTopCommands() throws Exception {
-        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 100));
+        Async async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 100));
 
         async.setBinaryMode(true);
         async.start();
@@ -81,7 +90,7 @@ public class AsyncBinarySpec {
     @Test
     public void shouldGetCommandsSynchronously() throws Exception {
 
-        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 0));
+        Async async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 0));
 
         async.setBinaryMode(true);
         async.start();
@@ -102,7 +111,7 @@ public class AsyncBinarySpec {
     @Test
     public void shouldRemoveMessages() throws Exception {
 
-        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 0));
+        Async async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 0));
 
         async.setBinaryMode(true);
         async.start();
@@ -128,7 +137,7 @@ public class AsyncBinarySpec {
     public void shouldInjectDependencyIntoCommand() throws InterruptedException {
 
         Injector injector = Guice.createInjector(new GreetingModule());
-        Async async = new Async(filePath, false, injector, new QueueConfig(QUEUE_NAME, new CommandListener(), 1));
+        Async async = new Async(asyncRoot, false, injector, new QueueConfig(QUEUE_NAME, new CommandListener(), 1));
 
         async.setBinaryMode(true);
         async.start();
@@ -144,7 +153,7 @@ public class AsyncBinarySpec {
     @Test
     public void shouldStartStopBroker() throws IOException, InterruptedException {
 
-        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
+        Async async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
         async.setBinaryMode(true);
         async.start();
         for(int i = 0; i < 10; i++){
@@ -172,7 +181,7 @@ public class AsyncBinarySpec {
     public void shouldInjectDependencyIntoCommandListener() throws InterruptedException {
 
         Injector injector = Guice.createInjector(new GreetingModule());
-        Async async = new Async(filePath, false, injector, new QueueConfig(QUEUE_NAME, new HelloCommandListener(), 1));
+        Async async = new Async(asyncRoot, false, injector, new QueueConfig(QUEUE_NAME, new HelloCommandListener(), 1));
         async.setBinaryMode(true);
         async.start();
 
