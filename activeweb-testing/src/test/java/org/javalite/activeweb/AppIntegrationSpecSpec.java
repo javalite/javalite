@@ -10,13 +10,13 @@ public class AppIntegrationSpecSpec extends AppIntegrationSpec {
 
     @BeforeClass
     public static  void before(){
-        SystemStreamUtil.replaceError();
+        SystemStreamUtil.replaceOut();
     }
 
     @AfterClass
     public static  void after(){
-        JSpec.the(SystemStreamUtil.getSystemErr()).shouldContain("Omitting destruction");
-        SystemStreamUtil.restoreSystemErr();
+        JSpec.the(SystemStreamUtil.getSystemOut()).shouldContain("Omitting destruction");
+        SystemStreamUtil.restoreSystemOut();
     }
 
     @Test
