@@ -1,5 +1,6 @@
 package org.javalite.async;
 
+import org.javalite.common.Util;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -7,8 +8,10 @@ import org.junit.Test;
 import javax.jms.JMSException;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.javalite.test.jspec.JSpec.the;
 
@@ -18,18 +21,21 @@ import static org.javalite.test.jspec.JSpec.the;
 public class BatchReceiverSpec {
     private static final String QUEUE_NAME = "queue1";
     private Async async;
+    private String asyncRoot;
 
     @Before
     public void before() throws IOException {
-        String filePath = Files.createTempDirectory("async").toFile().getCanonicalPath();
-        async = new Async(filePath, false, new QueueConfig(QUEUE_NAME));
+        asyncRoot = Files.createTempDirectory(UUID.randomUUID().toString()).toFile().getCanonicalPath();
+        async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME));
         async.start();
     }
 
     @After
-    public void after(){
+    public void after() throws IOException {
         async.stop();
+        Util.recursiveDelete(Paths.get(asyncRoot));
     }
+
 
     @Test
     public void shouldReceiveMessages() throws JMSException {
