@@ -33,13 +33,11 @@ public class AsyncSpec {
     public void before() throws IOException {
         asyncRoot = Files.createTempDirectory(UUID.randomUUID().toString()).toFile().getCanonicalPath();
         HelloCommand.reset();
-        SystemStreamUtil.replaceOut();
     }
 
     @After
     public void after() throws IOException {
         Util.recursiveDelete(Paths.get(asyncRoot));
-        SystemStreamUtil.restoreSystemOut();
     }
 
     @Test
@@ -304,6 +302,8 @@ public class AsyncSpec {
     @Test
     public void shouldLogContext() {
 
+        SystemStreamUtil.replaceOut();
+
         Async async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
         async.start();
         async.send(QUEUE_NAME, new ContextCommand(true));
@@ -327,6 +327,8 @@ public class AsyncSpec {
         the(context.get("weight")).shouldBeEqual("35lb");
 
         the(nonContextMap.containsKey("context")).shouldBeFalse();
+
+        SystemStreamUtil.restoreSystemOut();
     }
 
     private String getContextLine(String[] lines) {
