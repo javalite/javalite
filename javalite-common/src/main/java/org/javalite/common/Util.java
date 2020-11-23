@@ -563,7 +563,7 @@ public final class Util {
     }
 
     /**
-     * Deletes a directory recursively with all its contents. Will ignore files and directories if they are disappear during the oprtation.
+     * Deletes a directory recursively with all its contents. Will ignore files and directories if they disappear during the operation.
      *
      * @param directory directory to delete.
      */

@@ -15,6 +15,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 import static org.javalite.test.jspec.JSpec.a;
@@ -26,24 +27,25 @@ import static org.javalite.test.jspec.JSpec.the;
 public class AsyncSpec {
 
     private static final String QUEUE_NAME = "queue1";
-    private String filePath;
+    private String asyncRoot;
 
     @Before
     public void before() throws IOException {
-        filePath = Files.createTempDirectory("async").toFile().getCanonicalPath();
+        asyncRoot = Files.createTempDirectory(UUID.randomUUID().toString()).toFile().getCanonicalPath();
         HelloCommand.reset();
         SystemStreamUtil.replaceOut();
     }
 
     @After
-    public void after(){
+    public void after() throws IOException {
+        Util.recursiveDelete(Paths.get(asyncRoot));
         SystemStreamUtil.restoreSystemOut();
     }
 
     @Test
     public void shouldProcessCommands()  {
 
-        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
+        Async async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
 
         async.start();
 
@@ -72,7 +74,7 @@ public class AsyncSpec {
             }
         };
 
-        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, listener, 1));
+        Async async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, listener, 1));
 
         async.start();
 
@@ -99,7 +101,7 @@ public class AsyncSpec {
 
     @Test
     public void shouldListTopCommands() {
-        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 100));
+        Async async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 100));
 
         async.start();
 
@@ -127,7 +129,7 @@ public class AsyncSpec {
     @Test
     public void shouldGetCommandsSynchronously() {
 
-        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 0));
+        Async async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 0));
 
         async.start();
         for(int i = 0; i < 2; i++){
@@ -147,7 +149,7 @@ public class AsyncSpec {
     @Test
     public void shouldRemoveMessages() {
 
-        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 0));
+        Async async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 0));
 
         async.start();
 
@@ -172,7 +174,7 @@ public class AsyncSpec {
     public void shouldInjectDependencyIntoCommand(){
 
         Injector injector = Guice.createInjector(new GreetingModule());
-        Async async = new Async(filePath, false, injector, new QueueConfig(QUEUE_NAME, new CommandListener(), 1));
+        Async async = new Async(asyncRoot, false, injector, new QueueConfig(QUEUE_NAME, new CommandListener(), 1));
 
         async.start();
 
@@ -187,7 +189,7 @@ public class AsyncSpec {
     @Test
     public void shouldStartStopBroker() {
 
-        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
+        Async async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
         async.start();
         for (int i = 0; i < 10; i++) {
             async.send(QUEUE_NAME, new HelloCommand("Message: " + i));
@@ -215,7 +217,7 @@ public class AsyncSpec {
     public void shouldInjectDependencyIntoCommandListener() {
 
         Injector injector = Guice.createInjector(new GreetingModule());
-        Async async = new Async(filePath, false, injector, new QueueConfig(QUEUE_NAME, new HelloCommandListener(), 1));
+        Async async = new Async(asyncRoot, false, injector, new QueueConfig(QUEUE_NAME, new HelloCommandListener(), 1));
         async.start();
 
         async.send(QUEUE_NAME, new HelloCommand("Hi, there"));
@@ -229,7 +231,7 @@ public class AsyncSpec {
     @Test
     public void shouldMoveMessageToOtherQueue() throws JMSException {
 
-        Async async = new Async(filePath, false, new QueueConfig("queue1"), new QueueConfig("queue2"));
+        Async async = new Async(asyncRoot, false, new QueueConfig("queue1"), new QueueConfig("queue2"));
         async.start();
 
         async.sendTextMessage("queue1", "message test 1");
@@ -257,7 +259,7 @@ public class AsyncSpec {
     public void shouldMoveMessagesToOtherQueue() {
 
         String queue1  = "queue1", queue2 = "queue2";
-        Async async = new Async(filePath, false, new QueueConfig(queue1), new QueueConfig(queue2));
+        Async async = new Async(asyncRoot, false, new QueueConfig(queue1), new QueueConfig(queue2));
         async.start();
 
         the(async.getMessageCount(queue1)).shouldBeEqual(0);
@@ -282,7 +284,7 @@ public class AsyncSpec {
     public void shouldGetMessageCounts(){
 
         String queue1  = "queue1", queue2 = "queue2";
-        Async async = new Async(filePath, false, new QueueConfig(queue1), new QueueConfig(queue2));
+        Async async = new Async(asyncRoot, false, new QueueConfig(queue1), new QueueConfig(queue2));
         async.start();
 
 
@@ -302,7 +304,7 @@ public class AsyncSpec {
     @Test
     public void shouldLogContext() {
 
-        Async async = new Async(filePath, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
+        Async async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
         async.start();
         async.send(QUEUE_NAME, new ContextCommand(true));
         async.send(QUEUE_NAME, new ContextCommand(false));
