@@ -29,6 +29,7 @@ import org.apache.activemq.artemis.core.remoting.impl.invm.InVMAcceptorFactory;
 import org.apache.activemq.artemis.core.remoting.impl.invm.InVMConnectorFactory;
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyAcceptorFactory;
 import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants;
+import org.apache.activemq.artemis.core.server.ActiveMQServer;
 import org.apache.activemq.artemis.core.server.JournalType;
 import org.apache.activemq.artemis.core.server.embedded.EmbeddedActiveMQ;
 import org.apache.activemq.artemis.core.settings.impl.AddressFullMessagePolicy;
@@ -80,6 +81,7 @@ public class Async {
     private List<QueueConfig> queueConfigsList = new ArrayList<>();
     private boolean started;
     private InitialContext initialContext;
+    private ActiveMQConnectionFactory connectionFactory;
 
     /**
      * sessions that are used by listeners
@@ -189,11 +191,12 @@ public class Async {
                     .setAutoCreateQueues(false)
                     .setAutoCreateAddresses(false)
                     .setAutoDeleteQueues(false)
-                    .setAutoDeleteAddresses(false));
+                    .setAutoDeleteAddresses(false)
+                    );
 
             Wait.waitFor(() -> artemisServer.getActiveMQServer().isStarted());
 
-            ConnectionFactory connectionFactory = new ActiveMQConnectionFactory("vm://0");
+            connectionFactory = new ActiveMQConnectionFactory("vm://0");
 
             consumerConnection = connectionFactory.createConnection();
             receiverSessionPool = new SessionPool("Consumer", consumerConnection);
@@ -217,6 +220,7 @@ public class Async {
         receiverSessionPool.close();
         listenerConsumers.forEach(Util::closeQuietly);
         listenerSessions.forEach(Util::closeQuietly);
+        connectionFactory.close();
 
         closeQuietly(producerConnection);
         closeQuietly(consumerConnection);
@@ -232,9 +236,7 @@ public class Async {
         }
         try {
             artemisServer.stop();
-
-//            TimeUnit.SECONDS.sleep(20);
-//            Wait.waitFor(() -> !artemisServer.getActiveMQServer().isActive());
+            Wait.waitFor(() -> artemisServer.getActiveMQServer().getState() == ActiveMQServer.SERVER_STATE.STOPPED);
 
         } catch (Exception e) {
             LOGGER.warn("exception trying to stop broker.", e);
