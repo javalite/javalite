@@ -174,7 +174,7 @@ public class AsyncSpec {
 
         async.send(QUEUE_NAME, new HelloInjectedCommand("The greeting is: "), DeliveryMode.PERSISTENT);
 
-        Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
+        Wait.waitFor(()-> HelloInjectedCommand.result != null);
 
         a(HelloInjectedCommand.result).shouldBeEqual("The greeting is: hi");
     }
