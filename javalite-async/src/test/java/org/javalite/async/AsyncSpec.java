@@ -35,6 +35,7 @@ public class AsyncSpec {
     public void before() throws IOException {
         asyncRoot = Files.createTempDirectory(UUID.randomUUID().toString()).toFile().getCanonicalPath();
         HelloCommand.reset();
+        ContextCommand.reset();
     }
 
     @After
@@ -297,7 +298,7 @@ public class AsyncSpec {
         async.send(QUEUE_NAME, new ContextCommand(true), DeliveryMode.PERSISTENT);
         async.send(QUEUE_NAME, new ContextCommand(false), DeliveryMode.PERSISTENT);
 
-        Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
+        Wait.waitFor(()-> ContextCommand.counter() == 2);
 
         String out = SystemStreamUtil.getSystemOut();
 
