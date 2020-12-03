@@ -11,6 +11,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import java.io.IOException;
@@ -28,6 +29,7 @@ public class AsyncSpec {
 
     private static final String QUEUE_NAME = "queue1";
     private String asyncRoot;
+    private Async async;
 
     @Before
     public void before() throws IOException {
@@ -38,24 +40,23 @@ public class AsyncSpec {
     @After
     public void after() throws IOException {
         Util.recursiveDelete(Paths.get(asyncRoot));
+        async.stop();
     }
 
     @Test
     public void shouldProcessCommands()  {
 
-        Async async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
+        async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
 
         async.start();
 
         //send 100 messages
         for(int i = 0; i < 100; i++){
-            async.send(QUEUE_NAME, new HelloCommand("Hello, Dolly " + i));
+            async.send(QUEUE_NAME, new HelloCommand("Hello, Dolly " + i), DeliveryMode.PERSISTENT);
         }
 
         Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
 
-
-        async.stop();
         a(HelloCommand.counter()).shouldBeEqual(100);
     }
 
@@ -72,7 +73,7 @@ public class AsyncSpec {
             }
         };
 
-        Async async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, listener, 1));
+        async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, listener, 1));
 
         async.start();
 
@@ -80,12 +81,10 @@ public class AsyncSpec {
 
         for(int i = 0; i < 3; i++){
             requiredTime += 5000;
-            async.send(QUEUE_NAME, new HelloCommand("Hello " + i), new Date(requiredTime));
+            async.send(QUEUE_NAME, new HelloCommand("Hello " + i), DeliveryMode.PERSISTENT, requiredTime);
         }
 
         Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
-
-        async.stop();
 
         a(deliveredTimes.size()).shouldBeEqual(3);
 
@@ -99,7 +98,7 @@ public class AsyncSpec {
 
     @Test
     public void shouldListTopCommands() {
-        Async async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 100));
+        async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 100));
 
         async.start();
 
@@ -107,7 +106,7 @@ public class AsyncSpec {
 
         //send 100 messages
         for(int i = 0; i < 100; i++){
-            async.send(QUEUE_NAME, new HelloCommand("Hello, Dolly " + i));
+            async.send(QUEUE_NAME, new HelloCommand("Hello, Dolly " + i), DeliveryMode.PERSISTENT);
         }
         List<Command> commands = async.getTopCommands(10, QUEUE_NAME);
         a(commands.size()).shouldBeEqual(10);
@@ -120,18 +119,17 @@ public class AsyncSpec {
         commands = async.getTopCommands(10, QUEUE_NAME);
         a(commands.size()).shouldBeEqual(0);
 
-        async.stop();
     }
 
 
     @Test
     public void shouldGetCommandsSynchronously() {
 
-        Async async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 0));
+        async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 0));
 
         async.start();
         for(int i = 0; i < 2; i++){
-            async.send(QUEUE_NAME, new HelloCommand("Hello, Dolly " + i));
+            async.send(QUEUE_NAME, new HelloCommand("Hello, Dolly " + i), DeliveryMode.PERSISTENT);
         }
 
         a(async.receiveCommand(QUEUE_NAME, HelloCommand.class).getMessage()).shouldBeEqual("Hello, Dolly 0");
@@ -139,20 +137,19 @@ public class AsyncSpec {
 
         Command c = async.receiveCommand(QUEUE_NAME, 100); // returns null because there were only 2 commands sent
         a(c).shouldBeNull();
-        
-        async.stop();
+
     }
 
 
     @Test
     public void shouldRemoveMessages() {
 
-        Async async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 0));
+        async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 0));
 
         async.start();
 
         for(int i = 0; i < 2; i++){
-            async.send(QUEUE_NAME, new HelloCommand("Hello, Dolly " + i));
+            async.send(QUEUE_NAME, new HelloCommand("Hello, Dolly " + i), DeliveryMode.PERSISTENT);
         }
 
         List<Command> commands = async.getTopCommands(10, QUEUE_NAME);
@@ -165,32 +162,30 @@ public class AsyncSpec {
         commands = async.getTopCommands(10, QUEUE_NAME);
         a(commands.size()).shouldBeEqual(0);
 
-        async.stop();
     }
 
     @Test
     public void shouldInjectDependencyIntoCommand(){
 
         Injector injector = Guice.createInjector(new GreetingModule());
-        Async async = new Async(asyncRoot, false, injector, new QueueConfig(QUEUE_NAME, new CommandListener(), 1));
+        async = new Async(asyncRoot, false, injector, new QueueConfig(QUEUE_NAME, new CommandListener(), 1));
 
         async.start();
 
-        async.send(QUEUE_NAME, new HelloInjectedCommand("The greeting is: "));
+        async.send(QUEUE_NAME, new HelloInjectedCommand("The greeting is: "), DeliveryMode.PERSISTENT);
 
         Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
 
-        async.stop();
         a(HelloInjectedCommand.result).shouldBeEqual("The greeting is: hi");
     }
 
     @Test
     public void shouldStartStopBroker() {
 
-        Async async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
+        async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
         async.start();
         for (int i = 0; i < 10; i++) {
-            async.send(QUEUE_NAME, new HelloCommand("Message: " + i));
+            async.send(QUEUE_NAME, new HelloCommand("Message: " + i), DeliveryMode.PERSISTENT);
         }
 
         Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
@@ -202,12 +197,11 @@ public class AsyncSpec {
         async.start();
 
         for (int i = 0; i < 10; i++) {
-            async.send(QUEUE_NAME, new HelloCommand("Message: " + i));
+            async.send(QUEUE_NAME, new HelloCommand("Message: " + i), DeliveryMode.PERSISTENT);
         }
 
         Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
 
-        async.stop();
         a(HelloCommand.counter()).shouldBeEqual(20);
     }
 
@@ -215,24 +209,23 @@ public class AsyncSpec {
     public void shouldInjectDependencyIntoCommandListener() {
 
         Injector injector = Guice.createInjector(new GreetingModule());
-        Async async = new Async(asyncRoot, false, injector, new QueueConfig(QUEUE_NAME, new HelloCommandListener(), 1));
+        async = new Async(asyncRoot, false, injector, new QueueConfig(QUEUE_NAME, new HelloCommandListener(), 1));
         async.start();
 
-        async.send(QUEUE_NAME, new HelloCommand("Hi, there"));
+        async.send(QUEUE_NAME, new HelloCommand("Hi, there"), DeliveryMode.PERSISTENT);
 
         //SEE ASSERTION INSIDE HelloCommandListener.
 
         Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
-        async.stop();
     }
 
     @Test
     public void shouldMoveMessageToOtherQueue() throws JMSException {
 
-        Async async = new Async(asyncRoot, false, new QueueConfig("queue1"), new QueueConfig("queue2"));
+        async = new Async(asyncRoot, false, new QueueConfig("queue1"), new QueueConfig("queue2"));
         async.start();
 
-        async.sendTextMessage("queue1", "message test 1");
+        async.sendTextMessage("queue1", "message test 1", DeliveryMode.PERSISTENT, 5, 0);
         Message m1 = async.lookupMessage("queue1");
         the(m1).shouldNotBeNull();
 
@@ -250,21 +243,20 @@ public class AsyncSpec {
         the(m2).shouldNotBeNull();
 
         Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
-        async.stop();
     }
 
     @Test
     public void shouldMoveMessagesToOtherQueue() {
 
         String queue1  = "queue1", queue2 = "queue2";
-        Async async = new Async(asyncRoot, false, new QueueConfig(queue1), new QueueConfig(queue2));
+        async = new Async(asyncRoot, false, new QueueConfig(queue1), new QueueConfig(queue2));
         async.start();
 
         the(async.getMessageCount(queue1)).shouldBeEqual(0);
         the(async.getMessageCount(queue2)).shouldBeEqual(0);
 
-        async.sendTextMessage(queue1, "message test 1");
-        async.sendTextMessage(queue1, "message test 2");
+        async.sendTextMessage(queue1, "message test 1", DeliveryMode.PERSISTENT);
+        async.sendTextMessage(queue1, "message test 2", DeliveryMode.PERSISTENT);
 
         the(async.getMessageCount(queue1)).shouldBeEqual(2);
 
@@ -275,28 +267,24 @@ public class AsyncSpec {
         the(async.getMessageCount(queue1)).shouldBeEqual(0);
         the(async.getMessageCount(queue2)).shouldBeEqual(2);
 
-        async.stop();
     }
 
     @Test
     public void shouldGetMessageCounts(){
 
         String queue1  = "queue1", queue2 = "queue2";
-        Async async = new Async(asyncRoot, false, new QueueConfig(queue1), new QueueConfig(queue2));
+        async = new Async(asyncRoot, false, new QueueConfig(queue1), new QueueConfig(queue2));
         async.start();
 
 
-        async.sendTextMessage(queue1, "message test 1");
-        async.sendTextMessage(queue1, "message test 2");
-
-        async.sendTextMessage(queue2, "message test 3");
+        async.sendTextMessage(queue1, "message test 1", DeliveryMode.PERSISTENT);
+        async.sendTextMessage(queue1, "message test 2", DeliveryMode.PERSISTENT);
+        async.sendTextMessage(queue2, "message test 3", DeliveryMode.PERSISTENT);
 
         Map<String, Long> counts = async.getMessageCounts();
 
         the(counts.get(queue1)).shouldBeEqual(2);
         the(counts.get(queue2)).shouldBeEqual(1);
-
-        async.stop();
     }
 
     @Test
@@ -304,14 +292,12 @@ public class AsyncSpec {
 
         SystemStreamUtil.replaceOut();
 
-        Async async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
+        async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
         async.start();
-        async.send(QUEUE_NAME, new ContextCommand(true));
-        async.send(QUEUE_NAME, new ContextCommand(false));
+        async.send(QUEUE_NAME, new ContextCommand(true), DeliveryMode.PERSISTENT);
+        async.send(QUEUE_NAME, new ContextCommand(false), DeliveryMode.PERSISTENT);
 
         Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
-
-        async.stop();
 
         String out = SystemStreamUtil.getSystemOut();
 

@@ -558,6 +558,17 @@ public class Async {
     }
 
 
+    /**
+     *
+     * Sends a {@link TextMessage}.
+     *
+     * @param queueName name of queue
+     * @param text body of message
+     * @param deliveryMode delivery mode: {@link javax.jms.DeliveryMode}.
+     * @param priority priority of the message. Correct values are from 0 to 9, with higher number denoting a
+     *                 higher priority.
+     * @param timeToLive the message's lifetime (in milliseconds, where 0 is to never expire)
+     */
     public void sendTextMessage(String queueName, String text, int deliveryMode, int priority, long timeToLive) {
         sendTextMessage(queueName, text, deliveryMode, priority, timeToLive, -1);
     }
