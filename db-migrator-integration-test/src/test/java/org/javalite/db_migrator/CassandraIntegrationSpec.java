@@ -36,5 +36,4 @@ public class CassandraIntegrationSpec extends AbstractIntegrationSpec {
         String out = execute("target/cassandra-mysql-test-project", "test");
         the(out).shouldContain("BUILD SUCCESS");
     }
-
 }
