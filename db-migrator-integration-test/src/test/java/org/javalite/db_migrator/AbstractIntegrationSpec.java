@@ -31,12 +31,13 @@ abstract class AbstractIntegrationSpec {
 
     private static final String MVN = SystemUtils.IS_OS_WINDOWS ? "mvn.cmd " : "mvn ";
     private static String profile = System.getProperty("profileId");
+    static final String JENKINS = "jenkins";
 
     String execute(String dir, String... args) {
 
         List<String> argsList = new ArrayList<>(Arrays.asList(args));
         System.out.println("TEST MAVEN EXECUTION START >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        System.out.println("-->> Executing: mvn " + Util.join(args, " ") + " with profile:"  + profile);
+        System.out.println("-->> Executing: mvn " + Util.join(args, " ") + " with profile: "  + profile);
 
         String  mavenArgs = blank(profile) ? Util.join(argsList, " ") : (Util.join(argsList, " ") + "  -P" + profile);
 
@@ -55,5 +56,9 @@ abstract class AbstractIntegrationSpec {
         System.out.println("TEST MAVEN EXECUTION END <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 
         return out + err;
+    }
+
+    public String getProfile(){
+        return profile;
     }
 }
