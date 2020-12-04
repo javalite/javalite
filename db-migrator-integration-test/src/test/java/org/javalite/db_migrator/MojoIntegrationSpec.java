@@ -26,13 +26,14 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 
+import static org.javalite.common.Util.blank;
 import static org.javalite.db_migrator.JdbcPropertiesOverride.*;
 import static org.javalite.test.jspec.JSpec.the;
 import static org.junit.Assert.*;
-import static org.javalite.db_migrator.DbUtils.*;
 
 
 public class MojoIntegrationSpec extends AbstractIntegrationSpec {
+
 
     @Test
     public void shouldRunTestProject() throws IOException, InterruptedException {
@@ -50,7 +51,10 @@ public class MojoIntegrationSpec extends AbstractIntegrationSpec {
 
         // create database
         String output = execute(dir, "db-migrator:create");
-        the(output).shouldContain("Created database jdbc:mysql://localhost/test_project");
+
+        String host = !blank(getProfile()) && getProfile().equals(JENKINS)? "mariadb" : "localhost";
+
+        the(output).shouldContain("Created database jdbc:mysql://" + host + "/test_project");
         the(output).shouldContain("BUILD SUCCESS");
 
         // migrate
@@ -61,18 +65,18 @@ public class MojoIntegrationSpec extends AbstractIntegrationSpec {
             the(output).shouldContain(val);
         }
 
-        Base.open(driver(), "jdbc:mysql://localhost/test_project", user(), password());
+        Base.open(driver(), "jdbc:mysql://" + host +  "/test_project", user(), password());
         the(Base.count("books")).shouldBeEqual(9);
         the(Base.count("authors")).shouldBeEqual(2);
         Base.close();
 
         // drop, create and validate
         output = execute(dir, "db-migrator:drop");
-        the(output).shouldContain("Dropped database jdbc:mysql://localhost/test_project");
+        the(output).shouldContain("Dropped database jdbc:mysql://" + host +  "/test_project");
         the(output).shouldContain("BUILD SUCCESS");
 
         output = execute(dir, "db-migrator:create");
-        the(output).shouldContain("Created database jdbc:mysql://localhost/test_project");
+        the(output).shouldContain("Created database jdbc:mysql://" + host +  "/test_project");
         the(output).shouldContain("BUILD SUCCESS");
 
         output = execute(dir, "db-migrator:validate");

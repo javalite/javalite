@@ -32,15 +32,11 @@ public class CassandraIntegrationSpec extends AbstractIntegrationSpec {
     }
 
     @Test
-    public void shouldRunTestProjectWithTwoDatabases()  {
+    public void shouldRunTestProjectWithTwoDatabases() {
         String out = execute("target/cassandra-mysql-test-project", "test", "-e");
-
-
         System.out.println("++++++++++++++++++++++++++");
-
-         System.out.println(out);
+        System.out.println(out);
         System.out.println("++++++++++++++++++++++++++");
         the(out).shouldContain("BUILD SUCCESS");
     }
-
 }

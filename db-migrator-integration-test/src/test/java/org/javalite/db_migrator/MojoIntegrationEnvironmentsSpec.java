@@ -18,8 +18,8 @@ package org.javalite.db_migrator;
 
 import org.junit.Test;
 
-import java.io.IOException;
 
+import static org.javalite.common.Util.blank;
 import static org.javalite.test.jspec.JSpec.the;
 
 public class MojoIntegrationEnvironmentsSpec extends AbstractIntegrationSpec {
@@ -33,8 +33,10 @@ public class MojoIntegrationEnvironmentsSpec extends AbstractIntegrationSpec {
         // create database
         String output = execute(dir, "db-migrator:create");
 
-        the(output).shouldContain("Created database jdbc:mysql://localhost/test_project");
-        the(output).shouldContain("jdbc:mysql://localhost/test_project_stage");
+        String host = !blank(getProfile()) && getProfile().equals(JENKINS)? "mariadb" : "localhost";
+
+        the(output).shouldContain("Created database jdbc:mysql://" + host + "/test_project");
+        the(output).shouldContain("jdbc:mysql://" + host + "/test_project_stage");
         the(output).shouldContain("BUILD SUCCESS");
     }
 }
