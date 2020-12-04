@@ -13,6 +13,9 @@
 
     <profiles>
         <profile>
+            <id>jenkins</id>
+        </profile>
+        <profile>
             <id>release</id>
             <build>
                 <plugins>
@@ -26,6 +29,15 @@
     </profiles>
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <profileId>${project.activeProfiles[0].id}</profileId>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>

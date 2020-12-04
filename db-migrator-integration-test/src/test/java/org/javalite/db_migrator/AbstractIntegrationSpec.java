@@ -25,17 +25,22 @@ import org.apache.commons.lang3.SystemUtils;
 import org.javalite.common.RuntimeUtil;
 import org.javalite.common.Util;
 
-public abstract class AbstractIntegrationSpec {
+import static org.javalite.common.Util.blank;
+
+abstract class AbstractIntegrationSpec {
 
     private static final String MVN = SystemUtils.IS_OS_WINDOWS ? "mvn.cmd " : "mvn ";
+    private static String profile = System.getProperty("profileId");
 
-    protected String execute(String dir, String... args) {
+    String execute(String dir, String... args) {
 
         List<String> argsList = new ArrayList<>(Arrays.asList(args));
         System.out.println("TEST MAVEN EXECUTION START >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        System.out.println("-->> Executing: mvn " + Util.join(args, " "));
+        System.out.println("-->> Executing: mvn " + Util.join(args, " ") + " with profile:"  + profile);
 
-        RuntimeUtil.Response response = RuntimeUtil.execute(4096, new File(dir), MVN + Util.join(argsList, " "));
+        String  mavenArgs = blank(profile) ? Util.join(argsList, " ") : (Util.join(argsList, " ") + "  -P" + profile);
+
+        RuntimeUtil.Response response = RuntimeUtil.execute(4096, new File(dir), MVN + mavenArgs);
 
         String out = response.out;
         String err = response.err;
