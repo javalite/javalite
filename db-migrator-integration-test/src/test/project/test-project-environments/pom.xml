@@ -11,6 +11,19 @@
     <name>JavaLite Migrator Plugin Test - Environments</name>
 
 
+    <properties>
+        <database-properties>${basedir}/../database.properties</database-properties>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>jenkins</id>
+            <properties>
+                <database.properties>${basedir}/../database-jenkins.properties</database.properties>
+            </properties>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
@@ -18,7 +31,7 @@
                 <artifactId>db-migrator-maven-plugin</artifactId>
                 <version>2.5-j8-SNAPSHOT</version>
                 <configuration>
-                    <configFile>${basedir}/../database.properties</configFile>
+                    <configFile>${database-properties}</configFile>
                     <environments>development, staging</environments>
                 </configuration>
                 <dependencies>
