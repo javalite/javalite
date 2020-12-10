@@ -13,7 +13,15 @@
 
     <profiles>
         <profile>
+            <!--exists to be passed to test projects below -->
             <id>jenkins</id>
+        </profile>
+        <profile>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <!--exists to be passed to test projects below -->
+            <id>local</id>
         </profile>
         <profile>
             <id>release</id>
@@ -41,28 +49,6 @@
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-resources</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.basedir}/target</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.basedir}/src/test/project</directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <configuration>

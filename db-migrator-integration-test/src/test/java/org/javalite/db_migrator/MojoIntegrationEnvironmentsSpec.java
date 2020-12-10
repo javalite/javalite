@@ -26,14 +26,14 @@ public class MojoIntegrationEnvironmentsSpec extends AbstractIntegrationSpec {
 
     @Test
     public void shouldRunInEnvironments(){
-        String dir = "target/test-project-environments";
+        String dir = "src/test/project/test-project-environments";
         // drop
         execute(dir, "db-migrator:drop");
 
         // create database
         String output = execute(dir, "db-migrator:create");
 
-        String host = !blank(getProfile()) && getProfile().equals(JENKINS)? "mariadb" : "localhost";
+        String host = getMariaDBHost();
 
         the(output).shouldContain("Created database jdbc:mysql://" + host + "/test_project");
         the(output).shouldContain("jdbc:mysql://" + host + "/test_project_stage");
