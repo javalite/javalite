@@ -1,2 +1,3 @@
+# Info 
 
-This exists only for testing two diferent types of database migrations in the same project 
+This exists only for testing two different types of database migrations in the same project 

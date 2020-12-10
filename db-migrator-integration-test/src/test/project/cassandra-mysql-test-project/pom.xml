@@ -4,84 +4,64 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.javalite</groupId>
-    <artifactId>db-migrator-maven-plugin-test2</artifactId>
+    <artifactId>db-migrator-maven-plugin-cassandra-mysql-test</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>JavaLite Migrator Plugin Test</name>
+    <name>JavaLite Migrator Plugin Cassandra MySQL Test Project</name>
 
+
+
+    <parent>
+        <groupId>org.javalite</groupId>
+        <artifactId>test-project-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
     <properties>
         <cassandra.driver>org.javalite.cassandra.jdbc.CassandraJDBCDriver</cassandra.driver>
         <cassandra.url>jdbc:cassandra:///javalite?config_file=${project.basedir}/src/application.conf</cassandra.url>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>jenkins</id>
+            <properties>
+                <cassandra.url>jdbc:cassandra:///javalite?config_file=${project.basedir}/src/jenkins.application.conf</cassandra.url>
+            </properties>
+        </profile>
+
+        <profile>
+            <!--
+            This profile exists for executing project locally, so that Cassandra docker container is started/stopped automatically.
+            Jenkins has Cassandra running, so there is no need for this.
+            -->
+            <id>local</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
-            <plugin>
-                <groupId>io.fabric8</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>0.33.0</version>
-                <configuration>
-
-                    <images>
-                        <image>
-                            <name>cassandra:2.1</name>
-
-                            <build>
-                                <from>cassandra:2.1</from>
-                            </build>
-                            <run>
-                                <ports>
-                                    <port>9043:9042</port>
-                                </ports>
-                                <wait>
-                                    <!--FYI: apparently this is not working on Windows: https://github.com/fabric8io/docker-maven-plugin/issues/549 -->
-                                    <tcp>
-                                        <mode>direct</mode>
-                                        <ports>
-                                            <port>9042</port>
-                                        </ports>
-                                    </tcp>
-                                    <time>30000</time>
-                                    <kill>1000</kill>
-                                    <shutdown>500</shutdown>
-                                </wait>
-
-                                <restartPolicy>
-                                    <name>always</name>
-                                </restartPolicy>
-                            </run>
-                        </image>
-                    </images>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>docker:start</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>start</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>docker:stop</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
 
 
             <plugin>
                 <groupId>org.javalite</groupId>
                 <artifactId>db-migrator-maven-plugin</artifactId>
-                <version>3.0-SNAPSHOT</version>
+                <version>2.5-j8-SNAPSHOT</version>
                 <configuration>
                     <createSql>CREATE KEYSPACE %s WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};</createSql>
                     <dropSql>DROP KEYSPACE IF EXISTS %s</dropSql>
                 </configuration>
-
 
                 <executions>
                     <execution>
@@ -91,7 +71,7 @@
                             <url>${cassandra.url}</url>
                             <createSql>CREATE KEYSPACE %s WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1 };</createSql>
                         </configuration>
-                        <phase>validate</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>create</goal>
                         </goals>
@@ -103,7 +83,7 @@
                             <driver>${cassandra.driver}</driver>
                             <url>${cassandra.url}</url>
                         </configuration>
-                        <phase>validate</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>migrate</goal>
                         </goals>
@@ -112,35 +92,18 @@
                         <id>mysql_migrations</id>
                         <configuration>
                             <migrationsPath>src/migrations/mysql</migrationsPath>
-                            <driver>com.mysql.cj.jdbc.Driver</driver>
-                            <url>jdbc:mysql://localhost/test_project</url>
-                            <username>activejdbc</username>
-                            <password>p@ssw0rd</password>
+                            <driver>${driver}</driver>
+                            <url>${url}</url>
+                            <username>${username}</username>
+                            <password>${password}</password>
                         </configuration>
-                        <phase>validate</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>migrate</goal>
                         </goals>
                     </execution>
 
                 </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.datastax.oss</groupId>
-                        <artifactId>java-driver-core-shaded</artifactId>
-                        <version>4.8.0</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>mysql</groupId>
-                        <artifactId>mysql-connector-java</artifactId>
-                        <version>8.0.16</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.javalite</groupId>
-                        <artifactId>db-migrator-maven-plugin</artifactId>
-                        <version>3.0-SNAPSHOT</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>

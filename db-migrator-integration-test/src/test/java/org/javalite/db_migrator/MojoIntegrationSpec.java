@@ -24,9 +24,6 @@ import org.javalite.activejdbc.Base;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.IOException;
-
-import static org.javalite.common.Util.blank;
 import static org.javalite.db_migrator.JdbcPropertiesOverride.*;
 import static org.javalite.test.jspec.JSpec.the;
 import static org.junit.Assert.*;
@@ -36,23 +33,23 @@ public class MojoIntegrationSpec extends AbstractIntegrationSpec {
 
 
     @Test
-    public void shouldRunTestProject() throws IOException, InterruptedException {
-        run("target/test-project", "The book is: Hello, Book A!");
+    public void shouldRunTestProject() {
+        run("src/test/project/test-project", "The book is: Hello, Book A!");
     }
 
     @Test
-    public void shouldRunTestProjectWithProperties() throws IOException, InterruptedException {
-        run("target/test-project-properties", null);
+    public void shouldRunTestProjectWithProperties() {
+        run("src/test/project/test-project-properties", null);
     }
 
-    private void run(String dir, String val) throws IOException, InterruptedException {
+    private void run(String dir, String val){
         // drop
         execute(dir, "db-migrator:drop");
 
         // create database
         String output = execute(dir, "db-migrator:create");
 
-        String host = !blank(getProfile()) && getProfile().equals(JENKINS)? "mariadb" : "localhost";
+        String host = getMariaDBHost();
 
         the(output).shouldContain("Created database jdbc:mysql://" + host + "/test_project");
         the(output).shouldContain("BUILD SUCCESS");
