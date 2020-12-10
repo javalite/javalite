@@ -4,11 +4,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.javalite</groupId>
+
     <artifactId>db-migrator-maven-plugin-test-environments</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>JavaLite Migrator Plugin Test - Environments</name>
+    <name>JavaLite Migrator Plugin Test Environments Project</name>
+
+    <parent>
+        <groupId>org.javalite</groupId>
+        <artifactId>test-project-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
 
     <properties>
@@ -19,7 +25,7 @@
         <profile>
             <id>jenkins</id>
             <properties>
-                <database.properties>${basedir}/../database-jenkins.properties</database.properties>
+                <database-properties>${basedir}/../jenkins-database.properties</database-properties>
             </properties>
         </profile>
     </profiles>
@@ -34,13 +40,6 @@
                     <configFile>${database-properties}</configFile>
                     <environments>development, staging</environments>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>mysql</groupId>
-                        <artifactId>mysql-connector-java</artifactId>
-                        <version>8.0.16</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>

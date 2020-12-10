@@ -4,48 +4,22 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.javalite</groupId>
-    <artifactId>db-migrator-maven-plugin-test</artifactId>
+    <artifactId>db-migrator-maven-plugin-test-project</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>JavaLite Migrator Plugin Test</name>
+    <name>JavaLite Migrator Plugin Test Project</name>
 
+    <parent>
+        <groupId>org.javalite</groupId>
+        <artifactId>test-project-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
-    <properties>
-        <driver>com.mysql.jdbc.Driver</driver>
-        <url>jdbc:mysql://localhost/test_project</url>
-        <username>activejdbc</username>
-        <password>p@ssw0rd</password>
-    </properties>
-
-
-    <profiles>
-        <profile>
-            <id>jenkins</id>
-            <properties>
-                <url>jdbc:mysql://mariadb/test_project</url>
-            </properties>
-        </profile>
-    </profiles>
     <build>
         <plugins>
             <plugin>
                 <groupId>org.javalite</groupId>
                 <artifactId>db-migrator-maven-plugin</artifactId>
-                <version>3.0-j11-SNAPSHOT</version>
-                <configuration>
-                    <driver>com.mysql.jdbc.Driver</driver>
-                    <url>${url}</url>
-                    <username>root</username>
-                    <password>p@ssw0rd</password>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>mysql</groupId>
-                        <artifactId>mysql-connector-java</artifactId>
-                        <version>8.0.16</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>

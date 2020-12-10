@@ -17,9 +17,6 @@ limitations under the License.
 package org.javalite.db_migrator;
 
 import org.junit.Test;
-
-import java.io.IOException;
-
 import static org.javalite.test.jspec.JSpec.the;
 
 
@@ -27,13 +24,13 @@ public class CassandraIntegrationSpec extends AbstractIntegrationSpec {
 
     @Test
     public void shouldRunTestProject() {
-        String out = execute("target/cassandra-test-project", "test");
+        String out = execute("src/test/project/cassandra-test-project", "test");
         the(out).shouldContain("BUILD SUCCESS");
     }
 
     @Test
-    public void shouldRunTestProjectWithTwoDatabases()  {
-        String out = execute("target/cassandra-mysql-test-project", "test");
+    public void shouldRunTestProjectWithTwoDatabases() {
+        String out = execute("src/test/project/cassandra-mysql-test-project", "test");
         the(out).shouldContain("BUILD SUCCESS");
     }
 }

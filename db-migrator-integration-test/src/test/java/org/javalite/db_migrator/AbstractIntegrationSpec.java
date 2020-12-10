@@ -24,24 +24,33 @@ import java.util.List;
 import org.apache.commons.lang3.SystemUtils;
 import org.javalite.common.RuntimeUtil;
 import org.javalite.common.Util;
+import org.junit.BeforeClass;
 
 import static org.javalite.common.Util.blank;
 
 abstract class AbstractIntegrationSpec {
 
     private static final String MVN = SystemUtils.IS_OS_WINDOWS ? "mvn.cmd " : "mvn ";
-    private static String profile = System.getProperty("profileId");
+    private static String profileId = System.getProperty("profileId");
     static final String JENKINS = "jenkins";
 
-    String execute(String dir, String... args) {
+
+    @BeforeClass
+    public static void before(){
+        //lets install the parent pom
+        execute("src/test/project", "install", "-N");
+    }
+
+    static String execute(String dir, String... args) {
 
         List<String> argsList = new ArrayList<>(Arrays.asList(args));
-        System.out.println("TEST MAVEN EXECUTION START >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        System.out.println("-->> Executing: mvn " + Util.join(args, " ") + " with profile: "  + profile);
 
-        String  mavenArgs = blank(profile) ? Util.join(argsList, " ") : (Util.join(argsList, " ") + "  -P" + profile);
 
-        RuntimeUtil.Response response = RuntimeUtil.execute(4096, new File(dir), MVN + mavenArgs);
+        String  mavenArgs = blank(profileId) ? Util.join(argsList, " ") : (Util.join(argsList, " ") + "  -P" + profileId);
+
+        System.out.println("\n\nTEST MAVEN EXECUTION START >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        System.out.println("Executing: " + dir + " $> " + MVN + mavenArgs);
+        RuntimeUtil.Response response = RuntimeUtil.execute(8096, new File(dir), MVN + mavenArgs);
 
         String out = response.out;
         String err = response.err;
@@ -53,12 +62,12 @@ abstract class AbstractIntegrationSpec {
         System.out.print(response.out);
         System.err.println(response.err);
         System.out.println("************ STDERR ***********");
-        System.out.println("TEST MAVEN EXECUTION END <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        System.out.println("TEST MAVEN EXECUTION END <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n\n");
 
         return out + err;
     }
 
-    public String getProfile(){
-        return profile;
+    String getMariaDBHost(){
+        return !blank(profileId) && profileId.equals(JENKINS)? "mariadb" : "localhost";
     }
 }
