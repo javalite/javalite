@@ -58,11 +58,6 @@
                 <groupId>org.javalite</groupId>
                 <artifactId>db-migrator-maven-plugin</artifactId>
                 <version>2.5-j8-SNAPSHOT</version>
-                <configuration>
-                    <createSql>CREATE KEYSPACE %s WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};</createSql>
-                    <dropSql>DROP KEYSPACE IF EXISTS %s</dropSql>
-                </configuration>
-
                 <executions>
                     <execution>
                         <id>cassandra_create</id>
@@ -70,6 +65,7 @@
                             <driver>${cassandra.driver}</driver>
                             <url>${cassandra.url}</url>
                             <createSql>CREATE KEYSPACE %s WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1 };</createSql>
+                            <dropSql>DROP KEYSPACE IF EXISTS %s</dropSql>
                         </configuration>
                         <phase>compile</phase>
                         <goals>
@@ -102,7 +98,6 @@
                             <goal>migrate</goal>
                         </goals>
                     </execution>
-
                 </executions>
             </plugin>
         </plugins>
