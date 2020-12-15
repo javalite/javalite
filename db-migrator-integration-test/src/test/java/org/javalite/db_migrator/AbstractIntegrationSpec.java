@@ -32,8 +32,6 @@ abstract class AbstractIntegrationSpec {
 
     private static final String MVN = SystemUtils.IS_OS_WINDOWS ? "mvn.cmd " : "mvn ";
     private static String profileId = System.getProperty("profileId");
-    static final String JENKINS = "jenkins";
-
 
     @BeforeClass
     public static void before(){
@@ -68,6 +66,10 @@ abstract class AbstractIntegrationSpec {
     }
 
     String getMariaDBHost(){
-        return !blank(profileId) && profileId.equals(JENKINS)? "mariadb" : "localhost";
+        return !blank(profileId) && profileId.equals("jenkins")? "mariadb" : "localhost";
+    }
+
+    public boolean isJenkins(){
+        return profileId.equals("jenkins");
     }
 }
