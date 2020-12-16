@@ -1,9 +1,12 @@
 package org.javalite.db_migrator;
 
 import org.javalite.activejdbc.Base;
+import org.javalite.common.Util;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Properties;
 
 import static org.javalite.db_migrator.JdbcPropertiesOverride.*;
 import static org.javalite.test.jspec.JSpec.the;
@@ -13,19 +16,19 @@ import static org.javalite.db_migrator.DbUtils.*;
 
 public class MySQLMigrationSpec {
     private MigrationManager migrationManager;
-
+    private final String databaseName = "mysql_migration_test";
 
     @Before
     public void setup() throws Exception {
 
         Base.open(driver(), url(), user(), password());
         try {
-            exec("drop database mysql_migration_test");
+            exec("drop database " + databaseName);
         } catch (Exception e) {/*ignore*/}
-        exec("create database mysql_migration_test");
+        exec("create database " + databaseName);
         Base.close();
 
-        String url = "jdbc:mysql://localhost/mysql_migration_test";
+        String url = url() + "/" + databaseName;
         Base.open(driver(), url, user(), password());
         migrationManager = new MigrationManager("src/test/resources/test_migrations/mysql/", url);
     }
@@ -33,7 +36,7 @@ public class MySQLMigrationSpec {
     @After
     public void tearDown() {
         try {
-            exec("drop database mysql_migration_test");
+            exec("drop database " + databaseName);
         } catch (Exception e) {/*ignore*/}
         Base.close();
     }

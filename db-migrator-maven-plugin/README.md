@@ -74,7 +74,7 @@ Here is an example of simple configuration:
     <artifactId>db-migrator-maven-plugin</artifactId>
     <version>1.4.9</version>
     <configuration>
-        <driver>com.mysql.jdbc.Driver</driver>
+        <driver>com.mysql.cj.jdbc.Driver</driver>
         <url>jdbc:mysql://localhost/test_project</url>
         <username>your user</username>
         <password>your password</password>

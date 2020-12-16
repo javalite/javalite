@@ -34,7 +34,7 @@ public class ConnectionFailedMessageTest {
     public void shouldReportURLIfCannotConnect() {
         replaceError();
         try{
-            Base.open("com.mysql.jdbc.Driver", "jdbc:mysql://doesnotexist/", "root", "blah");
+            Base.open("com.mysql.cj.jdbc.Driver", "jdbc:mysql://doesnotexist/", "root", "blah");
         }catch(Exception e){
             e.printStackTrace();
         }
