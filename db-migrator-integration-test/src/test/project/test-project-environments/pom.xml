@@ -16,16 +16,15 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-
     <properties>
-        <database-properties>${basedir}/../database.properties</database-properties>
+        <database-properties>${basedir}/../../../../../config/database.properties</database-properties>
     </properties>
 
     <profiles>
         <profile>
             <id>jenkins</id>
             <properties>
-                <database-properties>${basedir}/../jenkins-database.properties</database-properties>
+                <database-properties>${basedir}/../../../../../config/jenkins-database.properties</database-properties>
             </properties>
         </profile>
     </profiles>

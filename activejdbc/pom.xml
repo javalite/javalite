@@ -182,7 +182,7 @@
         <profile>
             <id>mysql_travis-ci</id>
             <properties>
-                <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
+                <jdbc.driver>com.mysql.cj.jdbc.Driver</jdbc.driver>
                 <jdbc.url>jdbc:mysql://localhost/test</jdbc.url>
                 <jdbc.user>activejdbc</jdbc.user>
                 <jdbc.password>p@ssw0rd</jdbc.password>

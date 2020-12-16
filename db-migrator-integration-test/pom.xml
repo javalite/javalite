@@ -11,10 +11,17 @@
         <version>2.5-j8-SNAPSHOT</version>
     </parent>
 
+    <properties>
+        <jdbc.properties.file>${basedir}/../config/database.properties</jdbc.properties.file>
+    </properties>
+
     <profiles>
         <profile>
             <!--exists to be passed to test projects below -->
             <id>jenkins</id>
+            <properties>
+                <jdbc.properties.file>${basedir}/../config/jenkins-database.properties</jdbc.properties.file>
+            </properties>
         </profile>
         <profile>
             <activation>
@@ -42,7 +49,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <systemPropertyVariables>
-                        <profileId>${project.activeProfiles[0].id}</profileId>
+                        <jdbc.properties.file>${jdbc.properties.file}</jdbc.properties.file>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
@@ -55,7 +62,6 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 

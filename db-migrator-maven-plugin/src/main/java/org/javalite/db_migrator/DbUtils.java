@@ -47,7 +47,7 @@ public class DbUtils {
             return "org.postgresql.Driver";
         }
         if (url.contains(MYSQL_FRAGMENT)) {
-            return "com.mysql.jdbc.Driver";
+            return "com.mysql.cj.jdbc.Driver";
         }
         if (url.contains(HSQL_FRAGMENT)) {
             return "org.hsqldb.jdbcDriver";

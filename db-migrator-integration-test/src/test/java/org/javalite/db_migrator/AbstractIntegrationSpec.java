@@ -65,11 +65,7 @@ abstract class AbstractIntegrationSpec {
         return out + err;
     }
 
-    String getMariaDBHost(){
-        return !blank(profileId) && profileId.equals("jenkins")? "mariadb" : "localhost";
-    }
-
     public boolean isJenkins(){
-        return profileId.equals("jenkins");
+        return !blank(profileId) && profileId.equals("jenkins");
     }
 }

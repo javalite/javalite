@@ -17,7 +17,7 @@
                 <artifactId>db-migrator-maven-plugin</artifactId>
                 <version>2.5-j8-SNAPSHOT</version>
                 <configuration>
-                    <driver>com.mysql.jdbc.Driver</driver>
+                    <driver>com.mysql.cj.jdbc.Driver</driver>
                     <url>jdbc:mysql://localhost/test_project</url>
                     <username>root</username>
                     <password/>
