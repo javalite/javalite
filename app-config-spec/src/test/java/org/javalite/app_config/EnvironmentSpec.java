@@ -13,22 +13,28 @@ import static org.javalite.test.jspec.JSpec.the;
 //TODO: need to move this to the ActiveJDBC  module because this test has a dependency  on  it from the tested projects
 
 
-
+/**
+ * This test will attempt to  connect to non-existent databases. This is by design.
+ * It is only testing that the framework picks up the right configuration depending under different conditions.
+ *
+ */
 public class EnvironmentSpec {
-    private File location =  new File("target/test-project");
+    private final File location =  new File("src/test/project/test-project");
+
+    private static final int BUFFER_SIZE = 200000;
     @Test
     public void shouldAttemptDefaultConnection(){
-        RuntimeUtil.Response response = RuntimeUtil.execute(4096, location,
-                "mvn",  "-o",  "clean", "compile", "exec:java", "-Dexec.mainClass=com.doe.example.Main");
-        the(response.out).shouldContain("Failed to connect to JDBC URL: jdbc:mysql://localhost/test-project_development");
+        RuntimeUtil.Response response = RuntimeUtil.execute(BUFFER_SIZE, location,
+                "mvn",  "clean", "compile", "exec:java", "-Dexec.mainClass=com.doe.example.Main");
+        the(response.out).shouldContain("Failed to connect to JDBC URL: jdbc:mysql://localhost-local/test-project_development with user: hello");
+        the(response.out).shouldContain("Communications link failure");
     }
 
     @Test
     public void shouldUseSystemProperty(){
-        RuntimeUtil.Response response = RuntimeUtil.execute(4096, location,
-                "mvn","-o",  "clean", "compile", "exec:java", "-Dexec.mainClass=com.doe.example.Main", "-Dactive_env=jenkins");
-
-        the(response.out).shouldContain("Failed to connect to JDBC URL: jdbc:mariadb://test-project-jenkins/jenkins");
+        RuntimeUtil.Response response = RuntimeUtil.execute(BUFFER_SIZE, location,
+                "mvn",  "clean", "compile", "exec:java", "-Dexec.mainClass=com.doe.example.Main", "-Dactive_env=jenkins");
+        checkJenkins(response.out);
     }
 
     @Test
@@ -37,10 +43,9 @@ public class EnvironmentSpec {
         List<String> env = new ArrayList<>();
         env.add("ACTIVE_ENV=jenkins");
 
-        RuntimeUtil.Response response = RuntimeUtil.execute(4096, location, env,
-                "mvn", "-o", "clean", "compile", "exec:java", "-Dexec.mainClass=com.doe.example.Main");
-
-        the(response.out).shouldContain("Failed to connect to JDBC URL: jdbc:mariadb://test-project-jenkins/jenkins");
+        RuntimeUtil.Response response = RuntimeUtil.execute(BUFFER_SIZE, location, env,
+                "mvn", "clean", "compile", "exec:java", "-Dexec.mainClass=com.doe.example.Main");
+        checkJenkins(response.out);
     }
 
 
@@ -50,9 +55,13 @@ public class EnvironmentSpec {
         List<String> env = new ArrayList<>();
         env.add("ACTIVE_ENV=development");
 
-        RuntimeUtil.Response response = RuntimeUtil.execute(4096, location, env,
-                "mvn", "-o", "clean", "compile", "exec:java", "-Dexec.mainClass=com.doe.example.Main", "-Dactive_env=jenkins");
+        RuntimeUtil.Response response = RuntimeUtil.execute(BUFFER_SIZE, location, env,
+                "mvn", "clean", "compile", "exec:java", "-Dexec.mainClass=com.doe.example.Main", "-Dactive_env=jenkins");
+        checkJenkins(response.out);
+    }
 
-        the(response.out).shouldContain("Failed to connect to JDBC URL: jdbc:mariadb://test-project-jenkins/jenkins");
+    private void checkJenkins(String out){
+        the(out).shouldContain("Failed to connect to JDBC URL: jdbc:mysql://test-project-jenkins/jenkins with user: hello");
+        the(out).shouldContain("Communications link failure");
     }
 }

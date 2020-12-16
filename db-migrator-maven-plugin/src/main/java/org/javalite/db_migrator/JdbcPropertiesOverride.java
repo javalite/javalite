@@ -21,7 +21,7 @@ import java.util.Properties;
 public class JdbcPropertiesOverride {
 
     //defaults:
-    private static String driver = "com.mysql.jdbc.Driver";
+    private static String driver = "com.mysql.cj.jdbc.Driver";
     private static String url = "jdbc:mysql://localhost";
     private static String user = "root";
     private static String password = "p@ssw0rd";
