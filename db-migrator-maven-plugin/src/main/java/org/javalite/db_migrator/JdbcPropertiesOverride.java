@@ -6,53 +6,55 @@ import org.javalite.common.Util;
 import java.util.Properties;
 
 /**
- * This class serves as a source of JDBC connection properties for
- * developers who cannot or do not want to use hard-coded user <code>root</code> and password <code>p@ssw0rd</code>.
+ * This class serves as a source of JDBC connection properties for different environments during tests.
  *
- * Simply add a system property when you run the build <code>-Djdbc.override.properties=/path/to/your/file.properties</code>
- * with the following properties inside the file: <code>driver</code>, <code>url</code>, <code>user</code>, <code>password</code>.
- * Values from this file will override hard-coded values during tests.
- *
- * <p></p>
- * THIS CLASS USED IN TESTS ONLY
+ * THIS CLASS USED IN TESTS ONLY.
  *
  * @author igor on 4/19/17.
  */
 public class JdbcPropertiesOverride {
 
-    //defaults:
-    private static String driver = "com.mysql.cj.jdbc.Driver";
-    private static String url = "jdbc:mysql://localhost";
-    private static String user = "root";
-    private static String password = "p@ssw0rd";
+    private static final String driver;
+    private static String url;
+    private static final String fullUrl;
+    private static final String user;
+    private static final String password;
 
     static {
         try {
-            String overrideFile = System.getProperty("jdbc.override.properties");
-            if(overrideFile != null){
-                Properties overrideProperties = Util.readProperties(overrideFile);
-                driver = overrideProperties.getProperty("driver", driver);
-                url = overrideProperties.getProperty("url", url);
-                user = overrideProperties.getProperty("user", user);
-                password = overrideProperties.getProperty("password", password);
+            String file = System.getProperty("jdbc.properties.file");
+            if(file != null){
+                System.out.println("Located  database connection config file: " + file);
+                Properties props = Util.readProperties(System.getProperty("jdbc.properties.file"));
+                fullUrl = props.getProperty("development.url");// this includes the database name. We need to remove it.
+                JdbcPropertiesOverride.url = fullUrl.substring(0, fullUrl.lastIndexOf("/"));
+                driver = props.getProperty("development.driver");
+                user = props.getProperty("development.username");
+                password = props.getProperty("development.password");
+            }else {
+                throw new RuntimeException("Failed to find a config file");
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-
-    private JdbcPropertiesOverride(){
-    }
-
     public static String driver() {
         return driver;
     }
 
+    /**
+     * @return the URL to the database, but does not include a database name.
+     *      If  this  URL was configured in the file: <code>jdbc:mysql://localhost/test_project</code>, then the returned value will be:
+     *      </code>jdbc:mysql://localhost</code>
+     */
     public static String url() {
         return url;
     }
 
+    public static String fullUrl() {
+        return fullUrl;
+    }
     public static String user() {
         return user;
     }

@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import java.io.File;
-import java.util.Objects;
 
 import static org.javalite.db_migrator.JdbcPropertiesOverride.*;
 import static org.javalite.test.jspec.JSpec.the;
@@ -80,10 +79,10 @@ public class MojoIntegrationSpec extends AbstractIntegrationSpec {
         // create database
         String output = execute(testEnvironmentsProjectDir, "db-migrator:create");
 
-        String host = getMariaDBHost();
 
-        the(output).shouldContain("Created database jdbc:mysql://" + host + "/test_project");
-        the(output).shouldContain("jdbc:mysql://" + host + "/test_project_stage");
+
+        the(output).shouldContain("Created database " + url());
+        the(output).shouldContain("test_project_stage");
         the(output).shouldContain("BUILD SUCCESS");
     }
 
@@ -124,7 +123,7 @@ public class MojoIntegrationSpec extends AbstractIntegrationSpec {
         String output = execute(dir, "db-migrator:create");
 
 
-        the(output).shouldContain("Created database jdbc:mysql://" + getMariaDBHost() + "/test_project");
+        the(output).shouldContain("Created database " + url());
         the(output).shouldContain("BUILD SUCCESS");
 
         // migrate
@@ -135,18 +134,18 @@ public class MojoIntegrationSpec extends AbstractIntegrationSpec {
             the(output).shouldContain(val);
         }
 
-        Base.open(driver(), "jdbc:mysql://" + getMariaDBHost() +  "/test_project", user(), password());
+        Base.open(driver(), fullUrl(), user(), password());
         the(Base.count("books")).shouldBeEqual(9);
         the(Base.count("authors")).shouldBeEqual(2);
         Base.close();
 
         // drop, create and validate
         output = execute(dir, "db-migrator:drop");
-        the(output).shouldContain("Dropped database jdbc:mysql://" + getMariaDBHost() +  "/test_project");
+        the(output).shouldContain("Dropped database " + url());
         the(output).shouldContain("BUILD SUCCESS");
 
         output = execute(dir, "db-migrator:create");
-        the(output).shouldContain("Created database jdbc:mysql://" + getMariaDBHost() +  "/test_project");
+        the(output).shouldContain("Created database " + url());
         the(output).shouldContain("BUILD SUCCESS");
 
         output = execute(dir, "db-migrator:validate");
@@ -170,7 +169,9 @@ public class MojoIntegrationSpec extends AbstractIntegrationSpec {
 
     // will return null of not found
     private String findMigrationFile(File dir, String substring) {
-        for (String file : Objects.requireNonNull(dir.list())) {
+        String[]  files= dir.list();
+        the(files).shouldNotBeNull();
+        for (String file : files) {
             if (file.contains(substring)) {
                 return file;
             }

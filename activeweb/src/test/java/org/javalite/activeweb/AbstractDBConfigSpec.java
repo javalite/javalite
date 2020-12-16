@@ -27,7 +27,7 @@ public class AbstractDBConfigSpec {
     public void shouldConfigureJDBC(){
         class DBConfig extends AbstractDBConfig{
             public void init(AppContext appContext) {
-                environment("development").testing().jdbc("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/test123", "root", "****");
+                environment("development").testing().jdbc("com.mysql.cj.jdbc.Driver", "jdbc:mysql://localhost/test123", "root", "****");
             }
         }
 
@@ -41,8 +41,8 @@ public class AbstractDBConfigSpec {
         a(connectionConfig.getEnvironment()).shouldBeEqual("development");
 
 
+        a(connectionConfig.getDriver()).shouldBeEqual("com.mysql.cj.jdbc.Driver");
 
-        a(connectionConfig.getDriver()).shouldBeEqual("com.mysql.jdbc.Driver");
         a(connectionConfig.getUrl()).shouldBeEqual("jdbc:mysql://localhost/test123");
         a(connectionConfig.getUser()).shouldBeEqual("root");
         a(connectionConfig.getPassword()).shouldBeEqual("****");
@@ -109,7 +109,7 @@ public class AbstractDBConfigSpec {
         a(jdbcConfig.isTesting()).shouldBeFalse();
 
 
-        a(jdbcConfig.getDriver()).shouldBeEqual("com.mysql.jdbc.Driver");
+        a(jdbcConfig.getDriver()).shouldBeEqual("com.mysql.cj.jdbc.Driver");
         a(jdbcConfig.getUrl()).shouldBeEqual("jdbc:mysql://localhost/activejdbc");
         a(jdbcConfig.getUser()).shouldBeEqual("root");
         a(jdbcConfig.getPassword()).shouldBeEqual("p@ssw0rd");
@@ -121,7 +121,7 @@ public class AbstractDBConfigSpec {
         a(jdbcConfig.isTesting()).shouldBeTrue();
 
 
-        a(jdbcConfig.getDriver()).shouldBeEqual("com.mysql.jdbc.Driver");
+        a(jdbcConfig.getDriver()).shouldBeEqual("com.mysql.cj.jdbc.Driver");
         a(jdbcConfig.getUrl()).shouldBeEqual("jdbc:mysql://localhost/test");
         a(jdbcConfig.getUser()).shouldBeEqual("mary");
         a(jdbcConfig.getPassword()).shouldBeEqual("pwd1");

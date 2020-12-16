@@ -12,7 +12,19 @@
         <artifactId>javalite</artifactId>
         <version>3.0-j11-SNAPSHOT</version>
     </parent>
+
+    <properties>
+        <jdbc.properties.file>${basedir}/../config/database.properties</jdbc.properties.file>
+    </properties>
+
     <profiles>
+        <profile>
+            <id>jenkins</id>
+            <properties>
+                <jdbc.properties.file>${basedir}/../config/jenkins-database.properties</jdbc.properties.file>
+            </properties>
+        </profile>
+
         <profile>
             <id>release</id>
             <build>
@@ -33,6 +45,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <jdbc.properties.file>${jdbc.properties.file}</jdbc.properties.file>
+                    </systemPropertyVariables>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -62,13 +79,11 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.connector.version}</version>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
