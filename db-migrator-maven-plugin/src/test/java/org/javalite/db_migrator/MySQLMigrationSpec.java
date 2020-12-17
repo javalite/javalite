@@ -1,12 +1,9 @@
 package org.javalite.db_migrator;
 
 import org.javalite.activejdbc.Base;
-import org.javalite.common.Util;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Properties;
 
 import static org.javalite.db_migrator.JdbcPropertiesOverride.*;
 import static org.javalite.test.jspec.JSpec.the;
