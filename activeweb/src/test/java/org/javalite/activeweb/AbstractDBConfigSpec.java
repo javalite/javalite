@@ -74,7 +74,7 @@ public class AbstractDBConfigSpec {
 
         class DBConfig extends AbstractDBConfig{
             public void init(AppContext appContext) {
-                configFile("/database.properties");
+                configFile(System.getProperty("jdbc.properties.file"));
             }
         }
 
@@ -95,7 +95,7 @@ public class AbstractDBConfigSpec {
 
         class DBConfig extends AbstractDBConfig{
             public void init(AppContext appContext) {
-                configFile("/database.properties");
+                configFile("../config/activejdbc.properties");
             }
         }
 

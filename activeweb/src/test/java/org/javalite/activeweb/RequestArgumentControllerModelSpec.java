@@ -17,7 +17,7 @@ public class RequestArgumentControllerModelSpec extends RequestSpec {
 
     @Before
     public  void before(){
-        DBConfiguration.loadConfiguration("/database.properties");
+        DBConfiguration.loadConfiguration(System.getProperty("jdbc.properties.file"));
         Base.open();
     }
 
