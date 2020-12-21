@@ -2,8 +2,8 @@ package org.javalite.activeweb;
 
 import org.javalite.activejdbc.Base;
 import org.javalite.activejdbc.connection_config.DBConfiguration;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.servlet.ServletException;
@@ -15,14 +15,15 @@ import java.io.IOException;
 public class RequestArgumentControllerModelSpec extends RequestSpec {
 
 
-    @Before
-    public  void before(){
-        DBConfiguration.loadConfiguration(System.getProperty("jdbc.properties.file"));
+    @BeforeClass
+    public static void before(){
+        DBConfiguration.loadConfiguration("/activejdbc.properties");
         Base.open();
+        Base.exec("CREATE TABLE accounts (id  int(11) NOT NULL auto_increment PRIMARY KEY, account VARCHAR(56), description VARCHAR(56), amount DECIMAL(10,2), total DECIMAL(10,2))");
     }
 
-    @After
-    public  void after(){
+    @AfterClass
+    public static void after(){
         Base.close();
         DBConfiguration.resetConnectionConfigs();
     }

@@ -74,7 +74,7 @@ public class AbstractDBConfigSpec {
 
         class DBConfig extends AbstractDBConfig{
             public void init(AppContext appContext) {
-                configFile(System.getProperty("jdbc.properties.file"));
+                configFile("/activejdbc.properties");
             }
         }
 
@@ -95,7 +95,7 @@ public class AbstractDBConfigSpec {
 
         class DBConfig extends AbstractDBConfig{
             public void init(AppContext appContext) {
-                configFile("../config/activejdbc.properties");
+                configFile("/activejdbc.properties");
             }
         }
 
@@ -109,10 +109,10 @@ public class AbstractDBConfigSpec {
         a(jdbcConfig.isTesting()).shouldBeFalse();
 
 
-        a(jdbcConfig.getDriver()).shouldBeEqual("com.mysql.cj.jdbc.Driver");
-        a(jdbcConfig.getUrl()).shouldBeEqual("jdbc:mysql://localhost/activejdbc");
-        a(jdbcConfig.getUser()).shouldBeEqual("root");
-        a(jdbcConfig.getPassword()).shouldBeEqual("p@ssw0rd");
+        a(jdbcConfig.getDriver()).shouldBeEqual("org.h2.Driver");
+        a(jdbcConfig.getUrl()).shouldBeEqual("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
+        a(jdbcConfig.getUser()).shouldBeEqual("sa");
+        a(jdbcConfig.getPassword()).shouldBeEqual("");
 
         //test second connection spec
         jdbcConfig = (ConnectionJdbcConfig) DBConfiguration.getConnectionConfigs("development").toArray()[1];
