@@ -13,32 +13,8 @@
         <version>2.5-j8-SNAPSHOT</version>
     </parent>
 
-
-    <properties>
-        <jdbc.properties.file>${basedir}/../config/activejdbc.properties</jdbc.properties.file>
-    </properties>
-
-    <profiles>
-        <profile>
-            <id>jenkins</id>
-            <properties>
-                <jdbc.properties.file>${basedir}/../config/jenkins-activejdbc.properties</jdbc.properties.file>
-            </properties>
-        </profile>
-    </profiles>
-
-
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <systemPropertyVariables>
-                        <jdbc.properties.file>${jdbc.properties.file}</jdbc.properties.file>
-                    </systemPropertyVariables>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -134,10 +110,8 @@
         </dependency>
 
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <scope>test</scope>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
         </dependency>
-
     </dependencies>
 </project>
