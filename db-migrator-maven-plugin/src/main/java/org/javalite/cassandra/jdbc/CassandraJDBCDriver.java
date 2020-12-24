@@ -27,7 +27,6 @@ public class CassandraJDBCDriver implements Driver {
 
         CqlSession session = CqlSession.builder()
                 .withConfigLoader(DriverConfigLoader.fromFile(applicationConfFile))
-                .withLocalDatacenter("datacenter1")
                 .build();
 
         return new CassandraJDBCConnection(session);
