@@ -44,7 +44,7 @@ class VersionStrategy {
         CREATE_VERSION_TABLE_MAP.put(HSQL, "create table %s (%s varchar not null, %s datetime not null, %s int not null, constraint %2$s_unique unique (%2$s))");
         CREATE_VERSION_TABLE_MAP.put(SQL_SERVER, "create table %s (%s varchar(32) not null unique, %s datetime not null, %s int not null)");
         CREATE_VERSION_TABLE_MAP.put(CLICKHOUSE, "create table %s (%s String, %s DateTime, %s Int32) engine = Log");
-        CREATE_VERSION_TABLE_MAP.put(CASSANDRA, "CREATE TABLE %s (%s VARCHAR, %s TIMESTAMP, %s INT , PRIMARY KEY (version))");
+        CREATE_VERSION_TABLE_MAP.put(CASSANDRA, "CREATE TABLE IF NOT EXISTS %s (%s VARCHAR, %s TIMESTAMP, %s INT , PRIMARY KEY (version))");
 
     }
 
@@ -59,6 +59,11 @@ class VersionStrategy {
     }
 
     boolean versionTableExists() {
+
+        if(databaseType.equals(CASSANDRA)){
+            return false; // we will attempt to create a Cassandra table every time, and the "IF NOT EXISTS" clause will be our safeguard.
+        }
+
         try {
             countMigrations(getTableName());
         } catch (Exception e) {
@@ -69,7 +74,6 @@ class VersionStrategy {
 
     @SuppressWarnings("unchecked")
     List<String> getAppliedMigrations() {
-
         return Base.firstColumn("select version from " + getTableName());
     }
 
