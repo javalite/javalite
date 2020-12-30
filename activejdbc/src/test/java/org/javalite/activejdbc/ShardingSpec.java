@@ -115,8 +115,12 @@ public class ShardingSpec extends ActiveJDBCTest {
         the(addresses.get(1).get("address1")).shouldBeEqual("4455 Pine Ct.");
     }
 
+
+    // WARING: below test uses ADDRESSES table in  a non-sharded way- a bit of a hack.
     @Test
     public void should_access_shard_parent_in_one_to_many() {
+
+        deleteFromTable("addresses");
 
         User.metaModel().setShardTableName("shard1_users");
 
