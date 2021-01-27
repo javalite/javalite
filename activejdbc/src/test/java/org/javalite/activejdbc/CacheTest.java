@@ -28,6 +28,8 @@ import org.javalite.test.SystemStreamUtil;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +51,7 @@ public class CacheTest extends ActiveJDBCTest {
             Person p = new Person();
             p.set("name", "name: " + i);
             p.set("last_name", "last_name: " + i);
-            p.set("dob", "1935-12-06");
+            p.set("dob", new Date(LocalDate.of(1935, 12, 6).toEpochDay()));
             p.saveIt();
         }
     }
