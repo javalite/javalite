@@ -135,7 +135,7 @@ public class Configuration {
     }
 
     /**
-     * @return true if a custom logger is defined, false ther
+     * @return true if a custom logger is defined, false then
      */
     public static boolean hasActiveLogger() {
         return activeLogger != null;
