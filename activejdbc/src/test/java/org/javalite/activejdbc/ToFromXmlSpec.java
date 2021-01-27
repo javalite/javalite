@@ -57,6 +57,7 @@ public class ToFromXmlSpec extends ActiveJDBCTest {
         String xml = readResource("/person.xml");
         p.fromXml(xml);
         p.set("dob", toSqlDate(p.getString("dob"))); // to make Oracle happy
+        p.set("graduation_date", toSqlDate(p.getString("graduation_date"))); // to make Oracle happy
         p.saveIt();
         p.refresh();
 
@@ -75,6 +76,7 @@ public class ToFromXmlSpec extends ActiveJDBCTest {
         Person p = new Person();
         String xml = readResource("/person_no_val.xml");
         p.fromXml(xml);
+        p.set("dob", toSqlDate(p.getString("dob"))); // to make Oracle happy
         p.saveIt();
         p.refresh();
 
