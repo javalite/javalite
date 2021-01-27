@@ -33,9 +33,9 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import static org.javalite.activejdbc.DateUtil.toDate;
 import static org.javalite.activejdbc.test.JdbcProperties.driver;
 import static org.javalite.common.Collections.*;
+import static org.javalite.common.Convert.toSqlDate;
 
 
 public class ModelTest extends ActiveJDBCTest {
@@ -675,7 +675,7 @@ public class ModelTest extends ActiveJDBCTest {
         expect(new DifferenceExpectation(Person.count()) {
             @Override
             public Object exec() {
-                new Person().set("name", "Marilyn", "last_name", "Monroe", "dob", toDate("1935-12-06")).saveIt();
+                new Person().set("name", "Marilyn", "last_name", "Monroe", "dob", toSqlDate("1935-12-06")).saveIt();
                 return (Person.count());
             }
         });
@@ -726,7 +726,7 @@ public class ModelTest extends ActiveJDBCTest {
         Person p = new Person();
         p.set("name", "John");//before the upper case caused exception
         p.set("last_name", "Deer");
-        p.set("dob", toDate("2014-11-07"));
+        p.set("dob", toSqlDate("2014-11-07"));
         p.saveIt();
         a(p.get("name")).shouldBeEqual("John");
         a(p.get("last_name")).shouldBeEqual("Deer");

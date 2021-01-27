@@ -9,7 +9,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static org.javalite.activejdbc.DateUtil.toDate;
+import static org.javalite.common.Convert.toSqlDate;
+
 
 /**
  * @author Igor Polevoy
@@ -41,7 +42,7 @@ public class CacheEventListenerTest extends ActiveJDBCTest {
         Registry.cacheManager().addCacheEventListener(listener);
 
         //flush people first time:
-        Person.createIt("name", "Matt", "last_name", "Diamont", "dob", toDate("1962-01-01"));
+        Person.createIt("name", "Matt", "last_name", "Diamont", "dob", toSqlDate("1962-01-01"));
         a(listener.groupCount).shouldBeEqual(1);
         a(listener.groupName).shouldBeEqual("people");
 
@@ -69,7 +70,7 @@ public class CacheEventListenerTest extends ActiveJDBCTest {
         }
         BadEventListener listener = new BadEventListener();
         Registry.cacheManager().addCacheEventListener(listener);
-        Person.createIt("name", "Matt", "last_name", "Diamont", "dob", "1962-01-01");
+        Person.createIt("name", "Matt", "last_name", "Diamont", "dob", toSqlDate("1962-01-01"));
 
         a(triggered[0]).shouldBeTrue();
     }
