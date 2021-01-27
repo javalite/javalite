@@ -32,6 +32,7 @@ import java.util.Map;
 import org.javalite.activejdbc.test_models.Comment;
 import org.javalite.activejdbc.test_models.Tag;
 
+import static org.javalite.activejdbc.DateUtil.toDate;
 import static org.javalite.common.Util.readResource;
 
 /**
@@ -55,6 +56,7 @@ public class ToFromXmlSpec extends ActiveJDBCTest {
         Person p = new Person();
         String xml = readResource("/person.xml");
         p.fromXml(xml);
+        p.set("dob", toDate(p.getString("dob"))); // to make Oracle happy
         p.saveIt();
         p.refresh();
 

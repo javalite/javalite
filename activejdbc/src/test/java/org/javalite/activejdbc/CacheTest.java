@@ -28,15 +28,12 @@ import org.javalite.test.SystemStreamUtil;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.Date;
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.javalite.test.jspec.JSpec.$;
-
+import static org.javalite.activejdbc.DateUtil.toDate;
 
 
 /**
@@ -51,7 +48,7 @@ public class CacheTest extends ActiveJDBCTest {
             Person p = new Person();
             p.set("name", "name: " + i);
             p.set("last_name", "last_name: " + i);
-            p.set("dob", new Date(LocalDate.of(1935, 12, 6).toEpochDay()));
+            p.set("dob", toDate("1935-12-6"));
             p.saveIt();
         }
     }
@@ -97,7 +94,7 @@ public class CacheTest extends ActiveJDBCTest {
         a(p1).shouldBeTheSameAs(Person.findById(1));
 
         //now, let's save a new person - this will blow away cache. 
-        new Person().set("name", "Ron").set("last_name", "Smith").set("dob", "1946-11-04").saveIt();
+        new Person().set("name", "Ron").set("last_name", "Smith").set("dob", toDate("1946-11-04")).saveIt();
         a(p1).shouldNotBeTheSameAs(Person.findById(1));
 
         //cleanup:
@@ -194,7 +191,7 @@ public class CacheTest extends ActiveJDBCTest {
     @Test
     public void shouldDropCacheOnRefresh(){
         SystemStreamUtil.replaceOut();
-        Person p = Person.create("name", "Sam", "last_name", "Margulis", "dob", "2001-01-07");
+        Person p = Person.create("name", "Sam", "last_name", "Margulis", "dob", toDate("2001-01-07"));
         p.saveIt();
         Person.findAll().size();
         p.refresh();
@@ -213,7 +210,7 @@ public class CacheTest extends ActiveJDBCTest {
     @Test
     public void shouldGenerateJSONFromQueryCache(){
         SystemStreamUtil.replaceOut();
-        Person p = Person.create("name", "Sam", "last_name", "Margulis", "dob", "2001-01-07");
+        Person p = Person.create("name", "Sam", "last_name", "Margulis", "dob", toDate("2001-01-07"));
         p.saveIt();
         Person.findAll().size();
         Person.findAll().size();
