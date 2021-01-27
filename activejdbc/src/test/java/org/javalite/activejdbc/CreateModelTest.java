@@ -24,6 +24,8 @@ import org.junit.Before;
 import org.junit.Test;
 import java.util.Date;
 
+import static org.javalite.activejdbc.DateUtil.toDate;
+
 /**
  * @author Igor Polevoy
  */
@@ -38,7 +40,7 @@ public class CreateModelTest extends ActiveJDBCTest {
     @Test
     public void shouldCreateModel() {
 
-        Person p = Person.create("name", "Sam", "last_name", "Margulis", "dob", "2001-01-07");
+        Person p = Person.create("name", "Sam", "last_name", "Margulis", "dob", toDate("2001-01-07"));
         p.saveIt();
         a(p.get("name")).shouldBeEqual("Sam");
     }
@@ -47,25 +49,25 @@ public class CreateModelTest extends ActiveJDBCTest {
     public void shouldThrowExceptionIfWrongValuePassed() {
 
         //passing a Date instead of a name:
-        Person.create(new Date(), "Sam", "last_name", "Margulis", "dob", "2001-01-07");
+        Person.create(new Date(), "Sam", "last_name", "Margulis", "dob", toDate("2001-01-07"));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfWrongNumberOfArguments() {
 
-        Person.create(new Date(), "John", "last_name", "Margulis", "2001-01-07");
+        Person.create(new Date(), "John", "last_name", "Margulis", toDate("2001-01-07"));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfNullPassedForNameOfAttribute() {
 
-        Person.create((String) null, "John", "last_name", "Margulis", "2001-01-07");
+        Person.create((String) null, "John", "last_name", "Margulis", toDate("2001-01-07"));
     }
 
     @Test
     public void shouldCreateAndSaveModel(){
 
-        Person p = Person.createIt("name", "Sam", "last_name", "Margulis", "dob", "2001-01-07");
+        Person p = Person.createIt("name", "Sam", "last_name", "Margulis", "dob", toDate("2001-01-07"));
         a(p.getId()).shouldNotBeNull();
     }
 }
