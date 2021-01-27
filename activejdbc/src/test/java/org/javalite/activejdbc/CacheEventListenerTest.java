@@ -9,6 +9,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import static org.javalite.activejdbc.DateUtil.toDate;
+
 /**
  * @author Igor Polevoy
  */
@@ -39,7 +41,7 @@ public class CacheEventListenerTest extends ActiveJDBCTest {
         Registry.cacheManager().addCacheEventListener(listener);
 
         //flush people first time:
-        Person.createIt("name", "Matt", "last_name", "Diamont", "dob", "1962-01-01");
+        Person.createIt("name", "Matt", "last_name", "Diamont", "dob", toDate("1962-01-01"));
         a(listener.groupCount).shouldBeEqual(1);
         a(listener.groupName).shouldBeEqual("people");
 

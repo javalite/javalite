@@ -8,6 +8,8 @@ import org.junit.Test;
 import java.sql.Timestamp;
 import java.util.GregorianCalendar;
 
+import static org.javalite.activejdbc.DateUtil.toDate;
+
 /**
  * @author Igor Polevoy on 9/23/14.
  */
@@ -22,7 +24,7 @@ public class TimeManagementSpec extends ActiveJDBCTest {
     public void shouldTurnTimeManagementOffWhenCreating() {
 
         Person p = new Person();
-        p.set("name", "Marilyn", "last_name", "Monroe", "graduation_date", "1975-12-06");
+        p.set("name", "Marilyn", "last_name", "Monroe", "graduation_date", toDate("1975-12-06"));
 
         p.manageTime(false);
 
@@ -43,7 +45,7 @@ public class TimeManagementSpec extends ActiveJDBCTest {
     @Test
     public void shouldTurnTimeManagementOffWhenUpdating() {
         Person p = new Person();
-        p.set("name", "Marilyn", "last_name", "Monroe", "graduation_date", "1975-12-06").saveIt();
+        p.set("name", "Marilyn", "last_name", "Monroe", "graduation_date", toDate("1975-12-06")).saveIt();
 
 
         long createdAt = new GregorianCalendar(2014, 8, 22).getTimeInMillis();

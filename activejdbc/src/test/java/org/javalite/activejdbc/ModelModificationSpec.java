@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
+import static org.javalite.activejdbc.DateUtil.toDate;
 import static org.javalite.activejdbc.test.JdbcProperties.url;
 import static org.javalite.common.Collections.map;
 
@@ -21,7 +22,7 @@ public class ModelModificationSpec extends ActiveJDBCTest {
     public void shouldModifyString(){
         deleteAndPopulateTable("people");
         Person p = new Person();
-        p.set("name", "Marilyn", "last_name", "Monroe", "dob", "1935-12-06");
+        p.set("name", "Marilyn", "last_name", "Monroe", "dob", toDate("1935-12-06"));
         a(p.isModified()).shouldBeTrue();
         p.saveIt();
 
@@ -60,7 +61,7 @@ public class ModelModificationSpec extends ActiveJDBCTest {
 
             deleteAndPopulateTable("people");
             Person person = new Person();
-            Map<String, Object> inputMap = map("name", "Marilyn", "last_name", "Monroe","dob", "1935-12-06");
+            Map<String, Object> inputMap = map("name", "Marilyn", "last_name", "Monroe","dob", toDate("1935-12-06"));
 
             person.fromMap(inputMap);
             the(person).shouldBe("modified");
