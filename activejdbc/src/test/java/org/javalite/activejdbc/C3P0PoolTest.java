@@ -24,7 +24,7 @@ import javax.sql.DataSource;
 import java.beans.PropertyVetoException;
 import java.sql.SQLException;
 
-import static org.javalite.activejdbc.DateUtil.toDate;
+import static org.javalite.common.Convert.toSqlDate;
 import static org.javalite.test.jspec.JSpec.a;
 import static org.javalite.activejdbc.test.JdbcProperties.*;
 
@@ -42,7 +42,7 @@ public class C3P0PoolTest  {
         DataSource dataSourcePooled = DataSources.pooledDataSource(dataSourceUnpooled); //init the connection pool
         Base.open(dataSourcePooled); //get connection from pool
         Person.deleteAll(); //clean DB before test
-        Person.createIt("name", "Matt", "last_name", "Diamont", "dob", toDate("1962-01-01"));
+        Person.createIt("name", "Matt", "last_name", "Diamont", "dob", toSqlDate("1962-01-01"));
         a(Person.findAll().size()).shouldBeEqual(1);
 
         Person.deleteAll();//clean DB after test
