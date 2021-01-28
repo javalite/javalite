@@ -64,7 +64,7 @@
                 <executions>
                     <execution>
                         <id>create_keyspace</id>
-                        <phase>compile</phase>
+                        <phase>validate</phase>
                         <goals>
                             <goal>create</goal>
                         </goals>
@@ -77,6 +77,13 @@
                         </goals>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.datastax.oss</groupId>
+                        <artifactId>java-driver-core-shaded</artifactId>
+                        <version>4.8.0</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
