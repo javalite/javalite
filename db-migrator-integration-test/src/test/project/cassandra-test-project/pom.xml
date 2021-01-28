@@ -53,9 +53,8 @@
             <plugin>
                 <groupId>org.javalite</groupId>
                 <artifactId>db-migrator-maven-plugin</artifactId>
-                <version>3.0-SNAPSHOT</version>
                 <configuration>
-                    <configFile>${database.properties}</configFile>
+                    <configFile>src/main/resources/database.properties</configFile>
                     <environments>development</environments>
                     <createSql>CREATE KEYSPACE %s WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1 };</createSql>
                     <dropSql>DROP KEYSPACE IF EXISTS %s</dropSql>
@@ -70,7 +69,7 @@
                     </execution>
                     <execution>
                         <id>migrate</id>
-                        <phase>validate</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>migrate</goal>
                         </goals>
