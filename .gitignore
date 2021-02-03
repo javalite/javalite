@@ -172,3 +172,4 @@ hs_err_pid*
 *.ipr
 
 
+app-config-spec/src/test/project/test-project/target
