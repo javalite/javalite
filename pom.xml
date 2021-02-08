@@ -4,7 +4,7 @@
     <groupId>org.javalite</groupId>
     <artifactId>javalite</artifactId>
     <packaging>pom</packaging>
-    <version>3.0-SNAPSHOT</version>
+    <version>3.0-j11-SNAPSHOT</version>
     <name>JavaLite - Java, light as a feather</name>
     <url>http://javalite.io</url>
 
