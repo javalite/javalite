@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>app-config-spec</artifactId>
     <packaging>jar</packaging>
-    <version>2.3.3-j8-SNAPSHOT</version>
+    <version>3.0-j11-SNAPSHOT</version>
     <name>JavaLite - AppConfig  Spec </name>
 
     <parent>
