@@ -176,3 +176,4 @@ app-config-spec/src/test/project/test-project/target
 activejdbc/docker/data
 
 activejdbc/docker/mariadb/data
+activejdbc/docker/data
