@@ -173,3 +173,4 @@ hs_err_pid*
 
 
 app-config-spec/src/test/project/test-project/target
+activejdbc/docker/data
