@@ -130,31 +130,24 @@
     </modules>
 
     <repositories>
-        <repository>
-            <id>sonatype-nexus-plugin-snapshots</id>
-            <name>JavaLite Plugin Snapshots</name>
-            <url>http://repo.javalite.io/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
-
-    <pluginRepositories>
-        <pluginRepository>
-			<id>sonatype-nexus-plugin-snapshots</id>
-			<name>JavaLite Plugin Snapshots</name>
-			<url>http://repo.javalite.io/</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
+		<repository>
+			<id>sonatype_snapshots</id>
+			<name>Sonatype Snapshots</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>sonatype_plugin_snapshots</id>
+			<name>Sonatype Snapshots</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
 		</pluginRepository>
-    </pluginRepositories>
+	</pluginRepositories>
 </project>
