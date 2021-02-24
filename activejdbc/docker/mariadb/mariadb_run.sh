@@ -1,6 +1,6 @@
 
 docker rm mariadb
-docker run --hostname mariadb \
+docker run  \
 --name mariadb \
 --env-file=docker/mariadb/env.mariadb \
 --volume=$PWD/docker/data/mariadb:/var/lib/mysql \
