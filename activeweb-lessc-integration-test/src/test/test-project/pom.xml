@@ -9,7 +9,7 @@
     <name>Lessc Test Project</name>
 
     <properties>
-        <javalite.version>3.0-SNAPSHOT</javalite.version>
+        <javalite.version>3.0-j11-SNAPSHOT</javalite.version>
     </properties>
 
     <build>
@@ -40,6 +40,17 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.13.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.javalite</groupId>
+            <artifactId>activeweb</artifactId>
+            <version>${proj_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.javalite</groupId>
+            <artifactId>activeweb-testing</artifactId>
+            <version>${proj_version}</version>
             <scope>test</scope>
         </dependency>
 
