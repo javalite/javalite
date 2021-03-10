@@ -54,8 +54,7 @@
        <connection>scm:git:git@github.com:javalite/activejdbc.git</connection>
        <developerConnection>scm:git:git@github.com:javalite/activejdbc.git</developerConnection>
        <url>git@github.com:javalite/activejdbc.git</url>
-       <tag>HEAD</tag>
-  </scm>
+     </scm>
 
     <profiles>
         <profile>
@@ -354,7 +353,7 @@
             <dependency>
                 <groupId>com.google.inject</groupId>
                 <artifactId>guice</artifactId>
-                <version>4.2.3</version>
+                <version>5.0.0-BETA-1</version>
             </dependency>
             <dependency>
                 <groupId>commons-fileupload</groupId>
