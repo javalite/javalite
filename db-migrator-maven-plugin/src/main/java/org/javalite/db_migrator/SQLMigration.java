@@ -29,10 +29,14 @@ public class SQLMigration extends Migration {
     void migrate(String encoding) {
         try {
 
+            String path = getMigrationFile().getCanonicalPath();
+            Charset charset = encoding != null ? Charset.forName(encoding) : Charset.defaultCharset();
 
-        List<String> lines = Files.readAllLines(Paths.get(getMigrationFile().getCanonicalPath()), encoding != null ? Charset.forName(encoding) : Charset.defaultCharset());
-        String delimiter = DEFAULT_DELIMITER;
-        List<String> statements = new ArrayList<>();
+            LOGGER.info("Reading file {} using charset: {} ", path, charset);
+
+            List<String> lines = Files.readAllLines(Paths.get(path), charset);
+            String delimiter = DEFAULT_DELIMITER;
+            List<String> statements = new ArrayList<>();
 
             StringBuilder currentStatement = new StringBuilder();
             for (String line : lines) {
@@ -42,17 +46,17 @@ public class SQLMigration extends Migration {
                         delimiter = line.substring(10).trim();
                     } else if (line.endsWith(delimiter)) {
                         currentStatement.append(line.substring(0, line.length() - delimiter.length()));
-                        if(!blank(currentStatement.toString())){
+                        if (!blank(currentStatement.toString())) {
                             statements.add(currentStatement.toString());
                         }
                         currentStatement = new StringBuilder();
-                    }else {
+                    } else {
                         currentStatement.append(line).append(System.getProperty("line.separator"));
                     }
                 }
             }
 
-            if(!blank(currentStatement.toString())){
+            if (!blank(currentStatement.toString())) {
                 statements.add(currentStatement.toString());
             }
 
