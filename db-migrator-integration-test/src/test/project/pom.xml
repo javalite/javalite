@@ -1,0 +1,113 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.javalite</groupId>
+    <artifactId>test-project-parent</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+
+    <modules>
+        <module>test-project</module>
+        <module>test-project-properties</module>
+        <module>test-project-environments</module>
+        <module>cassandra-test-project</module>
+        <module>cassandra-mysql-test-project</module>
+    </modules>
+
+
+    <properties>
+        <driver>com.mysql.cj.jdbc.Driver</driver>
+        <url>jdbc:mysql://localhost/test_project</url>
+        <username>root</username>
+        <password>p@ssw0rd</password>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>jenkins</id>
+            <properties>
+                <url>jdbc:mysql://mariadb/test_project</url>
+            </properties>
+        </profile>
+    </profiles>
+
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.javalite</groupId>
+                    <artifactId>db-migrator-maven-plugin</artifactId>
+                    <version>3.0-SNAPSHOT</version>
+                    <configuration>
+                        <driver>${driver}</driver>
+                        <url>${url}</url>
+                        <username>${username}</username>
+                        <password>${password}</password>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>mysql</groupId>
+                            <artifactId>mysql-connector-java</artifactId>
+                            <version>8.0.16</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>com.datastax.oss</groupId>
+                            <artifactId>java-driver-core-shaded</artifactId>
+                            <version>4.8.0</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>0.33.0</version>
+                    <configuration>
+                        <images>
+                            <image>
+                                <name>cassandra:2.1</name>
+                                <build>
+                                    <from>cassandra:2.1</from>
+                                </build>
+                                <run>
+                                    <ports>
+                                        <port>9043:9042</port>
+                                    </ports>
+                                    <wait>
+                                        <!--FYI: apparently this is not working on Windows: https://github.com/fabric8io/docker-maven-plugin/issues/549 -->
+                                        <tcp>
+                                            <mode>direct</mode>
+                                            <ports>
+                                                <port>9042</port>
+                                            </ports>
+                                        </tcp>
+                                        <time>30000</time>
+                                        <kill>1000</kill>
+                                        <shutdown>500</shutdown>
+                                    </wait>
+                                </run>
+                            </image>
+                        </images>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>docker:start</id>
+                            <phase>validate</phase>  <!-- <<<<<<<<<<<<<< STARTS during validate phase -->
+                            <goals>
+                                <goal>start</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>docker:stop</id>
+                            <phase>test</phase>    <!-- <<<<<<<<<<<<<< STOPS during validate phase -->
+                            <goals>
+                                <goal>stop</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+</project>
