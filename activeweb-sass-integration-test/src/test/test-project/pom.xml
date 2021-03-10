@@ -3,10 +3,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.javalite</groupId>
-    <artifactId>activeweb-lessc</artifactId>
-    <packaging>war</packaging>
+    <artifactId>activeweb-sass</artifactId>
+    <packaging>jar</packaging>
     <version>1.1-SNAPSHOT</version>
-    <name>Lessc Test Project</name>
+    <name>SASS Test Project</name>
 
     <properties>
         <javalite.version>3.0-j11-SNAPSHOT</javalite.version>
@@ -16,11 +16,11 @@
         <plugins>
             <plugin>
                 <groupId>org.javalite</groupId>
-                <artifactId>activeweb-lessc-maven-plugin</artifactId>
+                <artifactId>activeweb-sass-maven-plugin</artifactId>
                 <version>${javalite.version}</version>
                 <configuration>
-                    <lesscMain>src/main/webapp/less/bootstrap.less</lesscMain>
-                    <targetDirectory>target/web</targetDirectory>
+                    <sassMain>src/main/sass/bootstrap.sass</sassMain>
+                    <targetDirectory>target</targetDirectory>
                     <targetFileName>bootstrap.css</targetFileName>
                 </configuration>
                 <executions>
@@ -39,14 +39,8 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13.1</version>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>1.7.0</version>
         </dependency>
     </dependencies>
 </project>

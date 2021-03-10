@@ -198,6 +198,8 @@
         <module>activeweb-testing</module>
         <module>activeweb-lessc-maven-plugin</module>
         <module>activeweb-lessc-integration-test</module>
+        <module>activeweb-sass-maven-plugin</module>
+        <module>activeweb-sass-integration-test</module>
         <module>javalite-async</module>
         <module>async-pool-test</module>
     </modules>
