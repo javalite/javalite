@@ -9,7 +9,7 @@
     <name>Lessc Test Project</name>
 
     <properties>
-        <javalite.version>3.0-j11-SNAPSHOT</javalite.version>
+        <javalite.version>3.0-SNAPSHOT</javalite.version>
     </properties>
 
     <build>
