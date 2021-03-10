@@ -45,4 +45,11 @@
         </plugins>
     </build>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.javalite</groupId>
+            <artifactId>activeweb</artifactId>
+            <version>${proj_version}</version>
+        </dependency>
+    </dependencies>
 </project>

@@ -9,7 +9,7 @@
     <name>Lessc Test Project</name>
 
     <properties>
-        <javalite.version>3.0-SNAPSHOT</javalite.version>
+        <activeweb.version>${proj_version}</activeweb.version>
     </properties>
 
     <build>
@@ -17,7 +17,7 @@
             <plugin>
                 <groupId>org.javalite</groupId>
                 <artifactId>activeweb-lessc-maven-plugin</artifactId>
-                <version>${javalite.version}</version>
+                <version>${proj_version}</version>
                 <configuration>
                     <lesscMain>src/main/webapp/less/bootstrap.less</lesscMain>
                     <targetDirectory>target/web</targetDirectory>
@@ -40,6 +40,17 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.13.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.javalite</groupId>
+            <artifactId>activeweb</artifactId>
+            <version>${proj_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.javalite</groupId>
+            <artifactId>activeweb-testing</artifactId>
+            <version>${proj_version}</version>
             <scope>test</scope>
         </dependency>
 
