@@ -1,16 +1,18 @@
-package org.javalite.lessc.maven;
+package org.javalite.sass.maven;
 
 import org.apache.maven.shared.invoker.*;
+
 import org.junit.Test;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.Arrays;
 
 import static org.javalite.test.jspec.JSpec.a;
 import static org.javalite.test.jspec.JSpec.the;
 
 /**
- * @author Igor Polevoy on 5/22/15.
+ * @author Igor Polevoy on March 9 2021.
  */
 public class IntegrationTest {
 
@@ -37,7 +39,7 @@ public class IntegrationTest {
     }
 
     @Test
-    public void shouldCompileProjectWithSingleLessFile() throws MavenInvocationException {
+    public void shouldCompileProjectWithSingleSASSFile() throws MavenInvocationException, IOException {
 
         String root = "target/test-project";
 
@@ -47,23 +49,24 @@ public class IntegrationTest {
         output = execute(root, true,  "install");
         the(output).shouldContain("BUILD SUCCESS");
 
-        File f = new File(root + "/target/web/bootstrap.css");
+        File f = new File(root + "/target/bootstrap.css");
         a(f.exists()).shouldBeTrue();
+
+        the(Files.readString(f.toPath())).shouldContain("font: 100% Helvetica, sans-serif;");
+
     }
 
     @Test
-    public void shouldCompileProjectWithMultipleLessFile() throws MavenInvocationException {
+    public void shouldCompileProjectWithMultipleSASSFile() throws MavenInvocationException, IOException {
         String root = "target/test-project-list";
         String output = execute(root, true, "clean");
         the(output).shouldContain("BUILD SUCCESS");
         output = execute(root, true,  "install");
         the(output).shouldContain("BUILD SUCCESS");
-        the(output).shouldContain("--verbose");
 
-        File f = new File(root + "/target/web1/bootstrap.css");
+        File f = new File(root + "/target/bootstrap.css");
         a(f.exists()).shouldBeTrue();
 
-        f = new File(root + "/target/web2/bootstrap.css");
-        a(f.exists()).shouldBeTrue();
+        the(Files.readString(f.toPath())).shouldContain("text-align: left;");
     }
 }
