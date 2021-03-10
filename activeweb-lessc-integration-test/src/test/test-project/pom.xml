@@ -9,7 +9,7 @@
     <name>Lessc Test Project</name>
 
     <properties>
-        <javalite.version>2.5-j8-SNAPSHOT</javalite.version>
+        <javalite.version>3.0-j11-SNAPSHOT</javalite.version>
     </properties>
 
     <build>
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
 

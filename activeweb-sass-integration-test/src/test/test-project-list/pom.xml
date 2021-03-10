@@ -9,7 +9,7 @@
     <name>SASS Test Project</name>
 
     <properties>
-        <javalite.version>2.5-j8-SNAPSHOT</javalite.version>
+        <javalite.version>3.0-j11-SNAPSHOT</javalite.version>
     </properties>
 
 
