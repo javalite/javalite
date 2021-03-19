@@ -1,6 +1,7 @@
 package org.javalite.validation;
 
 import org.javalite.common.CaseInsensitiveMap;
+import org.javalite.common.Util;
 import org.javalite.conversion.Converter;
 import org.javalite.conversion.DateToStringConverter;
 import org.javalite.conversion.StringToSqlDateConverter;
@@ -146,7 +147,7 @@ public class ValidationSupport implements Validatable {
     public Object get(String attributeName) {
         try {
             boolean needRevert = false;
-            Field field = getClass().getDeclaredField(attributeName);
+            Field field = Util.getField(attributeName, this.getClass());
             if (!field.isAccessible()) {
                 field.setAccessible(true);
                 needRevert = true;
