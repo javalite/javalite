@@ -24,4 +24,16 @@ public class StandaloneValidationSpec {
         book.setAuthorFirstName("Ilya");
         the(book).shouldBe("valid");
     }
+
+    @Test
+    public void shouldValidatePresenceForChildModel(){
+
+        FictionBook fb = new FictionBook();
+        fb.setTitle("Hitchhikers Guide to the Galaxy");
+
+        the(fb).shouldNotBe("valid");
+
+        fb.setAuthorFirstName("Douglas Adams");
+        the(fb).shouldBe("valid");
+    }
 }

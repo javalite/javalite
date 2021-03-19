@@ -16,6 +16,9 @@ limitations under the License.
 package org.javalite.common;
 
 import java.io.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
@@ -589,5 +592,26 @@ public final class Util {
             });
         } catch (NoSuchFileException ignore) {}
 
+    }
+
+    /**
+     * Gets a field from a class. Will traverse to super classes for it.
+     *
+     * @param fieldName name of a field to search
+     * @param clazz - class to interrogate
+     * @return fild if found, null if not.
+     *
+     */
+    public static Field getField(String fieldName, Class clazz){
+        try{
+            return clazz.getDeclaredField(fieldName);
+        }catch(NoSuchFieldException e){
+            Class parentClass = clazz.getSuperclass();
+            if(!parentClass.equals(Object.class)){
+                return getField(fieldName, clazz.getSuperclass());
+            }else {
+                return null;
+            }
+        }
     }
 }
