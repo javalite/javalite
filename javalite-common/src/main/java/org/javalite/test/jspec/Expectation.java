@@ -15,6 +15,7 @@ limitations under the License.
 */
 package org.javalite.test.jspec;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
@@ -300,13 +301,19 @@ public class Expectation<T> {
     }
 
     private Method booleanMethodNamed(String name) {
-        try {
-            Method m = actual.getClass().getMethod(name);
-            return (boolean.class.equals(m.getReturnType()) || Boolean.class.equals(m.getReturnType())) ? m : null;
-        } catch (NoSuchMethodException ignore) {
-            return null;
+        for (Method m : actual.getClass().getMethods()) {
+            if (Modifier.isPublic(m.getModifiers())) {
+                if ((boolean.class.equals(m.getReturnType()) || Boolean.class.equals(m.getReturnType()))
+                        && m.getParameterCount() == 0) {
+                    if(m.getName().equals(name)){
+                        return m;
+                    }
+                }
+            }
         }
+        return null;
     }
+
 
     /**
      * Invokes a boolean method.
