@@ -79,8 +79,6 @@ public class MojoIntegrationSpec extends AbstractIntegrationSpec {
         // create database
         String output = execute(testEnvironmentsProjectDir, "db-migrator:create");
 
-
-
         the(output).shouldContain("Created database " + url());
         the(output).shouldContain("test_project_stage");
         the(output).shouldContain("BUILD SUCCESS");
@@ -149,6 +147,7 @@ public class MojoIntegrationSpec extends AbstractIntegrationSpec {
         the(output).shouldContain("BUILD SUCCESS");
 
         output = execute(dir, "db-migrator:validate");
+        //todo: check output for outstanding migrations
         the(output).shouldContain("BUILD SUCCESS");
 
         // now migrate and validate again
@@ -163,8 +162,10 @@ public class MojoIntegrationSpec extends AbstractIntegrationSpec {
         execute(dir, "db-migrator:new", "-Dname=add_people");
         File migrationsDir = new File(dir, "src/migrations");
         String migrationFile = findMigrationFile(migrationsDir, "add_people");
-        assertNotNull(migrationFile);
-        assertTrue(new File(migrationsDir, migrationFile).delete());
+        assert migrationFile != null;
+        File f = new File(migrationsDir, migrationFile);
+        the(f.exists()).shouldBeTrue();
+        the(f.delete()).shouldBeTrue();
     }
 
     // will return null of not found

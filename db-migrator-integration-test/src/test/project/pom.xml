@@ -20,6 +20,7 @@
         <url>jdbc:mysql://localhost/test_project</url>
         <username>root</username>
         <password>p@ssw0rd</password>
+        <javalite.version>2.5-j8-SNAPSHOT</javalite.version>
     </properties>
 
     <profiles>
@@ -38,7 +39,7 @@
                 <plugin>
                     <groupId>org.javalite</groupId>
                     <artifactId>db-migrator-maven-plugin</artifactId>
-                    <version>3.0-SNAPSHOT</version>
+                    <version>2.5-j8-SNAPSHOT</version>
                     <configuration>
                         <driver>${driver}</driver>
                         <url>${url}</url>
@@ -99,7 +100,7 @@
                         </execution>
                         <execution>
                             <id>docker:stop</id>
-                            <phase>test</phase>    <!-- <<<<<<<<<<<<<< STOPS during validate phase -->
+                            <phase>test</phase>    <!-- <<<<<<<<<<<<<< STOPS during test phase -->
                             <goals>
                                 <goal>stop</goal>
                             </goals>

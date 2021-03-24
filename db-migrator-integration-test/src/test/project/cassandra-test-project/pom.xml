@@ -53,8 +53,7 @@
             <plugin>
                 <groupId>org.javalite</groupId>
                 <artifactId>db-migrator-maven-plugin</artifactId>
-<!--                TODO: check version!-->
-                <version>2.3.3-j8-SNAPSHOT</version>
+                <version>2.5-j8-SNAPSHOT</version>
                 <configuration>
                     <configFile>src/main/resources/database.properties</configFile>
                     <environments>development</environments>
@@ -64,14 +63,14 @@
                 <executions>
                     <execution>
                         <id>create_keyspace</id>
-                        <phase>validate</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>create</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>migrate</id>
-                        <phase>validate</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>migrate</goal>
                         </goals>

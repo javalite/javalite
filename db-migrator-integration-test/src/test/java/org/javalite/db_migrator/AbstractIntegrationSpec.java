@@ -48,7 +48,7 @@ abstract class AbstractIntegrationSpec {
 
         System.out.println("\n\nTEST MAVEN EXECUTION START >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         System.out.println("Executing: " + dir + " $> " + MVN + mavenArgs);
-        RuntimeUtil.Response response = RuntimeUtil.execute(8096, new File(dir), MVN + mavenArgs);
+        RuntimeUtil.Response response = RuntimeUtil.execute(100000, new File(dir), MVN + mavenArgs);
 
         String out = response.out;
         String err = response.err;
@@ -56,10 +56,17 @@ abstract class AbstractIntegrationSpec {
         System.out.println();
         System.out.print("Exit code: ");
         System.out.println(response.exitValue);
-        System.out.println("************ STDOUT ***********");
+        System.out.println(">>>>>>>>> STDOUT >>>>>>>>>>");
         System.out.print(response.out);
-        System.err.println(response.err);
-        System.out.println("************ STDERR ***********");
+        System.out.println("<<<<<<<<< STDOUT <<<<<<<<<");
+
+        if(response.err.length() > 0){
+            System.out.println(">>>>>>>>> STDERR >>>>>>>>>");
+            System.err.println(response.err);
+            System.out.println("<<<<<<<<< STDERR <<<<<<<<<");
+        }
+
+
         System.out.println("TEST MAVEN EXECUTION END <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n\n");
 
         return out + err;

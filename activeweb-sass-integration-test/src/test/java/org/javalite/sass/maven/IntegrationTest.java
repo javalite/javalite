@@ -2,10 +2,10 @@ package org.javalite.sass.maven;
 
 import org.apache.maven.shared.invoker.*;
 
+import org.javalite.common.Util;
 import org.junit.Test;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.util.Arrays;
 
 import static org.javalite.test.jspec.JSpec.a;
@@ -52,8 +52,7 @@ public class IntegrationTest {
         File f = new File(root + "/target/bootstrap.css");
         a(f.exists()).shouldBeTrue();
 
-        the(Files.readString(f.toPath())).shouldContain("font: 100% Helvetica, sans-serif;");
-
+        the(Util.readFile(f.getAbsolutePath())).shouldContain("font: 100% Helvetica, sans-serif;");
     }
 
     @Test
@@ -67,6 +66,6 @@ public class IntegrationTest {
         File f = new File(root + "/target/bootstrap.css");
         a(f.exists()).shouldBeTrue();
 
-        the(Files.readString(f.toPath())).shouldContain("text-align: left;");
+        the(Util.readFile(f.getAbsolutePath())).shouldContain("text-align: left;");
     }
 }
