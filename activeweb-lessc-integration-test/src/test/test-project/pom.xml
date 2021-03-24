@@ -42,17 +42,6 @@
             <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.javalite</groupId>
-            <artifactId>activeweb</artifactId>
-            <version>${proj_version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.javalite</groupId>
-            <artifactId>activeweb-testing</artifactId>
-            <version>${proj_version}</version>
-            <scope>test</scope>
-        </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>

@@ -98,7 +98,7 @@ public class RuntimeUtil {
      * @param command array containing the command to call and its arguments.
      * @param maxBuffer max size of buffers <code>out, err</code>. An external process may produce a
      *                  lot of output, be careful setting to a large value. The buffer will not be allocated to this
-     *                  this size at the start, but will grow until it reaches it. The program will continue toi execute, and the buffer
+     *                  this size at the start, but will grow until it reaches it. The program will continue to execute, and the buffer
      *                  will be 'tailing' the output of the external process.
      * @param dir - location of process execution. Pass <code>null</code> to execute at current location of the calling process.
      *
