@@ -20,6 +20,7 @@
         <url>jdbc:mysql://localhost/test_project</url>
         <username>root</username>
         <password>p@ssw0rd</password>
+        <javalite.version>3.0-SNAPSHOT</javalite.version>
     </properties>
 
     <profiles>
@@ -38,7 +39,7 @@
                 <plugin>
                     <groupId>org.javalite</groupId>
                     <artifactId>db-migrator-maven-plugin</artifactId>
-                    <version>3.0-j11-SNAPSHOT</version>
+                    <version>${javalite.version}</version>
                     <configuration>
                         <driver>${driver}</driver>
                         <url>${url}</url>
@@ -51,11 +52,11 @@
                             <artifactId>mysql-connector-java</artifactId>
                             <version>8.0.16</version>
                         </dependency>
-                        <dependency>
-                            <groupId>com.datastax.oss</groupId>
-                            <artifactId>java-driver-core-shaded</artifactId>
-                            <version>4.8.0</version>
-                        </dependency>
+<!--                        <dependency>-->
+<!--                            <groupId>com.datastax.oss</groupId>-->
+<!--                            <artifactId>java-driver-core-shaded</artifactId>-->
+<!--                            <version>4.8.0</version>-->
+<!--                        </dependency>-->
                     </dependencies>
                 </plugin>
                 <plugin>
@@ -99,7 +100,7 @@
                         </execution>
                         <execution>
                             <id>docker:stop</id>
-                            <phase>test</phase>    <!-- <<<<<<<<<<<<<< STOPS during validate phase -->
+                            <phase>test</phase>    <!-- <<<<<<<<<<<<<< STOPS during test phase -->
                             <goals>
                                 <goal>stop</goal>
                             </goals>

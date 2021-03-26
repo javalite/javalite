@@ -20,6 +20,13 @@
             <plugin>
                 <groupId>org.javalite</groupId>
                 <artifactId>db-migrator-maven-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>mysql</groupId>
+                        <artifactId>mysql-connector-java</artifactId>
+                        <version>8.0.16</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>

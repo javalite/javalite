@@ -54,7 +54,7 @@
                 <groupId>org.javalite</groupId>
                 <artifactId>db-migrator-maven-plugin</artifactId>
                 <configuration>
-                    <configFile>src/main/resources/database.properties</configFile>
+                    <configFile>${database.properties}</configFile>
                     <environments>development</environments>
                     <createSql>CREATE KEYSPACE %s WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1 };</createSql>
                     <dropSql>DROP KEYSPACE IF EXISTS %s</dropSql>
@@ -62,7 +62,7 @@
                 <executions>
                     <execution>
                         <id>create_keyspace</id>
-                        <phase>validate</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>create</goal>
                         </goals>
@@ -75,13 +75,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.datastax.oss</groupId>
-                        <artifactId>java-driver-core-shaded</artifactId>
-                        <version>4.8.0</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>

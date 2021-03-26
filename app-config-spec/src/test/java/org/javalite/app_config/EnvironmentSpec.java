@@ -34,16 +34,16 @@ public class EnvironmentSpec {
     @Test
     public void shouldAttemptDefaultConnection(){
         RuntimeUtil.Response response = RuntimeUtil.execute(4096, location,
-                "mvn",  "-o",  "clean", "compile", "exec:java", "-Dexec.mainClass=com.doe.example.Main");
+                "mvn",   "clean", "compile", "exec:java", "-Dexec.mainClass=com.doe.example.Main");
         the(response.out).shouldContain("Failed to connect to JDBC URL: jdbc:mysql://localhost/test-project_development");
     }
 
     @Test
     public void shouldUseSystemProperty(){
         RuntimeUtil.Response response = RuntimeUtil.execute(4096, location,
-                "mvn","-o",  "clean", "compile", "exec:java", "-Dexec.mainClass=com.doe.example.Main", "-Dactive_env=jenkins");
+                "mvn", "clean", "compile", "exec:java", "-Dexec.mainClass=com.doe.example.Main", "-Dactive_env=jenkins");
 
-        the(response.out).shouldContain("Failed to connect to JDBC URL: jdbc:mariadb://test-project-jenkins/jenkins");
+        the(response.out).shouldContain("Failed to connect to JDBC URL: jdbc:mysql://jenkins/test-project-jenkins/jenkins");
     }
 
     @Test
@@ -51,9 +51,9 @@ public class EnvironmentSpec {
         environmentVariables.add("ACTIVE_ENV=jenkins");
 
         RuntimeUtil.Response response = RuntimeUtil.execute(4096, location, environmentVariables,
-                "mvn", "-o", "clean", "compile", "exec:java", "-Dexec.mainClass=com.doe.example.Main");
+                "mvn",  "clean", "compile", "exec:java", "-Dexec.mainClass=com.doe.example.Main");
 
-        the(response.out).shouldContain("Failed to connect to JDBC URL: jdbc:mariadb://test-project-jenkins/jenkins");
+        the(response.out).shouldContain("Failed to connect to JDBC URL: jdbc:mysql://jenkins/test-project-jenkins/jenkins");
     }
 
 
@@ -62,7 +62,7 @@ public class EnvironmentSpec {
         environmentVariables.add("ACTIVE_ENV=development");
 
         RuntimeUtil.Response response = RuntimeUtil.execute(4096, location, environmentVariables,
-                "mvn", "-o", "clean", "compile", "exec:java", "-Dexec.mainClass=com.doe.example.Main", "-Dactive_env=jenkins");
-        the(response.out).shouldContain("Failed to connect to JDBC URL: jdbc:mariadb://test-project-jenkins/jenkins");
+                "mvn", "clean", "compile", "exec:java", "-Dexec.mainClass=com.doe.example.Main", "-Dactive_env=jenkins");
+        the(response.out).shouldContain("Failed to connect to JDBC URL: jdbc:mysql://jenkins/test-project-jenkins/jenkins");
     }
 }

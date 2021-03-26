@@ -58,12 +58,6 @@
                 <groupId>org.javalite</groupId>
                 <artifactId>db-migrator-maven-plugin</artifactId>
                 <version>3.0-SNAPSHOT</version>
-                <configuration>
-                    <createSql>CREATE KEYSPACE %s WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};</createSql>
-                    <dropSql>DROP KEYSPACE IF EXISTS %s</dropSql>
-                </configuration>
-
-
                 <executions>
                     <execution>
                         <id>cassandra_create</id>
@@ -105,23 +99,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.datastax.oss</groupId>
-                        <artifactId>java-driver-core-shaded</artifactId>
-                        <version>4.8.0</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>mysql</groupId>
-                        <artifactId>mysql-connector-java</artifactId>
-                        <version>8.0.16</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.javalite</groupId>
-                        <artifactId>db-migrator-maven-plugin</artifactId>
-                        <version>3.0-j11-SNAPSHOT</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>
