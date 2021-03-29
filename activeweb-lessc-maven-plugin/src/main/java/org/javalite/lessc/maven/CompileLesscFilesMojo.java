@@ -19,7 +19,7 @@ import java.util.List;
 import static java.lang.Runtime.getRuntime;
 
 
-@Mojo( name = "compile", defaultPhase = LifecyclePhase.PREPARE_PACKAGE)
+@Mojo( name = "compile", defaultPhase = LifecyclePhase.COMPILE)
 public class CompileLesscFilesMojo extends AbstractMojo {
 
     @Parameter( property = "project", required = true )
