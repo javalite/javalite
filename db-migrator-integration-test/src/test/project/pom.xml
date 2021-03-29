@@ -20,7 +20,7 @@
         <url>jdbc:mysql://localhost/test_project</url>
         <username>root</username>
         <password>p@ssw0rd</password>
-        <javalite.version>2.5-j8-SNAPSHOT</javalite.version>
+        <javalite.version>2.6-j8-SNAPSHOT</javalite.version>
     </properties>
 
     <profiles>
@@ -39,7 +39,7 @@
                 <plugin>
                     <groupId>org.javalite</groupId>
                     <artifactId>db-migrator-maven-plugin</artifactId>
-                    <version>2.5-j8-SNAPSHOT</version>
+                    <version>2.6-j8-SNAPSHOT</version>
                     <configuration>
                         <driver>${driver}</driver>
                         <url>${url}</url>

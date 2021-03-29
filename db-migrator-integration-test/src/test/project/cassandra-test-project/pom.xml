@@ -53,7 +53,7 @@
             <plugin>
                 <groupId>org.javalite</groupId>
                 <artifactId>db-migrator-maven-plugin</artifactId>
-                <version>2.5-j8-SNAPSHOT</version>
+                <version>2.6-j8-SNAPSHOT</version>
                 <configuration>
                     <configFile>src/main/resources/database.properties</configFile>
                     <environments>development</environments>
