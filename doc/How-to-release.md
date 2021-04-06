@@ -19,15 +19,20 @@
 
 9. Generate release notes:
 
-
 	git tag -a javalite-2.4-j8 -m "release javalite-2.4-j8"
+
+where `javalite-2.4-j8` is a tag for a new release     
+
 	git push origin --tags
-	gren release -t javalite-2.4-j8 javalite-2.3.2-j8 --override
 
-  After that, go to https://github.com/javalite/javalite/releases  and fix the release notes  if you have to, then publish the release
+Generate release notes:
 
-    Ensure that issues  in the release are properly categorized by tags. If needed, make 
-    corrections and re-run the same command again...and again...and again... 
+	groovy ReleaseNotes.groovy olderTag newerTag
+
+> Ensure that issues  in the release are properly categorized by tags. If needed, make corrections and re-run the same command again...and again...and again...
+
+  After that, go to https://github.com/javalite/javalite/releases  and add the release notes, then publish the release
+
 
    Add release notes link to:
 
