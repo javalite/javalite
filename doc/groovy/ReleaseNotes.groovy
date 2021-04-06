@@ -9,10 +9,8 @@ if (args.length < 2){
     System.exit(-1)
 }
 
-
-
 /**
- * Makes an HTTP calland returns content of resource
+ * Makes an HTTP call and returns a content of resource
  *
  * @param location - the URL of the resource
  * @return content of resource
@@ -29,7 +27,6 @@ def fetch(location) {
         System.exit(-1)
     }
 }
-
 
 /**
  *  Gets  an instance of LocalDateTime for tag
@@ -72,6 +69,7 @@ tag2 = args[1]
 
 tag1Date = getTagDate(tag1)
 tag2Date = getTagDate(tag2)
+
 println "Getting issues between  $tag1 / $tag1Date and $tag2 / $tag2Date"
 
 List allIssues = new ArrayList()
@@ -85,7 +83,6 @@ for (int i = 1; true; i++) {
     }
 }
 
-
 class SortClosedAt implements Comparator{
     @Override
     int compare(Object iss1, Object iss2) {
@@ -95,13 +92,17 @@ class SortClosedAt implements Comparator{
 
 Collections.sort(allIssues, new SortClosedAt());
 
-
 //key: label that has a 'Module' in a name
 modulesMap = new HashMap()
 
 allIssues.each{issue ->
     issueTime = ZonedDateTime.parse(issue.closed_at).toLocalDateTime()
     if(issueTime.compareTo(tag1Date) > 0 && issueTime.compareTo(tag2Date) < 0){
+
+        if(issue.containsKey("pull_request")) { // we do not want pull requests
+//            println "Skipping pull request ${issue.number}"
+           return // next iteration, this is a closure
+        }
 
         checkModuleLabel(issue)
 
