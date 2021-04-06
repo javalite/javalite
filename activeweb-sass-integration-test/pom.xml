@@ -2,14 +2,14 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>activeweb-sass-integration-test</artifactId>
-    <version>3.0-j11-SNAPSHOT</version>
+    <version>3.0-j11</version>
     <packaging>jar</packaging>
     <name>JavaLite - ActiveWeb SASS Maven Plugin Test</name>
 
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>javalite</artifactId>
-        <version>3.0-j11-SNAPSHOT</version>
+        <version>3.0-j11</version>
     </parent>
 
     <build>

@@ -4,14 +4,14 @@
 
     <artifactId>activeweb-testing</artifactId>
     <packaging>jar</packaging>
-    <version>3.0-j11-SNAPSHOT</version>
+    <version>3.0-j11</version>
     <name>JavaLite - ActiveWeb Testing Framework</name>
     <description>Testing framework for writing controller, view and integration specs.</description>
 
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>javalite</artifactId>
-        <version>3.0-j11-SNAPSHOT</version>
+        <version>3.0-j11</version>
     </parent>
 
     <dependencies>
