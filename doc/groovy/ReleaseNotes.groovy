@@ -57,7 +57,7 @@ def  checkModuleLabel(issue) {
         }
     }
     if(!hasModule){
-        println ">>>>>>>>>>>>>> MISSING MODULE LABEL!!! >>>>>>> #$issue.number - $issue.closed_at - $issue.title / Labels: $issue.labels.name"
+        println ">>>>>>>>>>>>>> MISSING MODULE LABEL!!! >>>>>>> https://github.com/javalite/javalite/issues/$issue.number - $issue.closed_at - $issue.title / Labels: $issue.labels.name"
     }
 }
 

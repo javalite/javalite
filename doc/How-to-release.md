@@ -19,14 +19,19 @@
 
 9. Generate release notes:
 
-       gren release -t new-tag previous-tag --override
+	git tag -a javalite-2.4-j8 -m "release javalite-2.4-j8"
 
+where `javalite-2.4-j8` is a tag for a new release     
 
-where `new-tag` and `previous-tag` are looked on  the [Github Releases Page](https://github.com/javalite/javalite/releases)
+	git push origin --tags
 
-    Ensure that issues  in the release are properly categorized by tags. If needed, make 
-    corrections and re-run the same command again...and again...and again... 
+Generate release notes:
 
+	groovy ReleaseNotes.groovy olderTag newerTag
+
+> Ensure that issues  in the release are properly categorized by tags. If needed, make corrections and re-run the same command again...and again...and again...
+
+  After that, go to https://github.com/javalite/javalite/releases  and add the release notes, then publish the release
 
 
    Add release notes link to:
@@ -43,6 +48,10 @@ where `new-tag` and `previous-tag` are looked on  the [Github Releases Page](htt
  
 1. Drop it from Sonatype.
 2. Delete tags/releases: [tags/releases](https://github.com/javalite/javalite/releases)
+    Example: 
+	git tag -d javalite-2.4-j8
+	git push origin :refs/tags/javalite-2.4-j8
+
 3. Perform:  `git fetch --tags` because your local repo still have old tags
 4. Erase release commits: 
     `git reset --hard HEAD~X` - depending how many you want  to kill
@@ -52,3 +61,4 @@ where `new-tag` and `previous-tag` are looked on  the [Github Releases Page](htt
        Remember that the release notes now are based on issues, not  commits.
         
 6. Start afresh
+
