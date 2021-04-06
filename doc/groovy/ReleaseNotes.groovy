@@ -1,7 +1,6 @@
 import groovy.json.*
 import java.time.*
 
-
 if (args.length < 2){
     println """Usage: 
 \$groovy ReleaseNotes.groovy olderTag newerTag
@@ -119,7 +118,6 @@ allIssues.each{issue ->
 }
 
 modulesMap.keySet().each{ label ->
-
     println "#### $label"
     modulesMap.get(label).each{ issue ->
         println "#$issue.number - $issue.title /  $issue.labels.name"
