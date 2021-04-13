@@ -35,13 +35,8 @@ public class SessionObjectConverterControllerSpec extends TemplateControllerSpec
     }
 
     @Test
-    public void shouldConvertInController(){
-        session("name", "John");
-        session("int", 1);
-        session("double", 1);
-        session("float", 1);
-        session("long", 1);
-        session("boolean", true);
+    public void shouldConvertInController() {
+        request().get("in-spec");
 
         request().get("in-controller");
 

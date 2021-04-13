@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static org.javalite.common.Util.read;
 
@@ -64,7 +66,16 @@ public class RuntimeUtil {
         String[]  commandAndArgs = command.length == 1 && command[0].contains(" ") ? Util.split(command[0], " ") : command;
 
         try {
-            String[] localEnv = envVars == null ? null: envVars.toArray(new String[envVars.size()]);
+
+            if (envVars == null) {
+                Map<String, String> systemEnvMap = System.getenv();
+                envVars = new ArrayList<>();
+                for(Map.Entry e : systemEnvMap.entrySet()) {
+                    envVars.add(e.getKey() + "=" + e.getValue());
+                }
+            }
+
+            String[] localEnv = envVars.toArray(new String[0]);
 
             Process process = Runtime.getRuntime().exec(commandAndArgs, localEnv, dir);
 
