@@ -1,0 +1,14 @@
+[
+  {
+    "modelClass": "org.javalite.async.Book",
+    "columnMetadata": {
+      "TITLE": {
+        "columnName": "TITLE",
+        "typeName": "VARCHAR",
+        "columnSize": 56
+      }
+    },
+    "dbName": "default",
+    "dbType": "H2"
+  }
+]
