@@ -323,12 +323,8 @@ public class AsyncSpec {
         return null;
     }
 
-
-
-
     @Test
     public void shouldSendModelData()  {
-        Command.allowType(Book.class);
         async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME));
         async.start();
         Book b = new Book();
