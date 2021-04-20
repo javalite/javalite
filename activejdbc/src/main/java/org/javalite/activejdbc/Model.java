@@ -845,7 +845,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      * @return all values of the model with all attribute names converted to lower case.
      */
     public Map<String, Object> toMap(){
-        Map<String, Object> retVal = new TreeMap<>();
+        Map<String, Object> retVal = new HashMap<>();
         for (Map.Entry<String, Object> entry : attributes.entrySet()) {
             Object v = entry.getValue();
             if (v != null) {

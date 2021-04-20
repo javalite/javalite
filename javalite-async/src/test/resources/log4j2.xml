@@ -8,6 +8,10 @@
 
     </Appenders>
     <Loggers>
+
+        <Logger name="org.apache.activemq.audit.base" level="off"/>
+        <Logger name="org.apache.activemq.artemis.core.server" level="off"/>
+        <Logger name="org.apache.activemq.audit.message" level="off"/>
         <Root level="info">
             <AppenderRef ref="SystemOutAppender"/>
         </Root>
