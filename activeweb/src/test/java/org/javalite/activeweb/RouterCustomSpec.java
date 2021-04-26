@@ -433,4 +433,53 @@ public class RouterCustomSpec extends RequestSpec {
         execDispatcher();
         the(responseContent()).shouldBeEqual("OptionsController#index");
     }
+
+    @Test
+    public void should_access_custom_route_with_exclusive_mode() {
+        routeConfig = new AbstractRouteConfig() {
+            public void init(AppContext appContext) {
+                exclusiveRoutes();
+                route("/options/blah").to(OptionsController.class).action("index").options();
+            }
+        };
+        request.setServletPath("/options/blah");
+        request.setMethod("OPTIONS");
+        execDispatcher();
+        the(responseContent()).shouldBeEqual("OptionsController#index");
+    }
+
+    @Test
+    public void should_NOT_access_standard_route_with_exclusive_mode() {
+        SystemStreamUtil.replaceOut();
+        //Success with custom route
+        routeConfig = new AbstractRouteConfig() {
+            public void init(AppContext appContext) {
+                exclusiveRoutes();
+                route("/options/blah").to(OptionsController.class).action("index").options();
+            }
+        };
+        request.setServletPath("/home");
+        request.setMethod("GET");
+        execDispatcher();
+
+        the(SystemStreamUtil.getSystemOut()).shouldContain("No matching route for servlet path: /home, passing down to container");
+        SystemStreamUtil.restoreSystemOut();
+    }
+
+    @Test
+    public void should_NOT_access_Restful_route_with_exclusive_mode() {
+        SystemStreamUtil.replaceOut();
+        //Success with custom route
+        routeConfig = new AbstractRouteConfig() {
+            public void init(AppContext appContext) {
+                exclusiveRoutes();
+            }
+        };
+        request.setServletPath("/restful1");
+        request.setMethod("GET");
+        execDispatcher();
+
+        the(SystemStreamUtil.getSystemOut()).shouldContain("No matching route for servlet path: /restful1, passing down to container");
+        SystemStreamUtil.restoreSystemOut();
+    }
 }

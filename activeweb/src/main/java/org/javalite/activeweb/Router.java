@@ -41,6 +41,7 @@ public class Router {
     private String rootControllerName;
     private List<RouteBuilder> routes = new ArrayList<>();
     private List<IgnoreSpec> ignoreSpecs;
+    private boolean exclusive;
 
     protected Router(String rootControllerName) {
         this.rootControllerName = rootControllerName;
@@ -71,6 +72,9 @@ public class Router {
         ControllerPath controllerPath = getControllerPath(uri);
 
         Route route = matchCustom(uri, controllerPath, httpMethod);
+        if(route == null && exclusive){
+            return null;
+        }
         if (route == null) { //proceed to built-in routes
             if (controllerPath.getControllerName() == null) {
                 return null;
@@ -442,5 +446,9 @@ public class Router {
 
     public void setIgnoreSpecs(List<IgnoreSpec> ignoreSpecs) {
         this.ignoreSpecs = ignoreSpecs;
+    }
+
+    public void setExclusive(boolean exclusive) {
+        this.exclusive = exclusive;
     }
 }
