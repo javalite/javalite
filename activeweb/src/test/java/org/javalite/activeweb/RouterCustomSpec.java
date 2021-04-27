@@ -462,7 +462,7 @@ public class RouterCustomSpec extends RequestSpec {
         request.setMethod("GET");
         execDispatcher();
 
-        the(SystemStreamUtil.getSystemOut()).shouldContain("No matching route for servlet path: /home, passing down to container");
+        the(SystemStreamUtil.getSystemOut()).shouldContain("Cannot map to a non-custom route with an 'exclusiveRoutes' flag on.");
         SystemStreamUtil.restoreSystemOut();
     }
 
@@ -479,7 +479,7 @@ public class RouterCustomSpec extends RequestSpec {
         request.setMethod("GET");
         execDispatcher();
 
-        the(SystemStreamUtil.getSystemOut()).shouldContain("No matching route for servlet path: /restful1, passing down to container");
+        the(SystemStreamUtil.getSystemOut()).shouldContain("Cannot map to a non-custom route with an 'exclusiveRoutes' flag on.");
         SystemStreamUtil.restoreSystemOut();
     }
 }

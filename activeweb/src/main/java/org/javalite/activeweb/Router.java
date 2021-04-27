@@ -72,9 +72,9 @@ public class Router {
         ControllerPath controllerPath = getControllerPath(uri);
 
         Route route = matchCustom(uri, controllerPath, httpMethod);
-        if(route == null && exclusive){
-            return null;
-        }
+
+        boolean nonCustomRoute = false;
+
         if (route == null) { //proceed to built-in routes
             if (controllerPath.getControllerName() == null) {
                 return null;
@@ -87,16 +87,19 @@ public class Router {
             }else{
                 route = controller.restful() ? matchRestful(uri, controllerPath, httpMethod, controller) :
                         matchStandard(uri, controllerPath, controller, httpMethod);
+                nonCustomRoute = true;
             }
         }
 
         if(route != null){
+            if(exclusive && nonCustomRoute){
+                throw new RouteException("Cannot map to a non-custom route with an 'exclusiveRoutes' flag on.");
+            }
             route.setIgnoreSpecs(ignoreSpecs);
         }else{
             logger.error("Failed to recognize URL: '" + uri + "'");
             throw new RouteException("Failed to map resource to URI: " + uri);
         }
-
         return route;
     }
 
