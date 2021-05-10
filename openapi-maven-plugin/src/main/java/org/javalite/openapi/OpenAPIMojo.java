@@ -78,7 +78,14 @@ public class OpenAPIMojo extends AbstractMojo {
 
             List<ClassInfo> controllerClassInfos = Configuration.getControllerClassInfos(combinedClassLoaderTL.get());
 
-            List<EndPointDefinition> controllerClassRoutes = getControllerRoutes(controllerClassInfos);
+            List<EndPointDefinition> endPointDefinitions = getEndpointDefinitions(controllerClassInfos);
+
+
+            TablePrinter.printEndpointDefinitions(endPointDefinitions);
+//
+//            for (EndPointDefinition endPointDefinition  : endPointDefinitions) {
+//                System.out.println("End point: " + endPointDefinition);
+//            }
 
 
 
@@ -88,59 +95,46 @@ public class OpenAPIMojo extends AbstractMojo {
         }
     }
 
-    private List<EndPointDefinition> getControllerRoutes(List<ClassInfo> controllerClassInfos) throws ClassNotFoundException {
+    @SuppressWarnings("unchecked")
+    private <T extends AppController> List<EndPointDefinition> getEndpointDefinitions(List<ClassInfo> controllerClassInfos) throws ClassNotFoundException {
 
-
+        List<EndPointDefinition> endPointDefinitions = new ArrayList<>();
         for (ClassInfo classInfo : controllerClassInfos) {
             String controllerName = classInfo.getName();
-            Class controllerClass = Class.forName(controllerName, false, combinedClassLoaderTL.get());
+            Class<T> controllerClass = (Class<T>) Class.forName(controllerName, false, combinedClassLoaderTL.get());
             getLog().info("Found a controller class: " + controllerClass);
-            List<EndPointDefinition> endPointDefinitions =  getEndpointDefinitions(controllerClass);
-
-            for (EndPointDefinition endPointDefinition  : endPointDefinitions) {
-                System.out.println("End point: " + endPointDefinition);
-            }
+            endPointDefinitions.addAll(getEndpointDefinitions(controllerClass));
         }
-
-        return null;
+        return endPointDefinitions;
     }
 
     private <T extends AppController> List<EndPointDefinition> getEndpointDefinitions(Class<T> controllerClass) throws ClassNotFoundException {
         List<EndPointDefinition> endPointDefinitions = new ArrayList<>();
         for (Method method : controllerClass.getMethods()) {
-            if(isAction(method)){
+            if(RouteUtil.isAction(method)){
                 HttpMethod m = HttpMethod.detect(method);
-                endPointDefinitions.add(new EndPointDefinition(m, Router.getControllerPath(controllerClass), null, ""));
+
+                String argumentType = null;
+                if(method.getParameterCount() ==1 ) {
+                    argumentType = method.getParameterTypes()[0].getName();
+                }
+                EndPointDefinition definition = new EndPointDefinition(m,
+                        Router.getControllerPath(controllerClass) + "/" + Inflector.underscore(method.getName()),
+                        argumentType != null? argumentType : "");
+
+                endPointDefinitions.add(definition);
             }
         }
-        return actions;
+        return endPointDefinitions;
     }
 
-    /**
-     *  1. modifier (must be public)
-     *  2. return value (must be void)
-     *  3. Parameters (count must be 1 or 0),
-     *  4. Cannot be static
-     *  5. Cannot be abstract
-     */
-    @SuppressWarnings("unchecked")
-    private boolean isAction(Method method) throws ClassNotFoundException {
-        Class<AppController> appControllerClass = (Class<AppController>) Class.forName("org.javalite.activeweb.AppController", true, combinedClassLoaderTL.get());
-        return  method.getParameterCount() <= 1
-                && Arrays.stream(appControllerClass.getDeclaredMethods()).noneMatch(method::equals) // shuts off AppController methods
-                && appControllerClass.isAssignableFrom(method.getDeclaringClass())  // shuts off Object  methods
-                && Modifier.isPublic(method.getModifiers())
-                && !Modifier.isStatic(method.getModifiers())
-                && !Modifier.isAbstract(method.getModifiers())
-                && method.getReturnType().equals(Void.TYPE);
-    }
 
 
     private ClassLoader getCombinedClassLoader() throws DependencyResolutionRequiredException, MalformedURLException {
         ClassLoader pluginCL = this.getClass().getClassLoader();
         URL[] urls = new URL[project.getRuntimeClasspathElements().size()];
         for(int x = 0 ; x < urls.length; x++){
-            urls[x] = new File(project.getRuntimeClasspathElements().get(x).toString()).toURL();
+            urls[x] = new File(project.getRuntimeClasspathElements().get(x).toString()).toURI().toURL();
         }
         return  new URLClassLoader(urls, pluginCL);
     }

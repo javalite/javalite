@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.util.*;
 
 import static org.javalite.common.Collections.list;
@@ -321,24 +320,49 @@ public class Configuration {
      * then <code>pack1.pack2</code> will be returned.
      *
      * @return a list of  of sub-package names
-     * @throws IOException
+     *
      */
     static List<String> locateControllerSubPackages() {
 
         List<String> subpackages = new ArrayList<>();
-        String controllerRootPackage = Configuration.getRootPackage() + ".controllers";
-        try (ScanResult scanResult = new ClassGraph().whitelistPackages(controllerRootPackage).scan()) {
-            for (ClassInfo classInfo : scanResult.getSubclasses(AppController.class.getName())) {
-                if(!classInfo.isAbstract()){
-                    String className = classInfo.getName();
-                    if (className.chars().filter(ch -> ch == '.').count() > 2) {
-                        subpackages.add(className.substring(className.indexOf("controllers." ) + 12, className.lastIndexOf('.')));
-                    }
-                }
+        for (ClassInfo classInfo : getControllerClassInfos(null)) {
+            String className = classInfo.getName();
+            if (className.chars().filter(ch -> ch == '.').count() > 2) {
+                subpackages.add(className.substring(className.indexOf("controllers.") + 12, className.lastIndexOf('.')));
             }
         }
         return subpackages;
     }
 
 
+    /**
+     * Returns  a list of controllers that are reachable and not abstract.
+     *
+     * @param classLoader - a classloader to use when looking for controllers.
+     *
+     * @return   list of <code>ControllerInfo</code>.
+     */
+    public static List<ClassInfo> getControllerClassInfos(ClassLoader classLoader){
+        ArrayList<ClassInfo> controllerInfos = new ArrayList<>();
+        String controllerRootPackage = Configuration.getRootPackage() + ".controllers";
+
+        ClassGraph classGraph = new ClassGraph().acceptPackages(controllerRootPackage).enableClassInfo().enableMethodInfo();
+
+        if (classLoader != null) {
+            classGraph.overrideClassLoaders(classLoader);
+        }
+
+        try ( ScanResult scanResult = classGraph.scan()) {
+            for (ClassInfo classInfo : scanResult.getSubclasses(AppController.class.getName())) {
+
+
+                if(!classInfo.isAbstract()){
+                    controllerInfos.add(classInfo);
+                }else {
+//                    System.out.println("Skipping abstract controller: " + classInfo.getName());
+                }
+            }
+        }
+        return controllerInfos;
+    }
 }

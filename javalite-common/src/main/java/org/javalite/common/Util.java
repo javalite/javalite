@@ -17,8 +17,6 @@ package org.javalite.common;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
@@ -573,7 +571,7 @@ public final class Util {
     public static void recursiveDelete(Path directory) throws IOException   {
 
         try {
-            Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
+            Files.walkFileTree(directory, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws java.io.IOException {
                     try {

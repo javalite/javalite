@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.*;
 
 import static org.javalite.common.Util.blank;
@@ -20,18 +19,6 @@ import static org.javalite.common.Util.join;
  */
 public class Route {
     private static Logger LOGGER = LoggerFactory.getLogger(Route.class);
-
-    private static Set<String> PRIMITIVES = new HashSet<>();
-    static {
-        PRIMITIVES.add("byte");
-        PRIMITIVES.add("short");
-        PRIMITIVES.add("int");
-        PRIMITIVES.add("long");
-        PRIMITIVES.add("float");
-        PRIMITIVES.add("double");
-        PRIMITIVES.add("char");
-        PRIMITIVES.add("boolean");
-    }
 
     private AppController controller;
     private String actionName, id, wildCardName, wildCardValue, targetAction;
@@ -81,74 +68,21 @@ public class Route {
         this.actionName = actionName;
         String actionMethodName = Inflector.camelize(actionName.replace('-', '_'), false);
 
-        actionMethod = getPublicMethodForName(controller, actionMethodName);
+        actionMethod = getActionMethod(controller, actionMethodName);
 
         if (actionMethod == null) {
             throw new ActionNotFoundException("Failed to find an action method for action: '" + actionName + "' in controller: " + controller.getClass().getName());
         }
     }
 
-    /**
-     * Methods by class name
-     */
-    private static ThreadLocal<Map<String, List<Method>>> methodsTL = new ThreadLocal<>();
-
-
-
-    /**
-     * Gets methods matching an action name. Excludes: methods of superclasses from JavaLite and all non-public methods
-     *
-     *
-     * This method exists for caching controller methods.
-     *
-     * @return all methods matching a method name.
-     */
-    private List<Method> getNamedMethods(AppController controller, String actionMethodName){
-
-        Map<String, List<Method>> controllerMap  =  methodsTL.get();
-
-        if(controllerMap == null){
-            methodsTL.set(controllerMap = new HashMap<>());
-        }
-        List<Method> discoveredMethods;
-
-        String controllerName = controller.getClass().getName();
-
-        //we do not want cached methods in case we are in development or reloading controllers on the fly
-        if (!controllerMap.containsKey(controllerName) || Configuration.activeReload()) {
-            discoveredMethods = new ArrayList<>();
-            controllerMap.put(controllerName, discoveredMethods);
-
-            for (Method m : controller.getClass().getMethods()) {
-                if (Modifier.isPublic(m.getModifiers()) &&
-                        !m.getDeclaringClass().equals(Object.class) &&
-                        !m.getDeclaringClass().equals(RequestAccess.class) &&
-                        !m.getDeclaringClass().equals(HttpSupport.class) &&
-                        !m.getDeclaringClass().equals(AppController.class)) {
-                    discoveredMethods.add(m);
-                }
-            }
-
-        } else {
-            discoveredMethods = controllerMap.get(controllerName);
-        }
-
-        List<Method> nameMatchMethods = new ArrayList<>();
-        for (Method discoveredMethod : discoveredMethods) {
-            if(discoveredMethod.getName().equals(actionMethodName)){
-                nameMatchMethods.add(discoveredMethod);
-            }
-        }
-        return nameMatchMethods;
-    }
 
     /**
      * Finds a first method that has one argument. If not found, will find a method that has no arguments.
-     * If not found, will return null;
+     * If not found, will return null.
      */
-    private Method getPublicMethodForName(AppController controller, String actionMethodName){
+    private Method getActionMethod(AppController controller, String actionMethodName){
 
-        List<Method> methods = getNamedMethods(controller, actionMethodName);
+        List<Method> methods = RouteUtil.getNamedMethods(controller, actionMethodName);
 
         if (methods.size() == 0) {
             return null;
@@ -159,14 +93,8 @@ public class Route {
         Method method = methods.get(0);
 
         if (method.getParameterCount() == 1) {
-            argumentClass = methods.get(0).getParameterTypes()[0];
-            // we do not need primitives, shooting for a class defined in the project.
-            if (!argumentClass.getName().startsWith("java")) {
-                return method;
-            }else if(PRIMITIVES.contains(argumentClass.getName())){
-                LOGGER.debug("Skipping method '" + method.getName() + "' because the argument is a primitive");
-                return null;
-            }
+            argumentClass = RouteUtil.getArgumentClass(method);
+            return method;
         }else  if (method.getParameterCount() == 0) {
             return method;
         }

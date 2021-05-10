@@ -2,6 +2,11 @@ package org.javalite.openapi;
 
 import org.javalite.activeweb.HttpMethod;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
+
 /**
  * Definition of an API  Endpoint
  */
@@ -20,6 +25,11 @@ public class EndPointDefinition {
         this.argumentClassName = argumentClassName;
     }
 
+    public EndPointDefinition(HttpMethod method, String path,  String argumentClassName) {
+        this(method, path, null, argumentClassName);
+
+    }
+
     public HttpMethod getMethod() {
         return method;
     }
@@ -36,5 +46,16 @@ public class EndPointDefinition {
         return argumentClassName;
     }
 
+    @Override
+    public String toString() {
+        return "method=" + method +
+                ", path='" + path + '\'' +
+                ", openAPIdoc='" + openAPIdoc + '\'' +
+                ", argumentClassName='" + argumentClassName + '\'' +
+                '}';
+    }
 
+    String[] toArray(){
+        return new String[]{method.name(), path, argumentClassName == null ? "" : argumentClassName};
+    }
 }

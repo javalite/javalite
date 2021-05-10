@@ -19,6 +19,8 @@ import org.javalite.activeweb.annotations.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 
 /**
  * @author Igor Polevoy
@@ -72,4 +74,55 @@ public enum HttpMethod {
         return this.equals(PUT) || this.equals(POST) || this.equals(DELETE) || this.equals(PATCH);
     }
 
+    /**
+     * Detects an HTTP method from class method.
+     * @param actionMethod method from a controller.
+     * @return instance of this class.
+     */
+    public static HttpMethod detect(Method actionMethod){
+
+        if(actionMethod.getAnnotations().length == 0){
+            return HttpMethod.GET;
+        }
+
+        if(Arrays.stream(actionMethod.getAnnotations()).anyMatch(a ->  a instanceof  org.javalite.activeweb.annotations.GET)){
+            return GET;
+        }else if(Arrays.stream(actionMethod.getAnnotations()).anyMatch(a ->  a instanceof  org.javalite.activeweb.annotations.POST)){
+            return POST;
+        }else if(Arrays.stream(actionMethod.getAnnotations()).anyMatch(a ->  a instanceof  org.javalite.activeweb.annotations.PATCH)){
+            return PATCH;
+        }else if(Arrays.stream(actionMethod.getAnnotations()).anyMatch(a ->  a instanceof  org.javalite.activeweb.annotations.OPTIONS)){
+            return OPTIONS;
+        }else if(Arrays.stream(actionMethod.getAnnotations()).anyMatch(a ->  a instanceof  org.javalite.activeweb.annotations.HEAD)){
+            return HEAD;
+        }else if(Arrays.stream(actionMethod.getAnnotations()).anyMatch(a ->  a instanceof  org.javalite.activeweb.annotations.PUT)){
+            return PUT;
+        }else if(Arrays.stream(actionMethod.getAnnotations()).anyMatch(a ->  a instanceof  org.javalite.activeweb.annotations.DELETE)){
+            return DELETE;
+        }
+
+        //TODO: technically, this is an incomplete implementation because an action  can have  more than one HTTP method annotation.
+        //TODO: not sure what to do in this case.
+
+        throw   new RouteException("Failed to detect an HTTP method for " + actionMethod);
+    }
+
+    static class Test{
+
+        @GET @POST
+        public void index(){
+        }
+    }
+
+    public static void main(String[] args) {
+
+
+        Annotation[] annotations  = Test.class.getDeclaredMethods()[0].getAnnotations();
+
+
+        System.out.println(Arrays.stream(annotations).anyMatch(a ->  a instanceof  org.javalite.activeweb.annotations.GET));
+
+
+
+    }
 }

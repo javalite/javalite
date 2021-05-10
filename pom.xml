@@ -209,6 +209,7 @@
         <module>activeweb-sass-integration-test</module>
         <module>javalite-async</module>
         <module>async-pool-test</module>
+        <module>openapi-maven-plugin</module>
     </modules>
 
     <dependencyManagement>
@@ -394,6 +395,17 @@
                 <scope>provided</scope>
             </dependency>
 
+            <dependency>
+                <groupId>com.github.javaparser</groupId>
+                <artifactId>javaparser-core</artifactId>
+                <version>3.20.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-artifact</artifactId>
+                <version>3.6.3</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

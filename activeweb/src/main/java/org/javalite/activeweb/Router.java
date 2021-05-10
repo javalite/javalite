@@ -367,7 +367,7 @@ public class Router {
      * @param controllerClass class of a controller.
      * @return standard path for a controller.
      */
-    static <T extends AppController> String getControllerPath(Class<T> controllerClass) {
+    public static <T extends AppController> String getControllerPath(Class<T> controllerClass) {
         String simpleName = controllerClass.getSimpleName();
         if (!simpleName.endsWith("Controller")) {
             throw new ControllerException("controller name must end with 'Controller' suffix");
