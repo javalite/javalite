@@ -41,7 +41,7 @@ public class Router {
     private String rootControllerName;
     private List<RouteBuilder> routes = new ArrayList<>();
     private List<IgnoreSpec> ignoreSpecs;
-    private boolean exclusive;
+    private boolean strictMode;
 
     protected Router(String rootControllerName) {
         this.rootControllerName = rootControllerName;
@@ -92,8 +92,8 @@ public class Router {
         }
 
         if(route != null){
-            if(exclusive && nonCustomRoute){
-                throw new RouteException("Cannot map to a non-custom route with an 'exclusiveRoutes' flag on.");
+            if(strictMode && nonCustomRoute){
+                throw new RouteException("Cannot map to a non-custom route with a 'strictMode' flag on.");
             }
             route.setIgnoreSpecs(ignoreSpecs);
         }else{
@@ -451,7 +451,7 @@ public class Router {
         this.ignoreSpecs = ignoreSpecs;
     }
 
-    public void setExclusive(boolean exclusive) {
-        this.exclusive = exclusive;
+    public void setStrictMode(boolean strictMode) {
+        this.strictMode = strictMode;
     }
 }

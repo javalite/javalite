@@ -13,7 +13,7 @@ public abstract class AbstractRouteConfig implements InitConfig {
     //ignore some URLs
     private List<IgnoreSpec> ignoreSpecs = new ArrayList<>();
 
-    private boolean exclusive = false;
+    private boolean strict = false;
 
 
 
@@ -38,7 +38,7 @@ public abstract class AbstractRouteConfig implements InitConfig {
      *
      * @param ignores list of regular expressions matching the URI. If an expression matches the request URI, such request ill be ignored
      *                by the framework. It will be processed by container.
-     * @return instance of IgnoreSpec
+     * @return instance of7 IgnoreSpec
      */
     protected IgnoreSpec ignore(String ... ignores){
         IgnoreSpec spec = new IgnoreSpec(ignores);
@@ -59,12 +59,12 @@ public abstract class AbstractRouteConfig implements InitConfig {
      * If this method is not called, all routes are enabled by default, standard, Restful as well as custom, which might not be a desired
      * configuration, especially if you are building an API with more complexity than simple Restful routes.
      */
-    protected void exclusiveRoutes(){
-        exclusive = true;
+    protected void strictMode(){
+        strict = true;
     }
 
-    boolean isExclusive(){
-        return exclusive;
+    boolean isStrictMode(){
+        return strict;
     }
 
 }

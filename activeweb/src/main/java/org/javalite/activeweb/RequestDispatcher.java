@@ -104,7 +104,7 @@ public class RequestDispatcher implements Filter {
             routeConfigLocal.init(context);
             router.setRoutes(routeConfigLocal.getRoutes());
             router.setIgnoreSpecs(routeConfigLocal.getIgnoreSpecs());
-            router.setExclusive(routeConfigLocal.isExclusive());
+            router.setStrictMode(routeConfigLocal.isStrictMode());
 
             logger.debug("Loaded routes from: " + routeConfigClassName);
 
