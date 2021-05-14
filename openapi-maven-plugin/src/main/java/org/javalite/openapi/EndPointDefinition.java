@@ -1,37 +1,39 @@
 package org.javalite.openapi;
 
 import org.javalite.activeweb.HttpMethod;
+import org.javalite.common.Util;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * Definition of an API  Endpoint
  */
 public class EndPointDefinition {
 
-    private HttpMethod method;
+    private List<HttpMethod> methods = new ArrayList<>();
     //underscore format
     private String path;
     private String openAPIdoc;
     private String argumentClassName; // can be null
 
-    public EndPointDefinition(HttpMethod method, String path, String openAPIdoc, String argumentClassName) {
-        this.method = method;
+    public EndPointDefinition(List<HttpMethod> methods, String path, String openAPIdoc, String argumentClassName) {
+
+
+        this.methods.addAll(methods);
         this.path = path;
         this.openAPIdoc = openAPIdoc;
         this.argumentClassName = argumentClassName;
     }
 
-    public EndPointDefinition(HttpMethod method, String path,  String argumentClassName) {
-        this(method, path, null, argumentClassName);
+    public EndPointDefinition(List<HttpMethod> methods, String path,  String argumentClassName) {
+        this(methods, path, null, argumentClassName);
 
     }
 
-    public HttpMethod getMethod() {
-        return method;
+    public List<HttpMethod> getMethods() {
+        return methods;
     }
 
     public String getPath() {
@@ -48,14 +50,13 @@ public class EndPointDefinition {
 
     @Override
     public String toString() {
-        return "method=" + method +
+        return "method=[" + Util.join(methods, ",") + "]" +
                 ", path='" + path + '\'' +
                 ", openAPIdoc='" + openAPIdoc + '\'' +
-                ", argumentClassName='" + argumentClassName + '\'' +
-                '}';
+                ", argumentClassName='" + argumentClassName + '\'';
     }
 
-    String[] toArray(){
-        return new String[]{method.name(), path, argumentClassName == null ? "" : argumentClassName};
+    public boolean hasMethod(HttpMethod method){
+        return methods.stream().anyMatch(httpMethod -> httpMethod.equals(method));
     }
 }

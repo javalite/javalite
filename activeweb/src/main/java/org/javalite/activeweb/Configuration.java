@@ -322,13 +322,14 @@ public class Configuration {
      * @return a list of  of sub-package names
      *
      */
-    static List<String> locateControllerSubPackages() {
-
+    static List<String> locateControllerSubPackages()  {
         List<String> subpackages = new ArrayList<>();
-        for (ClassInfo classInfo : getControllerClassInfos(null)) {
-            String className = classInfo.getName();
-            if (className.chars().filter(ch -> ch == '.').count() > 2) {
-                subpackages.add(className.substring(className.indexOf("controllers.") + 12, className.lastIndexOf('.')));
+        try(CloseableList<ClassInfo> infosList =  getControllerClassInfos(null)){
+            for (ClassInfo classInfo : infosList) {
+                String className = classInfo.getName();
+                if (className.chars().filter(ch -> ch == '.').count() > 2) {
+                    subpackages.add(className.substring(className.indexOf("controllers.") + 12, className.lastIndexOf('.')));
+                }
             }
         }
         return subpackages;
@@ -342,27 +343,24 @@ public class Configuration {
      *
      * @return   list of <code>ControllerInfo</code>.
      */
-    public static List<ClassInfo> getControllerClassInfos(ClassLoader classLoader){
-        ArrayList<ClassInfo> controllerInfos = new ArrayList<>();
+    public static CloseableList<ClassInfo> getControllerClassInfos(ClassLoader classLoader){
+        CloseableList<ClassInfo> controllerInfos = new CloseableList<>();
         String controllerRootPackage = Configuration.getRootPackage() + ".controllers";
 
-        ClassGraph classGraph = new ClassGraph().acceptPackages(controllerRootPackage).enableClassInfo().enableMethodInfo();
+        ClassGraph classGraph = new ClassGraph().acceptPackages(controllerRootPackage).enableClassInfo().enableMethodInfo().enableAnnotationInfo();
 
         if (classLoader != null) {
             classGraph.overrideClassLoaders(classLoader);
         }
 
-        try ( ScanResult scanResult = classGraph.scan()) {
-            for (ClassInfo classInfo : scanResult.getSubclasses(AppController.class.getName())) {
-
-
-                if(!classInfo.isAbstract()){
-                    controllerInfos.add(classInfo);
-                }else {
-//                    System.out.println("Skipping abstract controller: " + classInfo.getName());
-                }
+        ScanResult scanResult = classGraph.scan();
+        for (ClassInfo classInfo : scanResult.getSubclasses(AppController.class.getName())) {
+            if (!classInfo.isAbstract()) {
+                classInfo.getAnnotationInfo();
+                controllerInfos.add(classInfo);
             }
         }
+
         return controllerInfos;
     }
 }

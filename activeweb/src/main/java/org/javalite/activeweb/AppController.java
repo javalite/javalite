@@ -16,12 +16,6 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import org.javalite.activeweb.annotations.RESTful;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 
 /**

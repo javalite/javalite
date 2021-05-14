@@ -4,6 +4,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
+/**
+ * This class exists to aggregate some common functions that are used  by ActiveWeb as well as the Ope API plugin.
+ */
 public class RouteUtil {
 
     public final static Set<String> PRIMITIVES = new HashSet<>();

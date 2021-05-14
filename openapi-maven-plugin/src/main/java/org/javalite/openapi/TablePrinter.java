@@ -85,18 +85,5 @@ public class TablePrinter {
         System.out.print(line);
     }
 
-    public static void printEndpointDefinitions(List<EndPointDefinition> endPointDefinitions){
-        String[][] table  = new String[endPointDefinitions.size()][3];
-        table[0][0] = "Path";
-        table[0][1] = "HTTP Method";
-        table[0][2] = "Argument Type";
 
-        for (int row = 1; row < endPointDefinitions.size(); row++) {
-            EndPointDefinition endPointDefinition = endPointDefinitions.get(row);
-            table[row][0] = endPointDefinition.getPath();
-            table[row][1] = endPointDefinition.getMethod().name();
-            table[row][2] = endPointDefinition.getArgumentClassName();
-        }
-        printTable(table);
-    }
 }

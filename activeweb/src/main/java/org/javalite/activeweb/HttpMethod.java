@@ -15,12 +15,15 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
+import io.github.classgraph.MethodInfo;
 import org.javalite.activeweb.annotations.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Igor Polevoy
@@ -74,37 +77,45 @@ public enum HttpMethod {
         return this.equals(PUT) || this.equals(POST) || this.equals(DELETE) || this.equals(PATCH);
     }
 
+
+
     /**
      * Detects an HTTP method from class method.
      * @param actionMethod method from a controller.
      * @return instance of this class.
      */
-    public static HttpMethod detect(Method actionMethod){
+    public static List<HttpMethod> detect(MethodInfo actionMethod){
 
-        if(actionMethod.getAnnotations().length == 0){
-            return HttpMethod.GET;
+        List<HttpMethod> methods = new ArrayList<>();
+        if(actionMethod.getAnnotationInfo().size() == 0){
+            methods.add(HttpMethod.GET);
+            return methods ;
+        }else{
+
+            if(actionMethod.hasAnnotation(org.javalite.activeweb.annotations.GET.class.getName())){
+                methods.add(HttpMethod.GET);
+            }
+            if(actionMethod.hasAnnotation(org.javalite.activeweb.annotations.POST.class.getName())){
+                methods.add(HttpMethod.POST);
+            }
+            if(actionMethod.hasAnnotation(org.javalite.activeweb.annotations.PATCH.class.getName())){
+                methods.add(HttpMethod.PATCH);
+            }
+            if(actionMethod.hasAnnotation(org.javalite.activeweb.annotations.OPTIONS.class.getName())){
+                methods.add(HttpMethod.OPTIONS);
+            }
+            if(actionMethod.hasAnnotation(org.javalite.activeweb.annotations.HEAD.class.getName())){
+                methods.add(HttpMethod.HEAD);
+            }
+            if(actionMethod.hasAnnotation(org.javalite.activeweb.annotations.PUT.class.getName())){
+                methods.add(HttpMethod.PUT);
+            }
+            if(actionMethod.hasAnnotation(org.javalite.activeweb.annotations.DELETE.class.getName())){
+                methods.add(HttpMethod.DELETE);
+            }
         }
 
-        if(Arrays.stream(actionMethod.getAnnotations()).anyMatch(a ->  a instanceof  org.javalite.activeweb.annotations.GET)){
-            return GET;
-        }else if(Arrays.stream(actionMethod.getAnnotations()).anyMatch(a ->  a instanceof  org.javalite.activeweb.annotations.POST)){
-            return POST;
-        }else if(Arrays.stream(actionMethod.getAnnotations()).anyMatch(a ->  a instanceof  org.javalite.activeweb.annotations.PATCH)){
-            return PATCH;
-        }else if(Arrays.stream(actionMethod.getAnnotations()).anyMatch(a ->  a instanceof  org.javalite.activeweb.annotations.OPTIONS)){
-            return OPTIONS;
-        }else if(Arrays.stream(actionMethod.getAnnotations()).anyMatch(a ->  a instanceof  org.javalite.activeweb.annotations.HEAD)){
-            return HEAD;
-        }else if(Arrays.stream(actionMethod.getAnnotations()).anyMatch(a ->  a instanceof  org.javalite.activeweb.annotations.PUT)){
-            return PUT;
-        }else if(Arrays.stream(actionMethod.getAnnotations()).anyMatch(a ->  a instanceof  org.javalite.activeweb.annotations.DELETE)){
-            return DELETE;
-        }
-
-        //TODO: technically, this is an incomplete implementation because an action  can have  more than one HTTP method annotation.
-        //TODO: not sure what to do in this case.
-
-        throw   new RouteException("Failed to detect an HTTP method for " + actionMethod);
+        return methods;
     }
 
     static class Test{

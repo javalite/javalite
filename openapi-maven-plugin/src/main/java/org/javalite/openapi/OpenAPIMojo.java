@@ -6,22 +6,24 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.javalite.activeweb.*;
 import org.javalite.common.Inflector;
+import org.javalite.common.Util;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import static org.javalite.openapi.TablePrinter.printTable;
 
 
 /**
@@ -53,7 +55,7 @@ import java.util.List;
  */
 
 
-@Mojo(name = "generate")
+@Mojo(name = "generate", requiresDependencyResolution = ResolutionScope.COMPILE)
 public class OpenAPIMojo extends AbstractMojo {
 
     @Parameter(property = "src", defaultValue = "src/main/java")
@@ -68,25 +70,19 @@ public class OpenAPIMojo extends AbstractMojo {
 
     //----------------------- Private members below --------------------//
 
-    private static ThreadLocal<ClassLoader> combinedClassLoaderTL = new ThreadLocal<>();
+
+
 
     @Override
     public void execute() {
         try{
 
-            combinedClassLoaderTL.set(getCombinedClassLoader());
 
-            List<ClassInfo> controllerClassInfos = Configuration.getControllerClassInfos(combinedClassLoaderTL.get());
-
-            List<EndPointDefinition> endPointDefinitions = getEndpointDefinitions(controllerClassInfos);
+            List<EndPointDefinition> endPointDefinitions = ClassEndpointFinder.getClasspathEndpointDefinitions(getCombinedClassLoader());
 
 
-            TablePrinter.printEndpointDefinitions(endPointDefinitions);
-//
-//            for (EndPointDefinition endPointDefinition  : endPointDefinitions) {
-//                System.out.println("End point: " + endPointDefinition);
-//            }
 
+            printEndpointDefinitions(endPointDefinitions);
 
 
 //            processPath();
@@ -95,46 +91,32 @@ public class OpenAPIMojo extends AbstractMojo {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private <T extends AppController> List<EndPointDefinition> getEndpointDefinitions(List<ClassInfo> controllerClassInfos) throws ClassNotFoundException {
+    public static void printEndpointDefinitions(List<EndPointDefinition> endPointDefinitions){
+        String[][] table  = new String[endPointDefinitions.size() + 1][3];
+        table[0][0] = "Path";
+        table[0][1] = "HTTP Methods";
+        table[0][2] = "Argument Type";
 
-        List<EndPointDefinition> endPointDefinitions = new ArrayList<>();
-        for (ClassInfo classInfo : controllerClassInfos) {
-            String controllerName = classInfo.getName();
-            Class<T> controllerClass = (Class<T>) Class.forName(controllerName, false, combinedClassLoaderTL.get());
-            getLog().info("Found a controller class: " + controllerClass);
-            endPointDefinitions.addAll(getEndpointDefinitions(controllerClass));
+
+        for (int row = 0; row < endPointDefinitions.size() ; row++) {
+            EndPointDefinition endPointDefinition = endPointDefinitions.get(row);
+            table[row + 1][0] = endPointDefinition.getPath();
+            table[row + 1][1] = Util.join(endPointDefinition.getMethods(), ",");
+            table[row + 1][2] = endPointDefinition.getArgumentClassName();
         }
-        return endPointDefinitions;
+        printTable(table);
     }
 
-    private <T extends AppController> List<EndPointDefinition> getEndpointDefinitions(Class<T> controllerClass) throws ClassNotFoundException {
-        List<EndPointDefinition> endPointDefinitions = new ArrayList<>();
-        for (Method method : controllerClass.getMethods()) {
-            if(RouteUtil.isAction(method)){
-                HttpMethod m = HttpMethod.detect(method);
-
-                String argumentType = null;
-                if(method.getParameterCount() ==1 ) {
-                    argumentType = method.getParameterTypes()[0].getName();
-                }
-                EndPointDefinition definition = new EndPointDefinition(m,
-                        Router.getControllerPath(controllerClass) + "/" + Inflector.underscore(method.getName()),
-                        argumentType != null? argumentType : "");
-
-                endPointDefinitions.add(definition);
-            }
-        }
-        return endPointDefinitions;
-    }
 
 
 
     private ClassLoader getCombinedClassLoader() throws DependencyResolutionRequiredException, MalformedURLException {
-        ClassLoader pluginCL = this.getClass().getClassLoader();
-        URL[] urls = new URL[project.getRuntimeClasspathElements().size()];
+        ClassLoader pluginCL = Thread.currentThread().getContextClassLoader();
+
+        URL[] urls = new URL[project.getCompileClasspathElements().size()];
         for(int x = 0 ; x < urls.length; x++){
-            urls[x] = new File(project.getRuntimeClasspathElements().get(x).toString()).toURI().toURL();
+            urls[x] = new File(project.getCompileClasspathElements().get(x).toString()).toURI().toURL();
+
         }
         return  new URLClassLoader(urls, pluginCL);
     }
@@ -160,7 +142,7 @@ public class OpenAPIMojo extends AbstractMojo {
         }
 
         for (Path path : controllerPaths) {
-            EndpointFinder.processController(path);
+            SourceEndpointFinder.processController(path);
         }
 
 

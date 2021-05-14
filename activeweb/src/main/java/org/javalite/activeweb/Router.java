@@ -368,21 +368,25 @@ public class Router {
      * @return standard path for a controller.
      */
     public static <T extends AppController> String getControllerPath(Class<T> controllerClass) {
-        String simpleName = controllerClass.getSimpleName();
-        if (!simpleName.endsWith("Controller")) {
+        return getControllerPath(controllerClass.getName(), controllerClass.getSimpleName() );
+    }
+
+
+    public static <T extends AppController> String getControllerPath(String controllerClassName, String controllerSimpleName) {
+
+        if (!controllerSimpleName.endsWith("Controller")) {
             throw new ControllerException("controller name must end with 'Controller' suffix");
         }
 
-        String className = controllerClass.getName();
-        if (!className.startsWith("app.controllers")) {
+        if (!controllerClassName.startsWith("app.controllers")) {
             throw new ControllerException("controller must be in the 'app.controllers' package");
         }
-        String packageSuffix = className.substring("app.controllers".length(), className.lastIndexOf("."));
+        String packageSuffix = controllerClassName.substring("app.controllers".length(), controllerClassName.lastIndexOf("."));
         packageSuffix = packageSuffix.replace(".", "/");
         if (packageSuffix.startsWith("/"))
             packageSuffix = packageSuffix.substring(1);
 
-        return (packageSuffix.equals("") ? "" : "/" + packageSuffix) + "/" + Inflector.underscore(simpleName.substring(0, simpleName.lastIndexOf("Controller")));
+        return (packageSuffix.equals("") ? "" : "/" + packageSuffix) + "/" + Inflector.underscore(controllerSimpleName.substring(0, controllerSimpleName.lastIndexOf("Controller")));
     }
 
     /**
