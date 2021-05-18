@@ -19,6 +19,7 @@ package app.controllers;
 import org.javalite.activeweb.AppController;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 /**
  * @author Igor Polevoy
@@ -44,7 +45,11 @@ public class SessionController extends AppController {
     public void removeFromSession(){
         session().remove("greeting");
         Object x = session().remove((Object)"dumb-object");
-        respond(x.toString());
+        if (x == null) {
+            respond("not found").statusCode(404);
+        } else {
+            respond(x.toString()).statusCode(200);
+        }
     }
 }
 

@@ -47,12 +47,12 @@ import static org.javalite.common.Collections.list;
  */
 public class SpecHelper implements JSpecSupport{
 
-    private SessionTestFacade sessionFacade;
+    private SessionFacade sessionFacade;
 
 
     @Before @BeforeEach
     public void atStart() {
-        sessionFacade = new SessionTestFacade(new MockHttpSession());
+        sessionFacade = new SessionFacade();
         setTemplateLocation("src/main/webapp/WEB-INF/views");//default location of all views
 
         RequestContext.setTLs(null, new MockHttpServletResponse(), new MockFilterConfig(),
@@ -142,7 +142,7 @@ public class SpecHelper implements JSpecSupport{
     }
 
     private class DynamicModule extends AbstractModule{
-        private List<List<Class>> pairs = new ArrayList<>();
+        private List<List<Class>> pairs;
 
         public DynamicModule(List<List<Class>> pairs) {
             this.pairs = pairs;
@@ -257,7 +257,7 @@ public class SpecHelper implements JSpecSupport{
             protected void configure() {
                 bind(interfaceClass).to(mockClass).asEagerSingleton();
             }
-        };
+        }
 
         /**
          * Terminal method of a builder. Use to generate an instance of  Injector.
@@ -293,7 +293,7 @@ public class SpecHelper implements JSpecSupport{
      *
      * @return object allowing access to session in test context.
      */
-    protected SessionTestFacade session(){
+    protected SessionFacade session(){
         return sessionFacade;
     }
 

@@ -19,6 +19,7 @@ import com.google.inject.Injector;
 import org.springframework.mock.web.*;
 
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 import static org.javalite.activeweb.ControllerFactory.createControllerInstance;
@@ -38,7 +39,7 @@ public class RequestBuilder {
     private String contentType;
     private byte[] content;
     private String controllerPath;
-    private SessionTestFacade sessionFacade;
+    private SessionFacade sessionFacade;
     private List<org.javalite.activeweb.Cookie> cookies = new ArrayList<>();
     private MockHttpServletRequest request;
     private String realAction;
@@ -48,7 +49,7 @@ public class RequestBuilder {
     private String format;
     private String remoteAddress;
 
-    public RequestBuilder(String controllerPath, SessionTestFacade sessionFacade) {
+    public RequestBuilder(String controllerPath, SessionFacade sessionFacade) {
         RequestContext.setParams1st(null);
         this.controllerPath = controllerPath;
         this.sessionFacade = sessionFacade;
@@ -337,6 +338,9 @@ public class RequestBuilder {
     }
 
     private void createAndConfigureRequest(HttpMethod method) {
+
+        HttpServletRequest prevRequest = RequestContext.getHttpRequest();
+
         if(contentType != null && contentType.equals(MULTIPART) && !formItems.isEmpty()){
             request = new MockMultipartHttpServletRequestImpl();
             for (FormItem item : formItems) {
@@ -355,8 +359,9 @@ public class RequestBuilder {
             request.setRemoteAddr(remoteAddress);
         }
 
-        if(sessionFacade != null)
-            request.setSession(sessionFacade.getSession());
+        if (prevRequest != null) {
+            request.setSession(prevRequest.getSession());
+        }
 
         if (contentType != null)
             request.setContentType(contentType);

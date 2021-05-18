@@ -17,7 +17,6 @@ package org.javalite.activeweb;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -25,7 +24,19 @@ import java.util.*;
  *
  * @author Igor Polevoy
  */
-public class SessionFacade implements Map {
+public class SessionFacade implements Map<String,Object> {
+
+    private static final String[] EMPTY_ARRAY = new String[0];
+
+    private HttpSession httpSession() {
+        HttpServletRequest httpRequest = RequestContext.getHttpRequest();
+        return httpRequest == null ? null : httpRequest.getSession(false);
+    }
+
+    public boolean exists() {
+        return httpSession() != null;
+    }
+
 
     /**
      * Returns a session ID from underlying session.
@@ -33,23 +44,20 @@ public class SessionFacade implements Map {
      * @return a session ID from underlying session, or null if session does not exist.
      */
     public String id(){
-        HttpServletRequest r = RequestContext.getHttpRequest();
-        if(r == null){
-            return null;
-        }
-        HttpSession session = r.getSession(false);
+        HttpSession session = httpSession();
         return session == null ? null : session.getId();
     }
-
 
     /**
      * Retrieve object from session.
      *
-     * @param name name of object.
-     * @return named object. 
+     * @param key name of object.
+     * @return named object.
      */
-    public Object get(String name){
-        return RequestContext.getHttpRequest().getSession(true).getAttribute(name);
+    @Override
+    public Object get(Object key) {
+        HttpSession session = httpSession();
+        return session == null ? null : session.getAttribute(key.toString());
     }
 
     /**
@@ -64,44 +72,41 @@ public class SessionFacade implements Map {
         return get(name) != null? (T)get(name) : null;
     }
 
-
     /**
      * Removes object from session.
-     * @param name name of object
+     * @param key name of object
      */
-    public Object remove(String name){
-        return remove((Object)name);
-
-//        Object val = get(name);
-//        RequestContext.getHttpRequest().getSession(true).removeAttribute(name);
-//        return val;
+    @Override
+    public Object remove(Object key) {
+        HttpSession session = httpSession();
+        if (session != null) {
+            Object val = session.getAttribute(key.toString());
+            session.removeAttribute(key.toString());
+            return val;
+        }
+        return null;
     }
 
-    /**
-     * Add object to a session.
-     * @param name name of object
-     * @param value object reference.
-     */
-    public Object put(String name, Serializable value){
-        Object val = RequestContext.getHttpRequest().getSession(true).getAttribute(name);
-        RequestContext.getHttpRequest().getSession(true).setAttribute(name, value);
-        return val;
-    }
+
 
     /**
      * Returns time when session was created. 
      *
-     * @return time when session was created.
+     * @return time when session was created or -1 if session is not exists.
      */
     public long getCreationTime(){
-        return RequestContext.getHttpRequest().getSession(true).getCreationTime();
+        HttpSession session = httpSession();
+        return session == null ? -1 : session.getCreationTime();
     }
 
     /**
      * Invalidates current session. All attributes are discarded.
      */
     public void invalidate(){
-        RequestContext.getHttpRequest().getSession(true).invalidate();
+        HttpSession session = httpSession();
+        if (session != null) {
+            session.invalidate();
+        }
     }
 
     /**
@@ -118,13 +123,17 @@ public class SessionFacade implements Map {
      * @return names of current attributes as a list.
      */
     public String[] names(){
-        List<String> namesList = new ArrayList<>();
-        Enumeration names = RequestContext.getHttpRequest().getSession(true).getAttributeNames();
-        while (names.hasMoreElements()) {
-            Object o = names.nextElement();
-            namesList.add(o.toString());
-        }        
-        return namesList.toArray(new String[namesList.size()]);
+        HttpSession session = httpSession();
+        if (session != null) {
+            List<String> namesList = new ArrayList<>();
+            Enumeration<String> names = session.getAttributeNames();
+            while (names.hasMoreElements()) {
+                Object o = names.nextElement();
+                namesList.add(o.toString());
+            }
+            return namesList.toArray(new String[0]);
+        }
+        return EMPTY_ARRAY;
     }
 
 
@@ -134,7 +143,7 @@ public class SessionFacade implements Map {
      * @return ID of the underlying session
      */
     public String getId(){
-        return RequestContext.getHttpRequest().getSession(true).getId();
+        return id();
     }
 
 
@@ -142,94 +151,122 @@ public class SessionFacade implements Map {
      * Destroys current session
      */
     public void destroy(){
-        RequestContext.getHttpRequest().getSession(true).invalidate();
+        invalidate();
     }
-
-
 
     @Override
     public int size() {
-        throw new UnsupportedOperationException();
+        HttpSession session = httpSession();
+        if (session != null) {
+            Enumeration<String> enumeration = session.getAttributeNames();
+            if (enumeration.hasMoreElements()) {
+                int size = 0;
+                while (enumeration.hasMoreElements()) {
+                    enumeration.nextElement();
+                    size++;
+                }
+                return size;
+            }
+        }
+        return 0;
     }
 
     @Override
     public boolean isEmpty() {
-        return !RequestContext.getHttpRequest().getSession(true).getAttributeNames().hasMoreElements();
+        HttpSession session = httpSession();
+        return session == null || !session.getAttributeNames().hasMoreElements();
     }
 
     @Override
     public boolean containsKey(Object key) {
-        return RequestContext.getHttpRequest().getSession(true).getAttribute(key.toString()) != null;
+        return get(key) != null;
     }
 
     @Override
     public boolean containsValue(Object value) {
-        Enumeration names = RequestContext.getHttpRequest().getSession(true).getAttributeNames();
-        while (names.hasMoreElements()){
-            String name = names.nextElement().toString();
-            if(name.equals(value)){
-                return true;
+        HttpSession session = httpSession();
+        if (session != null) {
+            Enumeration<String> names = session.getAttributeNames();
+            while (names.hasMoreElements()) {
+                if (Objects.equals(session.getAttribute(names.nextElement()), value)) {
+                    return true;
+                }
             }
         }
         return false;
     }
 
+    /**
+     * Add object to a session.
+     * @param key name of object
+     * @param value object reference.
+     */
     @Override
-    public Object get(Object key) {
-        return get(key.toString());
-    }
-
-    @Override
-    public Object put(Object key, Object value) {
-        Object val = get(key.toString());
-        put(key.toString(), (Serializable)value);
-        return val;
-    }
-
-    @Override
-    public Object remove(Object key) {
-        Object val = get(key.toString());
-        RequestContext.getHttpRequest().getSession(true).removeAttribute(key.toString());
-        return val;
+    public Object put(String key, Object value) {
+        Object prev = get(key);
+        RequestContext.getHttpRequest().getSession(true).setAttribute(key, value);
+        return prev;
     }
 
     @Override
     public void putAll(Map m) {
-        Set keys = m.keySet();
-        for(Object k:keys){
-            put(k, m.get(k));
+        HttpSession session = RequestContext.getHttpRequest().getSession(true);
+        for (Object o : m.entrySet()) {
+            Map.Entry entry = (Entry) o;
+            session.setAttribute(entry.getKey().toString(), entry.getValue());
         }
     }
 
     @Override
     public void clear() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Set<Object> keySet() {
-        Set<Object> keys = new HashSet<>();
-        Enumeration names = RequestContext.getHttpRequest().getSession(true).getAttributeNames();
-        while (names.hasMoreElements()){
-            Object name = names.nextElement();
-            keys.add(name);
+        HttpSession session = httpSession();
+        if (session != null) {
+            for(String name : keySet()) {
+                session.removeAttribute(name);
+            }
         }
-        return keys;
     }
 
     @Override
-    public Collection values() {
-        Set<Object> values = new HashSet<>();
-        Enumeration names = RequestContext.getHttpRequest().getSession(true).getAttributeNames();
-        while (names.hasMoreElements()){
-            Object name = names.nextElement();
-            values.add(get(name));
+    public Set<String> keySet() {
+        HttpSession session = httpSession();
+        if (session != null) {
+            Set<String> keys = new HashSet<>();
+            Enumeration<String> names = session.getAttributeNames();
+            while (names.hasMoreElements()) {
+                keys.add(names.nextElement());
+            }
+            return keys;
         }
-        return values;
+        return Collections.emptySet();
     }
 
     @Override
-    public Set<Entry> entrySet() {
-        throw new UnsupportedOperationException();
+    public Collection<Object> values() {
+        HttpSession session = httpSession();
+        if (session != null) {
+            Set<Object> values = new HashSet<>();
+            Enumeration<String> names = session.getAttributeNames();
+            while (names.hasMoreElements()) {
+                values.add(session.getAttribute(names.nextElement()));
+            }
+            return values;
+        }
+        return Collections.emptySet();
+    }
+
+    @Override
+    public Set<Entry<String,Object>> entrySet() {
+        HttpSession session = httpSession();
+        if (session != null) {
+            Set<Map.Entry<String,Object>> entries = new HashSet<>();
+            Enumeration<String> names = session.getAttributeNames();
+            while (names.hasMoreElements()) {
+                String name = names.nextElement();
+                entries.add(new AbstractMap.SimpleImmutableEntry<>(name, session.getAttribute(name)));
+            }
+            return entries;
+        }
+        return Collections.emptySet();
     }
 }
