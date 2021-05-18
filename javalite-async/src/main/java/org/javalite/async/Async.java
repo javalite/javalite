@@ -78,6 +78,8 @@ public class Async {
     private EmbeddedActiveMQ artemisServer;
     private boolean binaryMode;
 
+    private boolean syncMode;
+
     private List<QueueConfig> queueConfigsList = new ArrayList<>();
     private boolean started;
     private InitialContext initialContext;
@@ -401,8 +403,20 @@ public class Async {
 
         checkStarted();
 
-        long now  = System.currentTimeMillis();
-        try(Session session = senderSessionPool.getSession()) {
+        long now = System.currentTimeMillis();
+
+        if (isSyncMode()) {
+            command.execute();
+
+            LOGGER.debug(JsonHelper.toJsonString(map(
+                "message", "completed synchronous command execution",
+                "time_millis", System.currentTimeMillis() - now,
+                "command", command.getClass()
+            )));
+            return;
+        }
+
+        try (Session session = senderSessionPool.getSession()) {
             checkInRange(deliveryMode, 1, 2, "delivery mode");
             checkInRange(priority, 0, 9, "priority");
             if (timeToLive < 0)
@@ -414,11 +428,11 @@ public class Async {
                 throw new AsyncException("Failed to find queue: " + queueName);
 
             Message message;
-            if(binaryMode){
+            if (binaryMode){
                 BytesMessage msg = session.createBytesMessage();
                 msg.writeBytes(command.toBytes());
                 message = msg;
-            }else{
+            } else{
                 message = session.createTextMessage(command.toXml());
             }
 
@@ -426,7 +440,7 @@ public class Async {
                 message.setLongProperty(HDR_SCHEDULED_DELIVERY_TIME.toString(), deliveryTime);
             }
 
-            try(MessageProducer producer = session.createProducer(queue);) {
+            try (MessageProducer producer = session.createProducer(queue)) {
                 producer.send(message, deliveryMode, priority, timeToLive);
             }
 
@@ -434,8 +448,13 @@ public class Async {
             throw e;
         } catch (Exception e) {
             throw new AsyncException("Failed to send message", e);
-        }finally {
-            LOGGER.debug(JsonHelper.toJsonString(map("message", "completed sending command", "time_millis", now - System.currentTimeMillis(), "command", command.getClass(), "queue", queueName)));
+        } finally {
+            LOGGER.debug(JsonHelper.toJsonString(map(
+                "message", "completed sending command",
+                "time_millis", System.currentTimeMillis() - now,
+                "command", command.getClass(),
+                "queue", queueName
+            )));
         }
     }
 
@@ -857,6 +876,24 @@ public class Async {
         } catch (Exception e) {
             throw new AsyncException(e);
         }
+    }
+
+    /**
+     * Checks if currently in synchronous execution mode
+     *
+     * @return true if in sync mode
+     */
+    public boolean isSyncMode() {
+        return syncMode;
+    }
+
+    /**
+     * Sets Async to synchronous execution mode
+     *
+     * @param syncMode new sync mode value
+     */
+    public void setSyncMode(boolean syncMode) {
+        this.syncMode = syncMode;
     }
 
     /**

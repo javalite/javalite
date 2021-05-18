@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.javalite.test.jspec.JSpec.a;
 import static org.javalite.test.jspec.JSpec.the;
@@ -312,6 +313,23 @@ public class AsyncSpec {
         the(context.get("weight")).shouldBeEqual("35lb");
 
         SystemStreamUtil.restoreSystemOut();
+    }
+
+    @Test
+    public void shouldSyncCommandsWait() {
+
+        async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 0));
+
+        async.setSyncMode(true);
+        async.start();
+
+        AtomicInteger counter = new AtomicInteger(0);
+
+        for(int i = 0; i < 5; i++){
+            async.send(QUEUE_NAME, new CounterCommand(counter), DeliveryMode.PERSISTENT);
+        }
+
+        a(counter).shouldBeEqual(5);
     }
 
     private String getContextLine(String[] lines) {
