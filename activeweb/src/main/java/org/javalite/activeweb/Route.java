@@ -310,15 +310,11 @@ public class Route {
         } else {
             List<HttpMethod> res = new ArrayList<>();
             for (Annotation annotation : annotations) {
-                if(annotation instanceof FailedValidationReply){
-                    continue;
-                }
                 try {
-                    res.add(HttpMethod.valueOf(annotation.annotationType().getSimpleName()));
-                } catch (IllegalArgumentException ignore) {
-                } // we do not know this annotation
+                    res.add(HttpMethod.method(annotation));
+                } catch (IllegalArgumentException ignore) {} // we do not know this annotation
             }
-            return res;
+            return res.isEmpty() ? Collections.singletonList(HttpMethod.GET) : res;
         }
     }
 
