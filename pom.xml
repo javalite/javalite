@@ -54,7 +54,8 @@
        <connection>scm:git:git@github.com:javalite/activejdbc.git</connection>
        <developerConnection>scm:git:git@github.com:javalite/activejdbc.git</developerConnection>
        <url>git@github.com:javalite/activejdbc.git</url>
-     </scm>
+       <tag>HEAD</tag>
+  </scm>
 
     <profiles>
         <profile>
@@ -86,8 +87,8 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.1</version>
                     <configuration>
-                        <source>11</source>
-                        <target>11</target>
+                        <source>15</source>
+                        <target>15</target>
                         <!--
                             Alternate config, working on Java11
                             <release>11</release>
@@ -194,7 +195,7 @@
         <module>javalite-common</module>
         <module>activejdbc-instrumentation</module>
         <module>activejdbc</module>
-        <module>activejdbc-kt</module>
+<!--        <module>activejdbc-kt</module>-->
         <module>db-migrator-maven-plugin</module>
         <module>db-migrator-integration-test</module>
         <module>app-config</module>

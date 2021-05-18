@@ -305,15 +305,11 @@ public class AsyncSpec {
         String [] lines = Util.split(out, System.getProperty("line.separator"));
 
         String contextLine = getContextLine(lines);
-        String nonContextLine = getNonContextLine(lines);
 
         Map contextMap = JsonHelper.toMap(contextLine);
-        Map nonContextMap = JsonHelper.toMap(nonContextLine);
 
         Map context = (Map) contextMap.get("context");
         the(context.get("weight")).shouldBeEqual("35lb");
-
-        the(nonContextMap.containsKey("context")).shouldBeFalse();
 
         SystemStreamUtil.restoreSystemOut();
     }
@@ -327,14 +323,17 @@ public class AsyncSpec {
         return null;
     }
 
-    private String getNonContextLine(String[] lines) {
-        for (String line : lines) {
-            if(line.contains("ActiveMQ-client-global-threads") && !line.contains("weight")){
-                return line;
-            }
-        }
-        return null;
+    @Test
+    public void shouldSendModelData()  {
+        async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME));
+        async.start();
+        Book b = new Book();
+        b.set("title", "Alice in Wonderland");
+        async.send(QUEUE_NAME, new BookCommand(b.toMap()), DeliveryMode.NON_PERSISTENT);
+        BookCommand bc = async.receiveCommand(QUEUE_NAME, BookCommand.class);
+        the(bc.getBook().get("title")).shouldBeEqual("Alice in Wonderland");
     }
+
 }
 
 

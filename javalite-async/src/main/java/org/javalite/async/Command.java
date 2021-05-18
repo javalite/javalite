@@ -18,17 +18,15 @@ limitations under the License.
 package org.javalite.async;
 
 import com.thoughtworks.xstream.XStream;
-import org.javalite.common.JsonHelper;
+import com.thoughtworks.xstream.security.AnyTypePermission;
+import com.thoughtworks.xstream.security.NoTypePermission;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
-import static org.javalite.common.Collections.map;
 
 /**
  * Super class of all commands. Only the method {@link #execute()} is to be provided by subclasses to
@@ -40,9 +38,12 @@ public abstract class Command {
 
     private String jmsMessageId;
 
-    private Map<String, String> params = map("class", getClass().getSimpleName());
-
-    private static final XStream X_STREAM = new XStream(new CDATAXppDriver());
+    private static final XStream X_STREAM;
+    static {
+        X_STREAM = new XStream(new CDATAXppDriver());
+        X_STREAM.addPermission(NoTypePermission.NONE );
+        X_STREAM.addPermission(AnyTypePermission.ANY);
+    }
 
     /**
      * Method used by framework to de-serialize a command from XML.

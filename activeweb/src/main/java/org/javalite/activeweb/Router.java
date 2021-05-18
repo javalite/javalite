@@ -41,6 +41,7 @@ public class Router {
     private String rootControllerName;
     private List<RouteBuilder> routes = new ArrayList<>();
     private List<IgnoreSpec> ignoreSpecs;
+    private boolean strictMode;
 
     protected Router(String rootControllerName) {
         this.rootControllerName = rootControllerName;
@@ -71,6 +72,9 @@ public class Router {
         ControllerPath controllerPath = getControllerPath(uri);
 
         Route route = matchCustom(uri, controllerPath, httpMethod);
+
+        boolean nonCustomRoute = false;
+
         if (route == null) { //proceed to built-in routes
             if (controllerPath.getControllerName() == null) {
                 return null;
@@ -83,16 +87,19 @@ public class Router {
             }else{
                 route = controller.restful() ? matchRestful(uri, controllerPath, httpMethod, controller) :
                         matchStandard(uri, controllerPath, controller, httpMethod);
+                nonCustomRoute = true;
             }
         }
 
         if(route != null){
+            if(strictMode && nonCustomRoute){
+                throw new RouteException("Cannot map to a non-custom route with a 'strictMode' flag on.");
+            }
             route.setIgnoreSpecs(ignoreSpecs);
         }else{
             logger.error("Failed to recognize URL: '" + uri + "'");
             throw new RouteException("Failed to map resource to URI: " + uri);
         }
-
         return route;
     }
 
@@ -442,5 +449,9 @@ public class Router {
 
     public void setIgnoreSpecs(List<IgnoreSpec> ignoreSpecs) {
         this.ignoreSpecs = ignoreSpecs;
+    }
+
+    public void setStrictMode(boolean strictMode) {
+        this.strictMode = strictMode;
     }
 }

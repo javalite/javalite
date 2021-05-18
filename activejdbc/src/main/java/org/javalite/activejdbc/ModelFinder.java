@@ -37,9 +37,14 @@ public class ModelFinder {
         if (modelMap == null) {
             try {
                 modelMap = new HashMap<>();
+                Set<URL> loadedModelFiles = new HashSet<>();
                 Enumeration<URL> urls = Registry.instance().getClass().getClassLoader().getResources(Registry.instance().getModelFile());
                 while(urls.hasMoreElements()) {
                     URL url = urls.nextElement();
+                    if (!loadedModelFiles.add(url)) {
+                        LogFilter.log(LOGGER, LogLevel.WARNING, "Skipping duplicate modelFile: {}", url.toExternalForm());
+                        continue;
+                    }
                     LogFilter.log(LOGGER, LogLevel.INFO, "Loading models from: {}", url.toExternalForm());
                     String modelsFile = Util.read(url.openStream());
                     String[] lines = Util.split(modelsFile, System.getProperty("line.separator"));
@@ -49,7 +54,7 @@ public class ModelFinder {
                         String dbName = parts[1];
                         Set<String> modelNames = modelMap.computeIfAbsent(dbName, k -> new HashSet<>());
                         if (!modelNames.add(modelName)) {
-                            throw new InitException(String.format("Model '{}' already exists for database '{}'", modelName, dbName));
+                            throw new InitException(String.format("Model '%s' already exists for database '%s'", modelName, dbName));
                         }
                     }
                 }
