@@ -33,7 +33,7 @@ public class SessionFacade implements Map<String,Object> {
         return httpRequest == null ? null : httpRequest.getSession(false);
     }
 
-    public boolean isExists() {
+    public boolean exists() {
         return httpSession() != null;
     }
 
@@ -51,13 +51,13 @@ public class SessionFacade implements Map<String,Object> {
     /**
      * Retrieve object from session.
      *
-     * @param name name of object.
+     * @param key name of object.
      * @return named object.
      */
     @Override
-    public Object get(Object name) {
+    public Object get(Object key) {
         HttpSession session = httpSession();
-        return session == null ? null : session.getAttribute(name.toString());
+        return session == null ? null : session.getAttribute(key.toString());
     }
 
     /**
@@ -74,11 +74,20 @@ public class SessionFacade implements Map<String,Object> {
 
     /**
      * Removes object from session.
-     * @param name name of object
+     * @param key name of object
      */
-    public Object remove(String name){
-        return remove((Object)name);
+    @Override
+    public Object remove(Object key) {
+        HttpSession session = httpSession();
+        if (session != null) {
+            Object val = session.getAttribute(key.toString());
+            session.removeAttribute(key.toString());
+            return val;
+        }
+        return null;
     }
+
+
 
     /**
      * Returns time when session was created. 
@@ -165,7 +174,7 @@ public class SessionFacade implements Map<String,Object> {
     @Override
     public boolean isEmpty() {
         HttpSession session = httpSession();
-        return session == null || session.getAttributeNames().hasMoreElements();
+        return session == null || !session.getAttributeNames().hasMoreElements();
     }
 
     @Override
@@ -179,8 +188,7 @@ public class SessionFacade implements Map<String,Object> {
         if (session != null) {
             Enumeration<String> names = session.getAttributeNames();
             while (names.hasMoreElements()) {
-                String name = names.nextElement();
-                if (name.equals(value)) {
+                if (Objects.equals(session.getAttribute(names.nextElement()), value)) {
                     return true;
                 }
             }
@@ -198,17 +206,6 @@ public class SessionFacade implements Map<String,Object> {
         Object prev = get(key);
         RequestContext.getHttpRequest().getSession(true).setAttribute(key, value);
         return prev;
-    }
-
-    @Override
-    public Object remove(Object key) {
-        HttpSession session = httpSession();
-        if (session != null) {
-            Object val = session.getAttribute(key.toString());
-            session.removeAttribute(key.toString());
-            return val;
-        }
-        return null;
     }
 
     @Override

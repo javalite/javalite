@@ -26,7 +26,7 @@ public class SessionFacadeSpec extends AppIntegrationSpec {
         controller("session").get("remove_from_session");
         a("not found".equals(responseContent())).shouldBeTrue();
         a(statusCode()).shouldBeEqual(404);
-        a(session().isExists()).shouldBeFalse();
+        a(session().exists()).shouldBeFalse();
 
     }
 }
