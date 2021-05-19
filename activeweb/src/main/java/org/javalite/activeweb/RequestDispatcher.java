@@ -118,13 +118,10 @@ public class RequestDispatcher implements Filter {
         return router;
     }
 
-
-
-    @SuppressWarnings("unchecked")
     private void initAppConfig(String configClassName, AppContext context, boolean fail){
         InitConfig initConfig;
         try {
-            Class c = Class.forName(configClassName);
+            Class<?> c = Class.forName(configClassName);
             initConfig = (InitConfig) c.getDeclaredConstructor().newInstance();
             initConfig.init(context);
             if(initConfig instanceof  Bootstrap){
@@ -136,17 +133,15 @@ public class RequestDispatcher implements Filter {
             initConfig.completeInit();
         }
         catch (Throwable e) {
-            Throwable realException = e;
-            if(e instanceof  CreationException){
-                logger.error("Initialization of Guice module failed with: " + e.getClass());
-                realException = e.getCause();
-            }
-
             if(fail){
-                logger.error("Failed to create and init a new instance of class: " + configClassName + ". Application failed to start, so it will not run.", realException);
-                throw new InitException(realException);
+                logger.error("Failed to create and init a new instance of class: " +
+                        configClassName + ". Application failed to start, so it will not run.", e);
+                if(e.getCause() != null){
+                    logger.error("Cause exception below: ", e.getCause());
+                }
+                throw new InitException(e);
             }else{
-                logger.warn("Failed to init a class name: " + configClassName + ", proceeding without it.", realException);
+                logger.warn("Failed to init a class name: " + configClassName + ", proceeding without it.", e);
             }
         }
     }
