@@ -30,8 +30,8 @@ import org.junit.Before;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.mock.web.MockFilterConfig;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.mock.web.MockHttpSession;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class SpecHelper implements JSpecSupport{
         sessionFacade = new SessionFacade();
         setTemplateLocation("src/main/webapp/WEB-INF/views");//default location of all views
 
-        RequestContext.setTLs(null, new MockHttpServletResponse(), new MockFilterConfig(),
+        RequestContext.setTLs(new MockHttpServletRequest(), new MockHttpServletResponse(), new MockFilterConfig(),
                 new AppContext(), new RequestVo(), null);
 
     }
