@@ -1,7 +1,6 @@
 package app.controllers;
 
 import org.javalite.activeweb.AppIntegrationSpec;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class SessionFacadeSpec extends AppIntegrationSpec {
@@ -22,7 +21,7 @@ public class SessionFacadeSpec extends AppIntegrationSpec {
         the(responseContent()).shouldContain("app.controllers.SessionController$Dumb");
     }
 
-    @Test @Ignore
+    @Test
     public void shouldSessionNotCreated() {
         controller("session").get("remove_from_session");
         a("not found".equals(responseContent())).shouldBeTrue();

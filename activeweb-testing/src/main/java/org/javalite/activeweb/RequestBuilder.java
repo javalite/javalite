@@ -39,7 +39,6 @@ public class RequestBuilder {
     private String contentType;
     private byte[] content;
     private String controllerPath;
-    private SessionFacade sessionFacade;
     private List<org.javalite.activeweb.Cookie> cookies = new ArrayList<>();
     private MockHttpServletRequest request;
     private String realAction;
@@ -49,10 +48,9 @@ public class RequestBuilder {
     private String format;
     private String remoteAddress;
 
-    public RequestBuilder(String controllerPath, SessionFacade sessionFacade) {
+    public RequestBuilder(String controllerPath) {
         RequestContext.setParams1st(null);
         this.controllerPath = controllerPath;
-        this.sessionFacade = sessionFacade;
     }
 
 
@@ -360,7 +358,7 @@ public class RequestBuilder {
         }
 
         if (prevRequest != null) {
-            request.setSession(prevRequest.getSession());
+            request.setSession(prevRequest.getSession(false));
         }
 
         if (contentType != null)
