@@ -54,8 +54,9 @@ public class SpecHelper implements JSpecSupport{
     public void atStart() {
         sessionFacade = new SessionFacade();
         setTemplateLocation("src/main/webapp/WEB-INF/views");//default location of all views
-
-        RequestContext.setTLs(new MockHttpServletRequest(), new MockHttpServletResponse(), new MockFilterConfig(),
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setContextPath("/test_context");
+        RequestContext.setTLs(request, new MockHttpServletResponse(), new MockFilterConfig(),
                 new AppContext(), new RequestVo(), null);
 
     }
