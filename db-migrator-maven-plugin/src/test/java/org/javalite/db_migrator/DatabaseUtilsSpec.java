@@ -3,7 +3,6 @@ package org.javalite.db_migrator;
 import org.junit.Test;
 
 import static org.javalite.test.jspec.JSpec.the;
-import static org.junit.Assert.*;
 import static org.javalite.db_migrator.DbUtils.*;
 
 public class DatabaseUtilsSpec

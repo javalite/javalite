@@ -1,16 +1,19 @@
 package org.javalite.db_migrator;
 
 import org.javalite.activejdbc.Base;
+import org.javalite.common.Templator;
+import org.javalite.common.Util;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.javalite.db_migrator.DbUtils.countMigrations;
+import static org.javalite.db_migrator.DbUtils.exec;
 import static org.javalite.db_migrator.JdbcPropertiesOverride.*;
 import static org.javalite.test.jspec.JSpec.the;
-import static org.javalite.db_migrator.DbUtils.*;
 
 
-public class MySQLMigrationSpec {
+public class MySQLTemplatorMigrationSpec {
     private MigrationManager migrationManager;
     private final String databaseName = "mysql_migration_test";
 
@@ -26,7 +29,12 @@ public class MySQLMigrationSpec {
 
         String url = url() + "/" + databaseName;
         Base.open(driver(), url, user(), password());
-        migrationManager = new MigrationManager("src/test/resources/test_migrations/mysql/", url);
+
+
+
+        migrationManager = new MigrationManager("src/test/resources/test_migrations/mysql-templator/",
+                url,
+                Util.readProperties("/test_migrations/templator/table-names.properties"));
     }
 
     @After
@@ -40,7 +48,7 @@ public class MySQLMigrationSpec {
     @Test
     public void shouldApplyPendingMigrations() {
         migrationManager.migrate(new MockLog(), null);
-        the(countMigrations("schema_version")).shouldBeEqual(4);
+        the(countMigrations("schema_version")).shouldBeEqual(2);
         the(Base.count("books")).shouldBeEqual(9);
         the(Base.count("authors")).shouldBeEqual(2);
     }

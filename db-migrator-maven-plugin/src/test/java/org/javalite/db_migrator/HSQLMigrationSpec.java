@@ -6,8 +6,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
 import static org.javalite.db_migrator.DbUtils.*;
+import static org.javalite.test.jspec.JSpec.the;
 
 
 public class HSQLMigrationSpec {
@@ -29,6 +29,6 @@ public class HSQLMigrationSpec {
     @Test
     public void shouldApplyPendingMigrations() {
         migrationManager.migrate(new MockLog(), null);
-        assertEquals(countMigrations("schema_version"), 2);
+        the(countMigrations("schema_version")).shouldBeEqual(2);
     }
 }

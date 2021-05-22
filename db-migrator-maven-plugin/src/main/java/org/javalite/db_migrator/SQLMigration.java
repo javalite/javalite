@@ -1,5 +1,6 @@
 package org.javalite.db_migrator;
 
+import org.javalite.common.Templator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import static org.javalite.common.Util.blank;
 import static org.javalite.db_migrator.DbUtils.exec;
@@ -21,8 +23,11 @@ public class SQLMigration extends Migration {
     private static final String[] COMMENT_CHARS = new String[]{"--", "#", "//"};
 
     public SQLMigration(String version, File migrationFile) {
+        this(version, migrationFile, null);
 
-        super(version, migrationFile);
+    }
+    public SQLMigration(String version, File migrationFile, Properties mergeProperties) {
+        super(version, migrationFile, mergeProperties);
     }
 
 
@@ -61,7 +66,7 @@ public class SQLMigration extends Migration {
             }
 
             for (String statement : statements) {
-                exec(statement);
+                exec(mergeProperties == null ? statement : Templator.mergeFromTemplate(statement, mergeProperties, false));
             }
         } catch (Exception e) {
             LOGGER.error("Error executing migration file: {}", getMigrationFile().toString(), e);

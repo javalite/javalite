@@ -1,0 +1,40 @@
+
+JavaLite DB-Migrator Plugin
+  Provides a set of utilities for database migrations.
+
+============ Supported goals ============
+
+db-migrator:drop
+  drops database configured in pom
+db-migrator:create
+  creates database configured in pom
+db-migrator:new
+  creates a new migration file. Example: 'mvn db-migrator:new -Dname=create_books_table'
+db-migrator:check
+  checks that no pending migrations remain. This can be used in build lifecycle to fail the build if pending migrations are found
+db-migrator:migrate
+  migrates all pending migrations
+db-migrator:validate
+  validates and prints a report listing pending migrations
+db-migrator:reset
+  drops/re-creates the database, and runs all migrations, effectively resetting database to pristine state
+db-migrator:help
+  prints this message
+
+============ Supported configuration parameters ============
+
+* url - URL to the database
+* driver - JDBC driver class name
+* username - user name for a database
+* password - password name for a database
+* environments - list of environments to migrate
+* configFile - a config properties file
+* mergeProperties - path to a properties file to merge into migration files. If this parameter is missing, no merging will be performed.
+
+Note: you either use the properties url, driver, username and password or the configFile.
+For more information, see https://javalite.io/database_migrations
+
+========================================================
+Example: 
+$ db-migrator:reset -Denvironments=development.test,development
+========================================================

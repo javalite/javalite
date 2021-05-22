@@ -22,7 +22,7 @@ package org.javalite.db_migrator;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.javalite.test.jspec.JSpec.the;
 
 
 public class MigrationResolverSpec {
@@ -30,6 +30,6 @@ public class MigrationResolverSpec {
     @Test
     public void shouldExtractVersionFromFileName() {
         MigrationResolver resolver = new MigrationResolver("blah");
-        assertEquals(resolver.extractVersion("20080718214030_tinman.sql"), "20080718214030");
+        the(resolver.extractVersion("20080718214030_tinman.sql")).shouldBeEqual("20080718214030");
     }
 }

@@ -11,12 +11,19 @@ import java.util.regex.Pattern;
 public class MigrationResolver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MigrationResolver.class);
-    private String migrationsLocation;
+    private final String migrationsLocation;
 
-    private static Pattern MIGRATION_FILE_PATTERN = Pattern.compile("^(\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d)_.*\\.(sql|groovy)");
+    private Properties mergeProperties;
+
+    private static final Pattern MIGRATION_FILE_PATTERN = Pattern.compile("^(\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d)_.*\\.(sql|groovy)");
 
     public MigrationResolver(String migrationsLocation) {
+        this(migrationsLocation, null);
+    }
+
+    public MigrationResolver(String migrationsLocation, Properties mergeProperties) {
         this.migrationsLocation = migrationsLocation;
+        this.mergeProperties = mergeProperties;
     }
 
     public List<Migration> resolve() {
@@ -45,9 +52,9 @@ public class MigrationResolver {
             String version = extractVersion(migrationFile.getName());
 
             if(migrationFile.getName().endsWith("sql")){
-                migrations.add(new SQLMigration(version, migrationFile));
+                migrations.add(new SQLMigration(version, migrationFile, mergeProperties));
             }else if(migrationFile.getName().endsWith("groovy")){
-                migrations.add(new GroovyMigration(version, migrationFile));
+                migrations.add(new GroovyMigration(version, migrationFile, mergeProperties));
             }else {
                 throw new RuntimeException("file type not supported");
             }
@@ -58,7 +65,7 @@ public class MigrationResolver {
     }
 
     private List<String> extractVersions(List<File> migrationsFiles) {
-        List<String> versions = new ArrayList<String>();
+        List<String> versions = new ArrayList<>();
         for (File file : migrationsFiles) {
             versions.add(extractVersion(file.getName()));
         }

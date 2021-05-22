@@ -1,15 +1,18 @@
 package org.javalite.db_migrator;
 
 import java.io.File;
+import java.util.Properties;
 
 public abstract class Migration implements Comparable{
 
     private File migrationFile;
     private String version;
+    protected Properties mergeProperties;
 
-    Migration(String version, File migrationFile) {
+    Migration(String version, File migrationFile,Properties mergeProperties) {
         this.migrationFile = migrationFile;
         this.version = version;
+        this.mergeProperties = mergeProperties;
     }
 
     String getVersion() {

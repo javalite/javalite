@@ -3,13 +3,11 @@ package org.javalite.db_migrator;
 import org.apache.maven.plugin.logging.Log;
 import org.javalite.activejdbc.Base;
 import org.javalite.cassandra.jdbc.CassandraJDBCConnection;
+import org.javalite.common.Templator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.javalite.db_migrator.DbUtils.databaseType;
 
@@ -21,8 +19,12 @@ public class MigrationManager {
 
 
     public MigrationManager(String migrationLocation, String url) throws SQLException {
+        this(migrationLocation, url, null);
+    }
+
+    public MigrationManager(String migrationLocation, String url, Properties mergeProperties) throws SQLException {
         this.dbType = determineDatabaseType();
-        migrationResolver = new MigrationResolver(migrationLocation);
+        migrationResolver = new MigrationResolver(migrationLocation, mergeProperties);
         String databaseName;
         if(url != null){
             databaseName = DbUtils.extractDatabaseName(url);
