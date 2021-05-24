@@ -20,7 +20,6 @@ public class EndPointDefinition {
 
     public EndPointDefinition(List<HttpMethod> methods, String path, String openAPIdoc, String argumentClassName) {
 
-
         this.methods.addAll(methods);
         this.path = path;
         this.openAPIdoc = openAPIdoc;

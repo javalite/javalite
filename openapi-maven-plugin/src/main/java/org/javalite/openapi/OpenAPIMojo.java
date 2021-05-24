@@ -1,6 +1,5 @@
 package org.javalite.openapi;
 
-import io.github.classgraph.ClassInfo;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -9,12 +8,10 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.javalite.activeweb.*;
-import org.javalite.common.Inflector;
 import org.javalite.common.Util;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -78,10 +75,10 @@ public class OpenAPIMojo extends AbstractMojo {
         try{
 
 
-            List<EndPointDefinition> endPointDefinitions = ClassEndpointFinder.getClasspathEndpointDefinitions(getCombinedClassLoader());
 
+            ClassEndpointFinder.getCustomEndpointDefinitions(getCombinedClassLoader());
 
-
+            List<EndPointDefinition> endPointDefinitions = ClassEndpointFinder.getStandardEndpointDefinitions(getCombinedClassLoader());
             printEndpointDefinitions(endPointDefinitions);
 
 

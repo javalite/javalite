@@ -1,20 +1,29 @@
 package org.javalite.openapi;
 
+import org.javalite.activeweb.ClassEndpointFinder;
 import org.javalite.activeweb.HttpMethod;
 import org.junit.Test;
 
 import java.util.List;
 
-import static org.javalite.openapi.ClassEndpointFinder.getClasspathEndpointDefinitions;
+import static org.javalite.activeweb.ClassEndpointFinder.getStandardEndpointDefinitions;
 import static org.javalite.test.jspec.JSpec.$;
 import static org.javalite.test.jspec.JSpec.the;
 
 public class ClassEndpointFinderSpec {
 
-    @Test
-    public void shouldFindEndpointsFromClasspath() {
 
-        List<EndPointDefinition> endPointDefinitions = getClasspathEndpointDefinitions(this.getClass().getClassLoader());
+    @Test
+    public void shouldFindCustomEndpointsFromClasspath() {
+
+        List<EndPointDefinition> endPointDefinitions = ClassEndpointFinder.getCustomEndpointDefinitions(this.getClass().getClassLoader());
+
+        endPointDefinitions.forEach(System.out::println);
+    }
+    @Test
+    public void shouldFindStandardEndpointsFromClasspath() {
+
+        List<EndPointDefinition> endPointDefinitions = getStandardEndpointDefinitions(this.getClass().getClassLoader());
 
         the(endPointDefinitions.size()).shouldBeEqual(10);
 

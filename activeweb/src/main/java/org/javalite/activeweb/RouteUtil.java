@@ -1,5 +1,7 @@
 package org.javalite.activeweb;
 
+import org.javalite.common.Inflector;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -94,12 +96,29 @@ public class RouteUtil {
         }
     }
 
-    public static Class<?> getArgumentClass(Method method){
+    /**
+     * Provides an argument  class for an action method. WIll find a type of an argument only if the method plays by the rules:
+     *
+     * <ul>
+     *     <li>
+     *         Method has just one argument
+     *     </li>
+     *     <li>
+     *          Argument is not coming from the <code>java.*</code> packages
+     *     </li>
+     * </ul>
+     *
+     * if argument is not playing by these rules a <code>null</code> will be returned even if the method does have arguments.
+     *
+     * @param actionMethod action method, obviously.
+     * @return type of an argument for this action method.
+     */
+    public static Class<?> getArgumentClass(Method actionMethod){
 
         Class<?> argumentClass;
 
-        if (method.getParameterCount() == 1) {
-            argumentClass = method.getParameterTypes()[0];
+        if (actionMethod.getParameterCount() == 1) {
+            argumentClass = actionMethod.getParameterTypes()[0];
             // we do not need primitives, shooting for a class defined in the project.
             if (!argumentClass.getName().startsWith("java")
                     && !PRIMITIVES.contains(argumentClass.getName())) {
@@ -109,4 +128,22 @@ public class RouteUtil {
         }
         return null;
     }
+
+    /**
+     * Finds a first method that has one argument. If not found, will find a method that has no arguments.
+     * If not found, will return null.
+     */
+     static Method getActionMethod(AppController controller, String actionName){
+
+        String actionMethodName = Inflector.camelize(actionName.replace('-', '_'), false);
+
+        List<Method> methods = RouteUtil.getNamedMethods(controller, actionMethodName);
+        if (methods.size() == 0) {
+            return null;
+        }else if(methods.size() > 1){ // must have exactly one method with the same name, regardless of arguments.
+            throw new AmbiguousActionException("Ambiguous overloaded method: " + actionMethodName + ".");
+        }
+        return methods.get(0);
+    }
+
 }

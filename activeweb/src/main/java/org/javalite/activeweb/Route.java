@@ -13,20 +13,20 @@ import static org.javalite.common.Util.blank;
 import static org.javalite.common.Util.join;
 
 /**
- * Instance of this class will contain routing information.
+ * Instance of this class will contain routing information discovered dynamically on a request.
  *
  * @author Igor Polevoy: 1/8/13 4:21 PM
  */
 public class Route {
-    private static Logger LOGGER = LoggerFactory.getLogger(Route.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Route.class);
 
-    private AppController controller;
+    private final AppController controller;
     private String actionName, id, wildCardName, wildCardValue, targetAction;
     private List<IgnoreSpec> ignoreSpecs;
     private HttpMethod httpMethod;
     private boolean custom = false;
     private Method actionMethod;
-    private Class argumentClass;
+    private Class<?> argumentClass;
 
     public Route(AppController controller, String actionName, HttpMethod method) {
         this.controller = controller;
@@ -66,42 +66,14 @@ public class Route {
         }
 
         this.actionName = actionName;
-        String actionMethodName = Inflector.camelize(actionName.replace('-', '_'), false);
 
-        actionMethod = getActionMethod(controller, actionMethodName);
-
-        if (actionMethod == null) {
+        actionMethod = RouteUtil.getActionMethod(controller, actionName);
+        if (actionMethod != null) {
+            argumentClass = RouteUtil.getArgumentClass(actionMethod);
+        }else {
             throw new ActionNotFoundException("Failed to find an action method for action: '" + actionName + "' in controller: " + controller.getClass().getName());
         }
     }
-
-
-    /**
-     * Finds a first method that has one argument. If not found, will find a method that has no arguments.
-     * If not found, will return null.
-     */
-    private Method getActionMethod(AppController controller, String actionMethodName){
-
-        List<Method> methods = RouteUtil.getNamedMethods(controller, actionMethodName);
-
-        if (methods.size() == 0) {
-            return null;
-        }else if(methods.size() > 1){ // must have exactly one method with the same name, regardless of arguments.
-            throw new AmbiguousActionException("Ambiguous overloaded method: " + actionMethodName + ".");
-        }
-
-        Method method = methods.get(0);
-
-        if (method.getParameterCount() == 1) {
-            argumentClass = RouteUtil.getArgumentClass(method);
-            return method;
-        }else  if (method.getParameterCount() == 0) {
-            return method;
-        }
-
-        return null;
-    }
-
 
     boolean isWildCard() {
         return wildCardName != null;
@@ -124,7 +96,7 @@ public class Route {
         return actionMethod;
     }
 
-    public Class getArgumentClass(){
+    public Class<?> getArgumentClass(){
         return this.argumentClass;
     }
 
