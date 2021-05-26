@@ -25,6 +25,11 @@ import java.io.Writer;
 import java.math.BigDecimal;
 import java.sql.Blob;
 import java.sql.Clob;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -43,11 +48,8 @@ public final class Convert {
             return Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         }
     };
-    private static final ThreadLocal<Calendar> THREADLOCAL_CAL_DEFAULT = new ThreadLocal<Calendar>() {
-        @Override protected Calendar initialValue(){
-            return Calendar.getInstance();
-        }
-    };
+    private static final ThreadLocal<Calendar> THREADLOCAL_CAL_DEFAULT = ThreadLocal.withInitial(Calendar::getInstance);
+    private static final ThreadLocal<SimpleDateFormat> FORMATTER = ThreadLocal.withInitial(() -> new SimpleDateFormat("dd-MM-yyyy"));
 
     private Convert() {
         // not instantiable
@@ -291,6 +293,36 @@ public final class Convert {
            return java.sql.Time.valueOf(value.toString().trim());
         }
     }
+
+    /**
+     * Converts a value to <code>LocalDate</code>. Tries to convert to <code>java.util.Date</code>, then to <code>LocalDate</code>.
+     * If that does not work, tries to convert to <code>String</code>, then to <code>Date</code>, and so on.
+     *
+     * @param value value to convert
+     * @return converted LocalDate
+     */
+    public static LocalDate toLocalDate(Object value){
+        if (value == null) {
+            return null;
+        } else if (value instanceof LocalDate) {
+            return (LocalDate) value;
+        } else if (value instanceof java.util.Date) {
+            return toLocalDate((java.util.Date)value);
+        }else{
+            try{
+                return toLocalDate(FORMATTER.get().parse(value.toString()));
+            }catch(java.text.ParseException e){
+                throw new ConversionException("failed to convert: '" + value + "' to LocalDate", e);
+            }
+        }
+    }
+
+    private static LocalDate toLocalDate(java.util.Date date){
+            Instant instant = date.toInstant();
+            ZonedDateTime zone = instant.atZone(ZoneId.systemDefault());
+            return zone.toLocalDate();
+    }
+
 
     /**
      * If the value is instance of java.sql.Timestamp, returns it, else tries to convert java.util.Date or Long to
