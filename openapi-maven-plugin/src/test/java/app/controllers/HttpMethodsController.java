@@ -5,22 +5,41 @@ import org.javalite.activeweb.annotations.*;
 
 
 public class HttpMethodsController extends AppController {
-    @GET @POST
-    public void index(){}
+
+    /**
+     * Hello
+     */
+    @GET
+    @POST
+    public void index() {
+    }
 
     @POST
-    public void doPost(){}
+    public void doPost() {
+    }
 
+    @OpenAPI("""
+            docs for doPut""")
     @PUT
-    public void doPut(){}
+    public void doPut() {
+    }
 
+    /**
+     * hello again
+     */
+
+    @OpenAPI("""
+            docs for doHead""")
     @HEAD
-    public void doHead(){}
+    public void doHead() {
+    }
 
     @OPTIONS
-    public void doOptions(){}
+    public void doOptions() {
+    }
 
     @PATCH
-    public void doPatch(){}
+    public void doPatch() {
+    }
 
 }

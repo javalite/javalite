@@ -11,7 +11,7 @@ public abstract class AbstractRouteConfig implements InitConfig {
     private List<RouteBuilder> routes = new ArrayList<>();
 
     //ignore some URLs
-    private List<IgnoreSpec> ignoreSpecs = new ArrayList<>();
+    private final List<IgnoreSpec> ignoreSpecs = new ArrayList<>();
 
     private boolean strict = false;
 
@@ -23,7 +23,7 @@ public abstract class AbstractRouteConfig implements InitConfig {
         return matchedRoute;
     }
 
-    protected List<RouteBuilder> getRoutes() {
+    public List<RouteBuilder> getRoutes() {
         return routes;
     }
 

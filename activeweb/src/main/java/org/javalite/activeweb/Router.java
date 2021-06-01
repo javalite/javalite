@@ -69,7 +69,7 @@ public class Router {
             uri = uri.substring(0, uri.length() - 1);
         }
 
-        ControllerPath controllerPath = getControllerPath(uri);
+        ControllerPath controllerPath = getControllerPathByURI(uri);
 
         Route route = matchCustom(uri, controllerPath, httpMethod);
 
@@ -331,7 +331,7 @@ public class Router {
      * @param uri this is a URI - the information after context : "controller/action/whatever".
      * @return map with two keys: "controller_name" and "package_suffix", both of which can be null.
      */
-    protected ControllerPath getControllerPath(String uri) {
+    protected ControllerPath getControllerPathByURI(String uri) {
 
         boolean rootPath = uri.equals("/");
         boolean useRootController = rootPath && rootControllerName != null;

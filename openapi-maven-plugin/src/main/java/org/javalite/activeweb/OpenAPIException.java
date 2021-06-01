@@ -1,4 +1,4 @@
-package org.javalite.openapi;
+package org.javalite.activeweb;
 
 public class OpenAPIException extends RuntimeException{
     public OpenAPIException(Throwable cause) {

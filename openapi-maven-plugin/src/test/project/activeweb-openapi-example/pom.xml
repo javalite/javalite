@@ -35,6 +35,10 @@
                 <groupId>org.javalite</groupId>
                 <artifactId>openapi-maven-plugin</artifactId>
                 <version>3.0-SNAPSHOT</version>
+                <configuration>
+                    <format>JSON</format>
+                    <base_file>src/main/openapi/base.yml</base_file>
+                </configuration>
             </plugin>
         </plugins>
     </build>

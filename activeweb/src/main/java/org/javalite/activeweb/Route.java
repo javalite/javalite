@@ -66,13 +66,12 @@ public class Route {
         }
 
         this.actionName = actionName;
-
-        actionMethod = RouteUtil.getActionMethod(controller, actionName);
-        if (actionMethod != null) {
-            argumentClass = RouteUtil.getArgumentClass(actionMethod);
-        }else {
+        ActionAndArgument actionAndArgument = RouteUtil.getActionAndArgument(controller, actionName);
+        if( actionAndArgument.getActionMethod() == null){
             throw new ActionNotFoundException("Failed to find an action method for action: '" + actionName + "' in controller: " + controller.getClass().getName());
         }
+        actionMethod = actionAndArgument.getActionMethod();
+        argumentClass = actionAndArgument.getArgumentType();
     }
 
     boolean isWildCard() {

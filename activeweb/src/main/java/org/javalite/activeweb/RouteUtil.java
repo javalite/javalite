@@ -97,7 +97,7 @@ public class RouteUtil {
     }
 
     /**
-     * Provides an argument  class for an action method. WIll find a type of an argument only if the method plays by the rules:
+     * Provides an argument  class for an action method. Will find a type of an argument only if the method plays by the rules:
      *
      * <ul>
      *     <li>
@@ -113,7 +113,7 @@ public class RouteUtil {
      * @param actionMethod action method, obviously.
      * @return type of an argument for this action method.
      */
-    public static Class<?> getArgumentClass(Method actionMethod){
+    private static Class<?> getArgumentClass(Method actionMethod){
 
         Class<?> argumentClass;
 
@@ -133,17 +133,17 @@ public class RouteUtil {
      * Finds a first method that has one argument. If not found, will find a method that has no arguments.
      * If not found, will return null.
      */
-     static Method getActionMethod(AppController controller, String actionName){
+     static ActionAndArgument getActionAndArgument(AppController controller, String actionName){
 
         String actionMethodName = Inflector.camelize(actionName.replace('-', '_'), false);
 
         List<Method> methods = RouteUtil.getNamedMethods(controller, actionMethodName);
         if (methods.size() == 0) {
-            return null;
+            return new ActionAndArgument(null, null);
         }else if(methods.size() > 1){ // must have exactly one method with the same name, regardless of arguments.
             throw new AmbiguousActionException("Ambiguous overloaded method: " + actionMethodName + ".");
         }
-        return methods.get(0);
+        return new ActionAndArgument(methods.get(0), getArgumentClass(methods.get(0)));
     }
 
 }

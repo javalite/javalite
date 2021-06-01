@@ -79,44 +79,6 @@ public enum HttpMethod {
 
 
 
-    /**
-     * Detects an HTTP method from class method.
-     * @param actionMethod method from a controller.
-     * @return instance of this class.
-     */
-    public static List<HttpMethod> detect(MethodInfo actionMethod){
-
-        List<HttpMethod> methods = new ArrayList<>();
-        if(actionMethod.getAnnotationInfo().size() == 0){
-            methods.add(HttpMethod.GET);
-            return methods ;
-        }else{
-
-            if(actionMethod.hasAnnotation(org.javalite.activeweb.annotations.GET.class.getName())){
-                methods.add(HttpMethod.GET);
-            }
-            if(actionMethod.hasAnnotation(org.javalite.activeweb.annotations.POST.class.getName())){
-                methods.add(HttpMethod.POST);
-            }
-            if(actionMethod.hasAnnotation(org.javalite.activeweb.annotations.PATCH.class.getName())){
-                methods.add(HttpMethod.PATCH);
-            }
-            if(actionMethod.hasAnnotation(org.javalite.activeweb.annotations.OPTIONS.class.getName())){
-                methods.add(HttpMethod.OPTIONS);
-            }
-            if(actionMethod.hasAnnotation(org.javalite.activeweb.annotations.HEAD.class.getName())){
-                methods.add(HttpMethod.HEAD);
-            }
-            if(actionMethod.hasAnnotation(org.javalite.activeweb.annotations.PUT.class.getName())){
-                methods.add(HttpMethod.PUT);
-            }
-            if(actionMethod.hasAnnotation(org.javalite.activeweb.annotations.DELETE.class.getName())){
-                methods.add(HttpMethod.DELETE);
-            }
-        }
-
-        return methods;
-    }
 
     static class Test{
 
