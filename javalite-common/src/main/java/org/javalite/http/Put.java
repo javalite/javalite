@@ -17,15 +17,15 @@ limitations under the License.
 package org.javalite.http;
 
 import java.io.OutputStream;
+import java.net.ProtocolException;
 
 /**
  * Executes a PUT request.
  *
  * @author Igor Polevoy
  */
-public class Put extends Request<Put> {
+public class Put extends Post {
 
-    private final byte[] content;
 
     /**
      * Constructor for making PUT requests.
@@ -36,30 +36,18 @@ public class Put extends Request<Put> {
      * @param readTimeout read timeout.
      */
     public Put(String url, byte[] content, int connectTimeout, int readTimeout) {
-        super(url, connectTimeout, readTimeout);
-        this.content = content;
-    }
-    
-    @Override
-    public Put doConnect() {
-        try {
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setRequestMethod("PUT");
-            connection.setInstanceFollowRedirects(redirect);
-            OutputStream os = connection.getOutputStream();
-            os.write(content);
-            os.flush();
-            return this;
-        } catch (Exception e) {
-            throw new HttpException("Failed URL: " + url, e);
-        }
+        super(url, content, connectTimeout, readTimeout);
     }
 
-    public static void main(String[] args) {
-        Put put = Http.put("http://localhost:8080/kitchensink/http/put", "bugagaga");
-        System.out.println(put.text());
-        System.out.println(put.headers());
-        System.out.println(put.responseCode());
+    @Override
+    protected void setMethod() throws ProtocolException {
+        connection.setRequestMethod("PUT");
     }
+
+//    public static void main(String[] args) {
+//        Put put = Http.put("http://localhost:8080/http", "bugagaga");
+//        System.out.println(put.text());
+//        System.out.println(put.headers());
+//        System.out.println(put.responseCode());
+//    }
 }

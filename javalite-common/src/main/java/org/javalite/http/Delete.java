@@ -16,12 +16,14 @@ limitations under the License.
 
 package org.javalite.http;
 
+import java.net.ProtocolException;
+
 /**
  * Executes a DELETE request.
  *
  * @author Igor Polevoy
  */
-public class Delete extends Request<Delete> {
+public class Delete extends Post {
 
     /**
      * Constructor for making DELETE requests.
@@ -31,26 +33,19 @@ public class Delete extends Request<Delete> {
      * @param readTimeout read timeout.
      */
     public Delete(String url, int connectTimeout, int readTimeout) {
-        super(url, connectTimeout, readTimeout);
+        super(url, null, connectTimeout, readTimeout);
     }
 
+
     @Override
-    public Delete doConnect() {
-        try {
-            connection.setDoOutput(true);
-            connection.setRequestMethod("DELETE");
-            connection.setInstanceFollowRedirects(redirect);
-            connection.connect();
-            return this;
-        } catch (Exception e) {
-            throw new HttpException("Failed URL: " + url, e);
-        }
+    protected void setMethod() throws ProtocolException {
+        connection.setRequestMethod("DELETE");
     }
-    
-    public static void main(String[] args) {
-        Delete delete = Http.delete("http://localhost:8080/kitchensink/http/delete");
-        System.out.println(delete.text());
-        System.out.println(delete.headers());
-        System.out.println(delete.responseCode());
-    }
+
+//    public static void main(String[] args) {
+//        Delete delete = Http.delete("http://localhost:8080/http");
+//        System.out.println(delete.text());
+//        System.out.println(delete.headers());
+//        System.out.println(delete.responseCode());
+//    }
 }

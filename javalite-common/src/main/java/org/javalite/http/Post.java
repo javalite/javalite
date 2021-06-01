@@ -18,6 +18,7 @@ package org.javalite.http;
 
 
 import java.io.OutputStream;
+import java.net.ProtocolException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,7 +51,7 @@ public class Post extends Request<Post> {
             connection.setDoInput(true);
             connection.setDoOutput(true);
             connection.setUseCaches(false);
-            connection.setRequestMethod("POST");
+            setMethod();
             connection.setInstanceFollowRedirects(redirect);
 
             if(params.size() > 0){
@@ -70,6 +71,11 @@ public class Post extends Request<Post> {
             throw new HttpException("Failed URL: " + url, e);
         }
     }
+
+    protected void setMethod() throws ProtocolException {
+        connection.setRequestMethod("POST");
+    }
+
 
 
     /**
@@ -109,14 +115,14 @@ public class Post extends Request<Post> {
         return this;
     }
 
-    public static void main(String[] args) {
+//    public static void main(String[] args) {
 //        Post post = Http.post("http://localhost:8080/kitchensink/http/post", "this is a post content").header("Content-type", "text/json");
 //        //System.out.println(post.text());
 //        //System.out.println(post.headers());
 //        System.out.println(post.responseCode());
 //        System.out.println(post.responseMessage());
-
-        Post post = Http.post("http://localhost:8080/hello").param("name", "John");
-        System.out.println(post.text());
-    }
+//
+//        Post post = Http.post("http://localhost:8080/hello").param("name", "John");
+//        System.out.println(post.text());
+//    }
 }
