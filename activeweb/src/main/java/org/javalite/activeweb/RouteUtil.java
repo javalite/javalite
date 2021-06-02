@@ -139,7 +139,7 @@ public class RouteUtil {
 
         List<Method> methods = RouteUtil.getNamedMethods(controller, actionMethodName);
         if (methods.size() == 0) {
-            return new ActionAndArgument(null, null);
+            return null;
         }else if(methods.size() > 1){ // must have exactly one method with the same name, regardless of arguments.
             throw new AmbiguousActionException("Ambiguous overloaded method: " + actionMethodName + ".");
         }

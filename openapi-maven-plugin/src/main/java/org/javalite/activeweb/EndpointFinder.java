@@ -14,19 +14,32 @@ import static org.javalite.activeweb.Configuration.getControllerClassInfos;
 
 class EndpointFinder {
 
-    protected static List<EndPointDefinition> getCustomEndpointDefinitions(ClassLoader classLoader) {
-        return getCustomEndpointDefinitions("app.config.RouteConfig", classLoader);
+    private String routeConfigClassName;
+    private ClassLoader classLoader;
+    private boolean strictMode = false;
+
+    public EndpointFinder(String routeConfigClassName, ClassLoader classLoader) {
+        this.routeConfigClassName = routeConfigClassName;
+        this.classLoader = classLoader;
     }
-    protected static List<EndPointDefinition> getCustomEndpointDefinitions(String routeConfigClassName, ClassLoader classLoader) {
 
+    public EndpointFinder(ClassLoader classLoader) {
+         this("app.config.RouteConfig", classLoader);
+    }
+
+    protected List<EndPointDefinition> getCustomEndpointDefinitions() {
         List<EndPointDefinition> endPointDefinitions = new ArrayList<>();
-
         try{
             AbstractRouteConfig rc = initRouteConfig(routeConfigClassName, classLoader);
+            strictMode = rc.isStrictMode();
             List<RouteBuilder> routes = rc.getRoutes();
             for (RouteBuilder routeBuilder : routes) {
                 ActionAndArgument actionAndArgument = RouteUtil.getActionAndArgument(routeBuilder.getController(), routeBuilder.getActionName());
 
+                if(actionAndArgument == null){
+                    System.err.println("WARNING: Failed to find a method for controller: '" + routeBuilder.getController().getClass() + "' and action: '" + routeBuilder.getActionName() + "'. Check your RouteConfig class.");
+                    continue;
+                }
                 // if action method contains one argument, but it is a primitive, the method is not an action method
 
                 Class<?> argumentType = actionAndArgument.getActionMethod() != null? actionAndArgument.getArgumentType(): null;
@@ -44,22 +57,18 @@ class EndpointFinder {
         return endPointDefinitions;
     }
 
-    private static AbstractRouteConfig initRouteConfig(String className, ClassLoader classLoader) throws NoSuchMethodException, ClassNotFoundException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    private  AbstractRouteConfig initRouteConfig(String className, ClassLoader classLoader) throws NoSuchMethodException, ClassNotFoundException, IllegalAccessException, InvocationTargetException, InstantiationException {
         Class<?> routeConfigClass = Class.forName(className, true, classLoader);
         AbstractRouteConfig rc = (AbstractRouteConfig) routeConfigClass.getDeclaredConstructor().newInstance();
         rc.init(new AppContext());
         return rc;
     }
 
-    static List<EndPointDefinition> getStandardEndpointDefinitions(ClassLoader classLoader) {
-        return getStandardEndpointDefinitions("app.config.RouteConfig", classLoader);
-    }
-
-    static List<EndPointDefinition> getStandardEndpointDefinitions(String routeConfigClassname, ClassLoader classLoader) {
+     List<EndPointDefinition> getStandardEndpointDefinitions() {
 
         try{
             List<EndPointDefinition> endPointDefinitions = new ArrayList<>();
-            AbstractRouteConfig rc = initRouteConfig(routeConfigClassname, classLoader);
+            AbstractRouteConfig rc = initRouteConfig(routeConfigClassName, classLoader);
             if(rc.isStrictMode()){
                 return endPointDefinitions;
             }else {
@@ -75,7 +84,7 @@ class EndpointFinder {
         }
     }
 
-    private static List<EndPointDefinition> getEndpointDefinitions(ClassInfo controllerClassInfo) {
+    private  List<EndPointDefinition> getEndpointDefinitions(ClassInfo controllerClassInfo) {
         List<MethodInfo> actionInfos = new ArrayList<>();
         addActionsToList(controllerClassInfo, actionInfos);
 
@@ -97,18 +106,13 @@ class EndpointFinder {
     /**
      * Recursive method with a side effect!
      */
-    private static void addActionsToList(ClassInfo controllerClassInfo, List<MethodInfo> actionInfos) {
+    private void addActionsToList(ClassInfo controllerClassInfo, List<MethodInfo> actionInfos) {
         MethodInfoList actions = controllerClassInfo.getDeclaredMethodInfo().filter(EndpointFinder::isAction);
-
-
-
         actionInfos.addAll(actions);
-//
         ClassInfo superClass = controllerClassInfo.getSuperclass();
         if(!superClass.getName().equals(AppController.class.getName())){
             addActionsToList(superClass, actionInfos);
         }
-
     }
 
     private static boolean isAction(MethodInfo method) {
@@ -128,7 +132,7 @@ class EndpointFinder {
      * @param actionMethod method from a controller.
      * @return instance of this class.
      */
-    private static List<HttpMethod> detectHTTPMethods(MethodInfo actionMethod){
+    private List<HttpMethod> detectHTTPMethods(MethodInfo actionMethod){
 
         List<HttpMethod> methods = new ArrayList<>();
         if(actionMethod.getAnnotationInfo().size() == 0){
@@ -162,8 +166,12 @@ class EndpointFinder {
         return methods;
     }
 
-    static String getOpenAPIDoc(Method method){
+    String getOpenAPIDoc(Method method){
         return method != null && method.isAnnotationPresent(OpenAPI.class) ? method.getAnnotation(OpenAPI.class).value() : "";
+    }
+
+    public  boolean isStrictMode() {
+        return strictMode;
     }
 
 }

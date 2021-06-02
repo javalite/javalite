@@ -8,6 +8,10 @@ class ActionAndArgument {
     private final Class<?> argumentType;
 
     public ActionAndArgument(Method actionMethod, Class<?> argumentType) {
+
+        if(actionMethod == null){
+            throw new NullPointerException("action method cannot be null");
+        }
         this.actionMethod = actionMethod;
         this.argumentType = argumentType;
     }
@@ -19,7 +23,6 @@ class ActionAndArgument {
     public String getActionMethodName(){
         return actionMethod != null? actionMethod.getName() : "";
     }
-
 
     public Class<?> getArgumentType() {
         return argumentType;

@@ -1,7 +1,10 @@
 package org.javalite.activeweb;
 
+import org.javalite.common.Util;
+
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -82,6 +85,31 @@ public class TablePrinter {
         Stream.iterate(1, (i -> i < table.length), (i -> ++i))
                 .forEach(a -> System.out.printf(formatString.toString(), table[a]));
         System.out.print(line);
+    }
+
+
+
+    static void printEndpointDefinitions(String title, List<EndPointDefinition> endPointDefinitions){
+        System.out.println(title);
+        String[][] table  = new String[endPointDefinitions.size() + 1][5];
+        table[0][0] = "Number";
+        table[0][1] = "Path";
+        table[0][2] = "HTTP Methods";
+        table[0][3] = "Controller";
+        table[0][4] = "Method";
+
+
+
+        for (int row = 0; row < endPointDefinitions.size() ; row++) {
+            EndPointDefinition endPointDefinition = endPointDefinitions.get(row);
+            table[row + 1][0] = Integer.toString(row + 1);
+            table[row + 1][1] = endPointDefinition.getPath();
+            table[row + 1][2] = Util.join(endPointDefinition.getHTTPMethods(), ",");
+            table[row + 1][3] = endPointDefinition.getControllerClassName();
+            table[row + 1][4] = endPointDefinition.getDisplayControllerMethod();
+
+        }
+        printTable(table);
     }
 
 
