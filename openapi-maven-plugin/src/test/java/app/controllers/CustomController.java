@@ -6,11 +6,12 @@ import org.javalite.activeweb.annotations.POST;
 
 public class CustomController extends AppController {
 
-
+    @OpenAPI(""" 
+            Generic description for an index endpoint""")
     public void index(){}
 
     @OpenAPI(""" 
-            This is a simple stub for CustomController""")
+            Description  of the API end point to save a Person object""")
     @POST
     public void savePerson(Person person){}
 }

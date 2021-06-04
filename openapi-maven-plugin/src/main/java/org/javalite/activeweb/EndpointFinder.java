@@ -3,6 +3,8 @@ package org.javalite.activeweb;
 import io.github.classgraph.*;
 import org.javalite.activeweb.annotations.OpenAPI;
 import org.javalite.common.Inflector;
+import org.javalite.common.Templator;
+import org.javalite.common.Util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -11,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.javalite.activeweb.Configuration.getControllerClassInfos;
+import static org.javalite.common.Collections.map;
 
 class EndpointFinder {
 
@@ -174,4 +177,20 @@ class EndpointFinder {
         return strictMode;
     }
 
+    public String getOpenAPIDocs(List<EndPointDefinition> customEndpointDefinitions , List<EndPointDefinition> standardEndpointDefinitions, String baseTemplate, String delimiter){
+
+        List<String> chunks = new ArrayList<>();
+
+        for (EndPointDefinition endPointDefinition : standardEndpointDefinitions) {
+            if(endPointDefinition.hasOpenAPI()){
+                chunks.add(endPointDefinition.getOpenAPIdoc());
+            }
+        }
+        for (EndPointDefinition endPointDefinition : customEndpointDefinitions) {
+            if(endPointDefinition.hasOpenAPI()){
+                chunks.add(endPointDefinition.getOpenAPIdoc());
+            }
+        }
+        return Templator.mergeFromTemplate(baseTemplate, map("content", Util.join(chunks, delimiter)), false);
+    }
 }

@@ -107,6 +107,12 @@ public class EndpointFinderSpec {
                 | 15     | /test/bar                | GET          | app.controllers.TestController        | bar()                              |
                 +--------+--------------------------+--------------+---------------------------------------+------------------------------------+""");
 
+        //we still get custom defined  in a default RouteConfig
+        List<EndPointDefinition> customDefinitions =  endpointFinder.getCustomEndpointDefinitions();
+        the(customDefinitions.size()).shouldBeEqual(2);
+        $(customDefinitions.contains(new EndPointDefinition(HttpMethod.GET, "/hello", "app.controllers.TestController", "foo", "", ""))).shouldBeTrue();
+        $(customDefinitions.contains(new EndPointDefinition(HttpMethod.POST, "/person_save", "app.controllers.CustomController", "savePerson", "app.controllers.Person", "This is a simple stub for CustomController"))).shouldBeTrue();
+
         SystemStreamUtil.restoreSystemOut();
     }
 
@@ -115,7 +121,26 @@ public class EndpointFinderSpec {
 
         EndpointFinder endpointFinder = new EndpointFinder("app.config.RouteConfig1", this.getClass().getClassLoader());
         List<EndPointDefinition> endPointDefinitions = endpointFinder.getStandardEndpointDefinitions();
-
         the(endPointDefinitions.size()).shouldBeEqual(0);
+    }
+
+    @Test
+    public void shouldCollectOpenAPIDocs(){
+
+        EndpointFinder endpointFinder = new EndpointFinder("app.config.RouteConfig", this.getClass().getClassLoader());
+        List<EndPointDefinition> customDefinitions = endpointFinder.getCustomEndpointDefinitions();
+        List<EndPointDefinition> standardDefinitions = endpointFinder.getStandardEndpointDefinitions();
+
+        String baseTemplate = """
+                header
+                {{content}}
+                footer""";
+
+        //NOTE: the doc: "Description  of the API end point to save a Person object" is mentioned twice because it is found both as a custom as well a standard endpoint.
+        // This is an expected behavior!
+        the(endpointFinder.getOpenAPIDocs(customDefinitions, standardDefinitions, baseTemplate, ", ")).shouldBeEqual("""
+                header
+                Generic description for an index endpoint, Description  of the API end point to save a Person object, docs for doPut, docs for doHead, Description  of the API end point to save a Person object
+                footer""");
     }
 }

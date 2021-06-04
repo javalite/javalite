@@ -116,6 +116,10 @@ public class EndPointDefinition {
     public boolean hasMethod(HttpMethod method) {
         return httpMethods.stream().anyMatch(httpMethod -> httpMethod.equals(method));
     }
+
+    public boolean hasOpenAPI() {
+            return !blank(this.openAPIdoc);
+    }
 }
 
 

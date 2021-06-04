@@ -24,8 +24,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>15</source>
-                    <target>15</target>
+                    <source>16</source>
+                    <target>16</target>
                     <meminitial>128m</meminitial>
                     <maxmem>512m</maxmem>
                 </configuration>
@@ -38,6 +38,7 @@
                 <configuration>
                     <format>JSON</format>
                     <base_file>src/main/openapi/base.yml</base_file>
+                    <target_file>src/main/openapi/base.yml</target_file>
                 </configuration>
             </plugin>
         </plugins>
