@@ -97,7 +97,7 @@ public class RouterCustomSpec extends RequestSpec {
     }
 
     @Test
-    public void shouldMatchBuiltInSegments() throws ClassLoadException, IllegalAccessException, InstantiationException {
+    public void shouldMatchBuiltInSegments() {
 
         routeConfig = new AbstractRouteConfig() {
             public void init(AppContext appContext) {
@@ -112,7 +112,7 @@ public class RouterCustomSpec extends RequestSpec {
     }
 
     @Test
-    public void shouldMatchStaticSegmentRoute1() throws ClassLoadException {
+    public void shouldMatchStaticSegmentRoute1(){
 
         routeConfig = new AbstractRouteConfig() {
             public void init(AppContext appContext) {
@@ -128,7 +128,7 @@ public class RouterCustomSpec extends RequestSpec {
 
 
     @Test
-    public void shouldMatchStaticSegmentRoute2() throws ClassLoadException {
+    public void shouldMatchStaticSegmentRoute2(){
 
         routeConfig = new AbstractRouteConfig() {
             public void init(AppContext appContext) {
@@ -142,7 +142,7 @@ public class RouterCustomSpec extends RequestSpec {
     }
 
     @Test
-    public void shouldMatchStaticSegmentRoute3() throws ClassLoadException, IllegalAccessException, InstantiationException {
+    public void shouldMatchStaticSegmentRoute3(){
 
         routeConfig = new AbstractRouteConfig() {
             public void init(AppContext appContext) {
@@ -159,7 +159,7 @@ public class RouterCustomSpec extends RequestSpec {
 
 
     @Test
-    public void shouldProvideDefaultAction() throws ClassLoadException, IllegalAccessException, InstantiationException {
+    public void shouldProvideDefaultAction() {
 
         routeConfig = new AbstractRouteConfig() {
             public void init(AppContext appContext) {
@@ -174,7 +174,7 @@ public class RouterCustomSpec extends RequestSpec {
 
 
     @Test
-    public void shouldMatchBuiltInAndUserSegments() throws ClassLoadException, IllegalAccessException, InstantiationException {
+    public void shouldMatchBuiltInAndUserSegments()  {
 
         routeConfig = new AbstractRouteConfig() {
             public void init(AppContext appContext) {
@@ -192,7 +192,7 @@ public class RouterCustomSpec extends RequestSpec {
     }
 
     @Test    //match 'photos/:id' => 'photos#show' - from Rails guide
-    public void shouldMatchSpecificActionOfController() throws ClassLoadException, IllegalAccessException, InstantiationException {
+    public void shouldMatchSpecificActionOfController(){
 
         routeConfig = new AbstractRouteConfig() {
             public void init(AppContext appContext) {
@@ -207,7 +207,7 @@ public class RouterCustomSpec extends RequestSpec {
 
 
     @Test
-    public void shouldRejectRouteIfBothToMethodAndControllerSegmentUsed() throws ClassLoadException, IllegalAccessException, InstantiationException, UnsupportedEncodingException {
+    public void shouldRejectRouteIfBothToMethodAndControllerSegmentUsed() throws UnsupportedEncodingException {
 
         routeConfig = new AbstractRouteConfig() {
             public void init(AppContext appContext) {
@@ -223,7 +223,7 @@ public class RouterCustomSpec extends RequestSpec {
     }
 
     @Test
-    public void shouldRejectRouteIfBothActionMethodAndActionSegmentUsed() throws ClassLoadException, IllegalAccessException, InstantiationException, UnsupportedEncodingException {
+    public void shouldRejectRouteIfBothActionMethodAndActionSegmentUsed() throws UnsupportedEncodingException {
 
         routeConfig = new AbstractRouteConfig() {
             public void init(AppContext appContext) {

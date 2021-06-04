@@ -87,8 +87,8 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.1</version>
                     <configuration>
-                        <source>15</source>
-                        <target>15</target>
+                        <source>16</source>
+                        <target>16</target>
                         <!--
                             Alternate config, working on Java11
                             <release>11</release>
@@ -209,6 +209,7 @@
         <module>activeweb-sass-integration-test</module>
         <module>javalite-async</module>
         <module>async-pool-test</module>
+        <module>openapi-maven-plugin</module>
     </modules>
 
     <dependencyManagement>
@@ -394,6 +395,17 @@
                 <scope>provided</scope>
             </dependency>
 
+            <dependency>
+                <groupId>com.github.javaparser</groupId>
+                <artifactId>javaparser-core</artifactId>
+                <version>3.20.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-artifact</artifactId>
+                <version>3.6.3</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

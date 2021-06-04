@@ -69,7 +69,7 @@ public class Router {
             uri = uri.substring(0, uri.length() - 1);
         }
 
-        ControllerPath controllerPath = getControllerPath(uri);
+        ControllerPath controllerPath = getControllerPathByURI(uri);
 
         Route route = matchCustom(uri, controllerPath, httpMethod);
 
@@ -331,7 +331,7 @@ public class Router {
      * @param uri this is a URI - the information after context : "controller/action/whatever".
      * @return map with two keys: "controller_name" and "package_suffix", both of which can be null.
      */
-    protected ControllerPath getControllerPath(String uri) {
+    protected ControllerPath getControllerPathByURI(String uri) {
 
         boolean rootPath = uri.equals("/");
         boolean useRootController = rootPath && rootControllerName != null;
@@ -367,22 +367,26 @@ public class Router {
      * @param controllerClass class of a controller.
      * @return standard path for a controller.
      */
-    static <T extends AppController> String getControllerPath(Class<T> controllerClass) {
-        String simpleName = controllerClass.getSimpleName();
-        if (!simpleName.endsWith("Controller")) {
+    public static <T extends AppController> String getControllerPath(Class<T> controllerClass) {
+        return getControllerPath(controllerClass.getName(), controllerClass.getSimpleName() );
+    }
+
+
+    public static <T extends AppController> String getControllerPath(String controllerClassName, String controllerSimpleName) {
+
+        if (!controllerSimpleName.endsWith("Controller")) {
             throw new ControllerException("controller name must end with 'Controller' suffix");
         }
 
-        String className = controllerClass.getName();
-        if (!className.startsWith("app.controllers")) {
+        if (!controllerClassName.startsWith("app.controllers")) {
             throw new ControllerException("controller must be in the 'app.controllers' package");
         }
-        String packageSuffix = className.substring("app.controllers".length(), className.lastIndexOf("."));
+        String packageSuffix = controllerClassName.substring("app.controllers".length(), controllerClassName.lastIndexOf("."));
         packageSuffix = packageSuffix.replace(".", "/");
         if (packageSuffix.startsWith("/"))
             packageSuffix = packageSuffix.substring(1);
 
-        return (packageSuffix.equals("") ? "" : "/" + packageSuffix) + "/" + Inflector.underscore(simpleName.substring(0, simpleName.lastIndexOf("Controller")));
+        return (packageSuffix.equals("") ? "" : "/" + packageSuffix) + "/" + Inflector.underscore(controllerSimpleName.substring(0, controllerSimpleName.lastIndexOf("Controller")));
     }
 
     /**

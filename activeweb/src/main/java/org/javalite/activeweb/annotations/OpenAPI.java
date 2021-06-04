@@ -13,22 +13,21 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and 
 limitations under the License. 
 */
-package app.controllers;
+package org.javalite.activeweb.annotations;
 
-import org.javalite.activeweb.AppController;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
+ * Use this annotation to specify OpenAPI - compliant documentation for an endpoint.
+ *
  * @author Igor Polevoy
  */
-public class AbcPersonController extends AppController {
 
-    public void index(){        
-        view("name", "John");
-        view("last_name", "Silverman");
-        view("age", 32);
-
-        header("Content-type", "text/html");
-    }
-
-    public void passValues(){}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface OpenAPI {
+    String value();
 }

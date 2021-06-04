@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.util.*;
 
 import static org.javalite.common.Collections.list;
@@ -321,19 +320,15 @@ public class Configuration {
      * then <code>pack1.pack2</code> will be returned.
      *
      * @return a list of  of sub-package names
-     * @throws IOException
+     *
      */
-    static List<String> locateControllerSubPackages() {
-
+    static List<String> locateControllerSubPackages()  {
         List<String> subpackages = new ArrayList<>();
-        String controllerRootPackage = Configuration.getRootPackage() + ".controllers";
-        try (ScanResult scanResult = new ClassGraph().whitelistPackages(controllerRootPackage).scan()) {
-            for (ClassInfo classInfo : scanResult.getSubclasses(AppController.class.getName())) {
-                if(!classInfo.isAbstract()){
-                    String className = classInfo.getName();
-                    if (className.chars().filter(ch -> ch == '.').count() > 2) {
-                        subpackages.add(className.substring(className.indexOf("controllers." ) + 12, className.lastIndexOf('.')));
-                    }
+        try(CloseableList<ClassInfo> infosList =  getControllerClassInfos(null)){
+            for (ClassInfo classInfo : infosList) {
+                String className = classInfo.getName();
+                if (className.chars().filter(ch -> ch == '.').count() > 2) {
+                    subpackages.add(className.substring(className.indexOf("controllers.") + 12, className.lastIndexOf('.')));
                 }
             }
         }
@@ -341,4 +336,31 @@ public class Configuration {
     }
 
 
+    /**
+     * Returns  a list of controllers that are reachable and not abstract.
+     *
+     * @param classLoader - a classloader to use when looking for controllers.
+     *
+     * @return   list of <code>ControllerInfo</code>.
+     */
+    public static CloseableList<ClassInfo> getControllerClassInfos(ClassLoader classLoader){
+        CloseableList<ClassInfo> controllerInfos = new CloseableList<>();
+        String controllerRootPackage = Configuration.getRootPackage() + ".controllers";
+
+        ClassGraph classGraph = new ClassGraph().acceptPackages(controllerRootPackage).enableClassInfo().enableMethodInfo().enableAnnotationInfo();
+
+        if (classLoader != null) {
+            classGraph.overrideClassLoaders(classLoader);
+        }
+
+        ScanResult scanResult = classGraph.scan();
+        for (ClassInfo classInfo : scanResult.getSubclasses(AppController.class.getName())) {
+            if (!classInfo.isAbstract()) {
+                classInfo.getAnnotationInfo();
+                controllerInfos.add(classInfo);
+            }
+        }
+
+        return controllerInfos;
+    }
 }

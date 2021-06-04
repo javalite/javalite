@@ -11,7 +11,7 @@ public abstract class AbstractRouteConfig implements InitConfig {
     private List<RouteBuilder> routes = new ArrayList<>();
 
     //ignore some URLs
-    private List<IgnoreSpec> ignoreSpecs = new ArrayList<>();
+    private final List<IgnoreSpec> ignoreSpecs = new ArrayList<>();
 
     private boolean strict = false;
 
@@ -23,7 +23,7 @@ public abstract class AbstractRouteConfig implements InitConfig {
         return matchedRoute;
     }
 
-    protected List<RouteBuilder> getRoutes() {
+    public List<RouteBuilder> getRoutes() {
         return routes;
     }
 
@@ -34,7 +34,7 @@ public abstract class AbstractRouteConfig implements InitConfig {
 
     /**
      * Use to ignore requests. Usually you want to ignore requests for static content, such as css files, images. etc.
-     * The order of this method compared to route() methods is irrelevant,
+     * The placement of this method compared to the <code>route()</code> methods is irrelevant,
      *
      * @param ignores list of regular expressions matching the URI. If an expression matches the request URI, such request ill be ignored
      *                by the framework. It will be processed by container.

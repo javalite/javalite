@@ -29,30 +29,30 @@ public class RouterControllerPathSpec {
 
     @Test
     public void shouldFindHomeControllerFromPath() {
-        a(router.getControllerPath("/").getControllerName()).shouldBeEqual("home");
-        a(router.getControllerPath("/").getControllerPackage()).shouldBeNull();
-        a(router.getControllerPath("/hello").getControllerName()).shouldBeEqual("hello");
-        a(router.getControllerPath("/hello").getControllerPackage()).shouldBeNull();
+        a(router.getControllerPathByURI("/").getControllerName()).shouldBeEqual("home");
+        a(router.getControllerPathByURI("/").getControllerPackage()).shouldBeNull();
+        a(router.getControllerPathByURI("/hello").getControllerName()).shouldBeEqual("hello");
+        a(router.getControllerPathByURI("/hello").getControllerPackage()).shouldBeNull();
     }
 
     @Test
     public void shouldFindSpecifiedControllerFromPath() {
 
-        a(router.getControllerPath("/hello").getControllerName()).shouldBeEqual("hello");
-        a(router.getControllerPath("/hello").getControllerPackage()).shouldBeNull();
+        a(router.getControllerPathByURI("/hello").getControllerName()).shouldBeEqual("hello");
+        a(router.getControllerPathByURI("/hello").getControllerPackage()).shouldBeNull();
     }
 
 
     @Test
     public void shouldFindControllerInSubPackage() {
-        ControllerPath controllerPath = router.getControllerPath("/admin/db");
+        ControllerPath controllerPath = router.getControllerPathByURI("/admin/db");
         a(controllerPath.getControllerPackage()).shouldBeEqual("admin");
         a(controllerPath.getControllerName()).shouldBeEqual("db");
     }
 
     @Test
     public void shouldFindControllerInSubPackageWithPeriodInPath() {
-        ControllerPath controllerPath = router.getControllerPath("/v1.0/service");
+        ControllerPath controllerPath = router.getControllerPathByURI("/v1.0/service");
         a(controllerPath.getControllerPackage()).shouldBeEqual("v1_0");
         a(controllerPath.getControllerName()).shouldBeEqual("service");
     }
@@ -60,7 +60,7 @@ public class RouterControllerPathSpec {
     @Test
     public void shouldFindControllerInSubPackageWithTrailingSlash() {
 
-        ControllerPath path = router.getControllerPath("/admin/db/");
+        ControllerPath path = router.getControllerPathByURI("/admin/db/");
         a(path.getControllerPackage()).shouldBeEqual("admin");
         a(path.getControllerName()).shouldBeEqual("db");
     }
@@ -68,14 +68,14 @@ public class RouterControllerPathSpec {
     @Test
     public void shouldFindControllerInDeepSubPackage() {
 
-        ControllerPath path = router.getControllerPath("/admin/special/db");
+        ControllerPath path = router.getControllerPathByURI("/admin/special/db");
         a(path.getControllerPackage()).shouldBeEqual("admin.special");
         a(path.getControllerName()).shouldBeEqual("db");
     }
 
     @Test(expected = ControllerException.class)
     public void shouldFailNoControllerProvided() {
-        router.getControllerPath("/admin/");//this should fail because "admin" package exists, and
+        router.getControllerPathByURI("/admin/");//this should fail because "admin" package exists, and
         //no controller is specified after.
     }
 }

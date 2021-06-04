@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.javalite.common.Collections.list;
+
 /**
  * Instance of this class represents a single custom route configured in the RouteConfig class of the application.
  *
@@ -31,11 +33,12 @@ import java.util.regex.Pattern;
  */
 public class RouteBuilder {
 
-    private static Pattern USER_SEGMENT_PATTERN = Pattern.compile("\\{.*\\}");
+    private static final Pattern USER_SEGMENT_PATTERN = Pattern.compile("\\{.*\\}");
 
-    private String actionName, id, routeConfig;
+    private String actionName, id,
+            routeConfig ; //what was specified in the  RouteConfig class
     private AppController controller;
-    private Class<? extends AppController> type;
+    private Class<? extends AppController> controllerClass;
     private List<Segment> segments = new ArrayList<>();
     private List<HttpMethod> methods = new ArrayList<>();
 
@@ -107,29 +110,34 @@ public class RouteBuilder {
         return wildCardValue;
     }
 
+    public String getRouteConfig() {
+        return routeConfig;
+    }
+
     /**
      * Allows to wire a route to a controller.
      *
-     * @param type class of controller to which a route is mapped
+     * @param controllerClass class of controller to which a route is mapped
      * @return instance of {@link RouteBuilder}.
      */
-    public  <T extends AppController> RouteBuilder to(Class<T> type) {
+    public  <T extends AppController> RouteBuilder to(Class<T> controllerClass) {
 
         boolean hasControllerSegment = false;
         for (Segment segment : segments) {
             hasControllerSegment = segment.controller;
         }
 
-        if (type != null && hasControllerSegment) {
+        if (controllerClass != null && hasControllerSegment) {
             throw new IllegalArgumentException("Cannot combine {controller} segment and .to(\"...\") method. Failed route: " + routeConfig);
         }
 
-        this.type = type;
+        this.controllerClass = controllerClass;
         return this;
     }
 
     /**
-     * Name of action to which a route is mapped.
+     * Name of action to which a route is mapped in the underscore  format. for example, if the action method of a controller
+     * is <code>listTrigger()</code>, than this argument needs to be <code>list_trigger</code>.
      *
      * @param action name of action.
      * @return instance of {@link RouteBuilder}.
@@ -236,7 +244,7 @@ public class RouteBuilder {
 
     protected AppController getController() {
         try {
-            return controller == null? controller = type.getDeclaredConstructor().newInstance(): controller ;
+            return controller == null? controller = controllerClass.getDeclaredConstructor().newInstance(): controller ;
         } catch (Exception e) {
             throw new ControllerException(e);
         }
@@ -350,9 +358,9 @@ public class RouteBuilder {
                 return true;
             }else if(controller){
 
-                if(type == null){//in case controller not provided in config, we infer it from the segment.
+                if(controllerClass == null){//in case controller not provided in config, we infer it from the segment.
                     String controllerClassName = ControllerFactory.getControllerClassName("/" + requestSegment);
-                    type = DynamicClassFactory.getCompiledClass(controllerClassName);
+                    controllerClass = DynamicClassFactory.getCompiledClass(controllerClassName);
                     return true;
                 }
                 return requestSegment.equals(controllerPath.getControllerName());
@@ -390,5 +398,23 @@ public class RouteBuilder {
             return value.substring(1, value.length() - 1); //I wish I knew  regexp better!
         }
         return null;
+    }
+
+    public List<HttpMethod> getMethods(){
+        return methods.size() == 0 ? list(HttpMethod.GET): methods;
+    }
+
+    public Class<? extends AppController> getControllerClass() {
+        return controllerClass;
+    }
+
+    @Override
+    public String toString() {
+        return "RouteBuilder{" +
+                "actionName='" + actionName + '\'' +
+                ", id='" + id + '\'' +
+                ", controller=" + controller +
+                ", methods=" + methods +
+                '}';
     }
 }
