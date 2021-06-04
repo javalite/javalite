@@ -47,8 +47,8 @@ import org.javalite.activejdbc.connection_config.DBConfiguration;
  * 1. public class DbConfig extends AbstractDBConfig {
  * 2.  public void init() {
  * 3.      environment("development").jndi("jdbc/kitchensink_development");
- * 4.      environment("development").testing().jdbc("com.mysql.cj.jdbc.Driver", "jdbc:mysql://localhost/kitchensink_test", "root", "****");
- * 5.      environment("hudson").testing().jdbc("com.mysql.cj.jdbc.Driver", "jdbc:mysql://172.30.64.31/kitchensink_test", "root", "****");
+ * 4.      environment("development").testing().jdbc("org.mariadb.jdbc.Driver", "jdbc:mysql://localhost/kitchensink_test", "root", "****");
+ * 5.      environment("hudson").testing().jdbc("org.mariadb.jdbc.Driver", "jdbc:mysql://172.30.64.31/kitchensink_test", "root", "****");
  * 6.      environment("production").jndi("jdbc/kitchensink_production");
  * 7.  }
  * 8.}
@@ -93,12 +93,12 @@ public abstract class AbstractDBConfig extends DBConfiguration implements InitCo
      * Configures multiple database connections from a single property file. Example content for such file:
      *
      * <pre>
-     development.driver=com.mysql.cj.jdbc.Driver
+     development.driver=org.mariadb.jdbc.Driver
      development.username=john
      development.password=pwd
      development.url=jdbc:mysql://localhost/proj_dev
 
-     test.driver=com.mysql.cj.jdbc.Driver
+     test.driver=org.mariadb.jdbc.Driver
      test.username=mary
      test.password=pwd1
      test.url=jdbc:mysql://localhost/test

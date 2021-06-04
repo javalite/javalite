@@ -39,6 +39,7 @@ public class RouteSpec extends RequestSpec {
         a(new Route(simpleController, "create", HttpMethod.POST).actionSupportsHTTPMethod()).shouldBeTrue();
         a(new Route(simpleController, "update", HttpMethod.PUT).actionSupportsHTTPMethod()).shouldBeTrue();
         a(new Route(simpleController, "destroy", HttpMethod.DELETE).actionSupportsHTTPMethod()).shouldBeTrue();
+        a(new Route(simpleController, "another_annotation", HttpMethod.GET).actionSupportsHTTPMethod()).shouldBeTrue();
     }
 
     @Test(expected = ActionNotFoundException.class)

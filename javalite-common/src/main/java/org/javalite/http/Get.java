@@ -49,10 +49,10 @@ public class Get extends Request<Get> {
         }
     }
 
-    public static void main(String[] args) {
-        Get get = Http.get("https://www.yahoo.com");
-        System.out.println(get.text());
-        System.out.println(get.headers());
-        System.out.println(get.responseCode());
-    }
+//    public static void main(String[] args) {
+//        Get get = Http.get("https://www.yahoo.com");
+//        System.out.println(get.text());
+//        System.out.println(get.headers());
+//        System.out.println(get.responseCode());
+//    }
 }

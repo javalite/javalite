@@ -19,9 +19,6 @@ package org.javalite.activeweb;
  * @author Igor Polevoy
  */
 public class InitException  extends RuntimeException{
-    public InitException() {
-        super();
-    }
 
     public InitException(String message) {
         super(message);

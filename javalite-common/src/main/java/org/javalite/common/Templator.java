@@ -18,6 +18,7 @@ package org.javalite.common;
 
 
 import java.util.Map;
+import java.util.Properties;
 
 import static org.javalite.common.Util.readResource;
 
@@ -93,5 +94,19 @@ public class Templator {
             template = template.replace("{{" + param + "}}", values.get(param) == null ? "" : values.get(param).toString());
         }
         return template.replaceAll("\n|\r|  ", "");
+    }
+
+    /**
+     * Merges from string as template.
+     *
+     * @param template template content, with placeholders like: {{name}}
+     * @param values  properties with values to merge
+     * @param stripWhitespace true to strip \n\r and space.
+     */
+    public static String mergeFromTemplate(String template, Properties values, boolean stripWhitespace) {
+        for (Object param : values.keySet()) {
+            template = template.replace("{{" + param + "}}", values.get(param) == null ? "" : values.get(param).toString());
+        }
+        return stripWhitespace ? template.replaceAll("\n|\r|  ", "") : template;
     }
 }

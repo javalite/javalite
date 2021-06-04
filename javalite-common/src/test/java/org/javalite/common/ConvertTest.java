@@ -25,7 +25,9 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 
@@ -314,5 +316,16 @@ public class ConvertTest implements JSpecSupport {
     @Test
     public void shouldToBytesCovertNull() {
         the(Convert.toBytes((Object) null)).shouldBeNull();
+    }
+
+    @Test
+    public void shouldConvertToLocalDate(){
+        java.util.Date d = new java.util.Date(System.currentTimeMillis());
+        LocalDate lDate = Convert.toLocalDate(d);
+        GregorianCalendar calendar = (GregorianCalendar) GregorianCalendar.getInstance();
+
+        the(lDate.getYear()).shouldBeEqual(calendar.get(Calendar.YEAR));
+        the(lDate.getMonthValue()).shouldBeEqual(calendar.get(Calendar.MONTH) + 1); // thanks, Java!
+        the(lDate.getDayOfMonth()).shouldBeEqual(calendar.get(Calendar.DAY_OF_MONTH));
     }
 }

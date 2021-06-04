@@ -9,8 +9,8 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.*;
 import static org.javalite.db_migrator.DbUtils.*;
+import static org.javalite.test.jspec.JSpec.the;
 
 public class SimpleVersionStrategySpec {
 
@@ -31,14 +31,14 @@ public class SimpleVersionStrategySpec {
     @Test
     public void shouldCreateSchemaVersionTable() throws SQLException {
         strategy.createSchemaVersionTable(DatabaseType.H2);
-        assertEquals(countMigrations("schema_version"), 0);
+        the(countMigrations("schema_version")).shouldBeEqual(0);
     }
 
     @Test
     public void shouldBeEmptyIfNoMigrationExecuted() throws SQLException {
         strategy.createSchemaVersionTable(DatabaseType.H2);
         List<String> migrations = strategy.getAppliedMigrations();
-        assertEquals(migrations.size(), 0);
+        the(migrations.size()).shouldBeEqual(0);
     }
 
     @Test
@@ -49,14 +49,14 @@ public class SimpleVersionStrategySpec {
         strategy.createSchemaVersionTable(DatabaseType.H2);
         strategy.recordMigration(v1, new Date(), 768);
 
-        assertEquals(countMigrations("schema_version"), 1);
+        the(countMigrations("schema_version")).shouldBeEqual(1);
 
         strategy.recordMigration(v2, new Date(), 231);
-        assertEquals(countMigrations("schema_version"), 2);
+        the(countMigrations("schema_version")).shouldBeEqual(2);
 
         List<String> appliedMigrations = strategy.getAppliedMigrations();
-        assertEquals(appliedMigrations.size(), 2);
-        assertEquals(appliedMigrations.get(0), v1);
-        assertEquals(appliedMigrations.get(1), v2);
+        the(appliedMigrations.size()).shouldBeEqual(2);
+        the(appliedMigrations.get(0)).shouldBeEqual(v1);
+        the(appliedMigrations.get(1)).shouldBeEqual(v2);
     }
 }

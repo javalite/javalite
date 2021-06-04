@@ -1,5 +1,5 @@
 -- Books
-CREATE TABLE books (
+CREATE TABLE {{books-table}} (
     id INT NOT NULL PRIMARY KEY,
     isbn VARCHAR(20) NOT NULL UNIQUE,
     title VARCHAR(1000) NOT NULL,

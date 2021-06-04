@@ -55,6 +55,11 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
      */
     private String configFile;
 
+    /**
+     * @parameter
+     */
+    private String mergeProperties;
+
     public final void execute() throws MojoExecutionException {
         if (blank(environments)) {
             executeCurrentConfiguration();
@@ -63,7 +68,7 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
                     ? new File(basedir, "database.properties")
                     : new File(configFile);
             getLog().info("Sourcing database configuration from file: " + file);
-            Properties properties = new Properties();
+            Properties properties =     new Properties();
             if (file.exists()) {
                 InputStream is = null;
                 try {
@@ -173,6 +178,14 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
 
     public void setConfigFile(String configFile) {
         this.configFile = configFile;
+    }
+
+    public String getMergeProperties() {
+        return mergeProperties;
+    }
+
+    public void setMergeProperties(String mergeProperties) {
+        this.mergeProperties = mergeProperties;
     }
 
     /**

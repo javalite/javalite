@@ -146,12 +146,12 @@ public class DBConfiguration {
      * Configures multiple database connections from a single property file. Example content for such file:
      *
      * <pre>
-     development.driver=com.mysql.cj.jdbc.Driver
+     development.driver=org.mariadb.jdbc.Driver
      development.username=john
      development.password=pwd
      development.url=jdbc:mysql://localhost/proj_dev
 
-     test.driver=com.mysql.cj.jdbc.Driver
+     test.driver=org.mariadb.jdbc.Driver
      test.username=mary
      test.password=pwd1
      test.url=jdbc:mysql://localhost/test
@@ -159,7 +159,7 @@ public class DBConfiguration {
      production.jndi=java:comp/env/jdbc/prod
 
      # this one is to run migrations in production remotely
-     production.remote.driver=com.mysql.cj.jdbc.Driver
+     production.remote.driver=org.mariadb.jdbc.Driver
      production.remote.username=root
      production.remote.password=xxx
      production.remote.url=jdbc:mysql://127.0.0.1:3307/poj1_production

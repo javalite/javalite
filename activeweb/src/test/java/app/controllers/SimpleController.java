@@ -43,4 +43,8 @@ public class SimpleController extends AppController {
 
     @PUT
     public void update() {}
+
+    @Deprecated
+    public void anotherAnnotation() {}
+
 }

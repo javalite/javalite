@@ -83,7 +83,7 @@ public abstract class AppIntegrationSpec extends IntegrationSpec{
      */
     @Override
     protected RequestBuilder controller(String controllerPath){
-        return new RequestBuilder(controllerPath, session());
+        return new RequestBuilder(controllerPath);
     }
 
 
