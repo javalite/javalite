@@ -16,10 +16,11 @@ import java.util.List;
 @Mojo(name = "validate")
 public class ValidateMojo extends AbstractDbMigrationMojo {
     public void executeMojo() throws MojoExecutionException {
-        getLog().info("Validating " + getUrl() + " using migrations from " + getMigrationsPath());
         try {
+            String path = toAbsolutePath(getMigrationsPath());
+            getLog().info("Validating " + getUrl() + " using migrations from " + path);
             openConnection();
-            MigrationManager manager = new MigrationManager(getProject(), getMigrationsPath(), getUrl());
+            MigrationManager manager = new MigrationManager(getProject(), path, getUrl());
             List<Migration> pendingMigrations = manager.getPendingMigrations();
 
             getLog().info("Database: " + getUrl());

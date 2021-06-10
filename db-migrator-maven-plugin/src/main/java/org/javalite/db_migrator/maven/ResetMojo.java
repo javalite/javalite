@@ -34,5 +34,6 @@ public class ResetMojo extends AbstractDbMigrationMojo {
         mojo.setCreateSql(getCreateSql());
         mojo.setMigrationsPath(getMigrationsPath());
         mojo.setDriver(getDriver());
+        mojo.setProject(getProject());
     }
 }

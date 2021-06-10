@@ -4,6 +4,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -20,16 +21,21 @@ public class NewMojo extends AbstractMigrationMojo {
             return;
         }
 
-        String directory = getMigrationsPath();
-        createMigrationsDirectory(directory);
-
-        File file = new File(directory, createFileName());
         try {
-            file.createNewFile();
-            getLog().info("Created new migration: " + file);
-        } catch (IOException e) {
-            throw new MojoExecutionException("Failed to create migration file: " + file, e);
+            String path = toAbsolutePath(getMigrationsPath(), true);
+
+            try {
+                createMigrationsDirectory(path);
+                File file = new File(path, createFileName());
+                file.createNewFile();
+                getLog().info("Created new migration: " + file);
+            } catch (IOException e) {
+                throw new MojoExecutionException("Failed to create migration file: " + path, e);
+            }
+        } catch (FileNotFoundException e) {
+            throw new MojoExecutionException("Unexpected error", e);
         }
+
     }
 
     private String createFileName() {

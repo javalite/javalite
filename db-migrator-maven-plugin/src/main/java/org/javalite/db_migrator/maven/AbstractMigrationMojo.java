@@ -1,8 +1,14 @@
 package org.javalite.db_migrator.maven;
 
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public abstract class AbstractMigrationMojo extends AbstractMojo {
 
@@ -25,13 +31,16 @@ public abstract class AbstractMigrationMojo extends AbstractMojo {
         return project;
     }
 
+    public void setProject(MavenProject project) {
+        this.project = project;
+    }
+
     public String getEncoding() {
         return encoding;
     }
 
     public String getMigrationsPath() {
-        return project == null? migrationsPath: project.getBasedir()
-                + System.getProperty("file.separator") + migrationsPath;
+        return migrationsPath;
     }
 
     public String getCreateSql() {
@@ -52,5 +61,24 @@ public abstract class AbstractMigrationMojo extends AbstractMojo {
 
     public void setDropSql(String dropSql) {
         this.dropSql = dropSql;
+    }
+
+    public String toAbsolutePath(String path) throws FileNotFoundException {
+        return toAbsolutePath(path, false);
+    }
+
+    public String toAbsolutePath(String path, boolean suppressNotExists) throws FileNotFoundException {
+        File f = new File(path);
+        if (f.exists()) {
+            f = Path.of(f.getAbsolutePath()).normalize().toFile();
+        } else {
+            if (project != null) {
+                f = Path.of(project.getBasedir().getAbsolutePath(), path).normalize().toFile();
+            }
+            if (!f.exists() && !suppressNotExists) {
+                throw new FileNotFoundException(f.getAbsolutePath());
+            }
+        }
+        return f.getAbsolutePath();
     }
 }
