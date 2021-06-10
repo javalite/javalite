@@ -18,10 +18,11 @@ import java.sql.SQLException;
 public class MigrateMojo extends AbstractDbMigrationMojo {
 
     public void executeMojo() throws MojoExecutionException {
-        getLog().info("Migrating " + getUrl() + " using migrations at " + getMigrationsPath());
         try {
+            String path = toAbsolutePath(getMigrationsPath());
+            getLog().info("Migrating " + getUrl() + " using migrations at " + path);
             openConnection();
-            new MigrationManager(getProject(), getMigrationsPath(), getUrl(),
+            new MigrationManager(getProject(), path, getUrl(),
                                 getMergeProperties() == null ? null : Util.readProperties(getMergeProperties())).migrate(getLog(), getEncoding());
         } catch(SQLException | IOException e){
             throw new MojoExecutionException("Failed to migrate database " + getUrl(), e);

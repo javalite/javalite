@@ -20,12 +20,12 @@ import java.util.List;
 @Mojo(name = "check", defaultPhase = LifecyclePhase.PROCESS_TEST_RESOURCES)
 public class CheckMojo extends AbstractDbMigrationMojo {
     public void executeMojo() throws MojoExecutionException {
-        getLog().info("Checking " + getUrl() + " using migrations from " + getMigrationsPath());
-
         List<Migration> pendingMigrations;
         try {
+            String path = toAbsolutePath(getMigrationsPath());
+            getLog().info("Checking " + getUrl() + " using migrations from " + path);
             openConnection();
-            MigrationManager manager = new MigrationManager(getProject(), getMigrationsPath(), getUrl());
+            MigrationManager manager = new MigrationManager(getProject(), path, getUrl());
             pendingMigrations = manager.getPendingMigrations();
         } catch (Exception e) {
             throw new MojoExecutionException("Failed to check " + getUrl(), e);

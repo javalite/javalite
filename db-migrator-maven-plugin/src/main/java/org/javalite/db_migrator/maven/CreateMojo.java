@@ -40,7 +40,7 @@ public class CreateMojo extends AbstractDbMigrationMojo {
 
         try{
             openConnection();
-            new MigrationManager(getProject(), getMigrationsPath(), getUrl()).createSchemaVersionTableIfDoesNotExist();
+            new MigrationManager(getProject(), toAbsolutePath(getMigrationsPath(), true), getUrl()).createSchemaVersionTableIfDoesNotExist();
         }catch(Exception e){
             throw  new MojoExecutionException("failed to create SCHEMA_VERSION table", e);
         }finally {
