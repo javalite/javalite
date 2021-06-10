@@ -1,5 +1,6 @@
 package org.javalite.db_migrator;
 
+import org.apache.maven.project.MavenProject;
 import org.javalite.common.Templator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import static org.javalite.db_migrator.DbUtils.exec;
 
 
 public class SQLMigration extends Migration {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SQLMigration.class);
     private static final String DEFAULT_DELIMITER = ";";
     private static final String DELIMITER_KEYWORD = "DELIMITER";

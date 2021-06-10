@@ -1,6 +1,7 @@
 package org.javalite.db_migrator.maven;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.javalite.activejdbc.Base;
 import org.javalite.cassandra.jdbc.CassandraJDBCDriver;
 import org.javalite.db_migrator.DatabaseType;
@@ -18,46 +19,28 @@ import static org.javalite.db_migrator.DbUtils.*;
 
 public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
 
-    /**
-     * @parameter property="basedir"
-     * @required
-     * @readonly
-     */
+    @Parameter(property = "basedir", required = true)
     private String basedir;
 
-    /**
-     * @parameter
-     */
+    @Parameter
     private String url;
 
-    /**
-     * @parameter
-     */
+    @Parameter
     private String driver;
 
-    /**
-     * @parameter
-     */
+    @Parameter
     private String username;
 
-    /**
-     * @parameter
-     */
+    @Parameter
     private String password;
 
-    /**
-     * @parameter
-     */
+    @Parameter
     private String environments;
 
-    /**
-     * @parameter
-     */
+    @Parameter
     private String configFile;
 
-    /**
-     * @parameter
-     */
+    @Parameter
     private String mergeProperties;
 
     public final void execute() throws MojoExecutionException {

@@ -1,6 +1,7 @@
 package org.javalite.db_migrator.maven;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Mojo;
 import org.javalite.activejdbc.Base;
 import org.javalite.db_migrator.DbUtils;
 
@@ -9,9 +10,7 @@ import static org.javalite.db_migrator.DbUtils.blank;
 import static org.javalite.db_migrator.DbUtils.exec;
 
 
-/**
- * @goal drop
- */
+@Mojo(name = "drop")
 public class DropMojo extends AbstractDbMigrationMojo {
     public void executeMojo() throws MojoExecutionException {
         try {

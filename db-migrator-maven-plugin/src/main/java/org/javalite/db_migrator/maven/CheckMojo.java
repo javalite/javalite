@@ -2,6 +2,8 @@ package org.javalite.db_migrator.maven;
 
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
 import org.javalite.activejdbc.Base;
 import org.javalite.db_migrator.Migration;
 import org.javalite.db_migrator.MigrationManager;
@@ -14,10 +16,8 @@ import java.util.List;
  * Check current schema against available migrations to see if database is up to date,
  * causing the build to fail if the database is not up to date.
  * <p></p>
- *
- * @goal check
- * @phase process-test-resources
  */
+@Mojo(name = "check", defaultPhase = LifecyclePhase.PROCESS_TEST_RESOURCES)
 public class CheckMojo extends AbstractDbMigrationMojo {
     public void executeMojo() throws MojoExecutionException {
         getLog().info("Checking " + getUrl() + " using migrations from " + getMigrationsPath());
@@ -25,7 +25,7 @@ public class CheckMojo extends AbstractDbMigrationMojo {
         List<Migration> pendingMigrations;
         try {
             openConnection();
-            MigrationManager manager = new MigrationManager(getMigrationsPath(), getUrl());
+            MigrationManager manager = new MigrationManager(getProject(), getMigrationsPath(), getUrl());
             pendingMigrations = manager.getPendingMigrations();
         } catch (Exception e) {
             throw new MojoExecutionException("Failed to check " + getUrl(), e);

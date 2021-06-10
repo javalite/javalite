@@ -1,8 +1,11 @@
 package org.javalite.db_migrator;
 
+import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
 import org.javalite.activejdbc.Base;
 import org.javalite.cassandra.jdbc.CassandraJDBCConnection;
+import org.javalite.common.JsonHelper;
 import org.javalite.common.Templator;
 
 import java.sql.Connection;
@@ -18,14 +21,15 @@ public class MigrationManager {
     private MigrationResolver migrationResolver;
 
 
-    public MigrationManager(String migrationLocation, String url) throws SQLException {
-        this(migrationLocation, url, null);
+    public MigrationManager(MavenProject mavenProject, String migrationLocation, String url) throws SQLException {
+        this(mavenProject, migrationLocation, url, null);
     }
 
-    public MigrationManager(String migrationLocation, String url, Properties mergeProperties) throws SQLException {
+    public MigrationManager(MavenProject mavenProject, String migrationLocation, String url, Properties mergeProperties) throws SQLException {
         this.dbType = determineDatabaseType();
-        migrationResolver = new MigrationResolver(migrationLocation, mergeProperties);
+        migrationResolver = new MigrationResolver(mavenProject, migrationLocation, mergeProperties);
         String databaseName;
+
         if(url != null){
             databaseName = DbUtils.extractDatabaseName(url);
         }else{

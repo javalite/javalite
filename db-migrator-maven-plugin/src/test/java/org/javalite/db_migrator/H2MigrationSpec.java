@@ -1,5 +1,6 @@
 package org.javalite.db_migrator;
 
+import org.apache.maven.project.MavenProject;
 import org.javalite.activejdbc.Base;
 import org.junit.After;
 import org.junit.Before;
@@ -15,7 +16,7 @@ public class H2MigrationSpec {
     public void setup() throws Exception {
         String url = "jdbc:h2:mem:h2-migration-test;DB_CLOSE_DELAY=-1";
         Base.open("org.h2.Driver", url , "sa", "");
-        migrationManager = new MigrationManager("src/test/resources/test_migrations/h2/", url);
+        migrationManager = new MigrationManager(new MavenProject(), "src/test/resources/test_migrations/h2/", url);
     }
 
     @After
