@@ -1,5 +1,6 @@
 package org.javalite.db_migrator;
 
+import org.apache.maven.project.MavenProject;
 import org.javalite.activejdbc.Base;
 import org.javalite.common.Templator;
 import org.javalite.common.Util;
@@ -32,7 +33,7 @@ public class MySQLTemplatorMigrationSpec {
 
 
 
-        migrationManager = new MigrationManager("src/test/resources/test_migrations/mysql-templator/",
+        migrationManager = new MigrationManager(new MavenProject(), "src/test/resources/test_migrations/mysql-templator/",
                 url,
                 Util.readProperties("/test_migrations/templator/table-names.properties"));
     }

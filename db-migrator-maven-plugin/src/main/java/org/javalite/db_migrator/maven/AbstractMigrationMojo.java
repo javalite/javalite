@@ -1,34 +1,29 @@
 package org.javalite.db_migrator.maven;
 
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 public abstract class AbstractMigrationMojo extends AbstractMojo {
 
-    /**
-     * @parameter property="project"
-     * @required
-     */
+    @Parameter(defaultValue = "${project}", readonly = true, required = true)
     protected MavenProject project;
 
-    /**
-     * @parameter
-     */
+    @Parameter
     private String encoding;
 
-    /**
-     * @parameter
-     */
-    private String migrationsPath = "src/migrations/";
+    @Parameter(defaultValue = "src/migrations/")
+    private String migrationsPath;
 
-    /**
-     * @parameter
-     */
+    @Parameter
     private String createSql;
-    /**
-     * @parameter
-     */
+
+    @Parameter
     private String dropSql;
+
+    public MavenProject getProject() {
+        return project;
+    }
 
     public String getEncoding() {
         return encoding;

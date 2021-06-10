@@ -1,11 +1,10 @@
 package org.javalite.db_migrator.maven;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Mojo;
 
 
-/**
- * @goal reset
- */
+@Mojo(name = "reset")
 public class ResetMojo extends AbstractDbMigrationMojo {
     public void executeMojo() throws MojoExecutionException {
         getLog().info("Resetting database " + getUrl());

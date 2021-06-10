@@ -1,6 +1,7 @@
 package org.javalite.db_migrator.maven;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Mojo;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,9 +11,7 @@ import java.util.Date;
 import static org.javalite.db_migrator.DbUtils.blank;
 
 
-/**
- * @goal new
- */
+@Mojo(name = "new")
 public class NewMojo extends AbstractMigrationMojo {
 
     public void execute() throws MojoExecutionException {

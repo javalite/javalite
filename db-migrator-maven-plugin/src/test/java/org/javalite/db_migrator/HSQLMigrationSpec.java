@@ -1,6 +1,7 @@
 package org.javalite.db_migrator;
 
 
+import org.apache.maven.project.MavenProject;
 import org.javalite.activejdbc.Base;
 import org.junit.After;
 import org.junit.Before;
@@ -18,7 +19,7 @@ public class HSQLMigrationSpec {
     public void setup() throws Exception {
         String url = "jdbc:hsqldb:file:./target/tmp/hsql-migration-test";
         Base.open("org.hsqldb.jdbcDriver", url, "sa", "");
-        migrationManager = new MigrationManager("src/test/resources/test_migrations/hsql/", url);
+        migrationManager = new MigrationManager(new MavenProject(), "src/test/resources/test_migrations/hsql/", url);
     }
 
     @After

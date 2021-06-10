@@ -1,5 +1,6 @@
 package org.javalite.db_migrator;
 
+import org.apache.maven.project.MavenProject;
 import org.javalite.activejdbc.Base;
 import org.junit.After;
 import org.junit.Before;
@@ -26,7 +27,7 @@ public class MySQLMigrationSpec {
 
         String url = url() + "/" + databaseName;
         Base.open(driver(), url, user(), password());
-        migrationManager = new MigrationManager("src/test/resources/test_migrations/mysql/", url);
+        migrationManager = new MigrationManager(new MavenProject(), "src/test/resources/test_migrations/mysql/", url);
     }
 
     @After
