@@ -12,4 +12,6 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface PATCH {}
+public @interface PATCH {
+    String value() default "";
+}

@@ -2,41 +2,38 @@ package org.javalite.activeweb;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 
 import static org.javalite.common.Collections.list;
 import static org.javalite.common.Util.blank;
+import static org.javalite.common.Util.join;
 
 
 /**
- * Definition of an API  Endpoint
+ * Wraps multiple HTTP methods for a single end point. Generally an edge case, but we need it. For instance:
+ * http://university.com/api/students may have two methods: GET and POST, one to get students, another to save,
+ * each with different semantics and documentation.
  */
 public class EndPointDefinition {
 
-    private List<HttpMethod> httpMethods = new ArrayList<>();
-    //underscore format
+    private final List<EndpointHttpMethod> endpointMethods = new ArrayList<>();
     private final String path;
-    private String openAPIdoc;
-    private String controllerClassName;
-    private String actionMethodName;
+    private final String controllerClassName;
+    private final String actionMethodName;
     private final String argumentClassName; // can be null
 
 
-    public EndPointDefinition(List<HttpMethod> httpMethods, String path, String controllerClassName,
-                              String controllerMethod, String argumentClassName, String openAPIdoc) {
+    public EndPointDefinition(List<EndpointHttpMethod> endpointMethods, String path, String controllerClassName,
+                              String actionMethod, String argumentClassName) {
 
-        this.httpMethods.addAll(httpMethods);
+        this.endpointMethods.addAll(endpointMethods);
         this.path = path;
         this.argumentClassName = argumentClassName;
         this.controllerClassName = controllerClassName;
-        this.actionMethodName = controllerMethod;
-        this.openAPIdoc = openAPIdoc;
+        this.actionMethodName = actionMethod;
     }
 
-    //used in tests
-    public EndPointDefinition(HttpMethod httpMethod, String path, String controllerClassName,
-                              String controllerMethod, String argumentClassName, String openAPIdoc) {
-        this(list(httpMethod), path, controllerClassName, controllerMethod,argumentClassName, openAPIdoc);
-    }
 
     public String getActionMethodName() {
         return actionMethodName;
@@ -48,15 +45,11 @@ public class EndPointDefinition {
     }
 
     public List<HttpMethod> getHTTPMethods() {
-        return httpMethods;
+        return this.endpointMethods.stream().map(EndpointHttpMethod::getHttpMethod).collect(Collectors.toList());
     }
 
     public String getPath() {
         return path;
-    }
-
-    public String getOpenAPIdoc() {
-        return openAPIdoc;
     }
 
     public String getArgumentClassName() {
@@ -67,58 +60,43 @@ public class EndPointDefinition {
         return controllerClassName;
     }
 
-    @Override
-    public String toString() {
-        return "methods=" + httpMethods +
-                ", path='" + path + "'" +
-                ", openAPIdoc='" + openAPIdoc + "'" +
-                ", controllerClassName='" + controllerClassName + "'" +
-                ", actionMethod='" + actionMethodName + "'" +
-                ", openAPIdoc='" + openAPIdoc + "'" +
-                ", argumentClassName='" + this.argumentClassName+ "'";
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        EndPointDefinition that = (EndPointDefinition) o;
-
-        if (!sameMethods(that.httpMethods)) return false;
-        if (!path.equals(that.path)) return false;
-        if (!openAPIdoc.equals(that.openAPIdoc)) return false;
-        if (!controllerClassName.equals(that.controllerClassName)) return false;
-        if (!actionMethodName.equals(that.actionMethodName)) return false;
-        return argumentClassName.equals(that.argumentClassName);
-    }
-
-    private boolean sameMethods(List<HttpMethod> httpMethods){
-        for (HttpMethod httpMethod : this.httpMethods) {
-            if(!httpMethods.contains(httpMethod)){
-                return false;
+    public boolean hasOpenAPI() {
+        boolean hasAPI = false;
+        for (EndpointHttpMethod endpointHttpMethod : endpointMethods) {
+            if(!blank(endpointHttpMethod.getHttpMethodAPI())){
+                hasAPI = true;
             }
         }
+        return hasAPI;
+    }
+
+    public String getOpenAPIdoc(Format format) {
+
+        List<String> apis = new ArrayList<>();
+        if(format.equals(Format.JSON)){
+            for (EndpointHttpMethod endpointHttpMethod : endpointMethods) {
+                String httpMethod = endpointHttpMethod.getHttpMethod().toString().toLowerCase();
+                String httpMethodAPI =  endpointHttpMethod.getHttpMethodAPI();
+                if(!blank(httpMethodAPI)){
+                    apis.add( "\"" + httpMethod + "\": " + httpMethodAPI);
+                }
+
+            }
+
+            return apis.size() > 0?   "\"" + path  + "\":{"+ join(apis, ",") + "}"
+                    : "}}";
+        }else {
+            throw new UnsupportedOperationException("Not implemented yet");
+        }
+    }
+
+    public boolean contains(EndpointHttpMethod[] endpointHttpMethods) {
+        for (EndpointHttpMethod endpointHttpMethod : endpointHttpMethods) {
+             if(!this.endpointMethods.contains(endpointHttpMethod)){
+                 return false;
+             }
+        }
         return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = httpMethods.hashCode();
-        result = 31 * result + path.hashCode();
-        result = 31 * result + openAPIdoc.hashCode();
-        result = 31 * result + controllerClassName.hashCode();
-        result = 31 * result + actionMethodName.hashCode();
-        result = 31 * result + argumentClassName.hashCode();
-        return result;
-    }
-
-    public boolean hasMethod(HttpMethod method) {
-        return httpMethods.stream().anyMatch(httpMethod -> httpMethod.equals(method));
-    }
-
-    public boolean hasOpenAPI() {
-            return !blank(this.openAPIdoc);
     }
 }
 

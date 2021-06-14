@@ -1,17 +1,68 @@
 package app.controllers;
 
 import org.javalite.activeweb.AppController;
-import org.javalite.activeweb.annotations.OpenAPI;
+import org.javalite.activeweb.annotations.GET;
 import org.javalite.activeweb.annotations.POST;
 
 public class CustomController extends AppController {
 
-    @OpenAPI(""" 
-            Generic description for an index endpoint""")
+    @GET("""
+            {
+              "operationId": "getVersionDetailsv2",
+              "summary": "Show API version details",
+              "responses": {
+                "200": {
+                  "description": "200 response",
+                  "content": {
+                    "application/json": {
+                      "examples": {}
+                    }
+                  }
+                },
+                "203": {
+                  "description": "203 response",
+                  "content": {
+                    "application/json": {
+                      "examples": {}
+                    }
+                  }
+                }
+              }
+            }""")
+    @POST("""
+            {
+              "operationId": "getVersionDetailsv2",
+              "summary": "Show API version details",
+              "responses": {
+                "200": {
+                  "description": "200 response",
+                  "content": {
+                    "application/json": {
+                      "examples": {
+                      }
+                    }
+                  }
+                }
+              }
+            }""")
     public void index(){}
 
-    @OpenAPI(""" 
-            Description  of the API end point to save a Person object""")
-    @POST
+    @POST("""
+            {
+              "operationId": "getVersionDetailsv2",
+              "summary": "Show API version details",
+              "responses": {
+                "200": {
+                  "description": "200 response",
+                  "content": {
+                    "application/json": {
+                      "examples": {
+                      }
+                    }
+                  }
+                }
+                         
+              }
+            }""")
     public void savePerson(Person person){}
 }

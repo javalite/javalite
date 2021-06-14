@@ -17,7 +17,6 @@ limitations under the License.
 package app.controllers;
 
 import org.javalite.activeweb.AppController;
-import org.javalite.activeweb.HttpMethod;
 import org.javalite.activeweb.annotations.GET;
 import org.javalite.activeweb.annotations.HEAD;
 

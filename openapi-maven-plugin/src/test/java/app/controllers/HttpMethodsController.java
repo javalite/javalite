@@ -18,19 +18,19 @@ public class HttpMethodsController extends AppController {
     public void doPost() {
     }
 
-    @OpenAPI("""
-            docs for doPut""")
-    @PUT
+    @PUT("""
+            {
+            "description" : "docs for doPut"
+            }
+            """)
     public void doPut() {
     }
 
-    /**
-     * hello again
-     */
-
-    @OpenAPI("""
-            docs for doHead""")
-    @HEAD
+    @HEAD("""
+            {
+            "description" : "docs for doHead"
+            }
+            """)
     public void doHead() {
     }
 

@@ -1,25 +1,33 @@
 package org.javalite.activeweb;
 
 import io.github.classgraph.*;
-import org.javalite.activeweb.annotations.OpenAPI;
+import org.javalite.activeweb.annotations.*;
 import org.javalite.common.Inflector;
 import org.javalite.common.Templator;
 import org.javalite.common.Util;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.javalite.activeweb.Configuration.getControllerClassInfos;
+import static org.javalite.common.Collections.list;
 import static org.javalite.common.Collections.map;
+import static org.javalite.common.Util.blank;
 
 class EndpointFinder {
 
     private String routeConfigClassName;
     private ClassLoader classLoader;
     private boolean strictMode = false;
+    private String apiLocation;
 
     public EndpointFinder(String routeConfigClassName, ClassLoader classLoader) {
         this.routeConfigClassName = routeConfigClassName;
@@ -27,80 +35,79 @@ class EndpointFinder {
     }
 
     public EndpointFinder(ClassLoader classLoader) {
-         this("app.config.RouteConfig", classLoader);
+        this("app.config.RouteConfig", classLoader);
     }
 
-    protected List<EndPointDefinition> getCustomEndpointDefinitions() {
+    protected List<EndPointDefinition> getCustomEndpointDefinitions(Format format) {
         List<EndPointDefinition> endPointDefinitions = new ArrayList<>();
-        try{
+        try {
             AbstractRouteConfig rc = initRouteConfig(routeConfigClassName, classLoader);
             strictMode = rc.isStrictMode();
             List<RouteBuilder> routes = rc.getRoutes();
             for (RouteBuilder routeBuilder : routes) {
                 ActionAndArgument actionAndArgument = RouteUtil.getActionAndArgument(routeBuilder.getController(), routeBuilder.getActionName());
 
-                if(actionAndArgument == null){
+                if (actionAndArgument == null) {
                     System.err.println("WARNING: Failed to find a method for controller: '" + routeBuilder.getController().getClass() + "' and action: '" + routeBuilder.getActionName() + "'. Check your RouteConfig class.");
                     continue;
                 }
                 // if action method contains one argument, but it is a primitive, the method is not an action method
 
-                Class<?> argumentType = actionAndArgument.getActionMethod() != null? actionAndArgument.getArgumentType(): null;
+                Class<?> argumentType = actionAndArgument.getActionMethod() != null ? actionAndArgument.getArgumentType() : null;
                 String argumentTypeName = argumentType != null ? argumentType.getName() : "";
-                EndPointDefinition definition = new EndPointDefinition(routeBuilder.getMethods(), routeBuilder.getRouteConfig(),
-                        routeBuilder.getController().getClass().getName(), actionAndArgument.getActionMethodName(), argumentTypeName,
-                        getOpenAPIDoc(actionAndArgument.getActionMethod()));
+                EndPointDefinition definition = new EndPointDefinition(getEndpointMethods(actionAndArgument.getActionMethod(), format), routeBuilder.getRouteConfig(), routeBuilder.getController().getClass().getName(),
+                        actionAndArgument.getActionMethod().getName(), argumentTypeName);
                 endPointDefinitions.add(definition);
             }
-        }catch(ClassNotFoundException ignore){
+        } catch (ClassNotFoundException ignore) {
             //RouteConfig is not provided
-        }catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+        } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
             throw new RouteException("Failed to generate endpoint definitions from custom routes.", e);
         }
         return endPointDefinitions;
     }
 
-    private  AbstractRouteConfig initRouteConfig(String className, ClassLoader classLoader) throws NoSuchMethodException, ClassNotFoundException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    private AbstractRouteConfig initRouteConfig(String className, ClassLoader classLoader) throws NoSuchMethodException, ClassNotFoundException, IllegalAccessException, InvocationTargetException, InstantiationException {
         Class<?> routeConfigClass = Class.forName(className, true, classLoader);
         AbstractRouteConfig rc = (AbstractRouteConfig) routeConfigClass.getDeclaredConstructor().newInstance();
         rc.init(new AppContext());
         return rc;
     }
 
-     List<EndPointDefinition> getStandardEndpointDefinitions() {
+    List<EndPointDefinition> getStandardEndpointDefinitions(Format format) {
 
-        try{
+        try {
             List<EndPointDefinition> endPointDefinitions = new ArrayList<>();
             AbstractRouteConfig rc = initRouteConfig(routeConfigClassName, classLoader);
-            if(rc.isStrictMode()){
+            if (rc.isStrictMode()) {
                 return endPointDefinitions;
-            }else {
-                try(CloseableList<ClassInfo> controllerClassInfos = getControllerClassInfos(classLoader)){
+            } else {
+                try (CloseableList<ClassInfo> controllerClassInfos = getControllerClassInfos(classLoader)) {
                     for (ClassInfo classInfo : controllerClassInfos) {
-                        endPointDefinitions.addAll(getEndpointDefinitions(classInfo));
+                        endPointDefinitions.addAll(getEndpointDefinitions(classInfo, format));
                     }
                 }
                 return endPointDefinitions;
             }
-        }catch(Throwable e){
+        } catch (Throwable e) {
             throw new RouteException("Failed to find standard endpoint definitions ", e);
         }
     }
 
-    private  List<EndPointDefinition> getEndpointDefinitions(ClassInfo controllerClassInfo) {
+    private List<EndPointDefinition> getEndpointDefinitions(ClassInfo controllerClassInfo, Format format) {
         List<MethodInfo> actionInfos = new ArrayList<>();
         addActionsToList(controllerClassInfo, actionInfos);
 
         List<EndPointDefinition> endPointDefinitions = new ArrayList<>();
         actionInfos.forEach(actionMethodInfo -> {
-
-            Method actionMethod = actionMethodInfo.loadClassAndGetMethod();
-
-            String argumentType = actionMethodInfo.getParameterInfo().length == 1 ? actionMethodInfo.getParameterInfo()[0].getTypeDescriptor().toString() : "";
-            endPointDefinitions.add(new EndPointDefinition(detectHTTPMethods(actionMethodInfo),
-                    Router.getControllerPath(controllerClassInfo.getName(), controllerClassInfo.getSimpleName()) + "/" + Inflector.underscore(actionMethodInfo.getName()),
-                    controllerClassInfo.getName(), actionMethodInfo.getName(),
-                    argumentType, getOpenAPIDoc(actionMethod)));
+                    String argumentType = actionMethodInfo.getParameterInfo().length == 1 ? actionMethodInfo.getParameterInfo()[0].getTypeDescriptor().toString() : "";
+                    Method actionMethod = actionMethodInfo.loadClassAndGetMethod();
+                    endPointDefinitions.add(new EndPointDefinition(
+                            getEndpointMethods(actionMethod,format),
+                            Router.getControllerPath(controllerClassInfo.getName(),
+                                    controllerClassInfo.getSimpleName()) + "/" + Inflector.underscore(actionMethodInfo.getName()),
+                            controllerClassInfo.getName(), actionMethodInfo.getName(),
+                            argumentType));
                 }
         );
         return endPointDefinitions;
@@ -113,7 +120,7 @@ class EndpointFinder {
         MethodInfoList actions = controllerClassInfo.getDeclaredMethodInfo().filter(EndpointFinder::isAction);
         actionInfos.addAll(actions);
         ClassInfo superClass = controllerClassInfo.getSuperclass();
-        if(!superClass.getName().equals(AppController.class.getName())){
+        if (!superClass.getName().equals(AppController.class.getName())) {
             addActionsToList(superClass, actionInfos);
         }
     }
@@ -130,67 +137,106 @@ class EndpointFinder {
             throw new RouteException("Failed to determine if a method is an action.", e);
         }
     }
+
     /**
      * Detects an HTTP method from class method.
+     *
      * @param actionMethod method from a controller.
      * @return instance of this class.
      */
-    private List<HttpMethod> detectHTTPMethods(MethodInfo actionMethod){
+    @SuppressWarnings("unchecked")
+    private List<EndpointHttpMethod> getEndpointMethods(Method actionMethod, Format format) {
+        List<EndpointHttpMethod> endpointMethods = new ArrayList<>();
+        List<Class> annotationsClasses = list(GET.class, POST.class, PUT.class, DELETE.class, OPTIONS.class, PATCH.class, HEAD.class);
 
-        List<HttpMethod> methods = new ArrayList<>();
-        if(actionMethod.getAnnotationInfo().size() == 0){
-            methods.add(HttpMethod.GET);
-            return methods ;
-        }else{
+        try {
+            if (actionMethod.getAnnotations().length == 0) {
 
-            if(actionMethod.hasAnnotation(org.javalite.activeweb.annotations.GET.class.getName())){
-                methods.add(HttpMethod.GET);
+                Annotation getAnnotation = this.getClass().getDeclaredMethod("foo").getAnnotation(GET.class); // quick hack just for this annotation because it is a default
+                endpointMethods.add(new EndpointHttpMethod(HttpMethod.GET, getActionAPI(GET.class, actionMethod, getAnnotation, format)));
+                return endpointMethods;
+            } else {
+                for (Class annotationClass : annotationsClasses) {
+                    Annotation annotation = actionMethod.getAnnotation(annotationClass);
+
+                    if(annotation == null){
+                        continue;
+                    }
+                    String apiText = getActionAPI(annotationClass, actionMethod, annotation, format);
+                    endpointMethods.add(new EndpointHttpMethod(HttpMethod.method(annotation), apiText));
+                }
             }
-            if(actionMethod.hasAnnotation(org.javalite.activeweb.annotations.POST.class.getName())){
-                methods.add(HttpMethod.POST);
-            }
-            if(actionMethod.hasAnnotation(org.javalite.activeweb.annotations.PATCH.class.getName())){
-                methods.add(HttpMethod.PATCH);
-            }
-            if(actionMethod.hasAnnotation(org.javalite.activeweb.annotations.OPTIONS.class.getName())){
-                methods.add(HttpMethod.OPTIONS);
-            }
-            if(actionMethod.hasAnnotation(org.javalite.activeweb.annotations.HEAD.class.getName())){
-                methods.add(HttpMethod.HEAD);
-            }
-            if(actionMethod.hasAnnotation(org.javalite.activeweb.annotations.PUT.class.getName())){
-                methods.add(HttpMethod.PUT);
-            }
-            if(actionMethod.hasAnnotation(org.javalite.activeweb.annotations.DELETE.class.getName())){
-                methods.add(HttpMethod.DELETE);
-            }
+
+        } catch (Exception e) {
+            throw new OpenAPIException(e);
         }
-
-        return methods;
+        return endpointMethods;
     }
 
-    String getOpenAPIDoc(Method method){
-        return method != null && method.isAnnotationPresent(OpenAPI.class) ? method.getAnnotation(OpenAPI.class).value() : "";
+    private String getActionAPI(Class annotationClass, Method actionMethod,   Annotation annotation, Format format) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException {
+        Method valueMethod = annotationClass.getMethod("value");
+        String annotationApiText = (String) valueMethod.invoke(annotation);
+        String fileApiText = getActionFileDoc(actionMethod, annotationClass, format);
+
+        if(!blank(annotationApiText) && !blank(fileApiText)){
+            throw new OpenAPIException("The action: " + actionMethod.getDeclaringClass().getName() + "#" + actionMethod.getName()
+                    + " contains the OpenAPI documentation in a corresponding file, as well as in the annotation "
+                    + annotationClass.getSimpleName() + ". Only one place of record is allowed." );
+        }
+        return !blank(annotationApiText) ? annotationApiText : fileApiText ;
     }
 
-    public  boolean isStrictMode() {
+    @GET
+    protected void foo(){}
+
+    /**
+     * Gets an api doc for an HTTP method from a file.
+     *
+     * @return doc or null
+     */
+    private String getActionFileDoc(Method actionMethod, Class annotationClass, Format format) throws IOException {
+
+        String className = actionMethod.getDeclaringClass().getName();
+        String fileName = className + "#" + actionMethod.getName() + "-" + annotationClass.getSimpleName().toLowerCase() + "." + format.name().toLowerCase();
+
+        if (!blank(apiLocation)) {
+
+            File f = new File(this.apiLocation, fileName);
+            if (f.exists()) {
+                System.out.println("Reading file: " + f);
+                return Util.readFile(f.getCanonicalPath());
+            }else{
+                System.out.println("Cannot find file:" + f.getCanonicalPath());
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public boolean isStrictMode() {
         return strictMode;
     }
 
-    public String getOpenAPIDocs(List<EndPointDefinition> customEndpointDefinitions , List<EndPointDefinition> standardEndpointDefinitions, String baseTemplate, String delimiter){
+    public String getOpenAPIDocs(String baseTemplate, Format format) {
 
-        List<String> chunks = new ArrayList<>();
+        List<String> paths = new ArrayList<>();
 
-        for (EndPointDefinition endPointDefinition : standardEndpointDefinitions) {
-            if(endPointDefinition.hasOpenAPI()){
-                chunks.add(endPointDefinition.getOpenAPIdoc());
+        for (EndPointDefinition endPointDefinition : getStandardEndpointDefinitions(format)) {
+            if (endPointDefinition.hasOpenAPI()) {
+                paths.add(endPointDefinition.getOpenAPIdoc(format));
             }
         }
-        for (EndPointDefinition endPointDefinition : customEndpointDefinitions) {
-            if(endPointDefinition.hasOpenAPI()){
-                chunks.add(endPointDefinition.getOpenAPIdoc());
+        for (EndPointDefinition endPointDefinition : getCustomEndpointDefinitions(format)) {
+            if (endPointDefinition.hasOpenAPI()) {
+                paths.add(endPointDefinition.getOpenAPIdoc(format));
             }
         }
-        return Templator.mergeFromTemplate(baseTemplate, map("content", Util.join(chunks, delimiter)), false);
+
+        return Templator.mergeFromTemplate(baseTemplate, map("paths", Util.join(paths, format.getDelimiter())), false);
+    }
+
+    public void setApiLocation(String apiLocation) {
+        this.apiLocation = apiLocation;
     }
 }

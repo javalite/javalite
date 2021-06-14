@@ -28,4 +28,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface DELETE {}
+public @interface DELETE {
+    String value() default "";
+}

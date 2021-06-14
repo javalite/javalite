@@ -15,18 +15,19 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
-import io.github.classgraph.MethodInfo;
 import org.javalite.activeweb.annotations.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+
 
 /**
+ * This class is mostly used by the framework. Do not use in  applications.
+ *
+ *
  * @author Igor Polevoy
+ * @since forever.
  */
 public enum HttpMethod {
     GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS;
@@ -75,27 +76,5 @@ public enum HttpMethod {
      */
     public boolean destructive(){
         return this.equals(PUT) || this.equals(POST) || this.equals(DELETE) || this.equals(PATCH);
-    }
-
-
-
-
-    static class Test{
-
-        @GET @POST
-        public void index(){
-        }
-    }
-
-    public static void main(String[] args) {
-
-
-        Annotation[] annotations  = Test.class.getDeclaredMethods()[0].getAnnotations();
-
-
-        System.out.println(Arrays.stream(annotations).anyMatch(a ->  a instanceof  org.javalite.activeweb.annotations.GET));
-
-
-
     }
 }

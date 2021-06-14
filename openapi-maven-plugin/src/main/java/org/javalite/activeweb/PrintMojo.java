@@ -1,18 +1,14 @@
 package org.javalite.activeweb;
 
-import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.List;
 
+import static org.javalite.activeweb.ClassPathUtil.getCombinedClassLoader;
 import static org.javalite.activeweb.TablePrinter.printEndpointDefinitions;
 
 
@@ -26,8 +22,8 @@ public class PrintMojo extends AbstractMojo {
     public void execute() {
         try{
             EndpointFinder endpointFinder = new  EndpointFinder(getCombinedClassLoader(project));
-            List<EndPointDefinition> customEndpointDefinitions = endpointFinder.getCustomEndpointDefinitions();
-            List<EndPointDefinition> standardEndpointDefinitions = new EndpointFinder(getCombinedClassLoader(project)).getStandardEndpointDefinitions();
+            List<EndPointDefinition> customEndpointDefinitions = endpointFinder.getCustomEndpointDefinitions(Format.JSON);//format does not matter here, we are printing the routing table
+            List<EndPointDefinition> standardEndpointDefinitions = new EndpointFinder(getCombinedClassLoader(project)).getStandardEndpointDefinitions(Format.JSON);//format does not matter here, we are printing the routing table
 
             String standardTitle =  "\n****************    STANDARD END POINTS    ****************\n";
             if(endpointFinder.isStrictMode()){
@@ -43,12 +39,4 @@ public class PrintMojo extends AbstractMojo {
         }
     }
 
-    protected static ClassLoader getCombinedClassLoader(MavenProject project) throws DependencyResolutionRequiredException, MalformedURLException {
-        ClassLoader pluginCL = Thread.currentThread().getContextClassLoader();
-        URL[] urls = new URL[project.getCompileClasspathElements().size()];
-        for(int x = 0 ; x < urls.length; x++){
-            urls[x] = new File(project.getCompileClasspathElements().get(x).toString()).toURI().toURL();
-        }
-        return  new URLClassLoader(urls, pluginCL);
-    }
 }

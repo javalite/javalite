@@ -28,4 +28,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface OPTIONS {}
+public @interface OPTIONS {
+    String value() default "";
+}

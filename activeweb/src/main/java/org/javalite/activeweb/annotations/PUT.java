@@ -27,4 +27,6 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface PUT {}
+public @interface PUT {
+    String value() default "";
+}

@@ -1,14 +1,18 @@
 package org.javalite.activeweb;
 
+import org.javalite.common.JsonHelper;
+import org.javalite.common.Util;
 import org.javalite.test.SystemStreamUtil;
+import org.javalite.test.jspec.ExceptionExpectation;
 import org.junit.Test;
 
 import java.util.List;
 
 import static org.javalite.activeweb.TablePrinter.printEndpointDefinitions;
-import static org.javalite.common.Collections.list;
-import static org.javalite.test.jspec.JSpec.$;
-import static org.javalite.test.jspec.JSpec.the;
+import static org.javalite.common.JsonHelper.toJsonString;
+import static org.javalite.common.JsonHelper.toMap;
+import static org.javalite.common.Util.readResource;
+import static org.javalite.test.jspec.JSpec.*;
 
 public class EndpointFinderSpec {
 
@@ -19,17 +23,17 @@ public class EndpointFinderSpec {
         SystemStreamUtil.replaceOut();
 
         EndpointFinder endpointFinder = new EndpointFinder("app.config.RouteConfig1", this.getClass().getClassLoader());
-        List<EndPointDefinition> endPointDefinitions = endpointFinder.getCustomEndpointDefinitions();
+        List<EndPointDefinition> endPointDefinitions = endpointFinder.getCustomEndpointDefinitions(Format.JSON);
         printEndpointDefinitions("Title", endPointDefinitions);
 
         the(endPointDefinitions.size()).shouldBeEqual(5);
 
-        $(endPointDefinitions.contains(new EndPointDefinition(HttpMethod.GET, "/hello", "app.controllers.TestController", "foo", "", ""))).shouldBeTrue();
-        $(endPointDefinitions.contains(new EndPointDefinition(HttpMethod.POST, "/person_save", "app.controllers.CustomController", "savePerson", "app.controllers.Person", "This is a simple stub for CustomController"))).shouldBeTrue();
-        $(endPointDefinitions.contains(new EndPointDefinition(HttpMethod.GET, "/segments/{id}", "app.controllers.SegmentsController", "index", "", ""))).shouldBeTrue();
+        $(exists(endPointDefinitions, "/hello", "app.controllers.TestController", "foo", "", new EndpointHttpMethod(HttpMethod.GET, null))).shouldBeTrue();
+        $(exists(endPointDefinitions,  "/person_save", "app.controllers.CustomController", "savePerson", "app.controllers.Person", new EndpointHttpMethod(HttpMethod.POST, readResource("/CustomController#savePerson-post.json")))).shouldBeTrue();
+        $(exists(endPointDefinitions, "/segments/{id}", "app.controllers.SegmentsController", "index", "", new EndpointHttpMethod(HttpMethod.GET, null))).shouldBeTrue();
 
-        $(endPointDefinitions.contains(new EndPointDefinition(HttpMethod.GET, "/about", "app.controllers.HomeController", "about", "", ""))).shouldBeTrue();
-        $(endPointDefinitions.contains(new EndPointDefinition(HttpMethod.GET, "/solutions", "app.controllers.HomeController", "solutions", "", ""))).shouldBeTrue();
+        $(exists(endPointDefinitions, "/about", "app.controllers.HomeController", "about", "",  new EndpointHttpMethod(HttpMethod.GET, null))).shouldBeTrue();
+        $(exists(endPointDefinitions, "/solutions", "app.controllers.HomeController", "solutions", "", new EndpointHttpMethod(HttpMethod.GET, null))).shouldBeTrue();
 
         the(SystemStreamUtil.getSystemErr()).shouldContain("WARNING: Failed to find a method for controller: 'class app.controllers.HomeController' and action: 'team'. Check your RouteConfig class.");
 
@@ -54,43 +58,52 @@ public class EndpointFinderSpec {
         SystemStreamUtil.replaceOut();
 
         EndpointFinder endpointFinder = new EndpointFinder(this.getClass().getClassLoader());
-        List<EndPointDefinition> endPointDefinitions = endpointFinder.getStandardEndpointDefinitions();
+        List<EndPointDefinition> endPointDefinitions = endpointFinder.getStandardEndpointDefinitions(Format.JSON);
 
         printEndpointDefinitions("Title", endPointDefinitions);
-        the(endPointDefinitions.size()).shouldBeEqual(15);
+        the(endPointDefinitions.size()).shouldBeEqual(17);
 
         //true below
-        $(endPointDefinitions.contains(new EndPointDefinition(list(HttpMethod.GET, HttpMethod.POST), "/test/index", "app.controllers.TestController", "index", "", ""))).shouldBeTrue();
-        $(endPointDefinitions.contains(new EndPointDefinition(HttpMethod.GET, "/test/foo", "app.controllers.TestController", "foo", "", "" ))).shouldBeTrue();
-        $(endPointDefinitions.contains(new EndPointDefinition(HttpMethod.POST, "/test/save_person", "app.controllers.TestController", "savePerson", "app.controllers.Person", "" ))).shouldBeTrue();
-        $(endPointDefinitions.contains(new EndPointDefinition(HttpMethod.GET, "/test/bar", "app.controllers.TestController", "bar", "", "" ))).shouldBeTrue();
 
-        $(endPointDefinitions.contains(new EndPointDefinition(list(HttpMethod.GET,HttpMethod.POST), "/http_methods/index", "app.controllers.HttpMethodsController", "index", "", ""))).shouldBeTrue();
-        $(endPointDefinitions.contains(new EndPointDefinition(HttpMethod.POST, "/http_methods/do_post", "app.controllers.HttpMethodsController", "doPost", "", ""))).shouldBeTrue();
-        $(endPointDefinitions.contains(new EndPointDefinition(HttpMethod.PUT, "/http_methods/do_put", "app.controllers.HttpMethodsController", "doPut", "", "docs for doPut"))).shouldBeTrue();
-        $(endPointDefinitions.contains(new EndPointDefinition(HttpMethod.OPTIONS, "/http_methods/do_options", "app.controllers.HttpMethodsController", "doOptions", "", ""))).shouldBeTrue();
-        $(endPointDefinitions.contains(new EndPointDefinition(HttpMethod.PATCH, "/http_methods/do_patch", "app.controllers.HttpMethodsController", "doPatch", "", ""))).shouldBeTrue();
-        $(endPointDefinitions.contains(new EndPointDefinition(HttpMethod.HEAD, "/http_methods/do_head", "app.controllers.HttpMethodsController", "doHead", "", "docs for doHead"))).shouldBeTrue();
+        $(exists(endPointDefinitions, "/test/index", "app.controllers.TestController", "index", "",
+                new EndpointHttpMethod(HttpMethod.GET, null),
+                new EndpointHttpMethod(HttpMethod.POST, null))).shouldBeTrue();
+        $(exists(endPointDefinitions, "/test/foo", "app.controllers.TestController", "foo", "", new EndpointHttpMethod(HttpMethod.GET, null))).shouldBeTrue();
+        $(exists(endPointDefinitions, "/test/save_person", "app.controllers.TestController", "savePerson", "app.controllers.Person", new EndpointHttpMethod(HttpMethod.POST, null))).shouldBeTrue();
+        $(exists(endPointDefinitions, "/test/bar", "app.controllers.TestController", "bar", "", new EndpointHttpMethod(HttpMethod.GET, null))).shouldBeTrue();
+        $(exists(endPointDefinitions, "/http_methods/index", "app.controllers.HttpMethodsController", "index", "",new EndpointHttpMethod(HttpMethod.GET, null),   new EndpointHttpMethod(HttpMethod.POST, null))).shouldBeTrue();
+        $(exists(endPointDefinitions, "/http_methods/do_post", "app.controllers.HttpMethodsController", "doPost", "", new EndpointHttpMethod(HttpMethod.POST, null))).shouldBeTrue();
+        $(exists(endPointDefinitions, "/http_methods/do_put", "app.controllers.HttpMethodsController", "doPut", "", new EndpointHttpMethod(HttpMethod.PUT,  """
+                                                                                                                                                                {
+                                                                                                                                                                "description" : "docs for doPut"
+                                                                                                                                                                }
+                                                                                                                                                                """))).shouldBeTrue();
+        $(exists(endPointDefinitions, "/http_methods/do_options", "app.controllers.HttpMethodsController", "doOptions", "", new EndpointHttpMethod(HttpMethod.OPTIONS, null))).shouldBeTrue();
+        $(exists(endPointDefinitions, "/http_methods/do_patch", "app.controllers.HttpMethodsController", "doPatch", "", new EndpointHttpMethod(HttpMethod.PATCH, null))).shouldBeTrue();
+        $(exists(endPointDefinitions, "/http_methods/do_head", "app.controllers.HttpMethodsController", "doHead", "", new EndpointHttpMethod(HttpMethod.HEAD,"""
+                                                                                                                                                                {
+                                                                                                                                                                "description" : "docs for doHead"
+                                                                                                                                                                }
+                                                                                                                                                                """))).shouldBeTrue();
+        $(exists(endPointDefinitions, "/segments/index", "app.controllers.SegmentsController", "index", "", new EndpointHttpMethod(HttpMethod.GET, null))).shouldBeTrue();
+        $(exists(endPointDefinitions, "/custom/index", "app.controllers.CustomController", "index", "",  new EndpointHttpMethod(HttpMethod.GET, readResource("/CustomController#index-get.json")),
+                                                                                                                 new EndpointHttpMethod(HttpMethod.POST, readResource("/CustomController#index-post.json")))).shouldBeTrue();
+        $(exists(endPointDefinitions, "/custom/save_person", "app.controllers.CustomController", "savePerson", "app.controllers.Person", new EndpointHttpMethod(HttpMethod.POST, readResource("/CustomController#savePerson-post.json")))).shouldBeTrue();
 
-        $(endPointDefinitions.contains(new EndPointDefinition(HttpMethod.GET, "/segments/index", "app.controllers.SegmentsController", "index", "", ""))).shouldBeTrue();
-
-        $(endPointDefinitions.contains(new EndPointDefinition(HttpMethod.GET, "/custom/index", "app.controllers.CustomController", "index", "", ""))).shouldBeTrue();
-        $(endPointDefinitions.contains(new EndPointDefinition(HttpMethod.POST, "/custom/save_person", "app.controllers.CustomController", "savePerson", "app.controllers.Person", "This is a simple stub for CustomController"))).shouldBeTrue();
-
-        //false below
-        $(endPointDefinitions.contains(new EndPointDefinition(HttpMethod.GET, "/bad/get_age", "app.controllers.CustomController", "", "", ""))).shouldBeFalse();
-        $(endPointDefinitions.contains(new EndPointDefinition(HttpMethod.GET, "/bad/foo", "app.controllers.CustomController", "", "", ""))).shouldBeFalse();
-        $(endPointDefinitions.contains(new EndPointDefinition(HttpMethod.POST, "/bad/bar", "app.controllers.CustomController", "", "", ""))).shouldBeFalse();
-
-        //false below
-        $(endPointDefinitions.contains(new EndPointDefinition(HttpMethod.GET, "/abstract/bar", "app.controllers.AbstractController", "", "", ""))).shouldBeFalse();
-        $(endPointDefinitions.contains(new EndPointDefinition(HttpMethod.GET, "/bad/foo", "app.controllers.CustomController", "", "", ""))).shouldBeFalse();
+//        //false below
+        $(exists(endPointDefinitions,  "/bad/get_age", "app.controllers.CustomController", "", "", new EndpointHttpMethod(HttpMethod.GET, ""))).shouldBeFalse();
+        $(exists(endPointDefinitions, "/bad/foo", "app.controllers.CustomController", "", "", new EndpointHttpMethod(HttpMethod.GET, ""))).shouldBeFalse();
+        $(exists(endPointDefinitions, "/bad/bar", "app.controllers.CustomController", "", "", new EndpointHttpMethod(HttpMethod.POST, ""))).shouldBeFalse();
+//
+//        //false below
+        $(exists(endPointDefinitions, "/abstract/bar", "app.controllers.AbstractController", "", "", new EndpointHttpMethod(HttpMethod.GET, ""))).shouldBeFalse();
+        $(exists(endPointDefinitions, "/bad/foo", "app.controllers.CustomController", "", "", new EndpointHttpMethod(HttpMethod.GET, ""))).shouldBeFalse();
 
         the(SystemStreamUtil.getSystemOut()).shouldContain("""
                 +--------+--------------------------+--------------+---------------------------------------+------------------------------------+
                 | Number | Path                     | HTTP Methods | Controller                            | Method                             |
                 +--------+--------------------------+--------------+---------------------------------------+------------------------------------+
-                | 1      | /custom/index            | GET          | app.controllers.CustomController      | index()                            |
+                | 1      | /custom/index            | GET,POST     | app.controllers.CustomController      | index()                            |
                 | 2      | /custom/save_person      | POST         | app.controllers.CustomController      | savePerson(app.controllers.Person) |
                 | 3      | /home/about              | GET          | app.controllers.HomeController        | about()                            |
                 | 4      | /home/solutions          | GET          | app.controllers.HomeController        | solutions()                        |
@@ -101,46 +114,114 @@ public class EndpointFinderSpec {
                 | 9      | /http_methods/do_options | OPTIONS      | app.controllers.HttpMethodsController | doOptions()                        |
                 | 10     | /http_methods/do_patch   | PATCH        | app.controllers.HttpMethodsController | doPatch()                          |
                 | 11     | /segments/index          | GET          | app.controllers.SegmentsController    | index()                            |
-                | 12     | /test/index              | GET,POST     | app.controllers.TestController        | index()                            |
-                | 13     | /test/foo                | GET          | app.controllers.TestController        | foo()                              |
-                | 14     | /test/save_person        | POST         | app.controllers.TestController        | savePerson(app.controllers.Person) |
-                | 15     | /test/bar                | GET          | app.controllers.TestController        | bar()                              |
+                | 12     | /segments/foobar         | GET          | app.controllers.SegmentsController    | foobar()                           |
+                | 13     | /segments/foobar_2       | GET          | app.controllers.SegmentsController    | foobar2()                          |
+                | 14     | /test/index              | GET,POST     | app.controllers.TestController        | index()                            |
+                | 15     | /test/foo                | GET          | app.controllers.TestController        | foo()                              |
+                | 16     | /test/save_person        | POST         | app.controllers.TestController        | savePerson(app.controllers.Person) |
+                | 17     | /test/bar                | GET          | app.controllers.TestController        | bar()                              |
                 +--------+--------------------------+--------------+---------------------------------------+------------------------------------+""");
 
         //we still get custom defined  in a default RouteConfig
-        List<EndPointDefinition> customDefinitions =  endpointFinder.getCustomEndpointDefinitions();
+        List<EndPointDefinition> customDefinitions =  endpointFinder.getCustomEndpointDefinitions(Format.JSON);
         the(customDefinitions.size()).shouldBeEqual(2);
-        $(customDefinitions.contains(new EndPointDefinition(HttpMethod.GET, "/hello", "app.controllers.TestController", "foo", "", ""))).shouldBeTrue();
-        $(customDefinitions.contains(new EndPointDefinition(HttpMethod.POST, "/person_save", "app.controllers.CustomController", "savePerson", "app.controllers.Person", "This is a simple stub for CustomController"))).shouldBeTrue();
+        $(exists(customDefinitions, "/hello", "app.controllers.TestController", "foo", "", new EndpointHttpMethod(HttpMethod.GET, null))).shouldBeTrue();
+        $(exists(customDefinitions, "/person_save", "app.controllers.CustomController", "savePerson", "app.controllers.Person", new EndpointHttpMethod(HttpMethod.POST, readResource("/CustomController#savePerson-post.json")))).shouldBeTrue();
 
         SystemStreamUtil.restoreSystemOut();
+    }
+
+    /**
+     * Validates that the collection endPointDefinitions contains an entry corresponding to the rest of arguments
+     */
+    private boolean exists(List<EndPointDefinition> endPointDefinitions, String path, String controllerName, String actionMethodName, String argumentTypeName, EndpointHttpMethod... endpointHttpMethods) {
+
+        for (EndPointDefinition endPointDefinition : endPointDefinitions) {
+            if (endPointDefinition.getPath().equals(path)
+                    && endPointDefinition.getControllerClassName().equals(controllerName)
+                    && endPointDefinition.getActionMethodName().equals(actionMethodName)
+                    && endPointDefinition.getArgumentClassName().equals(argumentTypeName)
+                    && endPointDefinition.contains(endpointHttpMethods)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Test
     public void should_not_find_standard_endpoints_with_strictMode() {
 
         EndpointFinder endpointFinder = new EndpointFinder("app.config.RouteConfig1", this.getClass().getClassLoader());
-        List<EndPointDefinition> endPointDefinitions = endpointFinder.getStandardEndpointDefinitions();
+        List<EndPointDefinition> endPointDefinitions = endpointFinder.getStandardEndpointDefinitions(Format.JSON);
         the(endPointDefinitions.size()).shouldBeEqual(0);
     }
 
+    //
     @Test
-    public void shouldCollectOpenAPIDocs(){
+    public void shouldCollectOpenAPIDocs() {
 
         EndpointFinder endpointFinder = new EndpointFinder("app.config.RouteConfig", this.getClass().getClassLoader());
-        List<EndPointDefinition> customDefinitions = endpointFinder.getCustomEndpointDefinitions();
-        List<EndPointDefinition> standardDefinitions = endpointFinder.getStandardEndpointDefinitions();
+
 
         String baseTemplate = """
-                header
-                {{content}}
-                footer""";
+                {
+                  "openapi": "3.0.0",
+                  "info": {
+                    "title": "Simple API overview",
+                    "version": "3.0.0"
+                  },
+                  "paths":{
+                  {{paths}}
+                  }
+                  }""";
 
         //NOTE: the doc: "Description  of the API end point to save a Person object" is mentioned twice because it is found both as a custom as well a standard endpoint.
         // This is an expected behavior!
-        the(endpointFinder.getOpenAPIDocs(customDefinitions, standardDefinitions, baseTemplate, ", ")).shouldBeEqual("""
-                header
-                Generic description for an index endpoint, Description  of the API end point to save a Person object, docs for doPut, docs for doHead, Description  of the API end point to save a Person object
-                footer""");
+
+
+        String out = toJsonString(toMap(endpointFinder.getOpenAPIDocs(baseTemplate, Format.JSON)), true);
+
+        System.out.println(out);
+
+
     }
+
+    @Test
+    public void shouldLoadAPIFromFile(){
+        EndpointFinder endpointFinder = new EndpointFinder("app.config.RouteConfig2", this.getClass().getClassLoader());
+
+        endpointFinder.setApiLocation("src/test/open-api");
+        List<EndPointDefinition> endPointDefinitions = endpointFinder.getCustomEndpointDefinitions(Format.JSON);
+
+        the(endPointDefinitions.size()).shouldBeEqual(1);
+
+        the(endPointDefinitions.get(0).getHTTPMethods().size()).shouldBeEqual(1);
+        the(endPointDefinitions.get(0).hasOpenAPI()).shouldBeTrue();
+        the(endPointDefinitions.get(0).getOpenAPIdoc(Format.JSON)).shouldBeEqual("""
+                                                                                    "/segments/{id}":{"get": {
+                                                                                      "message": "hello"
+                                                                                    }}""");
+    }
+
+
+    @Test
+    public void shouldFailDueToDuplicateDocs(){
+         try{
+             EndpointFinder endpointFinder = new EndpointFinder("app.config.RouteConfig3", this.getClass().getClassLoader());
+             endpointFinder.setApiLocation("src/test/open-api");
+             List<EndPointDefinition> endPointDefinitions = endpointFinder.getCustomEndpointDefinitions(Format.JSON);
+         }catch(OpenAPIException exception){
+             the(exception).shouldContain("The action: app.controllers.SegmentsController#foobar2 contains the OpenAPI documentation in a corresponding file, as well as in the annotation GET. Only one place of record is allowed.");
+         }
+    }
+
+
+    /*
+        //TODO:
+        3. Start with JSON
+        4. Implement a tag structure: "table": "<@table blah.html/@>" Freemarker?
+        5. Validate JSON format junk by  chunk
+        6. Format output
+     */
+
 }
