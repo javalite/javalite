@@ -89,6 +89,16 @@ public final class Util {
     /**
      * Reads contents of file fully and returns as string.
      *
+     * @param file file to read fully
+     * @return contents of entire file.
+     */
+    public static String readFile(File file) {
+        return readFile(file, "UTF-8");
+    }
+
+    /**
+     * Reads contents of file fully and returns as string.
+     *
      * @param fileName file name.
      * @param charset name of supported charset.
      * @return contents of entire file.
@@ -97,6 +107,25 @@ public final class Util {
         FileInputStream in = null;
         try {
             in = new FileInputStream(fileName);
+            return read(in, charset);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            closeQuietly(in);
+        }
+    }
+
+    /**
+     * Reads contents of file fully and returns as string.
+     *
+     * @param file file to ready fully.
+     * @param charset name of supported charset.
+     * @return contents of entire file.
+     */
+    public static String readFile(File file, String charset) {
+        FileInputStream in = null;
+        try {
+            in = new FileInputStream(file);
             return read(in, charset);
         } catch (IOException e) {
             throw new RuntimeException(e);

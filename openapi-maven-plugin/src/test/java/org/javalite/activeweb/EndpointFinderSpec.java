@@ -218,8 +218,6 @@ public class EndpointFinderSpec {
 
     /*
         //TODO:
-        3. Start with JSON
-        4. Implement a tag structure: "table": "<@table blah.html/@>" Freemarker?
         5. Validate JSON format junk by  chunk
         6. Format output
      */

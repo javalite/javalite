@@ -5,7 +5,7 @@
     <version>3.0-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
     <name>JavaLite - Open API Maven Plugin</name>
-    <description>This plugin will generate Open API  compliant document from sources of an ActiveWeb app.</description>
+    <description>This plugin will generate Open API - compliant document from sources of an ActiveWeb app.</description>
 
     <parent>
         <groupId>org.javalite</groupId>
@@ -31,7 +31,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
-
 
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -60,6 +59,17 @@
             <artifactId>javax.servlet-api</artifactId>
             <scope>runtime</scope>
         </dependency>
-    </dependencies>
 
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.hazendaz</groupId>
+            <artifactId>htmlcompressor</artifactId>
+            <version>1.7.1</version>
+        </dependency>
+
+    </dependencies>
 </project>
