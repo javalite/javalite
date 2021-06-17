@@ -785,7 +785,7 @@ public class HttpSupport implements RequestAccess {
      * @param hashName - name of a hash. In the example above, it will be "account".
      * @return map with name/value pairs parsed from request.
      */
-    public Map<String, String> getMap(String hashName) {
+    protected Map<String, String> getMap(String hashName) {
         Map<String, String[]>  params = params();
         Map<String, String>  hash = new HashMap<>();
         for(String key:params.keySet()){
@@ -821,7 +821,7 @@ public class HttpSupport implements RequestAccess {
      * @param formItems form items retrieved from <code>multipart/form-data</code> request.
      * @return map with name/value pairs parsed from request.
      */
-    public Map<String, String> getMap(String hashName, List<FormItem> formItems) {
+    protected Map<String, String> getMap(String hashName, List<FormItem> formItems) {
         Map<String, String>  hash = new HashMap<>();
         for(FormItem item:formItems){
             if(item.getFieldName().startsWith(hashName) && !item.isFile()){
@@ -1077,7 +1077,7 @@ public class HttpSupport implements RequestAccess {
      *
      * @param cookie cookie to send.
      */
-    public void sendCookie(Cookie cookie){
+    protected void sendCookie(Cookie cookie){
         RequestContext.getHttpResponse().addCookie(Cookie.toServletCookie(cookie));
     }
 
@@ -1087,7 +1087,7 @@ public class HttpSupport implements RequestAccess {
      * @param name name of cookie
      * @param value value of cookie.
      */
-    public void sendCookie(String name, String value) {
+    protected void sendCookie(String name, String value) {
         RequestContext.getHttpResponse().addCookie(Cookie.toServletCookie(new Cookie(name, value)));
     }
 
@@ -1098,7 +1098,7 @@ public class HttpSupport implements RequestAccess {
      * @param name name of cookie
      * @param value value of cookie.
      */
-    public void sendPermanentCookie(String name, String value) {
+    protected void sendPermanentCookie(String name, String value) {
         Cookie cookie = new Cookie(name, value);
         cookie.setMaxAge(60*60*24*365*20);
         RequestContext.getHttpResponse().addCookie(Cookie.toServletCookie(cookie));
@@ -1275,7 +1275,7 @@ public class HttpSupport implements RequestAccess {
      *
      * @return map with response headers.
      */
-    public Map<String, String> getResponseHeaders(){
+    protected Map<String, String> getResponseHeaders(){
         Collection<String> names  = RequestContext.getHttpResponse().getHeaderNames();
         Map<String, String> headers = new HashMap<>();
         for (String name : names) {
