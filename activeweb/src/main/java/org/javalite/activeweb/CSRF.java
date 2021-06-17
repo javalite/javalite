@@ -27,9 +27,9 @@ public class CSRF {
      */
     private static class SecureRandomTokenProvider implements TokenProvider {
 
-        private String base = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        private final String base = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 
-        private ThreadLocal<SecureRandom> secureRandom = ThreadLocal.withInitial(() -> {
+        private final ThreadLocal<SecureRandom> secureRandom = ThreadLocal.withInitial(() -> {
             try {
                 return SecureRandom.getInstance("SHA1PRNG");
             } catch(NoSuchAlgorithmException e) {

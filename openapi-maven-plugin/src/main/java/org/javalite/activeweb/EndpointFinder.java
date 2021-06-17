@@ -3,6 +3,7 @@ package org.javalite.activeweb;
 import io.github.classgraph.*;
 import org.javalite.activeweb.annotations.*;
 import org.javalite.common.Inflector;
+import org.javalite.common.JsonHelper;
 import org.javalite.common.Templator;
 import org.javalite.common.Util;
 
@@ -24,8 +25,8 @@ import static org.javalite.common.Util.blank;
 
 class EndpointFinder {
 
-    private String routeConfigClassName;
-    private ClassLoader classLoader;
+    private final String routeConfigClassName;
+    private final ClassLoader classLoader;
     private boolean strictMode = false;
     private String apiLocation;
 
@@ -167,12 +168,16 @@ class EndpointFinder {
                 }
             }
 
-        } catch (Exception e) {
+        }
+        catch (OpenAPIException e){
+            throw e;
+        }catch (Exception e) {
             throw new OpenAPIException(e);
         }
         return endpointMethods;
     }
 
+    @SuppressWarnings("unchecked")
     private String getActionAPI(Class annotationClass, Method actionMethod,   Annotation annotation, Format format) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException {
         Method valueMethod = annotationClass.getMethod("value");
         String annotationApiText = (String) valueMethod.invoke(annotation);
@@ -203,10 +208,15 @@ class EndpointFinder {
 
             File f = new File(this.apiLocation, fileName);
             if (f.exists()) {
-                System.out.println("Reading file: " + f);
-                return Util.readFile(f.getCanonicalPath());
+                String content= Util.readFile(f.getCanonicalPath());
+                try{
+                    JsonHelper.toMap(content);
+                }catch(Exception e){
+                    throw  new OpenAPIException("Failed to parse a JSON object from file: '" + f + "' for controller: '" + actionMethod.getDeclaringClass() + "' and action method: '" + actionMethod.getName() + "'") ;
+                }
+                return content;
             }else{
-                System.out.println("Cannot find file:" + f.getCanonicalPath());
+
                 return null;
             }
         } else {
@@ -218,7 +228,7 @@ class EndpointFinder {
         return strictMode;
     }
 
-    public String getOpenAPIDocs(String baseTemplate, Format format) {
+    public String getOpenAPIDocs(String baseTemplateContent, Format format) {
 
         List<String> paths = new ArrayList<>();
 
@@ -233,7 +243,9 @@ class EndpointFinder {
             }
         }
 
-        return Templator.mergeFromTemplate(baseTemplate, map("paths", Util.join(paths, format.getDelimiter())), false);
+        String json = Templator.mergeFromTemplate(baseTemplateContent, map("paths", Util.join(paths, format.getDelimiter())), false);
+        //proper JSON formatting:
+        return JsonHelper.toJsonString(JsonHelper.toMap(json), true);
     }
 
     public void setApiLocation(String apiLocation) {

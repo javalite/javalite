@@ -71,7 +71,7 @@ public class Templator {
      *
      * Example:
      * <code>
-     *     String result = Templator.mergeFromPath(readResource("/message_template.txt", valuesMap));
+     *     String result = Templator.mergeFromPath("/message_template.txt", valuesMap);
      * </code>
      *
      * @param templatePath template to merge

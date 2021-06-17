@@ -25,6 +25,7 @@ import org.javalite.activeweb.controller_filters.HttpSupportFilter;
 import org.javalite.activeweb.mock.*;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.servlet.ServletException;

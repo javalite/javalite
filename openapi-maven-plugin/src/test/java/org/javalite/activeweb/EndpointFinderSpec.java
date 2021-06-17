@@ -7,6 +7,7 @@ import org.javalite.test.jspec.ExceptionExpectation;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.javalite.activeweb.TablePrinter.printEndpointDefinitions;
 import static org.javalite.common.JsonHelper.toJsonString;
@@ -165,25 +166,27 @@ public class EndpointFinderSpec {
 
         String baseTemplate = """
                 {
-                  "openapi": "3.0.0",
-                  "info": {
-                    "title": "Simple API overview",
-                    "version": "3.0.0"
-                  },
-                  "paths":{
-                  {{paths}}
-                  }
+                      "openapi": "3.0.0",
+                      "info": {
+                        "title": "Simple API overview",
+                        "version": "3.0.0"
+                      },
+                      "paths":{
+                      {{paths}}
+                      }
                   }""";
 
-        //NOTE: the doc: "Description  of the API end point to save a Person object" is mentioned twice because it is found both as a custom as well a standard endpoint.
-        // This is an expected behavior!
+        String formattedJSONString = endpointFinder.getOpenAPIDocs(baseTemplate, Format.JSON);
 
-
-        String out = toJsonString(toMap(endpointFinder.getOpenAPIDocs(baseTemplate, Format.JSON)), true);
-
-        System.out.println(out);
-
-
+        Map apiMap= toMap(formattedJSONString);
+        Map paths = (Map) apiMap.get("paths");
+        the(paths.keySet().size()).shouldBeEqual(6);
+        the(paths).shouldContain("/custom/index");
+        the(paths).shouldContain("/custom/save_person");
+        the(paths).shouldContain("/http_methods/do_head");
+        the(paths).shouldContain("/http_methods/do_put");
+        the(paths).shouldContain("/person_save");
+        the(paths).shouldContain("/segments/foobar_2");
     }
 
     @Test
@@ -209,16 +212,29 @@ public class EndpointFinderSpec {
          try{
              EndpointFinder endpointFinder = new EndpointFinder("app.config.RouteConfig3", this.getClass().getClassLoader());
              endpointFinder.setApiLocation("src/test/open-api");
-             List<EndPointDefinition> endPointDefinitions = endpointFinder.getCustomEndpointDefinitions(Format.JSON);
+             endpointFinder.getCustomEndpointDefinitions(Format.JSON);
          }catch(OpenAPIException exception){
              the(exception).shouldContain("The action: app.controllers.SegmentsController#foobar2 contains the OpenAPI documentation in a corresponding file, as well as in the annotation GET. Only one place of record is allowed.");
          }
     }
 
+    @Test
+    public void shouldFailDueToMalformedJSON(){
+
+        try{
+            EndpointFinder endpointFinder = new EndpointFinder("app.config.RouteConfig4", this.getClass().getClassLoader());
+            endpointFinder.setApiLocation("src/test/open-api-malformed");
+            endpointFinder.getCustomEndpointDefinitions(Format.JSON);
+        }catch(OpenAPIException exception){
+            exception.printStackTrace();
+            the(exception.getMessage()).shouldBeEqual("Failed to parse a JSON object from file: 'src/test/open-api-malformed/app.controllers.SegmentsController#foobar-get.json' " +
+                    "for controller: 'class app.controllers.SegmentsController' and action method: 'foobar'");
+        }
+    }
+
 
     /*
         //TODO:
-        5. Validate JSON format junk by  chunk
         6. Format output
      */
 

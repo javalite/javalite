@@ -5,29 +5,60 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
-import org.javalite.common.Templator;
+import org.javalite.common.Util;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import static org.javalite.activeweb.ClassPathUtil.getCombinedClassLoader;
-import static org.javalite.common.Collections.map;
 import static org.javalite.common.Util.blank;
-import static org.javalite.common.Util.join;
 
 
 @Mojo(name = "generate", requiresDependencyResolution = ResolutionScope.COMPILE)
 public class GenerateMojo extends AbstractMojo {
 
+
+    /**
+     * Format, such as JSON or YAML
+     */
     @Parameter(required = true)
     protected String format;
 
-    @Parameter(required = true)
-    protected String baseFile;
 
+    /**
+     * File containing a template to merge the paths content into. Example:"
+     * {
+     *      "openapi": "3.0.0",
+     *      "info": {
+     *      "title": "Simple API overview",
+     *      "version": "3.0.0"
+     *       },
+     *       "paths":{
+     *          {{paths}}
+     *       }
+     *  }
+     */
+    @Parameter(required = true)
+    protected String templateFile;
+
+    /**
+     *
+     */
     @Parameter(required = true)
     protected String targetFile;
+
+
+    /**
+     * Directory that holds separate JSON files with docs for a specific action/HTTP method.
+     * If this is not provided, it will only source OpenAPI docs from GET,POST, PUT, etc annotations.
+     */
+    @Parameter
+    protected String apiLocation;
+
 
     @Parameter(defaultValue = "${project}", readonly = true, required = true)
     protected MavenProject project;
@@ -36,32 +67,32 @@ public class GenerateMojo extends AbstractMojo {
     public void execute() {
 
 
+        if(!blank(apiLocation) && !new File(apiLocation).exists()){
+            getLog().error("The directory: " + apiLocation + " does not exist");
+        }
+
         Format localFormat = null;
 
         if (Format.JSON.matches(format)) {
             localFormat = Format.JSON;
         } else if (Format.YAML.matches(format)) {
-            localFormat = Format.YAML;
+            throw new IllegalArgumentException("Yaml is not supported yet. Use JSON.");
         } else if (Format.JSON.matches(format)) {
             throw new IllegalArgumentException("Format not supported. Use one of: json, yml, yaml");
         }
 
-
         try {
+
+            String templateContent = Util.readFile(templateFile);
             EndpointFinder endpointFinder = new EndpointFinder(getCombinedClassLoader(project));
-            List<EndPointDefinition> customEndpointDefinitions = endpointFinder.getCustomEndpointDefinitions(localFormat);
-            List<EndPointDefinition> standardEndpointDefinitions = new EndpointFinder(getCombinedClassLoader(project)).getStandardEndpointDefinitions(localFormat);
-
-            List<String> chunks1 = getApiChunks(customEndpointDefinitions, localFormat);
-            List<String> chunks2 = getApiChunks(standardEndpointDefinitions, localFormat);
-
-            chunks2.addAll(chunks1);
-            String api = format.toLowerCase().contains("y") ? join(chunks2, ",") : join(chunks2, "\n");
-
-            String content = Templator.mergeFromPath(baseFile, map("content", api));
-//            System.out.println(content);
+            if(!blank(apiLocation)){
+                endpointFinder.setApiLocation(apiLocation);
+            }
+            String content = endpointFinder.getOpenAPIDocs(templateContent, localFormat);
+            Files.writeString(Paths.get(targetFile), content);
+            getLog().info("Output saved to: " + targetFile);
         } catch (Exception e) {
-            e.printStackTrace();
+            getLog().error("Failed to generate OpenAPI", e);
         }
     }
 

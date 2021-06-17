@@ -37,8 +37,9 @@
                 <version>3.0-SNAPSHOT</version>
                 <configuration>
                     <format>JSON</format>
-                    <baseFile>src/main/openapi/base.yml</baseFile>
-                    <targetFile>src/main/openapi/base.yml</targetFile>
+                    <templateFile>src/main/openapi/base.json</templateFile>
+                    <targetFile>target/openapi.json</targetFile>
+                    <apiLocation>src/main/openapi</apiLocation>
                 </configuration>
             </plugin>
         </plugins>

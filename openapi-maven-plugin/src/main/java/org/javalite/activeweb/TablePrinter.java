@@ -90,7 +90,11 @@ public class TablePrinter {
 
 
     static void printEndpointDefinitions(String title, List<EndPointDefinition> endPointDefinitions){
-//        System.out.println(title);
+        System.out.println(String.format("""
+                                  
+                **
+                **  %s
+                **""", title));
         String[][] table  = new String[endPointDefinitions.size() + 1][5];
         table[0][0] = "Number";
         table[0][1] = "Path";
