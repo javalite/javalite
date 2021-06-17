@@ -1,6 +1,7 @@
 package org.javalite.activeweb;
 
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
@@ -18,7 +19,7 @@ import static org.javalite.activeweb.ClassPathUtil.getCombinedClassLoader;
 import static org.javalite.common.Util.blank;
 
 
-@Mojo(name = "generate", requiresDependencyResolution = ResolutionScope.COMPILE)
+@Mojo(name = "generate", requiresDependencyResolution = ResolutionScope.COMPILE, defaultPhase = LifecyclePhase.COMPILE)
 public class GenerateMojo extends AbstractMojo {
 
 

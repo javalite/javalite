@@ -33,7 +33,7 @@
 
             <plugin>
                 <groupId>org.javalite</groupId>
-                <artifactId>openapi-maven-plugin</artifactId>
+                <artifactId>aw-mate</artifactId>
                 <version>3.0-SNAPSHOT</version>
                 <configuration>
                     <format>JSON</format>

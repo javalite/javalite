@@ -25,7 +25,7 @@ public class HelpMojo extends AbstractMojo {
                 sources and other supporting files. Here is a typical configuration of the plugin for this goal:
                                 <plugin>
                                     <groupId>org.javalite</groupId>
-                                    <artifactId>openapi-maven-plugin</artifactId>
+                                    <artifactId>aw-mate</artifactId>
                                     <version>${javalite.version}</version>
                                     <configuration>
                                         <format>JSON</format>

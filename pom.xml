@@ -195,7 +195,7 @@
         <module>javalite-common</module>
         <module>activejdbc-instrumentation</module>
         <module>activejdbc</module>
-<!--        <module>activejdbc-kt</module>-->
+        <!--module>activejdbc-kt</module-->
         <module>db-migrator-maven-plugin</module>
         <module>db-migrator-integration-test</module>
         <module>app-config</module>
@@ -209,7 +209,7 @@
         <module>activeweb-sass-integration-test</module>
         <module>javalite-async</module>
         <module>async-pool-test</module>
-        <module>openapi-maven-plugin</module>
+        <module>aw-mate</module>
     </modules>
 
     <dependencyManagement>
