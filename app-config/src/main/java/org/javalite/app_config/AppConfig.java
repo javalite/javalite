@@ -105,6 +105,7 @@ public class AppConfig implements Map<String, String> {
 
     private static Logger LOGGER = LoggerFactory.getLogger(AppConfig.class);
     private static HashMap<String, Property> props;
+    private static boolean isInTestMode = false;
 
     private static String activeEnv;
 
@@ -378,13 +379,17 @@ public class AppConfig implements Map<String, String> {
     }
 
 
+
     /**
      * Checks if running in a context of a test by checking of a presence of a  class <code>org.junit.Test</code> on classpath.
      *
      * @return true if class <code>org.junit.Test</code> is on classpath, otherwise returns <code>false</code>
      */
     public static boolean isInTestMode(){
-        return Util.getStackTraceString(new Exception()).contains("junit");
+        if(isInTestMode){
+            return true;
+        }
+        return isInTestMode = Util.getStackTraceString(new Exception()).contains("junit");
     }
 
     /**
