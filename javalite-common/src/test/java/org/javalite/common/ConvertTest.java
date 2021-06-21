@@ -26,6 +26,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -328,4 +329,38 @@ public class ConvertTest implements JSpecSupport {
         the(lDate.getMonthValue()).shouldBeEqual(calendar.get(Calendar.MONTH) + 1); // thanks, Java!
         the(lDate.getDayOfMonth()).shouldBeEqual(calendar.get(Calendar.DAY_OF_MONTH));
     }
+
+
+    @Test
+    public void shouldConvertToLocalDateTime(){
+
+        java.util.Date d = new java.util.Date(System.currentTimeMillis());
+        GregorianCalendar calendar = (GregorianCalendar) GregorianCalendar.getInstance();
+
+        //date
+        LocalDateTime lTime  = Convert.toLocalDateTime(d);
+        testLDT(lTime, calendar);
+
+        //long as object
+        lTime  = Convert.toLocalDateTime((Object)d.getTime());
+        testLDT(lTime, calendar);
+
+        //String
+        lTime  = Convert.toLocalDateTime(lTime.toString());
+        testLDT(lTime, calendar);
+
+        //long
+        lTime  = Convert.toLocalDateTime(d.getTime());
+        testLDT(lTime, calendar);
+    }
+
+    private void testLDT(LocalDateTime localDateTime, Calendar calendar){
+        the(localDateTime.getYear()).shouldBeEqual(calendar.get(Calendar.YEAR));
+        the(localDateTime.getMonthValue()).shouldBeEqual(calendar.get(Calendar.MONTH) + 1); // thanks, Java!
+        the(localDateTime.getDayOfMonth()).shouldBeEqual(calendar.get(Calendar.DAY_OF_MONTH));
+        the(localDateTime.getHour()).shouldBeEqual(calendar.get(Calendar.HOUR) + 12);
+        the(localDateTime.getMinute()).shouldBeEqual(calendar.get(Calendar.MINUTE));
+        the(localDateTime.getSecond()).shouldBeEqual(calendar.get(Calendar.SECOND));
+    }
+
 }

@@ -26,10 +26,7 @@ import java.math.BigDecimal;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -317,12 +314,58 @@ public final class Convert {
         }
     }
 
-    private static LocalDate toLocalDate(java.util.Date date){
+    public static LocalDate toLocalDate(java.util.Date date){
             Instant instant = date.toInstant();
             ZonedDateTime zone = instant.atZone(ZoneId.systemDefault());
             return zone.toLocalDate();
     }
 
+    /**
+     * Converts a value to <code>LocalDateTime</code>. Tries to convert to <code>java.util.Date</code>, then to <code>LocalDateTime</code>.
+     * If that does not work, tries to convert to <code>Long</code>. If all fails, it tries to parse the value from the string representation of the argument.
+     *
+     * @param value value to convert
+     * @return converted LocalDateTime
+     */
+
+    public static LocalDateTime toLocalDateTime(Object value) {
+        if (value == null) {
+            return null;
+        } else if (value instanceof LocalDateTime) {
+            return (LocalDateTime) value;
+        } else if (value instanceof java.util.Date) {
+            return toLocalDateTime(((java.util.Date) value).getTime());
+        } else if (value instanceof Long) {
+            return toLocalDateTime(((Long) value).longValue());
+        }else {
+            try {
+                return LocalDateTime.parse(value.toString());
+            } catch (Exception e) {
+                throw new ConversionException("failed to convert: '" + value + "' to LocalDateTime", e);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(toLocalDateTime(System.currentTimeMillis()));
+    }
+
+    /**
+     * @param millis milliseconds to convert to <code>LocalDateTime</code>.
+     * @param timeZone time zone.
+     * @return instance of <code>LocalDateTime</code>.
+     */
+    public static LocalDateTime toLocalDateTime(long millis, TimeZone timeZone){
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), timeZone.toZoneId());
+    }
+
+    /**
+     * @param millis milliseconds to convert to <code>LocalDateTime</code>. Uses a default time zone.
+     * @return instance of <code>LocalDateTime</code>.
+     */
+    public static LocalDateTime toLocalDateTime(long millis){
+        return toLocalDateTime(millis,TimeZone.getDefault());
+    }
 
     /**
      * If the value is instance of java.sql.Timestamp, returns it, else tries to convert java.util.Date or Long to
