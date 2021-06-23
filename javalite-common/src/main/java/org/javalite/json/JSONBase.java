@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class JSONValidatable extends ValidationSupport {
+public class JSONBase extends ValidationSupport {
 
     private JSONMap jsonMap;
 
@@ -19,7 +19,7 @@ public class JSONValidatable extends ValidationSupport {
      * @param jsonObject the JSON Object  document as string, such as "{...}"
      *                   Will not accept an array, such as "[...]".
      */
-    public JSONValidatable(String jsonObject) {
+    public JSONBase(String jsonObject) {
         jsonMap = new JSONMap(JSONHelper.toMap(jsonObject));
     }
 

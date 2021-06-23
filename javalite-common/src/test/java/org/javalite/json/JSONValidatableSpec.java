@@ -28,7 +28,7 @@ public class JSONValidatableSpec {
                     }
                 }
                 """;
-        JSONValidatable json = new JSONValidatable(jsonString);
+        JSONBase json = new JSONBase(jsonString);
 
         JSONList list = json.getList("university.students");
         the(list.get(0)).shouldBeEqual("mary");
@@ -37,33 +37,23 @@ public class JSONValidatableSpec {
 
     @Test
     public void shouldGetMap(){
-        String jsonString = """            
-                {
-                   "university": {
-                        "students" : {
-                            "mary": { "first_name": "Mary"},
-                            "joe": { "first_name": "Joe"}
-                        }
-                    }
-                }
-                """;
 
-        JSONMap students = new JSONValidatable(jsonString).getMap("university.students");
-        $(students.getMap("mary").get("first_name")).shouldBeEqual("Mary");
-        $(students.getMap("joe").get("first_name")).shouldBeEqual("Joe");
+        JSONMap students = new JSONBase(this.university).getMap("university.students");
+        $(students.getMap("university.students.mary").get("first_name")).shouldBeEqual("Mary");
+        $(students.getMap("university.students.joe").get("first_name")).shouldBeEqual("Joe");
     }
 
     @Test
     public void shouldGetDeepAttribute(){
 
-        JSONValidatable json = new JSONValidatable(university);
+        JSONBase json = new JSONBase(university);
         the(json.get("university.students.mary.first_name")).shouldBeEqual("Mary");
         the(json.get("university.students.joe.first_name")).shouldBeEqual("Joe");
     }
 
     @Test
     public void shouldValidatePresenceOfAttribute(){
-        class Students extends JSONValidatable{
+        class Students extends JSONBase {
             public Students(String jsonObject) {
                 super(jsonObject);
                 validatePresenceOf("university.students.mary.first_name");
@@ -76,7 +66,7 @@ public class JSONValidatableSpec {
 
     @Test
     public void shouldInValidateAbsenceOfAttribute(){
-        class Students extends JSONValidatable{
+        class Students extends JSONBase {
             public Students(String jsonObject) {
                 super(jsonObject);
                 validatePresenceOf("university.students.joe.age");
@@ -90,7 +80,7 @@ public class JSONValidatableSpec {
 
     @Test
     public void shouldInValidateNumericality(){
-        class Students extends JSONValidatable{
+        class Students extends JSONBase {
             public Students(String jsonObject) {
                 super(jsonObject);
                 validateNumericalityOf("university.students.mary.age");
@@ -102,7 +92,7 @@ public class JSONValidatableSpec {
 
     @Test
     public void shouldValidateRange(){
-        class Students extends JSONValidatable{
+        class Students extends JSONBase {
             public Students(String jsonObject) {
                 super(jsonObject);
                 validateWith(new RangeValidator("university.students.mary.age", 10, 50));
@@ -114,7 +104,7 @@ public class JSONValidatableSpec {
 
     @Test
     public void shouldInValidateRange(){
-        class Students extends JSONValidatable{
+        class Students extends JSONBase {
             public Students(String jsonObject) {
                 super(jsonObject);
                 validateWith(new RangeValidator("university.students.mary.age", 10, 20));
