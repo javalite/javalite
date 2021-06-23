@@ -29,8 +29,8 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static org.javalite.common.JsonHelper.escapeControlChars;
-import static org.javalite.common.JsonHelper.sanitize;
+import static org.javalite.json.JSONHelper.escapeControlChars;
+import static org.javalite.json.JSONHelper.sanitize;
 
 /**
  * Layout for log4j to emit JSON format, including exceptions. In addition, it will also append all

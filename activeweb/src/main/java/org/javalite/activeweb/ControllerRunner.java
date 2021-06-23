@@ -17,6 +17,7 @@ package org.javalite.activeweb;
 
 import com.google.inject.Injector;
 import org.javalite.activejdbc.Model;
+import org.javalite.json.JSONHelper;
 import org.javalite.validation.ImplicitConversionValidator;
 import org.javalite.validation.Validatable;
 import org.javalite.activeweb.annotations.FailedValidationReply;
@@ -150,7 +151,7 @@ class ControllerRunner {
             String body = Util.read(in);
             //todo: what happens if we get an array: '[1,2, 3]' ?
             try{
-                requestMap = JsonHelper.toMap(body);
+                requestMap = JSONHelper.toMap(body);
             }catch(RuntimeException e){
                 throw new ControllerException("Failed to convert JSON request to JSON document", e.getCause());
             }

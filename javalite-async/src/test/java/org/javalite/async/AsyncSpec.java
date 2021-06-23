@@ -3,7 +3,7 @@ package org.javalite.async;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.javalite.async.services.GreetingModule;
-import org.javalite.common.JsonHelper;
+import org.javalite.json.JSONHelper;
 import org.javalite.common.Util;
 import org.javalite.common.Wait;
 import org.javalite.test.SystemStreamUtil;
@@ -306,7 +306,7 @@ public class AsyncSpec {
 
         String contextLine = getContextLine(lines);
 
-        Map contextMap = JsonHelper.toMap(contextLine);
+        Map contextMap = JSONHelper.toMap(contextLine);
 
         Map context = (Map) contextMap.get("context");
         the(context.get("weight")).shouldBeEqual("35lb");

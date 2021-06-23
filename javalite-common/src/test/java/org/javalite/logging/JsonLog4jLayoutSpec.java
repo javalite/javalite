@@ -17,7 +17,7 @@ limitations under the License.
 
 package org.javalite.logging;
 
-import org.javalite.common.JsonHelper;
+import org.javalite.json.JSONHelper;
 import org.javalite.common.Util;
 import org.javalite.test.SystemStreamUtil;
 import org.junit.After;
@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Map;
@@ -61,13 +60,13 @@ public class JsonLog4jLayoutSpec {
         String[] lines = Util.split(out, System.getProperty("line.separator"));
         the(lines.length).shouldBeEqual(2);
         String logLine1 = lines[0];
-        Map log1 = JsonHelper.toMap(logLine1);
+        Map log1 = JSONHelper.toMap(logLine1);
         a(log1.get("message")).shouldBeEqual("hello");
         a(log1.get("logger")).shouldBeEqual("org.javalite.logging.JsonLog4jLayoutSpec");
         a(log1.get("level")).shouldBeEqual("INFO");
 
         String logLine2 = lines[1];
-        Map log2 = JsonHelper.toMap(logLine2);
+        Map log2 = JSONHelper.toMap(logLine2);
         a(log2.get("message")).shouldBeEqual("world");
 
         String timestamp = (String) log1.get("timestamp");

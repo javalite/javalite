@@ -17,7 +17,7 @@ limitations under the License.
 package org.javalite.async;
 
 import com.google.inject.Injector;
-import org.javalite.common.JsonHelper;
+import org.javalite.json.JSONHelper;
 import org.javalite.logging.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +47,7 @@ public class CommandListener implements MessageListener {
             }
             long start = System.currentTimeMillis();
             onCommand(command);
-            LOGGER.info(JsonHelper.toJsonString(map("processed_millis", (System.currentTimeMillis() - start), "command", command.getClass().getSimpleName())));
+            LOGGER.info(JSONHelper.toJsonString(map("processed_millis", (System.currentTimeMillis() - start), "command", command.getClass().getSimpleName())));
         } catch (Exception e) {
             LOGGER.error("Failed to process message: {}", getCommandAsText(message), e);
             throw new AsyncException("Failed to process message", e);

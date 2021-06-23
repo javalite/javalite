@@ -3,7 +3,7 @@ package org.javalite.activeweb;
 import io.github.classgraph.*;
 import org.javalite.activeweb.annotations.*;
 import org.javalite.common.Inflector;
-import org.javalite.common.JsonHelper;
+import org.javalite.json.JSONHelper;
 import org.javalite.common.Templator;
 import org.javalite.common.Util;
 
@@ -13,8 +13,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -210,7 +208,7 @@ class EndpointFinder {
             if (f.exists()) {
                 String content= Util.readFile(f.getCanonicalPath());
                 try{
-                    JsonHelper.toMap(content);
+                    JSONHelper.toMap(content);
                 }catch(Exception e){
                     throw  new OpenAPIException("Failed to parse a JSON object from file: '" + f + "' for controller: '" + actionMethod.getDeclaringClass() + "' and action method: '" + actionMethod.getName() + "'") ;
                 }
@@ -245,7 +243,7 @@ class EndpointFinder {
 
         String json = Templator.mergeFromTemplate(baseTemplateContent, map("paths", Util.join(paths, format.getDelimiter())), false);
         //proper JSON formatting:
-        return JsonHelper.toJsonString(JsonHelper.toMap(json), true);
+        return JSONHelper.toJsonString(JSONHelper.toMap(json), true);
     }
 
     public void setApiLocation(String apiLocation) {

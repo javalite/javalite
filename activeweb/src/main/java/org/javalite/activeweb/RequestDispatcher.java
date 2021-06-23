@@ -15,11 +15,10 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
-import com.google.inject.CreationException;
 import org.javalite.activejdbc.DB;
 
 import org.javalite.app_config.AppConfig;
-import org.javalite.common.JsonHelper;
+import org.javalite.json.JSONHelper;
 import org.javalite.common.Util;
 import org.javalite.logging.Context;
 import org.slf4j.Logger;
@@ -351,15 +350,15 @@ public class RequestDispatcher implements Filter {
         }
 
         if (throwable != null) {
-            log.put("error", JsonHelper.sanitize(throwable.getMessage() != null ? throwable.getMessage() : throwable.toString()));
+            log.put("error", JSONHelper.sanitize(throwable.getMessage() != null ? throwable.getMessage() : throwable.toString()));
         }
 
         addRequestHeaders(log);
 
         if(throwable != null && status >= 500){
-            logger.error(JsonHelper.toJsonString(log), throwable);
+            logger.error(JSONHelper.toJsonString(log), throwable);
         }else {
-            logger.info(JsonHelper.toJsonString(log));
+            logger.info(JSONHelper.toJsonString(log));
         }
     }
 
@@ -374,7 +373,7 @@ public class RequestDispatcher implements Filter {
                     headersMap = new HashMap<>();
                     log.put("headers", headersMap);
                 }
-                headersMap.put(header, JsonHelper.sanitize(RequestContext.getHttpRequest().getHeader(header)));
+                headersMap.put(header, JSONHelper.sanitize(RequestContext.getHttpRequest().getHeader(header)));
             }
         }
     }

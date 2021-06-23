@@ -19,6 +19,7 @@ package org.javalite.activejdbc.logging;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Animal;
 import org.javalite.common.Util;
+import org.javalite.json.JSONHelper;
 import org.javalite.logging.Context;
 import org.javalite.test.SystemStreamUtil;
 import org.junit.After;
@@ -61,13 +62,13 @@ public class JsonLog4jLayoutSpec  extends ActiveJDBCTest{
         List<String> lines = getLogLines();
         the(lines.size()).shouldBeEqual(2);
         String logLine1 = lines.get(0);
-        Map log1 = org.javalite.common.JsonHelper.toMap(logLine1);
+        Map log1 = JSONHelper.toMap(logLine1);
         a(log1.get("message")).shouldBeEqual("hello");
         a(log1.get("logger")).shouldBeEqual(getClass().getName());
         a(log1.get("level")).shouldBeEqual("INFO");
 
         String logLine2 = lines.get(1);
-        Map log2 = org.javalite.common.JsonHelper.toMap(logLine2);
+        Map log2 = JSONHelper.toMap(logLine2);
         a(log2.get("message")).shouldBeEqual("world");
         a(log2.get("level")).shouldBeEqual("ERROR");
     }
@@ -93,7 +94,7 @@ public class JsonLog4jLayoutSpec  extends ActiveJDBCTest{
         String json = getLastLine();
 
         System.err.println(json);
-        Map logMap = org.javalite.common.JsonHelper.toMap(json);
+        Map logMap = JSONHelper.toMap(json);
         Map message = (Map) logMap.get("message");
 
         a(message.get("sql")).shouldContain("SELECT ");
@@ -120,7 +121,7 @@ public class JsonLog4jLayoutSpec  extends ActiveJDBCTest{
         Animal.findAll().size();
 
         String json = getLastLine();
-        Map logMap = org.javalite.common.JsonHelper.toMap(json);
+        Map logMap = JSONHelper.toMap(json);
 
         Map message = (Map) logMap.get("message");
 
@@ -140,7 +141,7 @@ public class JsonLog4jLayoutSpec  extends ActiveJDBCTest{
         Animal.findAll().size();
 
         String json = getLastLine();
-        Map logMap = org.javalite.common.JsonHelper.toMap(json);
+        Map logMap = JSONHelper.toMap(json);
         Map message = (Map) logMap.get("message");
         List params = (List) message.get("params");
         a(message.get("sql")).shouldBeEqual("SELECT * FROM animals");

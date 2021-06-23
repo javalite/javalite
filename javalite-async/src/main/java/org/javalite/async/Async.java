@@ -35,7 +35,7 @@ import org.apache.activemq.artemis.core.server.embedded.EmbeddedActiveMQ;
 import org.apache.activemq.artemis.core.settings.impl.AddressFullMessagePolicy;
 import org.apache.activemq.artemis.core.settings.impl.AddressSettings;
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
-import org.javalite.common.JsonHelper;
+import org.javalite.json.JSONHelper;
 import org.javalite.common.Util;
 import org.javalite.common.Wait;
 import org.slf4j.Logger;
@@ -435,7 +435,7 @@ public class Async {
         } catch (Exception e) {
             throw new AsyncException("Failed to send message", e);
         }finally {
-            LOGGER.debug(JsonHelper.toJsonString(map("message", "completed sending command", "time_millis", now - System.currentTimeMillis(), "command", command.getClass(), "queue", queueName)));
+            LOGGER.debug(JSONHelper.toJsonString(map("message", "completed sending command", "time_millis", now - System.currentTimeMillis(), "command", command.getClass(), "queue", queueName)));
         }
     }
 
@@ -611,7 +611,7 @@ public class Async {
         } catch (Exception e) {
             throw new AsyncException("Failed to send message", e);
         }finally {
-            LOGGER.debug(JsonHelper.toJsonString(map("message", "completed sending text message", "time_millis", now - System.currentTimeMillis(), "queue", queueName)));
+            LOGGER.debug(JSONHelper.toJsonString(map("message", "completed sending text message", "time_millis", now - System.currentTimeMillis(), "queue", queueName)));
         }
 
     }

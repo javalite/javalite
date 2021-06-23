@@ -20,7 +20,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.javalite.common.Convert;
-import org.javalite.common.JsonHelper;
+import org.javalite.json.JSONHelper;
 import org.javalite.common.Util;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
@@ -1369,7 +1369,7 @@ public class HttpSupport implements RequestAccess {
      */
     protected List jsonList() {
         checkJsonContentType();
-        return JsonHelper.toList(getRequestString());
+        return JSONHelper.toList(getRequestString());
     }
 
     private void checkJsonContentType(){
@@ -1385,7 +1385,7 @@ public class HttpSupport implements RequestAccess {
      */
     protected Map jsonMap() {
         checkJsonContentType();
-        return JsonHelper.toMap(getRequestString());
+        return JSONHelper.toMap(getRequestString());
 
     }
 
@@ -1397,7 +1397,7 @@ public class HttpSupport implements RequestAccess {
      */
     protected Map[] jsonMaps() {
         checkJsonContentType();
-        return JsonHelper.toMaps(getRequestString());
+        return JSONHelper.toMaps(getRequestString());
     }
 
 

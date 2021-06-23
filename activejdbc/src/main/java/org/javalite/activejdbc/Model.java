@@ -27,6 +27,7 @@ import org.javalite.activejdbc.dialects.Dialect;
 import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.activejdbc.logging.LogLevel;
 
+import org.javalite.json.JSONHelper;
 import org.javalite.validation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1038,7 +1039,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
                 sb.append('"').append(Convert.toIsoString((Date) attribute)).append('"');
             } else {
                 sb.append('"');
-                sb.append(JsonHelper.sanitize(Convert.toString(attribute)));
+                sb.append(JSONHelper.sanitize(Convert.toString(attribute)));
                 sb.append('"');
             }
         }

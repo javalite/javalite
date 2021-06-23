@@ -20,7 +20,7 @@ package org.javalite.activejdbc.logging;
 import org.javalite.activejdbc.Configuration;
 import org.javalite.activejdbc.Registry;
 import org.javalite.activejdbc.statistics.QueryExecutionEvent;
-import org.javalite.common.JsonHelper;
+import org.javalite.json.JSONHelper;
 import org.slf4j.Logger;
 
 import java.util.function.Consumer;
@@ -96,7 +96,7 @@ public class LogFilter {
     }
 
     private static String getJson(String query, Object[] params, long time, boolean cacheHit) {
-        return  "{\"sql\":\"" + JsonHelper.sanitize(query) + "\",\"params\":[" + getParamsJson(params) + "]" +
+        return  "{\"sql\":\"" + JSONHelper.sanitize(query) + "\",\"params\":[" + getParamsJson(params) + "]" +
                 (!cacheHit ? (",\"duration_millis\":" + time ): "" ) +
                 ",\"cache\":" + (cacheHit ? "\"hit\"" : "\"miss\"") +
                 "}";
@@ -107,14 +107,14 @@ public class LogFilter {
         if (params != null) {
             for (int i = 0; i < params.length; i++) {
                 if(params[i] instanceof Number){
-                    paramsSB.append(JsonHelper.sanitize(params[i].toString()));
+                    paramsSB.append(JSONHelper.sanitize(params[i].toString()));
                 }else if(params[i] instanceof byte[]){
                     paramsSB.append("\"bytes[...]\"");
                 }else {
                     if(params[i] == null){
                         paramsSB.append("null");
                     }else {
-                        paramsSB.append("\"").append(JsonHelper.sanitize(params[i].toString())).append("\"");
+                        paramsSB.append("\"").append(JSONHelper.sanitize(params[i].toString())).append("\"");
                     }
                 }
                 if(i != (params.length - 1)){

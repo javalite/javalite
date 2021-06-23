@@ -1,6 +1,6 @@
 package org.javalite.activeweb;
 
-import org.javalite.common.JsonHelper;
+import org.javalite.json.JSONHelper;
 import org.javalite.common.Util;
 import org.junit.Test;
 
@@ -120,7 +120,7 @@ public class RequestArgumentControllerPOJOSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
-        Map resultMap = JsonHelper.toMap(response.getContentAsString());
+        Map resultMap = JSONHelper.toMap(response.getContentAsString());
 
         the(resultMap).shouldContain("yearOfBirth");
         the(resultMap.get("yearOfBirth")).shouldEqual("failed to convert: 'blah' to Integer");
@@ -139,7 +139,7 @@ public class RequestArgumentControllerPOJOSpec extends RequestSpec {
         dispatcher.doFilter(request, response, filterChain);
 
         the(response.getHeader("Content-type")).shouldEqual("application/json");
-        Map result = JsonHelper.toMap(response.getContentAsString());
+        Map result = JSONHelper.toMap(response.getContentAsString());
         the(result.get("group")).shouldBeEqual("value is missing");
         the(result.get("name")).shouldBeEqual("value is missing");
         the(result.get("temperature")).shouldBeEqual("value is greater than 100.0");
@@ -157,7 +157,7 @@ public class RequestArgumentControllerPOJOSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
-        Map resultMap = JsonHelper.toMap(response.getContentAsString());
+        Map resultMap = JSONHelper.toMap(response.getContentAsString());
         the(resultMap.get("group")).shouldBeEqual("value is missing");
         the(resultMap.get("name")).shouldBeEqual("value is missing");
         the(resultMap.get("temperature")).shouldBeEqual("failed to convert: 'blah' to Integer");
@@ -174,7 +174,7 @@ public class RequestArgumentControllerPOJOSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
-        Map resultMap = JsonHelper.toMap(response.getContentAsString());
+        Map resultMap = JSONHelper.toMap(response.getContentAsString());
         the(resultMap.get("group")).shouldBeEqual("value is missing");
         the(resultMap.get("name")).shouldBeEqual("value is missing");
         the(resultMap.get("temperature")).shouldBeEqual("failed to convert: 'blah' to Integer");
