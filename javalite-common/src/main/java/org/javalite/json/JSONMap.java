@@ -33,9 +33,10 @@ public class JSONMap extends HashMap {
     }
 
     /**
-     * Returns a <code>JSONList</code> for a list name. If the object is not a list, it  will throw an exception.
+     * Returns a <code>JSONList</code> for a list name. It is expected that this list is an immediate child of this map.
+     * If the object is not a list, the method will throw an exception.
      * The object is similar to that of <code>Map.get("name")</code> but will also convert the returned value to a
-     * JSONList so you  could go further down the JSON hierarchy.
+     * JSONList so you could go further down the JSON hierarchy.
      *
      * @param listName name (map key) of the list object in this map.
      *
@@ -55,6 +56,17 @@ public class JSONMap extends HashMap {
 
     }
 
+    /**
+     * Returns a <code>JSONMap</code> for a name. It is expected that this map is an immediate child of the current map.
+     * If the object is not a map, the method will throw an exception.
+     * The object is similar to that of <code>Map.get("name")</code> but will also convert the returned value to a
+     * JSONList so you could go further down the JSON hierarchy.
+     *
+     * @param attribute name (map key).
+     *
+     * @throws JSONParseException;
+     * @return instance of <code>JSONMap</code> for a name
+     */
     public JSONMap getChildMap(String attribute){
         Object map = super.get(attribute);
         if(map == null){
@@ -74,9 +86,9 @@ public class JSONMap extends HashMap {
      *         "university": {
      *             students : {
      *                 "mary" : {
-     *                           "first_name": "Joe",
-     *                           "last_name": "Shmoe",
-     *                       },
+     *                           "first_name": "Mary",
+     *                           "last_name": "Smith",
+     *                  },
      *                 "joe" : {
      *                     "first_name": "Joe",
      *                     "last_name": "Shmoe",
@@ -150,5 +162,4 @@ public class JSONMap extends HashMap {
         }
         return null;
     }
-
 }
