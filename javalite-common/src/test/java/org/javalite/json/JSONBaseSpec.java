@@ -7,7 +7,7 @@ import org.junit.Test;
 import static org.javalite.test.jspec.JSpec.$;
 import static org.javalite.test.jspec.JSpec.the;
 
-public class JSONValidatableSpec {
+public class JSONBaseSpec {
     String university = """            
                 {
                    "university": {
