@@ -5,7 +5,6 @@ import java.util.Locale;
 
 /**
  * Top interface to make something validatable.
- * Top interface to make something validatable.
  */
 public interface Validatable {
 

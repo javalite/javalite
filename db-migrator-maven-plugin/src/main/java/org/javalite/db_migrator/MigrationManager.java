@@ -1,12 +1,9 @@
 package org.javalite.db_migrator;
 
-import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.javalite.activejdbc.Base;
 import org.javalite.cassandra.jdbc.CassandraJDBCConnection;
-import org.javalite.common.JsonHelper;
-import org.javalite.common.Templator;
 
 import java.sql.Connection;
 import java.sql.SQLException;

@@ -20,7 +20,7 @@ import org.javalite.activejdbc.associations.Many2ManyAssociation;
 import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.activejdbc.logging.LogLevel;
 import org.javalite.common.CaseInsensitiveMap;
-import org.javalite.common.JsonHelper;
+import org.javalite.json.JSONHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -132,7 +132,7 @@ class MetaModels {
                     ASSOCIATIONS, associations
             ));
         });
-        return JsonHelper.toJsonString(models,false);
+        return JSONHelper.toJsonString(models,false);
     }
 
     protected void fromJSON(String json) {
@@ -140,7 +140,7 @@ class MetaModels {
             MethodHandles.Lookup lookup = MethodHandles.lookup();
             MethodType methodType = MethodType.methodType(void.class, Map.class);
 
-            for(Object o : JsonHelper.toList(json)) {
+            for(Object o : JSONHelper.toList(json)) {
                 Map metaModelMap = (Map) o;
 
                 MetaModel metaModel = new MetaModel(

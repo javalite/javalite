@@ -1,5 +1,6 @@
+
 /*
-Copyright 2009-2019 Igor Polevoy
+Copyright 2009-present Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,23 +15,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package org.javalite.common;
+package org.javalite.json;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import org.javalite.json.JSONHelper;
-import org.javalite.json.JSONParseException;
+public class JSONParseException extends RuntimeException{
+    public JSONParseException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-/**
- *
- * Deprecated, use {@link org.javalite.json.JSONHelper} instead.
- *
- * @author Igor Polevoy on 5/26/16.
- */
-
-@Deprecated()
-public class JsonHelper extends JSONHelper {}
+    public JSONParseException(String message) {
+        super(message);
+    }
+}

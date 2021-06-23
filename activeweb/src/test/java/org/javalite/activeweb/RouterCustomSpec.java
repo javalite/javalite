@@ -19,7 +19,7 @@ package org.javalite.activeweb;
 import app.controllers.*;
 import app.controllers.api.ApiHomeController;
 import app.controllers.api.v2.AuthorsController;
-import org.javalite.common.JsonHelper;
+import org.javalite.json.JSONHelper;
 import org.javalite.common.Util;
 import org.javalite.test.SystemStreamUtil;
 import org.junit.Before;
@@ -251,7 +251,7 @@ public class RouterCustomSpec extends RequestSpec {
         a(responseContent()).shouldContain("java.lang.ClassNotFoundException: app.controllers.GreetingController");
         String[] lines = Util.split(SystemStreamUtil.getSystemOut(), System.getProperty("line.separator"));
         SystemStreamUtil.restoreSystemOut();
-        Map log = JsonHelper.toMap(lines[2]);
+        Map log = JSONHelper.toMap(lines[2]);
         Map message = (Map) log.get("message");
         a(message.get("error")).shouldContain("java.lang.ClassNotFoundException: app.controllers.GreetingController");
     }

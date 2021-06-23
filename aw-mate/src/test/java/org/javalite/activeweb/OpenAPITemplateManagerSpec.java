@@ -1,7 +1,7 @@
 package org.javalite.activeweb;
 
 import freemarker.template.TemplateException;
-import org.javalite.common.JsonHelper;
+import org.javalite.json.JSONHelper;
 import org.junit.Test;
 
 import java.io.File;
@@ -27,7 +27,7 @@ public class OpenAPITemplateManagerSpec {
         System.out.println(jsonDoc);
         the(jsonDoc).shouldBeEqual("""
                 { "description" : "<table> <tr> <td>First name</td> <td>Last name</td> </tr> <tr> <td>Freddie</td> <td>Mercury</td> </tr> </table>" }""");
-        String description = JsonHelper.toMap(jsonDoc).get("description").toString();
+        String description = JSONHelper.toMap(jsonDoc).get("description").toString();
         the(description).shouldContain("Freddie");
     }
 

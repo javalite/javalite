@@ -1,17 +1,14 @@
 package org.javalite.activeweb;
 
-import org.javalite.common.JsonHelper;
-import org.javalite.common.Util;
 import org.javalite.test.SystemStreamUtil;
-import org.javalite.test.jspec.ExceptionExpectation;
 import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
 
 import static org.javalite.activeweb.TablePrinter.printEndpointDefinitions;
-import static org.javalite.common.JsonHelper.toJsonString;
-import static org.javalite.common.JsonHelper.toMap;
+import static org.javalite.json.JSONHelper.toJsonString;
+import static org.javalite.json.JSONHelper.toMap;
 import static org.javalite.common.Util.readResource;
 import static org.javalite.test.jspec.JSpec.*;
 

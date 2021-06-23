@@ -1,7 +1,7 @@
 package org.javalite.activeweb.controller_filters;
 
 import org.javalite.activeweb.RequestSpec;
-import org.javalite.common.JsonHelper;
+import org.javalite.json.JSONHelper;
 import org.javalite.common.Util;
 import org.javalite.test.SystemStreamUtil;
 import org.junit.After;
@@ -40,7 +40,7 @@ public class JSONLogSpec extends RequestSpec {
         String out = SystemStreamUtil.getSystemOut();
         String[] logs = Util.split(out, System.getProperty("line.separator"));
 
-        Map log0 = JsonHelper.toMap(logs[0]);
+        Map log0 = JSONHelper.toMap(logs[0]);
         the(log0.get("level")).shouldBeEqual("INFO");
         the(log0.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
 
@@ -51,7 +51,7 @@ public class JSONLogSpec extends RequestSpec {
         the(message.get("method")).shouldBeEqual("GET");
 
 
-        Map log1 = JsonHelper.toMap(logs[1]);
+        Map log1 = JSONHelper.toMap(logs[1]);
         the(log1.get("level")).shouldBeEqual("INFO");
         the(log1.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
 
@@ -75,7 +75,7 @@ public class JSONLogSpec extends RequestSpec {
         String[] logs = Util.split(out, System.getProperty("line.separator"));
 
         //Line 0
-        Map log0 = JsonHelper.toMap(logs[0]);
+        Map log0 = JSONHelper.toMap(logs[0]);
         the(log0.get("level")).shouldBeEqual("INFO");
         the(log0.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
         Map message = (Map) log0.get("message");
@@ -85,7 +85,7 @@ public class JSONLogSpec extends RequestSpec {
         the(message.get("method")).shouldBeEqual("GET");
 
         //Line 1
-        Map log1 = JsonHelper.toMap(logs[1]);
+        Map log1 = JSONHelper.toMap(logs[1]);
         the(log1.get("level")).shouldBeEqual("ERROR");
         the(log1.get("timestamp")).shouldNotBeNull();
         the(log1.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
@@ -99,7 +99,7 @@ public class JSONLogSpec extends RequestSpec {
         the(exception.get("stacktrace")).shouldContain("java.lang.RuntimeException: blah!");
 
         //Line 2
-        Map log2 = JsonHelper.toMap(logs[2]);
+        Map log2 = JSONHelper.toMap(logs[2]);
         the(log2.get("level")).shouldBeEqual("INFO");
         the(log2.get("timestamp")).shouldNotBeNull();
         the(log2.get("logger")).shouldBeEqual("org.javalite.activeweb.freemarker.FreeMarkerTemplateManager");
@@ -117,7 +117,7 @@ public class JSONLogSpec extends RequestSpec {
         String[] logs = Util.split(out, System.getProperty("line.separator"));
 
         //Line 0
-        Map log0 = JsonHelper.toMap(logs[0]);
+        Map log0 = JSONHelper.toMap(logs[0]);
         the(log0.get("level")).shouldBeEqual("INFO");
         the(log0.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
 
@@ -127,7 +127,7 @@ public class JSONLogSpec extends RequestSpec {
 
 
         //Line 1
-        Map log1 = JsonHelper.toMap(logs[1]);
+        Map log1 = JSONHelper.toMap(logs[1]);
         the(log1.get("level")).shouldBeEqual("INFO");
         the(log1.get("timestamp")).shouldNotBeNull();
         the(log1.get("logger")).shouldBeEqual("org.javalite.activeweb.freemarker.FreeMarkerTemplateManager");
@@ -145,7 +145,7 @@ public class JSONLogSpec extends RequestSpec {
         String[] logs = Util.split(out, System.getProperty("line.separator"));
 
         //Line0
-        Map log1 = JsonHelper.toMap(logs[0]);
+        Map log1 = JSONHelper.toMap(logs[0]);
         the(log1.get("level")).shouldBeEqual("INFO");
         the(log1.get("timestamp")).shouldNotBeNull();
         the(log1.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
@@ -158,7 +158,7 @@ public class JSONLogSpec extends RequestSpec {
         the(message.get("error")).shouldBeEqual("java.lang.ClassNotFoundException: app.controllers.Fake11Controller");
 
         //Line 1
-        Map log2 = JsonHelper.toMap(logs[1]);
+        Map log2 = JSONHelper.toMap(logs[1]);
         the(log2.get("level")).shouldBeEqual("INFO");
         the(log2.get("timestamp")).shouldNotBeNull();
         the(log2.get("logger")).shouldBeEqual("org.javalite.activeweb.freemarker.FreeMarkerTemplateManager");
@@ -176,7 +176,7 @@ public class JSONLogSpec extends RequestSpec {
         String[] logs = Util.split(out, System.getProperty("line.separator"));
 
         //Line 0
-        Map log0 = JsonHelper.toMap(logs[0]);
+        Map log0 = JSONHelper.toMap(logs[0]);
         the(log0.get("level")).shouldBeEqual("INFO");
         the(log0.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
         the(log0.get("timestamp")).shouldNotBeNull();;
@@ -189,7 +189,7 @@ public class JSONLogSpec extends RequestSpec {
 
         //rendering template: '/logging/no-view' with layout: '/layouts/default_layout"}
         //Line 1
-        Map log1 = JsonHelper.toMap(logs[1]);
+        Map log1 = JSONHelper.toMap(logs[1]);
         the(log1.get("level")).shouldBeEqual("INFO");
         the(log1.get("timestamp")).shouldNotBeNull();
         the(log1.get("logger")).shouldBeEqual("org.javalite.activeweb.freemarker.FreeMarkerTemplateManager");
@@ -197,7 +197,7 @@ public class JSONLogSpec extends RequestSpec {
 
 
         //Line 2
-        Map log2 = JsonHelper.toMap(logs[2]);
+        Map log2 = JSONHelper.toMap(logs[2]);
         the(log2.get("level")).shouldBeEqual("INFO");
         the(log2.get("timestamp")).shouldNotBeNull();
         the(log2.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
@@ -219,7 +219,7 @@ public class JSONLogSpec extends RequestSpec {
         String out = SystemStreamUtil.getSystemOut();
         String[] logs = Util.split(out, System.getProperty("line.separator"));
 
-        Map log0 = JsonHelper.toMap(logs[1]);
+        Map log0 = JSONHelper.toMap(logs[1]);
         the(log0.get("level")).shouldBeEqual("INFO");
         the(log0.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
 

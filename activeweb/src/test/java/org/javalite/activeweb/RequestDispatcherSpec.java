@@ -16,7 +16,7 @@ limitations under the License.
 
 package org.javalite.activeweb;
 
-import org.javalite.common.JsonHelper;
+import org.javalite.json.JSONHelper;
 import org.javalite.common.Util;
 import org.javalite.test.SystemStreamUtil;
 import org.javalite.test.XPathHelper;
@@ -26,8 +26,6 @@ import org.junit.Test;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 
 import java.io.IOException;
 import java.util.Map;
@@ -249,7 +247,7 @@ public class RequestDispatcherSpec extends RequestSpec {
         // we need this because on different OSes log lines may come out or order!
         Map message = null;
         for (String line : lines) {
-            Map log = JsonHelper.toMap(line);
+            Map log = JSONHelper.toMap(line);
             try {
                 message = (Map) log.get("message");
             }catch(ClassCastException ignore){}

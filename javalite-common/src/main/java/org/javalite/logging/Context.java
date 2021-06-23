@@ -17,7 +17,7 @@ limitations under the License.
 
 package org.javalite.logging;
 
-import org.javalite.common.JsonHelper;
+import org.javalite.json.JSONHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,6 +62,6 @@ public class Context {
      */
     public static String toJSON(){
         Map context = contextTL.get();
-        return context == null || context.isEmpty() ? null : JsonHelper.toJsonString(context);
+        return context == null || context.isEmpty() ? null : JSONHelper.toJsonString(context);
     }
 }

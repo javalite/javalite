@@ -25,11 +25,15 @@ import java.util.Locale;
  */
 public class ValidationException extends RuntimeException {
     private final String message;
-    private final Validatable source;
+    private Validatable source;
 
     public ValidationException(Validatable validatable){
         message = validatable.errors().toString();
         this.source = validatable;
+    }
+
+    public ValidationException(String message) {
+        this.message = message;
     }
 
     @Override

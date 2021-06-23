@@ -22,7 +22,7 @@ import org.javalite.activejdbc.cache.CacheEventListener;
 import org.javalite.activejdbc.statistics.QueryStats;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.*;
-import org.javalite.common.JsonHelper;
+import org.javalite.json.JSONHelper;
 import org.javalite.common.Util;
 import org.javalite.test.SystemStreamUtil;
 import org.junit.Before;
@@ -217,14 +217,14 @@ public class CacheTest extends ActiveJDBCTest {
         List<String> selects = getTwoSelects();
 
         //select 1, miss, has duration_millis
-        Map logMap = JsonHelper.toMap(selects.get(0));
+        Map logMap = JSONHelper.toMap(selects.get(0));
         Map message = (Map) logMap.get("message");
         the(message.get("duration_millis")).shouldNotBeNull();
         the(message.get("sql")).shouldBeEqual("SELECT * FROM people");
         the(message.get("cache")).shouldBeEqual("miss"); //<<-----------------miss
 
         //select 2, hit, has no duration_millis
-        logMap = JsonHelper.toMap(selects.get(1));
+        logMap = JSONHelper.toMap(selects.get(1));
         message = (Map) logMap.get("message");
         the(message.get("duration_millis")).shouldBeNull();
         the(message.get("sql")).shouldBeEqual("SELECT * FROM people");

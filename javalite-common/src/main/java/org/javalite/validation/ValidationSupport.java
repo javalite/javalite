@@ -174,10 +174,18 @@ public class ValidationSupport implements Validatable {
     }
 
 
+    /**
+     * Runs all registered validators and collects errors if any.
+     */
     public void validate() {
         validate(true);
     }
 
+    /**
+     * Runs all registered validators and collects errors if any.
+     *
+     * @param reset true to reset all previous validation errors.
+     */
     public void validate(boolean reset) {
         if(reset){
             errors = new Errors();
@@ -208,5 +216,4 @@ public class ValidationSupport implements Validatable {
         errors.setLocale(locale);
         return errors;
     }
-
 }
