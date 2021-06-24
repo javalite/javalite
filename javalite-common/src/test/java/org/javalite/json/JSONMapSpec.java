@@ -34,10 +34,10 @@ public class JSONMapSpec {
 
     @Test
     public void shouldFindDeepMap(){
-        JSONMap jsonMap = new JSONMap(JSON);
-        Map glossList =  jsonMap.getMap("glossary.GlossDiv.GlossList");
-        the(glossList.keySet().size()).shouldBeEqual(1);
-        the(glossList).shouldContain("GlossEntry");
+        JSONMap jsonMap = new JSONMap(JSONHelper.toMap(JSON));
+        Map glossMap =  jsonMap.getMap("glossary.GlossDiv.GlossList");
+        the(glossMap.keySet().size()).shouldBeEqual(1);
+        the(glossMap).shouldContain("GlossEntry");
         the(jsonMap.getMap("glossary.GlossDiv.GlossList.GlossEntry").get("ID")).shouldBeEqual("SGML");
     }
 }

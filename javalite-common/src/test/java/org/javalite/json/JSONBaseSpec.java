@@ -4,6 +4,9 @@ import org.javalite.validation.RangeValidator;
 import org.junit.Test;
 
 
+import java.util.Map;
+
+import static org.javalite.json.JSONHelper.toMap;
 import static org.javalite.test.jspec.JSpec.$;
 import static org.javalite.test.jspec.JSpec.the;
 
@@ -19,6 +22,8 @@ public class JSONBaseSpec {
                 }
                 """;
 
+    Map universityMap = toMap(university);
+
     @Test
     public void shouldGetList(){
         String jsonString = """            
@@ -28,7 +33,8 @@ public class JSONBaseSpec {
                     }
                 }
                 """;
-        JSONBase json = new JSONBase(jsonString);
+
+        JSONBase json = new JSONBase(toMap(jsonString));
 
         JSONList list = json.getList("university.students");
         the(list.get(0)).shouldBeEqual("mary");
@@ -38,15 +44,15 @@ public class JSONBaseSpec {
     @Test
     public void shouldGetMap(){
 
-        JSONMap students = new JSONBase(this.university).getMap("university.students");
-        $(students.getMap("university.students.mary").get("first_name")).shouldBeEqual("Mary");
-        $(students.getMap("university.students.joe").get("first_name")).shouldBeEqual("Joe");
+        JSONMap students = new JSONBase(universityMap).getMap("university.students");
+        $(students.getMap("mary").get("first_name")).shouldBeEqual("Mary");
+        $(students.getMap("joe").get("first_name")).shouldBeEqual("Joe");
     }
 
     @Test
     public void shouldGetDeepAttribute(){
 
-        JSONBase json = new JSONBase(university);
+        JSONBase json = new JSONBase(universityMap);
         the(json.get("university.students.mary.first_name")).shouldBeEqual("Mary");
         the(json.get("university.students.joe.first_name")).shouldBeEqual("Joe");
     }
@@ -54,12 +60,12 @@ public class JSONBaseSpec {
     @Test
     public void shouldValidatePresenceOfAttribute(){
         class Students extends JSONBase {
-            public Students(String jsonObject) {
-                super(jsonObject);
+            public Students(Map jsonMap) {
+                super(jsonMap);
                 validatePresenceOf("university.students.mary.first_name");
             }
         }
-        Students students =  new Students(university);
+        Students students =  new Students(universityMap);
         the(students).shouldBe("valid");
         the(students.errors().size()).shouldBeEqual(0);
     }
@@ -67,50 +73,50 @@ public class JSONBaseSpec {
     @Test
     public void shouldInValidateAbsenceOfAttribute(){
         class Students extends JSONBase {
-            public Students(String jsonObject) {
-                super(jsonObject);
+            public Students(Map map) {
+                super(map);
                 validatePresenceOf("university.students.joe.age");
             }
         }
-        Students students =  new Students(university);
+        Students students =  new Students(universityMap);
         the(students).shouldNotBe("valid");
         the(students.errors().size()).shouldBeEqual(1);
         the(students.errors().get("university.students.joe.age")).shouldBeEqual("value is missing");
     }
 
     @Test
-    public void shouldInValidateNumericality(){
+    public void shouldValidateNumericality(){
         class Students extends JSONBase {
-            public Students(String jsonObject) {
-                super(jsonObject);
+            public Students(Map json) {
+                super(json);
                 validateNumericalityOf("university.students.mary.age");
             }
         }
-        Students students =  new Students(university);
+        Students students =  new Students(universityMap);
         the(students).shouldBe("valid");
     }
 
     @Test
     public void shouldValidateRange(){
         class Students extends JSONBase {
-            public Students(String jsonObject) {
-                super(jsonObject);
+            public Students(Map jsonMap) {
+                super(jsonMap);
                 validateWith(new RangeValidator("university.students.mary.age", 10, 50));
             }
         }
-        Students students =  new Students(university);
+        Students students =  new Students(universityMap);
         the(students).shouldBe("valid");
     }
 
     @Test
     public void shouldInValidateRange(){
         class Students extends JSONBase {
-            public Students(String jsonObject) {
-                super(jsonObject);
+            public Students(Map jsonMap) {
+                super(jsonMap);
                 validateWith(new RangeValidator("university.students.mary.age", 10, 20));
             }
         }
-        Students students =  new Students(university);
+        Students students =  new Students(universityMap);
         the(students).shouldNotBe("valid");
 
         the(students.errors().size()).shouldBeEqual(1);

@@ -16,17 +16,12 @@ limitations under the License.
 
 package org.javalite.json;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
+import org.javalite.common.Convert;
 
-public class JSONMap extends HashMap {
+import java.math.BigDecimal;
+import java.util.*;
 
-
-    public JSONMap(String jsonObject){
-        super(JSONHelper.toMap(jsonObject));
-    }
+public class JSONMap extends HashMap<String, Object> {
 
     public JSONMap(Map map){
         super(map);
@@ -161,5 +156,47 @@ public class JSONMap extends HashMap {
             }
         }
         return null;
+    }
+
+
+    public boolean getBoolean(String attributePath){
+        return Convert.toBoolean(get(attributePath));
+    }
+
+    public BigDecimal getBigDecimal(String attributePath){
+        return Convert.toBigDecimal(get(attributePath));
+    }
+
+    public Date getDate(String attributePath){
+        return Convert.toSqlDate(get(attributePath));
+    }
+
+    public Double getDouble(String attributePath){
+        return Convert.toDouble(get(attributePath));
+    }
+
+    public Float getFloat(String attributePath){
+        return Convert.toFloat(get(attributePath));
+    }
+
+    public Integer getInteger(String attributePath){
+        return Convert.toInteger(get(attributePath));
+    }
+
+    public Long getLong(String attributePath){
+        return Convert.toLong(get(attributePath));
+    }
+
+    public Short getShort(String attributePath){
+        return Convert.toShort(get(attributePath));
+    }
+
+    public String getString(String attributePath){
+        return Convert.toString(get(attributePath));
+    }
+
+    @Override
+    public String toString() {
+        return JSONHelper.toJsonString(this);
     }
 }

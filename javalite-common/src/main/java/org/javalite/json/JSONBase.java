@@ -15,13 +15,6 @@ public class JSONBase extends ValidationSupport {
 
     private JSONMap jsonMap;
 
-    /**
-     * @param jsonObject the JSON Object  document as string, such as "{...}"
-     *                   Will not accept an array, such as "[...]".
-     */
-    public JSONBase(String jsonObject) {
-        jsonMap = new JSONMap(JSONHelper.toMap(jsonObject));
-    }
 
     public JSONBase(Map  jsonMap) {
         this.jsonMap = new JSONMap(jsonMap);
@@ -106,9 +99,7 @@ public class JSONBase extends ValidationSupport {
 
         try{
             String[] path = Util.split(attributePath, '.');
-            if(path.length < 2){
-                throw new IllegalArgumentException("Invalid path to an attribute");
-            }
+
             List<String> mapPath = new ArrayList<>();
             for (int i = 0; i < path.length - 1; i++) {
                 mapPath.add(path[i]);

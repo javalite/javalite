@@ -250,12 +250,27 @@ public class RequestBuilder {
         return this;
     }
 
+
+    /**
+     * Use  to post content to a tested controller.
+     *
+     * @param content content string
+     * @return self
+     */
+    public RequestBuilder content(String content) {
+        return content(content.getBytes());
+    }
+
+    /**
+     * Use  to post content to a tested controller.
+     *
+     * @param content content bytes
+     * @return self
+     */
     public RequestBuilder content(byte[] content) {
         this.content = content;
         return this;
     }
-
-
 
     /**
      * Simulate HTTP GET call to an action of controller.

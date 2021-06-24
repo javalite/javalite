@@ -17,12 +17,16 @@ limitations under the License.
 
 package org.javalite.json;
 
+import org.javalite.common.Convert;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Represents a <code>java.utilList</code> as an object  that fronts a chunk of a JSON object.
+ * Represents a <code>java.util.List</code> as an object  that fronts a chunk of a JSON object.
  * A list can contain  all kinds of things normally found in JSON: other lists, maps, primitives, etc.
  *
  * <p></p>
@@ -76,5 +80,47 @@ public class JSONList extends ArrayList {
         }else{
             throw new JSONParseException("Object at index " + index + " is not a List.");
         }
+    }
+
+
+    public boolean getBoolean(int index){
+        return Convert.toBoolean(get(index));
+    }
+
+    public BigDecimal getBigDecimal(int index){
+        return Convert.toBigDecimal(get(index));
+    }
+
+    public Date getDate(int index){
+        return Convert.toSqlDate(get(index));
+    }
+
+    public Double getDouble(int index){
+        return Convert.toDouble(get(index));
+    }
+
+    public Float getFloat(int index){
+        return Convert.toFloat(get(index));
+    }
+
+    public Integer getInteger(int index){
+        return Convert.toInteger(get(index));
+    }
+
+    public Long getLong(int index){
+        return Convert.toLong(get(index));
+    }
+
+    public Short getShort(int index){
+        return Convert.toShort(get(index));
+    }
+
+    public String getString(int index){
+        return Convert.toString(get(index));
+    }
+
+    @Override
+    public String toString() {
+        return JSONHelper.toJsonString(this);
     }
 }

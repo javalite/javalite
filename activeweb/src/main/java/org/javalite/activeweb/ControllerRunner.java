@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -147,44 +148,54 @@ class ControllerRunner {
         String contentType = RequestContext.getHttpRequest().getContentType();
         boolean jsonRequest = contentType != null && contentType.equals("application/json");
         Map<String, String> requestMap;
+        InputStream in = route.getController().getRequestInputStream();
+        String requestBody = Util.read(in);
         if(jsonRequest){
-            InputStream in = route.getController().getRequestInputStream();
-            String body = Util.read(in);
-            //todo: what happens if we get an array: '[1,2, 3]' ?
             try{
-                requestMap = JSONHelper.toMap(body);
+                requestMap = JSONHelper.toMap(requestBody);
             }catch(RuntimeException e){
                 throw new ControllerException("Failed to convert JSON request to JSON document", e.getCause());
             }
         }else {
             requestMap = route.getController().params1st();
         }
-
         return getObjectWithValues(route, requestMap);
     }
 
-        @SuppressWarnings("unchecked")
-    private Object getObjectWithValues(Route route, Map<String, String> requestMap) throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
-
+    private Object getObjectWithValues(Route route, Map<String,String> requestMap) throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
         Class argumentClass = route.getArgumentClass();
 
-        Object requestObject = JSONBase.class.isAssignableFrom(argumentClass) ? argumentClass.getDeclaredConstructor(Map.class).newInstance(requestMap)
-                : argumentClass.getDeclaredConstructor().newInstance();
-
-
-        if(requestObject instanceof Model){
-            ((Model)requestObject).fromMap(requestMap);
-        }else if (!(requestObject instanceof JSONBase)) {
-            Map translatedRequestMap = translateMapToJava(requestMap);
-            Field[] fields = argumentClass.getDeclaredFields();
-
-            for (Field field : fields) {
-                //TODO: create an ImplicitValidator and  return control of implicit conversions to developer
-               setField(field, translatedRequestMap, requestObject);
+        if (JSONBase.class.isAssignableFrom(argumentClass)) {
+            return getJSONBase(argumentClass, requestMap);
+        }else {
+            Object requestObject = argumentClass.getDeclaredConstructor().newInstance();
+            if (requestObject instanceof Model) {
+                return ((Model) requestObject).fromMap(requestMap);
+            } else {
+                return getFilledPOJO(argumentClass, requestMap);
             }
+        }
+    }
+
+    private Object getJSONBase(Class argumentClass, Map<String, String> requestMap) throws InvocationTargetException, InstantiationException, IllegalAccessException {
+        Constructor constructor;
+        try {
+            constructor = argumentClass.getDeclaredConstructor(Map.class);
+            return constructor.newInstance(requestMap);
+        } catch (NoSuchMethodException e) {
+            throw new ControllerException("Failed to find a constructor in " + argumentClass + " that accepts a Map.");
+        }
+    }
+    private Object getFilledPOJO(Class argumentClass, Map<String, String> requestMap) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Object requestObject = argumentClass.getDeclaredConstructor().newInstance();
+        Map translatedRequestMap = translateMapToJava(requestMap);
+        Field[] fields = argumentClass.getDeclaredFields();
+        for (Field field : fields) {
+            setField(field, translatedRequestMap, requestObject);
         }
         return requestObject;
     }
+
 
     private void setField(Field field, Map translatedRequestMap, Object requestObject) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         boolean needRevert = false;

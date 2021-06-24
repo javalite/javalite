@@ -42,7 +42,7 @@ public class JSONListSpec {
 
     @Test
     public void shouldFindDeepList() {
-        JSONMap jsonMap = new JSONMap(JSON);
+        JSONMap jsonMap = new JSONMap(JSONHelper.toMap(JSON));
         JSONList glossList = jsonMap.getList("glossary.GlossDiv.GlossList.GlossEntry.GlossDef.GlossSeeAlso");
 
         the(glossList.size()).shouldBeEqual(2);
