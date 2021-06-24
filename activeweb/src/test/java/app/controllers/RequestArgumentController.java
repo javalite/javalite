@@ -4,6 +4,7 @@ import app.controllers.request_objects.*;
 import app.models.Account;
 import org.javalite.activeweb.AppController;
 import org.javalite.activeweb.annotations.FailedValidationReply;
+import org.javalite.activeweb.annotations.POST;
 
 public class RequestArgumentController extends AppController {
 
@@ -35,5 +36,14 @@ public class RequestArgumentController extends AppController {
     public void overloaded1(){}
 
     public void overloaded1(Person person){}
+
+
+    @POST
+    public void updateUniversity(University university){
+
+        respond(university.errors().toJSON()).contentType("application/json");
+
+    }
+
 
 }

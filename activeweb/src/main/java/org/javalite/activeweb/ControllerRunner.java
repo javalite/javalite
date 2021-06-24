@@ -17,6 +17,7 @@ package org.javalite.activeweb;
 
 import com.google.inject.Injector;
 import org.javalite.activejdbc.Model;
+import org.javalite.json.JSONBase;
 import org.javalite.json.JSONHelper;
 import org.javalite.validation.ImplicitConversionValidator;
 import org.javalite.validation.Validatable;
@@ -166,11 +167,14 @@ class ControllerRunner {
     private Object getObjectWithValues(Route route, Map<String, String> requestMap) throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
 
         Class argumentClass = route.getArgumentClass();
-        Object requestObject = argumentClass.getDeclaredConstructor().newInstance();
+
+        Object requestObject = JSONBase.class.isAssignableFrom(argumentClass) ? argumentClass.getDeclaredConstructor(Map.class).newInstance(requestMap)
+                : argumentClass.getDeclaredConstructor().newInstance();
+
 
         if(requestObject instanceof Model){
             ((Model)requestObject).fromMap(requestMap);
-        }else{
+        }else if (!(requestObject instanceof JSONBase)) {
             Map translatedRequestMap = translateMapToJava(requestMap);
             Field[] fields = argumentClass.getDeclaredFields();
 
@@ -179,7 +183,6 @@ class ControllerRunner {
                setField(field, translatedRequestMap, requestObject);
             }
         }
-
         return requestObject;
     }
 

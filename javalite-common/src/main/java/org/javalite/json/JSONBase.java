@@ -23,6 +23,10 @@ public class JSONBase extends ValidationSupport {
         jsonMap = new JSONMap(JSONHelper.toMap(jsonObject));
     }
 
+    public JSONBase(Map  jsonMap) {
+        this.jsonMap = new JSONMap(jsonMap);
+    }
+
 
     /**
      * Returns a list deep from the structure of JSON document.
@@ -151,5 +155,10 @@ public class JSONBase extends ValidationSupport {
 
     public String getString(String attributePath){
         return Convert.toString(get(attributePath));
+    }
+
+    @Override
+    public String toString() {
+        return JSONHelper.toJsonString(this.jsonMap);
     }
 }
