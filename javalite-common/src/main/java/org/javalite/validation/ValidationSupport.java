@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import static org.javalite.common.Collections.list;
+
 /**
  * Manages validators and converters.
  */
@@ -60,6 +62,13 @@ public class ValidationSupport implements Validatable {
     public ValidationBuilder validateWith(Validator validator) {
         validators.add(validator);
         return new ValidationBuilder(validator);
+    }
+
+    @SuppressWarnings("unchecked")
+    public ValidationBuilder validateWith(Validator ... validators) {
+        List<Validator> list =  list(validators);
+        this.validators.addAll(list);
+        return new ValidationBuilder(list);
     }
 
     @SuppressWarnings("unchecked")

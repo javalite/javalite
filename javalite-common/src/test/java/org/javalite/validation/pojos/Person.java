@@ -15,7 +15,6 @@ public class Person extends ValidationSupport {
         this.email = email;
 
         validatePresenceOf("firstName", "lastName");
-        validateWith(new DateValidator("dob", "yyyy-MM-dd"));
-        validateWith(new EmailValidator("email"));
+        validateWith(new DateValidator("dob", "yyyy-MM-dd"), new EmailValidator("email"));
     }
 }
