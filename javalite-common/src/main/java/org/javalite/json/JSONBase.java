@@ -100,7 +100,12 @@ public class JSONBase extends ValidationSupport {
         try{
             String[] path = Util.split(attributePath, '.');
 
+            if(attributePath.indexOf('.') == -1 ){
+                return this.jsonMap.get(attributePath);
+            }
+
             List<String> mapPath = new ArrayList<>();
+
             for (int i = 0; i < path.length - 1; i++) {
                 mapPath.add(path[i]);
             }

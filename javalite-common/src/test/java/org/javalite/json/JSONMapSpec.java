@@ -31,6 +31,13 @@ public class JSONMapSpec {
                     }
                 }""";
 
+    @Test
+    public void shouldFindImmediateChild(){
+        JSONMap jsonMap = new JSONMap(JSONHelper.toMap(JSON));
+        Map glossaryMap = (Map) jsonMap.get("glossary");
+        the(glossaryMap.keySet().size()).shouldBeEqual(2);
+        the(glossaryMap).shouldContain("title");
+    }
 
     @Test
     public void shouldFindDeepMap(){

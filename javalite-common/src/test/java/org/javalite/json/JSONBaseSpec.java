@@ -4,7 +4,7 @@ import org.javalite.validation.RangeValidator;
 import org.junit.Test;
 
 
-import java.util.Map;
+import java.util.*;
 
 import static org.javalite.json.JSONHelper.toMap;
 import static org.javalite.test.jspec.JSpec.$;
@@ -121,5 +121,25 @@ public class JSONBaseSpec {
 
         the(students.errors().size()).shouldBeEqual(1);
         the(students.errors().get("university.students.mary.age")).shouldBeEqual("value should be within limits: > 10 and < 20");
+    }
+
+    @Test
+    public void shouldReadImmediateChild(){
+
+        String json  = """
+            {
+              "message_body": "Test message",
+              "from": "2012220321",
+              "to": [
+                {
+                  "phone": [
+                    "+12015550123"
+                  ]
+                }
+              ]
+            }""";
+
+        JSONBase jsonBase = new JSONBase(JSONHelper.toMap(json));
+        the(jsonBase.get("message_body")).shouldBeEqual("Test message");
     }
 }
