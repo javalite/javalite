@@ -27,6 +27,8 @@ public class JSONMap extends HashMap<String, Object> {
         super(map);
     }
 
+    public JSONMap(){}
+
     /**
      * Returns a <code>JSONList</code> for a list name. It is expected that this list is an immediate child of this map.
      * If the object is not a list, the method will throw an exception.

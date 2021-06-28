@@ -20,6 +20,9 @@ package org.javalite.async;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.security.AnyTypePermission;
 import com.thoughtworks.xstream.security.NoTypePermission;
+import org.javalite.async.xstream.CDATAXppDriver;
+import org.javalite.async.xstream.JSONListConverter;
+import org.javalite.async.xstream.JSONMapConverter;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -41,6 +44,8 @@ public abstract class Command {
     private static final XStream X_STREAM;
     static {
         X_STREAM = new XStream(new CDATAXppDriver());
+        X_STREAM.registerConverter(new JSONMapConverter(X_STREAM.getMapper()));
+        X_STREAM.registerConverter(new JSONListConverter(X_STREAM.getMapper()));
         X_STREAM.addPermission(NoTypePermission.NONE );
         X_STREAM.addPermission(AnyTypePermission.ANY);
     }

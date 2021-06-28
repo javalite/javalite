@@ -44,6 +44,8 @@ public class JSONList extends ArrayList {
         super(JSONHelper.toList(jsonList));
     }
 
+    public JSONList(){}
+
     /**
      * Returns a JSONMap at a provided index. If the object is not a map, it  will throw an exception.
      *
