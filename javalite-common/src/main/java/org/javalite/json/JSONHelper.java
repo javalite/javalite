@@ -52,6 +52,26 @@ public class JSONHelper {
     }
 
     /**
+     * Convenience method to convert String to {@link JSONMap}.
+     *
+     * @param json String content of some JSON object.
+     * @return instance of {@link JSONMap}.
+     */
+    public static JSONMap toJSONMap(String json) {
+        return new JSONMap(toMap(json));
+    }
+
+    /**
+     * Convenience method to convert String to {@link JSONList}.
+     *
+     * @param json String content of some JSON array.
+     * @return instance of {@link JSONList}.
+     */
+    public static JSONList toJSONList(String json) {
+        return new JSONList(toList(json));
+    }
+
+    /**
      * Convert JSON Array to Java array of maps.
      *
      * @param json JSON array
