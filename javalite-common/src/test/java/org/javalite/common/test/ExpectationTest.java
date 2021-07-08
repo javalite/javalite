@@ -92,14 +92,9 @@ public class ExpectationTest {
     }
     @Test
     public void shouldTestNegativeContainsWithObjects(){
-
         List<Person> list = list(new Person("Jack"), new Person("Mary"));
-        System.out.println(list);
-        System.out.println(new Person("Mike"));
         a(list).shouldNotContain(new Person("Mike"));
-
     }
-
 
     @Test(expected = TestException.class)
     public void shouldTestMissingValueWithSting() {

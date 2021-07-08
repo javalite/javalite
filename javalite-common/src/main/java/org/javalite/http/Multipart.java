@@ -166,13 +166,13 @@ public class Multipart extends Request<Multipart> {
         return this;
     }
 
-    public static void main(String[] args){
-
-        //use kitchensink
-        Multipart mp = Http.multipart("http://localhost:8080/upload/save")
-                .field("name1", "val1")
-                .file("file1", "/home/igor/tmp/test.txt");
-
-        System.out.println(mp.headers());
-    }
+//    public static void main(String[] args){
+//
+//        //use kitchensink
+//        Multipart mp = Http.multipart("http://localhost:8080/upload/save")
+//                .field("name1", "val1")
+//                .file("file1", "/home/igor/tmp/test.txt");
+//
+//        System.out.println(mp.headers());
+//    }
 }

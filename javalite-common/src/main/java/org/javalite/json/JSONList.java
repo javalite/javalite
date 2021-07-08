@@ -59,7 +59,11 @@ public class JSONList extends ArrayList {
         if(map == null){
             return null;
         }else if(map instanceof Map){
-            return new JSONMap((Map) map);
+            if(map instanceof  JSONMap){
+                return (JSONMap) map;
+            }else{
+                return new JSONMap((Map) map);
+            }
         }else {
             throw new JSONParseException("Object at index " + index + " is not a Map.");
         }
@@ -78,7 +82,11 @@ public class JSONList extends ArrayList {
         if(list == null){
             return null;
         }else if(list instanceof List){
-            return new JSONList((List) list);
+            if(list instanceof JSONList){
+                return (JSONList) list;
+            }else{
+                return new JSONList((List) list);
+            }
         }else{
             throw new JSONParseException("Object at index " + index + " is not a List.");
         }

@@ -346,9 +346,6 @@ public final class Convert {
         }
     }
 
-    public static void main(String[] args) {
-        System.out.println(toLocalDateTime(System.currentTimeMillis()));
-    }
 
     /**
      * @param millis milliseconds to convert to <code>LocalDateTime</code>.

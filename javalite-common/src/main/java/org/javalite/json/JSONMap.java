@@ -40,7 +40,7 @@ public class JSONMap extends HashMap<String, Object> {
      * @throws JSONParseException;
      * @return instance of <code>JSONList</code> for a name
      */
-    public JSONList getChildList(String listName){
+    private JSONList getChildList(String listName){
         if(!containsKey(listName)){
             return null;
         }
@@ -64,14 +64,14 @@ public class JSONMap extends HashMap<String, Object> {
      * @throws JSONParseException;
      * @return instance of <code>JSONMap</code> for a name
      */
-    public JSONMap getChildMap(String attribute){
+    private JSONMap getChildMap(String attribute){
         Object map = super.get(attribute);
         if(map == null){
             return null;
         }else if(map instanceof Map){
             return new JSONMap((Map) map);
         }else {
-            throw new JSONParseException("Object named" + attribute + " is not a Map.");
+            throw new JSONParseException("Object named: " + attribute + " is not a Map.");
         }
     }
 
@@ -95,15 +95,15 @@ public class JSONMap extends HashMap<String, Object> {
      *     }
      * </pre>
      *
-     * @param attribute accepts a dot-delimited format: "university.students.joe" where every entry must  be a map
+     * @param attributePath accepts a dot-delimited format: "university.students.joe" where every entry must  be a map
      * @return map from the depths of the JSON structure.
      */
-    public JSONMap getMap(String attribute) {
+    public JSONMap getMap(String attributePath) {
 
-        if (!attribute.contains(".")) {
-            return getChildMap(attribute);
+        if (!attributePath.contains(".")) {
+            return getChildMap(attributePath);
         } else {
-            StringTokenizer st = new StringTokenizer(attribute, ".");
+            StringTokenizer st = new StringTokenizer(attributePath, ".");
             JSONMap  parent = this;
             JSONMap  child;
 
@@ -120,7 +120,7 @@ public class JSONMap extends HashMap<String, Object> {
                 }
             }
         }
-        return null;
+        throw new IllegalArgumentException("Failed to find a list at path: " + attributePath);
     }
 
     /**
@@ -135,15 +135,15 @@ public class JSONMap extends HashMap<String, Object> {
      *     }
      * </pre>
      *
-     * @param attribute accepts a dot-delimited format: "university.students" where every entry must  be a map
+     * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map
      * @return list from the depths of the JSON structure.
      */
-    public JSONList getList(String attribute) {
+    public JSONList getList(String attributePath) {
 
-        if (!attribute.contains(".")) {
-            return getChildList(attribute);
+        if (!attributePath.contains(".")) {
+            return getChildList(attributePath);
         } else {
-            StringTokenizer st = new StringTokenizer(attribute, ".");
+            StringTokenizer st = new StringTokenizer(attributePath, ".");
             JSONMap  parent = this;
             Object  child;
 
@@ -157,42 +157,69 @@ public class JSONMap extends HashMap<String, Object> {
                 }
             }
         }
-        return null;
+        throw new IllegalArgumentException("Failed to find a list at path: " + attributePath);
     }
 
 
+    /**
+     * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
+     */
     public boolean getBoolean(String attributePath){
         return Convert.toBoolean(get(attributePath));
     }
 
+    /**
+     * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
+     */
     public BigDecimal getBigDecimal(String attributePath){
         return Convert.toBigDecimal(get(attributePath));
     }
 
+    /**
+     * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
+     */
     public Date getDate(String attributePath){
         return Convert.toSqlDate(get(attributePath));
     }
 
+    /**
+     * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
+     */
     public Double getDouble(String attributePath){
         return Convert.toDouble(get(attributePath));
     }
 
+    /**
+     * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
+     */
     public Float getFloat(String attributePath){
         return Convert.toFloat(get(attributePath));
     }
 
+    /**
+     * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
+     */
     public Integer getInteger(String attributePath){
         return Convert.toInteger(get(attributePath));
     }
 
+    /**
+     * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
+     */
     public Long getLong(String attributePath){
         return Convert.toLong(get(attributePath));
     }
 
+    /**
+     * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
+     */
     public Short getShort(String attributePath){
         return Convert.toShort(get(attributePath));
     }
 
+    /**
+     * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
+     */
     public String getString(String attributePath){
         return Convert.toString(get(attributePath));
     }
