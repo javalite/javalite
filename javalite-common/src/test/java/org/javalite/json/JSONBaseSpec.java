@@ -1,5 +1,6 @@
 package org.javalite.json;
 
+import org.javalite.validation.EmailValidator;
 import org.javalite.validation.RangeValidator;
 import org.junit.Test;
 

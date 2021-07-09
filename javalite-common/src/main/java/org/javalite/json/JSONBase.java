@@ -28,35 +28,35 @@ import java.util.Map;
 
 /**
  *
- This class is used access data from JSON immediately after parsing.
- For instance, given this document:
-<pre>
- {
-     "university": {
-        "students" : ["mary", "joe"]
+ * This class is used access data from JSON immediately after parsing. It expects a JSON Object to
+ *  be the top structure in a JSON document. For instance, given this document:
+    <pre>
+     {
+         "university": {
+            "students" : ["mary", "joe"]
+         }
      }
- }
- </pre>
+     </pre>
 
- we can parse and access data such as:
+     we can parse and access data such as:
 
- <pre>
- JSONBase jsonBase = new JSONBase(JSONHelper.toMap(jsonString));
- </pre>
+     <pre>
+     JSONBase jsonBase = new JSONBase(jsonString);
+     </pre>
 
- <p></p>
- Once we have the instance, we can reach to a deep object inside the JSON document:
- <p></p>
- <pre>
- JSONList list = jsonBase.getList("university.students");
- </pre>
- <p></p>
- As you can see, we are expecting the type at the path <code>"university.students"</code> to be a </code>java.util.List</code>
- (formerly a JSON array).
- <p></p>
+     <p></p>
+     Once we have the instance, we can reach to a deep object inside the JSON document:
+     <p></p>
+     <pre>
+     JSONList list = jsonBase.getList("university.students");
+     </pre>
+     <p></p>
+     As you can see, we are expecting the type at the path <code>"university.students"</code> to be a </code>java.util.List</code>
+     (formerly a JSON array).
+     <p></p>
 
- Both </code>JSONMap</code> and </code>JSONBase</code> have this capability we call Deep Path  that allows a developer to reach directly
- to a deep object without having to pick apart  one layer at the time.
+     Both </code>JSONMap</code> and </code>JSONBase</code> have this capability we call Deep Path  that allows a developer to reach directly
+     to a deep object without having to pick apart  one layer at the time.
  */
 public class JSONBase extends ValidationSupport {
 
