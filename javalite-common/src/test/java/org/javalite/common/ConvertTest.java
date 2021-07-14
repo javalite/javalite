@@ -358,7 +358,7 @@ public class ConvertTest implements JSpecSupport {
         the(localDateTime.getYear()).shouldBeEqual(calendar.get(Calendar.YEAR));
         the(localDateTime.getMonthValue()).shouldBeEqual(calendar.get(Calendar.MONTH) + 1); // thanks, Java!
         the(localDateTime.getDayOfMonth()).shouldBeEqual(calendar.get(Calendar.DAY_OF_MONTH));
-        the(localDateTime.getHour()).shouldBeEqual(calendar.get(Calendar.HOUR) + 12);
+        the(localDateTime.getHour()).shouldBeEqual(calendar.get(Calendar.HOUR_OF_DAY));
         the(localDateTime.getMinute()).shouldBeEqual(calendar.get(Calendar.MINUTE));
         the(localDateTime.getSecond()).shouldBeEqual(calendar.get(Calendar.SECOND));
     }
