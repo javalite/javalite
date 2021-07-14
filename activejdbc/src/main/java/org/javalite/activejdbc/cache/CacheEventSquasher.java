@@ -2,6 +2,8 @@ package org.javalite.activejdbc.cache;
 
 import org.javalite.activejdbc.MetaModel;
 import org.javalite.activejdbc.Registry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -10,7 +12,7 @@ import static org.javalite.activejdbc.ModelDelegate.metaModelFor;
 
 /**
  * This class exists in order to collapse multiple similar cache purge events into one.
- * This is especially crucial in cases of cascade deletes. In the absence of this  class, it the system would
+ * This is especially crucial in cases of cascade deletes. In the absence of this  class, the system would
  * generate unnecessary duplicate cache purge events.
  *
  * @author yanchevsky
@@ -34,6 +36,9 @@ public class CacheEventSquasher implements AutoCloseable {
 
     private static final ThreadLocal<State> stateTL = new ThreadLocal<>();
 
+    /**
+     * Exists for debugging,   see usage in comments below inside a COnstructor.
+     */
     private String codePoint() {
         StackTraceElement[] elements = Thread.currentThread().getStackTrace();
         return "[" + elements[3].toString() + ", " + elements[4].toString() + "]";
@@ -55,11 +60,13 @@ public class CacheEventSquasher implements AutoCloseable {
 
     public CacheEventSquasher add(MetaModel metaModel) {
         if (metaModel.cached()) {
-            System.err.println("\t\t\t\t" + stateTL.get().hashCode() + " CacheEventSquasher add '" + metaModel.getTableName() + "' " + codePoint());
+            //System.err.println("\t\t\t\t" + stateTL.get().hashCode() + " CacheEventSquasher add '" + metaModel.getTableName() + "' " + codePoint()); //  for debug only
             stateTL.get().tables.add(metaModel.getTableName());
-        } else {
-            System.err.println("\t\t\t\t" + stateTL.get().hashCode() + " CacheEventSquasher skip '" + metaModel.getTableName() + "' " + codePoint());
         }
+        //debug only:
+//        else {
+//            //System.err.println("\t\t\t\t" + stateTL.get().hashCode() + " CacheEventSquasher skip '" + metaModel.getTableName() + "' " + codePoint());//  for debug only
+//        }
         return this;
     }
 
@@ -76,7 +83,7 @@ public class CacheEventSquasher implements AutoCloseable {
         if (state.owner == this) { //TODO should be NPE if not initialized (for DEV DEBUG)
             stateTL.remove();
             CacheManager cacheManager = Registry.cacheManager();
-            System.err.println("\t\t\t\t" + state.hashCode() + " CacheEventSquasher close and purge " + state.tables + " " + codePoint());
+//            System.err.println("\t\t\t\t" + state.hashCode() + " CacheEventSquasher close and purge " + state.tables + " " + codePoint());
             for(String table : state.tables) {
                 cacheManager.flush(new CacheEvent(table, getClass().getName()));
             }

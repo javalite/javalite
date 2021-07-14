@@ -233,22 +233,6 @@ public class CacheTest extends ActiveJDBCTest {
         SystemStreamUtil.restoreSystemOut();
     }
 
-    @Test
-    public void shouldNotChangePreviousResultOfQuery() {
-        deleteAndPopulateTables("doctors", "patients", "doctors_patients");
-        List<Doctor> doctors = Doctor.findAll();
-        int size1 = doctors.size();
-
-        a(size1 > 0).shouldBeTrue();
-
-        doctors.get(0).deleteCascade();
-
-        doctors = Doctor.findAll();
-        int size2 = doctors.size();
-
-        a(size1 - 2).shouldBeEqual(size2); //two doctors linked by patients
-    }
-
     private List<String> getTwoSelects() {
         String out = SystemStreamUtil.getSystemOut();
         List<String> lines = Arrays.asList(Util.split(out, System.getProperty("line.separator")));

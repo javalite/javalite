@@ -2110,7 +2110,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
 
     /**
      * Sets  lifecycle listeners on current model. All previous listeners will be unregistered.
-     * In case you are using cache in the current model, it is recommended to reset this model's caches before calling this method
+     * In case you are using cache for the current model, this call will reset this model's caches before calling this method
      * in order to avoid a potential logical error.
      *
      * @param listeners list of lifecycle listeners
@@ -2657,7 +2657,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
         }
 
         boolean result;
-        try (CacheEventSquasher ces = new CacheEventSquasher()) {  //TODO AY: save not purgeEdges!!!
+        try (CacheEventSquasher ces = new CacheEventSquasher()) {
             if (getId() == null && !compositeKeyPersisted) {
                 result = insert();
             } else {
@@ -2994,15 +2994,17 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
 
     /**
      * Use to force-purge cache associated with this table. If this table is not cached, this method has no side effect.
+     * Keep in mind, that this is a "manual" mode, meaning if you are calling this method, and this model has associations that are potentially cached,
+     * it is your responsibility to  clean  caches of those related models as well.
      */
-    public static void purgeCache() { //TODO purge cache cascade ?
+    public static void purgeCache() {
         ModelDelegate.purgeCache(modelClass());
     }
 
     /**
      * Convenience method: converts ID value to Long and returns it.
      *
-     * @return value of attribute corresponding to <code>getIdName()</code>, converted to Long.
+     * @return value of attribute corresponding to <code>getIdName()</code>, converted to a Long.
      */
     public Long getLongId() {
         return getId() == null ? null: Convert.toLong(getId());
