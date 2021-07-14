@@ -18,6 +18,7 @@ package org.javalite.activejdbc;
 import org.javalite.activejdbc.annotations.Cached;
 import org.javalite.activejdbc.annotations.CompositePK;
 import org.javalite.activejdbc.associations.*;
+import org.javalite.activejdbc.cache.CacheEventSquasher;
 import org.javalite.activejdbc.cache.QueryCache;
 import org.javalite.common.*;
 import org.javalite.conversion.BlankToNullConverter;
@@ -472,10 +473,10 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
         }
         if (1 == result) {
             frozen = true;
-            if (metaModelOf(getClass()).cached()) {
-                Registry.cacheManager().purgeTableCache(metaModelLocal);
+            try (CacheEventSquasher ces = new CacheEventSquasher()) {
+                ces.add(metaModelLocal);
+                ModelDelegate.purgeEdges(metaModelLocal);
             }
-            ModelDelegate.purgeEdges(metaModelLocal);
             fireAfterDelete();
             return true;
         }
@@ -606,10 +607,12 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      * @param excludedAssociations associations
      */
     public void deleteCascadeExcept(Association... excludedAssociations){
-        deleteMany2ManyDeep(metaModelLocal.getManyToManyAssociations(excludedAssociations), excludedAssociations);
-        deleteChildrenDeep(metaModelLocal.getOneToManyAssociations(excludedAssociations), excludedAssociations);
-        deleteChildrenDeep(metaModelLocal.getPolymorphicAssociations(excludedAssociations), excludedAssociations);
-        delete();
+        try (CacheEventSquasher ces = new CacheEventSquasher()) {
+            deleteMany2ManyDeep(metaModelLocal.getManyToManyAssociations(excludedAssociations), excludedAssociations);
+            deleteChildrenDeep(metaModelLocal.getOneToManyAssociations(excludedAssociations), excludedAssociations);
+            deleteChildrenDeep(metaModelLocal.getPolymorphicAssociations(excludedAssociations), excludedAssociations);
+            delete();
+        }
     }
 
 
@@ -1896,7 +1899,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
     }
 
     /**
-     * Use in a static block of a model definotion to add a scope.
+     * Use in a static block of a model definition to add a scope.
      *
      * @param name name of scope
      * @param criteria SQL criteria for the scope filter
@@ -2458,7 +2461,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
         }
 
         MetaModel childMetaModel = metaModelOf(child.getClass());
-        MetaModel metaModel = metaModelLocal;
+        MetaModel metaModel = metaModelLocal; //TODO AY: ??
         if (getId() != null) {
             if (metaModel.hasAssociation(child.getClass(), OneToManyAssociation.class)) {
                 addOne2ManyChild(metaModel, child);
@@ -2489,30 +2492,32 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
 
     private void addMany2ManyChild(MetaModel metaModel, Model child, MetaModel childMetaModel){
         Many2ManyAssociation ass = metaModel.getAssociationForTarget(child.getClass(), Many2ManyAssociation.class);
-        if (child.getId() == null) {
-            child.saveIt();
-        }
-        MetaModel joinMetaModel = metaModelFor(ass.getJoin());
-        if (joinMetaModel == null) {
-            new DB(metaModel.getDbName()).exec(metaModel.getDialect().insertManyToManyAssociation(ass),
-                    getId(), child.getId());
-        } else {
-            //this is for Oracle, many 2 many, and all annotations used, including @IdGenerator. In this case,
-            //it is best to delegate generation of insert to a model (sequences, etc.)
-            try {
-                Model joinModel = joinMetaModel.getModelClass().getDeclaredConstructor().newInstance();
-                joinModel.set(ass.getSourceFkName(), getId());
-                joinModel.set(ass.getTargetFkName(), child.getId());
-                joinModel.saveIt();
-            } catch (InstantiationException | NoSuchMethodException | InvocationTargetException e) {
-                throw new InitException("failed to create a new instance of class: " + joinMetaModel.getClass()
-                        + ", are you sure this class has a default constructor?", e);
-            } catch (IllegalAccessException e) {
-                throw new InitException(e);
-            } finally {
-                Registry.cacheManager().purgeTableCache(ass.getJoin());
-                Registry.cacheManager().purgeTableCache(metaModel);
-                Registry.cacheManager().purgeTableCache(childMetaModel);
+        try (CacheEventSquasher ces = new CacheEventSquasher()) {
+            if (child.getId() == null) {
+                child.saveIt();
+            }
+            MetaModel joinMetaModel = metaModelFor(ass.getJoin());
+            if (joinMetaModel == null) {
+                new DB(metaModel.getDbName()).exec(metaModel.getDialect().insertManyToManyAssociation(ass),
+                        getId(), child.getId());
+            } else {
+                //this is for Oracle, many 2 many, and all annotations used, including @IdGenerator. In this case,
+                //it is best to delegate generation of insert to a model (sequences, etc.)
+                try {
+                    Model joinModel = joinMetaModel.getModelClass().getDeclaredConstructor().newInstance();
+                    joinModel.set(ass.getSourceFkName(), getId());
+                    joinModel.set(ass.getTargetFkName(), child.getId());
+                    joinModel.saveIt();
+                } catch (InstantiationException | NoSuchMethodException | InvocationTargetException e) {
+                    throw new InitException("failed to create a new instance of class: " + joinMetaModel.getClass()
+                            + ", are you sure this class has a default constructor?", e);
+                } catch (IllegalAccessException e) {
+                    throw new InitException(e);
+                } finally {
+                    Registry.cacheManager().purgeTableCache(ass.getJoin());
+                    Registry.cacheManager().purgeTableCache(metaModel);
+                    Registry.cacheManager().purgeTableCache(childMetaModel);
+                }
             }
         }
     }
@@ -2652,10 +2657,12 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
         }
 
         boolean result;
-        if (getId() == null && !compositeKeyPersisted) {
-            result = insert();
-        } else {
-            result = update();
+        try (CacheEventSquasher ces = new CacheEventSquasher()) {  //TODO AY: save not purgeEdges!!!
+            if (getId() == null && !compositeKeyPersisted) {
+                result = insert();
+            } else {
+                result = update();
+            }
         }
         fireAfterSave();
         return result;
@@ -2724,9 +2731,8 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
                 attributes.put(metaModel.getIdName(), id);
                 done = (id != null);
             }
-            if (metaModel.cached()) {
-                Registry.cacheManager().purgeTableCache(metaModel);
-            }
+
+            CacheEventSquasher.purge(metaModel);
 
             if (metaModel.isVersioned()) {
                 attributes.put(metaModel.getVersionColumn(), 1);
@@ -2817,9 +2823,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
         }else if(metaModel.isVersioned()){
             set(metaModelLocal.getVersionColumn(), getLong(metaModelLocal.getVersionColumn()) + 1);
         }
-        if(metaModel.cached()){
-            Registry.cacheManager().purgeTableCache(metaModel);
-        }
+        CacheEventSquasher.purge(metaModel);
         dirtyAttributeNames.clear();
         fireAfterUpdate();
         return updated > 0;
@@ -2991,7 +2995,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
     /**
      * Use to force-purge cache associated with this table. If this table is not cached, this method has no side effect.
      */
-    public static void purgeCache(){
+    public static void purgeCache() { //TODO purge cache cascade ?
         ModelDelegate.purgeCache(modelClass());
     }
 
