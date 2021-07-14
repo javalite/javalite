@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.javalite.activejdbc.ModelDelegate.metaModelFor;
+
 /**
  * Abstract method to be sub-classed by various caching technologies.
  *
@@ -70,9 +72,9 @@ public abstract class CacheManager {
             propagate(event);
         }
 
-            String message = "Cache purged: " + (event.getType() == CacheEvent.CacheEventType.ALL
-                    ? "all caches" : "table: " + event.getGroup());
-            LogFilter.log(LOGGER, LogLevel.DEBUG, message);
+        String message = "Cache purged: " + (event.getType() == CacheEvent.CacheEventType.ALL
+                ? "all caches" : "table: " + event.getGroup());
+        LogFilter.log(LOGGER, LogLevel.DEBUG, message);
     }
 
     private void propagate(CacheEvent event){
@@ -114,7 +116,9 @@ public abstract class CacheManager {
      * @param metaModel meta-model whose caches are to purge.
      */
     public void purgeTableCache(MetaModel metaModel) {
-        flush(new CacheEvent(metaModel.getTableName(), getClass().getName()));
+        if (metaModel.cached()) {
+            CacheEventSquasher.purge(metaModel);
+        }
     }
 
     /**
@@ -123,7 +127,7 @@ public abstract class CacheManager {
      * @param tableName name of table whose caches to purge.
      */
     public void purgeTableCache(String tableName) {
-        flush(new CacheEvent(tableName, getClass().getName()));
+        purgeTableCache(metaModelFor(tableName));
     }
 
 
