@@ -19,7 +19,9 @@ package org.javalite.http;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.*;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,12 +33,14 @@ import static org.javalite.common.Util.toBase64;
  *
  * @author Igor Polevoy
  */
-public abstract class Request<T extends Request> {
+public abstract class Request {
 
-    protected final HttpURLConnection connection;
+    private final HttpURLConnection connection;
     private boolean connected;
     protected boolean redirect;
     protected final String url;
+    private Map<String, String> params = new HashMap<>();
+
 
     public Request(String url, int connectTimeout, int readTimeout) {
         try {
@@ -44,6 +48,11 @@ public abstract class Request<T extends Request> {
             connection = (HttpURLConnection) new URL(url).openConnection();
             connection.setConnectTimeout(connectTimeout);
             connection.setReadTimeout(readTimeout);
+            connection.setUseCaches(false);
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setInstanceFollowRedirects(redirect);
+            connection.setRequestMethod(getMethod());
         } catch (Exception e) {
             throw new HttpException("Failed URL: " + url, e);
         }
@@ -57,7 +66,7 @@ public abstract class Request<T extends Request> {
      * @param value header value.
      * @return self.
      */
-    public T header(String name, String value) {
+    public <T extends Request> T  header(String name, String value) {
         connection.setRequestProperty(name, value);
         return (T) this;
     }
@@ -69,9 +78,9 @@ public abstract class Request<T extends Request> {
      * @param redirect true to follow, false to not.
      * @return self
      */
-    public T redirect(boolean redirect) {
+    public <T extends Request> T   redirect(boolean redirect) {
         this.redirect = redirect;
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -218,23 +227,21 @@ public abstract class Request<T extends Request> {
         }
     }
 
-    protected T connect() {
-        if (!connected) {
-            T t = doConnect();
-            connected = true;
-            return t;
-        } else {
-            return (T) this;
+    protected <T extends Request> T connect() {
+        try{
+            if (!connected) {
+                T t = doConnect(connection);
+                connected = true;
+                return t;
+            } else {
+                return (T) this;
+            }
+        }catch(Exception e){
+            throw new HttpException(e);
         }
     }
 
 
-    /**
-     * Makes a connection to the remote resource.
-     *
-     * @return self.
-     */
-    protected abstract T doConnect();
 
 
     /**
@@ -244,9 +251,9 @@ public abstract class Request<T extends Request> {
      * @param password password.
      * @return self.
      */
-    public T basic(String user, String password){
+    public <T extends Request> T   basic(String user, String password){
         connection.setRequestProperty("Authorization", "Basic " + toBase64((user + ":" + password).getBytes()));
-        return (T) this;
+        return (T)this;
     }
 
     /**
@@ -255,8 +262,57 @@ public abstract class Request<T extends Request> {
      * @param user user
      * @return self
      */
-    public T basic(String user){
+    public <T extends Request> T  basic(String user){
         connection.setRequestProperty("Authorization", "Basic " + toBase64((user).getBytes()));
+        return (T)this;
+    }
+
+    protected <T extends Request> T  doConnect(HttpURLConnection connection) throws IOException {
         return (T) this;
+    }
+
+
+    protected abstract String getMethod();
+
+    protected Map<String, String> params() {
+        return params;
+    }
+
+    /**
+     * Convenience method to add multiple parameters to the request.
+     * <p></p>
+     * Names and values alternate: name1, value1, name2, value2, etc.
+     *
+     * @param namesAndValues names/values of multiple fields to be added to the request.
+     * @return self
+     */
+    public <T extends Request> T params(String ... namesAndValues) {
+
+        if(namesAndValues == null ){
+            throw new NullPointerException("'names and values' cannot be null");
+        }
+
+        if(namesAndValues.length % 2 != 0){
+            throw new IllegalArgumentException("must pass even number of arguments");
+        }
+
+        for (int i = 0; i < namesAndValues.length - 1; i += 2) {
+            if (namesAndValues[i] == null) throw new IllegalArgumentException("parameter names cannot be nulls");
+            params.put(namesAndValues[i], namesAndValues[i + 1]);
+        }
+
+        return (T)this;
+    }
+
+    /**
+     * Adds a parameter to the request as in a HTML form.
+     *
+     * @param name name of parameter
+     * @param value value of parameter
+     * @return self
+     */
+    public <T extends Request> T  param(String name, String value) {
+        params.put(name, value);
+        return (T)this;
     }
 }

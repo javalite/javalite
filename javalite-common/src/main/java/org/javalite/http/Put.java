@@ -18,6 +18,8 @@ package org.javalite.http;
 
 import java.io.OutputStream;
 import java.net.ProtocolException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Executes a PUT request.
@@ -40,14 +42,15 @@ public class Put extends Post {
     }
 
     @Override
-    protected void setMethod() throws ProtocolException {
-        connection.setRequestMethod("PUT");
+    protected String getMethod() {
+        return "PUT";
     }
 
-//    public static void main(String[] args) {
-//        Put put = Http.put("http://localhost:8080/http", "bugagaga");
-//        System.out.println(put.text());
-//        System.out.println(put.headers());
-//        System.out.println(put.responseCode());
-//    }
+
+    public static void main(String[] args) {
+        Put put = Http.put("http://localhost:8080/http", "bugagaga").param("", "");
+        System.out.println(put.text());
+        System.out.println(put.headers());
+        System.out.println(put.responseCode());
+    }
 }

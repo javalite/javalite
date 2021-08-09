@@ -158,13 +158,18 @@ public class Http {
         return put(uri, content.getBytes());
     }
 
-    /**
-     * Executes a PUT request.
-     *
-     * @param uri     uri of resource.
-     * @param content content to be put.
-     * @return {@link Put} object.
-     */
+    public static Put put(String uri) {
+        return put(uri, (byte[]) null);
+    }
+
+
+        /**
+         * Executes a PUT request.
+         *
+         * @param uri     uri of resource.
+         * @param content content to be put.
+         * @return {@link Put} object.
+         */
     public static Put put(String uri, byte[] content) {
         return put(uri, content, CONNECTION_TIMEOUT , READ_TIMEOUT);
     }

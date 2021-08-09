@@ -16,13 +16,12 @@ limitations under the License.
 
 package org.javalite.http;
 
-
 /**
  * Executes a GET request.
  *
  * @author Igor Polevoy
  */
-public class Get extends Request<Get> {
+public class Get extends Request {
 
     /**
      * Constructor for making GET requests.
@@ -36,23 +35,14 @@ public class Get extends Request<Get> {
     }
 
     @Override
-    public Get doConnect() {
-        try {
-            connection.setDoInput(true);
-            connection.setDoOutput(true);
-            connection.setInstanceFollowRedirects(redirect);
-            connection.setUseCaches(false);
-            connection.setRequestMethod("GET");
-            return this;
-        } catch (Exception e) {
-            throw new HttpException("Failed URL: " + url, e);
-        }
+    protected String getMethod() {
+        return "GET";
     }
 
-//    public static void main(String[] args) {
-//        Get get = Http.get("https://www.yahoo.com");
-//        System.out.println(get.text());
-//        System.out.println(get.headers());
-//        System.out.println(get.responseCode());
-//    }
+    public static void main(String[] args) {
+        Get get = Http.get("http://localhost:8080");
+        System.out.println(get.text());
+        System.out.println(get.headers());
+        System.out.println(get.responseCode());
+    }
 }
