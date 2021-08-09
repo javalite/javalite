@@ -73,28 +73,6 @@ public class Post extends Request {
     }
 
     public static void main(String[] args) {
-
-
-        Post post = Http.post("http://localhost:8080/http/post").
-                param("greeting", "hello").header("Content-type", "text/json");
-
-        System.out.println("Text: " + post.text());
-        System.out.println("Headers: " + post.headers());
-        System.out.println("Response code: " + post.responseCode());
-        System.out.println("Response message: " + post.responseMessage());
-
-        System.out.println("=================================================");
-
-        post = Http.post("http://localhost:8080/http/post", "this is  a content")
-                .header("Content-type", "text/json");
-
-        System.out.println("Text: " + post.text());
-        System.out.println("Headers: " + post.headers());
-        System.out.println("Response code: " + post.responseCode());
-        System.out.println("Response message: " + post.responseMessage());
-    }
-
-    public static void main(String[] args) {
         Post post = Http.post("http://localhost:8080/http/post").header("Content-type", "text/json").param("name", "Igor");
         System.out.println(post.text());
         System.out.println(post.headers());
