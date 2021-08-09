@@ -164,7 +164,7 @@ public class JSONMap extends HashMap<String, Object> {
     /**
      * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
      */
-    public boolean getBoolean(String attributePath){
+    public Boolean getBoolean(String attributePath){
         return Convert.toBoolean(get(attributePath));
     }
 
