@@ -115,14 +115,11 @@ public class Post extends Request<Post> {
         return this;
     }
 
-//    public static void main(String[] args) {
-//        Post post = Http.post("http://localhost:8080/kitchensink/http/post", "this is a post content").header("Content-type", "text/json");
-//        //System.out.println(post.text());
-//        //System.out.println(post.headers());
-//        System.out.println(post.responseCode());
-//        System.out.println(post.responseMessage());
-//
-//        Post post = Http.post("http://localhost:8080/hello").param("name", "John");
-//        System.out.println(post.text());
-//    }
+    public static void main(String[] args) {
+        Post post = Http.post("http://localhost:8080/http/post").header("Content-type", "text/json").param("name", "Igor");
+        System.out.println(post.text());
+        System.out.println(post.headers());
+        System.out.println(post.responseCode());
+        System.out.println(post.responseMessage());
+    }
 }
