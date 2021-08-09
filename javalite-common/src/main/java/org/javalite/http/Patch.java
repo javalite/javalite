@@ -2,6 +2,7 @@ package org.javalite.http;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 
 /**
  * Executes a PATCH request.
@@ -23,32 +24,16 @@ public class Patch  extends Request {
     public Patch(String uri, byte[] content, int connectTimeout, int readTimeout) {
         super(uri, connectTimeout, readTimeout);
         this.content = content;
-        header("X-HTTP-Method-Override", "PATCH");
     }
 
     @Override
-    public Patch doConnect() {
-        try {
-            this.connection.setDoInput(true);
-            this.connection.setDoOutput(true);
-            this.connection.setUseCaches(false);
-            this.connection.setRequestMethod("POST");
-            this.connection.setRequestProperty("X-HTTP-Method-Override", "PATCH");
-            OutputStream out = this.connection.getOutputStream();
-            out.write(this.content);
-            out.flush();
-            return this;
-        } catch (Exception e) {
-            throw new HttpException("Failed URL: " + url, e);
-        }
+    public Patch doConnect(HttpURLConnection connection) throws IOException {
+        connection.setRequestProperty("X-HTTP-Method-Override", "PATCH");
+        OutputStream out = connection.getOutputStream();
+        out.write(this.content);
+        out.flush();
+        return this;
     }
-
-    @Override
-    protected void writeBody(OutputStream outputStream) throws IOException {
-        outputStream.write(this.content);
-        outputStream.flush();
-    }
-
 
     @Override
     protected String getMethod() {

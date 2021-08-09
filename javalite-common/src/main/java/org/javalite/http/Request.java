@@ -35,7 +35,7 @@ import static org.javalite.common.Util.toBase64;
  */
 public abstract class Request {
 
-    protected final HttpURLConnection connection;
+    private final HttpURLConnection connection;
     private boolean connected;
     protected boolean redirect;
     protected final String url;
@@ -48,6 +48,11 @@ public abstract class Request {
             connection = (HttpURLConnection) new URL(url).openConnection();
             connection.setConnectTimeout(connectTimeout);
             connection.setReadTimeout(readTimeout);
+            connection.setUseCaches(false);
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setInstanceFollowRedirects(redirect);
+            connection.setRequestMethod(getMethod());
         } catch (Exception e) {
             throw new HttpException("Failed URL: " + url, e);
         }
@@ -222,13 +227,17 @@ public abstract class Request {
         }
     }
 
-    protected <T extends Request> T   connect() {
-        if (!connected) {
-            T t = doConnect();
-            connected = true;
-            return t;
-        } else {
-            return (T) this;
+    protected <T extends Request> T connect() {
+        try{
+            if (!connected) {
+                T t = doConnect(connection);
+                connected = true;
+                return t;
+            } else {
+                return (T) this;
+            }
+        }catch(Exception e){
+            throw new HttpException(e);
         }
     }
 
@@ -258,26 +267,9 @@ public abstract class Request {
         return (T)this;
     }
 
-    protected <T extends Request> T  doConnect() {
-        try {
-            connection.setUseCaches(false);
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setInstanceFollowRedirects(redirect);
-            connection.setRequestMethod(getMethod());
-            if(!this.getClass().equals(Get.class)){
-                OutputStream out = connection.getOutputStream();
-                writeBody(out);
-                out.flush();
-                out.close();
-            }
-            return (T) this;
-        } catch (Exception e) {
-            throw new HttpException("Failed URL: " + url, e);
-        }
+    protected <T extends Request> T  doConnect(HttpURLConnection connection) throws IOException {
+        return (T) this;
     }
-
-    protected abstract void writeBody(OutputStream stream) throws IOException;
 
 
     protected abstract String getMethod();

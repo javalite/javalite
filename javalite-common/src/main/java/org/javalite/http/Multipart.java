@@ -1,6 +1,7 @@
 package org.javalite.http;
 
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,9 +34,10 @@ public class Multipart extends Request {
         header("Content-type", "multipart/form-data; boundary=" + boundary);
     }
 
+
     @Override
-    protected void writeBody(OutputStream outputStream) throws IOException {
-        PrintStream printStream = new PrintStream(outputStream, true);
+    protected <T extends Request> T doConnect(HttpURLConnection connection) throws IOException {
+        PrintStream printStream = new PrintStream(connection.getOutputStream(), true);
         for (FormField f : formFields) {
             if(f.isFile()){
                 sendFile((FileField)f, printStream);
@@ -45,6 +47,8 @@ public class Multipart extends Request {
         }
         printStream.append(LINE_FEED);
         printStream.append("--").append(boundary).append("--").append(LINE_FEED);
+        printStream.flush();
+        return (T)this;
     }
 
 
@@ -138,13 +142,13 @@ public class Multipart extends Request {
         return this;
     }
 
-//    public static void main(String[] args){
-//
-//        //use kitchensink
-//        Multipart mp = Http.multipart("http://localhost:8080/upload/save")
-//                .field("name1", "val1")
-//                .file("file1", "/home/igor/tmp/test.txt");
-//
-//        System.out.println(mp.headers());
-//    }
+    public static void main(String[] args){
+
+        //use kitchensink
+        Multipart mp = Http.multipart("http://localhost:8080/upload/save")
+                .field("name1", "val1")
+                .file("file1", "/home/igor/tmp/test.txt");
+
+        System.out.println(mp.headers());
+    }
 }

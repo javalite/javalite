@@ -19,6 +19,7 @@ package org.javalite.http;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 
 /**
  * Executes a POST request.
@@ -44,13 +45,26 @@ public class Post extends Request {
     }
 
     @Override
-    protected void writeBody(OutputStream stream) throws IOException {
-        if(params().size() > 0){
-            stream.write(Http.map2URLEncoded(params()).getBytes());
+    protected <T extends Request> T doConnect(HttpURLConnection connection) throws IOException {
+
+        if (content != null && !params().isEmpty()) {
+            throw new HttpException("You can submit either content or parameters but not both");
         }
-        if (content != null) {
-            stream.write(content);
+
+        if(!params().isEmpty()) {
+            header("Content-type", "application/x-www-form-urlencoded");
         }
+
+        if (content != null || !params().isEmpty()) {
+            OutputStream outputStream = connection.getOutputStream();
+            if(params().size() > 0){
+                outputStream.write(Http.map2URLEncoded(params()).getBytes());
+            } else {
+                outputStream.write(content);
+            }
+            outputStream.flush();
+        }
+        return (T) this;
     }
 
     @Override
@@ -69,5 +83,14 @@ public class Post extends Request {
         System.out.println("Response code: " + post.responseCode());
         System.out.println("Response message: " + post.responseMessage());
 
+        System.out.println("=================================================");
+
+        post = Http.post("http://localhost:8080/http/post", "this is  a content")
+                .header("Content-type", "text/json");
+
+        System.out.println("Text: " + post.text());
+        System.out.println("Headers: " + post.headers());
+        System.out.println("Response code: " + post.responseCode());
+        System.out.println("Response message: " + post.responseMessage());
     }
 }

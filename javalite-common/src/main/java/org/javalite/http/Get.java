@@ -16,10 +16,6 @@ limitations under the License.
 
 package org.javalite.http;
 
-
-import java.io.IOException;
-import java.io.OutputStream;
-
 /**
  * Executes a GET request.
  *
@@ -39,15 +35,9 @@ public class Get extends Request {
     }
 
     @Override
-    protected void writeBody(OutputStream stream) throws IOException {}
-
-    @Override
     protected String getMethod() {
         return "GET";
     }
-
-
-
 
     public static void main(String[] args) {
         Get get = Http.get("http://localhost:8080");
