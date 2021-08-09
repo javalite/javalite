@@ -36,13 +36,12 @@ public class Delete extends Post {
         super(url, null, connectTimeout, readTimeout);
     }
 
-
     @Override
-    protected void setMethod() throws ProtocolException {
-        connection.setRequestMethod("DELETE");
+    protected String getMethod() {
+        return "DELETE";
     }
 
-//    public static void main(String[] args) {
+    //    public static void main(String[] args) {
 //        Delete delete = Http.delete("http://localhost:8080/http");
 //        System.out.println(delete.text());
 //        System.out.println(delete.headers());

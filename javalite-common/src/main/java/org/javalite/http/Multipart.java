@@ -1,7 +1,5 @@
 package org.javalite.http;
 
-import org.javalite.common.Inflector;
-
 import java.io.*;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -13,14 +11,11 @@ import java.util.UUID;
  *
  * @author Igor Polevoy on 5/1/16.
  */
-public class Multipart extends Request<Multipart> {
+public class Multipart extends Request {
 
-    private static final String DASH = "------";
     private static final String LINE_FEED = "\r\n";
 
-    private PrintWriter writer;
     private String boundary;
-    private OutputStream outputStream;
     private List<FormField> formFields = new ArrayList<>();
 
 
@@ -34,77 +29,54 @@ public class Multipart extends Request<Multipart> {
      */
     public Multipart(String url, int connectTimeout, int readTimeout) {
         super(url, connectTimeout, readTimeout);
+        boundary = "JavaLite-HTTP-"+ UUID.randomUUID() ;
+        header("Content-type", "multipart/form-data; boundary=" + boundary);
     }
 
     @Override
-    protected Multipart doConnect() {
-
-        try {
-            boundary = "JavaLite-HTTP-"+ UUID.randomUUID() ;
-            connection.setUseCaches(false);
-            connection.setDoOutput(true); // indicates POST method
-            connection.setDoInput(true);
-            connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-            connection.setInstanceFollowRedirects(redirect);
-            outputStream = connection.getOutputStream();
-            writer = new PrintWriter(new OutputStreamWriter(outputStream), true);
-            sendData();
-            finish();
-            return this;
-        } catch (Exception e) {
-            throw new HttpException("Failed URL: " + url, e);
-        }
-    }
-
-    private void sendData() {
+    protected void writeBody(OutputStream outputStream) throws IOException {
+        PrintStream printStream = new PrintStream(outputStream, true);
         for (FormField f : formFields) {
             if(f.isFile()){
-                sendFile((FileField)f);
+                sendFile((FileField)f, printStream);
             }else{
-                sendField(f);
+                sendField(f, printStream);
             }
         }
+        printStream.append(LINE_FEED);
+        printStream.append("--").append(boundary).append("--").append(LINE_FEED);
     }
 
-    private void finish(){
-        writer.append(LINE_FEED);
-        writer.append("--").append(boundary).append("--").append(LINE_FEED);
-        writer.close();
+
+    @Override
+    protected String getMethod() {
+        return "POST";
     }
 
-    private void sendField(FormField f) {
-        writer.append("--").append(boundary).append(LINE_FEED);
-        writer.append("Content-Disposition: form-data; name=\"").append(f.getName()).append("\"").append(LINE_FEED);
-        writer.append("Content-Type: text/plain" ).append(LINE_FEED);
-        writer.append(LINE_FEED);
-        writer.append(f.getValue()).append(LINE_FEED);
-        writer.flush();
+    private void sendField(FormField f, PrintStream printStream) {
+        printStream.append("--").append(boundary).append(LINE_FEED);
+        printStream.append("Content-Disposition: form-data; name=\"").append(f.getName()).append("\"").append(LINE_FEED);
+        printStream.append("Content-Type: text/plain" ).append(LINE_FEED);
+        printStream.append(LINE_FEED);
+        printStream.append(f.getValue()).append(LINE_FEED);
     }
 
-    private void sendFile(FileField f) {
-        try {
-            String fileName = f.getFile().getName();
-            writer.append("--").append(boundary).append(LINE_FEED);
-            writer.append("Content-Disposition: form-data; name=\"").append(f.getName()).append("\"; filename=\"").append(fileName).append("\"").append(LINE_FEED);
-            writer.append("Content-Type: ").append(URLConnection.guessContentTypeFromName(fileName)).append(LINE_FEED);
-            writer.append("Content-Transfer-Encoding: binary").append(LINE_FEED);
-            writer.append(LINE_FEED);
-            writer.flush();
+    private void sendFile(FileField f, PrintStream printStream) throws  IOException {
+        String fileName = f.getFile().getName();
+        printStream.append("--").append(boundary).append(LINE_FEED);
+        printStream.append("Content-Disposition: form-data; name=\"").append(f.getName()).append("\"; filename=\"").append(fileName).append("\"").append(LINE_FEED);
+        printStream.append("Content-Type: ").append(URLConnection.guessContentTypeFromName(fileName)).append(LINE_FEED);
+        printStream.append("Content-Transfer-Encoding: binary").append(LINE_FEED);
+        printStream.append(LINE_FEED);
 
-            FileInputStream inputStream = new FileInputStream(f.getFile());
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-            outputStream.flush();
-            inputStream.close();
-
-            writer.append(LINE_FEED);
-            writer.flush();
-        } catch (Exception e) {
-            throw new HttpException(e);
+        FileInputStream inputStream = new FileInputStream(f.getFile());
+        byte[] buffer = new byte[4096];
+        int bytesRead;
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            printStream.write(buffer, 0, bytesRead);
         }
+        inputStream.close();
+        printStream.append(LINE_FEED);
     }
 
     /**

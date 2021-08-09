@@ -17,20 +17,17 @@ limitations under the License.
 package org.javalite.http;
 
 
+import java.io.IOException;
 import java.io.OutputStream;
-import java.net.ProtocolException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Executes a POST request.
  *
  * @author Igor Polevoy
  */
-public class Post extends Request<Post> {
+public class Post extends Request {
 
-    private final byte[] content;
-    private Map<String, String> params = new HashMap<>();
+    private byte[] content;
 
     /**
      * Constructor for making POST requests.
@@ -43,86 +40,34 @@ public class Post extends Request<Post> {
     public Post(String url, byte[] content, int connectTimeout, int readTimeout) {
         super(url, connectTimeout, readTimeout);
         this.content = content;
+        header("Content-type", "application/x-www-form-urlencoded");
     }
 
     @Override
-    public Post doConnect() {
-        try {
-            connection.setDoInput(true);
-            connection.setDoOutput(true);
-            connection.setUseCaches(false);
-            setMethod();
-            connection.setInstanceFollowRedirects(redirect);
-
-            if(params.size() > 0){
-                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            }
-            OutputStream out = connection.getOutputStream();
-            if(params.size() > 0){
-                out.write(Http.map2URLEncoded(params).getBytes());
-            }
-            if(content != null){
-                out.write(content);
-            }
-
-            out.flush();
-            return this;
-        } catch (Exception e) {
-            throw new HttpException("Failed URL: " + url, e);
+    protected void writeBody(OutputStream stream) throws IOException {
+        if(params().size() > 0){
+            stream.write(Http.map2URLEncoded(params()).getBytes());
+        }
+        if (content != null) {
+            stream.write(content);
         }
     }
 
-    protected void setMethod() throws ProtocolException {
-        connection.setRequestMethod("POST");
+    @Override
+    protected String getMethod() {
+        return "POST";
     }
 
+    public static void main(String[] args) {
 
 
-    /**
-     * Convenience method to add multiple parameters to the request.
-     * <p></p>
-     * Names and values alternate: name1, value1, name2, value2, etc.
-     *
-     * @param namesAndValues names/values of multiple fields to be added to the request.
-     * @return self
-     */
-    public Post params(String ... namesAndValues){
+        Post post = Http.post("http://localhost:8080/http/post").
+                param("greeting", "hello").header("Content-type", "text/json");
 
-        if(namesAndValues == null ){
-            throw new NullPointerException("'names and values' cannot be null");
-        }
+        System.out.println("Text: " + post.text());
+        System.out.println("Headers: " + post.headers());
+        System.out.println("Response code: " + post.responseCode());
+        System.out.println("Response message: " + post.responseMessage());
 
-        if(namesAndValues.length % 2 != 0){
-            throw new IllegalArgumentException("mus pas even number of arguments");
-        }
-
-        for (int i = 0; i < namesAndValues.length - 1; i += 2) {
-            if (namesAndValues[i] == null) throw new IllegalArgumentException("parameter names cannot be nulls");
-            params.put(namesAndValues[i], namesAndValues[i + 1]);
-        }
-        return this;
     }
-
-    /**
-     * Adds a parameter to the request as in a HTML form.
-     *
-     * @param name name of parameter
-     * @param value value of parameter
-     * @return self
-     */
-    public Post param(String name, String value){
-        params.put(name, value);
-        return this;
-    }
-
-//    public static void main(String[] args) {
-//        Post post = Http.post("http://localhost:8080/kitchensink/http/post", "this is a post content").header("Content-type", "text/json");
-//        //System.out.println(post.text());
-//        //System.out.println(post.headers());
-//        System.out.println(post.responseCode());
-//        System.out.println(post.responseMessage());
-//
-//        Post post = Http.post("http://localhost:8080/hello").param("name", "John");
-//        System.out.println(post.text());
-//    }
 }

@@ -1,5 +1,6 @@
 package org.javalite.http;
 
+import java.io.IOException;
 import java.io.OutputStream;
 
 /**
@@ -7,7 +8,7 @@ import java.io.OutputStream;
  *
  * @author Mikhail Chachkouski
  */
-public class Patch  extends Request<Patch> {
+public class Patch  extends Request {
 
     private final byte[] content;
 
@@ -22,6 +23,7 @@ public class Patch  extends Request<Patch> {
     public Patch(String uri, byte[] content, int connectTimeout, int readTimeout) {
         super(uri, connectTimeout, readTimeout);
         this.content = content;
+        header("X-HTTP-Method-Override", "PATCH");
     }
 
     @Override
@@ -39,5 +41,17 @@ public class Patch  extends Request<Patch> {
         } catch (Exception e) {
             throw new HttpException("Failed URL: " + url, e);
         }
+    }
+
+    @Override
+    protected void writeBody(OutputStream outputStream) throws IOException {
+        outputStream.write(this.content);
+        outputStream.flush();
+    }
+
+
+    @Override
+    protected String getMethod() {
+        return "POST";
     }
 }
