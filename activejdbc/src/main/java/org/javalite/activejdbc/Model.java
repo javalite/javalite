@@ -29,6 +29,9 @@ import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.activejdbc.logging.LogLevel;
 
 import org.javalite.json.JSONHelper;
+import org.javalite.json.JSONList;
+import org.javalite.json.JSONMap;
+import org.javalite.json.JSONParseException;
 import org.javalite.validation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -3022,5 +3025,52 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
         dirtyAttributeNames = (Set<String>) in.readObject();
     }
 
+    /**
+     * Helper method. Use to convert the text  content of this column to a {@link JSONMap} instance.
+     * The developer is responsible to ensure that the content of this attribute/column is parseable into a JSON object.
+     * If not, a {@link JSONParseException} will be thrown.
+     *
+     * @param attribute name of the attribute
+     * @return instance  a {@link JSONMap}.
+     */
+    public JSONMap getJSONMap(String attribute){
+         return JSONHelper.toJSONMap(getString(attribute));
+    }
 
+    /**
+     * Helper method. Use to convert the text  content of this column to a {@link JSONList} instance.
+     * The developer is responsible to ensure that the content of this attribute/column is parseable into a JSON array.
+     * If not, a {@link JSONParseException} will be thrown.
+     *
+     * @param attribute name of the attribute
+     * @return instance  a {@link JSONList}.
+     */
+    public JSONList getJSONList(String attribute){
+        return JSONHelper.toJSONList(getString(attribute));
+    }
+
+
+    /**
+     * Sets a {@link JSONMap} as a value of an attribute. The underlying content is stored as a string, so use an
+     * appropriate database type (varchar, text, etc.).
+     *
+     * @param attributeName name of an attribute
+     * @param value instance of a {@link JSONMap}
+     * @return instance  of this model
+     */
+    public <T extends Model> T setJSONMap(String attributeName, JSONMap value) {
+        return setRaw(attributeName, value.toString());
+    }
+
+    /**
+     * Sets a {@link JSONList} as a value of an attribute. The underlying content is stored as a string, so use an
+     * appropriate database type (varchar, text, etc.).
+     *
+     * @param attributeName name of an attribute
+     * @param value instance of a {@link JSONList}
+     * @return instance  of this model
+     */
+    public <T extends Model> T setJSONList(String attributeName, JSONList value) {
+        return setRaw(attributeName, value.toString());
+    }
 }
