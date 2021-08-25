@@ -4,6 +4,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.javalite.activejdbc.Base;
 import org.javalite.cassandra.jdbc.CassandraJDBCDriver;
+import org.javalite.common.Util;
 import org.javalite.db_migrator.DatabaseType;
 import org.javalite.db_migrator.DbUtils;
 import org.javalite.db_migrator.MigrationException;
@@ -13,7 +14,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.DriverManager;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 import static org.javalite.db_migrator.DbUtils.*;
 
@@ -43,15 +46,36 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
     @Parameter
     private String mergeProperties;
 
+    private Properties currentMergeProperties;
+
+    private String currentEnvironment;
+
+    public Properties getCurrentMergeProperties() {
+        return currentMergeProperties;
+    }
+
+    public String getCurrentEnvironment() {
+        return currentEnvironment;
+    }
+
     public final void execute() throws MojoExecutionException {
+        Properties originMergeProperties = null;
+        if (mergeProperties != null) {
+            try {
+                originMergeProperties = Util.readProperties(getMergeProperties());
+            } catch (IOException e) {
+                throw new MojoExecutionException("Load merge properties from " + mergeProperties, e);
+            }
+        }
         if (blank(environments)) {
+            prepareCurrentMergeProperties(null, null, originMergeProperties);
             executeCurrentConfiguration();
         } else {
             File file = blank(configFile)
                     ? new File(basedir, "database.properties")
                     : new File(configFile);
             getLog().info("Sourcing database configuration from file: " + file);
-            Properties properties =     new Properties();
+            Properties properties = new Properties();
             if (file.exists()) {
                 InputStream is = null;
                 try {
@@ -65,15 +89,47 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
             } else {
                 throw new MojoExecutionException("File " + file + " not found");
             }
+            Set<String> environmentSet = new HashSet<>();
             for (String environment : environments.split("\\s*,\\s*")) {
+                environmentSet.add(environment);
+            }
+            for (String environment : environmentSet) {
                 getLog().info("Environment: " + environment);
                 url = properties.getProperty(environment + ".url");
                 driver = properties.getProperty(environment + ".driver");
                 username = properties.getProperty(environment + ".username");
                 password = properties.getProperty(environment + ".password");
+                prepareCurrentMergeProperties(environment, environmentSet, originMergeProperties);
+                currentEnvironment = environment;
                 executeCurrentConfiguration();
             }
         }
+    }
+
+    private void prepareCurrentMergeProperties(String env, Set<String> environmentSet, Properties origin) {
+        currentMergeProperties = new Properties();
+        if (origin != null) {
+            if (env == null) {
+                currentMergeProperties.putAll(origin);
+            } else {
+                origin.entrySet().forEach(entry -> {
+                    String key = entry.getKey().toString();
+                    String value = entry.getValue().toString();
+                    String[] parts = key.split("\\.");
+                    if (parts.length > 1 && environmentSet.contains(parts[0])) {
+                        if (env.equals(parts[0])) {
+                            currentMergeProperties.setProperty(key.substring(env.length() + 1), value);
+                        }
+                    } else {
+                        currentMergeProperties.putIfAbsent(key, value);
+                    }
+                });
+            }
+        }
+        currentMergeProperties.setProperty("url", url);
+        currentMergeProperties.setProperty("driver", driver);
+        currentMergeProperties.setProperty("username", username);
+        currentMergeProperties.setProperty("password", password);
     }
 
 

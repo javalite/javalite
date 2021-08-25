@@ -4,7 +4,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.javalite.activejdbc.Base;
-import org.javalite.common.Util;
 import org.javalite.db_migrator.MigrationManager;
 
 import java.io.IOException;
@@ -23,7 +22,7 @@ public class MigrateMojo extends AbstractDbMigrationMojo {
             getLog().info("Migrating " + getUrl() + " using migrations at " + path);
             openConnection();
             new MigrationManager(getProject(), path, getUrl(),
-                                getMergeProperties() == null ? null : Util.readProperties(getMergeProperties())).migrate(getLog(), getEncoding());
+                                getMergeProperties() == null ? null : getCurrentMergeProperties()).migrate(getLog(), getEncoding());
         } catch(SQLException | IOException e){
             throw new MojoExecutionException("Failed to migrate database " + getUrl(), e);
         } finally {
