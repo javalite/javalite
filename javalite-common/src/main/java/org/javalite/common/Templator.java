@@ -83,6 +83,23 @@ public class Templator {
     }
 
     /**
+     * This method  is used in one-off operations, where it is OK to load a template every time.
+     *
+     * Example:
+     * <code>
+     *     String result = Templator.mergeFromPath("/message_template.txt", valuesMap);
+     * </code>
+     *
+     * @param templatePath template to merge
+     * @param values values to merge into a template
+     * @param stripWhitespace - true to strip whitespace, false to keep the template intact
+     * @return result of merging
+     */
+    public static String mergeFromPath(String templatePath, Map<String, ?> values, boolean stripWhitespace) {
+        return mergeFromTemplate(readResource(templatePath), values, stripWhitespace);
+    }
+
+    /**
      * Merges from string as template.
      *
      * @param template template content, with placeholders like: {{name}}
