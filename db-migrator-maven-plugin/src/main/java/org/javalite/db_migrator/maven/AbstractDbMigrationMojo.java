@@ -126,12 +126,17 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
                 });
             }
         }
-        currentMergeProperties.setProperty("url", url);
-        currentMergeProperties.setProperty("driver", driver);
-        currentMergeProperties.setProperty("username", username);
-        currentMergeProperties.setProperty("password", password);
+        setProperty(currentMergeProperties,"url", url);
+        setProperty(currentMergeProperties,"driver", driver);
+        setProperty(currentMergeProperties,"username", username);
+        setProperty(currentMergeProperties,"password", password);
     }
 
+    private void setProperty(Properties properties, String key, String value) {
+        if (value != null) {
+            properties.setProperty(key, value);
+        }
+    }
 
     private void executeCurrentConfiguration() throws MojoExecutionException {
         if (blank(password)) {
