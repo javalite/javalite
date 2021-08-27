@@ -58,6 +58,14 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
         return currentEnvironment;
     }
 
+    public void setCurrentMergeProperties(Properties currentMergeProperties) {
+        this.currentMergeProperties = currentMergeProperties;
+    }
+
+    public void setCurrentEnvironment(String currentEnvironment) {
+        this.currentEnvironment = currentEnvironment;
+    }
+
     public final void execute() throws MojoExecutionException {
         Properties originMergeProperties = null;
         if (mergeProperties != null) {
