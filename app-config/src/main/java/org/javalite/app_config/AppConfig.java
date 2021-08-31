@@ -485,6 +485,16 @@ public class AppConfig implements Map<String, String> {
     }
 
     /**
+     * Read property as <code>Long</code>.
+     *
+     * @param propertyName name of property.
+     * @return property as <code>Long</code>.
+     */
+    public static Long pLong(String propertyName){
+        return Convert.toLong(p(propertyName));
+    }
+
+    /**
      * Read property as <code>Float</code>.
      *
      * @param propertyName name of property.
