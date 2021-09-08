@@ -150,7 +150,7 @@ public class Async {
 
     private void configureLocations(String dataDirectory) {
         if (dataDirectory == null || !new File(dataDirectory).exists()) {
-            throw new AsyncException("Must provide data directory that exists");
+            throw new AsyncException("Must provide data directory that exists: " + dataDirectory);
         }
         config.setBindingsDirectory(dataDirectory + "/bindings");
         config.setJournalDirectory(dataDirectory + "/journal");

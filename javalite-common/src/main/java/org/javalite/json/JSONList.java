@@ -129,8 +129,20 @@ public class JSONList extends ArrayList {
         return Convert.toString(get(index));
     }
 
+    /**
+     * @return a JSON representation  of this object
+     */
     @Override
     public String toString() {
         return JSONHelper.toJsonString(this);
+    }
+
+    /**
+     * @param pretty - true for formatted JSON.
+     *
+     * @return a JSON representation  of this object
+     */
+    public String toJSON(boolean pretty){
+        return JSONHelper.toJsonString(this,  pretty);
     }
 }

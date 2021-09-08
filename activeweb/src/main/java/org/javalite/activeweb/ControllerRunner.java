@@ -19,6 +19,7 @@ import com.google.inject.Injector;
 import org.javalite.activejdbc.Model;
 import org.javalite.json.JSONBase;
 import org.javalite.json.JSONHelper;
+import org.javalite.json.JSONMap;
 import org.javalite.validation.ImplicitConversionValidator;
 import org.javalite.validation.Validatable;
 import org.javalite.activeweb.annotations.FailedValidationReply;
@@ -152,6 +153,7 @@ class ControllerRunner {
         String requestBody = Util.read(in);
         if(jsonRequest){
             try{
+                //TODO: here we presume that the incoming JSON will be an Object, but it can also me an array!
                 requestMap = JSONHelper.toMap(requestBody);
             }catch(RuntimeException e){
                 throw new ControllerException("Failed to convert JSON request to JSON document", e.getCause());
@@ -167,6 +169,8 @@ class ControllerRunner {
 
         if (JSONBase.class.isAssignableFrom(argumentClass)) {
             return getJSONBase(argumentClass, requestMap);
+        }else if (JSONMap.class.equals(argumentClass)) {
+            return new JSONMap(requestMap);
         }else {
             Object requestObject = argumentClass.getDeclaredConstructor().newInstance();
             if (requestObject instanceof Model) {
@@ -176,6 +180,8 @@ class ControllerRunner {
             }
         }
     }
+
+
 
     private Object getJSONBase(Class argumentClass, Map<String, String> requestMap) throws InvocationTargetException, InstantiationException, IllegalAccessException {
         Constructor constructor;

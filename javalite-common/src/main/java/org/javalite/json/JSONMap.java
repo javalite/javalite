@@ -76,7 +76,57 @@ public class JSONMap extends HashMap<String, Object> {
     }
 
     /**
-     * Returns a map deep from the structure of JSON document.
+     * Returns an object deep from the structure of a JSON document.
+     *
+     * <pre>
+     *     {
+     *         "university": {
+     *             students : {
+     *                 "mary" : {
+     *                           "first_name": "Mary",
+     *                           "last_name": "Smith",
+     *                  },
+     *                 "joe" : {
+     *                     "first_name": "Joe",
+     *                     "last_name": "Shmoe",
+     *                 }
+     *             }
+     *         }
+     *     }
+     * </pre>
+     *
+     * @param attributePath accepts a dot-delimited format: "university.students.joe" where every entry except the last one  must be a map
+     * @return an object from the depths of the JSON structure.
+     */
+    @Override
+    public Object get(Object attributePath) {
+        if (!attributePath.toString().contains(".")) {
+            return super.get(attributePath);
+        } else {
+            StringTokenizer st = new StringTokenizer(attributePath.toString(), ".");
+            Object  parent = this;
+            Object  child = null;
+
+            while (st.hasMoreTokens()) {
+                String attr = st.nextToken();
+                if(parent instanceof  Map){
+                    child = ((Map)parent).get(attr);
+                }
+
+                if(child !=  null && !st.hasMoreTokens()){
+                    return child;
+                }else if(child != null && st.hasMoreTokens() && child instanceof Map){
+                    parent = new JSONMap((Map) child);
+                }else if(child != null && !st.hasMoreTokens()){
+                    return child;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns a map deep from the structure of a JSON document.
      *
      * <pre>
      *     {
@@ -96,31 +146,19 @@ public class JSONMap extends HashMap<String, Object> {
      * </pre>
      *
      * @param attributePath accepts a dot-delimited format: "university.students.joe" where every entry must  be a map
-     * @return map from the depths of the JSON structure.
+     * @return a map from the depths of the JSON structure.
      */
     public JSONMap getMap(String attributePath) {
 
-        if (!attributePath.contains(".")) {
-            return getChildMap(attributePath);
-        } else {
-            StringTokenizer st = new StringTokenizer(attributePath, ".");
-            JSONMap  parent = this;
-            JSONMap  child;
+        Object o = get(attributePath);
 
-            while (st.hasMoreTokens()) {
-                String attr = st.nextToken();
-                child = parent.getChildMap(attr);
-
-                if(child !=  null && !st.hasMoreTokens()){
-                    return child;
-                }else if(child != null && st.hasMoreTokens()){
-                    parent = child;
-                }else if(child != null && !st.hasMoreTokens()){
-                    return child;
-                }
-            }
+        if(o instanceof Map){
+            return new JSONMap((Map) o);
+        }else if(o != null){
+            throw  new JSONParseException(attributePath + " is not a Map");
+        }else {
+            return null;
         }
-        throw new IllegalArgumentException("Failed to find a list at path: " + attributePath);
     }
 
     /**
@@ -140,24 +178,16 @@ public class JSONMap extends HashMap<String, Object> {
      */
     public JSONList getList(String attributePath) {
 
-        if (!attributePath.contains(".")) {
-            return getChildList(attributePath);
-        } else {
-            StringTokenizer st = new StringTokenizer(attributePath, ".");
-            JSONMap  parent = this;
-            Object  child;
+        Object o = get(attributePath);
 
-            while (st.hasMoreTokens()) {
-                String attr = st.nextToken();
-                child = parent.get(attr);
-                if(child !=  null && !st.hasMoreTokens() && child instanceof List){
-                    return new JSONList((List) child);
-                }else if(child != null && st.hasMoreTokens() &&  child instanceof Map){
-                    parent = new JSONMap((Map) child);
-                }
-            }
+        if(o instanceof List){
+            return new JSONList((List) o);
+        }else if(o != null){
+
+            throw new JSONParseException(attributePath + " is not a List");
+        }else{
+            return null;
         }
-        throw new IllegalArgumentException("Failed to find a list at path: " + attributePath);
     }
 
 
@@ -224,8 +254,29 @@ public class JSONMap extends HashMap<String, Object> {
         return Convert.toString(get(attributePath));
     }
 
+    /**
+     * @return  a JSON representation  of this object
+     */
     @Override
     public String toString() {
         return JSONHelper.toJsonString(this);
+    }
+
+
+    /**
+     * @param pretty - true for formatted JSON.
+     *
+     * @return a JSON representation  of this object
+     */
+    public String toJSON(boolean pretty){
+        return JSONHelper.toJsonString(this, pretty);
+    }
+
+    /**
+     *
+     * @return a JSON representation  of this object
+     */
+    public String toJSON(){
+        return JSONHelper.toJsonString(this, false);
     }
 }

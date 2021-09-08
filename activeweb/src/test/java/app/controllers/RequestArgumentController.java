@@ -5,6 +5,7 @@ import app.models.Account;
 import org.javalite.activeweb.AppController;
 import org.javalite.activeweb.annotations.FailedValidationReply;
 import org.javalite.activeweb.annotations.POST;
+import org.javalite.json.JSONMap;
 
 public class RequestArgumentController extends AppController {
 
@@ -40,10 +41,11 @@ public class RequestArgumentController extends AppController {
 
     @POST
     public void updateUniversity(University university){
-
         respond(university.errors().toJSON()).contentType("application/json");
-
     }
 
-
+    @POST
+    public void updateUniversity2(JSONMap jsonMap){
+        respond(jsonMap.toJSON()).contentType("application/json");
+    }
 }

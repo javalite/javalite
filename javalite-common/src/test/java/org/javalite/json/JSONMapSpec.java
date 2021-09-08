@@ -6,6 +6,7 @@ import java.util.Map;
 
 import static org.javalite.test.jspec.JSpec.the;
 
+
 public class JSONMapSpec {
     static String JSON =  """
                 {
@@ -13,10 +14,11 @@ public class JSONMapSpec {
                         "title": "example glossary",
                 		"GlossDiv": {
                             "title": "S",
-                			"GlossList": {
+                			"GlossMap": {
                                 "GlossEntry": {
                                     "ID": "SGML",
                 					"SortAs": "SGML",
+                					"ItemsNumber": 123,
                 					"GlossTerm": "Standard Generalized Markup Language",
                 					"Acronym": "SGML",
                 					"Abbrev": "ISO 8879:1986",
@@ -32,7 +34,7 @@ public class JSONMapSpec {
                 }""";
 
     @Test
-    public void shouldFindImmediateChild(){
+    public void shouldFindImmediateChild() {
         JSONMap jsonMap = JSONHelper.toJSONMap(JSON);
         Map glossaryMap = (Map) jsonMap.get("glossary");
         the(glossaryMap.keySet().size()).shouldBeEqual(2);
@@ -40,11 +42,34 @@ public class JSONMapSpec {
     }
 
     @Test
-    public void shouldFindDeepMap(){
+    public void shouldFindDeepMap() {
         JSONMap jsonMap = JSONHelper.toJSONMap(JSON);
-        Map glossMap =  jsonMap.getMap("glossary.GlossDiv.GlossList");
+        Map glossMap = jsonMap.getMap("glossary.GlossDiv.GlossMap");
         the(glossMap.keySet().size()).shouldBeEqual(1);
         the(glossMap).shouldContain("GlossEntry");
-        the(jsonMap.getMap("glossary.GlossDiv.GlossList.GlossEntry").get("ID")).shouldBeEqual("SGML");
+        the(jsonMap.getMap("glossary.GlossDiv.GlossMap.GlossEntry").get("ID")).shouldBeEqual("SGML");
+    }
+
+    @Test
+    public void shouldFindDeepAttribute() {
+        JSONMap jsonMap = JSONHelper.toJSONMap(JSON);
+        String title = jsonMap.getString("glossary.GlossDiv.GlossMap.GlossEntry.Acronym");
+        the(title).shouldBeEqual("SGML");
+    }
+
+    @Test
+    public void shouldFindDeepList() {
+        JSONMap jsonMap = JSONHelper.toJSONMap(JSON);
+        JSONList seeAlso = jsonMap.getList("glossary.GlossDiv.GlossMap.GlossEntry.GlossDef.GlossSeeAlso");
+        the(seeAlso.size()).shouldBeEqual(2);
+        the(seeAlso.get(0)).shouldBeEqual("GML");
+        the(seeAlso.get(1)).shouldBeEqual("XML");
+    }
+
+    @Test
+    public void shouldFindDeepInt() {
+        JSONMap jsonMap = JSONHelper.toJSONMap(JSON);
+        Integer items = jsonMap.getInteger("glossary.GlossDiv.GlossMap.GlossEntry.ItemsNumber");
+        the(items).shouldBeEqual(123);
     }
 }
