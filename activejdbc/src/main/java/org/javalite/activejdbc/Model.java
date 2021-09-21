@@ -848,18 +848,26 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      * and a parent is <code>User</code> (and user has many addresses), then the resulting map would
      * have all the attributes of the current table and another map representing a parent user with a
      * key "user" in current map.
+     * @param attributeNames a list of attribute names to export to a map to. Applies only to this model, not a parent  or a child.
      *
-     * @return all values of the model with all attribute names converted to lower case.
+     * @return values of the model with all attribute names converted to lower case.
      */
-    public Map<String, Object> toMap(){
+    public Map<String, Object> toMap(String ... attributeNames){
         Map<String, Object> retVal = new HashMap<>();
-        for (Map.Entry<String, Object> entry : attributes.entrySet()) {
-            Object v = entry.getValue();
+
+        for (String attributeName: attributeNames) {
+            metaModelLocal.checkAttribute(attributeName);
+        }
+
+        Collection<String> attr = attributeNames.length == 0 ? metaModelLocal.getAttributeNames() : Arrays.asList(attributeNames);
+
+        for (String attribute: attr )  {
+            Object v = attributes.get(attribute);
             if (v != null) {
                 if (v instanceof Clob) {
-                    retVal.put(entry.getKey().toLowerCase(), Convert.toString(v));
+                    retVal.put(attribute.toLowerCase(), Convert.toString(v));
                 } else {
-                    retVal.put(entry.getKey().toLowerCase(), v);
+                    retVal.put(attribute.toLowerCase(), v);
                 }
             }
 

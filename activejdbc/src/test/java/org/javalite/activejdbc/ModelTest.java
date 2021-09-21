@@ -718,28 +718,7 @@ public class ModelTest extends ActiveJDBCTest {
     }
 
 
-    @Test
-    public void shouldOverrideSomeAttributesFromMap(){
 
-        Person.deleteAll();
-
-        Person p = new Person();
-        p.set("name", "John");//before the upper case caused exception
-        p.set("last_name", "Deer");
-        p.set("dob", toSqlDate("2014-11-07"));
-        p.saveIt();
-        a(p.get("name")).shouldBeEqual("John");
-        a(p.get("last_name")).shouldBeEqual("Deer");
-        a(p.get("dob")).shouldNotBeNull();
-        Object id  = p.getId();
-
-        p.fromMap(map("name", "Jack", "dob", null));
-
-        a(p.get("name")).shouldBeEqual("Jack");
-        a(p.get("last_name")).shouldBeEqual("Deer");
-        a(p.get("dob")).shouldBeNull();
-        a(p.getId()).shouldBeEqual(id);
-    }
 
 
     @Test
