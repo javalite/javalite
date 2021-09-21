@@ -17,12 +17,9 @@ limitations under the License.
 
 package org.javalite.common;
 
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Inflector {
 
@@ -227,6 +224,40 @@ public class Inflector {
             result.append(capitalize(st.nextToken()));
         }
         return capitalizeFirstChar ? result.toString() : result.substring(0, 1).toLowerCase() + result.substring(1);
+    }
+
+
+    /**
+     * Will camelize the keys of the map and will return a new map with the same values, but CamelCase keys.
+     *
+     * @param input map whose keys to conver to to CamelCase
+     * @param capitalizeFirstChar tru to capitalize a first character.
+     * @return new map with the same values, but CamelCase keys
+     */
+    public static Map<String, Object> camelize(Map<?,Object> input, boolean capitalizeFirstChar){
+        Map<String, Object> retVal = new HashMap<>();
+        for(Map.Entry<?,Object> entry: input.entrySet()){
+            String key = camelize(entry.getKey().toString(), capitalizeFirstChar);
+            retVal.put(key, entry.getValue());
+        }
+        return retVal;
+    }
+
+
+    /**
+     * Will underscore the keys of the map and will return a new map with the same values, but under_score keys.
+     *
+     * @param input map whose keys to convert to to under_score
+     * @return new map with the same values, but underscore keys
+     */
+
+    public static Map<String, Object> underscore(Map<?,Object> input){
+        Map<String, Object> retVal = new HashMap<>();
+        for(Map.Entry<?,Object> entry: input.entrySet()){
+            String key = underscore(entry.getKey().toString());
+            retVal.put(key, entry.getValue());
+        }
+        return retVal;
     }
 
     /**

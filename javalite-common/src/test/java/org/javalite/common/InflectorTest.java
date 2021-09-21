@@ -18,7 +18,11 @@ limitations under the License.
 package org.javalite.common;
 
 import junit.framework.TestCase;
+import org.junit.Test;
 
+import java.util.Map;
+
+import static org.javalite.common.Collections.map;
 import static org.javalite.test.jspec.JSpec.*;
 
 
@@ -84,5 +88,35 @@ public class InflectorTest extends TestCase {
     public void testCamelize(){
         a(Inflector.camelize("library_book")).shouldBeEqual("LibraryBook");
         a(Inflector.camelize("library_book", false)).shouldBeEqual("libraryBook");
+    }
+
+    public void testConvertMapKeysFrom_undescore_to_CameCase(){
+        Map<?, Object> vals = map("first_name", "Joe", "last_name", "Shmoe", "long_description_of_his_live", "blah");
+        Map<?,Object> retVal = Inflector.camelize(vals, false);
+
+        the(retVal.containsKey("firstName")).shouldBeTrue();
+        the(retVal.containsKey("lastName")).shouldBeTrue();
+        the(retVal.containsKey("longDescriptionOfHisLive")).shouldBeTrue();
+
+        the(retVal.get("firstName")).shouldEqual("Joe");
+        the(retVal.get("lastName")).shouldEqual("Shmoe");
+        the(retVal.get("longDescriptionOfHisLive")).shouldEqual("blah");
+
+        retVal = Inflector.camelize(vals, true);// capitalize
+        the(retVal.get("FirstName")).shouldEqual("Joe");
+        the(retVal.get("LastName")).shouldEqual("Shmoe");
+    }
+
+    public void testConvertMapKeysFrom_CameCase_to_undescore(){
+        Map<?, Object> vals = map("firstName", "Joe", "lastName", "Shmoe", "longDescriptionOfHisLive", "blah");
+        Map<?,Object> retVal = Inflector.underscore(vals);
+
+        the(retVal.containsKey("first_name")).shouldBeTrue();
+        the(retVal.containsKey("first_name")).shouldBeTrue();
+        the(retVal.containsKey("long_description_of_his_live")).shouldBeTrue();
+
+        the(retVal.get("first_name")).shouldEqual("Joe");
+        the(retVal.get("last_name")).shouldEqual("Shmoe");
+        the(retVal.get("long_description_of_his_live")).shouldEqual("blah");
     }
 }
