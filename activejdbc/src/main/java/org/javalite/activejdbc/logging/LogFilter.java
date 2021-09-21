@@ -36,7 +36,7 @@ public class LogFilter {
 
     static{
         String logFlag = System.getProperty("activejdbc.log");
-        if (logFlag != null && logFlag.equals("")) {
+        if (logFlag != null && (logFlag.equals("") || logFlag.equalsIgnoreCase("true"))) {
             //match anything
             setLogExpression(".*");
         } else if (logFlag != null ) {//match by provided value
