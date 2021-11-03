@@ -85,7 +85,8 @@ class RenderTemplateResponse extends ControllerResponse{
     @Override
     void doProcess() {
         try {
-            templateManager.merge(values, template, layout, format, RequestContext.getHttpResponse().getWriter());
+
+            templateManager.merge(values, template, layout, format, RequestContext.getHttpResponse().getWriter(), RequestContext.isCustomRoute());
         }
         catch (IllegalStateException | ViewException e){
             throw e;

@@ -79,7 +79,7 @@ public class CSRFSpec extends RequestSpec {
     @Test
     public void testBA_shouldRenderCSRFTokenParameterWithMethodPOST() {
         StringWriter sw = new StringWriter();
-        manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_method_post", sw);
+        manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_method_post", sw, false);
         a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"post\" id=\"formA\">\n" +
                 "\t<input type='hidden' name='" + CSRF.name() + "' value='" + CSRF.token() + "' />&nbsp;</form>");
     }
@@ -87,7 +87,7 @@ public class CSRFSpec extends RequestSpec {
     @Test
     public void testBB_shouldRenderCSRFTokenParameterWithMethodPUT() {
         StringWriter sw = new StringWriter();
-        manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_method_put", sw);
+        manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_method_put", sw, false);
         a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"post\" id=\"formB\"> <input type='hidden' name='" + CSRF.name() + "' value='" +
                 CSRF.token() + "' /> <input type='hidden' name='_method' value='put' /> <input type=\"hidden\" name=\"blah\"> </form>");
     }
@@ -95,7 +95,7 @@ public class CSRFSpec extends RequestSpec {
     @Test
     public void testBC_shouldRenderCSRFTokenParameterWithMethodDELETE() {
         StringWriter sw = new StringWriter();
-        manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_method_delete", sw);
+        manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_method_delete", sw, false);
         a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"post\"> <input type='hidden' name='" + CSRF.name() + "' value='" +
                 CSRF.token() + "' /> <input type='hidden' name='_method' value='delete' /> <input type=\"hidden\" name=\"blah\"> </form>");
     }
@@ -103,7 +103,7 @@ public class CSRFSpec extends RequestSpec {
     @Test
     public void testBD_shouldNotRenderCSRFTokenParameterWithMethodGET() {
         StringWriter sw = new StringWriter();
-        manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_method_get", sw);
+        manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_method_get", sw, false);
         a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"get\">&nbsp;</form>");
     }
 
@@ -114,7 +114,7 @@ public class CSRFSpec extends RequestSpec {
     @Test
     public void testCA_shouldRenderTokenInSimpleForm() {
         StringWriter sw = new StringWriter();
-        manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_csrf_token", sw);
+        manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_csrf_token", sw, false);
         a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"post\">" +
                 "<input type='hidden' name='" + CSRF.name() + "' value='" + CSRF.token() + "' /></form>");
     }
@@ -123,7 +123,7 @@ public class CSRFSpec extends RequestSpec {
     public void testCB_shouldNotRenderToken() {
         CSRF.disableVerification();
         StringWriter sw = new StringWriter();
-        manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_csrf_token", sw);
+        manager.merge(map("context_path", "/simple_context", "activeweb", map("controller", "simple", "restful", false)), "/form/simple_form_with_csrf_token", sw, false);
         a(sw.toString()).shouldBeEqual("<form action=\"/simple_context/simple/index\" method=\"post\"></form>");
     }
 
@@ -330,7 +330,7 @@ public class CSRFSpec extends RequestSpec {
         RequestContextHelper.createSession();
         StringWriter sw = new StringWriter();
         manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "simple", "restful", false)),
-                "link_to/data_attributes", sw);
+                "link_to/data_attributes", sw, false);
 
         a(sw.toString()).shouldBeEqual("<a href=\"/bookstore/book/read/2\" data-destination=\"hello\" data-form=\"form1\" data-method=\"post\" data-csrf-token=\"" + CSRF.token() + "\" data-csrf-param=\"" + CSRF.name() + "\" data-link=\"aw\" class=\"red_button\">Click here to read book 2</a>");
     }
@@ -339,7 +339,7 @@ public class CSRFSpec extends RequestSpec {
     public void testEB_shouldGenerateLinkWithoutCSRFToken() {
         StringWriter sw = new StringWriter();
         manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "simple", "restful", false)),
-                "/link_to/normal_link", sw);
+                "/link_to/normal_link", sw, false);
         a(sw.toString()).shouldBeEqual("<a href=\"/bookstore/book/read/2?first_name=John\" data-link=\"aw\" class=\"red_button\">Click here to read book 2</a>");
     }
 

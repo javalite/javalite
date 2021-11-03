@@ -186,4 +186,8 @@ public class RequestContext {
         formItems.set(null);
         params1st.set(null);
     }
+
+    public static boolean isCustomRoute(){
+        return RequestContext.getRoute() != null && RequestContext.getRoute().isCustom();
+    }
 }

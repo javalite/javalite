@@ -48,14 +48,14 @@ public class FreeMarkerTagSpec implements JSpecSupport {
     @Test
     public void shouldProcessInnerTag() {
         StringWriter sw = new StringWriter();
-        manager.merge(map("name", "earthlings!!"), "/greeting/index", sw);
+        manager.merge(map("name", "earthlings!!"), "/greeting/index", sw, false);
         a(sw.toString()).shouldBeEqual("<greeting> this is just a greeting: Hello, earthlings!! </greeting>");
     }
 
     @Test
     public void shouldProcessInnerTagWithSuppliedText() {
         StringWriter sw = new StringWriter();
-        manager.merge(map("name", "Earthlings!!"), "/greeting/index1", sw);
+        manager.merge(map("name", "Earthlings!!"), "/greeting/index1", sw, false);
         a(sw.toString()).shouldBeEqual("<greeting> this is just a greeting: Hello, Earthlings!! </greeting>");
     }
 }

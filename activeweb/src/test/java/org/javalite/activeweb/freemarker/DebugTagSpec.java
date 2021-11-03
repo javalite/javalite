@@ -27,14 +27,14 @@ public class DebugTagSpec  {
     @Test
     public void shouldPrintDebugInformationForMap() {
         manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "simple")),
-                "/debug/debug", sw);
+                "/debug/debug", sw, false);
         a(sw.toString()).shouldContain("{controller=simple}");
     }
 
     @Test
     public void shouldPrintSimpleValue() {
         manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "simple"), "message", "hello"),
-                "/debug/message", sw);
+                "/debug/message", sw, false);
         a(sw.toString()).shouldBeEqual("hello");
     }
 
@@ -42,7 +42,7 @@ public class DebugTagSpec  {
     @Test
     public void shouldPrintNull() {
         manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "simple"), "greeting", null),
-                "/debug/greeting", sw);
+                "/debug/greeting", sw, false);
         a(sw.toString()).shouldBeEqual("DebugTag: value 'print' is null!");
     }
 }

@@ -44,7 +44,7 @@ public class SelectTagSpec extends RequestSpec {
     public void shouldRejectIfListParameterMissing() {
         sw = new StringWriter();
         manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "simple", "restful", false)),
-                "/select/list_missing", sw);
+                "/select/list_missing", sw, false);
     }
 
 
@@ -53,7 +53,7 @@ public class SelectTagSpec extends RequestSpec {
         sw = new StringWriter();
         manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "simple", "restful", false),
                 "books", "Blah - this should really be a list"),  //<<--- -this is data passed to tag
-                "/select/index", sw);
+                "/select/index", sw, false);
     }
 
 
@@ -63,7 +63,7 @@ public class SelectTagSpec extends RequestSpec {
         sw = new StringWriter();
         manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "simple", "restful", false),
                 "books", list("The Hitchhiker's Guide to the Galaxy", "All Quiet on Western Front")),  //<<--- -this is data passed to tag
-                "/select/index", sw);
+                "/select/index", sw, false);
 
     }
 
@@ -74,7 +74,7 @@ public class SelectTagSpec extends RequestSpec {
         sw = new StringWriter();
         manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "simple", "restful", false),
                 "books", list(new SelectOption(1, "The Hitchhiker's Guide to the Galaxy"), new SelectOption(2, "All Quiet on Western Front", true))),  //<<--- -this is data passed to tag
-                "/select/index", sw);
+                "/select/index", sw, false);
 
         a(sw.toString()).shouldBeEqual("<select><option value=\"1\">The Hitchhiker's Guide to the Galaxy</option><option value=\"2\" selected=\"true\">All Quiet on Western Front</option></select>");
     }
@@ -84,7 +84,7 @@ public class SelectTagSpec extends RequestSpec {
         sw = new StringWriter();
         manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "simple", "restful", false),
                         "books", list(new SelectOption(1, "The Hitchhiker's Guide to the Galaxy"), new SelectOption(2, "All Quiet on Western Front", true))),  //<<--- -this is data passed to tag
-                "/select/html5", sw);
+                "/select/html5", sw, false);
 
         a(sw.toString()).shouldBeEqual("<select data-attributes='hello'><option value=\"1\">The Hitchhiker's Guide to the Galaxy</option><option value=\"2\" selected=\"true\">All Quiet on Western Front</option></select>");
     }
@@ -94,7 +94,7 @@ public class SelectTagSpec extends RequestSpec {
         sw = new StringWriter();
         manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "simple", "restful", false),
                 "books", list(new SelectOption(1, "The Hitchhiker's Guide to the Galaxy"), new SelectOption(2, "All Quiet on Western Front", true))),  //<<--- -this is data passed to tag
-                "/select/has_body", sw);
+                "/select/has_body", sw, false);
 
         a(sw.toString()).shouldBeEqual("<select><option value=\"3\">A Tale of Two Cities</option> " +
                 "<option value=\"1\">The Hitchhiker's Guide to the Galaxy</option><option value=\"2\" selected=\"true\">All Quiet on Western Front</option></select>");

@@ -28,7 +28,7 @@ import java.util.Map;
 public class MockTemplateManager extends TemplateManager {
     private Map values; String template, layout, format;
 
-    public void merge(Map values, String template, String layout, String format, Writer writer) {
+    public void merge(Map values, String template, String layout, String format, Writer writer, boolean customRoute) {
         this.values = values;
         this.template = template;
         this.layout = layout;
@@ -49,7 +49,7 @@ public class MockTemplateManager extends TemplateManager {
 
     public void setServletContext(ServletContext ctx) {}
 
-    public void merge(Map values, String template, Writer writer) {
+    public void merge(Map values, String template, Writer writer, boolean customRoute) {
 
     }
 

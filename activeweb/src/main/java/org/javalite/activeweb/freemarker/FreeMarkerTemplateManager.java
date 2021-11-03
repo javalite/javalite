@@ -16,10 +16,8 @@ limitations under the License.
 package org.javalite.activeweb.freemarker;
 
 import freemarker.template.*;
-import org.javalite.activeweb.InitException;
-import org.javalite.activeweb.TemplateManager;
-import org.javalite.activeweb.ViewException;
-import org.javalite.activeweb.ViewMissingException;
+import freemarker.template.Configuration;
+import org.javalite.activeweb.*;
 import org.javalite.app_config.AppConfig;
 import org.javalite.common.Util;
 import org.slf4j.Logger;
@@ -70,14 +68,14 @@ public class FreeMarkerTemplateManager extends TemplateManager {
     }
 
     @Override
-    public void merge(Map<String, Object> values, String template, Writer writer) {
-        merge(values, template, defaultLayout, null, writer);
+    public void merge(Map<String, Object> values, String template, Writer writer, boolean customRoute) {
+        merge(values, template, defaultLayout, null, writer, customRoute);
     }
 
     @Override
-    public void merge(Map<String, Object> input, String template, String layout, String format, Writer writer) {
+    public void merge(Map<String, Object> input, String template, String layout, String format, Writer writer, boolean customRoute) {
 
-        String templateName = blank(format)? template + ".ftl" : template + "." + format + ".ftl";
+        String templateName = blank(format) || customRoute ? template + ".ftl" : template + "." + format + ".ftl";
         try {
             logger.info("Rendering template: " + getTemplateDescription(templateName, layout));
             if(AppConfig.isInDevelopment()){

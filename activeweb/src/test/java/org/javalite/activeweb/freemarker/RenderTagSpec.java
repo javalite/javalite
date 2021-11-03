@@ -44,14 +44,14 @@ public class RenderTagSpec implements JSpecSupport {
     @Test(expected = ViewException.class)
     public void shouldThrowExceptionIfPartialAttributeMissing() {
         StringWriter sw = new StringWriter();
-        manager.merge(new HashMap(), "/partial/main_missing_partial_attribute", sw);
+        manager.merge(new HashMap(), "/partial/main_missing_partial_attribute", sw, false);
     }
 
     @Test
     public void shouldRenderPartialRelativeToContainerTemplate() {
 
         StringWriter sw = new StringWriter();
-        manager.merge(map("fruit", "apple"), "/partial/main_with_simple_partial", sw);
+        manager.merge(map("fruit", "apple"), "/partial/main_with_simple_partial", sw, false);
         a(sw.toString()).shouldBeEqual("and the fruit is: apple ");
     }
 
@@ -59,7 +59,7 @@ public class RenderTagSpec implements JSpecSupport {
     public void shouldRenderSharedPartial() {
 
         StringWriter sw = new StringWriter();
-        manager.merge(map("fruit", "apple"), "/partial/main_with_shared_partial", sw);
+        manager.merge(map("fruit", "apple"), "/partial/main_with_shared_partial", sw, false);
         a(sw.toString()).shouldBeEqual("and the fruit is: apple ");
     }
 
@@ -68,7 +68,7 @@ public class RenderTagSpec implements JSpecSupport {
     public void shouldRejectIncorrectlyNamedSharedPartial() {
 
         StringWriter sw = new StringWriter();
-        manager.merge(map("fruit", "apple"), "/partial/main_with_incorrectly_named_shared_partial", sw);
+        manager.merge(map("fruit", "apple"), "/partial/main_with_incorrectly_named_shared_partial", sw, false);
         a(sw.toString()).shouldBeEqual("and the fruit is: apple");
 
     }
@@ -76,14 +76,14 @@ public class RenderTagSpec implements JSpecSupport {
     @Test
     public void shouldRenderPartialWithCollection() {
         StringWriter sw = new StringWriter();
-        manager.merge(map("fruits", li("apple", "prune", "pear")), "/partial/main_with_collection_partial", sw);
+        manager.merge(map("fruits", li("apple", "prune", "pear")), "/partial/main_with_collection_partial", sw, false);
         a(sw.toString()).shouldBeEqual("and the fruit is: apple and the fruit is: prune and the fruit is: pear ");
     }
 
     @Test
     public void shouldRenderPartialWithCollectionAndCounter() {
         StringWriter sw = new StringWriter();
-        manager.merge(map("fruits", li("apple", "prune", "pear")), "/partial/main_with_collection_partial_and_counter", sw);
+        manager.merge(map("fruits", li("apple", "prune", "pear")), "/partial/main_with_collection_partial_and_counter", sw, false);
         a(sw.toString()).shouldBeEqual("and the fruit is: apple and the count is: 0   " +
                 "and the fruit is: prune and the count is: 1   " +
                 "and the fruit is: pear and the count is: 2   ");
@@ -93,14 +93,14 @@ public class RenderTagSpec implements JSpecSupport {
     public void shouldRenderSharedPartialWithCollection(){
 
         StringWriter sw = new StringWriter();
-        manager.merge(map("fruits", li("apple", "prune", "pear")), "/partial/main_with_shared_collection_partial", sw);
+        manager.merge(map("fruits", li("apple", "prune", "pear")), "/partial/main_with_shared_collection_partial", sw, false);
         a(sw.toString()).shouldBeEqual("and the fruit is: apple and the fruit is: prune and the fruit is: pear ");
     }
 
     @Test
     public void shouldRenderSpacerWithCollectionPartial(){
         StringWriter sw = new StringWriter();
-        manager.merge(map("fruits", li("apple", "prune", "pear")), "/partial/main_with_collection_partial_and_spacer", sw);
+        manager.merge(map("fruits", li("apple", "prune", "pear")), "/partial/main_with_collection_partial_and_spacer", sw, false);
         a(sw.toString()).shouldBeEqual("and the fruit is: apple " +
                 "=========================== " +
                 "and the fruit is: prune " +
@@ -111,14 +111,14 @@ public class RenderTagSpec implements JSpecSupport {
     @Test
     public void shouldPassSimpleParameterToPartial(){
         StringWriter sw = new StringWriter();
-        manager.merge(map("fruit_name", "pear"), "/partial/main_with_simple_partial_and_parameter", sw);
+        manager.merge(map("fruit_name", "pear"), "/partial/main_with_simple_partial_and_parameter", sw, false);
         a(sw.toString()).shouldEqual("and the fruit name is: pear");
     }
 
     @Test
     public void shouldPassSimpleParameterToPartialWithCollection(){
         StringWriter sw = new StringWriter();
-        manager.merge(map("fruits", li("apple", "prune", "pear")), "/partial/main_with_collection_and_simple_parameters_for_partial", sw);
+        manager.merge(map("fruits", li("apple", "prune", "pear")), "/partial/main_with_collection_and_simple_parameters_for_partial", sw, false);
         a(sw.toString()).shouldEqual("and the fruit is: apple, berry: blueberry " +
                 "and the fruit is: prune, berry: blueberry " +
                 "and the fruit is: pear, berry: blueberry");
@@ -128,7 +128,7 @@ public class RenderTagSpec implements JSpecSupport {
     @Test
     public void shouldCheckFirstAndLastWithCollection(){        
         StringWriter sw = new StringWriter();
-        manager.merge(map("fruits", li("apple", "prune", "pear")), "/partial/main_with_collection_partial_with_first_and_last", sw);
+        manager.merge(map("fruits", li("apple", "prune", "pear")), "/partial/main_with_collection_partial_with_first_and_last", sw, false);
         a(sw.toString()).shouldBeEqual( "and the fruit is: apple, first: true, last: false " +
                                         "and the fruit is: prune, first: false, last: false " +
                                         "and the fruit is: pear, first: false, last: true");

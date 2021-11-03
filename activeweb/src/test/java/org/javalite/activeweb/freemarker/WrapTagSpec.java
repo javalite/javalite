@@ -41,28 +41,28 @@ public class WrapTagSpec {
     @Test
     public void shouldRenderWithBasicConfig() {
         StringWriter sw = new StringWriter();
-        manager.merge(Collections.EMPTY_MAP, "/wrap/template_basic", sw);
+        manager.merge(Collections.EMPTY_MAP, "/wrap/template_basic", sw, false);
         it(sw.toString()).shouldBeEqual("[HEADER]inner content[FOOTER]");
     }
 
     @Test
     public void shouldRenderWithPageContent() {
         StringWriter sw = new StringWriter();
-        manager.merge(map("page_content", "page value"), "/wrap/template_basic_with_page_content", sw);
+        manager.merge(map("page_content", "page value"), "/wrap/template_basic_with_page_content", sw, false);
         it(sw.toString()).shouldBeEqual("[HEADER]page value[FOOTER]");
     }
 
     @Test
     public void shouldRenderWithParam() {
         StringWriter sw = new StringWriter();
-        manager.merge(Collections.EMPTY_MAP, "/wrap/template_basic_with_param", sw);
+        manager.merge(Collections.EMPTY_MAP, "/wrap/template_basic_with_param", sw, false);
         it(sw.toString()).shouldBeEqual("[HEADER]inner content[FOOTER]simple value");
     }
 
     @Test
     public void shouldRenderWithoutPlaceholder() {
         StringWriter sw = new StringWriter();
-        manager.merge(Collections.EMPTY_MAP, "/wrap/template_basic_without_placeholder", sw);
+        manager.merge(Collections.EMPTY_MAP, "/wrap/template_basic_without_placeholder", sw, false);
         it(sw.toString()).shouldBeEqual("[HEADER] [FOOTER]");
     }
 

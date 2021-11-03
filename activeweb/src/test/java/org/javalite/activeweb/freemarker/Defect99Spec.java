@@ -49,7 +49,7 @@ public class Defect99Spec extends RequestSpec {
             SystemStreamUtil.replaceOut();
             manager.merge(map("context_path", "/bookstore", "activeweb", map("controller", "simple", "restful", false),
                     "books", "Blah - this should really be a list"),  //<<--- -this is data passed to tag
-                    "/select/index", sw);
+                    "/select/index", sw, false);
             a(SystemStreamUtil.getSystemOut()).shouldContain("Failed to render template: 'src/test/views/select/index.ftl', without layout");
             SystemStreamUtil.restoreSystemOut();
         } catch (Exception ignore) {}

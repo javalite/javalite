@@ -23,40 +23,40 @@ public class MessageTagSpec extends RequestSpec {
 
     @Test
     public void shouldRenderValueByKey() {
-        manager.merge(null, "/messages/simple", sw);
+        manager.merge(null, "/messages/simple", sw, false);
         a(sw.toString()).shouldBeEqual("Hello!");
     }
 
     //<@message key="the.message.key" param1="x", param2="y"/>
     @Test
     public void shouldRenderValueByKeyWithParameters() {
-        manager.merge(null, "/messages/simple_with_params", sw);
+        manager.merge(null, "/messages/simple_with_params", sw, false);
         a(sw.toString()).shouldBeEqual("Meeting will take place on Wednesday at 2:00 PM");
     }
 
     @Test
     public void shouldNotFailIfKeyMissing() {
-        manager.merge(null, "/messages/key_does_not_exist", sw);
+        manager.merge(null, "/messages/key_does_not_exist", sw, false);
         a(sw.toString()).shouldBeEqual("does_not_exist");
     }
 
     @Test
     public void shouldFailGracefullyIfKeyMissing() {
-        manager.merge(null, "/messages/key_missing", sw);
+        manager.merge(null, "/messages/key_missing", sw, false);
         a(sw.toString()).shouldBeEqual("<span style=\"display:none\">you failed to supply key for this message tag</span>");
     }
 
     @Test
     public void shouldPickupLocaleFromRequest() {
         request.addPreferredLocale(Locale.FRANCE);
-        manager.merge(null, "/messages/simple", sw);
+        manager.merge(null, "/messages/simple", sw, false);
         a(sw.toString()).shouldBeEqual("Bonjour!");
     }
 
     @Test
     public void shouldOverrideLocaleInTemplate() {
         request.addPreferredLocale(Locale.FRANCE);
-        manager.merge(null, "/messages/simple_german", sw);
+        manager.merge(null, "/messages/simple_german", sw, false);
         a(sw.toString()).shouldBeEqual("Halo!"); //<< this is German
     }
 }

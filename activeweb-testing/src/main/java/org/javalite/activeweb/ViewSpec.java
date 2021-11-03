@@ -105,7 +105,7 @@ public abstract class ViewSpec extends SpecHelper {
 
         ParamCopy.copyInto(values);
 
-        manager.merge(values, templateName, stringWriter);
+        manager.merge(values, templateName, stringWriter, false);
         return stringWriter.toString();
     }
 

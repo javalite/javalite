@@ -214,6 +214,8 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
+        String out = getSystemOut();
+
         the(getSystemOut()).shouldContain("Failed to find an action method for action: 'hello' in controller: app.controllers.HelloController");
 
         String html = response.getContentAsString();

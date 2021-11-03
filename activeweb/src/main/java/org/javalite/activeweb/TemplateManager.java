@@ -31,16 +31,17 @@ public abstract class TemplateManager {
      * @param templateName name of template in format: <code>dir/template</code> without
      * file extension. This is to support multiple template technologies in the future.
      * @param writer Writer to write results to.
+     * @param customRoute true if the route is custom. In  this case, the template manager will not try to guess a template name based on a format
      *
      * @param layout name of layout, <code>null</code> if no layout is needed.
      */
-    public abstract void merge(Map<String, Object> values, String templateName, String layout, String format, Writer writer);
+    public abstract void merge(Map<String, Object> values, String templateName, String layout, String format, Writer writer, boolean customRoute);
 
 
     /**
-     * Same as {@link #merge(java.util.Map, String, String, String, java.io.Writer)}, but uses default layout and default format (html).
+     * Same as {@link #merge(java.util.Map, String, String, String, java.io.Writer, boolean customRoute)}, but uses default layout and default format (html).
      */
-    public abstract void merge(Map<String, Object> values, String template, Writer writer);
+    public abstract void merge(Map<String, Object> values, String template, Writer writer, boolean customRoute);
 
     /**
      * A template manager might need a context to be able to load templates from it.

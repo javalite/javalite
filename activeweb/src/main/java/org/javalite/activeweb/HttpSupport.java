@@ -1266,7 +1266,7 @@ public class HttpSupport implements RequestAccess {
      */
     protected String merge(String template, Map values){
         StringWriter stringWriter = new StringWriter();
-        Configuration.getTemplateManager().merge(values, template, stringWriter);
+        Configuration.getTemplateManager().merge(values, template, stringWriter, RequestContext.getRoute().isCustom());
         return stringWriter.toString();
     }
 

@@ -47,7 +47,7 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
     @Test
     public void shouldOverrideDefaultFreeMarkerNumberFormat() {
         StringWriter sw = new StringWriter();
-        manager.merge(map("number", 1234567), "/partial/number_format", sw);
+        manager.merge(map("number", 1234567), "/partial/number_format", sw, false);
         a(sw.toString()).shouldBeEqual("hello: 1234567");
 
     }
@@ -60,7 +60,7 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
         values.put("name", "Jim");
 
         StringWriter sw = new StringWriter();
-        manager.merge(values, "/abc_controller/test_template", sw);
+        manager.merge(values, "/abc_controller/test_template", sw, false);
         String generated = sw.toString();
 
         a(XPathHelper.selectText("//body/div[1]", generated)).shouldEqual("this is a header");
@@ -76,7 +76,7 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
         values.put("name", "Jim");
 
         StringWriter sw = new StringWriter();
-        manager.merge(values, "/abc_controller/contains_content_for", sw);
+        manager.merge(values, "/abc_controller/contains_content_for", sw, false);
         String generated = sw.toString();
 
         a(XPathHelper.selectText("//title", generated)).shouldEqual("sample content");
@@ -90,7 +90,7 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
         values.put("name", "Jim");
 
         StringWriter sw = new StringWriter();
-        manager.merge(values, "/abc_controller/contains_blank_content_for", sw);
+        manager.merge(values, "/abc_controller/contains_blank_content_for", sw, false);
         String generated = sw.toString();
         a(XPathHelper.selectText("//title", generated)).shouldEqual("");
     }
@@ -107,7 +107,7 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
         ByteArrayOutputStream bin = new ByteArrayOutputStream();
         PrintStream err = new PrintStream(bin);
         System.setErr(err);
-        manager.merge(values, "/abc_controller/does_not_contain_content_for", sw);
+        manager.merge(values, "/abc_controller/does_not_contain_content_for", sw, false);
         String generated = sw.toString();
 
         err.flush();
@@ -124,7 +124,7 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
 
         StringWriter sw = new StringWriter();
 
-        manager.merge(values, "/abc_controller/multiple_content_for", sw);
+        manager.merge(values, "/abc_controller/multiple_content_for", sw, false);
         String generated = sw.toString();
         a(XPathHelper.count("//script", generated)).shouldEqual(3);
     }
@@ -136,7 +136,7 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
 
         StringWriter sw = new StringWriter();
 
-        manager.merge(new HashMap<>(), "/formatting/index", sw);
+        manager.merge(new HashMap<>(), "/formatting/index", sw, false);
         String generated = sw.toString();
 
         a(generated).shouldContain("default format - format value missing");
@@ -146,7 +146,7 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
     public void shouldSelectTemplateForProvidedFormat(){
 
         StringWriter sw = new StringWriter();
-        manager.merge(new HashMap<>(), "/formatting/index", "/layouts/default_layout", "xml", sw);
+        manager.merge(new HashMap<>(), "/formatting/index", "/layouts/default_layout", "xml", sw, false);
         a(sw.toString()).shouldContain("XML");
     }
 
@@ -154,7 +154,7 @@ public class FreeMarkerTemplateManagerSpec implements JSpecSupport {
     public void shouldThrowCorrectExceptionIfPartialNotFound(){
         StringWriter sw = new StringWriter();
         try {
-            manager.merge(new HashMap<>(), "/partial/missing-partial", sw);
+            manager.merge(new HashMap<>(), "/partial/missing-partial", sw, false);
         } catch (Exception e) {
             the(e.getMessage()).shouldContain("Failed to render template: '/partial/missing-partial.ftl' without layout. Template not found for name \"/partial/_missing.ftl\".");
         }

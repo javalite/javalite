@@ -16,6 +16,7 @@ limitations under the License.
 
 package org.javalite.activeweb;
 
+import app.controllers.MainController;
 import app.controllers.WildcardRouteController;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,6 +69,25 @@ public class RouterWildcardSpec extends RequestSpec {
         request.setServletPath("/greeting/1/2/3/4/tada");
         execDispatcher();
         a(responseContent()).shouldBeEqual("1/2/3/4/tada");
+    }
+    @Test
+    public void shouldNotInterpretTemplateNameForWildCardRoutes(){
+
+
+        routeConfig = new AbstractRouteConfig() {
+            public void init(AppContext appContext) {
+                strictMode();
+                route("/*path").to(MainController.class).action("index");
+            }
+        };
+        request.setServletPath("/access/one.two.three");
+        request.setMethod("GET");
+        execDispatcher();
+
+        System.out.println("Response content: " + responseContent());
+
+        the(responseContent()).shouldContain("hello");
+
     }
 
     @Test
