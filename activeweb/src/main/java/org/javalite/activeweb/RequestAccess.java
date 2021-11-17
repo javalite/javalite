@@ -286,7 +286,7 @@ public interface RequestAccess {
                 valuesList = asList(values);
             }
         } else {
-            valuesList = values == null? new ArrayList<String>() : list(values);
+            valuesList = values == null? new ArrayList<>() : list(values);
             String userSegment = RequestContext.getRequestVo().getUserSegments().get(name);
             if(userSegment != null){
                 valuesList.add(userSegment);

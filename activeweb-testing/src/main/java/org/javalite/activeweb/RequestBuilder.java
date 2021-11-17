@@ -16,14 +16,17 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import com.google.inject.Injector;
-import org.springframework.mock.web.*;
-
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static org.javalite.activeweb.ControllerFactory.createControllerInstance;
 import static org.javalite.activeweb.ControllerFactory.getControllerClassName;
+import static org.javalite.common.Collections.list;
 import static org.javalite.test.jspec.JSpec.a;
 
 /**
@@ -34,7 +37,7 @@ import static org.javalite.test.jspec.JSpec.a;
 public class RequestBuilder {
     private static final String MULTIPART = "multipart/form-data";
 
-    private Map<String, Object> values = new HashMap<>();
+    private Map<String, List> values = new HashMap<>();
     private Map<String, String> headers = new HashMap<>();
     private String contentType;
     private byte[] content;
@@ -152,7 +155,7 @@ public class RequestBuilder {
             List list = (List) value;
             values.put(name, list);
         }else{
-            values.put(name, value.toString());
+            values.put(name, list(value));
         }
         return this;
     }
@@ -170,7 +173,7 @@ public class RequestBuilder {
 
         if(name == null) throw new IllegalArgumentException("name can't be null");
 
-        values.put(name, "");
+        values.put(name, list(""));
         return this;
     }
 
@@ -400,8 +403,10 @@ public class RequestBuilder {
             request.setMethod(method.toString());
         }
         addHeaders(request);
-        addParameterValues(request);
+        addParameterValues(values, request);
+        addParameterValuesFromQueryString(request);
     }
+
 
     private void addHeaders(MockHttpServletRequest request) {        
         for(String header: headers.keySet()){
@@ -418,19 +423,41 @@ public class RequestBuilder {
         request.setCookies(arr);
     }
 
-    private void addParameterValues(MockHttpServletRequest httpServletRequest) {
-        for (String key : values.keySet()) {
-            Object value = values.get(key);
-            if(value instanceof List){
-                List<String> strings = new ArrayList<>(((List) value).size());
-                for (Object v: ((List)value)) {
-                    strings.add(v.toString());
-                }
-                httpServletRequest.addParameter(key, strings.toArray(new String[]{}));
-            }else{
-                httpServletRequest.addParameter(key, value.toString());
+    private void addParameterValues(Map<String, List> valuesMap, MockHttpServletRequest httpServletRequest) {
+        for (String key : valuesMap.keySet()) {
+            Object value = valuesMap.get(key);
+            List<String> strings = new ArrayList<>(((List) value).size());
+            for (Object v: ((List)value)) {
+                strings.add(v.toString());
             }
+            httpServletRequest.addParameter(key, strings.toArray(new String[]{}));
         }
+    }
+
+
+    private void addParameterValuesFromQueryString(MockHttpServletRequest request) {
+        String queryString = request.getQueryString();
+        if(queryString != null){
+            Map<String, List> params = splitQuery(queryString);
+            addParameterValues(params, request);
+        }
+    }
+
+    // below is borrowed from: https://stackoverflow.com/questions/13592236/parse-a-uri-string-into-name-value-collection
+    private Map<String, List> splitQuery(String  uri) {
+            final Map<String, List> query_pairs = new LinkedHashMap<>();
+            final String[] pairs = uri.split("&");
+            for (String pair : pairs) {
+                final int idx = pair.indexOf("=");
+                final String key = idx > 0 ? URLDecoder.decode(pair.substring(0, idx), StandardCharsets.UTF_8) : pair;
+                if (!query_pairs.containsKey(key)) {
+                    query_pairs.put(key, new LinkedList<String>());
+                }
+                final String value = idx > 0 && pair.length() > idx + 1 ? URLDecoder.decode(pair.substring(idx + 1), StandardCharsets.UTF_8) : null;
+                query_pairs.get(key).add(value);
+            }
+            return query_pairs;
+
     }
 
 

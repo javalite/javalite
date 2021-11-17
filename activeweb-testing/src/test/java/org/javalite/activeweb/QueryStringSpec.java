@@ -41,9 +41,34 @@ public class QueryStringSpec extends AppIntegrationSpec {
 
     @Test
     public void shouldPassQueryStringFromTest(){
-
         controller("query_string").queryString("first_name=John&last_name=Travolta").get("index");
         a(assigns().get("query_string")).shouldBeEqual("first_name=John&last_name=Travolta");
-
     }
+
+    @Test
+    public void shouldPassQueryAndParamsFromTest(){
+        controller("query_string")
+                .queryString("first_name=John")
+                .params("last_name", "Doe")
+                .get("get_params");
+
+        the(responseContent()).shouldBeEqual("Name: John Doe");
+    }
+
+    @Test
+    public void shouldPassMultipleQueryParameters(){
+        controller("query_string")
+                .queryString("first=2&last=3")
+                .get("multiple");
+        the(responseContent()).shouldBeEqual("first:2 last: 3");
+    }
+
+    @Test
+    public void shouldPassSingleQueryParameterWithDifferentValues(){
+        controller("query_string")
+                .queryString("num=2&num=3")
+                .get("diff-values");
+        the(responseContent()).shouldBeEqual("num:[2, 3]");
+    }
+
 }

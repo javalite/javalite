@@ -24,7 +24,18 @@ import org.javalite.activeweb.AppController;
 public class QueryStringController extends AppController {
 
     public void index(){
-
         view("query_string", queryString());
+    }
+
+    public void getParams(){
+        respond("Name: " + param("first_name") + " " + param("last_name") );
+    }
+
+    public void multiple(){
+        respond("first:" + param("first") + " last: " + param("last"));
+    }
+
+    public void diffValues(){
+        respond("num:" + params("num"));
     }
 }
