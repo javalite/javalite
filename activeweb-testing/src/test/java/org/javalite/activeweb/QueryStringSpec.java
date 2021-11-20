@@ -71,4 +71,13 @@ public class QueryStringSpec extends AppIntegrationSpec {
         the(responseContent()).shouldBeEqual("num:[2, 3]");
     }
 
+    @Test
+    public void shouldProcessParamWithNoValue(){
+        controller("/query_string")
+                .queryString("p1")
+                .get("no_val");
+
+        the(responseContent()).shouldBeEqual("blank");
+    }
+
 }

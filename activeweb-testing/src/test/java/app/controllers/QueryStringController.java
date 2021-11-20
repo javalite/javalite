@@ -38,4 +38,12 @@ public class QueryStringController extends AppController {
     public void diffValues(){
         respond("num:" + params("num"));
     }
+
+    public void noVal(){
+        if(blank("p1")){
+            respond("blank");
+        }else {
+            respond(param("p1"));
+        }
+    }
 }

@@ -428,7 +428,7 @@ public class RequestBuilder {
             Object value = valuesMap.get(key);
             List<String> strings = new ArrayList<>(((List) value).size());
             for (Object v: ((List)value)) {
-                strings.add(v.toString());
+                strings.add(v == null? "" : v.toString());
             }
             httpServletRequest.addParameter(key, strings.toArray(new String[]{}));
         }
