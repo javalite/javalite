@@ -63,7 +63,7 @@ public class RequestArgumentControllerModelSpec extends RequestSpec {
     public void should_convert_JSON_to_Model() throws IOException, ServletException {
         request.setServletPath("/request_argument/get_total");
         request.setMethod("GET");
-        request.setContentType("application/json");
+        request.setContentType("application/json; charset=utf-8");
 
         request.setContent("{ \"amount\" : 50, \"total\" : 30  }".getBytes());
         dispatcher.doFilter(request, response, filterChain);

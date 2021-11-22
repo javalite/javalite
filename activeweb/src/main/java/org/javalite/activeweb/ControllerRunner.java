@@ -147,7 +147,7 @@ class ControllerRunner {
     @SuppressWarnings("unchecked")
     private Object getRequestObject(Route route) throws IllegalAccessException, InstantiationException, IOException, InvocationTargetException, NoSuchMethodException {
         String contentType = RequestContext.getHttpRequest().getContentType();
-        boolean jsonRequest = contentType != null && contentType.equals("application/json");
+        boolean jsonRequest = contentType != null && contentType.toLowerCase().contains("application/json");
         Map<String, String> requestMap;
         InputStream in = route.getController().getRequestInputStream();
         String requestBody = Util.read(in);
