@@ -9,6 +9,7 @@ import java.util.Map;
 
 import static org.javalite.common.Collections.map;
 import static org.javalite.json.JSONHelper.toJsonString;
+import static org.javalite.json.JSONHelper.toMap;
 import static org.javalite.test.jspec.JSpec.*;
 
 /**
@@ -46,7 +47,7 @@ public class JsonHelperSpec {
 
     @Test
     public void shouldConvertObject2JSONPrettyPrintString() {
-        Map m = JSONHelper.toMap("{ \"firstName\" : \"John\",\"lastName\" : \"Smith\", \"age\": 22, \"1\": 1 }");
+        Map m = toMap("{ \"firstName\" : \"John\",\"lastName\" : \"Smith\", \"age\": 22, \"1\": 1 }");
         String pretty = toJsonString(m, true);
         a(pretty).shouldBeEqual("{" + System.lineSeparator() +
                 "  \"1\" : 1," + System.lineSeparator() +
@@ -67,7 +68,7 @@ public class JsonHelperSpec {
 
     @Test
     public void shouldConvertMap2Map() {
-        Map m = JSONHelper.toMap("{ \"name\" : \"John\", \"age\": 22 }");
+        Map m = toMap("{ \"name\" : \"John\", \"age\": 22 }");
         $(m.size()).shouldBeEqual(2);
         $(m.get("name")).shouldBeEqual("John");
         $(m.get("age")).shouldBeEqual(22);
@@ -138,7 +139,7 @@ public class JsonHelperSpec {
         }
 
         String result = JSONHelper.toJsonObject("name", "Joe", "age", 23, "dob", new Date());
-        Map mapResult = JSONHelper.toMap(result);
+        Map mapResult = toMap(result);
         the(mapResult.get("name")).shouldBeEqual("Joe");
         the(mapResult.get("age")).shouldBeEqual(23);
         the(mapResult.get("dob")).shouldNotBeNull();
@@ -147,7 +148,7 @@ public class JsonHelperSpec {
     @Test
     public void shouldConvertNull() {
         String json = JSONHelper.toJsonObject("null", null);
-        the(JSONHelper.toMap(json).get("null")).shouldBeNull();
+        the(toMap(json).get("null")).shouldBeNull();
     }
 
     @Test
@@ -161,7 +162,7 @@ public class JsonHelperSpec {
 
     @Test
     public void shouldParseJsonToMap() {
-        Map map= JSONHelper.toMap(Util.readResource("/john.json"));
+        Map map= toMap(Util.readResource("/john.json"));
         the(map.get("first_name")).shouldBeEqual("John");
         the(map.get("last_name")).shouldBeEqual("Doe");
     }
@@ -175,7 +176,7 @@ public class JsonHelperSpec {
 
     @Test
     public void shouldParseNull() {
-        Map person= JSONHelper.toMap(Util.readResource("/contains_null.json"));
+        Map person= toMap(Util.readResource("/contains_null.json"));
         the(person.get("name")).shouldBeEqual("John");
         the(person.get("adult")).shouldBeNull();
     }
@@ -187,6 +188,15 @@ public class JsonHelperSpec {
         String json = JSONHelper.toJsonString(map);
         the(json).shouldContain("\"name\":\"John\"");
         the(json).shouldContain("\"married\":null");
+    }
+    
+    record Human(String firstName, String lastName){}
+    
+    @Test
+    public void shouldSerializeJavaRecord(){
+        Map hm = toMap(toJsonString(new Human("Joe", "Shmoe")));
+        the(hm.get("firstName")).shouldBeEqual("Joe");
+        the(hm.get("lastName")).shouldBeEqual("Shmoe");
     }
 }
 
