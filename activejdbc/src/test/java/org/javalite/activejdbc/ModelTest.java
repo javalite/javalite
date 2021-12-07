@@ -38,6 +38,10 @@ import static org.javalite.common.Collections.*;
 import static org.javalite.common.Convert.toSqlDate;
 
 
+/**
+ * This class was written in the infancy of JavaLite and contains the most basic tests for ActiveJDBC.
+ *  More tests can be found in other classes in this package and subpackages.
+ */
 public class ModelTest extends ActiveJDBCTest {
 
     @Test

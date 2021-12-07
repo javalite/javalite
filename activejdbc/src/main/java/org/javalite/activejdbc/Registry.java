@@ -109,7 +109,9 @@ public enum Registry {
 
     synchronized void init(String dbName) {
 
+        LOGGER.info("Starting to get metadata from the database...");
         if (staticMetadataStatus == STATIC_METADATA_LOADED || initedDbs.contains(dbName)) {
+            LOGGER.info("Metadata  is already processed, exiting...");
             return;
         } else {
             initedDbs.add(dbName);
