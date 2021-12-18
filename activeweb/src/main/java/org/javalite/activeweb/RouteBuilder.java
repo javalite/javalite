@@ -16,6 +16,7 @@ limitations under the License.
 package org.javalite.activeweb;
 
 
+import org.javalite.activeweb.websockets.AppEndpoint;
 import org.javalite.common.Util;
 
 import java.util.ArrayList;

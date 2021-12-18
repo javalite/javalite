@@ -107,10 +107,8 @@ public class RequestDispatcher implements Filter {
 
             logger.debug("Loaded routes from: " + routeConfigClassName);
 
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | ConfigurationException e) {
             throw e;
-        }catch(ConfigurationException e){
-            throw  e;
         } catch (Exception e) {
             logger.debug("Did not find custom routes. Going with built in defaults: " + getCauseMessage(e));
         }
