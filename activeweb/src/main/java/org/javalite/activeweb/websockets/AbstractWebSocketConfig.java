@@ -1,30 +1,25 @@
 package org.javalite.activeweb.websockets;
 
 
-import org.javalite.activeweb.AppController;
-import org.javalite.activeweb.RouteBuilder;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractWebSocketConfig {
 
-    private List<Mapping> mappings = new ArrayList<>();
+    private List<EndpointMapping> mappings = new ArrayList<>();
 
     protected  abstract void init();
 
-    public Mapping route(String uri){
-        return new Mapping(uri);
+    public EndpointMapping route(String uri){
+        return new EndpointMapping(uri);
     }
-
-    protected class Mapping<T extends  AppEndpoint> {
+    public class EndpointMapping {
         private final String uri;
         private Class<? extends AppEndpoint> endpointClass;
 
-        private  Mapping(String uri) {
+        private  EndpointMapping(String uri) {
             this.uri = uri;
         }
-
 
         public <T extends AppEndpoint> void to(Class<T> endpointClass) {
 
@@ -41,7 +36,7 @@ public abstract class AbstractWebSocketConfig {
         }
     }
 
-    protected final List<Mapping> getMappings() {
+    protected final List<EndpointMapping> getMappings() {
         return mappings;
     }
 

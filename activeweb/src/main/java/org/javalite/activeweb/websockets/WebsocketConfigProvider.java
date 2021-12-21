@@ -1,5 +1,6 @@
 package org.javalite.activeweb.websockets;
 
+import org.javalite.activeweb.Configuration;
 import org.javalite.activeweb.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,12 +27,13 @@ public class WebsocketConfigProvider implements ServerApplicationConfig {
             Class<?> wsClass = Class.forName(configClassName);
             AbstractWebSocketConfig config = (AbstractWebSocketConfig) wsClass.getDeclaredConstructor().newInstance();
             config.init();
-            List<AbstractWebSocketConfig.Mapping> mappings = config.getMappings();
+            List<AbstractWebSocketConfig.EndpointMapping> mappings = config.getMappings();
 
-            for (AbstractWebSocketConfig.Mapping mapping : mappings) {
+            for (AbstractWebSocketConfig.EndpointMapping mapping : mappings) {
                 LOGGER.info("Configuring a websocket" + mapping.getEndpointClass() + " for a path: " + mapping.getUri());
-                ServerEndpointConfig sec = ServerEndpointConfig.Builder.create(mapping.getEndpointClass(), mapping.getUri()).build();
+                ServerEndpointConfig sec = ServerEndpointConfig.Builder.create(EndpointDispatcher.class, mapping.getUri()).build();
                 result.add(sec);
+                Configuration.addEndpointMapping(mapping);
             }
         } catch (ClassNotFoundException ignore) {
             LOGGER.info("Failed to find an instance of " + configClassName + ", proceeding without WebSockets");

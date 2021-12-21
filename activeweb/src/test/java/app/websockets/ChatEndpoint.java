@@ -5,6 +5,10 @@ import org.javalite.activeweb.websockets.AppEndpoint;
 public class ChatEndpoint extends AppEndpoint {
     @Override
     public void onMessage(String message) {
-        sendMessage(" you sent: " + message);
+        try{
+            sendMessage(" you sent: " + message);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 }

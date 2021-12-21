@@ -21,11 +21,12 @@ import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
 import org.javalite.activeweb.controller_filters.HttpSupportFilter;
 import org.javalite.activeweb.freemarker.AbstractFreeMarkerConfig;
+import org.javalite.activeweb.websockets.AbstractWebSocketConfig;
+import org.javalite.activeweb.websockets.AppEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
@@ -38,6 +39,7 @@ import static org.javalite.common.Util.blank;
 public class Configuration {
     private static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
     private static Injector injector;
+    private static Map<String, Class<? extends AppEndpoint>> mappings =  new HashMap<>();
 
     static List<String> getControllerPackages() {
         return controllerPackages;
@@ -362,5 +364,13 @@ public class Configuration {
         }
 
         return controllerInfos;
+    }
+
+    public static void addEndpointMapping(AbstractWebSocketConfig.EndpointMapping mapping) {
+        mappings.put(mapping.getUri(), mapping.getEndpointClass());
+    }
+
+    public static Class<? extends AppEndpoint> getAppEndpointClass(String path){
+         return mappings.get(path);
     }
 }

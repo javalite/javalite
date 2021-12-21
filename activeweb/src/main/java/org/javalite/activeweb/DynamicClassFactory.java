@@ -19,9 +19,9 @@ import static org.javalite.common.Util.join;
  * User: evan
  * Date: 4/30/13
  */
-abstract public class DynamicClassFactory {
+public abstract class DynamicClassFactory {
 
-    static <T> T createInstance(String className, Class<T> expectedType) throws ClassLoadException {
+    public static <T> T createInstance(String className, Class<T> expectedType) throws ClassLoadException {
         try {
             Object o = getCompiledClass(className).getDeclaredConstructor().newInstance();
             T instance = expectedType.cast(o);
@@ -37,7 +37,7 @@ abstract public class DynamicClassFactory {
 
     private static Map<String, Class> cachedClasses = new HashMap<>();
 
-    static Class getCompiledClass(String className) throws ClassLoadException{
+    public static Class getCompiledClass(String className) throws ClassLoadException{
         Class theClass;
         try {
             if (Configuration.activeReload()) {
