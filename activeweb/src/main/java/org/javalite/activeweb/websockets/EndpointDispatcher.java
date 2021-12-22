@@ -22,8 +22,6 @@ public class EndpointDispatcher extends Endpoint implements MessageHandler.Whole
         try {
             Class<? extends AppEndpoint> clazz = Configuration.getAppEndpointClass(session.getRequestURI().getPath());
             endpoint = DynamicClassFactory.createInstance(clazz.getName(), AppEndpoint.class);
-
-
             endpoint.setSession(session);
             session.addMessageHandler(this);
 
