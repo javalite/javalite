@@ -143,6 +143,8 @@ public final class Convert {
             return new java.sql.Date(((java.util.Date) value).getTime());
         } else if (value instanceof Number) {
             return new java.sql.Date(((Number) value).longValue());
+        } else if (value instanceof LocalDateTime) {
+            return new java.sql.Date(((LocalDateTime) value).atZone(ZoneOffset.systemDefault()).toInstant().toEpochMilli());
         } else {
             try {
                 return java.sql.Date.valueOf(value.toString().trim());
@@ -374,7 +376,7 @@ public final class Convert {
      * @return instance of Timestamp.
      */
     public static java.sql.Timestamp toTimestamp(Object value) {
-       if (value == null) {
+        if (value == null) {
             return null;
         } else if (value instanceof java.sql.Timestamp) {
             return (java.sql.Timestamp) value;
@@ -382,7 +384,9 @@ public final class Convert {
            return new java.sql.Timestamp(((java.util.Date) value).getTime());
         } else if (value instanceof Number) {
            return new java.sql.Timestamp(((Number) value).longValue());
-       } else {
+        } else if (value instanceof LocalDateTime) {
+            return java.sql.Timestamp.valueOf((LocalDateTime)value);
+        } else {
            return java.sql.Timestamp.valueOf(value.toString().trim());
         }
     }
