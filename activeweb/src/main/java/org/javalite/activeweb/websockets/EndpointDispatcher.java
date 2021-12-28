@@ -5,9 +5,15 @@ import org.javalite.activeweb.DynamicClassFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpSession;
 import javax.websocket.*;
 
 
+/**
+ * Interesting advice: https://stackoverflow.com/questions/50114490/java-websocket-session-times-out-regardless-the-value-of-setmaxidletimeout
+ * Another: https://yishanhe.net/how-to-keep-your-websocket-session-alive/
+ * Java Client: https://github.com/eugenp/tutorials/tree/master/spring-boot-modules/spring-boot-client/src/main/java/com/baeldung/websocket/client
+ */
 public class EndpointDispatcher extends Endpoint implements MessageHandler.Whole<String> {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -23,6 +29,8 @@ public class EndpointDispatcher extends Endpoint implements MessageHandler.Whole
             Class<? extends AppEndpoint> clazz = Configuration.getAppEndpointClass(session.getRequestURI().getPath());
             endpoint = DynamicClassFactory.createInstance(clazz.getName(), AppEndpoint.class);
             endpoint.setSession(session);
+            HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
+            endpoint.setHttSession(httpSession);
             session.addMessageHandler(this);
 
         } catch (Exception e) {
@@ -32,12 +40,12 @@ public class EndpointDispatcher extends Endpoint implements MessageHandler.Whole
 
     @Override
     public final void onClose(Session session, CloseReason closeReason) {
-        endpoint.onClose(session, closeReason);
+        endpoint.onClose(closeReason);
     }
 
     @Override
     public final void onError(Session session, Throwable e) {
-        endpoint.onError(session, e);
+        endpoint.onError(e);
     }
 
     public void onMessage(String message){

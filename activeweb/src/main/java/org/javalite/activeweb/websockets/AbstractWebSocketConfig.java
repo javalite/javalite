@@ -4,6 +4,9 @@ package org.javalite.activeweb.websockets;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Subclasses MUST be called  WebSocketConfig...
+ */
 public abstract class AbstractWebSocketConfig {
 
     private List<EndpointMapping> mappings = new ArrayList<>();

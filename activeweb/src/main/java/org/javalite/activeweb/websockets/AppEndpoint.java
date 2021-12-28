@@ -3,14 +3,17 @@ package org.javalite.activeweb.websockets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpSession;
 import javax.websocket.CloseReason;
 import javax.websocket.Session;
 import java.io.IOException;
 
 public abstract class AppEndpoint {
-    private Logger logger = LoggerFactory.getLogger(getClass());
 
-    protected Session session;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private Session session;
+    private HttpSession httpSession;
 
 
     protected final void logInfo(String info){
@@ -44,14 +47,26 @@ public abstract class AppEndpoint {
     final void setSession(Session session) {
         this.session = session;
     }
+    public void setHttSession(HttpSession httpSession){
+        this.httpSession = httpSession;
+    }
 
     protected final void sendMessage(String message) throws IOException {
         session.getBasicRemote().sendText(message);
     }
 
+    public Session getSession() {
+        return session;
+    }
+
+    public HttpSession getHttpSession() {
+        return httpSession;
+    }
+
     public abstract void onMessage(String message);
 
-    public void onClose(Session session, CloseReason closeReason) {}
+    public void onClose(CloseReason closeReason) {}
 
-    public final void onError(Session session, Throwable thr) {}
+    public final void onError(Throwable throwable) {}
+
 }

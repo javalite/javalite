@@ -31,7 +31,12 @@ public class WebsocketConfigProvider implements ServerApplicationConfig {
 
             for (AbstractWebSocketConfig.EndpointMapping mapping : mappings) {
                 LOGGER.info("Configuring a websocket" + mapping.getEndpointClass() + " for a path: " + mapping.getUri());
-                ServerEndpointConfig sec = ServerEndpointConfig.Builder.create(EndpointDispatcher.class, mapping.getUri()).build();
+
+                ServerEndpointConfig sec = ServerEndpointConfig.Builder
+                        .create(EndpointDispatcher.class, mapping.getUri())
+                        .configurator(new WebSocketConfigurator())
+                        .build();
+
                 result.add(sec);
                 Configuration.addEndpointMapping(mapping);
             }
