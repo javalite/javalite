@@ -144,7 +144,7 @@ public final class Convert {
         } else if (value instanceof Number) {
             return new java.sql.Date(((Number) value).longValue());
         } else if (value instanceof LocalDateTime) {
-            return new java.sql.Date(((LocalDateTime) value).atZone(ZoneOffset.systemDefault()).toInstant().toEpochMilli());
+            return new java.sql.Date(toLong(value));
         } else {
             try {
                 return java.sql.Date.valueOf(value.toString().trim());
@@ -280,18 +280,24 @@ public final class Convert {
      * @return instance of java.sql.Time
      */
     public static java.sql.Time toTime(Object value) {
-       if (value == null) {
+        if (value == null) {
             return null;
         } else if (value instanceof java.sql.Time) {
             return (java.sql.Time) value;
         } else if (value instanceof java.util.Date) {
            return new java.sql.Time(((java.util.Date) value).getTime());
+        } else if (value instanceof java.sql.Date) {
+            return new java.sql.Time(((java.sql.Date) value).getTime());
         } else if (value instanceof Number) { // SQLite returns TIME as Integer
            return new java.sql.Time(((Number) value).longValue());
+        } else if (value instanceof LocalDateTime) {
+           return new java.sql.Time(toLong(value));
         } else {
            return java.sql.Time.valueOf(value.toString().trim());
         }
     }
+
+
 
     /**
      * Converts a value to <code>LocalDate</code>. Tries to convert to <code>java.util.Date</code>, then to <code>LocalDate</code>.
@@ -429,6 +435,8 @@ public final class Convert {
             return ((Number) value).longValue();
         } else if (value instanceof java.util.Date) {
             return ((java.util.Date) value).getTime();
+        } else if (value instanceof LocalDateTime) {
+            return ((LocalDateTime) value).atZone(ZoneOffset.systemDefault()).toInstant().toEpochMilli();
         } else {
             try {
                 return Long.valueOf(value.toString().trim());

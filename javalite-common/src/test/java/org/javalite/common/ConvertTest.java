@@ -186,10 +186,17 @@ public class ConvertTest implements JSpecSupport {
         a(object).shouldBeEqual(1);
 
         //java.util.Date
-        Date date = new Date(1416127392928L);
+        long time = 1416127392928L;
+        Date date = new Date(time);
         object = Convert.toLong(date);
         the(object).shouldBeA(Long.class);
-        a(object).shouldBeEqual(1416127392928L);
+        a(object).shouldBeEqual(time);
+
+        //LocalDateTime
+        LocalDateTime ldt = LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault());
+        object = Convert.toLong(ldt);
+        the(object).shouldBeA(Long.class);
+        a(object).shouldBeEqual(time);
 
     }
 
@@ -388,6 +395,40 @@ public class ConvertTest implements JSpecSupport {
         //long
         lTime  = Convert.toLocalDateTime(d.getTime());
         testLDT(lTime, calendar);
+    }
+
+    @Test
+    public void shouldCovertToTime() {
+
+        //Time
+        Time time = new Time(System.currentTimeMillis());
+        Time time2 = Convert.toTime(time);
+        a(time).shouldBeEqual(time2);
+
+        //java.sql.Date
+        java.sql.Date date = new Date(System.currentTimeMillis());
+        time = new Time(date.getTime());
+        time2 = Convert.toTime(date);
+        a(time).shouldBeEqual(time2);
+
+        //java.util.Date
+        java.util.Date date1 = new java.util.Date(System.currentTimeMillis());
+        time = new Time(date.getTime());
+        time2 = Convert.toTime(date);
+        a(time).shouldBeEqual(time2);
+
+        //Number
+        Long number = 1416127392928L;
+        time = new Time(number);
+        time2 = Convert.toTime(number);
+        a(time).shouldBeEqual(time2);
+
+        //LocalDateTime
+        long mills = 1416127392928L;
+        LocalDateTime ldt = LocalDateTime.ofInstant(Instant.ofEpochMilli(mills), ZoneId.systemDefault());
+        time = new Time(mills);
+        time2 = Convert.toTime(ldt);
+        a(time).shouldBeEqual(time2);
     }
 
     private void testLDT(LocalDateTime localDateTime, Calendar calendar){
