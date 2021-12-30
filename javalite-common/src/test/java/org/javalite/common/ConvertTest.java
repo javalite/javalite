@@ -25,8 +25,11 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -40,12 +43,37 @@ public class ConvertTest implements JSpecSupport {
 
     @Test
     public void shouldCovertToSqlDate() throws ParseException {
-        Date d = new Date(new SimpleDateFormat("yyyy-MM-dd").parse("2001-01-01").getTime());
-        Date d1 = Convert.toSqlDate("2001-01-01");
-        a(d).shouldBeEqual(d1);
+        long time = 1416127392928L;
+        //long
+        Date date = new Date(time);
+        Date date1 = Convert.toSqlDate(time);
+        a(date).shouldBeEqual(date1);
+        a(date1.toString()).shouldBeEqual("2014-11-16");
 
-        Date date = Convert.toSqlDate(1416127392928L);
-        a(date.toString()).shouldBeEqual("2014-11-16");
+        //java.util.Date
+        java.util.Date utilDate = new java.util.Date(time);
+        java.util.Date utilDate1 = Convert.toSqlDate(date);
+        a(utilDate).shouldBeEqual(utilDate1);
+        a(utilDate1.toString()).shouldBeEqual("2014-11-16");
+
+        //java.sql.Date
+        date = new Date(time);
+        date1 = Convert.toSqlDate(date);
+        a(date).shouldBeEqual(date1);
+        a(date1.toString()).shouldBeEqual("2014-11-16");
+
+        //String
+        String dateStr = "2001-01-01";
+        date = new Date(new SimpleDateFormat("yyyy-MM-dd").parse(dateStr).getTime());
+        date1 = Convert.toSqlDate(dateStr);
+        a(date).shouldBeEqual(date1);
+
+        //LocalDateTime
+        LocalDateTime ldt = LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault());
+        date = new Date(time);
+        date1 = Convert.toSqlDate(ldt);
+        a(date).shouldBeEqual(date1);
+
     }
 
     @Test
@@ -98,8 +126,16 @@ public class ConvertTest implements JSpecSupport {
         a(ts).shouldBeEqual(ts1);
 
         //Long
-        ts = Convert.toTimestamp(1416127392928L);
-        a(ts).shouldBeEqual(new Timestamp(1416127392928L));
+        long time = 1416127392928L;
+        ts = Convert.toTimestamp(time);
+        ts1 = new Timestamp(time);
+        a(ts).shouldBeEqual(ts1);
+
+        //LocalDateTime
+        LocalDateTime ldt = LocalDateTime.now();
+        ts = Convert.toTimestamp(ldt);
+        ts1 = Timestamp.valueOf(ldt);
+        a(ts).shouldBeEqual(ts1);
     }
 
     @Test
@@ -150,10 +186,17 @@ public class ConvertTest implements JSpecSupport {
         a(object).shouldBeEqual(1);
 
         //java.util.Date
-        Date date = new Date(1416127392928L);
+        long time = 1416127392928L;
+        Date date = new Date(time);
         object = Convert.toLong(date);
         the(object).shouldBeA(Long.class);
-        a(object).shouldBeEqual(1416127392928L);
+        a(object).shouldBeEqual(time);
+
+        //LocalDateTime
+        LocalDateTime ldt = LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault());
+        object = Convert.toLong(ldt);
+        the(object).shouldBeA(Long.class);
+        a(object).shouldBeEqual(time);
 
     }
 
@@ -352,6 +395,40 @@ public class ConvertTest implements JSpecSupport {
         //long
         lTime  = Convert.toLocalDateTime(d.getTime());
         testLDT(lTime, calendar);
+    }
+
+    @Test
+    public void shouldCovertToTime() {
+
+        //Time
+        Time time = new Time(System.currentTimeMillis());
+        Time time2 = Convert.toTime(time);
+        a(time).shouldBeEqual(time2);
+
+        //java.sql.Date
+        java.sql.Date date = new Date(System.currentTimeMillis());
+        time = new Time(date.getTime());
+        time2 = Convert.toTime(date);
+        a(time).shouldBeEqual(time2);
+
+        //java.util.Date
+        java.util.Date date1 = new java.util.Date(System.currentTimeMillis());
+        time = new Time(date.getTime());
+        time2 = Convert.toTime(date);
+        a(time).shouldBeEqual(time2);
+
+        //Number
+        Long number = 1416127392928L;
+        time = new Time(number);
+        time2 = Convert.toTime(number);
+        a(time).shouldBeEqual(time2);
+
+        //LocalDateTime
+        long mills = 1416127392928L;
+        LocalDateTime ldt = LocalDateTime.ofInstant(Instant.ofEpochMilli(mills), ZoneId.systemDefault());
+        time = new Time(mills);
+        time2 = Convert.toTime(ldt);
+        a(time).shouldBeEqual(time2);
     }
 
     private void testLDT(LocalDateTime localDateTime, Calendar calendar){
