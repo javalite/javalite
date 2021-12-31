@@ -37,7 +37,7 @@ public class OtherDbTest extends ActiveJDBCTest {
         DB db = new DB("test");
         db.open("org.h2.Driver", "jdbc:h2:mem:other;DB_CLOSE_DELAY=-1", "sa", "");
         db.exec("DROP TABLE IF EXISTS other_db_models;");
-        db.exec("CREATE TABLE other_db_models (id int(11) NOT NULL auto_increment PRIMARY KEY, name VARCHAR(56));");
+        db.exec("CREATE TABLE other_db_models (id int NOT NULL auto_increment PRIMARY KEY, name VARCHAR(56));");
         db.connection().setAutoCommit(false);
         deleteAndPopulateTable("users");
         db.exec("INSERT INTO other_db_models (id, name) VALUES(1, 'Foo');");

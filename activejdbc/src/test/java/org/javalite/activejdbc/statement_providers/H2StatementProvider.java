@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.javalite.common.Collections.list;
+
 /**
  * @author Igor Polevoy
  */
@@ -15,14 +17,14 @@ public class H2StatementProvider implements StatementProvider {
         List<String> statements = new ArrayList<>();
         if (table.equals("people")) {
             statements =  Arrays.asList(
-                    "INSERT INTO people (id, name, last_name, dob, graduation_date, created_at, updated_at) VALUES(1, 'John', 'Smith', '1934-12-01', '1954-12-01', now(), now());",
-                    "INSERT INTO people (id, name, last_name, dob, graduation_date, created_at, updated_at) values(2, 'Leylah', 'Jonston', '1954-04-03', '1974-04-03', now(), now());",
-                    "INSERT INTO people (id, name, last_name, dob, graduation_date, created_at, updated_at) values(3, 'Muhammad', 'Ali', '1943-01-04', '1963-01-04', now(), now());",
-                    "INSERT INTO people (id, name, last_name, dob, graduation_date, created_at, updated_at) values(4, 'Joe', 'Pesci', '1944-02-23','1964-02-23', now(), now());"
+                    "INSERT INTO people (name, last_name, dob, graduation_date, created_at, updated_at) VALUES('John', 'Smith', '1934-12-01', '1954-12-01', now(), now());",
+                    "INSERT INTO people (name, last_name, dob, graduation_date, created_at, updated_at) values('Leylah', 'Jonston', '1954-04-03', '1974-04-03', now(), now());",
+                    "INSERT INTO people (name, last_name, dob, graduation_date, created_at, updated_at) values('Muhammad', 'Ali', '1943-01-04', '1963-01-04', now(), now());",
+                    "INSERT INTO people (name, last_name, dob, graduation_date, created_at, updated_at) values('Joe', 'Pesci', '1944-02-23','1964-02-23', now(), now());"
             );
         } else if (table.equals("accounts")) {
             statements =  Arrays.asList(
-                    "INSERT INTO accounts VALUES(1, '123', 'checking', 9999.99, 1234.32);"
+                    "INSERT INTO accounts ( account, description, amount, total) VALUES('123', 'checking', 9999.99, 1234.32);"
             );
         } else if (table.equals("temperatures")) {
             statements =  Arrays.asList(
@@ -35,101 +37,99 @@ public class H2StatementProvider implements StatementProvider {
             );
         } else if (table.equals("users")) {
             statements =  Arrays.asList(
-                    "INSERT INTO users VALUES(1, 'Marilyn', 'Monroe', 'mmonroe@yahoo.com');",
-                    "INSERT INTO users VALUES(2, 'John', 'Doe', 'jdoe@gmail.com');",
-                    "INSERT INTO users VALUES(3, 'James', 'Dean', 'jdean@hotmail.com');"
+                    "INSERT INTO users (first_name, last_name, email) VALUES('Marilyn', 'Monroe', 'mmonroe@yahoo.com');",
+                    "INSERT INTO users (first_name, last_name, email) VALUES('John', 'Doe', 'jdoe@gmail.com');",
+                    "INSERT INTO users (first_name, last_name, email) VALUES('James', 'Dean', 'jdean@hotmail.com');"
             );
         } else if (table.equals("addresses")) {
             statements =  Arrays.asList(
-                    "INSERT INTO addresses VALUES(1, '123 Pine St.', 'apt 31', 'Springfield', 'IL', '60606', 1);",
-                    "INSERT INTO addresses VALUES(2, '456 Brook St.', 'apt 21', 'Springfield', 'IL', '60606', 1);",
-                    "INSERT INTO addresses VALUES(3, '23 Grove St.', 'apt 32', 'Springfield', 'IL', '60606', 1);",
-                    "INSERT INTO addresses VALUES(4, '143 Madison St.', 'apt 34', 'Springfield', 'IL', '60606', 2);",
-                    "INSERT INTO addresses VALUES(5, '153 Creek St.', 'apt 35', 'Springfield', 'IL', '60606', 2);",
-                    "INSERT INTO addresses VALUES(6, '163 Gorge St.', 'apt 36', 'Springfield', 'IL', '60606', 2);",
-                    "INSERT INTO addresses VALUES(7, '173 Far Side.', 'apt 37', 'Springfield', 'IL', '60606', 2);"
+                    "INSERT INTO addresses (address1, address2, city, state, zip, user_id) VALUES('123 Pine St.', 'apt 31', 'Springfield', 'IL', '60606', 1);",
+                    "INSERT INTO addresses (address1, address2, city, state, zip, user_id) VALUES('456 Brook St.', 'apt 21', 'Springfield', 'IL', '60606', 1);",
+                    "INSERT INTO addresses (address1, address2, city, state, zip, user_id) VALUES('23 Grove St.', 'apt 32', 'Springfield', 'IL', '60606', 1);",
+                    "INSERT INTO addresses (address1, address2, city, state, zip, user_id) VALUES('143 Madison St.', 'apt 34', 'Springfield', 'IL', '60606', 2);",
+                    "INSERT INTO addresses (address1, address2, city, state, zip, user_id) VALUES('153 Creek St.', 'apt 35', 'Springfield', 'IL', '60606', 2);",
+                    "INSERT INTO addresses (address1, address2, city, state, zip, user_id) VALUES('163 Gorge St.', 'apt 36', 'Springfield', 'IL', '60606', 2);",
+                    "INSERT INTO addresses (address1, address2, city, state, zip, user_id) VALUES('173 Far Side.', 'apt 37', 'Springfield', 'IL', '60606', 2);"
             );
         } else if (table.equals("rooms")) {
             statements =  Arrays.asList(
-                    "INSERT INTO rooms VALUES(1, 'bathroom', 1);",
-                    "INSERT INTO rooms VALUES(2, 'conference room', 1);",
-                    "INSERT INTO rooms VALUES(3, 'ball room', 7);",
-                    "INSERT INTO rooms VALUES(4, 'basement', 7);"
+                    "INSERT INTO rooms (name, address_id) VALUES('bathroom', 1);",
+                    "INSERT INTO rooms (name, address_id) VALUES('conference room', 1);",
+                    "INSERT INTO rooms (name, address_id) VALUES('ball room', 7);",
+                    "INSERT INTO rooms (name, address_id) VALUES('basement', 7);"
             );
         } else if (table.equals("legacy_universities")) {
-            statements =  Arrays.asList(
-
-                    "INSERT INTO legacy_universities  VALUES(1, 'DePaul', '123 Pine St.', 'apt 3B', 'Springfield', 'IL', '60606');"
+            statements =  list(
+                    "INSERT INTO legacy_universities  (univ_name, address1, address2, city, state, zip) VALUES('DePaul', '123 Pine St.', 'apt 3B', 'Springfield', 'IL', '60606');"
             );
         } else if (table.equals("libraries")) {
-            statements =  Arrays.asList(
-
-                    "INSERT INTO libraries VALUES(1, '124 Pine Street', 'St. Raphael', 'California');",
-                    "INSERT INTO libraries VALUES(2, '345 Burlington Blvd', 'Springfield', 'Il');"
+            statements =  list(
+                    "INSERT INTO libraries (address, city, state) VALUES('124 Pine Street', 'St. Raphael', 'California');",
+                    "INSERT INTO libraries (address, city, state) VALUES('345 Burlington Blvd', 'Springfield', 'Il');"
             );
         } else if (table.equals("books")) {
             statements =  Arrays.asList(
-                    "INSERT INTO books VALUES(1, 'All Quiet on Western Front', 'Eric Remarque', '123', 1);",
-                    "INSERT INTO books VALUES(2, '12 Chairs', 'Ilf, Petrov', '122', 1);"
+                    "INSERT INTO books (title, author, isbn, lib_id) VALUES('All Quiet on Western Front', 'Eric Remarque', '123', 1);",
+                    "INSERT INTO books (title, author, isbn, lib_id) VALUES('12 Chairs', 'Ilf, Petrov', '122', 1);"
             );
         } else if (table.equals("readers")) {
             statements =  Arrays.asList(
-                    "INSERT INTO readers VALUES(1, 'John', 'Smith', 1);",
-                    "INSERT INTO readers VALUES(2, 'John', 'Doe', 1);",
-                    "INSERT INTO readers VALUES(3, 'Igor', 'Polevoy', 2);"
+                    "INSERT INTO readers (first_name, last_name, book_id) VALUES('John', 'Smith', 1);",
+                    "INSERT INTO readers (first_name, last_name, book_id) VALUES('John', 'Doe', 1);",
+                    "INSERT INTO readers (first_name, last_name, book_id) VALUES('Igor', 'Polevoy', 2);"
             );
         } else if (table.equals("animals")) {
             statements =  Arrays.asList(
-                    "INSERT INTO animals VALUES(1, 'frog');"
+                    "INSERT INTO animals (animal_name) VALUES('frog');"
             );
         } else if (table.equals("patients")) {
             statements =  Arrays.asList(
-                    "INSERT INTO patients VALUES(1, 'Jim', 'Cary');",
-                    "INSERT INTO patients VALUES(2, 'John', 'Carpenter');",
-                    "INSERT INTO patients VALUES(3, 'John', 'Krugg');"
+                    "INSERT INTO patients (first_name, last_name) VALUES('Jim', 'Cary');",
+                    "INSERT INTO patients (first_name, last_name) VALUES('John', 'Carpenter');",
+                    "INSERT INTO patients (first_name, last_name) VALUES('John', 'Krugg');"
             );
         } else if (table.equals("patient_cards")) {
             statements = Arrays.asList(
-                    "INSERT INTO patient_cards VALUES(1, 'Jim', 1);",
-                    "INSERT INTO patient_cards VALUES(2, 'John', 2);",
-                    "INSERT INTO patient_cards VALUES(3, 'John', 3);"
+                    "INSERT INTO patient_cards (info, patient_id) VALUES('Jim', 1);",
+                    "INSERT INTO patient_cards (info, patient_id) VALUES('John', 2);",
+                    "INSERT INTO patient_cards (info, patient_id) VALUES('John', 3);"
             );
         } else if (table.equals("prescriptions")) {
             statements =  Arrays.asList(
-                    "INSERT INTO prescriptions VALUES(1, 'Viagra', 1, 1);",
-                    "INSERT INTO prescriptions VALUES(2, 'Prozac', 1, 2);",
-                    "INSERT INTO prescriptions VALUES(3, 'Valium', 2, 1);",
-                    "INSERT INTO prescriptions VALUES(4, 'Marijuana (medicinal) ', 2, 1);",
-                    "INSERT INTO prescriptions VALUES(5, 'CML treatment', 3, 3);"
+                    "INSERT INTO prescriptions (name, patient_id, doctor_id) VALUES('Viagra', 1, 1);",
+                    "INSERT INTO prescriptions (name, patient_id, doctor_id)  VALUES('Prozac', 1, 2);",
+                    "INSERT INTO prescriptions (name, patient_id, doctor_id) VALUES('Valium', 2, 1);",
+                    "INSERT INTO prescriptions (name, patient_id, doctor_id) VALUES('Marijuana (medicinal) ', 2, 1);",
+                    "INSERT INTO prescriptions (name, patient_id, doctor_id) VALUES('CML treatment', 3, 3);"
             );
         } else if (table.equals("doctors")) {
             statements =  Arrays.asList(
-                    "INSERT INTO doctors VALUES(1, 'John', 'Doe', 'otolaryngology');",
-                    "INSERT INTO doctors VALUES(2, 'Hellen', 'Hunt', 'dentistry');",
-                    "INSERT INTO doctors VALUES(3, 'John', 'Druker', 'oncology');",
-                    "INSERT INTO doctors VALUES(4, 'Henry', 'Jekyll', 'pathology');"
+                    "INSERT INTO doctors (first_name, last_name, discipline) VALUES('John', 'Doe', 'otolaryngology');",
+                    "INSERT INTO doctors (first_name, last_name, discipline) VALUES('Hellen', 'Hunt', 'dentistry');",
+                    "INSERT INTO doctors (first_name, last_name, discipline) VALUES('John', 'Druker', 'oncology');",
+                    "INSERT INTO doctors (first_name, last_name, discipline) VALUES('Henry', 'Jekyll', 'pathology');"
             );
         } else if (table.equals("doctors_patients")) {
             statements =  Arrays.asList(
-                    "INSERT INTO doctors_patients VALUES(1, 1, 2);",
-                    "INSERT INTO doctors_patients VALUES(2, 1, 1);",
-                    "INSERT INTO doctors_patients VALUES(3, 2, 1);",
-                    "INSERT INTO doctors_patients VALUES(4, 3, 3);"            );
+                    "INSERT INTO doctors_patients (doctor_id, patient_id) VALUES(1, 2);",
+                    "INSERT INTO doctors_patients (doctor_id, patient_id) VALUES(1, 1);",
+                    "INSERT INTO doctors_patients (doctor_id, patient_id) VALUES(2, 1);",
+                    "INSERT INTO doctors_patients (doctor_id, patient_id) VALUES(3, 3);"            );
         } else if (table.equals("students")) {
             statements =  Arrays.asList(
-                    "INSERT INTO students (id, first_name, last_name, dob, enrollment_date) VALUES (1, 'Jim', 'Cary', '1965-12-01', '1973-01-20 11:00:00');",
-                    "INSERT INTO students (id, first_name, last_name, dob, enrollment_date) VALUES (2, 'John', 'Carpenter', '1979-12-01', '1987-01-29 13:00:00');"
+                    "INSERT INTO students (first_name, last_name, dob, enrollment_date) VALUES ('Jim', 'Cary', '1965-12-01', '1973-01-20 11:00:00');",
+                    "INSERT INTO students (first_name, last_name, dob, enrollment_date) VALUES ('John', 'Carpenter', '1979-12-01', '1987-01-29 13:00:00');"
             );
         } else if (table.equals("courses")) {
             statements =  Arrays.asList(
-                    "INSERT INTO courses  VALUES(1, 'Functional programming 101');",
-                    "INSERT INTO courses  VALUES(2, 'data structures 415');"
+                    "INSERT INTO courses (course_name) VALUES('Functional programming 101');",
+                    "INSERT INTO courses (course_name) VALUES('data structures 415');"
             );
         } else if (table.equals("registrations")) {
             statements =  Arrays.asList(
-                    "INSERT INTO registrations VALUES(1, 1, 2);",
-                    "INSERT INTO registrations VALUES(2, 1, 1);",
-                    "INSERT INTO registrations VALUES(3, 2, 1);"
+                    "INSERT INTO registrations (astudent_id, acourse_id ) VALUES(1, 2);",
+                    "INSERT INTO registrations (astudent_id, acourse_id ) VALUES(1, 1);",
+                    "INSERT INTO registrations (astudent_id, acourse_id ) VALUES(2, 1);"
             );
         } else if (table.equals("items")) {
             statements =  Arrays.asList(
@@ -137,13 +137,13 @@ public class H2StatementProvider implements StatementProvider {
             );
         } else if (table.equals("articles")) {
             statements =  Arrays.asList(
-                    "INSERT INTO articles VALUES(1, 'ActiveJDBC basics', 'this is a test content of the article');",
-                    "INSERT INTO articles VALUES(2, 'ActiveJDBC polymorphic associations', 'Polymorphic associations are...');"
+                    "INSERT INTO articles ( title, content ) VALUES('ActiveJDBC basics', 'this is a test content of the article');",
+                    "INSERT INTO articles ( title, content ) VALUES('ActiveJDBC polymorphic associations', 'Polymorphic associations are...');"
             );
         } else if (table.equals("posts")) {
             statements =  Arrays.asList(
-                    "INSERT INTO posts VALUES(1, 'Who gets up early in the morning... is tired all day', 'this is to explain that ...sleeping in is actually really good...');",
-                    "INSERT INTO posts VALUES(2, 'Thou shalt not thread', 'Suns strategy for threading inside J2EE is a bit... insane...');"
+                    "INSERT INTO posts (title, post) VALUES('Who gets up early in the morning... is tired all day', 'this is to explain that ...sleeping in is actually really good...');",
+                    "INSERT INTO posts (title, post) VALUES('Thou shalt not thread', 'Suns strategy for threading inside J2EE is a bit... insane...');"
             );
         } else if (table.equals("comments")) {
             statements =  Arrays.asList();
@@ -165,15 +165,15 @@ public class H2StatementProvider implements StatementProvider {
             statements =  Arrays.asList();
         } else if (table.equals("motherboards")){
         	statements =  Arrays.asList(
-                    "INSERT INTO motherboards VALUES(1,'motherboardOne');"
+                    "INSERT INTO motherboards (description) VALUES('motherboardOne');"
             );
         } else if (table.equals("keyboards")){
         	statements =  Arrays.asList(
-                    "INSERT INTO keyboards VALUES(1,'keyboard-us');"
+                    "INSERT INTO keyboards (description) VALUES('keyboard-us');"
             );
         } else if (table.equals("computers")){
         	statements =  Arrays.asList(
-                    "INSERT INTO computers VALUES(1,'ComputerX',1,1);"
+                    "INSERT INTO computers (description, mother_id, key_id) VALUES('ComputerX',1,1);"
             );
         }else if (table.equals("ingredients_recipes")) {
             statements = Arrays.asList();
@@ -187,21 +187,21 @@ public class H2StatementProvider implements StatementProvider {
             statements = Arrays.asList();
         } else if (table.equals("nodes")) {
             statements =  Arrays.asList(
-                    "INSERT INTO nodes VALUES (1, 'Parent', NULL);",
-                    "INSERT INTO nodes VALUES (2, 'Self', 1);",
-                    "INSERT INTO nodes VALUES (3, 'Sibling', 1);",
-                    "INSERT INTO nodes VALUES (4, 'Child', 2);");
+                    "INSERT INTO nodes (name, parent_id) VALUES ('Parent', NULL);",
+                    "INSERT INTO nodes (name, parent_id) VALUES ('Self', 1);",
+                    "INSERT INTO nodes (name, parent_id) VALUES ('Sibling', 1);",
+                    "INSERT INTO nodes (name, parent_id) VALUES ('Child', 2);");
         } else if (table.equals("teams")) {
           statements =  Arrays.asList(
-              "INSERT INTO teams VALUES (1, 'New England Patriots');",
-              "INSERT INTO teams VALUES (2, 'Philadelphia Eagles');"
+              "INSERT INTO teams (name) VALUES ('New England Patriots');",
+              "INSERT INTO teams (name) VALUES ('Philadelphia Eagles');"
           );
         } else if (table.equals("players")) {
           statements =  Arrays.asList(
-              "INSERT INTO players VALUES (1, 'Tom', 'Brady', 1);",
-              "INSERT INTO players VALUES (2, 'Dany', 'Amendola', 1);",
-              "INSERT INTO players VALUES (3, 'Nick', 'Foles', 2);",
-              "INSERT INTO players VALUES (4, 'Trey', 'Burton', 2);"
+              "INSERT INTO players (first_name, last_name, team_id) VALUES ('Tom', 'Brady', 1);",
+              "INSERT INTO players (first_name, last_name, team_id) VALUES ('Dany', 'Amendola', 1);",
+              "INSERT INTO players (first_name, last_name, team_id) VALUES ('Nick', 'Foles', 2);",
+              "INSERT INTO players (first_name, last_name, team_id) VALUES ('Trey', 'Burton', 2);"
           );
         } else if (table.equals("bands")) {
             statements = Arrays.asList();
