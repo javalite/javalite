@@ -68,7 +68,7 @@ public class RawPaginatorSpec extends ActiveJDBCTest {
     @Test
     public void shouldGetPage(){
         RawPaginator p = new RawPaginator("default", "items", null, 10, false, "item_description like ?", "%2%").orderBy("item_number");
-        List<Map> items = p.getPage(28);
+        List<Map<String, Object>> items = p.getPage(28);
         a(items.size()).shouldBeEqual(1);
         a(items.get(0).get("item_number")).shouldBeEqual(992);
 
@@ -136,7 +136,7 @@ public class RawPaginatorSpec extends ActiveJDBCTest {
     public void shouldLoadOnlyRequestedColumns(){
 
         RawPaginator p = new RawPaginator("items", arr("item_number"), 10, "item_description like '%2%'").orderBy("item_number");
-        List<Map> items = p.getPage(28);
+        List<Map<String, Object>> items = p.getPage(28);
         a(items.size()).shouldBeEqual(1);
         a(items.get(0).get("item_number")).shouldBeEqual(992);
         a(items.get(0).get("item_description")).shouldBeNull();

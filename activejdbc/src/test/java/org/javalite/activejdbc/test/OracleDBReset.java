@@ -39,7 +39,7 @@ public class OracleDBReset {
 
     private static void dropTriggers() throws SQLException {
 
-        List<Map> triggers = Base.findAll("select trigger_name from user_triggers");
+        List<Map<String, Object>> triggers = Base.findAll("select trigger_name from user_triggers");
         for (Map trigger : triggers) {
             if(trigger.get("trigger_name").toString().contains("$")){
                 continue;   
@@ -54,7 +54,7 @@ public class OracleDBReset {
 
     private static void dropSequences() throws SQLException {
 
-        List<Map> sequences = Base.findAll("select sequence_name from user_sequences");
+        List<Map<String, Object>> sequences = Base.findAll("select sequence_name from user_sequences");
         for (Map sequence : sequences) {
             Statement s = Base.connection().createStatement();
             s.execute("drop sequence " + sequence.get("sequence_name"));
@@ -64,8 +64,8 @@ public class OracleDBReset {
     }
 
     private static void dropTables() throws SQLException {
-        List<Map> tables = Base.findAll("select table_name from user_tables");
-        for (Map table : tables) {
+        List<Map<String, Object>> tables = Base.findAll("select table_name from user_tables");
+        for (Map<String, Object> table : tables) {
             Statement s = Base.connection().createStatement();
             s.execute("drop table " + table.get("table_name") + " cascade constraints");
             System.out.println("Dropping table: " + table.get("table_name"));

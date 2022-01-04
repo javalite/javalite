@@ -150,7 +150,7 @@ public class ModelTest extends ActiveJDBCTest {
         a(p.getId()).shouldNotBeNull();
         //verify save:
 
-        List<Map> results = Base.findAll("select * from people where name = ? and last_name = ? and dob = ?", "Marilyn", "Monroe", getDate(1935, 12, 6));
+        List<Map<String, Object>> results = Base.findAll("select * from people where name = ? and last_name = ? and dob = ?", "Marilyn", "Monroe", getDate(1935, 12, 6));
 
         a(results.size()).shouldBeEqual(1);
     }
@@ -165,7 +165,7 @@ public class ModelTest extends ActiveJDBCTest {
         p.saveIt();
 
         //verify save:
-        List<Map> results = Base.findAll("select * from people where name = ? and last_name = ?", "Keith", "Emerson");
+        List<Map<String, Object>> results = Base.findAll("select * from people where name = ? and last_name = ?", "Keith", "Emerson");
 
         a(results.size()).shouldBeEqual(1);
     }
@@ -211,7 +211,7 @@ public class ModelTest extends ActiveJDBCTest {
         p.saveIt();
 
         //verify save:
-        List<Map> results = Base.findAll("select * from people where id = 1");
+        List<Map<String, Object>> results = Base.findAll("select * from people where id = 1");
 
         a(1).shouldBeEqual(results.size());
         a(results.get(0).get("name")).shouldBeEqual("Igor");

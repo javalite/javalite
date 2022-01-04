@@ -37,11 +37,11 @@ public class BaseTest extends ActiveJDBCTest {
 
     @Test
     public void testBaseFinder() {
-        final List<Map> records = new ArrayList<>();
+        final List<Map<String, Object>> records = new ArrayList<>();
 
         Base.find("select * from people order by id", new RowListenerAdapter() {
             @Override
-            public void onNext(Map record) {
+            public void onNext(Map<String, Object> record) {
                 records.add(record);
             }
         });
@@ -53,14 +53,14 @@ public class BaseTest extends ActiveJDBCTest {
     @Test
     public void testBaseFindAll() {
 
-        List<Map> records = Base.findAll("select * from people");
+        List<Map<String, Object>> records = Base.findAll("select * from people");
         a(records.size()).shouldBeEqual(4);
     }
 
     @Test
     public void testBaseFindAllParametrized() {
 
-        List<Map> records = Base.findAll("select * from people where last_name = ? and name = ?", "Smith", "John");
+        List<Map<String, Object>> records = Base.findAll("select * from people where last_name = ? and name = ?", "Smith", "John");
         a(records.size()).shouldBeEqual(1);
     }
 
@@ -68,7 +68,7 @@ public class BaseTest extends ActiveJDBCTest {
     public void testExec() {
         int count = Base.exec("insert into people (NAME, LAST_NAME, DOB) values('Mic', 'Jagger', ?)", getTimestamp(1962, 6, 13));
 
-        List<Map> results = Base.findAll("select * from people where last_name='Jagger'");
+        List<Map<String, Object>> results = Base.findAll("select * from people where last_name='Jagger'");
         a(1).shouldBeEqual(results.size());
         a(1).shouldBeEqual(count);
     }
@@ -83,7 +83,7 @@ public class BaseTest extends ActiveJDBCTest {
     public void testExecParametrized() {
         Base.exec("insert into people (name, last_name, dob) values(?, ?, ?)", "John", "Silver", getTimestamp(1934, 2, 5));
 
-        List<Map> results = Base.findAll("select * from people where last_name=?", "Silver");
+        List<Map<String, Object>> results = Base.findAll("select * from people where last_name=?", "Silver");
         a(1).shouldBeEqual(results.size());
     }
 

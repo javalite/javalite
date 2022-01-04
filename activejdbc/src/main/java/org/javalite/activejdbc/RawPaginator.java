@@ -131,7 +131,7 @@ public class RawPaginator implements Serializable {
      * @return list of records that match a query make up a "page".
      */
     @SuppressWarnings("unchecked")
-    public List<Map>  getPage(int pageNumber) {
+    public List<Map<String, Object>>  getPage(int pageNumber) {
 
         if (pageNumber < 1) {
             throw new IllegalArgumentException("minimum page index == 1");
