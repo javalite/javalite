@@ -1,0 +1,1 @@
+docker start javalite-postgres
