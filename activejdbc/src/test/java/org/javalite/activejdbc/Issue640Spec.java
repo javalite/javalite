@@ -2,8 +2,6 @@ package org.javalite.activejdbc;
 
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Status;
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -12,11 +10,6 @@ import java.util.Map;
 import static org.javalite.activejdbc.test.JdbcProperties.driver;
 
 public class Issue640Spec  extends ActiveJDBCTest {
-
-    @Before
-    public void beforeTest(){
-
-    }
 
     @Test
     public void shouldWorkWithPlainSQL(){
