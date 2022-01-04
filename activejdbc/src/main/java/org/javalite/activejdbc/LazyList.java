@@ -536,9 +536,9 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
         final MetaModel childMetaModel = metaModelOf(association.getTargetClass());
         final Map<Object, List<Model>> childrenByParentId = new HashMap<>();
         List<Object> ids = collect(metaModel.getIdName());
-        List<Map> childResults = new DB(childMetaModel.getDbName()).findAll(childMetaModel.getDialect().selectManyToManyAssociation(
+        List<Map<String, Object>> childResults = new DB(childMetaModel.getDbName()).findAll(childMetaModel.getDialect().selectManyToManyAssociation(
                 association, "the_parent_record_id", ids.size()), ids.toArray());
-        for(Map res: childResults){
+        for(Map<String, Object> res: childResults){
             Model child = ModelDelegate.instance(res, childMetaModel);
             Object parentId = res.get("the_parent_record_id");
             if(childrenByParentId.get(parentId) == null){

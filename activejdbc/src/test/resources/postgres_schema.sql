@@ -240,3 +240,9 @@ CREATE TABLE postal_addresses (id serial PRIMARY KEY, address1 VARCHAR(56), addr
 
 DROP TABLE IF EXISTS phone_numbers;
 CREATE TABLE phone_numbers (id serial PRIMARY KEY, the_number VARCHAR(56), type VARCHAR(56), scope VARCHAR(56), customer_id INT);
+
+
+DROP TABLE IF EXISTS statuses;
+DROP TYPE IF EXISTS status_type;
+CREATE TYPE status_type AS ENUM ('A', 'B', 'C');
+CREATE TABLE statuses ( id serial PRIMARY KEY, status status_type );

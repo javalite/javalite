@@ -1,7 +1,15 @@
 package org.javalite.activejdbc.dialects;
 
-import java.util.List;
+import org.javalite.activejdbc.ColumnMetadata;
+import org.javalite.activejdbc.MetaModel;
+import org.javalite.common.Util;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static org.javalite.common.Util.join;
+import static org.javalite.common.Util.joinAndRepeat;
 
 
 public class PostgreSQLDialect extends DefaultDialect {
@@ -33,5 +41,44 @@ public class PostgreSQLDialect extends DefaultDialect {
         }
 
         return fullQuery.toString();
+    }
+
+    @Override
+    public String insertParametrized(MetaModel metaModel, List<String> columns, boolean containsId) {
+        StringBuilder query = new StringBuilder().append("INSERT INTO ").append(metaModel.getTableName()).append(' ');
+        if (columns.isEmpty()) {
+            appendEmptyRow(metaModel, query);
+        } else {
+            boolean addIdGeneratorCode = (!containsId && metaModel.getIdGeneratorCode() != null);
+            query.append('(');
+            if (addIdGeneratorCode) {
+                query.append(metaModel.getIdName()).append(", ");
+            }
+            join(query, columns, ", ");
+            query.append(") VALUES (");
+            if (addIdGeneratorCode) {
+                query.append(metaModel.getIdGeneratorCode()).append(", ");
+            }
+            appendTypedQuestions(metaModel, query, columns);
+            query.append(')');
+        }
+        return query.toString();
+    }
+
+    private void appendTypedQuestions(MetaModel metaModel, StringBuilder query, List<String> columns) {
+        Map<String, ColumnMetadata> columnMetadataMap = metaModel.getColumnMetadata();
+
+        List<String> types = new ArrayList<>();
+        for (String column : columns) {
+            //WTF, Postgres????
+            String key = column.startsWith("\"") && column.endsWith("\"")
+                    ? column.substring(1, column.length() - 1)
+                    : column;
+
+            ColumnMetadata metadata = columnMetadataMap.get(key);
+            String  type =  metadata.getTypeName();
+            types.add("?::"+ type);
+        }
+        query.append(Util.join(types, ","));
     }
 }

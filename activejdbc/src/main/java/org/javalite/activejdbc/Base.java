@@ -196,7 +196,7 @@ public class Base {
      * @param params list of parameters for a parametrized query.
      * @return entire result set corresponding to the query.
      */
-    public static List<Map> findAll(String query, Object... params) {
+    public static List<Map<String, Object>> findAll(String query, Object... params) {
         return new DB(DB.DEFAULT_NAME).findAll(query, params);
     }
 
@@ -226,7 +226,7 @@ public class Base {
      * @param query raw SQL query. This query is not parametrized.
      * @return entire result set corresponding to the query.
      */
-    public static List<Map> findAll(String query) {
+    public static List<Map<String, Object>> findAll(String query) {
         return new DB(DB.DEFAULT_NAME).findAll(query);
     }
 

@@ -406,7 +406,7 @@ public class DB implements Closeable{
     /**
      * Alias to {@link #findAll(String, Object...)}
      */
-    public List<Map> all(String query, Object ... params) {
+    public List<Map<String, Object>> all(String query, Object ... params) {
         return findAll(query, params);
     }
 
@@ -424,9 +424,9 @@ public class DB implements Closeable{
      * @param params list of parameters for a parametrized query.
      * @return entire result set corresponding to the query.
      */
-    public List<Map> findAll(String query, Object ... params) {
+    public List<Map<String, Object>> findAll(String query, Object ... params) {
 
-        final List<Map> results = new ArrayList<>();
+        final List<Map<String, Object>> results = new ArrayList<>();
         long start = System.currentTimeMillis();
         find(query, params).with(new RowListenerAdapter() {
             @Override public void onNext(Map<String, Object> row) {
@@ -478,7 +478,7 @@ public class DB implements Closeable{
     /**
      * Alias to {@link #findAll(String)}
      */
-    public List<Map> all(String query) {
+    public List<Map<String, Object>> all(String query) {
         return findAll(query);
     }
 
@@ -488,9 +488,9 @@ public class DB implements Closeable{
      * @param query raw SQL query. This query is not parametrized.
      * @return entire result set corresponding to the query.
      */
-    public List<Map> findAll(String query) {
+    public List<Map<String, Object>> findAll(String query) {
 
-        final ArrayList<Map> results = new ArrayList<>();
+        final ArrayList<Map<String, Object>> results = new ArrayList<>();
         long start = System.currentTimeMillis();
         find(query).with(new RowListenerAdapter() {
             @Override public void onNext(Map<String, Object> row) {
