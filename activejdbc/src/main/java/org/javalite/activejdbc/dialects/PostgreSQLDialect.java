@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.javalite.common.Util.join;
-import static org.javalite.common.Util.joinAndRepeat;
 
 
 public class PostgreSQLDialect extends DefaultDialect {

@@ -25,9 +25,6 @@ import java.util.Properties;
  */
 public class JdbcProperties {
 
-    private static final JdbcProperties JDBC_PROPERTIES = new JdbcProperties();
-
-
     private static String driver, url, user, password, db;
 
 

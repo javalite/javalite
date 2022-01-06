@@ -23,13 +23,25 @@ import org.javalite.activejdbc.MetaModel;
 /**
  * @author Igor Polevoy
  */
-public class MySQLDialect extends PostgreSQLDialect {
+public class MySQLDialect extends DefaultDialect {
     @Override
     public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset) {
         if (limit == -1L && offset != -1L) {
             throw new IllegalArgumentException("MySQL does not support OFFSET without LIMIT. OFFSET is a parameter of LIMIT function");
         }
-        return super.formSelect(tableName, columns, subQuery, orderBys, limit, offset);
+        StringBuilder fullQuery = new StringBuilder();
+
+        appendSelect(fullQuery, tableName, columns, null, subQuery, orderBys);
+
+        if(limit != -1){
+            fullQuery.append(" LIMIT ").append(limit);
+        }
+
+        if(offset != -1){
+            fullQuery.append(" OFFSET ").append(offset);
+        }
+
+        return fullQuery.toString();
     }
 
     @Override
