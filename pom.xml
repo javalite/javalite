@@ -38,7 +38,7 @@
         <javassist.version>3.27.0-GA</javassist.version>
         <junit-vintage-engine.version>5.7.0</junit-vintage-engine.version>
         <mariadb.connector.version>2.7.4</mariadb.connector.version>
-        <h2.version>2.0.202</h2.version>
+        <h2.version>2.0.206</h2.version>
         <spring.version>5.1.4.RELEASE</spring.version>
     </properties>
 
