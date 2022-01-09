@@ -17,25 +17,25 @@ limitations under the License.
 package org.javalite.activejdbc;
 
 
+
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
-import com.fasterxml.jackson.databind.util.StdDateFormat;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.*;
 import org.javalite.common.Convert;
-import org.javalite.common.Util;
 import org.javalite.json.JSONHelper;
+import org.javalite.common.Util;
 import org.junit.Test;
 
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.TemporalField;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static org.javalite.common.Convert.toLocalDateTime;
-import static org.javalite.common.Convert.toLong;
+import static org.javalite.activejdbc.test.JdbcProperties.driver;
 
 /**
  * @author Igor Polevoy
@@ -149,17 +149,18 @@ public class ToJsonSpec extends ActiveJDBCTest {
 
         @SuppressWarnings("unchecked")
         Map<String, String> map = JSONHelper.toMap(json);
+        LocalDateTime ldt = Convert.toLocalDateTime(map.get("created_at"));
+        // difference between date in Json and in original model instance should be less than 1000 milliseconds
 
-        System.out.println("Map: " + map.get("created_at"));
-        System.out.println("Model: " + p.get("created_at"));
 
-        System.out.println("Map ldt: " + toLocalDateTime(map.get("created_at")));
+        System.out.println(ldt);
+        System.out.println(p.getLocalDateTime("created_at"));
 
-        long date = toLong(toLocalDateTime(map.get("created_at")));
+        System.out.println(ZonedDateTime.of(ldt, ZoneId.systemDefault()).toInstant().toEpochMilli());
+        System.out.println(ZonedDateTime.of(p.getLocalDateTime("created_at"), ZoneId.systemDefault()).toInstant().toEpochMilli());
 
-        System.out.println("Map long: " + date);
-        System.out.println("Model : " + p.get("created_at") + ", " + p.get("created_at").getClass());
-        a(Math.abs(date - p.getTimestamp("created_at").getTime()) < 1000L).shouldBeTrue();
+        a(Math.abs(ZonedDateTime.of(ldt, ZoneId.systemDefault()).toInstant().toEpochMilli()
+                - ZonedDateTime.of(p.getLocalDateTime("created_at"), ZoneId.systemDefault()).toInstant().toEpochMilli() ) < 1000L).shouldBeTrue();
     }
 
     @Test
