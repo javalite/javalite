@@ -76,7 +76,12 @@ public class PostgreSQLDialect extends DefaultDialect {
 
             ColumnMetadata metadata = columnMetadataMap.get(key);
             String  type =  metadata.getTypeName();
-            types.add("?::"+ type);
+            if(type.equalsIgnoreCase("serial")){
+                types.add("?");
+            }else{
+                types.add("?::"+ type);
+            }
+
         }
         query.append(Util.join(types, ","));
     }

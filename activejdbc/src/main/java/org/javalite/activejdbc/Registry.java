@@ -109,9 +109,9 @@ public enum Registry {
 
     synchronized void init(String dbName) {
 
-        LOGGER.info("Starting to get metadata from the database...");
+        LOGGER.debug("Starting to get metadata from the database...");
         if (staticMetadataStatus == STATIC_METADATA_LOADED || initedDbs.contains(dbName)) {
-            LOGGER.info("Metadata  is already processed, exiting...");
+            LOGGER.debug("Metadata  is already processed, exiting...");
             return;
         } else {
             initedDbs.add(dbName);
@@ -268,6 +268,14 @@ public enum Registry {
 
         //if upper case not found, try lower case.
         if (columns.isEmpty()) {
+            rs = databaseMetaData.getColumns(catalog, schema, tableName.toLowerCase(), null);
+            columns = getColumns(rs, dbType);
+            rs.close();
+        }
+
+        //if table is back-quoted, try to remove quotes - helped with MySQL
+        if (columns.isEmpty() && tableName.contains("`")) {
+            tableName = tableName.substring(1, tableName.length() -1);
             rs = databaseMetaData.getColumns(catalog, schema, tableName.toLowerCase(), null);
             columns = getColumns(rs, dbType);
             rs.close();

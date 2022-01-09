@@ -21,14 +21,21 @@ package org.javalite.activejdbc;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.*;
+import org.javalite.common.Convert;
 import org.javalite.json.JSONHelper;
 import org.javalite.common.Util;
 import org.junit.Test;
 
 import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.TemporalField;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import static org.javalite.activejdbc.test.JdbcProperties.driver;
 
 /**
  * @author Igor Polevoy
@@ -134,19 +141,26 @@ public class ToJsonSpec extends ActiveJDBCTest {
     }
 
     @Test
-    public void shouldReturnSecondsInDateTime() throws ParseException {
+    public void shouldReturnSecondsInDateTime() {
         Person p = new Person();
         p.set("name", "john", "last_name", "doe").saveIt();
         p.refresh();
         String json = p.toJson(true);
 
-        System.out.println(json);
         @SuppressWarnings("unchecked")
         Map<String, String> map = JSONHelper.toMap(json);
-
-        Date d = new ISO8601DateFormat().parse(map.get("created_at"));
+        LocalDateTime ldt = Convert.toLocalDateTime(map.get("created_at"));
         // difference between date in Json and in original model instance should be less than 1000 milliseconds
-        a(Math.abs(d.getTime() - p.getTimestamp("created_at").getTime()) < 1000L).shouldBeTrue();
+
+
+        System.out.println(ldt);
+        System.out.println(p.getLocalDateTime("created_at"));
+
+        System.out.println(ZonedDateTime.of(ldt, ZoneId.systemDefault()).toInstant().toEpochMilli());
+        System.out.println(ZonedDateTime.of(p.getLocalDateTime("created_at"), ZoneId.systemDefault()).toInstant().toEpochMilli());
+
+        a(Math.abs(ZonedDateTime.of(ldt, ZoneId.systemDefault()).toInstant().toEpochMilli()
+                - ZonedDateTime.of(p.getLocalDateTime("created_at"), ZoneId.systemDefault()).toInstant().toEpochMilli() ) < 1000L).shouldBeTrue();
     }
 
     @Test

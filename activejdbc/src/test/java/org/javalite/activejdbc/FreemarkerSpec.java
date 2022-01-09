@@ -4,9 +4,11 @@ package org.javalite.activejdbc;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Person;
 import org.javalite.activejdbc.test_models.Student;
+import org.javalite.common.Convert;
 import org.junit.Test;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,9 +21,8 @@ import static org.javalite.activejdbc.test.JdbcProperties.driver;
 public class FreemarkerSpec extends ActiveJDBCTest {
 
 
-
     @Test
-    public void shouldRenderSingleInstance(){
+    public void shouldRenderSingleInstance() {
         deleteAndPopulateTable("people");
 
         Person smith = Person.findFirst("last_name = ?", "Smith");
@@ -70,7 +71,11 @@ public class FreemarkerSpec extends ActiveJDBCTest {
 
         if(driver().equals("org.sqlite.JDBC")){
             the(students.get(1).get("enrollment_date")).shouldBeEqual("1987-01-29 13:00:00");
-        }else {
+        } else if (driver().equals("com.mysql.cj.jdbc.Driver")) {
+            java.sql.Timestamp ts = Timestamp.valueOf("1987-01-29 13:00:00");
+            LocalDateTime ldt = Convert.toLocalDateTime(ts.getTime());
+            the(students.get(1).get("enrollment_date")).shouldBeEqual(ldt);
+        } else {
             java.sql.Timestamp ts = Timestamp.valueOf("1987-01-29 13:00:00");
             the(students.get(1).get("enrollment_date")).shouldBeEqual(ts);
         }

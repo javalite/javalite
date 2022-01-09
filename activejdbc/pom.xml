@@ -14,11 +14,6 @@
     <!-- Default to H2 if no profile provided -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jdbc.driver>org.h2.Driver</jdbc.driver>
-        <jdbc.url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1</jdbc.url>
-        <jdbc.user>sa</jdbc.user>
-        <jdbc.password />
-        <db>h2</db>
     </properties>
 
     <profiles>
@@ -35,10 +30,16 @@
         </profile>
         <profile>
             <id>h2</id>
-            <!--
-                Configure jdbc.driver, jdbc.url, jdbc.user, jdbc.password
-                and db properties in your ~/.m2/settings.xml
-            -->
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <jdbc.driver>org.h2.Driver</jdbc.driver>
+                <jdbc.url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1</jdbc.url>
+                <jdbc.user>sa</jdbc.user>
+                <jdbc.password/>
+                <db>h2</db>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>com.h2database</groupId>
@@ -48,26 +49,37 @@
         </profile>
         <profile>
             <id>mssql</id>
-            <!--
-                Configure jdbc.driver, jdbc.url, jdbc.user, jdbc.password
-                and db properties in your ~/.m2/settings.xml
-            -->
+
+            <properties>
+                <jdbc.driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc.driver>
+<!--                <jdbc.url>jdbc:sqlserver://localhost:1433;databaseName=javalite</jdbc.url>-->
+                <jdbc.url>jdbc:sqlserver://localhost:1433</jdbc.url>
+                <jdbc.user>SA</jdbc.user>
+                <jdbc.password>p@ssw0rd</jdbc.password>
+                <db>mssql</db>
+            </properties>
+
             <dependencies>
-                <!-- https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc -->
                 <dependency>
                     <groupId>com.microsoft.sqlserver</groupId>
                     <artifactId>mssql-jdbc</artifactId>
-                    <version>6.4.0.jre8</version>
+                    <version>9.4.1.jre16</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
         </profile>
+
         <profile>
             <id>mariadb</id>
-            <!--
-                Configure jdbc.driver, jdbc.url, jdbc.user, jdbc.password
-                and db properties in your ~/.m2/settings.xml
-            -->
+            <properties>
+                <jdbc.driver>org.mariadb.jdbc.Driver</jdbc.driver>
+                <jdbc.url>jdbc:mariadb://localhost:3307/activejdbc</jdbc.url>
+                <jdbc.user>activejdbc</jdbc.user>
+                <jdbc.password>p@ssw0rd</jdbc.password>
+                <!-- we need this to read the file with schema statements -->
+                <db>mysql</db>
+            </properties>
+
             <dependencies>
                 <dependency>
                     <groupId>org.mariadb.jdbc</groupId>
@@ -75,6 +87,27 @@
                 </dependency>
             </dependencies>
         </profile>
+
+        <profile>
+            <id>mysql</id>
+            <properties>
+                <jdbc.driver>com.mysql.cj.jdbc.Driver</jdbc.driver>
+                <jdbc.url>jdbc:mysql://localhost:3307/activejdbc</jdbc.url>
+                <jdbc.user>root</jdbc.user>
+                <jdbc.password>p@ssw0rd</jdbc.password>
+                <!-- we need this to read the file with schema statements -->
+                <db>mysql</db>
+            </properties>
+
+            <dependencies>
+                <dependency>
+                    <groupId>mysql</groupId>
+                    <artifactId>mysql-connector-java</artifactId>
+                    <version>8.0.27</version>
+                </dependency>
+            </dependencies>
+        </profile>
+
         <profile>
             <id>oracle</id>
             <!--
@@ -93,15 +126,17 @@
         </profile>
         <profile>
             <id>postgresql</id>
-            <!--
-                Configure jdbc.driver, jdbc.url, jdbc.user, jdbc.password
-                and db properties in your ~/.m2/settings.xml
-            -->
+            <properties>
+                <jdbc.driver>org.postgresql.Driver</jdbc.driver>
+                <jdbc.url>jdbc:postgresql://localhost:5432/postgres</jdbc.url>
+                <jdbc.user>postgres</jdbc.user>
+                <jdbc.password>p@ssw0rd</jdbc.password>
+                <db>postgresql</db>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>org.postgresql</groupId>
                     <artifactId>postgresql</artifactId>
-                    <scope>test</scope>
                 </dependency>
             </dependencies>
         </profile>

@@ -25,8 +25,10 @@ import java.io.Writer;
 import java.math.BigDecimal;
 import java.sql.Blob;
 import java.sql.Clob;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -341,6 +343,8 @@ public final class Convert {
             return null;
         } else if (value instanceof LocalDateTime) {
             return (LocalDateTime) value;
+        } else if (value instanceof Timestamp) {
+            return toLocalDateTime(((Timestamp) value).getTime());
         } else if (value instanceof java.util.Date) {
             return toLocalDateTime(((java.util.Date) value).getTime());
         } else if (value instanceof Long) {
@@ -349,7 +353,14 @@ public final class Convert {
             try {
                 return LocalDateTime.parse(value.toString());
             } catch (Exception e) {
-                throw new ConversionException("failed to convert: '" + value + "' to LocalDateTime", e);
+                try{
+                    //say, this is a ISO string?
+                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
+                    return LocalDateTime.parse(value.toString(), dtf);
+
+                }catch(Exception ex){
+                    throw new ConversionException("failed to convert: '" + value + "' to LocalDateTime", e);
+                }
             }
         }
     }

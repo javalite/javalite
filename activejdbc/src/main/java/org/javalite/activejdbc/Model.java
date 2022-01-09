@@ -47,6 +47,7 @@ import java.sql.Clob;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.Collections;
 import java.util.Map.Entry;
@@ -1612,6 +1613,14 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
                 attributeName, value, Timestamp.class);
         return converter != null ? converter.convert(value) : Convert.toTimestamp(value);
     }
+
+    public LocalDateTime getLocalDateTime(String attributeName) {
+        Object value = getRaw(attributeName);
+        Converter<Object, LocalDateTime> converter = modelRegistryLocal.converterForValue(attributeName, value, LocalDateTime.class);
+        return converter != null ? converter.convert(value) : Convert.toLocalDateTime(value);
+    }
+
+
 
     /**
      * Gets attribute value as <code>Double</code>.

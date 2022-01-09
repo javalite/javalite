@@ -24,7 +24,10 @@ public class DefaultDBReset {
 
     protected static void before() throws SQLException {
         Base.open(driver(), url(), user(), password());
+        System.out.println("Connecting to: " + url() + " with driver: " + driver() + ", db: " + db());
+        System.out.println("Generating schema");
         tryGenSchema();
+        System.out.println("Generating schema completed");
         Base.connection().setAutoCommit(false);
     }
 
@@ -32,7 +35,6 @@ public class DefaultDBReset {
         if (!schemaGenerated) {
             generateSchema();
             schemaGenerated = true;
-            System.out.println("DB: " + db() + ", Driver: " + driver());
         }
     }
 

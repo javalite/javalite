@@ -576,7 +576,7 @@ public class ModelTest extends ActiveJDBCTest {
         the(s.get("first_name")).shouldBeEqual("James");
         the(s.get("last_name")).shouldBeEqual("Meredith");
         the(s.get("dob")).shouldBeEqual(dob);
-        the(s.get("enrollment_date")).shouldBeEqual(enrollmentDate);
+        the(s.getTimestamp("enrollment_date")).shouldBeEqual(enrollmentDate);
     }
 
     @Test
@@ -636,7 +636,7 @@ public class ModelTest extends ActiveJDBCTest {
         the(s.get("first_name")).shouldBeEqual("Jim");
         the(s.get("last_name")).shouldBeEqual("Cary");
         the(s.get("dob")).shouldBeEqual(dob);
-        the(s.get("enrollment_date")).shouldBeEqual(enrollmentDate);
+        the(s.getTimestamp("enrollment_date")).shouldBeEqual(enrollmentDate);
     }
 
     @Test

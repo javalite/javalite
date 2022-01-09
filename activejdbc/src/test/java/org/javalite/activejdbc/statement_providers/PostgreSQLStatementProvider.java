@@ -139,8 +139,8 @@ public class PostgreSQLStatementProvider implements StatementProvider {
             );
         } else if (table.equals("articles")) {
             statements =  Arrays.asList(
-                    "INSERT INTO articles VALUES(1, 'ActiveJDBC basics', 'this is a test content of the article');",
-                    "INSERT INTO articles VALUES(2, 'ActiveJDBC polymorphic associations', 'Polymorphic associations are...');"
+                    "INSERT INTO articles (title, content) VALUES('ActiveJDBC basics', 'this is a test content of the article');",
+                    "INSERT INTO articles (title, content) VALUES('ActiveJDBC polymorphic associations', 'Polymorphic associations are...');"
             );
         } else if (table.equals("posts")) {
             statements =  Arrays.asList(

@@ -18,12 +18,15 @@ limitations under the License.
 package org.javalite.activejdbc.validation;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Salary;
 import org.javalite.activejdbc.test_models.Student;
 import org.junit.Test;
+
+import static org.javalite.activejdbc.test.JdbcProperties.driver;
 
 public class ConverterTest extends ActiveJDBCTest {
 
@@ -141,8 +144,15 @@ public class ConverterTest extends ActiveJDBCTest {
     @Test
     public void shouldGetConvertTimestampToString() {
         deleteAndPopulateTable("students");
-        the(Student.findById(1).getString("enrollment_date")).shouldBeEqual("01/20/1973 11 AM");
-        the(Student.findById(2).getString("enrollment_date")).shouldBeEqual("01/29/1987 1 PM");
+
+        if(driver().contains("mysql")){
+            the(Student.findById(1).getString("enrollment_date")).shouldBeEqual("1973-01-20T11:00");
+            the(Student.findById(2).getString("enrollment_date")).shouldBeEqual("1987-01-29T13:00");
+        }else {
+            the(Student.findById(1).getString("enrollment_date")).shouldBeEqual("01/20/1973 11 AM");
+            the(Student.findById(2).getString("enrollment_date")).shouldBeEqual("01/29/1987 1 PM");
+        }
+
     }
 
     @Test
@@ -156,8 +166,15 @@ public class ConverterTest extends ActiveJDBCTest {
         student = Student.findById(id);
         the(student.get("dob")).shouldBeA(java.sql.Date.class);
         the(student.getString("dob")).shouldBeEqual("02/29/2000");
-        the(student.get("enrollment_date")).shouldBeA(java.sql.Timestamp.class);
-        the(student.getString("enrollment_date")).shouldBeEqual("02/29/2008 12 PM");
+
+        if(driver().contains("mysql")){
+            the(student.get("enrollment_date")).shouldBeA(LocalDateTime.class);
+            the(student.getString("enrollment_date")).shouldBeEqual("2008-02-29T12:00");
+        }else{
+            the(student.get("enrollment_date")).shouldBeA(java.sql.Timestamp.class);
+            the(student.getString("enrollment_date")).shouldBeEqual("02/29/2008 12 PM");
+        }
+
     }
 
     @Test
