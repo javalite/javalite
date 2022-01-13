@@ -92,7 +92,7 @@
             <id>mysql</id>
             <properties>
                 <jdbc.driver>com.mysql.cj.jdbc.Driver</jdbc.driver>
-                <jdbc.url>jdbc:mysql://localhost:3307/activejdbc</jdbc.url>
+                <jdbc.url>jdbc:mysql://localhost:3308/activejdbc</jdbc.url>
                 <jdbc.user>root</jdbc.user>
                 <jdbc.password>p@ssw0rd</jdbc.password>
                 <!-- we need this to read the file with schema statements -->

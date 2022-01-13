@@ -1,1 +1,1 @@
-docker stop  mariadb
+docker stop javalite-mariadb
