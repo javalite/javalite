@@ -11,9 +11,9 @@ import static org.javalite.test.jspec.JSpec.the;
 import static org.javalite.db_migrator.DbUtils.*;
 
 
-public class MySQLMigrationSpec {
+public class MariaDBSQLMigrationSpec {
     private MigrationManager migrationManager;
-    private final String databaseName = "mysql_migration_test";
+    private final String databaseName = "mariadb_migration_test";
 
     @Before
     public void setup() throws Exception {

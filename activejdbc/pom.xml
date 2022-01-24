@@ -14,6 +14,12 @@
     <!-- Default to H2 if no profile provided -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jdbc.driver>org.h2.Driver</jdbc.driver>
+        <jdbc.url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1</jdbc.url>
+        <jdbc.user>sa</jdbc.user>
+        <jdbc.password />
+        <db>h2</db>
+        <mysql.connector.java.version>8.0.27</mysql.connector.java.version>
     </properties>
 
     <profiles>
@@ -74,10 +80,9 @@
             <properties>
                 <jdbc.driver>org.mariadb.jdbc.Driver</jdbc.driver>
                 <jdbc.url>jdbc:mariadb://localhost:3307/activejdbc</jdbc.url>
-                <jdbc.user>activejdbc</jdbc.user>
+                <jdbc.user>root</jdbc.user>
                 <jdbc.password>p@ssw0rd</jdbc.password>
-                <!-- we need this to read the file with schema statements -->
-                <db>mysql</db>
+                <db>mysql</db> <!-- we need this to read the file with schema statements -->
             </properties>
 
             <dependencies>
@@ -103,7 +108,7 @@
                 <dependency>
                     <groupId>mysql</groupId>
                     <artifactId>mysql-connector-java</artifactId>
-                    <version>8.0.27</version>
+                    <version>${mysql.connector.java.version}</version>
                 </dependency>
             </dependencies>
         </profile>

@@ -17,23 +17,20 @@ limitations under the License.
 package org.javalite.activejdbc;
 
 
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
-import com.fasterxml.jackson.databind.util.StdDateFormat;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.*;
 import org.javalite.common.Convert;
+import org.javalite.common.JsonHelper;
 import org.javalite.common.Util;
-import org.javalite.json.JSONHelper;
 import org.junit.Test;
 
-import java.text.ParseException;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Date;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
+import static org.javalite.activejdbc.test.JdbcProperties.driver;
 import static org.javalite.common.Convert.toLocalDateTime;
 import static org.javalite.common.Convert.toLong;
 
@@ -48,7 +45,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
         Person p = Person.findFirst("name = ? and last_name = ? ", "John", "Smith");
         //test no indent
         String json = p.toJson(false, "name", "last_name", "dob");
-        Map  map = JSONHelper.toMap(json);
+        Map  map = JsonHelper.toMap(json);
 
         a(map.get("name")).shouldBeEqual("John");
         a(map.get("last_name")).shouldBeEqual("Smith");
@@ -62,7 +59,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
         User u = personList.get(0);
         String json = u.toJson(true);
 
-        Map m = JSONHelper.toMap(json);
+        Map m = JsonHelper.toMap(json);
 
         a(m.get("first_name")).shouldBeEqual("Marilyn");
         a(m.get("last_name")).shouldBeEqual("Monroe");
@@ -80,7 +77,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
         List<User> personList = User.findAll().orderBy("id").include(Address.class);
         User u = personList.get(0);
         String json = u.toJson(false);
-        Map m = JSONHelper.toMap(json);
+        Map m = JsonHelper.toMap(json);
 
         a(m.get("first_name")).shouldBeEqual("Marilyn");
         a(m.get("last_name")).shouldBeEqual("Monroe");
@@ -98,7 +95,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
 
         User u = User.findById(1);
         String json = u.toJson(true, "email", "last_name");
-        JSONHelper.toJsonString(json); // validate
+        JsonHelper.toJsonString(json); // validate
         the(json).shouldBeEqual("{\n" +
                 "  \"email\":\"mmonroe@yahoo.com\",\n" +
                 "  \"last_name\":\"Monroe\"\n" +
@@ -111,14 +108,14 @@ public class ToJsonSpec extends ActiveJDBCTest {
         LazyList<User> personList = User.findAll().orderBy("id").include(Address.class);
 
         String json = personList.toJson(false);
-        JSONHelper.toJsonString(json); // validate
+        JsonHelper.toJsonString(json); // validate
     }
 
     @Test
     public void shouldEscapeDoubleQuote() {
         Page p = new Page();
         p.set("description", "bad \"/description\"");
-        Map map = JSONHelper.toMap(p.toJson(true));
+        Map map = JsonHelper.toMap(p.toJson(true));
         a(map.get("description").toString()).shouldBeEqual("bad \"/description\"");
 
         //ensure no NPE:
@@ -135,31 +132,40 @@ public class ToJsonSpec extends ActiveJDBCTest {
         Post p = Post.findById(1);
         String json = p.toJson(true, "title");
 
-        Map map = JSONHelper.toMap(json);
+        Map map = JsonHelper.toMap(json);
         Map injected = (Map) map.get("injected");
         a(injected.get("secret_name")).shouldBeEqual("Secret Name");
     }
 
     @Test
-    public void shouldReturnSecondsInDateTime() {
+    public void shouldConvertTimestampsToUTC() {
+
+        //Only MariaDB  test.
+        if(!driver().contains("mariadb")){
+            return;
+        }
         Person p = new Person();
         p.set("name", "john", "last_name", "doe").saveIt();
         p.refresh();
         String json = p.toJson(true);
 
         @SuppressWarnings("unchecked")
-        Map<String, String> map = JSONHelper.toMap(json);
+        Map<String, String> map = JsonHelper.toMap(json);
+        LocalDateTime modelLDT  = p.getLocalDateTime("created_at");
+        LocalDateTime mapLDT = Convert.toLocalDateTime(map.get("created_at"));
 
-        System.out.println("Map: " + map.get("created_at"));
-        System.out.println("Model: " + p.get("created_at"));
+        //need to convert to UTC because the Mode.toJson() converts timestamps to UTC.
+        TimeZone utc = TimeZone.getTimeZone("UTC");
+        LocalDateTime utcLDT = modelLDT.atZone(TimeZone.getDefault().toZoneId()).withZoneSameInstant(utc.toZoneId()).toLocalDateTime();
+        the(utcLDT).shouldBeEqual(mapLDT);
 
-        System.out.println("Map ldt: " + toLocalDateTime(map.get("created_at")));
 
-        long date = toLong(toLocalDateTime(map.get("created_at")));
+    }
+    @Test
+    public void should(){
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
+        System.out.println(LocalDateTime.parse("2022-01-24T17:13:55Z", dtf));
 
-        System.out.println("Map long: " + date);
-        System.out.println("Model : " + p.get("created_at") + ", " + p.get("created_at").getClass());
-        a(Math.abs(date - p.getTimestamp("created_at").getTime()) < 1000L).shouldBeTrue();
     }
 
     @Test
@@ -188,11 +194,11 @@ public class ToJsonSpec extends ActiveJDBCTest {
     public void shouldKeepParametersCase() {
         Person p = Person.create("name", "Joe", "last_name", "Schmoe");
 
-        Map map = JSONHelper.toMap(p.toJson(true));
+        Map map = JsonHelper.toMap(p.toJson(true));
         a(map.get("name")).shouldBeEqual("Joe");
         a(map.get("last_name")).shouldBeEqual("Schmoe");
 
-        map = JSONHelper.toMap(p.toJson(true, "Name", "Last_Name"));
+        map = JsonHelper.toMap(p.toJson(true, "Name", "Last_Name"));
         a(map.get("Name")).shouldBeEqual("Joe");
         a(map.get("Last_Name")).shouldBeEqual("Schmoe");
     }
@@ -203,7 +209,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
         deleteAndPopulateTables("libraries", "books", "readers");
         List<Book> books = Book.findAll().orderBy(Book.getMetaModel().getIdName()).include(Reader.class, Library.class);
 
-        Map book = JSONHelper.toMap(books.get(0).toJson(true));
+        Map book = JsonHelper.toMap(books.get(0).toJson(true));
         Map parents = (Map) book.get("parents");
         the(parents.size()).shouldBeEqual(1);
 
@@ -227,7 +233,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
         populateTable("computers");
 
         String json = Computer.findAll().include(Motherboard.class, Keyboard.class).toJson(true);
-        List list = JSONHelper.toList(json);
+        List list = JsonHelper.toList(json);
         Map m = (Map) list.get(0);
         Map parents = (Map) m.get("parents");
         List motherboards = (List) parents.get("motherboards");
@@ -242,7 +248,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
         Person p = new Person();
                                                                 //hack to fix a build on Windows
         p.set("name", Util.readResource("/bad.txt").replaceAll("\r\n", "\n"));
-        Map m = JSONHelper.toMap(p.toJson(true));
+        Map m = JsonHelper.toMap(p.toJson(true));
         a(m.get("name")).shouldBeEqual("bad\n\tfor\n\t\tJson");
     }
 }

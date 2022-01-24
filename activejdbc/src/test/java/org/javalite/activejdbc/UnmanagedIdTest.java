@@ -7,7 +7,7 @@ import org.junit.Test;
 /**
  * @author Igor Polevoy: 11/11/12 8:44 PM
  */
-public class UnmaganedIdTest extends ActiveJDBCTest {
+public class UnmanagedIdTest extends ActiveJDBCTest {
 
     @Test
     public void shouldInsertNewRecord(){

@@ -1023,7 +1023,8 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
     }
 
     /**
-     * Generates a JSON document from content of this model.
+     * Generates a JSON document from content of this model. Timestamps will be converted to the UTC format:
+     * "yyyy-MM-dd'T'HH:mm:ssX".
      *
      * @param pretty pretty format (human readable), or one line text.
      * @param attributeNames  list of attributes to include. No arguments == include all attributes.
