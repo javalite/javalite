@@ -1,6 +1,8 @@
 package org.javalite.async;
 
 import org.javalite.activejdbc.Base;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Standard command listener to process commands that require a database access.
@@ -16,6 +18,8 @@ import org.javalite.activejdbc.Base;
  * @author Igor Polevoy on 2/14/16.
  */
 public class DBCommandListener extends CommandListener {
+
+    private Logger logger = LoggerFactory.getLogger(DBCommandListener.class);
 
     private String jndiConnection;
 
@@ -69,5 +73,7 @@ public class DBCommandListener extends CommandListener {
      * @param command   command that was unsuccessfully executed
      * @param exception exception caught during command execution
      */
-    protected void onException(Command command, Exception exception) {}
+    protected void onException(Command command, Exception exception) {
+        logger.error(command.toXml() , exception);
+    }
 }
