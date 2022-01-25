@@ -21,13 +21,6 @@
 
     <profiles>
         <profile>
-            <id>jenkins</id>
-            <properties>
-                <database.properties>${basedir}/src/main/resources/jenkins-database.properties</database.properties>
-            </properties>
-        </profile>
-
-        <profile>
             <!--
             This profile exists for executing project locally, so that Cassandra docker container is started/stopped automatically.
             Jenkins has Cassandra running, so there is no need for this.

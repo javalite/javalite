@@ -18,12 +18,7 @@
     </properties>
 
     <profiles>
-        <profile>
-            <id>jenkins</id>
-            <properties>
-                <jdbc.properties.file>${basedir}/../config/jenkins-database.properties</jdbc.properties.file>
-            </properties>
-        </profile>
+
 
         <profile>
             <id>release</id>

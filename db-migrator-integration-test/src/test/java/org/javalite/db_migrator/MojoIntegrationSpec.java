@@ -84,10 +84,6 @@ public class MojoIntegrationSpec extends AbstractIntegrationSpec {
     }
 
 
-    @Test
-    public void should_H_DropCassandraKeyspace() {
-        dropCassandraKeyspaceIfJenkins();
-    }
 
     @Test
     public void should_I_RunTestCassandraProject() {
@@ -98,7 +94,6 @@ public class MojoIntegrationSpec extends AbstractIntegrationSpec {
     @Test
     public void should_J_DropCassandraKeyspaceAndMySQLSchema() {
         execute(testPropertiesProjectDir, "db-migrator:drop"); // will drop mysql
-        dropCassandraKeyspaceIfJenkins();
     }
 
     @Test
@@ -174,11 +169,5 @@ public class MojoIntegrationSpec extends AbstractIntegrationSpec {
             }
         }
         return null;
-    }
-
-    private void dropCassandraKeyspaceIfJenkins(){
-        if(isJenkins()){
-            execute(testCassandraProjectDir, "db-migrator:drop");
-        }
     }
 }

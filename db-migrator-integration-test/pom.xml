@@ -16,13 +16,7 @@
     </properties>
 
     <profiles>
-        <profile>
-            <!--exists to be passed to test projects below -->
-            <id>jenkins</id>
-            <properties>
-                <jdbc.properties.file>${basedir}/../config/jenkins-database.properties</jdbc.properties.file>
-            </properties>
-        </profile>
+
         <profile>
             <activation>
                 <activeByDefault>true</activeByDefault>

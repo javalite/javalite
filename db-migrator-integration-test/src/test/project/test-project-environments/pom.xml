@@ -20,15 +20,6 @@
         <database-properties>${basedir}/../../../../../config/database.properties</database-properties>
     </properties>
 
-    <profiles>
-        <profile>
-            <id>jenkins</id>
-            <properties>
-                <database-properties>${basedir}/../../../../../config/jenkins-database.properties</database-properties>
-            </properties>
-        </profile>
-    </profiles>
-
     <build>
         <plugins>
             <plugin>
@@ -39,13 +30,6 @@
                     <configFile>${database-properties}</configFile>
                     <environments>development, staging</environments>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.mariadb.jdbc</groupId>
-                        <artifactId>mariadb-java-client</artifactId>
-                        <version>2.7.3</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>

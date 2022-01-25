@@ -135,7 +135,6 @@
                         <systemPropertyVariables>
                             <oracle.jdbc.J2EE13Compliant>true</oracle.jdbc.J2EE13Compliant>
                             <activejdbc.log/>
-                            <profileId>${project.activeProfiles[0].id}</profileId>
                         </systemPropertyVariables>
                         <useSystemClassLoader>false</useSystemClassLoader>
                     </configuration>

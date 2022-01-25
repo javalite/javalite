@@ -23,12 +23,6 @@
     </properties>
 
     <profiles>
-        <profile>
-            <id>jenkins</id>
-            <properties>
-                <cassandra.url>jdbc:cassandra:///javalite?config_file=${project.basedir}/src/jenkins.application.conf</cassandra.url>
-            </properties>
-        </profile>
 
         <profile>
             <!--
@@ -99,6 +93,18 @@
                         </goals>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.mariadb.jdbc</groupId>
+                        <artifactId>mariadb-java-client</artifactId>
+                        <version>2.7.3</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.datastax.oss</groupId>
+                        <artifactId>java-driver-core-shaded</artifactId>
+                        <version>4.8.0</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>

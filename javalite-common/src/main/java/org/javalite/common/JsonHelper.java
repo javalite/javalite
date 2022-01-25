@@ -16,14 +16,8 @@ limitations under the License.
 
 package org.javalite.common;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.javalite.json.JSONHelper;
-import org.javalite.json.JSONParseException;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -32,5 +26,5 @@ import java.util.Map;
  * @author Igor Polevoy on 5/26/16.
  */
 
-@Deprecated()
+@Deprecated(since = "3.0")
 public class JsonHelper extends JSONHelper {}

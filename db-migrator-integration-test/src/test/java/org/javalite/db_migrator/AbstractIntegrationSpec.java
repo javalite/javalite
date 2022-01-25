@@ -31,7 +31,6 @@ import static org.javalite.common.Util.blank;
 abstract class AbstractIntegrationSpec {
 
     private static final String MVN = SystemUtils.IS_OS_WINDOWS ? "mvn.cmd " : "mvn ";
-    private static String profileId = System.getProperty("profileId");
 
     @BeforeClass
     public static void before(){
@@ -44,7 +43,7 @@ abstract class AbstractIntegrationSpec {
         List<String> argsList = new ArrayList<>(Arrays.asList(args));
 
 
-        String  mavenArgs = blank(profileId) ? Util.join(argsList, " ") : (Util.join(argsList, " ") + "  -P" + profileId);
+        String  mavenArgs = Util.join(argsList, " ");
 
         System.out.println("\n\nTEST MAVEN EXECUTION START >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         System.out.println("Executing: " + dir + " $> " + MVN + mavenArgs);
@@ -65,7 +64,4 @@ abstract class AbstractIntegrationSpec {
         return out + err;
     }
 
-    public boolean isJenkins(){
-        return !blank(profileId) && profileId.equals("jenkins");
-    }
 }

@@ -20,14 +20,6 @@
         <database-properties>${basedir}/../../../../../config/database.properties</database-properties>
     </properties>
 
-    <profiles>
-        <profile>
-            <id>jenkins</id>
-            <properties>
-                <database-properties>${basedir}/../../../../../config/jenkins-database.properties</database-properties>
-            </properties>
-        </profile>
-    </profiles>
 
     <build>
         <plugins>
