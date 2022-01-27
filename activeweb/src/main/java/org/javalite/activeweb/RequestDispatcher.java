@@ -140,7 +140,7 @@ public class RequestDispatcher implements Filter {
                 }
                 throw new InitException(e);
             }else{
-                logger.warn("Failed to init a class name: " + configClassName + ", proceeding without it.", e);
+                logger.warn("Failed to init a class name: " + configClassName + ", proceeding without it.");
             }
         }
     }
