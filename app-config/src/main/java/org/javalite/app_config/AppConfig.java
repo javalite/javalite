@@ -335,37 +335,49 @@ public class AppConfig implements Map<String, String> {
 
     @Override
     public String put(String key, String value) {
-        throw new UnsupportedOperationException("Operation not supported, not a real map");
+        Object val = props.put(key, new Property(key, value, "added dynamically"));
+        return val != null ? val.toString() : null;
     }
 
     @Override
     public String remove(Object key) {
-        throw new UnsupportedOperationException("Operation not supported, not a real map");
+        Object val = props.remove(key);
+        return val != null ? val.toString() : null;
     }
 
     @Override
     public void putAll(Map<? extends String, ? extends String> m) {
-        throw new UnsupportedOperationException("Operation not supported, not a real map");
+        for(String key: m.keySet()){
+            props.put(key, new Property(key, m.get(key), "added dynamically"));
+        }
     }
 
     @Override
     public void clear() {
-        throw new UnsupportedOperationException("Operation not supported, not a real map");
+        props.clear();
     }
 
     @Override
     public Set<String> keySet() {
-        throw new UnsupportedOperationException("Operation not supported, not a real map");
+        return props.keySet();
     }
 
     @Override
     public Collection<String> values() {
-        throw new UnsupportedOperationException("Operation not supported, not a real map");
+        List<String> vals = new ArrayList<>();
+        for(String key: props.keySet()){
+            vals.add(props.get(key).getValue());
+        }
+        return vals;
     }
 
     @Override
     public Set<Entry<String, String>> entrySet() {
-        throw new UnsupportedOperationException("Operation not supported, not a real map");
+        Set<Entry<String, String>> entries = new HashSet<>();
+        for(String key: props.keySet()){
+            entries.add(new AbstractMap.SimpleEntry<>(key, props.get(key).getValue()));
+        }
+        return entries;
     }
 
 
