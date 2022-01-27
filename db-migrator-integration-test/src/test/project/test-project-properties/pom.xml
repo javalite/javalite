@@ -15,19 +15,13 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-
-    <properties>
-        <database-properties>${basedir}/../../../../../config/database.properties</database-properties>
-    </properties>
-
-
     <build>
         <plugins>
             <plugin>
                 <groupId>org.javalite</groupId>
                 <artifactId>db-migrator-maven-plugin</artifactId>
                 <configuration>
-                    <configFile>${database-properties}</configFile>
+                    <configFile>${basedir}/../../../../../config/database.properties</configFile>
                     <environments>development</environments>
                 </configuration>
             </plugin>

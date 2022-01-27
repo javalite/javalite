@@ -22,6 +22,8 @@ public class CreateMojo extends AbstractDbMigrationMojo {
             switch (DbUtils.databaseType(getUrl())) {
                 case MYSQL:
                     break;
+                case MARIADB:
+                    break;
                 case SQL_SERVER:
                     break;
                 case POSTGRESQL:

@@ -49,7 +49,7 @@ class VersionStrategy {
     }
 
     void createSchemaVersionTable(DatabaseType dbType) {
-        LOGGER.info("Creating schema version table for {} DB", dbType);
+        LOGGER.info("Creating schema version table for {}.", dbType);
         exec(format(CREATE_VERSION_TABLE_MAP.getOrDefault(dbType, DEFAULT_VALUE), getTableName(), "version", "applied_on", "duration"));
     }
 

@@ -16,9 +16,6 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <properties>
-        <database-properties>${basedir}/../../../../../config/database.properties</database-properties>
-    </properties>
 
     <build>
         <plugins>
@@ -27,7 +24,7 @@
                 <artifactId>db-migrator-maven-plugin</artifactId>
                 <version>3.0-SNAPSHOT</version>
                 <configuration>
-                    <configFile>${database-properties}</configFile>
+                    <configFile>${basedir}/../../../../../config/database.properties</configFile>
                     <environments>development, staging</environments>
                 </configuration>
             </plugin>

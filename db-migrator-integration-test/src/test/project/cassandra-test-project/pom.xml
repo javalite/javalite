@@ -21,14 +21,7 @@
 
     <profiles>
         <profile>
-            <!--
-            This profile exists for executing project locally, so that Cassandra docker container is started/stopped automatically.
-            Jenkins has Cassandra running, so there is no need for this.
-            -->
             <id>local</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <build>
                 <plugins>
                     <plugin>

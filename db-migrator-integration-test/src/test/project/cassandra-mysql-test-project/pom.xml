@@ -22,28 +22,6 @@
         <cassandra.url>jdbc:cassandra:///javalite?config_file=${project.basedir}/src/application.conf</cassandra.url>
     </properties>
 
-    <profiles>
-
-        <profile>
-            <!--
-            This profile exists for executing project locally, so that Cassandra docker container is started/stopped automatically.
-            Jenkins has Cassandra running, so there is no need for this.
-            -->
-            <id>local</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>io.fabric8</groupId>
-                        <artifactId>docker-maven-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
     <build>
         <plugins>
 
@@ -54,7 +32,7 @@
                 <version>3.0-SNAPSHOT</version>
                 <executions>
                     <execution>
-                        <id>cassandra_create</id>
+                        <id>cassandra_migrations</id>
                         <configuration>
                             <driver>${cassandra.driver}</driver>
                             <url>${cassandra.url}</url>
@@ -66,26 +44,12 @@
                             <goal>create</goal>
                         </goals>
                     </execution>
-
                     <execution>
-                        <id>cassandra_migrate</id>
-                        <configuration>
-                            <driver>${cassandra.driver}</driver>
-                            <url>${cassandra.url}</url>
-                        </configuration>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>migrate</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>mysql_migrations</id>
+                        <id>mariadb_migrations</id>
                         <configuration>
                             <migrationsPath>src/migrations/mysql</migrationsPath>
-                            <driver>${driver}</driver>
-                            <url>${url}</url>
-                            <username>${username}</username>
-                            <password>${password}</password>
+                            <configFile>${basedir}/../../../../../config/database.properties</configFile>
+                            <environments>development</environments>
                         </configuration>
                         <phase>compile</phase>
                         <goals>

@@ -1,0 +1,1 @@
+docker stop `docker  container ls | grep cassandra | awk '{print $1}'`

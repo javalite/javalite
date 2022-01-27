@@ -21,6 +21,7 @@ limitations under the License.
 package org.javalite.db_migrator;
 
 import org.javalite.activejdbc.Base;
+import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -31,7 +32,6 @@ import static org.javalite.db_migrator.JdbcPropertiesOverride.*;
 import static org.javalite.test.jspec.JSpec.the;
 import static org.junit.Assert.*;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class MojoIntegrationSpec extends AbstractIntegrationSpec {
 
     private String testProjectDir = "src/test/project/test-project";
@@ -40,42 +40,33 @@ public class MojoIntegrationSpec extends AbstractIntegrationSpec {
     private String testCassandraProjectDir = "src/test/project/cassandra-test-project";
 
 
-    @Test
-    public void should_A_DropTestProjectSchema() {
-        // drop test project schema
-        // we are  not testing the  outcome here, since if the schema does not exist, we don't care about the error.
-        execute(testProjectDir, "db-migrator:drop");
+
+    @BeforeClass
+    public static void before(){
+        //lets install the parent pom
+        execute("src/test/project", "install", "-N");
     }
 
+
     @Test
-    public void should_B_RunTestProject() {
+    public void shouldRunTestProject() {
+        execute(testProjectDir, "db-migrator:drop");
         runTest(testProjectDir, "The book is: Hello, Book A!");
     }
 
-    @Test
-    public void should_C_DropTestProjectSchema() {
 
-        // drop test project schema
-        // we are  not testing the  outcome here, since if the schema does not exist, we don't care about the error.
+    @Test
+    public void shouldRunTestProjectWithProperties() {
         execute(testPropertiesProjectDir, "db-migrator:drop");
-    }
-
-    @Test
-    public void should_D_RunTestProjectWithProperties() {
         runTest(testPropertiesProjectDir, null);
     }
 
 
     @Test
-    public void should_E_DropTestProjectSchemas() {
-
+    public void shouldRunInEnvironments(){
         // drop test project schema
-        // we are  not testing the  outcome here, since if the schema does not exist, we don't care about the error.
         execute(testEnvironmentsProjectDir, "db-migrator:drop");
-    }
 
-    @Test
-    public void should_F_RunInEnvironments(){
         // create database
         String output = execute(testEnvironmentsProjectDir, "db-migrator:create");
         the(output).shouldContain("Created database " + url());
@@ -83,27 +74,29 @@ public class MojoIntegrationSpec extends AbstractIntegrationSpec {
         the(output).shouldContain("BUILD SUCCESS");
     }
 
-
-
     @Test
-    public void should_I_RunTestCassandraProject() {
-        String out = execute("src/test/project/cassandra-test-project", "test");
+    public void shouldRunTestCassandraProject() {
+
+        execute(testCassandraProjectDir, "db-migrator:drop");
+
+        String out = execute(testCassandraProjectDir, "test");
         the(out).shouldContain("BUILD SUCCESS");
     }
 
     @Test
-    public void should_J_DropCassandraKeyspaceAndMySQLSchema() {
-        execute(testPropertiesProjectDir, "db-migrator:drop"); // will drop mysql
-    }
+    public void shouldRunTestProjectWithCassandraAndMariaDB() {
 
-    @Test
-    public void should_K_RunTestProjectWithCassandraAndMySQL() {
         String projectDir = "src/test/project/cassandra-mysql-test-project";
-        execute(projectDir, "db-migrator:create");
+
+        //Drop databases:
+        execute(projectDir, "db-migrator:drop@mariadb_migrations");
+        execute(projectDir, "db-migrator:drop@cassandra_migrations");
+
+        execute(projectDir, "db-migrator:create@mariadb_migrations");
+
         String  out = execute(projectDir, "test");
         System.out.println(out);
         the(out).shouldContain("BUILD SUCCESS");
-
     }
 
 

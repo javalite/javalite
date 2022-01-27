@@ -1,0 +1,1 @@
+docker start `docker container ls -a | grep javalite-cassandra | awk '{print $1}'`

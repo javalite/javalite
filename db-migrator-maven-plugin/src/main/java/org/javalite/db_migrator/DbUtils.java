@@ -20,6 +20,7 @@ public class DbUtils {
 
     private static final String POSTGRESQL_FRAGMENT = ":postgresql:";
     private static final String MYSQL_FRAGMENT = ":mysql:";
+    private static final String MARIADB_FRAGMENT = ":mariadb:";
     private static final String HSQL_FRAGMENT = ":hsqldb:";
     private static final String H2_FRAGMENT = ":h2:";
     private static final String SQL_SERVER_JTDS_FRAGMENT = ":jtds:sqlserver:";
@@ -47,6 +48,9 @@ public class DbUtils {
             return "org.postgresql.Driver";
         }
         if (url.contains(MYSQL_FRAGMENT)) {
+            return "com.mysql.cj.jdbc.Driver";
+        }
+        if (url.contains(MARIADB_FRAGMENT)) {
             return "org.mariadb.jdbc.Driver";
         }
         if (url.contains(HSQL_FRAGMENT)) {
@@ -85,6 +89,9 @@ public class DbUtils {
         }
         if (url.contains(MYSQL_FRAGMENT)) {
             return MYSQL;
+        }
+        if (url.contains(MARIADB_FRAGMENT)) {
+            return MARIADB;
         }
         if (url.contains(HSQL_FRAGMENT)) {
             return HSQL;

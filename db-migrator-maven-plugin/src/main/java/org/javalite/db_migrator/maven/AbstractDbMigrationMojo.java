@@ -67,6 +67,15 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
     }
 
     public final void execute() throws MojoExecutionException {
+
+        getLog().info("*********** The following properties are configured: *************");
+        getLog().info("url: " + url);
+        getLog().info("driver: " + driver);
+        getLog().info("username: " + username);
+        getLog().info("environments: " + environments);
+        getLog().info("configFile: " + configFile);
+        getLog().info("mergeProperties: " + mergeProperties);
+
         Properties originMergeProperties = null;
         if (mergeProperties != null) {
             try {
@@ -261,6 +270,7 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
             }
         }
 
+        getLog().info("Opening a connection to: " + url  + " using a driver:" + getDriver());
         Base.open(getDriver(), url, getUsername(), getPassword());
 
         try{ // Ignoring this is needed for the CreateMojo, since the keyspace does not exist yet

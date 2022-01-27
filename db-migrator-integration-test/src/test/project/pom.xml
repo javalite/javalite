@@ -16,10 +16,6 @@
 
 
     <properties>
-        <driver>org.mariadb.jdbc.Driver</driver>
-        <url>jdbc:mariadb://localhost:3307/test_project</url>
-        <username>root</username>
-        <password>p@ssw0rd</password>
         <javalite.version>3.0-SNAPSHOT</javalite.version>
         <mariadb.connector.version>2.7.4</mariadb.connector.version>
     </properties>
@@ -31,12 +27,6 @@
                     <groupId>org.javalite</groupId>
                     <artifactId>db-migrator-maven-plugin</artifactId>
                     <version>${javalite.version}</version>
-                    <configuration>
-                        <driver>${driver}</driver>
-                        <url>${url}</url>
-                        <username>${username}</username>
-                        <password>${password}</password>
-                    </configuration>
                     <dependencies>
                         <dependency>
                             <groupId>org.mariadb.jdbc</groupId>

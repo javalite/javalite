@@ -15,15 +15,19 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.javalite</groupId>
                 <artifactId>db-migrator-maven-plugin</artifactId>
                 <configuration>
+                    <environments>development</environments>
+                    <configFile>${project.basedir}/../../../../../config/database.properties</configFile>
                     <mergeProperties>${project.basedir}/src/merge-vals.properties</mergeProperties>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
     <dependencies>

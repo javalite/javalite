@@ -32,12 +32,6 @@ abstract class AbstractIntegrationSpec {
 
     private static final String MVN = SystemUtils.IS_OS_WINDOWS ? "mvn.cmd " : "mvn ";
 
-    @BeforeClass
-    public static void before(){
-        //lets install the parent pom
-        execute("src/test/project", "install", "-N");
-    }
-
     static String execute(String dir, String... args) {
 
         List<String> argsList = new ArrayList<>(Arrays.asList(args));
