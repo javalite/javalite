@@ -1,4 +1,4 @@
-package org.javalite.activeweb;
+package org.javalite.activeweb.mojo;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -48,7 +48,7 @@ public class HelpMojo extends AbstractMojo {
                                        "version": "3.0.0"
                                      },
                                      "paths":{
-                                        {{paths}}
+                                        
                                       }
                                    }
                                    

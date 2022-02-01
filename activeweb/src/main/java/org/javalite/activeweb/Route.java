@@ -66,7 +66,7 @@ public class Route {
         }
 
         this.actionName = actionName;
-        ActionAndArgument actionAndArgument = RouteUtil.getActionAndArgument(controller, actionName);
+        ActionAndArgument actionAndArgument = RouteUtil.getActionAndArgument(controller.getClass(), actionName);
         if( actionAndArgument == null || actionAndArgument.getActionMethod() == null){
             throw new ActionNotFoundException("Failed to find an action method for action: '" + actionName + "' in controller: " + controller.getClass().getName());
         }

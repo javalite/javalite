@@ -1,3 +1,7 @@
 {
-  "message": "hello"
+  "responses": {
+    "200": {
+      "description": "200 all good"
+    }
+  }
 }

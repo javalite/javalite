@@ -6,40 +6,15 @@ import org.javalite.activeweb.annotations.POST;
 
 public class CustomController extends AppController {
 
-    @GET("""
-            {
-              "operationId": "getVersionDetailsv2",
-              "summary": "Show API version details",
-              "responses": {
-                "200": {
-                  "description": "200 response",
-                  "content": {
-                    "application/json": {
-                      "examples": {}
-                    }
-                  }
-                },
-                "203": {
-                  "description": "203 response",
-                  "content": {
-                    "application/json": {
-                      "examples": {}
-                    }
-                  }
-                }
-              }
-            }""")
+    @GET
     @POST("""
             {
-              "operationId": "getVersionDetailsv2",
+              "operationId": "getVersionDetailsv4",
               "summary": "Show API version details",
               "responses": {
                 "200": {
-                  "description": "200 response",
-                  "content": {
-                    "application/json": {
-                      "examples": {
-                      }
+                  "description": "200 response"
+                  
                     }
                   }
                 }
@@ -49,17 +24,11 @@ public class CustomController extends AppController {
 
     @POST("""
             {
-              "operationId": "getVersionDetailsv2",
+              
               "summary": "Show API version details",
               "responses": {
                 "200": {
-                  "description": "200 response",
-                  "content": {
-                    "application/json": {
-                      "examples": {
-                      }
-                    }
-                  }
+                  "description": "200 response"
                 }
                          
               }

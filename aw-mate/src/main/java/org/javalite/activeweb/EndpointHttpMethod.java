@@ -1,11 +1,11 @@
 package org.javalite.activeweb;
 
 /**
- * This record is to encapsulate an HTTP method and its corresponding API docs if any.
+ * This class is to encapsulate an HTTP method and its corresponding API docs if any.
  */
 public class EndpointHttpMethod{
-    private HttpMethod httpMethod;
-    private String httpMethodAPI;
+    private final HttpMethod httpMethod;
+    private final String httpMethodAPI;
 
     public EndpointHttpMethod(HttpMethod httpMethod, String httpMethodAPI) {
         this.httpMethod = httpMethod;

@@ -176,3 +176,7 @@ app-config-spec/src/test/project/test-project/target
 
 activejdbc/docker/mariadb/data
 activejdbc/docker/data
+
+aw-mate/src/test/project/activeweb-openapi-example/.idea
+aw-mate/src/test/project/activeweb-openapi-example/activeweb-openapi-example.iml
+aw-mate/src/test/project/activeweb-openapi-example/target

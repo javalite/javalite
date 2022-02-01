@@ -1,11 +1,14 @@
 package org.javalite.activeweb;
 
-import io.github.classgraph.*;
+import io.github.classgraph.ClassInfo;
+import io.github.classgraph.MethodInfo;
+import io.github.classgraph.MethodInfoList;
 import org.javalite.activeweb.annotations.*;
 import org.javalite.common.Inflector;
-import org.javalite.json.JSONHelper;
-import org.javalite.common.Templator;
 import org.javalite.common.Util;
+import org.javalite.json.JSONHelper;
+import org.javalite.json.JSONMap;
+import org.javalite.json.JSONParseException;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,14 +17,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.javalite.activeweb.Configuration.getControllerClassInfos;
 import static org.javalite.common.Collections.list;
-import static org.javalite.common.Collections.map;
 import static org.javalite.common.Util.blank;
 
-class EndpointFinder {
+public class EndpointFinder {
 
     private final String routeConfigClassName;
     private final ClassLoader classLoader;
@@ -37,14 +41,14 @@ class EndpointFinder {
         this("app.config.RouteConfig", classLoader);
     }
 
-    protected List<EndPointDefinition> getCustomEndpointDefinitions(Format format) {
+    public List<EndPointDefinition> getCustomEndpointDefinitions(Format format) {
         List<EndPointDefinition> endPointDefinitions = new ArrayList<>();
         try {
             AbstractRouteConfig rc = initRouteConfig(routeConfigClassName, classLoader);
             strictMode = rc.isStrictMode();
             List<RouteBuilder> routes = rc.getRoutes();
             for (RouteBuilder routeBuilder : routes) {
-                ActionAndArgument actionAndArgument = RouteUtil.getActionAndArgument(routeBuilder.getController(), routeBuilder.getActionName());
+                ActionAndArgument actionAndArgument = RouteUtil.getActionAndArgument(routeBuilder.getControllerClass(), routeBuilder.getActionName());
 
                 if (actionAndArgument == null) {
                     System.err.println("WARNING: Failed to find a method for controller: '" + routeBuilder.getController().getClass() + "' and action: '" + routeBuilder.getActionName() + "'. Check your RouteConfig class.");
@@ -54,7 +58,7 @@ class EndpointFinder {
 
                 Class<?> argumentType = actionAndArgument.getActionMethod() != null ? actionAndArgument.getArgumentType() : null;
                 String argumentTypeName = argumentType != null ? argumentType.getName() : "";
-                EndPointDefinition definition = new EndPointDefinition(getEndpointMethods(actionAndArgument.getActionMethod(), format), routeBuilder.getRouteConfig(), routeBuilder.getController().getClass().getName(),
+                EndPointDefinition definition = new EndPointDefinition(getEndpointMethods(actionAndArgument.getActionMethod(), format), routeBuilder.getRouteConfig(), routeBuilder.getControllerClass().getName(),
                         actionAndArgument.getActionMethod().getName(), argumentTypeName);
                 endPointDefinitions.add(definition);
             }
@@ -73,7 +77,7 @@ class EndpointFinder {
         return rc;
     }
 
-    List<EndPointDefinition> getStandardEndpointDefinitions(Format format) {
+    public List<EndPointDefinition> getStandardEndpointDefinitions(Format format) {
 
         try {
             List<EndPointDefinition> endPointDefinitions = new ArrayList<>();
@@ -146,26 +150,24 @@ class EndpointFinder {
     @SuppressWarnings("unchecked")
     private List<EndpointHttpMethod> getEndpointMethods(Method actionMethod, Format format) {
         List<EndpointHttpMethod> endpointMethods = new ArrayList<>();
-        List<Class> annotationsClasses = list(GET.class, POST.class, PUT.class, DELETE.class, OPTIONS.class, PATCH.class, HEAD.class);
+        List<Class<? extends Annotation>> annotationsClasses = list(GET.class, POST.class, PUT.class, DELETE.class, OPTIONS.class, PATCH.class, HEAD.class);
 
         try {
-            if (actionMethod.getAnnotations().length == 0) {
 
-                Annotation getAnnotation = this.getClass().getDeclaredMethod("foo").getAnnotation(GET.class); // quick hack just for this annotation because it is a default
-                endpointMethods.add(new EndpointHttpMethod(HttpMethod.GET, getActionAPI(GET.class, actionMethod, getAnnotation, format)));
-                return endpointMethods;
-            } else {
+            if(annotationsClasses.stream().anyMatch(actionMethod::isAnnotationPresent)){
                 for (Class annotationClass : annotationsClasses) {
                     Annotation annotation = actionMethod.getAnnotation(annotationClass);
-
                     if(annotation == null){
                         continue;
                     }
                     String apiText = getActionAPI(annotationClass, actionMethod, annotation, format);
                     endpointMethods.add(new EndpointHttpMethod(HttpMethod.method(annotation), apiText));
                 }
+            }else{
+                Annotation getAnnotation = this.getClass().getDeclaredMethod("foo").getAnnotation(GET.class); // quick hack just for this annotation because it is a default
+                endpointMethods.add(new EndpointHttpMethod(HttpMethod.GET, getActionAPI(GET.class, actionMethod, getAnnotation, format)));
+                return endpointMethods;
             }
-
         }
         catch (OpenAPIException e){
             throw e;
@@ -174,6 +176,7 @@ class EndpointFinder {
         }
         return endpointMethods;
     }
+
 
     @SuppressWarnings("unchecked")
     private String getActionAPI(Class annotationClass, Method actionMethod,   Annotation annotation, Format format) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException {
@@ -186,7 +189,11 @@ class EndpointFinder {
                     + " contains the OpenAPI documentation in a corresponding file, as well as in the annotation "
                     + annotationClass.getSimpleName() + ". Only one place of record is allowed." );
         }
-        return !blank(annotationApiText) ? annotationApiText : fileApiText ;
+
+        String apiDoc  = !blank(annotationApiText) ? annotationApiText : fileApiText;
+
+
+        return blank(apiDoc) ? null: apiDoc.replaceAll("([\\r\\n])", "");
     }
 
     @GET
@@ -228,22 +235,38 @@ class EndpointFinder {
 
     public String getOpenAPIDocs(String baseTemplateContent, Format format) {
 
-        List<String> paths = new ArrayList<>();
+        List<EndPointDefinition> standardEndpointDefinitions =  getStandardEndpointDefinitions(format);
+        List<EndPointDefinition> customEndpointDefinitions = getCustomEndpointDefinitions(format);
 
-        for (EndPointDefinition endPointDefinition : getStandardEndpointDefinitions(format)) {
-            if (endPointDefinition.hasOpenAPI()) {
-                paths.add(endPointDefinition.getOpenAPIdoc(format));
-            }
-        }
-        for (EndPointDefinition endPointDefinition : getCustomEndpointDefinitions(format)) {
-            if (endPointDefinition.hasOpenAPI()) {
-                paths.add(endPointDefinition.getOpenAPIdoc(format));
-            }
+        Map<String, Object> paths = new HashMap<>();
+        for (EndPointDefinition endPointDefinition : standardEndpointDefinitions) {
+            Map<String, Map> methods = getMethodsAPI(endPointDefinition);
+            paths.put(endPointDefinition.getPath(), methods );
         }
 
-        String json = Templator.mergeFromTemplate(baseTemplateContent, map("paths", Util.join(paths, format.getDelimiter())), false);
-        //proper JSON formatting:
-        return JSONHelper.toJsonString(JSONHelper.toMap(json), true);
+        for (EndPointDefinition endPointDefinition : customEndpointDefinitions) {
+            Map<String, Map> methods = getMethodsAPI(endPointDefinition);
+            paths.put(endPointDefinition.getPath(), methods );
+        }
+
+        JSONMap baseMap =  JSONHelper.toJSONMap(baseTemplateContent);
+        baseMap.put("paths", paths);
+        return JSONHelper.toJsonString(baseMap);
+    }
+
+    private Map<String, Map> getMethodsAPI(EndPointDefinition endPointDefinition) {
+        Map<String, Map> methods = new HashMap<>();
+        for (EndpointHttpMethod endpointHttpMethod : endPointDefinition.getEndpointMethods()) {
+            String methodAPI = endpointHttpMethod.getHttpMethodAPI();
+            if(methodAPI != null){
+                try{
+                    methods.put(endpointHttpMethod.getHttpMethod().toString().toLowerCase(), JSONHelper.toMap(methodAPI));
+                }catch(JSONParseException e){
+                    throw  new OpenAPIException("Failed to process docs for endpoint: " + endPointDefinition.getControllerClassName() + "#" +  endPointDefinition.getActionMethodName() + ". See that the API docs are real JSON.", e);
+                }
+            }
+        }
+        return methods;
     }
 
     public void setApiLocation(String apiLocation) {

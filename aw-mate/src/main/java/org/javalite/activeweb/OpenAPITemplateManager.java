@@ -24,8 +24,7 @@ import org.javalite.common.Util;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Map;
+
 
 import static org.javalite.common.Collections.map;
 

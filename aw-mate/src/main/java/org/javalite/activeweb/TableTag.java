@@ -22,6 +22,6 @@ public class TableTag implements TemplateDirectiveModel {
         }
 
         Writer writer = environment.getOut(); //to write output to
-        writer.write(Util.readFile(params.get("file").toString()));
+        writer.write(Util.readFile(params.get("file").toString()).replace('"', '\''));
     }
 }

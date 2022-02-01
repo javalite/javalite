@@ -44,6 +44,10 @@ public class EndPointDefinition {
 
     }
 
+    public List<EndpointHttpMethod> getEndpointMethods() {
+        return endpointMethods;
+    }
+
     public List<HttpMethod> getHTTPMethods() {
         return this.endpointMethods.stream().map(EndpointHttpMethod::getHttpMethod).collect(Collectors.toList());
     }
@@ -68,26 +72,6 @@ public class EndPointDefinition {
             }
         }
         return hasAPI;
-    }
-
-    public String getOpenAPIdoc(Format format) {
-
-        List<String> apis = new ArrayList<>();
-        if(format.equals(Format.JSON)){
-            for (EndpointHttpMethod endpointHttpMethod : endpointMethods) {
-                String httpMethod = endpointHttpMethod.getHttpMethod().toString().toLowerCase();
-                String httpMethodAPI =  endpointHttpMethod.getHttpMethodAPI();
-                if(!blank(httpMethodAPI)){
-                    apis.add( "\"" + httpMethod + "\": " + httpMethodAPI);
-                }
-
-            }
-
-            return apis.size() > 0?   "\"" + path  + "\":{"+ join(apis, ",") + "}"
-                    : "}}";
-        }else {
-            throw new UnsupportedOperationException("Not implemented yet");
-        }
     }
 
     public boolean contains(EndpointHttpMethod[] endpointHttpMethods) {

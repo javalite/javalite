@@ -20,7 +20,12 @@ public class HttpMethodsController extends AppController {
 
     @PUT("""
             {
-            "description" : "docs for doPut"
+            "description" : "docs for doPut",
+            "responses": {
+                      "200": {
+                        "description": "200 put"
+                      }
+              }
             }
             """)
     public void doPut() {
@@ -28,7 +33,12 @@ public class HttpMethodsController extends AppController {
 
     @HEAD("""
             {
-            "description" : "docs for doHead"
+            "description" : "docs for doHead",
+            "responses": {
+                      "200": {
+                        "description": "200 head"
+                      }
+              }       
             }
             """)
     public void doHead() {

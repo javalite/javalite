@@ -24,7 +24,6 @@ public class OpenAPITemplateManagerSpec {
     public void shouldMergeTemplateFromFile() throws TemplateException, IOException {
         OpenAPITemplateManager m = new OpenAPITemplateManager();
         String jsonDoc = m.process(new File("src/test/resources/table-template.json"));
-        System.out.println(jsonDoc);
         the(jsonDoc).shouldBeEqual("""
                 { "description" : "<table> <tr> <td>First name</td> <td>Last name</td> </tr> <tr> <td>Freddie</td> <td>Mercury</td> </tr> </table>" }""");
         String description = JSONHelper.toMap(jsonDoc).get("description").toString();

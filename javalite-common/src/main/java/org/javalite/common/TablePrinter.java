@@ -1,15 +1,42 @@
-package org.javalite.activeweb;
-
-import org.javalite.common.Util;
+package org.javalite.common;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
 /**
- * This code was stolen... ehhr borrowed from: https://itsallbinary.com/java-printing-to-console-in-table-format-simple-code-with-flexible-width-left-align-header-separator-line/
+ * Prints a two dimensional array to STDIO as a formatted table. Width of columns will be automatically adjusted  based on data.
+ *
+ * <p></p>
+ *
+ * <h4>Usage:</h4>
+ * <pre>
+ *     String[][] table = new String[][] {
+ *             { "id", "First Name", "Last Name", "Age" },
+ *             { "1", "John", "Johnson", "45" },
+ *             { "2", "Tom", "", "35" },
+ *             { "3", "Rose", "Johnson", "23"},
+ *             { "4", "Jimmy", "Kimmel", "" }
+ *     };
+ *     TablePrinter.printTable(table);
+ * </pre>
+ *
+ * The above will result in this output:
+ *
+ * <pre>
+ * +----+------------+-----------+-----+
+ * | id | First Name | Last Name | Age |
+ * +----+------------+-----------+-----+
+ * | 1  | John       | Johnson   | 45  |
+ * | 2  | Tom        |           | 35  |
+ * | 3  | Rose       | Johnson   | 23  |
+ * | 4  | Jimmy      | Kimmel    |     |
+ * +----+------------+-----------+-----+
+ * </pre>
+ *
+ * This code was <strike>stolen</strike>... ehhr borrowed from:
+ * <a href="https://itsallbinary.com/java-printing-to-console-in-table-format-simple-code-with-flexible-width-left-align-header-separator-line/">Printing to CONSOLE in TABLE format</a>.
  */
 public class TablePrinter {
 
@@ -17,9 +44,13 @@ public class TablePrinter {
     /*
      * Table to print in console in 2-dimensional array. Each sub-array is a row.
      */
-    static String[][] table = new String[][] { { "id", "First Name", "Last Name", "Age" },
-            { "1", "John", "Johnson", "45" }, { "2", "Tom", "", "35" }, { "3", "Rose", "Johnson asdfg asd fgafgr ar rg", "23"},
-            { "4", "Jimmy", "Kimmel", "" } };
+    static String[][] table = new String[][] {
+            { "id", "First Name", "Last Name", "Age" },
+            { "1", "John", "Johnson", "45" },
+            { "2", "Tom", "", "35" },
+            { "3", "Rose", "Johnson", "23"},
+            { "4", "Jimmy", "Kimmel", "" }
+    };
 
 
     //leaving here as an example
@@ -28,7 +59,7 @@ public class TablePrinter {
     }
 
     /**
-     * Expects a two-dimensional array of strings. Does no tolerate null values. ALl cells must be String instances.
+     * Expects a two-dimensional array of strings. Does not tolerate null values. ALl cells must be String instances.
      */
     public static void printTable(String[][] table) {
         /*
@@ -86,35 +117,4 @@ public class TablePrinter {
                 .forEach(a -> System.out.printf(formatString.toString(), table[a]));
         System.out.print(line);
     }
-
-
-
-    static void printEndpointDefinitions(String title, List<EndPointDefinition> endPointDefinitions){
-        System.out.println(String.format("""
-                                  
-                **
-                **  %s
-                **""", title));
-        String[][] table  = new String[endPointDefinitions.size() + 1][5];
-        table[0][0] = "Number";
-        table[0][1] = "Path";
-        table[0][2] = "HTTP Methods";
-        table[0][3] = "Controller";
-        table[0][4] = "Method";
-
-
-
-        for (int row = 0; row < endPointDefinitions.size() ; row++) {
-            EndPointDefinition endPointDefinition = endPointDefinitions.get(row);
-            table[row + 1][0] = Integer.toString(row + 1);
-            table[row + 1][1] = endPointDefinition.getPath();
-            table[row + 1][2] = Util.join(endPointDefinition.getHTTPMethods(), ",");
-            table[row + 1][3] = endPointDefinition.getControllerClassName();
-            table[row + 1][4] = endPointDefinition.getDisplayControllerMethod();
-
-        }
-        printTable(table);
-    }
-
-
 }

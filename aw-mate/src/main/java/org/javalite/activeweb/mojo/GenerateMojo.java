@@ -1,4 +1,4 @@
-package org.javalite.activeweb;
+package org.javalite.activeweb.mojo;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -6,16 +6,14 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
-import org.javalite.common.Util;
+import org.javalite.activeweb.EndpointFinder;
+import org.javalite.activeweb.Format;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
-import static org.javalite.activeweb.ClassPathUtil.getCombinedClassLoader;
+import static org.javalite.activeweb.mojo.ClassPathUtil.getCombinedClassLoader;
 import static org.javalite.common.Util.blank;
 
 
@@ -39,7 +37,7 @@ public class GenerateMojo extends AbstractMojo {
      *      "version": "3.0.0"
      *       },
      *       "paths":{
-     *          {{paths}}
+     *
      *       }
      *  }
      */
@@ -78,32 +76,20 @@ public class GenerateMojo extends AbstractMojo {
             localFormat = Format.JSON;
         } else if (Format.YAML.matches(format)) {
             throw new IllegalArgumentException("Yaml is not supported yet. Use JSON.");
-        } else if (Format.JSON.matches(format)) {
-            throw new IllegalArgumentException("Format not supported. Use one of: json, yml, yaml");
         }
 
         try {
 
-            String templateContent = Util.readFile(templateFile);
+            Generator generator = new Generator();
             EndpointFinder endpointFinder = new EndpointFinder(getCombinedClassLoader(project));
-            if(!blank(apiLocation)){
-                endpointFinder.setApiLocation(apiLocation);
-            }
-            String content = endpointFinder.getOpenAPIDocs(templateContent, localFormat);
-            Files.writeString(Paths.get(targetFile), content);
+            endpointFinder.setApiLocation(apiLocation);
+            String mergedContent = generator.generate(templateFile, endpointFinder, localFormat);
+
+            Files.writeString(Paths.get(targetFile), mergedContent);
+
             getLog().info("Output saved to: " + targetFile);
         } catch (Exception e) {
             getLog().error("Failed to generate OpenAPI", e);
         }
-    }
-
-    private List<String> getApiChunks(List<EndPointDefinition> customEndpointDefinitions, Format format) {
-        List<String> chunks = new ArrayList<>();
-        for (EndPointDefinition endPointDefinition : customEndpointDefinitions) {
-            if (endPointDefinition.hasOpenAPI()) {
-                chunks.add(endPointDefinition.getOpenAPIdoc(format));
-            }
-        }
-        return chunks;
     }
 }

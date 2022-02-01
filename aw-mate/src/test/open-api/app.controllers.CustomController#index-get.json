@@ -3,11 +3,13 @@
   "summary": "Some custom stuff 11",
   "responses": {
     "200": {
-      "description" : "<@table file='src/main/openapi/description_table.html'/>",
+      "description" : "<@table file='src/test/open-api/description_table.html'/>",
       "content": {
         "application/json": {
           "examples": {
-            "message": "none"
+            "foo": {
+              "value": "Just a foo?"
+            }
           }
         }
       }

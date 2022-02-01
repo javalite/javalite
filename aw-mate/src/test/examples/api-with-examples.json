@@ -64,7 +64,7 @@
     },
     "/v2": {
       "get": {
-        "operationId": "getVersionDetailsv2",
+        "operationId": "getVersionDetailsv3",
         "summary": "Show API version details",
         "responses": {
           "200": {

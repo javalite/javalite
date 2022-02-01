@@ -1,20 +1,9 @@
 package org.javalite.activeweb;
 
 
-import java.util.List;
-
-import static org.javalite.common.Collections.list;
-
 public enum Format {
 
-    JSON(","), YAML("\n\r");
-
-    private String delimiter;
-
-    Format(String delimiter){
-         this.delimiter = delimiter;
-    }
-
+    JSON, YAML;
     public boolean matches(String format){
 
         if(this.equals(JSON) && format.equalsIgnoreCase("json")){
@@ -23,9 +12,5 @@ public enum Format {
             return true;
         }
         return false;
-    }
-
-    public String getDelimiter() {
-        return delimiter;
     }
 }

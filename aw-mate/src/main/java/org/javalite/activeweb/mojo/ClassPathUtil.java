@@ -1,4 +1,4 @@
-package org.javalite.activeweb;
+package org.javalite.activeweb.mojo;
 
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.project.MavenProject;

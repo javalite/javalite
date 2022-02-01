@@ -36,7 +36,7 @@ public class RouteUtil {
      *
      * @return all methods matching a method name.
      */
-    public static List<Method> getNamedMethods(AppController controller, String actionMethodName){
+    public static List<Method> getNamedMethods(Class<? extends AppController> controllerClass, String actionMethodName){
 
         Map<String, List<Method>> controllerMap  =  methodsTL.get();
 
@@ -45,14 +45,14 @@ public class RouteUtil {
         }
         List<Method> discoveredMethods;
 
-        String controllerName = controller.getClass().getName();
+        String controllerName = controllerClass.getName();
 
         //we do not want cached methods in case we are in development or reloading controllers on the fly
         if (!controllerMap.containsKey(controllerName) || Configuration.activeReload()) {
             discoveredMethods = new ArrayList<>();
             controllerMap.put(controllerName, discoveredMethods);
 
-            for (Method m : controller.getClass().getMethods()) {
+            for (Method m : controllerClass.getMethods()) {
                 if (isAction(m)) {
                     discoveredMethods.add(m);
                 }
@@ -133,11 +133,11 @@ public class RouteUtil {
      * Finds a first method that has one argument. If not found, will find a method that has no arguments.
      * If not found, will return null.
      */
-     static ActionAndArgument getActionAndArgument(AppController controller, String actionName){
+     static ActionAndArgument getActionAndArgument(Class<? extends AppController> controllerClass, String actionName){
 
         String actionMethodName = Inflector.camelize(actionName.replace('-', '_'), false);
 
-        List<Method> methods = RouteUtil.getNamedMethods(controller, actionMethodName);
+        List<Method> methods = RouteUtil.getNamedMethods(controllerClass, actionMethodName);
         if (methods.size() == 0) {
             return null;
         }else if(methods.size() > 1){ // must have exactly one method with the same name, regardless of arguments.

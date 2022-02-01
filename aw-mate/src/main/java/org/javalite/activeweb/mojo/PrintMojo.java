@@ -1,15 +1,19 @@
-package org.javalite.activeweb;
+package org.javalite.activeweb.mojo;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
+import org.javalite.activeweb.EndPointDefinition;
+import org.javalite.activeweb.EndpointFinder;
+import org.javalite.activeweb.Format;
+import org.javalite.common.Util;
 
 import java.util.List;
 
-import static org.javalite.activeweb.ClassPathUtil.getCombinedClassLoader;
-import static org.javalite.activeweb.TablePrinter.printEndpointDefinitions;
+import static org.javalite.activeweb.mojo.ClassPathUtil.getCombinedClassLoader;
+import static org.javalite.common.TablePrinter.printTable;
 
 
 @Mojo(name = "routes", requiresDependencyResolution = ResolutionScope.COMPILE)
@@ -37,5 +41,32 @@ public class PrintMojo extends AbstractMojo {
         }catch(Exception e){
             e.printStackTrace();
         }
+    }
+
+    public static void printEndpointDefinitions(String title, List<EndPointDefinition> endPointDefinitions){
+        System.out.println(String.format("""
+                                  
+                **
+                **  %s
+                **""", title));
+        String[][] table  = new String[endPointDefinitions.size() + 1][5];
+        table[0][0] = "Number";
+        table[0][1] = "Path";
+        table[0][2] = "HTTP Methods";
+        table[0][3] = "Controller";
+        table[0][4] = "Method";
+
+
+
+        for (int row = 0; row < endPointDefinitions.size() ; row++) {
+            EndPointDefinition endPointDefinition = endPointDefinitions.get(row);
+            table[row + 1][0] = Integer.toString(row + 1);
+            table[row + 1][1] = endPointDefinition.getPath();
+            table[row + 1][2] = Util.join(endPointDefinition.getHTTPMethods(), ",");
+            table[row + 1][3] = endPointDefinition.getControllerClassName();
+            table[row + 1][4] = endPointDefinition.getDisplayControllerMethod();
+
+        }
+        printTable(table);
     }
 }
