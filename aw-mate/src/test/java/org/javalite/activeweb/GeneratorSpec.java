@@ -29,7 +29,7 @@ public class GeneratorSpec {
         JSONMap paths = root.getMap("paths");
 
         //Lets do some spot checks:
-        the(paths.size()).shouldBeEqual(19);
+        the(paths.size()).shouldBeEqual(25);
         the(paths.get("/custom/index.get.summary")).shouldEqual("Some custom stuff 11");
         the(paths.get("/custom/index.get.responses.200.description")).shouldEqual("<table> <tr> <td>First name</td> <td>Last name</td> </tr> <tr> <td style='background-color: aqua'>Freddie</td> <td>Mercury</td> </tr> </table>");
 
