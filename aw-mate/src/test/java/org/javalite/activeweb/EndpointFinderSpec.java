@@ -236,11 +236,13 @@ public class EndpointFinderSpec {
 
         String formattedJSONString = endpointFinder.getOpenAPIDocs(baseTemplate, Format.JSON);
 
-        Map apiMap= toMap(formattedJSONString);
-        Map paths = (Map) apiMap.get("paths");
+        JSONMap apiMap= JSONHelper.toJSONMap(formattedJSONString);
+        JSONMap paths = apiMap.getMap("paths");
         the(paths.keySet().size()).shouldBeEqual(25);
         the(paths).shouldContain("/custom/index");
         the(paths).shouldContain("/custom/save_person");
+        the(paths.getMap("/http_methods/index").size()).shouldContain(2);
+        the(paths.get("/http_methods/do_put.put.description")).shouldEqual("docs for doPut");
         the(paths).shouldContain("/http_methods/do_head");
         the(paths).shouldContain("/http_methods/do_put");
         the(paths).shouldContain("/person_save");
