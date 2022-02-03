@@ -8,7 +8,6 @@ import org.javalite.common.Inflector;
 import org.javalite.common.Util;
 import org.javalite.json.JSONHelper;
 import org.javalite.json.JSONMap;
-import org.javalite.json.JSONParseException;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,11 +54,24 @@ public class EndpointFinder {
                     continue;
                 }
                 // if action method contains one argument, but it is a primitive, the method is not an action method
-
                 Class<?> argumentType = actionAndArgument.getActionMethod() != null ? actionAndArgument.getArgumentType() : null;
                 String argumentTypeName = argumentType != null ? argumentType.getName() : "";
-                EndPointDefinition definition = new EndPointDefinition(getEndpointMethods(actionAndArgument.getActionMethod(), format), routeBuilder.getRouteConfig(), routeBuilder.getControllerClass().getName(),
-                        actionAndArgument.getActionMethod().getName(), argumentTypeName);
+                EndPointDefinition definition = new EndPointDefinition(
+                        getEndpointMethods(actionAndArgument.getActionMethod(), format),
+                        routeBuilder.getRouteConfig(),
+                        routeBuilder.getControllerClass().getName(),
+                        actionAndArgument.getActionMethod().getName(),
+                        argumentTypeName);
+
+                //if we have a definition for the same path,  and controller, but everything else is different, we need to find the existing one, and just add an EndpointMethod to
+                //the existing EndPointDefinition:
+                for (EndPointDefinition endPointDefinition : endPointDefinitions) {
+                    if(endPointDefinition.getPath().equals(routeBuilder.getRouteConfig())
+                            && endPointDefinition.getControllerClassName().equals(routeBuilder.getControllerClass().getName())){
+                        endPointDefinition.addEndpointMethod(getEndpointMethods(actionAndArgument.getActionMethod(), format));
+                    }
+                }
+
                 endPointDefinitions.add(definition);
             }
         } catch (ClassNotFoundException ignore) {
@@ -148,8 +160,8 @@ public class EndpointFinder {
      * @return instance of this class.
      */
     @SuppressWarnings("unchecked")
-    private List<EndpointHttpMethod> getEndpointMethods(Method actionMethod, Format format) {
-        List<EndpointHttpMethod> endpointMethods = new ArrayList<>();
+    private List<EndPointHttpMethod> getEndpointMethods(Method actionMethod, Format format) {
+        List<EndPointHttpMethod> endpointMethods = new ArrayList<>();
         List<Class<? extends Annotation>> annotationsClasses = list(GET.class, POST.class, PUT.class, DELETE.class, OPTIONS.class, PATCH.class, HEAD.class);
 
         try {
@@ -161,11 +173,11 @@ public class EndpointFinder {
                         continue;
                     }
                     String apiText = getActionAPI(annotationClass, actionMethod, annotation, format);
-                    endpointMethods.add(new EndpointHttpMethod(HttpMethod.method(annotation), apiText));
+                    endpointMethods.add(new EndPointHttpMethod(HttpMethod.method(annotation), apiText));
                 }
             }else{
                 Annotation getAnnotation = this.getClass().getDeclaredMethod("foo").getAnnotation(GET.class); // quick hack just for this annotation because it is a default
-                endpointMethods.add(new EndpointHttpMethod(HttpMethod.GET, getActionAPI(GET.class, actionMethod, getAnnotation, format)));
+                endpointMethods.add(new EndPointHttpMethod(HttpMethod.GET, getActionAPI(GET.class, actionMethod, getAnnotation, format)));
                 return endpointMethods;
             }
         }
@@ -238,15 +250,30 @@ public class EndpointFinder {
         List<EndPointDefinition> standardEndpointDefinitions =  getStandardEndpointDefinitions(format);
         List<EndPointDefinition> customEndpointDefinitions = getCustomEndpointDefinitions(format);
 
-        Map<String, Object> paths = new HashMap<>();
+        Map<String, Map> paths = new HashMap<>();
         for (EndPointDefinition endPointDefinition : standardEndpointDefinitions) {
-            Map<String, Map> methods = getMethodsAPI(endPointDefinition);
-            paths.put(endPointDefinition.getPath(), methods );
+            Map<String, Map<String, Object>> endpointAPI = endPointDefinition.getEndpointAPI();
+            if(paths.containsKey(endPointDefinition.getPath())){
+                for(String key: endpointAPI.keySet()){
+                    paths.get(endPointDefinition.getPath()).put(key, endpointAPI.get(key));
+                }
+            }
+            else{
+                paths.put(endPointDefinition.getPath(), endpointAPI );
+            }
         }
 
         for (EndPointDefinition endPointDefinition : customEndpointDefinitions) {
-            Map<String, Map> methods = getMethodsAPI(endPointDefinition);
-            paths.put(endPointDefinition.getPath(), methods );
+            Map<String, Map<String, Object>> endpointAPI = endPointDefinition.getEndpointAPI();
+            if(paths.containsKey(endPointDefinition.getPath())){
+
+                for(String key: endpointAPI.keySet()){
+                    paths.get(endPointDefinition.getPath()).put(key, endpointAPI.get(key));
+                }
+            }
+            else{
+                paths.put(endPointDefinition.getPath(), endpointAPI );
+            }
         }
 
         JSONMap baseMap =  JSONHelper.toJSONMap(baseTemplateContent);
@@ -254,20 +281,7 @@ public class EndpointFinder {
         return JSONHelper.toJsonString(baseMap);
     }
 
-    private Map<String, Map> getMethodsAPI(EndPointDefinition endPointDefinition) {
-        Map<String, Map> methods = new HashMap<>();
-        for (EndpointHttpMethod endpointHttpMethod : endPointDefinition.getEndpointMethods()) {
-            String methodAPI = endpointHttpMethod.getHttpMethodAPI();
-            if(methodAPI != null){
-                try{
-                    methods.put(endpointHttpMethod.getHttpMethod().toString().toLowerCase(), JSONHelper.toMap(methodAPI));
-                }catch(JSONParseException e){
-                    throw  new OpenAPIException("Failed to process docs for endpoint: " + endPointDefinition.getControllerClassName() + "#" +  endPointDefinition.getActionMethodName() + ". See that the API docs are real JSON.", e);
-                }
-            }
-        }
-        return methods;
-    }
+
 
     public void setApiLocation(String apiLocation) {
         this.apiLocation = apiLocation;

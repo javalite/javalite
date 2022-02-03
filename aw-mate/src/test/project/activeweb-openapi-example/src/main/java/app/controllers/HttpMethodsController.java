@@ -5,22 +5,65 @@ import org.javalite.activeweb.annotations.*;
 
 
 public class HttpMethodsController extends AppController {
-    @GET @POST
+    @GET("""
+            "responses": {
+                "200": {
+                  "description": "200 response"      
+               }
+            }
+            """)
+    @POST("""
+            "responses": {
+                "200": {
+                  "description": "200 response"      
+               }
+            }
+            """)
     public void index(){}
 
-    @POST
+    @POST("""
+            "responses": {
+                "200": {
+                  "description": "200 response"      
+               }
+            }
+            """)
     public void doPost(){}
 
-    @PUT
+    @PUT("""
+            "responses": {
+                "200": {
+                  "description": "200 response"      
+               }
+            }
+            """)
     public void doPut(){}
 
-    @HEAD
+    @HEAD("""
+            "responses": {
+                "200": {
+                  "description": "200 response"      
+               }
+            }
+                  """)
     public void doHead(){}
 
-    @OPTIONS
+    @OPTIONS("""
+            "responses": {
+                "200": {
+                  "description": "200 response"      
+               }
+            }
+            """)
     public void doOptions(){}
 
-    @PATCH
+    @PATCH("""
+            "responses": {
+                "200": {
+                  "description": "200 response"      
+               }
+            }
+            """)
     public void doPatch(){}
 
 }
