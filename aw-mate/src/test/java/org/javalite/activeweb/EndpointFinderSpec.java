@@ -9,220 +9,13 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
-import static org.javalite.activeweb.mojo.PrintMojo.printEndpointDefinitions;
-import static org.javalite.common.Util.readFile;
-import static org.javalite.json.JSONHelper.toMap;
-import static org.javalite.test.jspec.JSpec.$;
 import static org.javalite.test.jspec.JSpec.the;
 
 public class EndpointFinderSpec {
 
-    @Test
-    public void shouldFindCustomEndpointsFromClasspath() {
 
-        SystemStreamUtil.replaceError();
-        SystemStreamUtil.replaceOut();
-
-        EndpointFinder endpointFinder = new EndpointFinder("app.config.RouteConfig1", this.getClass().getClassLoader());
-        endpointFinder.setApiLocation("src/test/open-api");
-        List<EndPointDefinition> endPointDefinitions = endpointFinder.getCustomEndpointDefinitions(Format.JSON);
-        printEndpointDefinitions("Title", endPointDefinitions);
-
-        the(endPointDefinitions.size()).shouldBeEqual(5);
-
-        $(exists(endPointDefinitions, "/hello", "app.controllers.TestController", "foo", "", new EndPointHttpMethod(HttpMethod.GET, null))).shouldBeTrue();
-        $(exists(endPointDefinitions,  "/person_save", "app.controllers.CustomController", "savePerson", "app.controllers.Person", new EndPointHttpMethod(HttpMethod.POST, """
-            {
-              
-              "summary": "Show API version details",
-              "responses": {
-                "200": {
-                  "description": "200 response"
-                }
-                         
-              }
-            }""".replaceAll("([\\r\\n])", "")))).shouldBeTrue();
-        $(exists(endPointDefinitions, "/segments/{id}", "app.controllers.SegmentsController", "index", "", new EndPointHttpMethod(HttpMethod.GET, null))).shouldBeTrue();
-
-        $(exists(endPointDefinitions, "/about", "app.controllers.HomeController", "about", "",  new EndPointHttpMethod(HttpMethod.GET, null))).shouldBeTrue();
-        $(exists(endPointDefinitions, "/solutions", "app.controllers.HomeController", "solutions", "", new EndPointHttpMethod(HttpMethod.GET, null))).shouldBeTrue();
-
-        the(SystemStreamUtil.getSystemErr()).shouldContain("WARNING: Failed to find a method for controller: 'class app.controllers.HomeController' and action: 'team'. Check your RouteConfig class.");
-
-        the(SystemStreamUtil.getSystemOut()).shouldContain("""
-                +--------+----------------+--------------+------------------------------------+------------------------------------+
-                | Number | Path           | HTTP Methods | Controller                         | Method                             |
-                +--------+----------------+--------------+------------------------------------+------------------------------------+
-                | 1      | /hello         | GET          | app.controllers.TestController     | foo()                              |
-                | 2      | /person_save   | POST         | app.controllers.CustomController   | savePerson(app.controllers.Person) |
-                | 3      | /segments/{id} | GET          | app.controllers.SegmentsController | index()                            |
-                | 4      | /about         | GET          | app.controllers.HomeController     | about()                            |
-                | 5      | /solutions     | GET          | app.controllers.HomeController     | solutions()                        |
-                +--------+----------------+--------------+------------------------------------+------------------------------------+""");
-
-        SystemStreamUtil.restoreSystemErr();
-        SystemStreamUtil.restoreSystemOut();
-    }
-
-    @Test
-    public void shouldFindStandardEndpointsFromClasspath() {
-
-        SystemStreamUtil.replaceOut();
-
-        EndpointFinder endpointFinder = new EndpointFinder(this.getClass().getClassLoader());
-        endpointFinder.setApiLocation("src/test/open-api");
-        List<EndPointDefinition> endPointDefinitions = endpointFinder.getStandardEndpointDefinitions(Format.JSON);
-
-        printEndpointDefinitions("Title", endPointDefinitions);
-        the(endPointDefinitions.size()).shouldBeEqual(23);
-
-        //true below
-
-        $(exists(endPointDefinitions, "/test/index", "app.controllers.TestController", "index", "",
-                new EndPointHttpMethod(HttpMethod.GET, null),
-                new EndPointHttpMethod(HttpMethod.POST, null))).shouldBeTrue();
-        $(exists(endPointDefinitions, "/test/foo", "app.controllers.TestController", "foo", "", new EndPointHttpMethod(HttpMethod.GET, null))).shouldBeTrue();
-        $(exists(endPointDefinitions, "/test/save_person", "app.controllers.TestController", "savePerson", "app.controllers.Person", new EndPointHttpMethod(HttpMethod.POST, null))).shouldBeTrue();
-        $(exists(endPointDefinitions, "/test/bar", "app.controllers.TestController", "bar", "", new EndPointHttpMethod(HttpMethod.GET, null))).shouldBeTrue();
-        $(exists(endPointDefinitions, "/http_methods/index", "app.controllers.HttpMethodsController", "index", "",
-                new EndPointHttpMethod(HttpMethod.GET, null),
-                new EndPointHttpMethod(HttpMethod.POST, null))).shouldBeTrue();
-        $(exists(endPointDefinitions, "/http_methods/do_post", "app.controllers.HttpMethodsController", "doPost", "", new EndPointHttpMethod(HttpMethod.POST, null))).shouldBeTrue();
-        $(exists(endPointDefinitions, "/http_methods/do_put", "app.controllers.HttpMethodsController", "doPut", "",
-                new EndPointHttpMethod(HttpMethod.PUT,  """
-                                                        {
-                                                        "description" : "docs for doPut",
-                                                        "responses": {
-                                                                  "200": {
-                                                                    "description": "200 put"
-                                                                  }
-                                                          }
-                                                        }         
-                                                        """.replaceAll("([\\r\\n])", "")))).shouldBeTrue();
-        $(exists(endPointDefinitions, "/http_methods/do_options", "app.controllers.HttpMethodsController", "doOptions", "", new EndPointHttpMethod(HttpMethod.OPTIONS, null))).shouldBeTrue();
-        $(exists(endPointDefinitions, "/http_methods/do_patch", "app.controllers.HttpMethodsController", "doPatch", "", new EndPointHttpMethod(HttpMethod.PATCH, null))).shouldBeTrue();
-        $(exists(endPointDefinitions, "/http_methods/do_head", "app.controllers.HttpMethodsController", "doHead", "",
-                new EndPointHttpMethod(HttpMethod.HEAD,"""
-                                                        {
-                                                        "description" : "docs for doHead",
-                                                        "responses": {
-                                                                  "200": {
-                                                                    "description": "200 head"
-                                                                  }
-                                                          }       
-                                                        }
-                                                        """.replaceAll("([\\r\\n])", "")))).shouldBeTrue();
-        $(exists(endPointDefinitions, "/segments/index", "app.controllers.SegmentsController", "index", "", new EndPointHttpMethod(HttpMethod.GET, null))).shouldBeTrue();
-        $(exists(endPointDefinitions, "/custom/index", "app.controllers.CustomController", "index", "",
-
-                new EndPointHttpMethod(HttpMethod.GET, readFile("src/test/open-api/app.controllers.CustomController#index-get.json").replaceAll("([\\r\\n])", "")))
-        ).shouldBeTrue();
-        $(exists(endPointDefinitions, "/custom/save_person", "app.controllers.CustomController", "savePerson", "app.controllers.Person",
-                new EndPointHttpMethod(HttpMethod.POST, """
-            {
-              
-              "summary": "Show API version details",
-              "responses": {
-                "200": {
-                  "description": "200 response"
-                }
-                         
-              }
-            }""".replaceAll("([\\r\\n])", "")))).shouldBeTrue();
-
-//        //false below
-        $(exists(endPointDefinitions,  "/bad/get_age", "app.controllers.CustomController", "", "", new EndPointHttpMethod(HttpMethod.GET, ""))).shouldBeFalse();
-        $(exists(endPointDefinitions, "/bad/foo", "app.controllers.CustomController", "", "", new EndPointHttpMethod(HttpMethod.GET, ""))).shouldBeFalse();
-        $(exists(endPointDefinitions, "/bad/bar", "app.controllers.CustomController", "", "", new EndPointHttpMethod(HttpMethod.POST, ""))).shouldBeFalse();
-
-//        //false below
-        $(exists(endPointDefinitions, "/abstract/bar", "app.controllers.AbstractController", "", "", new EndPointHttpMethod(HttpMethod.GET, ""))).shouldBeFalse();
-        $(exists(endPointDefinitions, "/bad/foo", "app.controllers.CustomController", "", "", new EndPointHttpMethod(HttpMethod.GET, ""))).shouldBeFalse();
-
-        the(SystemStreamUtil.getSystemOut()).shouldContain("""
-                +--------+--------------------------+--------------+---------------------------------------+------------------------------------+
-                | Number | Path                     | HTTP Methods | Controller                            | Method                             |
-                +--------+--------------------------+--------------+---------------------------------------+------------------------------------+
-                | 1      | /custom/index            | GET,POST     | app.controllers.CustomController      | index()                            |
-                | 2      | /custom/save_person      | POST         | app.controllers.CustomController      | savePerson(app.controllers.Person) |
-                | 3      | /home/about              | GET          | app.controllers.HomeController        | about()                            |
-                | 4      | /home/solutions          | GET          | app.controllers.HomeController        | solutions()                        |
-                | 5      | /http_methods/index      | GET,POST     | app.controllers.HttpMethodsController | index()                            |
-                | 6      | /http_methods/do_post    | POST         | app.controllers.HttpMethodsController | doPost()                           |
-                | 7      | /http_methods/do_put     | PUT          | app.controllers.HttpMethodsController | doPut()                            |
-                | 8      | /http_methods/do_head    | HEAD         | app.controllers.HttpMethodsController | doHead()                           |
-                | 9      | /http_methods/do_options | OPTIONS      | app.controllers.HttpMethodsController | doOptions()                        |
-                | 10     | /http_methods/do_patch   | PATCH        | app.controllers.HttpMethodsController | doPatch()                          |
-                | 11     | /pet/add                 | POST         | app.controllers.PetController         | add()                              |
-                | 12     | /pet/update              | PUT          | app.controllers.PetController         | update()                           |
-                | 13     | /pet/find_by_status      | GET          | app.controllers.PetController         | findByStatus()                     |
-                | 14     | /pet/get_pet             | GET          | app.controllers.PetController         | getPet()                           |
-                | 15     | /pet/update_pet          | POST         | app.controllers.PetController         | updatePet()                        |
-                | 16     | /pet/delete_pet          | DELETE       | app.controllers.PetController         | deletePet()                        |
-                | 17     | /segments/index          | GET          | app.controllers.SegmentsController    | index()                            |
-                | 18     | /segments/foobar         | GET          | app.controllers.SegmentsController    | foobar()                           |
-                | 19     | /segments/foobar_2       | GET          | app.controllers.SegmentsController    | foobar2()                          |
-                | 20     | /test/index              | GET,POST     | app.controllers.TestController        | index()                            |
-                | 21     | /test/foo                | GET          | app.controllers.TestController        | foo()                              |
-                | 22     | /test/save_person        | POST         | app.controllers.TestController        | savePerson(app.controllers.Person) |
-                | 23     | /test/bar                | GET          | app.controllers.TestController        | bar()                              |
-                +--------+--------------------------+--------------+---------------------------------------+------------------------------------+
-                """);
-
-        //we still get custom defined  in a default RouteConfig
-        List<EndPointDefinition> customDefinitions =  endpointFinder.getCustomEndpointDefinitions(Format.JSON);
-        the(customDefinitions.size()).shouldBeEqual(2);
-        $(exists(customDefinitions, "/hello", "app.controllers.TestController", "foo", "", new EndPointHttpMethod(HttpMethod.GET, null))).shouldBeTrue();
-        $(exists(customDefinitions, "/person_save", "app.controllers.CustomController", "savePerson", "app.controllers.Person", new EndPointHttpMethod(HttpMethod.POST, """
-            {
-              
-              "summary": "Show API version details",
-              "responses": {
-                "200": {
-                  "description": "200 response"
-                }
-                         
-              }
-            }""".replaceAll("([\\r\\n])", "")))).shouldBeTrue();
-
-        SystemStreamUtil.restoreSystemOut();
-    }
-
-    /**
-     * Validates that the collection endPointDefinitions contains an entry corresponding to the rest of arguments
-     */
-    private boolean exists(List<EndPointDefinition> endPointDefinitions, String path, String controllerName, String actionMethodName, String argumentTypeName, EndPointHttpMethod... endpointHttpMethods) {
-
-        for (EndPointDefinition endPointDefinition : endPointDefinitions) {
-            if (endPointDefinition.getPath().equals(path)
-                    && endPointDefinition.getControllerClassName().equals(controllerName)
-                    && endPointDefinition.getActionMethodName().equals(actionMethodName)
-                    && endPointDefinition.getArgumentClassName().equals(argumentTypeName)
-                    && endPointDefinition.contains(endpointHttpMethods)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Test
-    public void should_not_find_standard_endpoints_with_strictMode() {
-
-        EndpointFinder endpointFinder = new EndpointFinder("app.config.RouteConfig1", this.getClass().getClassLoader());
-        List<EndPointDefinition> endPointDefinitions = endpointFinder.getStandardEndpointDefinitions(Format.JSON);
-        the(endPointDefinitions.size()).shouldBeEqual(0);
-    }
-
-    //
-    @Test
-    public void shouldCollectOpenAPIDocs() {
-
-        EndpointFinder endpointFinder = new EndpointFinder("app.config.RouteConfig", this.getClass().getClassLoader());
-
-
-        String baseTemplate = """
+    private static final String BASE_TEMPLATE = """
                 {
                       "openapi": "3.0.0",
                       "info": {
@@ -234,23 +27,114 @@ public class EndpointFinderSpec {
                       }
                   }""";
 
-        String formattedJSONString = endpointFinder.getOpenAPIDocs(baseTemplate, Format.JSON);
 
+    @Test
+    public void should_find_api_with_strictMode() {
+
+        SystemStreamUtil.replaceError();
+        EndpointFinder endpointFinder = new EndpointFinder("app.config.RouteConfig1", this.getClass().getClassLoader());
+        endpointFinder.setApiLocation("src/test/open-api");
+
+        String formattedJSONString = endpointFinder.getOpenAPIDocs(BASE_TEMPLATE, Format.JSON);
         JSONMap apiMap= JSONHelper.toJSONMap(formattedJSONString);
         JSONMap paths = apiMap.getMap("paths");
-        the(paths.keySet().size()).shouldBeEqual(25);
-        the(paths).shouldContain("/custom/index");
-        the(paths).shouldContain("/custom/save_person");
-        the(paths.getMap("/http_methods/index").size()).shouldContain(2);
-        the(paths.get("/http_methods/do_put.put.description")).shouldEqual("docs for doPut");
-        the(paths).shouldContain("/http_methods/do_head");
-        the(paths).shouldContain("/http_methods/do_put");
-        the(paths).shouldContain("/person_save");
-        the(paths).shouldContain("/segments/foobar_2");
+        the(paths.size()).shouldBeEqual(3);
+        the(paths.get("/custom.post.summary")).shouldBeEqual("Show API version details - CustomController#index - @POST annotation");
+        the(paths.get("/person_save.post.summary")).shouldBeEqual("Show API version details - CustomController#savePerson - @POST annotation");
+        the(paths.get("/hello.post.summary")).shouldBeEqual("Inherited method!!!");
+
+        String x = SystemStreamUtil.getSystemErr();
+
+        the(x).shouldContain("Failed to find a method for controller: 'class app.controllers.HomeController' and action: 'team'. Check your RouteConfig class.");
+
+        SystemStreamUtil.restoreSystemErr();
     }
 
     @Test
-    public void shouldLoadAPIFromFile() {
+    public void should_find_api_in_annotations_and_files_with_standard_and_custom_routes() {
+
+        EndpointFinder endpointFinder = new EndpointFinder(this.getClass().getClassLoader());
+        endpointFinder.setApiLocation("src/test/open-api2");
+
+        String formattedJSONString = endpointFinder.getOpenAPIDocs(BASE_TEMPLATE, Format.JSON);
+        JSONMap apiMap= JSONHelper.toJSONMap(formattedJSONString);
+        JSONMap paths = apiMap.getMap("paths");
+        the(paths.keySet().size()).shouldBeEqual(15);
+
+        the(paths.get("/custom/index.post.summary")).shouldBeEqual("Show API version details - CustomController#index - @POST annotation");
+        the(paths.get("/custom/save_person.post.summary")).shouldBeEqual("Show API version details - CustomController#savePerson - @POST annotation");
+
+        the(paths.get("/http_methods/do_head.head.description")).shouldBeEqual("docs for doHead");
+        the(paths.get("/http_methods/do_put.put.description")).shouldBeEqual("docs for doPut");
+
+        the(paths.get("/pet/update.put.responses.200.description")).shouldBeEqual("200 response");
+        the(paths.get("/pet/find_by_status.get.responses.200.description")).shouldBeEqual("200 response GET");
+        the(paths.get("/pet/add.post.responses.200.description")).shouldBeEqual("200 response POST");
+        the(paths.get("/pet/update_pet.post.responses.200.description")).shouldBeEqual("200 response POST");
+        the(paths.get("/pet/delete_pet.delete.responses.200.description")).shouldBeEqual("200 response DELETE");
+        the(paths.get("/pet/get_pet.get.responses.200.description")).shouldBeEqual("200 response GET");
+
+        the(paths.get("/segments/foobar_2.get.responses.200.description")).shouldBeEqual("200 all good"); //<<-- from a file!
+        the(paths).shouldContain("/segments/foobar");
+        the(paths).shouldContain("/test/foo");
+
+        //from RouteConfig - custom routes:
+        the(paths.get("/hello.post.summary")).shouldBeEqual("Inherited method!!!");
+        the(paths.get("/person_save.post.summary")).shouldBeEqual("Show API version details - CustomController#savePerson - @POST annotation");
+
+        //some random deeper spot checks:
+        the(paths.get("/http_methods/do_put.put.description")).shouldEqual("docs for doPut");
+        the(paths.get("/test/foo.post.summary")).shouldEqual("Inherited method!!!");
+    }
+
+    @Test
+    public void should_not_find_standard_endpoints_with_strict_mode() {
+
+        EndpointFinder endpointFinder = new EndpointFinder("app.config.RouteConfig1", this.getClass().getClassLoader());
+        List<EndPointDefinition> endPointDefinitions = endpointFinder.getStandardEndpointDefinitions(Format.JSON);
+        the(endPointDefinitions.size()).shouldBeEqual(0);
+    }
+
+    //API Location is not set! The routes and endpoints are reflected from  code.
+    @Test
+    public void should_generate_with_standard_and_custom_routes() {
+
+        EndpointFinder endpointFinder = new EndpointFinder("app.config.RouteConfig", this.getClass().getClassLoader());
+
+
+        String formattedJSONString = endpointFinder.getOpenAPIDocs(BASE_TEMPLATE, Format.JSON);
+
+        JSONMap apiMap= JSONHelper.toJSONMap(formattedJSONString);
+        JSONMap paths = apiMap.getMap("paths");
+        the(paths.keySet().size()).shouldBeEqual(14);
+
+        //NOTE: we have 14 items here, 12 coming from controllers, and another 2 from the RouteConfig.
+        the(paths).shouldContain("/custom/index");
+        the(paths.get("/custom/index.post.summary")).shouldBeEqual("Show API version details - CustomController#index - @POST annotation"); // <<---- this is coming from annotation!!
+
+        the(paths).shouldContain("/http_methods/do_head");
+        the(paths).shouldContain("/http_methods/do_put");
+        the(paths).shouldContain("/pet/update");
+        the(paths).shouldContain("/pet/find_by_status");
+        the(paths).shouldContain("/custom/save_person");
+        the(paths).shouldContain("/pet/add");
+        the(paths).shouldContain("/pet/update_pet");
+        the(paths).shouldContain("/person_save");
+        the(paths).shouldContain("/pet/delete_pet");
+        the(paths).shouldContain("/custom/index");
+        the(paths).shouldContain("/pet/get_pet");
+        the(paths).shouldContain("/hello");
+        the(paths).shouldContain("/segments/foobar_2");
+        the(paths).shouldContain("/test/foo");
+
+        //some deeper spot checks:
+        the(paths.get("/http_methods/do_put.put.description")).shouldEqual("docs for doPut");
+        the(paths.get("/test/foo.post.summary")).shouldEqual("Inherited method!!!");
+        the(paths.get("/pet/update.put.responses.200.description")).shouldEqual("200 response");
+    }
+
+    @Test
+    public void should_find_api_from_files_with_strictMode() {
         EndpointFinder endpointFinder = new EndpointFinder("app.config.RouteConfig2", this.getClass().getClassLoader());
 
         endpointFinder.setApiLocation("src/test/open-api");
@@ -260,18 +144,30 @@ public class EndpointFinderSpec {
 
         the(endPointDefinitions.get(0).getHTTPMethods().size()).shouldBeEqual(1);
         the(endPointDefinitions.get(0).hasOpenAPI()).shouldBeTrue();
+
+        the(endPointDefinitions.get(0).getEndpointMethods().size()).shouldEqual(1);
+
+        the(endPointDefinitions.get(0).getEndpointMethods().get(0).getHttpMethod()).shouldEqual(HttpMethod.GET);
+        the(endPointDefinitions.get(0).getEndpointMethods().get(0).getAPIAsMap().get("responses.200.description")).shouldEqual("200 all good");
     }
 
 
     @Test
-    public void shouldFailDueToDuplicateDocs(){
+    public void should_fail_due_to_duplicate_docs(){
+
          try{
              EndpointFinder endpointFinder = new EndpointFinder("app.config.RouteConfig3", this.getClass().getClassLoader());
              endpointFinder.setApiLocation("src/test/open-api");
              endpointFinder.getCustomEndpointDefinitions(Format.JSON);
          }catch(OpenAPIException exception){
-             the(exception).shouldContain("The action: app.controllers.SegmentsController#foobar2 contains the OpenAPI documentation in a corresponding file, as well as in the annotation GET. Only one place of record is allowed.");
+
+
+             the(exception.getMessage()).shouldBeEqual("The action: public void app.controllers.SegmentsController.foobar2() " +
+                     "contains the OpenAPI documentation in a corresponding file, as well as in the annotation GET. Only one place of record is allowed.");
+             return;
          }
+
+         throw new RuntimeException("This test failed");
     }
 
     @Test

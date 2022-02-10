@@ -1,0 +1,18 @@
+{
+  "operationId": "getCustomID",
+  "summary": "Some custom stuff 11",
+  "responses": {
+    "200": {
+      "description" : "<@table file='src/test/open-api/description_table.html'/>",
+      "content": {
+        "application/json": {
+          "examples": {
+            "foo": {
+              "value": "Just a foo?"
+            }
+          }
+        }
+      }
+    }
+  }
+}

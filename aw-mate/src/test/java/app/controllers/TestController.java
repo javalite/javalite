@@ -9,6 +9,17 @@ public class TestController extends AbstractController {
     @GET @POST
     public void index(){}
 
+    @POST("""
+            {
+              
+              "summary": "Inherited method!!!",
+              "responses": {
+                "200": {
+                  "description": "200 response"
+                }
+                         
+              }
+            }""")
     @Override
     public void foo() {}
 

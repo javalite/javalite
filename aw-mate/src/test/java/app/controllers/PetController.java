@@ -15,7 +15,7 @@ public class PetController extends AppController {
             {
                 "responses": {
                     "200": {
-                      "description": "200 response"      
+                      "description": "200 response POST"      
                    }
                 }
             }
@@ -37,7 +37,7 @@ public class PetController extends AppController {
             {
                 "responses": {
                     "200": {
-                      "description": "200 response"      
+                      "description": "200 response GET"      
                    }
                 }
             }
@@ -48,7 +48,7 @@ public class PetController extends AppController {
             {
                 "responses": {
                     "200": {
-                      "description": "200 response"      
+                      "description": "200 response GET"      
                    }
                 }
             }
@@ -64,7 +64,7 @@ public class PetController extends AppController {
             {
                 "responses": {
                     "200": {
-                      "description": "200 response"      
+                      "description": "200 response POST"      
                    }
                 }
             }
@@ -78,7 +78,7 @@ public class PetController extends AppController {
             {
                 "responses": {
                     "200": {
-                      "description": "200 response"      
+                      "description": "200 response DELETE"      
                    }
                 }
             }

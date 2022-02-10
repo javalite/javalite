@@ -21,7 +21,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Mark an action of a controller with this annotation to receive an HTTP GET request.
+ * Mark an action of a controller with this annotation to receive an HTTP GET request. If an action has no annotation from this package,
+ * then the framework assumes the GET annotation by default.
+ *
  * @author Igor Polevoy
  */
 

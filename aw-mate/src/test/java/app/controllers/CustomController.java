@@ -10,7 +10,7 @@ public class CustomController extends AppController {
     @POST("""
             {
               "operationId": "getVersionDetailsv4",
-              "summary": "Show API version details",
+              "summary": "Show API version details - CustomController#index - @POST annotation",
               "responses": {
                 "200": {
                   "description": "200 response"
@@ -25,7 +25,7 @@ public class CustomController extends AppController {
     @POST("""
             {
               
-              "summary": "Show API version details",
+              "summary": "Show API version details - CustomController#savePerson - @POST annotation",
               "responses": {
                 "200": {
                   "description": "200 response"

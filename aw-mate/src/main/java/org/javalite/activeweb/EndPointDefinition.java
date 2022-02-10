@@ -102,14 +102,11 @@ public class EndPointDefinition {
 
         Map<String, Map<String, Object>> apiMethods =   new HashMap<>();
         for (EndPointHttpMethod endPointHttpMethod : endpointMethods) {
-
             try{
                 apiMethods.put(endPointHttpMethod.getHttpMethod().name().toLowerCase(), endPointHttpMethod.getAPIAsMap());
             }catch(JSONParseException e){
                 throw new JSONParseException("Failed to parse docs into JSON for: " + this.getControllerClassName() + ", path: " + this.path + ":" +  endPointHttpMethod.getHttpMethod().name(), e);
             }
-
-
         }
         return apiMethods;
     }
