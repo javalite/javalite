@@ -24,23 +24,28 @@ public class PrintMojo extends AbstractMojo {
 
     @Override
     public void execute() {
-        try{
-            EndpointFinder endpointFinder = new  EndpointFinder(getCombinedClassLoader(project));
-            List<EndPointDefinition> customEndpointDefinitions = endpointFinder.getCustomEndpointDefinitions(Format.JSON);//format does not matter here, we are printing the routing table
-            List<EndPointDefinition> standardEndpointDefinitions = new EndpointFinder(getCombinedClassLoader(project)).getStandardEndpointDefinitions(Format.JSON);//format does not matter here, we are printing the routing table
-
-            String standardTitle =  "STANDARD END POINTS";
-            if(endpointFinder.isStrictMode()){
-                System.out.println(standardTitle);
-                System.out.println("WARNING: No standard end points are listed because you use a String Mode in your RouteConfig");
-            }else{
-                printEndpointDefinitions(standardTitle, standardEndpointDefinitions);
-            }
-
-            printEndpointDefinitions("CUSTOM END POINTS", customEndpointDefinitions);
-        }catch(Exception e){
+        try {
+            print(getCombinedClassLoader(project));
+        } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    protected void print(ClassLoader cl){
+
+        EndpointFinder endpointFinder = new EndpointFinder(cl);
+        //Open API format does not matter here, we are printing the routing table
+        List<EndPointDefinition> customEndpointDefinitions = endpointFinder.getCustomEndpointDefinitions(null);
+        List<EndPointDefinition> standardEndpointDefinitions = endpointFinder.getStandardEndpointDefinitions(null);
+
+        String standardTitle = "STANDARD END POINTS";
+        if (endpointFinder.isStrictMode()) {
+            System.out.println(standardTitle);
+            System.out.println("WARNING: No standard end points are listed because you use a String Mode in your RouteConfig");
+        } else {
+            printEndpointDefinitions(standardTitle, standardEndpointDefinitions);
+        }
+        printEndpointDefinitions("CUSTOM END POINTS", customEndpointDefinitions);
     }
 
     public static void printEndpointDefinitions(String title, List<EndPointDefinition> endPointDefinitions){

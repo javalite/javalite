@@ -183,26 +183,32 @@ public class EndpointFinder {
 
         List<Class<? extends Annotation>> annotationsClasses = list(GET.class, POST.class, PUT.class, DELETE.class, OPTIONS.class, PATCH.class, HEAD.class);
 
+        String apiText = "";
+        HttpMethod httpMethod = HttpMethod.GET;
         try {
-
+            //has annotations
             if(annotationsClasses.stream().anyMatch(actionMethod::isAnnotationPresent)){
                 for (Class annotationClass : annotationsClasses) {
                     Annotation annotation = actionMethod.getAnnotation(annotationClass);
                     if(annotation == null){
                         continue;
                     }
-                    String apiText = getActionAPI(actionMethod, annotation, format);
-                    if(!blank(apiText)){
-                        endpointMethods.add(new EndPointHttpMethod(HttpMethod.method(annotation), apiText));
+                    if(format != null){
+                        apiText = getActionAPI(actionMethod, annotation, format);
                     }
+
+                    httpMethod = HttpMethod.method(annotation);
                 }
             }else{
-
-                String apiText = getActionAPI(actionMethod, null, format);
-                if(!blank(apiText)){
-                    endpointMethods.add(new EndPointHttpMethod(HttpMethod.GET, apiText));
+                //  no annotations
+                if(format != null){
+                    apiText = getActionAPI(actionMethod, null, format);
                 }
-                return endpointMethods;
+
+            }
+
+            if(!blank(apiText) || format == null){
+                endpointMethods.add(new EndPointHttpMethod(httpMethod, apiText));
             }
         }
         catch (OpenAPIException e){
