@@ -3,14 +3,14 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>javalite-async</artifactId>
-    <version>3.1-j11</version>
+    <version>3.2-j11-SNAPSHOT</version>
     <name>JavaLite - Async Framework for Offline Processing</name>
     <packaging>jar</packaging>
 
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>javalite</artifactId>
-        <version>3.1-j11</version>
+        <version>3.2-j11-SNAPSHOT</version>
     </parent>
 
     <properties>

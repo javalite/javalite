@@ -4,7 +4,7 @@
     <groupId>org.javalite</groupId>
     <artifactId>javalite</artifactId>
     <packaging>pom</packaging>
-    <version>3.1-j11</version>
+    <version>3.2-j11-SNAPSHOT</version>
     <name>JavaLite - Java, light as a feather</name>
     <url>http://javalite.io</url>
 
@@ -54,7 +54,7 @@
        <connection>scm:git:git@github.com:javalite/activejdbc.git</connection>
        <developerConnection>scm:git:git@github.com:javalite/activejdbc.git</developerConnection>
        <url>git@github.com:javalite/activejdbc.git</url>
-       <tag>javalite-3.1-j11</tag>
+       <tag>javalite-3.0-j11</tag>
   </scm>
 
     <profiles>

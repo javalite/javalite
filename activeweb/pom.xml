@@ -3,14 +3,14 @@
 
     <artifactId>activeweb</artifactId>
     <packaging>jar</packaging>
-    <version>3.1-j11</version>
+    <version>3.2-j11-SNAPSHOT</version>
     <name>JavaLite - ActiveWeb: The Agile Java Web Framework</name>
     <description>Core functionality of the framework</description>
 
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>javalite</artifactId>
-        <version>3.1-j11</version>
+        <version>3.2-j11-SNAPSHOT</version>
     </parent>
 
     <build>

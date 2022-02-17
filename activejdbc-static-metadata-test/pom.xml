@@ -9,7 +9,7 @@
     <parent>
         <artifactId>javalite</artifactId>
         <groupId>org.javalite</groupId>
-        <version>3.1-j11</version>
+        <version>3.2-j11-SNAPSHOT</version>
     </parent>
 
     <properties>

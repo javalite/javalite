@@ -2,13 +2,13 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>app-config</artifactId>
     <packaging>jar</packaging>
-    <version>3.1-j11</version>
+    <version>3.2-j11-SNAPSHOT</version>
     <name>JavaLite - AppConfig For All Your Environments</name>
 
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>javalite</artifactId>
-        <version>3.1-j11</version>
+        <version>3.2-j11-SNAPSHOT</version>
     </parent>
 
     <build>
