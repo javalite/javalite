@@ -41,7 +41,7 @@ public class PrintMojo extends AbstractMojo {
         String standardTitle = "STANDARD END POINTS";
         if (endpointFinder.isStrictMode()) {
             System.out.println(standardTitle);
-            System.out.println("WARNING: No standard end points are listed because you use a String Mode in your RouteConfig");
+            System.out.println("WARNING: No standard end points are listed because you use the Strict Mode in your RouteConfig");
         } else {
             printEndpointDefinitions(standardTitle, standardEndpointDefinitions);
         }
