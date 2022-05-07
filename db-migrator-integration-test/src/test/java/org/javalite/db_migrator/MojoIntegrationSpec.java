@@ -22,9 +22,8 @@ package org.javalite.db_migrator;
 
 import org.javalite.activejdbc.Base;
 import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
+
 
 import java.io.File;
 
