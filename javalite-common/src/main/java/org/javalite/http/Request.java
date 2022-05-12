@@ -16,11 +16,16 @@ limitations under the License.
 
 package org.javalite.http;
 
+import org.javalite.json.JSONHelper;
+import org.javalite.json.JSONList;
+import org.javalite.json.JSONMap;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.*;
+import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +76,27 @@ public abstract class Request {
         return (T) this;
     }
 
+
+    /**
+     * Convenience method to set a ""Content-Type" to "application/json" value.
+     * @return self
+     */
+    public <T extends Request> T  applicationJson() {
+        connection.setRequestProperty("Content-Type", "application/json");
+        return (T) this;
+    }
+
+
+    /**
+     * Convenience method to set a ""Content-Type" header.
+     * @param value value for a "Content-Type" header.
+     *
+     * @return self
+     */
+    public <T extends Request> T  contentType(String value) {
+        connection.setRequestProperty("Content-Type", value);
+        return (T) this;
+    }
     /**
      * Configures this request to follow redirects. Default is <code>false</code>.
      *
@@ -165,7 +191,7 @@ public abstract class Request {
     }
 
     /**
-     * Fetches response content from server as String.
+     * Fetches response content from server as String. UTF-8 is used as a default encoding.
      *
      * @return response content from server as String.
      */
@@ -314,5 +340,46 @@ public abstract class Request {
     public <T extends Request> T  param(String name, String value) {
         params.put(name, value);
         return (T)this;
+    }
+
+    /**
+     * Converts a server response to an instance of {@link JSONMap}.
+     *
+     * @param encoding pass to specify encoding. Use {@link java.nio.charset.StandardCharsets} <code>name()</code> method
+     *                 to get provide specific charsets.
+     * @return instance  of {@link JSONMap}
+     */
+    public JSONMap jsonMap(String encoding){
+        return JSONHelper.toJSONMap(text(encoding));
+    }
+
+    /**
+     * Converts a server response to an instance of {@link JSONMap}. UTF-8 is used as a default encoding.
+     *
+     * @return instance  of {@link JSONMap}
+     */
+
+    public JSONMap jsonMap(){
+        return JSONHelper.toJSONMap(text());
+    }
+
+    /**
+     * Converts a server response to an instance of {@link JSONList}.
+     *
+     * @return instance  of {@link JSONList}
+     */
+    public JSONList jsonList(){
+        return JSONHelper.toJSONList(text());
+    }
+
+    /**
+     * Converts a server response to an instance of {@link JSONList}.
+     *
+     * @param encoding pass to specify encoding. Use {@link java.nio.charset.StandardCharsets} <code>name()</code> method
+     *                 to get provide specific charsets.
+     * @return instance  of {@link JSONList}
+     */
+    public JSONList jsonList(String encoding){
+        return JSONHelper.toJSONList(text(encoding));
     }
 }

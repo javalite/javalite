@@ -1116,6 +1116,14 @@ public class HttpSupport implements RequestAccess {
     }
 
     /**
+     * A convenience method. Sets the <code>"Content-Type"</code> header on the response to
+     * <code>"application/json"</code>.
+     */
+    protected void applicationJSON(){
+        RequestContext.getHttpResponse().addHeader("Content-Type", "application/json");
+    }
+
+    /**
      * Adds a header to response.
      *
      * @param name name of header.

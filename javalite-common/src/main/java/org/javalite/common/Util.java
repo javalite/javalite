@@ -17,6 +17,8 @@ package org.javalite.common;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
@@ -55,7 +57,7 @@ public final class Util {
      * @return entire contents of resource as string.
      */
     public static String readResource(String resourceName) {
-        return readResource(resourceName, "UTF-8");
+        return readResource(resourceName, StandardCharsets.UTF_8.name());
     }
 
     /**
