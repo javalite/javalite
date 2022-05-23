@@ -115,9 +115,36 @@ public class JSONHelper {
      *     }
      * </pre>
      * @param namesAndValues  is a list of name and value pairs  in a typical JavaLite fashion.
-     * @return JSON object with name and values passed n
+     * @return JSON object with name and values passed in.
      */
     public static String toJsonString(Object ...namesAndValues) {
+        return toJsonString(map(namesAndValues), false);
+    }
+
+    /**
+     * Generates a JSON object from names and values. Example: this code:
+     *
+     * <pre>
+     *
+     *     String person = toJsonString("first_name", "Marilyn", "last_name", "Monroe");
+     * </pre>
+     *
+     * will generate this JSON string:
+     *
+     * <pre>
+     *
+     *     {
+     *         "first_name": "Marilyn",
+     *         "last_name": "Monroe"
+     *     }
+     * </pre>
+     *
+     * <strong>This method is a synonym for {@link #toJsonString(Object...)}.</strong>
+     *
+     * @param namesAndValues  is a list of name and value pairs  in a typical JavaLite fashion.
+     * @return JSON object with name and values passed in
+     */
+    public static String toJson(Object ...namesAndValues) {
         return toJsonString(map(namesAndValues), false);
     }
 
