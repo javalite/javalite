@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.javalite.common.Collections.map;
+
 /**
  * Convenience class to convert JSON strings to and from objects.
  *
@@ -93,6 +95,30 @@ public class JSONHelper {
      */
     public static String toJsonString(Object val) {
         return toJsonString(val, false);
+    }
+
+    /**
+     * Generates a JSON object from names and values. Example: this code:
+     *
+     * <pre>
+     *
+     *     String person = toJsonString("first_name", "Marilyn", "last_name", "Monroe");
+     * </pre>
+     *
+     * will generate this JSON string:
+     *
+     * <pre>
+     *
+     *     {
+     *         "first_name": "Marilyn",
+     *         "last_name": "Monroe"
+     *     }
+     * </pre>
+     * @param namesAndValues  is a list of name and value pairs  in a typical JavaLite fashion.
+     * @return JSON object with name and values passed n
+     */
+    public static String toJsonString(Object ...namesAndValues) {
+        return toJsonString(map(namesAndValues), false);
     }
 
     /**

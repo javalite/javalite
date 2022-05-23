@@ -198,6 +198,17 @@ public class JsonHelperSpec {
         the(hm.get("firstName")).shouldBeEqual("Joe");
         the(hm.get("lastName")).shouldBeEqual("Shmoe");
     }
+
+    @Test
+    public void shouldGenerateJSONObjectFromPairs(){
+
+        String person = toJsonString("first_name", "Marilyn", "last_name", "Monroe");
+        Map personMap = JSONHelper.toJSONMap(person);
+
+        the(personMap.get("first_name")).shouldBeEqual("Marilyn");
+        the(personMap.get("last_name")).shouldBeEqual("Monroe");
+
+    }
 }
 
 
