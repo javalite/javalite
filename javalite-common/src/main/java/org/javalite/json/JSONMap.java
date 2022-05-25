@@ -21,10 +21,22 @@ import org.javalite.common.Convert;
 import java.math.BigDecimal;
 import java.util.*;
 
+import static org.javalite.common.Collections.map;
+
 public class JSONMap extends HashMap<String, Object> {
 
     public JSONMap(Map map){
         super(map);
+    }
+
+    /**
+     * Creates a ne instance from the array,
+     * where odd arguments are map keys and the even are values.
+     *
+     * @param keysAndValues keys and
+     */
+    public JSONMap(String ... keysAndValues){
+        super(map(keysAndValues));
     }
 
     public JSONMap(){}

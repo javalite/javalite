@@ -72,4 +72,11 @@ public class JSONMapSpec {
         Integer items = jsonMap.getInteger("glossary.GlossDiv.GlossMap.GlossEntry.ItemsNumber");
         the(items).shouldBeEqual(123);
     }
+
+
+    @Test
+    public void shouldTestConstructor() {
+        JSONMap jsonMap = new JSONMap("name", "John");
+        the(jsonMap.get("name")).shouldBeEqual("John");
+    }
 }
