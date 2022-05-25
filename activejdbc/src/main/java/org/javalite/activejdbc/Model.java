@@ -1036,6 +1036,15 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
         return sb.toString();
     }
 
+    /**
+     * Equivalent to {@link #toJson(boolean, String...)}, not pretty and includes all attributes
+     *
+     * @return generated JSON.
+     */
+    public String toJSON() {
+        return toJson(false);
+    }
+
     protected void toJsonP(StringBuilder sb, boolean pretty, String indent, String... attributeNames) {
         if (pretty) { sb.append(indent); }
         sb.append('{');
