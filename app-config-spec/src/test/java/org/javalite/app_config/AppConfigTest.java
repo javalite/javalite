@@ -70,7 +70,6 @@ public class AppConfigTest implements JSpecSupport {
 
     @Test
     public void shouldShouldDetectRunningInTestMode(){
-
         the(AppConfig.isInTestMode()).shouldBeTrue();
     }
 }

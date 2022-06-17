@@ -204,6 +204,7 @@ public class AppConfig implements Map<String, String> {
             registerProperties(url);
         }
 
+        registerMap(System.getenv(), "System.getenv()");
     }
 
     private static boolean isInited() {
@@ -211,27 +212,35 @@ public class AppConfig implements Map<String, String> {
     }
 
     private static void registerProperties(URL url) {
+        Properties properties = new Properties();
 
-        LOGGER.info("Registering properties from: " + url.getPath());
-
-        Properties temp = new Properties();
         try {
-            temp.load(url.openStream());
+            properties.load(url.openStream());
         } catch (IOException e) {
             throw new ConfigInitException(e);
         }
-        Enumeration keys = temp.keys();
-        while (keys.hasMoreElements()) {
-            String key = (String) keys.nextElement();
-            String value = temp.getProperty(key);
-            Property property = new Property(key, value, url.getPath());
 
+        //converting this to <String,String>, Java is annoying sometimes.
+        Set<Object> keys = properties.keySet();
+        Map<String, String> temp = new HashMap<>();
+        for (Object key : keys) {
+            temp.put(key.toString(), properties.get(key).toString());
+        }
+        registerMap(temp, url.toString());
+    }
+
+    private static void registerMap(Map<String, String> properties, String source){
+        LOGGER.info("Registering properties from: " + source);
+        Set<String> keys = properties.keySet();
+
+        for (String key : keys) {
+            String value =  properties.get(key);
+            Property property = new Property(key, value, source);
             Property previous = props.put(key, property);
-
             if (previous != null) {
-                LOGGER.warn("Duplicate property defined. Property: '" + key + "' found in files:"
-                        + previous.getPropertyFile() + ", " + url.getPath()
-                        + ", Using value '" + property.getValue() + "' from:"
+                LOGGER.warn("Duplicate property defined. Property: '" + key + "' found in: "
+                        + previous.getPropertyFile() + " and in: " + source
+                        + ". Using value '" + property.getValue() + "' from: "
                         + property.getPropertyFile());
             }
         }
