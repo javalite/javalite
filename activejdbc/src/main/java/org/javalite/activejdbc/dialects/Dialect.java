@@ -17,8 +17,12 @@ limitations under the License.
 package org.javalite.activejdbc.dialects;
 
 import java.io.Serializable;
+import java.sql.Array;
+import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
+
+import org.javalite.activejdbc.DBException;
 import org.javalite.activejdbc.MetaModel;
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
 
@@ -54,5 +58,6 @@ public interface Dialect extends Serializable{
     String insert(MetaModel metaModel, Map<String, Object> attributes, String ... replacements);
 
     String update(MetaModel metaModel, Map<String, Object> attributes, String ... replacements);
+    Array toArray(String typeName, Object value, Connection connection);
 
 }

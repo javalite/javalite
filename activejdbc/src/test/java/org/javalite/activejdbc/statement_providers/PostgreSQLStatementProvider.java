@@ -209,6 +209,11 @@ public class PostgreSQLStatementProvider implements StatementProvider {
             statements = Arrays.asList();
         } else if (table.equals("bands_musicians")) {
             statements = Arrays.asList();
+        } else if(table.equals("salaried_employees")){
+            statements =  Arrays.asList(
+                    "INSERT INTO salaried_employees (name, pay_by_quarter, schedule) VALUES ('Bill','{10001, 10002, 10003, 10004}','{{\"meeting\", \"lunch\"}, {\"training\", \"presentation\"}}');",
+                    "INSERT INTO salaried_employees (name, pay_by_quarter, schedule) VALUES ('Carol', '{20000, 25000, 25001, 25002}', '{{\"breakfast\", \"consulting\"}, {\"meeting\", \"lunch\"}}');"
+            );
         } else {
             statements = Arrays.asList();
         }

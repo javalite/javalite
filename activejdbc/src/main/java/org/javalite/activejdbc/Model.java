@@ -43,13 +43,12 @@ import javax.xml.stream.XMLStreamReader;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.sql.Clob;
-import java.sql.Time;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.text.DateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Map.Entry;
 
 import static org.javalite.activejdbc.ModelDelegate.metaModelFor;
@@ -1662,6 +1661,22 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
         return converter != null ? converter.convert(value) : Convert.toBoolean(value);
     }
 
+    /**
+     * Gets attribute value as <code>java.sql.Array</code>.
+     * If there is a {@link Converter} registered for the attribute that converts it to Class
+     * <code>java.sql.Array</code>, then it will be used, otherwise performs a conversion using {@link Convert#toArray(Object)}.
+     *
+     * @param attributeName name of attribute to convert
+     * @return value converted to {@link java.sql.Array}
+     */
+    public Array getArray(String attributeName) {
+        Object value = getRaw(attributeName);
+        Converter<Object, Array> converter = modelRegistryLocal.converterForValue(attributeName, value, Array.class);
+        String typeName = metaModelLocal.getColumnMetadata().get(attributeName).getTypeName();
+        return converter != null ? converter.convert(value) : metaModelLocal.getDialect().toArray(typeName, value, new DB(metaModelLocal.getDbName()).connection());
+    }
+
+
     /*************************** typed setters *****************************************/
 
     /**
@@ -1815,6 +1830,26 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
     public <T extends Model> T setBoolean(String attributeName, Object value) {
         Converter<Object, Boolean> converter = modelRegistryLocal.converterForValue(attributeName, value, Boolean.class);
         return setRaw(attributeName, converter != null ? converter.convert(value) : Convert.toBoolean(value));
+    }
+
+    /**
+     * Sets attribute value as <code>java.sql.Array</code>.
+     *
+     * If there is a {@link Converter} registered for the attribute that converts it to Class
+     * <code>java.sql.Array</code>, then it will be used.
+     *
+     * @param attributeName name of attribute.
+     * @param arrayObject value - presumably an array of primitives, as long as your database supports it.
+     * @return reference to this model.
+     */
+    public <T extends Model> T setArray(String attributeName, Object[] arrayObject) {
+        Converter<Object, Array> converter = modelRegistryLocal.converterForValue(attributeName, arrayObject, Array.class);
+
+        String typeName = metaModelLocal.getColumnMetadata().get(attributeName).getTypeName();
+        Object convertedValue = converter != null ? converter.convert(arrayObject)
+                : metaModelLocal.getDialect().toArray(typeName, arrayObject, new DB(metaModelLocal.getDbName()).connection());
+
+        return setRaw(attributeName, convertedValue);
     }
 
     /**
