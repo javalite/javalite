@@ -2,8 +2,11 @@ package org.javalite.activejdbc.dialects;
 
 import org.javalite.activejdbc.ColumnMetadata;
 import org.javalite.activejdbc.MetaModel;
+import org.javalite.common.ConversionException;
 import org.javalite.common.Util;
 
+import java.sql.Array;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -84,5 +87,33 @@ public class PostgreSQLDialect extends DefaultDialect {
 
         }
         query.append(Util.join(types, ","));
+    }
+
+
+    /**
+     * Converts the input
+     *
+     * @param value
+     * @param connection
+     * @return
+     */
+    public Array toArray(String typeName, Object value, Connection connection) {
+        try {
+            if (value == null) {
+                return null;
+            } else if (value instanceof Array) {
+                return (Array) value;
+            } else {
+                if (connection != null) {
+                    return connection.createArrayOf(typeName.substring(1), (Object[]) value);
+                } else {
+                    throw new ConversionException("Failed to convert " + value + " to Array, no connection provided.");
+                }
+            }
+        } catch (ConversionException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ConversionException(e);
+        }
     }
 }

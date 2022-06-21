@@ -246,3 +246,6 @@ DROP TABLE IF EXISTS statuses;
 DROP TYPE IF EXISTS status_type;
 CREATE TYPE status_type AS ENUM ('A', 'B', 'C');
 CREATE TABLE statuses ( id serial PRIMARY KEY, status status_type );
+
+DROP TABLE IF EXISTS salaried_employees;
+CREATE TABLE salaried_employees( id serial PRIMARY KEY, name text, pay_by_quarter integer[], schedule text[][]);

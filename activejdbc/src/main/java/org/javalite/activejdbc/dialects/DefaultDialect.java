@@ -20,6 +20,8 @@ import static org.javalite.common.Util.blank;
 import static org.javalite.common.Util.join;
 import static org.javalite.common.Util.joinAndRepeat;
 
+import java.sql.Array;
+import java.sql.Connection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -28,10 +30,12 @@ import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 
 
+import org.javalite.activejdbc.DBException;
 import org.javalite.activejdbc.MetaModel;
 
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
 import org.javalite.common.CaseInsensitiveMap;
+import org.javalite.common.ConversionException;
 import org.javalite.common.Convert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -306,5 +310,17 @@ public class DefaultDialect implements Dialect {
 			}
         }
     	return query.toString();
+    }
+
+
+    /**
+     * Converts the input
+     *
+     * @param value
+     * @param connection
+     * @return
+     */
+    public Array toArray(String typeName, Object value, Connection connection) {
+        throw new DBException("Not implemented for this dialect");
     }
 }
