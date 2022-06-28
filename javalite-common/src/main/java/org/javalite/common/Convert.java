@@ -25,6 +25,7 @@ import java.io.Writer;
 import java.math.BigDecimal;
 import java.sql.Blob;
 import java.sql.Clob;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.*;
@@ -325,9 +326,10 @@ public final class Convert {
     }
 
     public static LocalDate toLocalDate(java.util.Date date){
-            Instant instant = date.toInstant();
-            ZonedDateTime zone = instant.atZone(ZoneId.systemDefault());
-            return zone.toLocalDate();
+        Instant instant = Instant.ofEpochMilli(date.getTime());
+        ZonedDateTime zone = instant.atZone(ZoneId.systemDefault());
+        return zone.toLocalDate();
+
     }
 
     /**

@@ -364,7 +364,7 @@ public class ConvertTest implements JSpecSupport {
 
     @Test
     public void shouldConvertToLocalDate(){
-        java.util.Date d = new java.util.Date(System.currentTimeMillis());
+        java.util.Date d = new java.sql.Date(System.currentTimeMillis());
         LocalDate lDate = Convert.toLocalDate(d);
         GregorianCalendar calendar = (GregorianCalendar) GregorianCalendar.getInstance();
 
