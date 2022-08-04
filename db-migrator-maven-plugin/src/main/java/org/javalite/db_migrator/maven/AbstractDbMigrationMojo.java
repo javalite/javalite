@@ -14,10 +14,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
+import static org.javalite.db_migrator.DatabaseType.POSTGRESQL;
 import static org.javalite.db_migrator.DbUtils.*;
 
 public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
@@ -278,5 +281,21 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
                 exec("USE " + DbUtils.extractDatabaseName(url));
             }
         }catch(Exception ignore){}
+    }
+
+    protected boolean databaseExists(String databaseName) throws SQLException {
+        if (DbUtils.databaseType(getUrl()).equals(POSTGRESQL)) {
+            return  Base.count("pg_database",  "datname = ?",  databaseName) > 0;
+        }else{
+            ResultSet resultSet = Base.connection().getMetaData().getCatalogs();
+            while (resultSet.next()) {
+                String db = resultSet.getString(1);
+                if (db.equals(databaseName)){
+                    return true;
+                }
+            }
+            resultSet.close();
+            return false;
+        }
     }
 }

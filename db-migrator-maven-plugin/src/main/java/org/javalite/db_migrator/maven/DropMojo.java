@@ -16,9 +16,17 @@ public class DropMojo extends AbstractDbMigrationMojo {
         try {
             String dropSql = blank(getDropSql()) ? "drop database %s" : getDropSql();
             openConnection(true);
-            exec(format(dropSql, DbUtils.extractDatabaseName(getUrl())));
-            getLog().info("Dropped database " + getUrl());
-        } finally {
+
+            String databaseName = DbUtils.extractDatabaseName(getUrl());
+            if(databaseExists(databaseName)){
+                exec(format(dropSql, databaseName));
+                getLog().info("Dropped database " + getUrl());
+            }else {
+                getLog().warn("The database '" + databaseName + "' does not exist, cannot drop.");
+            }
+        }catch (Exception e){
+            getLog().error("Failed to drop the database", e);
+        }finally {
             Base.close();
         }
     }

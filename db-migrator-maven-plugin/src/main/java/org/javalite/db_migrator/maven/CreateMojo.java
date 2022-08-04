@@ -19,18 +19,6 @@ public class CreateMojo extends AbstractDbMigrationMojo {
         String databaseName = DbUtils.extractDatabaseName(getUrl());
         try {
             String createSql = blank(getCreateSql()) ? "create database %s" : getCreateSql();
-            switch (DbUtils.databaseType(getUrl())) {
-                case MYSQL:
-                    break;
-                case MARIADB:
-                    break;
-                case SQL_SERVER:
-                    break;
-                case POSTGRESQL:
-                    databaseName = "\"" + databaseName + "\"";
-                    break;
-            }
-
             openConnection(true);
             exec(format(createSql, databaseName));
             getLog().info("Created database " + getUrl());
