@@ -23,7 +23,7 @@ import org.javalite.common.Convert;
 import org.javalite.json.JSONHelper;
 import org.javalite.common.Util;
 import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
+import org.jsoup.safety.Safelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1311,7 +1311,7 @@ public class HttpSupport implements RequestAccess {
      * @return sanitized version of input
      */
     protected String sanitize(String unsafeContent){
-        return Jsoup.clean(unsafeContent, Whitelist.basic());
+        return Jsoup.clean(unsafeContent, Safelist.basic());
     }
 
     /**
