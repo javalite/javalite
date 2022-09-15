@@ -69,6 +69,8 @@ public class ArrayTypeSpec extends ActiveJDBCTest {
     @Test
     public void shouldSaveArrays() throws SQLException {
 
+        if (notPostgreSQL()) return;
+
         SalariedEmployee salariedEmployee = new SalariedEmployee();
 
 

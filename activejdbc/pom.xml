@@ -79,7 +79,7 @@
             <id>mariadb</id>
             <properties>
                 <jdbc.driver>org.mariadb.jdbc.Driver</jdbc.driver>
-                <jdbc.url>jdbc:mariadb://localhost:3307/activejdbc</jdbc.url>
+                <jdbc.url>jdbc:mariadb://127.0.0.1:3307/activejdbc</jdbc.url>
                 <jdbc.user>root</jdbc.user>
                 <jdbc.password>p@ssw0rd</jdbc.password>
                 <db>mysql</db> <!-- we need this to read the file with schema statements -->

@@ -57,7 +57,13 @@ public class DefaultDBReset {
         for (String statement : statements) {
             if (!Util.blank(statement)) {
                 Statement st = connection.createStatement();
-                st.executeUpdate(statement);
+                try{
+                    System.out.println("Executing: " + statement);
+                    st.executeUpdate(statement);
+                }catch(SQLException e){
+                    System.err.println("Failed to execute: " + statement);
+                    throw e;
+                }
                 st.close();
             }
         }

@@ -21,15 +21,33 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
+/**
+ * Validator designed for use of regular expressions.
+ */
 public class RegexpValidator extends ValidatorAdapter {
 
     private final Pattern pattern;
     private final String attribute;
 
-    public RegexpValidator(String attribute, String rule) {
-        this.pattern = Pattern.compile(rule, Pattern.CASE_INSENSITIVE);
+    /**
+     * @param attribute attribute name
+     * @param rule regular expression
+     * @param flags {@link Pattern}
+     */
+    public RegexpValidator(String attribute, String rule, int flags) {
+        this.pattern = Pattern.compile(rule,  flags);
         this.attribute = attribute;
         setMessage("value does not match given format");
+    }
+
+    /**
+     * Calls the {@link #RegexpValidator(String, String, int)} with the {@link Pattern#CASE_INSENSITIVE} flag by default.
+     *
+     * @param attribute attribute name
+     * @param rule regular expression
+     */
+    public RegexpValidator(String attribute, String rule) {
+        this(attribute, rule, Pattern.CASE_INSENSITIVE);
     }
 
     @Override
