@@ -49,6 +49,7 @@ import java.io.File;
 import java.util.*;
 
 import static org.apache.activemq.artemis.api.core.Message.HDR_SCHEDULED_DELIVERY_TIME;
+import static org.javalite.common.Collections.list;
 import static org.javalite.common.Collections.map;
 import static org.javalite.common.Util.closeQuietly;
 
@@ -79,6 +80,7 @@ public class Async {
     private boolean binaryMode;
 
     private List<QueueConfig> queueConfigsList = new ArrayList<>();
+    private List<TopicConfig> topicConfigsList = new ArrayList<>();
     private boolean started;
     private InitialContext initialContext;
     private ActiveMQConnectionFactory connectionFactory;
@@ -97,21 +99,71 @@ public class Async {
     private SessionPool senderSessionPool;
     private SessionPool receiverSessionPool;
 
+
+    public static class AsyncBuilder{
+        private final String dataDirectory;
+        private boolean useLinAio = false;
+        private Injector injector;
+        private QueueConfig[] queueConfigs;
+        private TopicConfig[] topicConfigs;
+
+        public AsyncBuilder(String dataDirectory) {
+            this.dataDirectory = dataDirectory;
+        }
+
+        public AsyncBuilder injector(Injector injector){
+            this.injector = injector;
+            return this;
+        }
+
+        public AsyncBuilder useLibAio(boolean useLinAio){
+            this.useLinAio = useLinAio;
+            return this;
+        }
+
+        public AsyncBuilder queueConfigs(QueueConfig... queueConfigs){
+            this.queueConfigs = queueConfigs;
+            return this;
+        }
+
+        public AsyncBuilder queueTopic(TopicConfig... topicConfigs){
+            this.topicConfigs = topicConfigs;
+            return this;
+        }
+
+        public Async build(){
+            Async async = new Async(dataDirectory, useLinAio, injector, queueConfigs);
+            if(topicConfigs != null && topicConfigs.length > 0){
+                List<TopicConfig> x = list(topicConfigs);
+                async.setTopicConfigsList(x);
+            }
+            return async;
+        }
+    }
+
+
+
     /**
      * Creates and configures a new instance.
+     * <p></p>
+     * However, it is recommended to  use a builder to create Async instances:
+     * <code>new Async.AsyncBuilder(...)...</code>.
      *
      * @param dataDirectory root directory where persistent messages are stored
      * @param useLibAio true to use libaio, false not to use (See Artemis log statements to check if it was detected).
      *
      * @param queueConfigs vararg of QueueConfig instances.
      */
-
     public Async(String dataDirectory, boolean useLibAio, QueueConfig... queueConfigs) {
         this(dataDirectory, useLibAio, null, queueConfigs);
     }
 
     /**
      * Creates and configures a new instance.
+     *
+     * <p></p>
+     * However, it is recommended to  use a builder to create Async instances:
+     * <code>new Async.AsyncBuilder(...)...</code>.
      *
      * @param dataDirectory root directory where persistent messages are stored
      * @param useLibAio true to use libaio, false to use NIO.
@@ -857,6 +909,11 @@ public class Async {
         } catch (Exception e) {
             throw new AsyncException(e);
         }
+    }
+
+
+    public void setTopicConfigsList(List<TopicConfig> topicConfigsList) {
+        this.topicConfigsList = topicConfigsList;
     }
 
     /**

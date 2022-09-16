@@ -35,7 +35,7 @@ class DynamicClassLoader extends ClassLoader {
     private String baseDir;
 
     DynamicClassLoader(ClassLoader parent, String baseDir){
-        super(parent);
+//        super(parent);
         this.baseDir = baseDir;
     }
 
@@ -47,7 +47,7 @@ class DynamicClassLoader extends ClassLoader {
                 return loadByParent(name);
             }
 
-            if(name.endsWith("Controller") || name.contains("Controller$")
+            if(name.endsWith("Controller") || name.contains("Controller$") || name.endsWith("Endpoint")
                     || name.equals(Configuration.getRouteConfigClassName())){
 
                 String pathToClassFile = name.replace('.', '/') + ".class";

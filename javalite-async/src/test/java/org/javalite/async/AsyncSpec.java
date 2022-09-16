@@ -40,15 +40,16 @@ public class AsyncSpec {
 
     @After
     public void after() throws IOException {
-        Util.recursiveDelete(Paths.get(asyncRoot));
         async.stop();
+        Util.recursiveDelete(Paths.get(asyncRoot));
     }
 
     @Test
     public void shouldProcessCommands()  {
 
-        async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
-
+        async = new Async.AsyncBuilder(asyncRoot)
+                .queueConfigs(new QueueConfig(QUEUE_NAME, new CommandListener(), 50))
+                .build();
         async.start();
 
         //send 100 messages
@@ -74,8 +75,9 @@ public class AsyncSpec {
             }
         };
 
-        async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, listener, 1));
-
+        async = new Async.AsyncBuilder(asyncRoot)
+                .queueConfigs(new QueueConfig(QUEUE_NAME, listener, 1))
+                .build();
         async.start();
 
         long requiredTime = System.currentTimeMillis();
@@ -93,14 +95,15 @@ public class AsyncSpec {
             a(time >= requiredTime && time < requiredTime + 500).shouldBeTrue();
             requiredTime -= 5000;
         }
-
     }
 
 
     @Test
     public void shouldListTopCommands() {
-        async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 100));
 
+        async = new Async.AsyncBuilder(asyncRoot)
+                .queueConfigs(new QueueConfig(QUEUE_NAME, new CommandListener(), 100))
+                .build();
         async.start();
 
         async.pause(QUEUE_NAME);
@@ -126,7 +129,9 @@ public class AsyncSpec {
     @Test
     public void shouldGetCommandsSynchronously() {
 
-        async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 0));
+        async = new Async.AsyncBuilder(asyncRoot)
+                .queueConfigs(new QueueConfig(QUEUE_NAME, new CommandListener(), 0))
+                .build();
 
         async.start();
         for(int i = 0; i < 2; i++){
@@ -145,7 +150,9 @@ public class AsyncSpec {
     @Test
     public void shouldRemoveMessages() {
 
-        async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 0));
+        async = new Async.AsyncBuilder(asyncRoot)
+                .queueConfigs(new QueueConfig(QUEUE_NAME, new CommandListener(), 0))
+                .build();
 
         async.start();
 
@@ -169,7 +176,11 @@ public class AsyncSpec {
     public void shouldInjectDependencyIntoCommand(){
 
         Injector injector = Guice.createInjector(new GreetingModule());
-        async = new Async(asyncRoot, false, injector, new QueueConfig(QUEUE_NAME, new CommandListener(), 1));
+
+        async = new Async.AsyncBuilder(asyncRoot)
+                .queueConfigs(new QueueConfig(QUEUE_NAME, new CommandListener(), 1))
+                .injector(injector)
+                .build();
 
         async.start();
 
@@ -183,7 +194,10 @@ public class AsyncSpec {
     @Test
     public void shouldStartStopBroker() {
 
-        async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
+        async = new Async.AsyncBuilder(asyncRoot)
+                .queueConfigs(new QueueConfig(QUEUE_NAME, new CommandListener(), 50))
+                .build();
+
         async.start();
         for (int i = 0; i < 10; i++) {
             async.send(QUEUE_NAME, new HelloCommand("Message: " + i), DeliveryMode.PERSISTENT);
@@ -210,7 +224,10 @@ public class AsyncSpec {
     public void shouldInjectDependencyIntoCommandListener() {
 
         Injector injector = Guice.createInjector(new GreetingModule());
-        async = new Async(asyncRoot, false, injector, new QueueConfig(QUEUE_NAME, new HelloCommandListener(), 1));
+        async = new Async.AsyncBuilder(asyncRoot)
+                .queueConfigs(new QueueConfig(QUEUE_NAME, new HelloCommandListener(), 1))
+                .build();
+
         async.start();
 
         async.send(QUEUE_NAME, new HelloCommand("Hi, there"), DeliveryMode.PERSISTENT);
@@ -223,7 +240,10 @@ public class AsyncSpec {
     @Test
     public void shouldMoveMessageToOtherQueue() throws JMSException {
 
-        async = new Async(asyncRoot, false, new QueueConfig("queue1"), new QueueConfig("queue2"));
+        async = new Async.AsyncBuilder(asyncRoot)
+                .queueConfigs(new QueueConfig("queue1"), new QueueConfig("queue2"))
+                .build();
+
         async.start();
 
         async.sendTextMessage("queue1", "message test 1", DeliveryMode.PERSISTENT, 5, 0);
@@ -250,7 +270,11 @@ public class AsyncSpec {
     public void shouldMoveMessagesToOtherQueue() {
 
         String queue1  = "queue1", queue2 = "queue2";
-        async = new Async(asyncRoot, false, new QueueConfig(queue1), new QueueConfig(queue2));
+
+        async = new Async.AsyncBuilder(asyncRoot)
+                .queueConfigs(new QueueConfig("queue1"), new QueueConfig("queue2"))
+                .build();
+
         async.start();
 
         the(async.getMessageCount(queue1)).shouldBeEqual(0);
@@ -274,7 +298,10 @@ public class AsyncSpec {
     public void shouldGetMessageCounts(){
 
         String queue1  = "queue1", queue2 = "queue2";
-        async = new Async(asyncRoot, false, new QueueConfig(queue1), new QueueConfig(queue2));
+        async = new Async.AsyncBuilder(asyncRoot)
+                .queueConfigs(new QueueConfig(queue1), new QueueConfig(queue2))
+                .build();
+
         async.start();
 
 
@@ -293,7 +320,10 @@ public class AsyncSpec {
 
         SystemStreamUtil.replaceOut();
 
-        async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME, new CommandListener(), 50));
+        async = new Async.AsyncBuilder(asyncRoot)
+                .queueConfigs(new QueueConfig(QUEUE_NAME, new CommandListener(), 50))
+                .build();
+
         async.start();
         async.send(QUEUE_NAME, new ContextCommand(true), DeliveryMode.PERSISTENT);
         async.send(QUEUE_NAME, new ContextCommand(false), DeliveryMode.PERSISTENT);
@@ -325,7 +355,10 @@ public class AsyncSpec {
 
     @Test
     public void shouldSendModelData()  {
-        async = new Async(asyncRoot, false, new QueueConfig(QUEUE_NAME));
+        async = new Async.AsyncBuilder(asyncRoot)
+                .queueConfigs(new QueueConfig(QUEUE_NAME))
+                .build();
+
         async.start();
         Book b = new Book();
         b.set("title", "Alice in Wonderland");
