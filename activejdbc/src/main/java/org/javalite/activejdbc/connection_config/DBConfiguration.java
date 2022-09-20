@@ -241,7 +241,7 @@ public class DBConfiguration {
     /**
      * @return list of {@link ConnectionConfig} objects that are marked for testing.
      */
-    public List<ConnectionConfig> getTestConnectionConfigs() {
+    public static List<ConnectionConfig> getTestConnectionConfigs() {
         return getConnectionConfigsForCurrentEnv().stream().filter(ConnectionConfig::isTesting).collect(Collectors.toList());
     }
 
