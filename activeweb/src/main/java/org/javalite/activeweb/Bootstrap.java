@@ -38,7 +38,7 @@ public abstract class Bootstrap implements InitConfig {
 
 
     /**
-     * Called when application is bootstraps.
+     * Called when application bootstraps.
      *
      * @param context app context instance
      */
