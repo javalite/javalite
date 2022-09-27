@@ -18,6 +18,7 @@ package org.javalite.activeweb;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Instance of this class can hold application-specific objects for duration of application life span.
@@ -26,8 +27,7 @@ import java.util.Map;
  */
 public class AppContext {
 
-    private Map context = new HashMap();
-
+    private static final AtomicReference<Map<String, Object>> contextReference = new AtomicReference<>(new HashMap<>());
 
     /**
      * Retrieves object by name
@@ -36,7 +36,7 @@ public class AppContext {
      * @return   object by name;
      */
     public Object get(String name){
-        return context.get(name);
+        return contextReference.get().get(name);
     }
 
     /**
@@ -46,8 +46,8 @@ public class AppContext {
      * @param type type requested.
      * @return object by name
      */
-    public <T>  T get(String name, Class<T> type){
-        Object o = context.get(name);
+    public static  <T>  T get(String name, Class<T> type){
+        Object o = contextReference.get().get(name);
         return o == null? null : (T) o;
     }
 
@@ -57,7 +57,7 @@ public class AppContext {
      * @param name name of object
      * @param object - instance. 
      */
-    public void set(String name, Object object){
-        context.put(name, object);
+    public static void set(String name, Object object){
+        contextReference.get().put(name, object);
     }
 }

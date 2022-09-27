@@ -28,7 +28,6 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import java.io.IOException;
 
 import static org.javalite.test.SystemStreamUtil.replaceError;
 import static org.javalite.test.SystemStreamUtil.restoreSystemErr;
@@ -38,11 +37,7 @@ import static org.javalite.test.SystemStreamUtil.restoreSystemErr;
  */
 public abstract class RequestSpec implements JSpecSupport {
 
-    protected FilterChain filterChain = new FilterChain() {
-        public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse) throws IOException, ServletException {
-
-        }
-    };
+    protected FilterChain filterChain = (servletRequest, servletResponse) -> {};
     protected RequestDispatcher dispatcher;
     protected MockHttpServletRequest request;
     protected MockHttpServletResponse response;
