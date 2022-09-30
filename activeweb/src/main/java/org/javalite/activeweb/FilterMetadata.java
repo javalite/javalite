@@ -8,23 +8,23 @@ import java.util.Set;
 /**
  * @author igor on 6/28/17.
  */
-class FilterMetadata<T extends AppController> {
+class FilterMetadata {
 
     private Boolean wildcard = true;
 
-    private Set<String> controllers = new HashSet<>();
-    private Set<String> excludedActions = new HashSet<>();
-    private Set<String> excludedControllers = new HashSet<>();
-    private Set<String> includedActions = new HashSet<>();
+    private final Set<String> controllers = new HashSet<>();
+    private final Set<String> excludedActions = new HashSet<>();
+    private final Set<String> excludedControllers = new HashSet<>();
+    private final Set<String> includedActions = new HashSet<>();
 
-    final void addController(Class<T> controllerClass) {
+    final void addController(Class<? extends AppController> controllerClass) {
         controllers.add(controllerClass.getName());
         wildcard = false;
     }
 
     @SafeVarargs
-    final void setExcludedControllers(Class<T>... controllerClasses) {
-        for (Class<T> controllerClazz : controllerClasses) {
+    final void setExcludedControllers(Class<? extends AppController>... controllerClasses) {
+        for (var controllerClazz : controllerClasses) {
             excludedControllers.add(controllerClazz.getName());
         }
     }
@@ -40,12 +40,9 @@ class FilterMetadata<T extends AppController> {
         } else if (controllers.contains(route.getController().getClass().getName()) && !excludedActions.contains(route.getActionName())
                 && (includedActions.contains(route.getActionName()) || includedActions.isEmpty())) {
             return true;
-        }else if(!wildcard && includedActions.contains(route.getActionName())
+        } else return !wildcard && includedActions.contains(route.getActionName())
                 && !excludedActions.contains(route.getActionName())
-                && controllers.contains(route.getController().getClass().getName())){
-            return true;
-        }
-        return false;
+                && controllers.contains(route.getController().getClass().getName());
     }
 
     final void setExcludedActions(String[] excludedActions) {
@@ -59,6 +56,6 @@ class FilterMetadata<T extends AppController> {
     }
 
     boolean hasControllers(){
-        return controllers.size() > 0;
+        return !controllers.isEmpty();
     }
 }

@@ -39,7 +39,7 @@ import static org.javalite.common.Util.blank;
 public class Configuration {
     private static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
     private static Injector injector;
-    private static Map<String, Class<? extends AppEndpoint>> mappings =  new HashMap<>();
+    private static final Map<String, Class<? extends AppEndpoint>> mappings =  new HashMap<>();
 
     static List<String> getControllerPackages() {
         return controllerPackages;
@@ -51,16 +51,16 @@ public class Configuration {
     }
 
     private static List<String> logHeaders = new ArrayList<>();
-    private static Properties props;
+    private static final Properties props;
     private static TemplateManager templateManager;
 
     private static boolean testing;
 
-    private static boolean activeReload = !blank(System.getProperty("active_reload")) && System.getProperty("active_reload").equals("true");
+    private static final boolean activeReload = !blank(System.getProperty("active_reload")) && System.getProperty("active_reload").equals("true");
     private static AbstractFreeMarkerConfig freeMarkerConfig;
     private static boolean useDefaultLayoutForErrors = true;
 
-    private static List<String> controllerPackages;
+    private static final List<String> controllerPackages;
     private static List<HttpSupportFilter> filters  = new ArrayList<>();
 
     private static boolean filtersInjected = false;
@@ -171,7 +171,7 @@ public class Configuration {
         }
     }
 
-    private static void initTemplateManager() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+    private static void initTemplateManager() {
         try{
          templateManager = (TemplateManager)Class.forName(
              get(Params.templateManager.toString())
@@ -355,11 +355,12 @@ public class Configuration {
             classGraph.overrideClassLoaders(classLoader);
         }
 
-        ScanResult scanResult = classGraph.scan();
-        for (ClassInfo classInfo : scanResult.getSubclasses(AppController.class.getName())) {
-            if (!classInfo.isAbstract()) {
-                classInfo.getAnnotationInfo();
-                controllerInfos.add(classInfo);
+        try (ScanResult scanResult = classGraph.scan()) {
+            for (ClassInfo classInfo : scanResult.getSubclasses(AppController.class.getName())) {
+                if (!classInfo.isAbstract()) {
+                    classInfo.getAnnotationInfo();
+                    controllerInfos.add(classInfo);
+                }
             }
         }
 
