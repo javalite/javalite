@@ -42,12 +42,12 @@ import java.util.List;
  *
  * @author Igor Polevoy
  */
-public abstract class AbstractControllerConfig<T extends AppController> implements InitConfig {
+public abstract class AbstractControllerConfig implements InitConfig {
 
-    private List<HttpSupportFilter> allFilters = new ArrayList<>();
+    private final List<HttpSupportFilter> allFilters = new ArrayList<>();
 
-    public class FilterBuilder {
-        private List<HttpSupportFilter> filters = new ArrayList<>();
+    public static class FilterBuilder<T extends AppController> {
+        private final List<HttpSupportFilter> filters = new ArrayList<>();
 
 
         protected FilterBuilder(HttpSupportFilter[] filters) {
@@ -60,9 +60,10 @@ public abstract class AbstractControllerConfig<T extends AppController> implemen
          * @param controllerClasses list of controller classes to which filters are added.
          * @return self, usually to run a method {@link #forActions(String...)}.
          */
-        public FilterBuilder to(Class<? extends AppController>... controllerClasses) {
+        @SafeVarargs
+        public final FilterBuilder<T> to(Class<? extends AppController>... controllerClasses) {
             for (HttpSupportFilter filter : filters) {
-                for (Class<? extends AppController> controllerClass : controllerClasses) {
+                for (var controllerClass : controllerClasses) {
                     Configuration.getFilterMetadata(filter).addController(controllerClass);
                 }
             }
@@ -80,11 +81,12 @@ public abstract class AbstractControllerConfig<T extends AppController> implemen
          * @param actionNames list of action names for which filters are configured.
          */
         public void forActions(String... actionNames) {
-            if (!hasControllers())
+            if (hasControllers()) {
+                for (HttpSupportFilter filter : filters) {
+                    Configuration.getFilterMetadata(filter).setIncludedActions(actionNames);
+                }
+            } else {
                 throw new IllegalArgumentException("controller classes not provided. Please call 'to(controllers)' before 'forActions(actions)'");
-
-            for (HttpSupportFilter filter : filters) {
-                Configuration.getFilterMetadata(filter).setIncludedActions(actionNames);
             }
         }
 
@@ -94,11 +96,12 @@ public abstract class AbstractControllerConfig<T extends AppController> implemen
          * @param excludedActions list of actions for which this filter will not apply.
          */
         public void excludeActions(String... excludedActions) {
-            if (!hasControllers())
+            if (hasControllers()) {
+                for (HttpSupportFilter filter : filters) {
+                    Configuration.getFilterMetadata(filter).setExcludedActions(excludedActions);
+                }
+            } else {
                 throw new IllegalArgumentException("controller classes not provided. Please call 'to(controllers)' before 'exceptAction(actions)'");
-
-            for (HttpSupportFilter filter : filters) {
-                Configuration.getFilterMetadata(filter).setExcludedActions(excludedActions);
             }
         }
 
@@ -118,7 +121,7 @@ public abstract class AbstractControllerConfig<T extends AppController> implemen
          * @param excludeControllerClasses list of controllers to which these filters do not apply.
          */
         @SafeVarargs
-        public final void exceptFor(Class<T>... excludeControllerClasses) {
+        public final void exceptFor(Class<? extends AppController>... excludeControllerClasses) {
             for (HttpSupportFilter filter : filters) {
                 Configuration.getFilterMetadata(filter).setExcludedControllers(excludeControllerClasses);
             }
@@ -133,14 +136,14 @@ public abstract class AbstractControllerConfig<T extends AppController> implemen
      * @param filters filters to be added.
      * @return object with <code>to()</code> method which accepts a controller class.
      */
-    protected FilterBuilder add(HttpSupportFilter... filters) {
+    protected FilterBuilder<? extends AppController> add(HttpSupportFilter... filters) {
         for (HttpSupportFilter filter : filters) {
             if(allFilters.contains(filter)){
                 throw new IllegalArgumentException("Cannot register the same filter instance more than once.");
             }
         }
         allFilters.addAll(Collections.list(filters));
-        return new FilterBuilder(filters);
+        return new FilterBuilder<>(filters);
     }
 
 
