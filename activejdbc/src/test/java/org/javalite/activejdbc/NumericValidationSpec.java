@@ -100,10 +100,8 @@ public class NumericValidationSpec extends ActiveJDBCTest {
 
 
         page.set("word_count", 21.2);
-        the(page).shouldNotBe("valid");
-        the(page.errors().size()).shouldBeEqual(1);
-        the(page.errors().get("word_count")).shouldBeEqual("'word_count' must be an integer greater than 10");
-
+        the(page).shouldBe("valid");
+        the(page.get("word_count")).shouldEqual(21); // <---- the conversion to integer lost a decimal point.
     }
 
     @Test
