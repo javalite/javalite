@@ -31,7 +31,7 @@ public class StringToSqlDateConverter extends ConverterAdapter<String, java.sql.
 
     private final DateFormat format;
     // Calendar and DateFormat are not thread safe: http://www.javacodegeeks.com/2010/07/java-best-practices-dateformat-in.html
-    private final ThreadLocal<DateFormat> threadLocalFormat = new ThreadLocal<DateFormat>() {
+    private final ThreadLocal<DateFormat> threadLocalFormat = new ThreadLocal<>() {
         @Override protected DateFormat initialValue() {
             return (DateFormat) format.clone();
         }

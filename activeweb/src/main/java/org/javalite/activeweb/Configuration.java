@@ -362,7 +362,6 @@ public class Configuration {
                 controllerInfos.add(classInfo);
             }
         }
-
         return controllerInfos;
     }
 
