@@ -355,13 +355,15 @@ public class Configuration {
             classGraph.overrideClassLoaders(classLoader);
         }
 
-        ScanResult scanResult = classGraph.scan();
-        for (ClassInfo classInfo : scanResult.getSubclasses(AppController.class.getName())) {
-            if (!classInfo.isAbstract()) {
-                classInfo.getAnnotationInfo();
-                controllerInfos.add(classInfo);
+        try (ScanResult scanResult = classGraph.scan()) {
+            for (ClassInfo classInfo : scanResult.getSubclasses(AppController.class.getName())) {
+                if (!classInfo.isAbstract()) {
+                    classInfo.getAnnotationInfo();
+                    controllerInfos.add(classInfo);
+                }
             }
         }
+
         return controllerInfos;
     }
 

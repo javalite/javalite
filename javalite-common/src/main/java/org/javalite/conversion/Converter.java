@@ -32,7 +32,7 @@ public interface Converter<S, T> {
      * @param destinationClass destination Class
      * @return true if this converter can convert instances of sourceClass to destinationClass, false otherwise
      */
-    boolean canConvert(Class<S> sourceClass, Class<T> destinationClass);
+    boolean canConvert(Class sourceClass, Class destinationClass);
 
     /**
      * Converts instance of <tt>S</tt> to <tt>T</tt>.

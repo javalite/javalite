@@ -14,16 +14,11 @@ public class Page extends Model {
     }
 }
 
-class StringToIntegerConverter extends ConverterAdapter<Object, Integer> {
+class StringToIntegerConverter extends ConverterAdapter<String, Integer> {
 
     @Override
-    protected Class<Object> sourceClass() {
-        return Object.class;
-    }
-
-    @Override
-    public boolean canConvert(Class<Object> aSourceClass, Class<Integer> aDestinationClass) {
-        return true;
+    protected Class<String> sourceClass() {
+        return String.class;
     }
 
     @Override
@@ -32,16 +27,7 @@ class StringToIntegerConverter extends ConverterAdapter<Object, Integer> {
     }
 
     @Override
-    protected Integer doConvert(Object source){
-
-        if(source == null){
-            return null;
-        }
-
-        if("zero".equals(source)){
-            return 0;
-        }else{
-            return Convert.toInteger(source);
-        }
+    protected Integer doConvert(String source) throws Exception {
+        return "zero".equals(source) ? 0 : Convert.toInteger(source);
     }
 }

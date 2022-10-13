@@ -26,7 +26,7 @@ package org.javalite.conversion;
 public abstract class ConverterAdapter<S, T> implements Converter<S, T> {
 
     @Override
-    public boolean canConvert(Class<S> aSourceClass, Class<T> aDestinationClass) {
+    public boolean canConvert(Class aSourceClass, Class aDestinationClass) {
         return sourceClass().isAssignableFrom(aSourceClass) && destinationClass().isAssignableFrom(aDestinationClass);
     }
 

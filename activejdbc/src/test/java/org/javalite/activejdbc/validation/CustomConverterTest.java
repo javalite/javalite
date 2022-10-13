@@ -31,18 +31,4 @@ public class CustomConverterTest extends ActiveJDBCTest {
         a(p.get("word_count")).shouldBeA(Integer.class);
         a(p.get("word_count")).shouldBeEqual(0);
     }
-
-
-    @Test
-    public void shouldConvertStringToIntegerOnSave(){
-        Page p = new Page();
-
-        the(p.get("word_count")).shouldBeNull();
-
-        p.set("word_count", "20");
-        p.saveIt();
-
-        the(p.get("word_count")).shouldBeA(Integer.class);
-        the(p.get("word_count")).shouldEqual(20);
-    }
 }
