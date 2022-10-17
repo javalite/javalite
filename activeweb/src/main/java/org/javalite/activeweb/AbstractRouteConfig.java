@@ -1,6 +1,7 @@
 package org.javalite.activeweb;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,8 +24,13 @@ public abstract class AbstractRouteConfig implements InitConfig {
         return matchedRoute;
     }
 
-    public List<RouteBuilder> getRoutes() {
-        return routes;
+    public RouteBuilder route(RouteBuilder builder){
+        routes.add(builder);
+        return builder;
+    }
+
+    List<RouteBuilder> getRoutes() {
+        return Collections.unmodifiableList(this.routes);
     }
 
     protected void clear(){

@@ -5,22 +5,21 @@ package org.javalite.activeweb;
  *
  * @author igor on 9/17/18.
  */
-class ControllerPath {
+public class ControllerPath {
     private String controllerName, controllerPackage;
 
-    ControllerPath(String controllerName, String controllerPackage) {
+    public ControllerPath(String controllerName, String controllerPackage) {
         this.controllerName = controllerName;
         this.controllerPackage = controllerPackage;
     }
 
-    ControllerPath(String controllerName) {
+    public ControllerPath(String controllerName) {
         this.controllerName = controllerName;
     }
 
-    ControllerPath() {
-    }
+    public ControllerPath() {}
 
-    String getControllerName() {
+    public String getControllerName() {
         return controllerName;
     }
 
@@ -28,7 +27,7 @@ class ControllerPath {
         return controllerName == null && controllerPackage == null;
     }
 
-    String getControllerPackage() {
+    public String getControllerPackage() {
         return controllerPackage;
     }
 

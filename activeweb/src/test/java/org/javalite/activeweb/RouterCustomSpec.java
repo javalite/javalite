@@ -482,4 +482,28 @@ public class RouterCustomSpec extends RequestSpec {
         the(SystemStreamUtil.getSystemOut()).shouldContain("Cannot map to a non-custom route with a 'strictMode' flag on.");
         SystemStreamUtil.restoreSystemOut();
     }
+
+    @Test
+    public void should_use_custom_RouteBuilder() {
+        routeConfig = new AbstractRouteConfig() {
+            public void init(AppContext appContext) {
+                route( new RouteBuilder(new RouteBuilderController(), "index"){
+                    @Override
+                    protected boolean matches(String requestUri, ControllerPath controllerPath, HttpMethod httpMethod)  {
+                        return requestUri.contains("one");
+                    }
+                });
+            }
+        };
+        request.setServletPath("/one");
+        execDispatcher();
+        the(responseContent()).shouldBeEqual("custom!");
+
+        //reset the old object
+        response = new MockHttpServletResponse();
+
+        request.setServletPath("/onetwothree");
+        execDispatcher();
+        the(responseContent()).shouldBeEqual("custom!");
+    }
 }
