@@ -59,6 +59,7 @@ public class FreeMarkerTemplateManager extends TemplateManager {
         config.setSharedVariable("select", new SelectTag());
         config.setSharedVariable("message", new MessageTag());
         config.setSharedVariable("csrf_token", new CSRFTokenTag());
+        config.setSharedVariable("aw_script", new AWJSTag());
 
         AbstractFreeMarkerConfig freeMarkerConfig = org.javalite.activeweb.Configuration.getFreeMarkerConfig();
         if(freeMarkerConfig != null){
