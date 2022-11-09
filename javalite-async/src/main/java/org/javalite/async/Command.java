@@ -17,12 +17,8 @@ limitations under the License.
 
 package org.javalite.async;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.security.AnyTypePermission;
-import com.thoughtworks.xstream.security.NoTypePermission;
-import org.javalite.async.xstream.CDATAXppDriver;
-import org.javalite.async.xstream.JSONListConverter;
-import org.javalite.async.xstream.JSONMapConverter;
+import org.javalite.json.JSONHelper;
+import org.javalite.json.JSONMap;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -41,24 +37,33 @@ public abstract class Command {
 
     private String jmsMessageId;
 
-    private static final XStream X_STREAM;
-    static {
-        X_STREAM = new XStream(new CDATAXppDriver());
-        X_STREAM.registerConverter(new JSONMapConverter(X_STREAM.getMapper()));
-        X_STREAM.registerConverter(new JSONListConverter(X_STREAM.getMapper()));
-        X_STREAM.addPermission(NoTypePermission.NONE );
-        X_STREAM.addPermission(AnyTypePermission.ANY);
+    /**
+     * Method used by framework to de-serialize a command from JSON.
+     *
+     * @param commandJSON JSON representation of a command.
+     *
+     * @return new instance of a command initialized with data from <code>commandJSON</code>  argument.
+     */
+    static <T extends Command> T hydrate(String commandJSON) {
+        try{
+            JSONMap map = JSONHelper.toJSONMap(commandJSON);
+            String commandClass = map.getString("type");
+            //TODO: there is a second parsing of the same JSON here:
+            Class c1 = Class.forName(commandClass);
+            return (T) JSONHelper.toObject(map.getMap("command").toJSON(), c1);
+        }catch(Exception e){
+            throw new AsyncException(e);
+        }
     }
 
     /**
-     * Method used by framework to de-serialize a command from XML.
+     * Serializes this object into XML. The output is used by {@link #hydrate(String)} to de-serialize a command
+     * after it passes through messaging broker.
      *
-     * @param commandXml XML representation of a command.
-     *
-     * @return new instance of a command initialized with data from <code>commandXml</code>  argument.
+     * @return XML representation of this instance.
      */
-    public static <T extends Command> T  fromXml(String commandXml) {
-        return (T) X_STREAM.fromXML(commandXml);
+    final String dehydrate() {
+        return new CommandWrapper(this.getClass().getName(), this).toJSON();
     }
 
 
@@ -68,15 +73,7 @@ public abstract class Command {
      */
     public abstract void execute();
 
-    /**
-     * Serializes this object into XML. The output is used by {@link #fromXml(String)} to de-serialize a command
-     * after it passes through messaging broker.
-     *
-     * @return XML representation of this instance.
-     */
-    public final String toXml() {
-        return X_STREAM.toXML(this);
-    }
+
 
     /**
      * Flattens(serializes, dehydrates, etc.) this instance to a binary representation.
@@ -89,7 +86,7 @@ public abstract class Command {
         ZipOutputStream stream = new ZipOutputStream(bout);
         ZipEntry ze = new ZipEntry("async_message");
         stream.putNextEntry(ze);
-        stream.write(toXml().getBytes());
+        stream.write(dehydrate().getBytes());
         stream.flush();
         stream.close();
         return  bout.toByteArray();
@@ -108,7 +105,7 @@ public abstract class Command {
         while((len = zin.read(buffer)) != -1) {
             bout.write(buffer, 0, len);
         }
-        return  (T) Command.fromXml(bout.toString());
+        return  (T) Command.hydrate(bout.toString());
     }
 
     public String getJMSMessageID() {

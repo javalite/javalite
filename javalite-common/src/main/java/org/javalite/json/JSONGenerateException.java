@@ -1,5 +1,6 @@
+
 /*
-Copyright 2009-(CURRENT YEAR) Igor Polevoy
+Copyright 2009-present Igor Polevoy
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -13,19 +14,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package org.javalite.async.xstream;
 
-import com.thoughtworks.xstream.converters.collections.CollectionConverter;
-import com.thoughtworks.xstream.mapper.Mapper;
-import org.javalite.json.JSONList;
+package org.javalite.json;
 
-public class JSONListConverter extends CollectionConverter{
-    public JSONListConverter(Mapper mapper) {
-        super(mapper);
+public class JSONGenerateException extends RuntimeException{
+    public JSONGenerateException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    @Override
-    public boolean canConvert(Class type) {
-        return type.equals(JSONList.class);
+    public JSONGenerateException(String message) {
+        super(message);
     }
 }

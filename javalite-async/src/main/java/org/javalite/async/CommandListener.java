@@ -82,7 +82,8 @@ public class CommandListener implements MessageListener {
     protected Command parseCommand(Message message) throws IOException, JMSException {
         Command command;
         if (message instanceof TextMessage) {
-            command = Command.fromXml(((TextMessage) message).getText());
+            message.getStringProperty("java_type");
+            command = Command.hydrate(((TextMessage) message).getText());
         } else {
             byte[] bytes = Async.getBytes((BytesMessage) message);
             command = Command.fromBytes(bytes);

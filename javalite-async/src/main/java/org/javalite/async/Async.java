@@ -471,7 +471,7 @@ public class Async {
                 msg.writeBytes(command.toBytes());
                 message = msg;
             }else{
-                message = session.createTextMessage(command.toXml());
+                message = session.createTextMessage(command.dehydrate());
             }
 
             if (deliveryTime > 0) {
@@ -559,7 +559,7 @@ public class Async {
                 if(binaryMode){
                     command = Command.fromBytes(getBytes((BytesMessage) message));
                 }else {
-                    command = Command.fromXml(((TextMessage)message).getText());
+                    command = Command.hydrate(((TextMessage)message).getText());
                 }
                 command.setJMSMessageID(message.getJMSMessageID());
                 return command;
@@ -704,7 +704,7 @@ public class Async {
                 if(binaryMode){
                     command = Command.fromBytes(getBytes((BytesMessage) message));
                 }else{
-                    command = Command.fromXml(((TextMessage)message).getText());
+                    command = Command.hydrate(((TextMessage)message).getText());
                 }
                 command.setJMSMessageID(message.getJMSMessageID());
                 res.add(command);
