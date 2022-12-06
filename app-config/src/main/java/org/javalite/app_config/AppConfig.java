@@ -80,6 +80,17 @@ import java.util.*;
  * <blockquote><strong>The file-based configuration  overrides classpath one. If you have a property defined in both,
  * the classpath configuration will be completely ignored and the file property will be used.</strong></blockquote>
  *
+ * <h2>3. Environment Variables</h2>
+ *
+ * You can set the environment variables as well. As long as they are read as usual:
+ * <br>
+ * <pre>String val = p("env_var_name") </pre>
+ *
+ * <br/>
+ *  your program will read these values. The Environment Variables have the highest precedent and will override
+ *  any other properties defined for this environment.
+ *
+ *
  *
  * <h2>Property substitution</h2>
  *
@@ -240,7 +251,7 @@ public class AppConfig implements Map<String, String> {
             if (previous != null) {
                 LOGGER.warn("Duplicate property defined. Property: '" + key + "' found in: "
                         + previous.getPropertyFile() + " and in: " + source
-                        + ". Using value '" + property.getValue() + "' from: "
+                        + ". Using the value from: "
                         + property.getPropertyFile());
             }
         }
