@@ -1,0 +1,7 @@
+{
+  "responses": {
+    "200": {
+      "description": "Creates a pet"
+    }
+  }
+}

@@ -204,8 +204,8 @@ public class DbUtils {
 
     public static int exec(String statement, Object ... params){
         try {
-            LOGGER.info("Executing: " + statement);
-            return params.length == 0 ? Base.exec(statement) : Base.exec(statement, params);
+            LOGGER.info("Executing: <" + statement.trim() + ">");
+            return params.length == 0 ? Base.exec(statement.trim()) : Base.exec(statement.trim(), params);
 
         } catch (Exception e) {
             throw new RuntimeException(e);

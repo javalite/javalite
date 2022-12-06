@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 
 import static org.javalite.common.Util.blank;
-import static org.javalite.common.Util.join;
+
 
 
 /**
@@ -27,6 +27,24 @@ public class EndPointDefinition {
     private final String argumentClassName; // can be null
 
 
+    public EndPointDefinition(EndPointHttpMethod endpointMethod, String path, String controllerClassName,
+                              String actionMethod, String argumentClassName) {
+
+        this.endpointMethods.add(endpointMethod);
+        this.path = path;
+        this.argumentClassName = argumentClassName;
+        this.controllerClassName = controllerClassName;
+        this.actionMethodName = actionMethod;
+    }
+
+    /**
+     *
+     * @param endpointMethods
+     * @param path whatever was specified in the RouteConfig for this route.
+     * @param controllerClassName
+     * @param actionMethod
+     * @param argumentClassName
+     */
     public EndPointDefinition(List<EndPointHttpMethod> endpointMethods, String path, String controllerClassName,
                               String actionMethod, String argumentClassName) {
 

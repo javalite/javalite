@@ -362,7 +362,7 @@ public class Router {
      * <li>For class: <code>app.controllers.admin.simple.PeopleAdmin</code> the path will be: <code>/admin/simple/people_admin</code>.</li>
      * </ul>
      * <p/>
-     * Class name looses the "Controller" suffix and gets converted to underscore format, while packages stay unchanged.
+     * Class name loses the "Controller" suffix and gets converted to underscore format, while packages stay unchanged.
      *
      * @param controllerClass class of a controller.
      * @return standard path for a controller.

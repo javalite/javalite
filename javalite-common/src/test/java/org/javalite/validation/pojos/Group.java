@@ -8,7 +8,6 @@ public class Group extends ValidationSupport {
 
     public Group(String size) {
         this.size = size;
-
         validateNumericalityOf("size");
     }
 }

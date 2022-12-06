@@ -2,6 +2,8 @@ package org.javalite.activeweb;
 
 import org.javalite.common.Inflector;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -31,8 +33,6 @@ public class RouteUtil {
 
     /**
      * Gets methods matching an action name. Excludes: methods of superclasses from JavaLite and all non-public methods
-     *
-     * This method exists for caches controller methods in a ThreadLocal storage.
      *
      * @return all methods matching a method name.
      */
@@ -74,25 +74,46 @@ public class RouteUtil {
 
 
     /**
-     *  1. modifier (must be public)
-     *  2. return value (must be void)
+     *  Tests  if a method is callable in an HTTP request.
+     *  Rules:
+     *
+     *  1. Modifier (must be public)
+     *  2. Return value (must be void)
      *  3. Parameters (count must be 1 or 0),
      *  4. Cannot be static
      *  5. Cannot be abstract
      */
-    @SuppressWarnings("unchecked")
     public static boolean isAction(Method method) {
         try{
-            Class<AppController> appControllerClass = (Class<AppController>) Class.forName("org.javalite.activeweb.AppController");
+
             return  method.getParameterCount() <= 1
-                    && Arrays.stream(appControllerClass.getDeclaredMethods()).noneMatch(method::equals) // shuts off AppController methods
-                    && appControllerClass.isAssignableFrom(method.getDeclaringClass())  // shuts off super classes methods
+                    && Arrays.stream(AppController.class.getDeclaredMethods()).noneMatch(method::equals) // shuts off AppController methods
+                    && AppController.class.isAssignableFrom(method.getDeclaringClass())  // shuts off super classes methods
                     && Modifier.isPublic(method.getModifiers())
                     && !Modifier.isStatic(method.getModifiers())
                     && !Modifier.isAbstract(method.getModifiers())
                     && method.getReturnType().equals(Void.TYPE);
         }catch(Exception e){
             throw new RouteException("Failed to determine if a method is an action.", e);
+        }
+    }
+
+    /**
+     * Finds if  a controller has an action method with a given HTTP method.
+     *
+     * @param controllerClass controller class
+     * @param actionName name of an action
+     * @param httpMethod HttpMethod instance.
+     * @return true if such an action exists, false if not.
+     */
+    public static boolean hasAction(Class<? extends AppController> controllerClass, String actionName, HttpMethod httpMethod) throws InvocationTargetException, InstantiationException, IllegalAccessException {
+        String actionMethodName = Inflector.camelize(actionName, false);
+        try{
+            Method actionMethod = controllerClass.getMethod(actionMethodName);
+            Annotation annotation = HttpMethod.annotation(httpMethod);
+            return actionMethod.getAnnotation(annotation.getClass()) != null;
+        }catch(NoSuchMethodException e){
+            return false;
         }
     }
 
