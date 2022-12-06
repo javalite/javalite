@@ -59,7 +59,7 @@ public class EndpointFinderSpec {
         String formattedJSONString = endpointFinder.getOpenAPIDocs(BASE_TEMPLATE, Format.JSON);
         JSONMap apiMap= JSONHelper.toJSONMap(formattedJSONString);
         JSONMap paths = apiMap.getMap("paths");
-        the(paths.keySet().size()).shouldBeEqual(15);
+        the(paths.keySet().size()).shouldBeEqual(19);
 
         the(paths.get("/custom/index.post.summary")).shouldBeEqual("Show API version details - CustomController#index - @POST annotation");
         the(paths.get("/custom/save_person.post.summary")).shouldBeEqual("Show API version details - CustomController#savePerson - @POST annotation");
@@ -106,7 +106,7 @@ public class EndpointFinderSpec {
 
         JSONMap apiMap= JSONHelper.toJSONMap(formattedJSONString);
         JSONMap paths = apiMap.getMap("paths");
-        the(paths.keySet().size()).shouldBeEqual(14);
+        the(paths.keySet().size()).shouldBeEqual(18);
 
         //NOTE: we have 14 items here, 12 coming from controllers, and another 2 from the RouteConfig.
         the(paths).shouldContain("/custom/index");
@@ -185,8 +185,6 @@ public class EndpointFinderSpec {
 
     @Test
     public void shouldFindCustomRoutesForPetStore() throws TemplateException, IOException {
-
-
         EndpointFinder endpointFinder = new EndpointFinder("app.config.RouteConfigPetStore", this.getClass().getClassLoader());
         endpointFinder.setApiLocation("src/test/open-api");
 
@@ -209,5 +207,26 @@ public class EndpointFinderSpec {
         the(paths.getMap("/pet/{petId}.post.responses").size()).shouldEqual(1);
         the(paths.getMap("/pet/{petId}.get.responses").size()).shouldEqual(1);
         the(paths.getMap("/pet/{petId}.delete.responses").size()).shouldEqual(1);
+    }
+
+    @Test
+    public void should_find_routes_for_restful_controllers() throws TemplateException, IOException {
+
+        EndpointFinder endpointFinder = new EndpointFinder("app.config.RouteConfig5", this.getClass().getClassLoader());
+        endpointFinder.setApiLocation("src/test/open-api3");
+
+        Generator generator = new Generator();
+        String generated = generator.generate("src/test/open-api3/base.json", endpointFinder, Format.JSON);
+
+        JSONMap jsonMap = JSONHelper.toJSONMap(generated);
+        JSONMap paths = jsonMap.getMap("paths");
+
+        the(paths.get("/pet_rest.post.responses.200.description")).shouldEqual("Creates a pet");
+        the(paths.get("/pet_rest.get.responses.200.description")).shouldEqual("List all pets");
+        the(paths.get("/pet_rest/{id}/edit_form.get.responses.200.description")).shouldEqual("Displays a form for editing an existing pet");
+        the(paths.get("/pet_rest/{id}.get.responses.200.description")).shouldEqual("Get a pet by ID");
+        the(paths.get("/pet_rest/{id}.delete.responses.200.description")).shouldEqual("Delete a pet by ID");
+        the(paths.get("/pet_rest/{id}.put.responses.200.description")).shouldEqual("Update a specific pet by ID");
+        the(paths.get("/pet_rest/new_form.get.responses.200.description")).shouldEqual("Displays a form for creation of a new pet");
     }
 }

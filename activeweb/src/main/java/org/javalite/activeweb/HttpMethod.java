@@ -19,7 +19,8 @@ import org.javalite.activeweb.annotations.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
+import java.lang.reflect.InvocationTargetException;
+
 
 
 /**
@@ -70,6 +71,21 @@ public enum HttpMethod {
         return HttpMethod.valueOf(requestMethod.toUpperCase());
     }
 
+    public static Annotation annotation(HttpMethod httpMethod) throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        return switch (httpMethod) {
+            case GET -> getInstance(GET.class);
+            case POST -> getInstance(POST.class);
+            case PUT -> getInstance(PUT.class);
+            case DELETE -> getInstance(DELETE.class);
+            case HEAD -> getInstance(HEAD.class);
+            case  PATCH -> getInstance(PATCH.class);
+            case OPTIONS -> getInstance(OPTIONS.class);
+        };
+    }
+
+    private static Annotation getInstance(Class<? extends Annotation> annotation) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        return annotation.getDeclaredConstructor().newInstance();
+    }
 
     /**
      * @return true if a method has an intention to change a resource.

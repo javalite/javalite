@@ -4,8 +4,6 @@ import org.javalite.json.JSONHelper;
 import org.javalite.json.JSONMap;
 import org.javalite.json.JSONParseException;
 
-import static org.javalite.common.Collections.map;
-
 /**
  * This class is to encapsulate an HTTP method (GET, POST, DELETE, etc.) and its corresponding API docs if any.
  */
