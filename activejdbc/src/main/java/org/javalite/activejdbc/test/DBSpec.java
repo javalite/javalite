@@ -18,19 +18,17 @@ package org.javalite.activejdbc.test;
 
 import org.javalite.activejdbc.DB;
 import org.javalite.activejdbc.InitException;
-import org.javalite.activejdbc.connection_config.ConnectionConfig;
 import org.javalite.activejdbc.connection_config.DBConfiguration;
 import org.javalite.test.jspec.JSpecSupport;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,7 +36,7 @@ import java.util.Map;
  *   <code>database.properties</code> file. Test connection transactions work in the following manner:
  *
  *   <ul>
- *       <li>A connection is opened, and the autocommit is se to <code>false</code></li>
+ *       <li>A connection is opened, and the autocommit is set to <code>false</code></li>
  *       <li>The test method picks the connection from teh current thread, uses it to read/write data to the DB</li>
  *       <li>Once the test method exits, the framework rolls back transaction and closes the connection </li>
  *   </ul>
@@ -50,23 +48,7 @@ import java.util.Map;
  */
 public class DBSpec extends DBConfiguration implements JSpecSupport {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(DBSpec.class);
     private boolean rollback = true;
-    private boolean suppressDb = false;
-    private List<ConnectionConfig> testConnectionConfigs;
-
-
-    public boolean suppressedDb() {
-        return suppressDb;
-    }
-
-    /**
-     * Call this method from a constructor of your spec in cases you do not need DB connections.
-     * Calling from a "@Before" method will not work.
-     */
-    public void suppressDb(boolean suppressDb) {
-        this.suppressDb = suppressDb;
-    }
 
     /**
      * Current state of 'rollback' flag.
@@ -78,7 +60,7 @@ public class DBSpec extends DBConfiguration implements JSpecSupport {
     }
 
     /**
-     * Set to true in order  to rollback a transaction at the end of the test.
+     * Set to true in order  to rollback a transaction at the end of the test (default is true)..
      * <p>
      *     <em>
      *     WARNING: if you set this value to false inside your test, the framework will not
@@ -90,53 +72,30 @@ public class DBSpec extends DBConfiguration implements JSpecSupport {
      * @param rollback true to rollback transactions at the end of the test, false to not rollback.
      */
     public void setRollback(boolean rollback) {
-        if(!suppressDb){
-            this.rollback = rollback;
-            Map<String, Connection> connections = DB.connections();
-            for(String name: connections.keySet()){
-                try {
-                    boolean autocommit = !rollback;
-                    connections.get(name).setAutoCommit(autocommit);
-                } catch (SQLException e) {
-                    throw new InitException(e);
-                }
+        this.rollback = rollback;
+        Map<String, Connection> connections = DB.connections();
+        for (String name : connections.keySet()) {
+            try {
+                boolean autocommit = !rollback;
+                connections.get(name).setAutoCommit(autocommit);
+            } catch (SQLException e) {
+                throw new InitException(e);
             }
         }
     }
 
     @Before @BeforeEach
-    public final void openTestConnections() {
-
-        if(!suppressDb){
-            loadConfiguration("/database.properties");
-            testConnectionConfigs = getTestConnectionConfigs();
-            if (testConnectionConfigs.isEmpty()) {
-                LOGGER.warn("no DB connections are configured, none opened");
-            }else {
-                testConnectionConfigs.forEach(connectionConfig -> {
-                    DB db = new DB(connectionConfig.getDbName());
-                    db.open(connectionConfig);
-                    if (rollback) {
-                        db.openTransaction();
-                    }
-                });
-            }
-        }
+    public final void openConnections() {
+        openTestConnections(rollback);
     }
 
     @After @AfterEach
-    public final void closeTestConnections() {
-        if(!suppressDb){
+    public final void closeConnections() {
+        closeTestConnections(rollback);
+    }
 
-            for (ConnectionConfig connectionConfig : testConnectionConfigs) {
-                String dbName = connectionConfig.getDbName();
-                DB db = new DB(dbName);
-                if (rollback) {
-                    db.rollbackTransaction();
-                }
-                db.close();
-            }
-            clearConnectionConfigs();
-        }
+    @BeforeClass   @BeforeAll
+    public static void initDBConfig() {
+        loadConfiguration("/database.properties");
     }
 }

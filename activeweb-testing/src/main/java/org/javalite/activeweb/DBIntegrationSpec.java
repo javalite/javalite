@@ -15,8 +15,17 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
+import org.javalite.activejdbc.connection_config.DBConfiguration;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+
+import static org.javalite.activejdbc.connection_config.DBConfiguration.*;
 
 
 /**
@@ -27,15 +36,54 @@ import org.junit.Before;
  */
 public class DBIntegrationSpec extends IntegrationSpec{
 
-    @Before
-    public final void before(){
-        DBSpecHelper.initDBConfig();
-        DBSpecHelper.openTestConnections();
+    private boolean rollback = true;
+
+    /**
+     * Set to true in order  to rollback a transaction at the end of the test (default is true).
+     * This method will set the <code>autocommit = !rollback</code> on all connections found
+     * on this thread.
+     *
+     * <p>
+     *     <em>
+     *     WARNING: if you set this value to false inside your test, the framework will not
+     *     clean any remaining data you insert into your test database. Basically, this is a
+     *     "manual mode" where you are responsible for cleaning after yourself.
+     *     </em>
+     * </p>
+     *
+     * @param rollback true to rollback transactions at the end of the test, false to not rollback.
+     */
+    public void setRollback(boolean rollback) {
+        this.rollback = rollback;
+        DBSpecHelper.setRollback(rollback);
     }
 
-    @After
-    public void after() {
-        DBSpecHelper.closeTestConnections();
-        DBSpecHelper.clearConnectionConfigs();
-    }    
+    /**
+     * Current state of 'rollback' flag.
+     *
+     * @return Current state of 'rollback' flag.
+     */
+    public boolean rollback() {
+        return rollback;
+    }
+
+    @BeforeClass @BeforeAll
+    public static void initDBConfig() {
+        DBSpecHelper.initDBConfig();
+    }
+
+    @Before @BeforeEach
+    public final void openTestConnections(){
+        DBConfiguration.openTestConnections(rollback);
+    }
+
+    @After @AfterEach
+    public void closeTestConnections() {
+        DBConfiguration.closeTestConnections(rollback);
+    }
+
+    @AfterClass    @AfterAll
+    public static void clearConnectionConfigs() {
+        DBConfiguration.clearConnectionConfigs();
+    }
 }

@@ -16,13 +16,13 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import org.javalite.activejdbc.DB;
-import org.javalite.activejdbc.connection_config.ConnectionConfig;
-import org.javalite.activejdbc.connection_config.DBConfiguration;
+import org.javalite.activejdbc.InitException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * Used by test classes as a helper to open/close DB connection, start and rollback transactions.
@@ -50,48 +50,19 @@ public class DBSpecHelper {
         }
     }
 
-    public static void clearConnectionConfigs() {
-        DBConfiguration.clearConnectionConfigs();
-    }
-
-
-    public static void openTestConnections(){
-        List<ConnectionConfig> connectionConfigs = getTestConnectionConfigs();
-        if(connectionConfigs.isEmpty()){
-            LOGGER.warn("no DB connections are configured, none opened");
-            return;
-        }
-
-        for (ConnectionConfig connectionConfig : connectionConfigs) {
-            DB db = new DB(connectionConfig.getDbName());
-            db.open(connectionConfig);
-            if (Configuration.rollback())
-                db.openTransaction();            
-        }
-    }
-
-    public static void closeTestConnections() {
-        List<ConnectionConfig> connectionConfigs = getTestConnectionConfigs();
-        for (ConnectionConfig connectionConfig : connectionConfigs) {
-            String dbName = connectionConfig.getDbName();
-            DB db = new DB(dbName);
-            if (Configuration.rollback()) {
-                db.rollbackTransaction();
+    /**
+     * Sets a rollback instantly on all connections.
+     *
+     */
+    public static void setRollback(boolean rollback) {
+        Map<String, Connection> connections = DB.connections();
+        for (String name : connections.keySet()) {
+            try {
+                boolean autocommit = !rollback;
+                connections.get(name).setAutoCommit(autocommit);
+            } catch (SQLException e) {
+                throw new InitException(e);
             }
-            db.close();
-
         }
-    }
-
-    private static List<ConnectionConfig> getTestConnectionConfigs() {
-        List<ConnectionConfig> allConnections = DBConfiguration.getConnectionConfigsForCurrentEnv();
-        List<ConnectionConfig> result = new LinkedList<>();
-
-        for (ConnectionConfig connectionConfig : allConnections) {
-            if (connectionConfig.isTesting())
-                result.add(connectionConfig);
-        }
-
-        return result;
     }
 }

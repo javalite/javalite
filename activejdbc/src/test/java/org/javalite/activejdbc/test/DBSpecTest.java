@@ -66,9 +66,14 @@ public class DBSpecTest extends DBSpec{
     @Test
     public void f_shouldFindRecordsFromPrevious_NOT_Rolledback_Transaction(){
         a(Base.count("patients")).shouldBeEqual(1);
+        setRollback(false);
 
         //lets cleanup after ourselves just in case
-        setRollback(false);
         Base.exec("delete from patients");
+    }
+
+    @Test
+    public void h_should_not_find_records_deleted_in_previous_test(){
+        a(Base.count("patients")).shouldBeEqual(0);
     }
 }

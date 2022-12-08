@@ -46,7 +46,7 @@ public class Configuration {
     }
 
     enum Params {
-        templateManager, bootstrap, defaultLayout, targetDir, rootPackage, dbconfig, controllerConfig, rollback,
+        templateManager, bootstrap, defaultLayout, targetDir, rootPackage, dbconfig, controllerConfig,
         freeMarkerConfig, route_config, maxUploadSize
     }
 
@@ -229,10 +229,6 @@ public class Configuration {
 
     public static String getRootPackage() {
         return get(Params.rootPackage.toString());  
-    }
-
-    public static boolean rollback() {
-        return Boolean.parseBoolean(get(Params.rollback.toString().trim()));  
     }
 
     public static boolean activeReload(){

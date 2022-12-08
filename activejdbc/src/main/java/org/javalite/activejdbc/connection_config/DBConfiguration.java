@@ -17,6 +17,7 @@ limitations under the License.
 
 package org.javalite.activejdbc.connection_config;
 
+import org.javalite.activejdbc.DB;
 import org.javalite.activejdbc.InitException;
 import org.javalite.app_config.AppConfig;
 import org.javalite.common.Util;
@@ -291,4 +292,33 @@ public class DBConfiguration {
         }
     }
 
+
+
+    public static void openTestConnections(boolean rollback){
+        List<ConnectionConfig> connectionConfigs = getTestConnectionConfigs();
+        if(connectionConfigs.isEmpty()){
+            LOGGER.warn("no DB connections are configured, none opened");
+            return;
+        }
+
+        for (ConnectionConfig connectionConfig : connectionConfigs) {
+            DB db = new DB(connectionConfig.getDbName());
+            db.open(connectionConfig);
+            if(rollback){
+                db.openTransaction();
+            }
+        }
+    }
+
+    public static void closeTestConnections(boolean rollback) {
+        List<ConnectionConfig> connectionConfigs = getTestConnectionConfigs();
+        for (ConnectionConfig connectionConfig : connectionConfigs) {
+            String dbName = connectionConfig.getDbName();
+            DB db = new DB(dbName);
+            if(rollback){
+                db.rollbackTransaction();
+            }
+            db.close();
+        }
+    }
 }
