@@ -745,7 +745,12 @@ public class DB implements Closeable{
     }
 
     /**
-     * Opens local transaction.
+     * Opens a DB transaction and sets the auto-commit == false on this database connection object.
+     * According to the JDBC specification, all statements will be executed  in teh context of this transaction
+     * until this transaction is either committed or rolled back.
+     *
+     * @see #commitTransaction()
+     * @see #rollbackTransaction()
      */
     public  void openTransaction() {
         try {
@@ -762,7 +767,26 @@ public class DB implements Closeable{
 
 
     /**
-     * Commits local transaction.
+     * Resets this connection to the "auto-commit" transaction mode.
+     */
+    public void resetAutoCommit(){
+        try {
+            Connection c = ConnectionsAccess.getConnection(name);
+            if (c == null) {
+                throw new DBException("Cannot open transaction, connection '" + name + "' not available");
+            }
+            c.setAutoCommit(true);
+            LogFilter.log(LOGGER, LogLevel.DEBUG, "Connection reset to auto-commit");
+        } catch (SQLException ex) {
+            throw new DBException(ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * Commits a current transaction associated with this connection.
+     *
+     * @see #openTransaction()
+     * @see #rollbackTransaction()
      */
     public void commitTransaction() {
         try {
@@ -778,7 +802,10 @@ public class DB implements Closeable{
     }
 
     /**
-     * Rolls back local transaction.
+     * Rolls back transaction associated with this connection.
+     *
+     * @see #openTransaction()
+     * @see #commitTransaction()
      */
     public void rollbackTransaction() {
         try {

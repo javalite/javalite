@@ -339,6 +339,15 @@ public class Base {
     }
 
     /**
+     * Resets the default connection to the "auto-commit" transaction mode.
+     *
+     * @see DB#resetAutoCommit()
+     */
+    public static void resetAutoCommit(){
+        new DB(DB.DEFAULT_NAME).resetAutoCommit();
+    }
+
+    /**
      * Commits local transaction.
      */
     public static void commitTransaction() {
