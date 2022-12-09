@@ -482,22 +482,22 @@ public class Base {
      * Same as {@link DB#doInTransaction(DB.ThrowingSupplier, Consumer, Runnable)}, but with db name {@link DB#DEFAULT_NAME}.
      */
     public static  <T> T doInTransaction(DB.ThrowingSupplier<T> bodyHandler,
-                                         Consumer<Throwable> exceptionHandler,
-                                         Runnable finallyHandler) throws Throwable {
+                                         Consumer<Exception> exceptionHandler,
+                                         Runnable finallyHandler) throws Exception {
         return new DB(DB.DEFAULT_NAME).doInTransaction(bodyHandler, exceptionHandler, finallyHandler);
     }
 
     /**
      * Same as {@link DB#doInTransactionSilently(DB.ThrowingRunnable, Consumer)}, but with db name {@link DB#DEFAULT_NAME}.
      */
-    public static void doInTransactionSilently(DB.ThrowingRunnable bodyHandler, Consumer<Throwable> exceptionHandler){
+    public static void doInTransactionSilently(DB.ThrowingRunnable bodyHandler, Consumer<Exception> exceptionHandler){
         new DB(DB.DEFAULT_NAME).doInTransactionSilently(bodyHandler, exceptionHandler);
     }
 
     /**
-     * Same as {@link DB#doInTransaction(DB.ThrowingSupplier, Consumer, Runnable)}, but with db name {@link DB#DEFAULT_NAME}.
+     * Same as {@link DB#doInTransactionSilently(DB.ThrowingSupplier, Function)}, but with db name {@link DB#DEFAULT_NAME}.
      */
-    public static <T> T doInTransactionSilently(DB.ThrowingSupplier<T> bodyHandler, Function<Throwable, T> exceptionHandler){
+    public static <T> T doInTransactionSilently(DB.ThrowingSupplier<T> bodyHandler, Function<Exception, T> exceptionHandler){
         return new DB(DB.DEFAULT_NAME).doInTransactionSilently(bodyHandler, exceptionHandler);
     }
 }

@@ -1146,15 +1146,15 @@ public class DB implements Closeable{
      * @see <a href="https://docs.oracle.com/en/java/javase/16/docs/api/java.sql/java/sql/Connection.html#setAutoCommit(boolean)">Connection auto-commit flag</a>
      */
     public <T> T doInTransaction(ThrowingSupplier<T> bodyHandler,
-                                         Consumer<Throwable> exceptionHandler,
-                                         Runnable finallyHandler) throws Throwable {
+                                         Consumer<Exception> exceptionHandler,
+                                         Runnable finallyHandler) throws Exception {
         try {
             openTransaction();
             T result = bodyHandler.get();
             commitTransaction();
             return result;
         }
-        catch (Throwable ex){
+        catch (Exception ex){
             rollbackTransaction();
             exceptionHandler.accept(ex);
             throw ex;
@@ -1197,13 +1197,13 @@ public class DB implements Closeable{
      * @param exceptionHandler exception handler code, may not throw exceptions by itself (and should not be null)
      * @see <a href="https://docs.oracle.com/en/java/javase/16/docs/api/java.sql/java/sql/Connection.html#setAutoCommit(boolean)">Connection auto-commit flag</a>
      */
-    public void doInTransactionSilently(ThrowingRunnable bodyHandler, Consumer<Throwable> exceptionHandler){
+    public void doInTransactionSilently(ThrowingRunnable bodyHandler, Consumer<Exception> exceptionHandler){
         try {
             openTransaction();
             bodyHandler.run();
             commitTransaction();
         }
-        catch (Throwable ex){
+        catch (Exception ex){
             rollbackTransaction();
             exceptionHandler.accept(ex);
         }
@@ -1245,14 +1245,14 @@ public class DB implements Closeable{
      * @param exceptionHandler exception handler code, may not throw exceptions by itself (and should not be null)
      * @see <a href="https://docs.oracle.com/en/java/javase/16/docs/api/java.sql/java/sql/Connection.html#setAutoCommit(boolean)">Connection auto-commit flag</a>
      */
-    public <T> T doInTransactionSilently(ThrowingSupplier<T> bodyHandler, Function<Throwable, T> exceptionHandler){
+    public <T> T doInTransactionSilently(ThrowingSupplier<T> bodyHandler, Function<Exception, T> exceptionHandler){
         try {
             openTransaction();
             T result = bodyHandler.get();
             commitTransaction();
             return result;
         }
-        catch (Throwable ex){
+        catch (Exception ex){
             rollbackTransaction();
             return exceptionHandler.apply(ex);
         }
@@ -1265,10 +1265,10 @@ public class DB implements Closeable{
     }
 
     public interface ThrowingRunnable {
-        void run() throws Throwable;
+        void run() throws Exception;
     }
 
     public interface ThrowingSupplier<T> {
-        T get() throws Throwable;
+        T get() throws Exception;
     }
 }
