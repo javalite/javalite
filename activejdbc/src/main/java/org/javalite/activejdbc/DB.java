@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
@@ -1122,5 +1124,151 @@ public class DB implements Closeable{
                 return supplier.get();
             }
         }
+    }
+
+    /**
+     * Executes specified code in transaction and returns its result possibly throwing exceptions.<br>
+     * The methods works as follows:<ol>
+     * <li>Transaction is opened in current (thread-bound) connection.</li>
+     * <li>{@code bodyHandler} is executed.</li>
+     * <li>If {@code bodyHandler} execution completed with exception, transaction is committed and code result is returned.</li>
+     * <li>If {@code bodyHandler} execution throws some exception:<ol>
+     * <li>Transaction is rolled-back.</li>
+     * <li>{@code exceptionHandler} is invoked with the exception as parameter</li>
+     * <li>Exception is re-thrown</li>
+     * </ol></li>
+     * <li>Finally, connection auto-commit flag set to true, and {@code finallyHandler} is executed.</li>
+     * </ol>
+     *
+     * @param bodyHandler transaction body code, may throw exceptions (should not be null)
+     * @param exceptionHandler exception handler code, may not throw exceptions by itself (and should not be null)
+     * @param finallyHandler finally handler code, may not throw exceptions by itself (and should not be null). May be used for cleaning up
+     * @see <a href="https://docs.oracle.com/en/java/javase/16/docs/api/java.sql/java/sql/Connection.html#setAutoCommit(boolean)">Connection auto-commit flag</a>
+     */
+    public <T> T doInTransaction(ThrowingSupplier<T> bodyHandler,
+                                         Consumer<Exception> exceptionHandler,
+                                         Runnable finallyHandler) throws Exception {
+        try {
+            openTransaction();
+            T result = bodyHandler.get();
+            commitTransaction();
+            return result;
+        }
+        catch (Exception ex){
+            rollbackTransaction();
+            exceptionHandler.accept(ex);
+            throw ex;
+        }
+        finally {
+            try {
+                resetAutoCommit();
+            }
+            finally {
+                finallyHandler.run();
+            }
+        }
+    }
+
+    /**
+     * Executes specified code in transaction without throwing exceptions and without returning result. <br>
+     * The methods works as follows:<ol>
+     * <li>Transaction is opened in current (thread-bound) connection.</li>
+     * <li>{@code bodyHandler} is executed.</li>
+     * <li>If {@code bodyHandler} execution completed with exception, transaction is committed.</li>
+     * <li>If {@code bodyHandler} execution throws some exception:<ol>
+     * <li>Transaction is rolled-back.</li>
+     * <li>{@code exceptionHandler} is invoked with the exception as parameter</li>
+     * </ol></li>
+     * <li>Finally, connection auto-commit flag set to true.</li>
+     * </ol>
+     * Usage example:
+     * <pre>
+ db.doInTransactionSilently(
+     ()->{
+         Base.exec("DELETE FROM accounts WHERE id = ?", 1);
+     },
+     exception->{
+         log.error("Unable to delete account");
+     }
+ );
+</pre>
+     *
+     * @param bodyHandler transaction body code, may throw exceptions (should not be null)
+     * @param exceptionHandler exception handler code, may not throw exceptions by itself (and should not be null)
+     * @see <a href="https://docs.oracle.com/en/java/javase/16/docs/api/java.sql/java/sql/Connection.html#setAutoCommit(boolean)">Connection auto-commit flag</a>
+     */
+    public void doInTransactionSilently(ThrowingRunnable bodyHandler, Consumer<Exception> exceptionHandler){
+        try {
+            openTransaction();
+            bodyHandler.run();
+            commitTransaction();
+        }
+        catch (Exception ex){
+            rollbackTransaction();
+            exceptionHandler.accept(ex);
+        }
+        finally {
+            try {
+                resetAutoCommit();
+            }
+            catch (Exception ignore) {}
+        }
+    }
+
+    /**
+     * Executes specified code in transaction and returns its result without throwing exceptions.<br>
+     * The methods works as follows:<ol>
+     * <li>Transaction is opened in current (thread-bound) connection.</li>
+     * <li>{@code bodyHandler} is executed.</li>
+     * <li>If {@code bodyHandler} execution completed with exception, transaction is committed and code result is returned.</li>
+     * <li>If {@code bodyHandler} execution throws some exception:<ol>
+     * <li>Transaction is rolled-back.</li>
+     * <li>{@code exceptionHandler} is invoked with the exception as parameter, and its output returned as result</li>
+     * </ol></li>
+     * <li>Finally, connection auto-commit flag set to true.</li>
+     * </ol>
+     * Usage example:
+     * <pre>
+     *
+ int totalAccountsDeleted = db.doInTransactionSilently(
+      ()->{
+          return Base.exec("DELETE FROM accounts WHERE date > NOW()");
+      },
+      exception->{
+          log.error("Unable to delete any account");
+          return 0;
+      }
+ );
+     * </pre>
+     *
+     * @param bodyHandler transaction body code, may throw exceptions (should not be null)
+     * @param exceptionHandler exception handler code, may not throw exceptions by itself (and should not be null)
+     * @see <a href="https://docs.oracle.com/en/java/javase/16/docs/api/java.sql/java/sql/Connection.html#setAutoCommit(boolean)">Connection auto-commit flag</a>
+     */
+    public <T> T doInTransactionSilently(ThrowingSupplier<T> bodyHandler, Function<Exception, T> exceptionHandler){
+        try {
+            openTransaction();
+            T result = bodyHandler.get();
+            commitTransaction();
+            return result;
+        }
+        catch (Exception ex){
+            rollbackTransaction();
+            return exceptionHandler.apply(ex);
+        }
+        finally {
+            try {
+                resetAutoCommit();
+            }
+            catch (Exception ignore) {}
+        }
+    }
+
+    public interface ThrowingRunnable {
+        void run() throws Exception;
+    }
+
+    public interface ThrowingSupplier<T> {
+        T get() throws Exception;
     }
 }

@@ -23,6 +23,8 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 
@@ -474,5 +476,28 @@ public class Base {
      */
     public static  <T> T withDb(Supplier<T> supplier) {
         return new DB(DB.DEFAULT_NAME).withDb(supplier);
+    }
+
+    /**
+     * Same as {@link DB#doInTransaction(DB.ThrowingSupplier, Consumer, Runnable)}, but with db name {@link DB#DEFAULT_NAME}.
+     */
+    public static  <T> T doInTransaction(DB.ThrowingSupplier<T> bodyHandler,
+                                         Consumer<Exception> exceptionHandler,
+                                         Runnable finallyHandler) throws Exception {
+        return new DB(DB.DEFAULT_NAME).doInTransaction(bodyHandler, exceptionHandler, finallyHandler);
+    }
+
+    /**
+     * Same as {@link DB#doInTransactionSilently(DB.ThrowingRunnable, Consumer)}, but with db name {@link DB#DEFAULT_NAME}.
+     */
+    public static void doInTransactionSilently(DB.ThrowingRunnable bodyHandler, Consumer<Exception> exceptionHandler){
+        new DB(DB.DEFAULT_NAME).doInTransactionSilently(bodyHandler, exceptionHandler);
+    }
+
+    /**
+     * Same as {@link DB#doInTransactionSilently(DB.ThrowingSupplier, Function)}, but with db name {@link DB#DEFAULT_NAME}.
+     */
+    public static <T> T doInTransactionSilently(DB.ThrowingSupplier<T> bodyHandler, Function<Exception, T> exceptionHandler){
+        return new DB(DB.DEFAULT_NAME).doInTransactionSilently(bodyHandler, exceptionHandler);
     }
 }
