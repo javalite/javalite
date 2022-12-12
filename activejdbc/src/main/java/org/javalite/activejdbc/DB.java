@@ -1127,22 +1127,27 @@ public class DB implements Closeable{
     }
 
     /**
-     * Executes specified code in transaction and returns its result possibly throwing exceptions.<br>
-     * The methods works as follows:<ol>
-     * <li>Transaction is opened in current (thread-bound) connection.</li>
-     * <li>{@code bodyHandler} is executed.</li>
-     * <li>If {@code bodyHandler} execution completed with exception, transaction is committed and code result is returned.</li>
-     * <li>If {@code bodyHandler} execution throws some exception:<ol>
-     * <li>Transaction is rolled-back.</li>
-     * <li>{@code exceptionHandler} is invoked with the exception as parameter</li>
-     * <li>Exception is re-thrown</li>
-     * </ol></li>
-     * <li>Finally, connection auto-commit flag set to true, and {@code finallyHandler} is executed.</li>
+     * Executes a specified code block in a transaction and returns a result. May throw an exception.<br>
+     * Usage:
+     * <ol>
+     *   <li>Transaction is opened in the current (thread-bound) connection.</li>
+     *   <li>{@code bodyHandler} is executed.</li>
+     *   <li>If {@code bodyHandler} execution completed without an exception, transaction is committed and execution result is returned.</li>
+     *   <li>If {@code bodyHandler} execution throws some exception:
+     *      <ol>
+     *        <li>Transaction is rolled-back.</li>
+     *        <li>{@code exceptionHandler} is invoked with the exception as parameter</li>
+     *        <li>Exception is re-thrown</li>`
+     *      </ol>
+     *   </li>
+     *   <li>
+     *       Finally, connection auto-commit flag set to true, and {@code finallyHandler} is executed.
+     *   </li>
      * </ol>
      *
-     * @param bodyHandler transaction body code, may throw exceptions (should not be null)
-     * @param exceptionHandler exception handler code, may not throw exceptions by itself (and should not be null)
-     * @param finallyHandler finally handler code, may not throw exceptions by itself (and should not be null). May be used for cleaning up
+     * @param bodyHandler  main code body; may throw exceptions (should not be null)
+     * @param exceptionHandler an 'exception' code handler; may not throw exceptions by itself (and should not be null)
+     * @param finallyHandler a 'finally' code handler; may not throw exceptions by itself (and should not be null). Maybe used for cleaning up.
      * @see <a href="https://docs.oracle.com/en/java/javase/16/docs/api/java.sql/java/sql/Connection.html#setAutoCommit(boolean)">Connection auto-commit flag</a>
      */
     public <T> T doInTransaction(ThrowingSupplier<T> bodyHandler,
@@ -1170,31 +1175,34 @@ public class DB implements Closeable{
     }
 
     /**
-     * Executes specified code in transaction without throwing exceptions and without returning result. <br>
-     * The methods works as follows:<ol>
-     * <li>Transaction is opened in current (thread-bound) connection.</li>
-     * <li>{@code bodyHandler} is executed.</li>
-     * <li>If {@code bodyHandler} execution completed with exception, transaction is committed.</li>
-     * <li>If {@code bodyHandler} execution throws some exception:<ol>
-     * <li>Transaction is rolled-back.</li>
-     * <li>{@code exceptionHandler} is invoked with the exception as parameter</li>
-     * </ol></li>
-     * <li>Finally, connection auto-commit flag set to true.</li>
+     * Executes a specified code block in a transaction context without throwing exceptions and without returning result. <br>
+     * Usage:
+     * <ol>
+     *     <li>Transaction is opened in current (thread-bound) connection.</li>
+     *     <li>{@code bodyHandler} is executed.</li>
+     *     <li>If {@code bodyHandler} execution completed with exception, transaction is committed.</li>
+     *       <li>If {@code bodyHandler} execution throws some exception:
+     *         <ol>
+     *            <li>Transaction is rolled-back.</li>
+     *            <li>{@code exceptionHandler} is invoked with the exception as parameter</li>
+     *         </ol>
+     *       </li>
+     *     <li>Finally, connection auto-commit flag set to true.</li>
      * </ol>
      * Usage example:
      * <pre>
- db.doInTransactionSilently(
-     ()->{
-         Base.exec("DELETE FROM accounts WHERE id = ?", 1);
-     },
-     exception->{
-         log.error("Unable to delete account");
-     }
- );
-</pre>
+         db.doInTransactionSilently(
+             ()->{
+                 Base.exec("DELETE FROM accounts WHERE id = ?", 1);
+             },
+             exception->{
+                 log.error("Unable to delete account");
+             }
+         );
+     </pre>
      *
-     * @param bodyHandler transaction body code, may throw exceptions (should not be null)
-     * @param exceptionHandler exception handler code, may not throw exceptions by itself (and should not be null)
+     * @param bodyHandler transaction code body; may throw exceptions (should not be null)
+     * @param exceptionHandler exception handler code body; may not throw exceptions by itself (and should not be null)
      * @see <a href="https://docs.oracle.com/en/java/javase/16/docs/api/java.sql/java/sql/Connection.html#setAutoCommit(boolean)">Connection auto-commit flag</a>
      */
     public void doInTransactionSilently(ThrowingRunnable bodyHandler, Consumer<Exception> exceptionHandler){
@@ -1217,32 +1225,35 @@ public class DB implements Closeable{
 
     /**
      * Executes specified code in transaction and returns its result without throwing exceptions.<br>
-     * The methods works as follows:<ol>
-     * <li>Transaction is opened in current (thread-bound) connection.</li>
-     * <li>{@code bodyHandler} is executed.</li>
-     * <li>If {@code bodyHandler} execution completed with exception, transaction is committed and code result is returned.</li>
-     * <li>If {@code bodyHandler} execution throws some exception:<ol>
-     * <li>Transaction is rolled-back.</li>
-     * <li>{@code exceptionHandler} is invoked with the exception as parameter, and its output returned as result</li>
-     * </ol></li>
-     * <li>Finally, connection auto-commit flag set to true.</li>
+     * Usage:
+     * <ol>
+     *   <li>Transaction is opened in current (thread-bound) connection.</li>
+     *   <li>{@code bodyHandler} is executed.</li>
+     *   <li>If {@code bodyHandler} execution completed with exception, transaction is committed and code result is returned.</li>
+     *   <li>If {@code bodyHandler} execution throws some exception:
+     *     <ol>
+     *       <li>Transaction is rolled-back.</li>
+     *       <li>{@code exceptionHandler} is invoked with the exception as parameter, and its output returned as result</li>
+     *     </ol>
+     *   </li>
+     *   <li>Finally, connection auto-commit flag set to true.</li>
      * </ol>
      * Usage example:
      * <pre>
      *
- int totalAccountsDeleted = db.doInTransactionSilently(
-      ()->{
-          return Base.exec("DELETE FROM accounts WHERE date > NOW()");
-      },
-      exception->{
-          log.error("Unable to delete any account");
-          return 0;
-      }
- );
+         int totalAccountsDeleted = db.doInTransactionSilently(
+              ()->{
+                  return Base.exec("DELETE FROM accounts WHERE date > NOW()");
+              },
+              exception->{
+                  log.error("Unable to delete any account");
+                  return 0;
+              }
+         );
      * </pre>
      *
-     * @param bodyHandler transaction body code, may throw exceptions (should not be null)
-     * @param exceptionHandler exception handler code, may not throw exceptions by itself (and should not be null)
+     * @param bodyHandler transaction body code body; may throw exceptions (should not be null)
+     * @param exceptionHandler exception handler code; may not throw exceptions by itself (and should not be null)
      * @see <a href="https://docs.oracle.com/en/java/javase/16/docs/api/java.sql/java/sql/Connection.html#setAutoCommit(boolean)">Connection auto-commit flag</a>
      */
     public <T> T doInTransactionSilently(ThrowingSupplier<T> bodyHandler, Function<Exception, T> exceptionHandler){

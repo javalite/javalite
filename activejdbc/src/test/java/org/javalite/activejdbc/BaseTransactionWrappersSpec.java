@@ -9,7 +9,7 @@ import org.junit.Test;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-public class BaseTest3 extends ActiveJDBCTest {
+public class BaseTransactionWrappersSpec extends ActiveJDBCTest {
 
     @Before
     public void before1() {
@@ -24,15 +24,15 @@ public class BaseTest3 extends ActiveJDBCTest {
 
         AtomicInteger exceptionCounter = new AtomicInteger(0);
         Base.doInTransactionSilently(
-            ()->{
-                Animal a = new Animal();
-                a.set("animal_name","BULL");
-                a.saveIt();
-            },
-            ex->exceptionCounter.incrementAndGet()
+                () -> {
+                    Animal a = new Animal();
+                    a.set("animal_name", "BULL");
+                    a.saveIt();
+                },
+                ex -> exceptionCounter.incrementAndGet()
         );
 
-        the(Animal.count()).shouldEqual(countBefore+1);
+        the(Animal.count()).shouldEqual(countBefore + 1);
         the(exceptionCounter.get()).shouldBeEqual(0);
     }
 
@@ -43,13 +43,13 @@ public class BaseTest3 extends ActiveJDBCTest {
 
         AtomicInteger exceptionCounter = new AtomicInteger(0);
         Base.doInTransactionSilently(
-            ()->{
-                Animal a = new Animal();
-                a.set("animal_name","BULL");
-                a.saveIt();
-                Base.findAll("SYNTAX ERROR QUERY THAT CAUSES ROLLBACK");
-            },
-            ex->exceptionCounter.incrementAndGet()
+                () -> {
+                    Animal a = new Animal();
+                    a.set("animal_name", "BULL");
+                    a.saveIt();
+                    Base.findAll("SYNTAX ERROR QUERY THAT CAUSES ROLLBACK");
+                },
+                ex -> exceptionCounter.incrementAndGet()
         );
 
         the(Animal.count()).shouldEqual(countBefore);
@@ -58,29 +58,29 @@ public class BaseTest3 extends ActiveJDBCTest {
 
     @Test
     public void shouldBeginAndCommitTransactionSilentlyWithResult() {
-        final Integer WRONG_VALUE = -100;
+        final Integer INVALID_VALUE = -100;
         final String NEW_ANIMAL_NAME = "Bull";
 
         Long countBefore = Animal.count();
 
         AtomicInteger exceptionCounter = new AtomicInteger(0);
         Object resultId = Base.doInTransactionSilently(
-            ()->{
-                Animal a = new Animal();
-                a.set("animal_name",NEW_ANIMAL_NAME);
-                a.saveIt();
-                return a.getId();
-            },
-            ex->{
-                exceptionCounter.incrementAndGet();
-                return WRONG_VALUE;
-            }
+                () -> {
+                    Animal a = new Animal();
+                    a.set("animal_name", "Bull");
+                    a.saveIt();
+                    return a.getId();
+                },
+                ex -> {
+                    exceptionCounter.incrementAndGet();
+                    return INVALID_VALUE;
+                }
         );
 
-        the(Animal.count()).shouldEqual(countBefore+1);
+        the(Animal.count()).shouldEqual(countBefore + 1);
         the(exceptionCounter.get()).shouldBeEqual(0);
         the(resultId).shouldNotBeNull();
-        the(resultId).shouldNotBeEqual(WRONG_VALUE);
+        the(resultId).shouldNotBeEqual(INVALID_VALUE);
 
         Animal newAnimal = Animal.findById(resultId);
         the(newAnimal).shouldNotBeNull();
@@ -97,14 +97,14 @@ public class BaseTest3 extends ActiveJDBCTest {
 
         AtomicInteger exceptionCounter = new AtomicInteger(0);
         Object resultId = Base.doInTransactionSilently(
-                ()->{
+                () -> {
                     Animal a = new Animal();
-                    a.set("animal_name",NEW_ANIMAL_NAME);
+                    a.set("animal_name", NEW_ANIMAL_NAME);
                     a.saveIt();
                     Base.findAll("SYNTAX ERROR QUERY THAT CAUSES ROLLBACK");
                     return a.getId();
                 },
-                ex->{
+                ex -> {
                     exceptionCounter.incrementAndGet();
                     return WRONG_VALUE;
                 }
@@ -117,25 +117,25 @@ public class BaseTest3 extends ActiveJDBCTest {
     }
 
     @Test
-    public void shouldBeginAndCommitTransactionWithResult() throws Throwable{
+    public void shouldBeginAndCommitTransactionWithResult() throws Throwable {
         final String NEW_ANIMAL_NAME = "Bull";
 
         Long countBefore = Animal.count();
 
         AtomicInteger exceptionCounter = new AtomicInteger(0);
         AtomicInteger finallyCounter = new AtomicInteger(0);
-        Object resultId = Base.doInTransaction (
-            ()->{
-                Animal a = new Animal();
-                a.set("animal_name",NEW_ANIMAL_NAME);
-                a.saveIt();
-                return a.getId();
-            },
-            ex->exceptionCounter.incrementAndGet(),
-            finallyCounter::incrementAndGet
+        Object resultId = Base.doInTransaction(
+                () -> {
+                    Animal a = new Animal();
+                    a.set("animal_name", NEW_ANIMAL_NAME);
+                    a.saveIt();
+                    return a.getId();
+                },
+                ex -> exceptionCounter.incrementAndGet(),
+                finallyCounter::incrementAndGet
         );
 
-        the(Animal.count()).shouldEqual(countBefore+1);
+        the(Animal.count()).shouldEqual(countBefore + 1);
         the(exceptionCounter.get()).shouldBeEqual(0);
         the(finallyCounter.get()).shouldBeEqual(1);
         the(resultId).shouldNotBeNull();
@@ -160,15 +160,15 @@ public class BaseTest3 extends ActiveJDBCTest {
             public void exec() throws Exception {
                 @SuppressWarnings("unused")
                 Object ignored = Base.doInTransaction(
-                    () -> {
-                        Animal a = new Animal();
-                        a.set("animal_name", NEW_ANIMAL_NAME);
-                        a.saveIt();
-                        Base.findAll("SYNTAX ERROR QUERY THAT CAUSES ROLLBACK");
-                        return a.getId();
-                    },
-                    ex -> exceptionCounter.incrementAndGet(),
-                    finallyCounter::incrementAndGet
+                        () -> {
+                            Animal a = new Animal();
+                            a.set("animal_name", NEW_ANIMAL_NAME);
+                            a.saveIt();
+                            Base.findAll("SYNTAX ERROR QUERY THAT CAUSES ROLLBACK");
+                            return a.getId();
+                        },
+                        ex -> exceptionCounter.incrementAndGet(),
+                        finallyCounter::incrementAndGet
                 );
             }
         });
