@@ -170,4 +170,27 @@ public class UploadControllerSpec extends IntegrationSpec{
                 .post("Use-Multi-Part-Form-API");
         a(responseContent()).shouldBeEqual("hello John");
     }
+
+
+    @Test
+    public void shouldUseMultiPartFormAPITwice(){
+
+         System.out.println("A");
+        controller("upload")
+                .contentType("multipart/form-data")
+                .formItem(new FileItem("hello.txt", "file", "text/plain", "hello".getBytes()))
+                .formItem("name", "John")
+                .post("Use-Multi-Part-Form-API");
+        a(responseContent()).shouldBeEqual("hello John");
+        System.out.println("B");
+
+        controller("upload")
+                .contentType("multipart/form-data")
+                .formItem(new FileItem("hello.txt", "file", "text/plain", "hello".getBytes()))
+                .formItem("name", "Igor")
+                .post("Use-Multi-Part-Form-API");
+        a(responseContent()).shouldBeEqual("hello Igor");
+
+        System.out.println("C");
+    }
 }

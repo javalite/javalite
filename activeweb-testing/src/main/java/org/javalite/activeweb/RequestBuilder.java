@@ -52,7 +52,13 @@ public class RequestBuilder {
     private String remoteAddress;
 
     public RequestBuilder(String controllerPath) {
+        RequestContext.setControllerResponse(null);
         RequestContext.setParams1st(null);
+        RequestContext.setControllerResponse(null);
+        RequestContext.setEncoding(null);
+        RequestContext.setFormat(null);
+        RequestContext.setFormItems(null);
+        RequestContext.setHttpResponse(null);
         this.controllerPath = controllerPath;
     }
 
