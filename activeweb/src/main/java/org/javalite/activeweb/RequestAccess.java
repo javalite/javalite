@@ -1,5 +1,6 @@
 package org.javalite.activeweb;
 
+import org.javalite.common.Inflector;
 import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -585,15 +586,46 @@ public interface RequestAccess {
 
 
     /**
-     * Returns a request header by name.
+     * Returns a request header by name verbatim, without trying to manipulate the header name.
      *
      * @param name name of header
-     * @return header value.
+     * @return header value or null.
      */
     default String header(String name){
         return RequestContext.getHttpRequest().getHeader(name);
     }
 
+    /**
+     * Convenience method to test if a header exists. Uses {@link #getHeader(String)}} internally.
+     * @param header header to check.
+     * @return true if the header exists, false if not.
+     */
+    default boolean hasHeader(String header) {
+        return getHeader(header) != null;
+    }
+
+    /**
+     * Tries various case permutations of the header name. Example: the header "Authorization"
+     * will be tried as "authorization", "Authorization" and "AUTHORIZATION" before returning a result.
+     *
+     * @param header header name
+     * @return header value if found.
+     */
+    default  String getHeader(String header) {
+        String headerVal = header(Inflector.capitalize(header));
+        if(!Util.blank(headerVal)){
+            return headerVal;
+        }else {
+            String headerUpperVal = header(header.toUpperCase());
+            String headerLowerVal = header(header.toLowerCase());
+            if (!Util.blank(headerLowerVal)) {
+                return headerVal;
+            } else if (!Util.blank(headerUpperVal)) {
+                return headerUpperVal;
+            }
+        }
+        return null;
+    }
     /**
      * Returns all headers from a request keyed by header name.
      *
