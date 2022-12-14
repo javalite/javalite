@@ -270,6 +270,21 @@ public class RequestBuilder {
         return content(content.getBytes());
     }
 
+
+    /**
+     * Convenience method. Expects the content to be some JSON document (object or array).
+     * This method does NOT check the validity of the document. It is a responsibility of the controller.
+     * <br>
+     * This method will automatically set the header "Content-Type" to be "application/json", and that is the convenience.
+     *
+     * @param content JSON document is expected
+     * @return self.
+     */
+    public RequestBuilder json(String content) {
+        contentType("application/json");
+        return content(content.getBytes());
+    }
+
     /**
      * Use  to post content to a tested controller.
      *

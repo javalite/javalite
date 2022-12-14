@@ -22,6 +22,8 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.javalite.common.Convert;
 import org.javalite.json.JSONHelper;
 import org.javalite.common.Util;
+import org.javalite.json.JSONList;
+import org.javalite.json.JSONMap;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
 import org.slf4j.Logger;
@@ -491,8 +493,7 @@ public class HttpSupport implements RequestAccess {
     }
 
     /**
-     * This method will send the text to a client verbatim. It will not use any layouts. Use it to build app.services
-     * and to support AJAX.
+     * This method will send the text to a client verbatim. It will not use any layouts. Use it to support AJAX or API functions.
      *
      * @param text text of response.
      * @return {@link HttpSupport.HttpBuilder}, to accept additional information.
@@ -502,8 +503,26 @@ public class HttpSupport implements RequestAccess {
             text = "null";
         }
         DirectResponse resp = new DirectResponse(text);
+        String contentType = RequestContext.getHttpRequest().getHeader("Content-Type");
+        //TODO: is this some spaghetti code? Seems we have Content-type in RequestContext as well as in ControllerResponse?
+        if(contentType != null){
+            resp.setContentType(contentType);
+        }
+
         RequestContext.setControllerResponse(resp);
         return new HttpBuilder(resp);
+    }
+
+    /**
+     * Serializes the argument as a JSON string and sets the "Content-Type"  header to "application/json".
+     * See {@link HttpSupport#respond(String)}.
+     *
+     * @param object object to serialize to JSON
+     * @return self
+     */
+    protected HttpBuilder respondJSON(Object object){
+        header("Content-Type", "application/json");
+        return respond(JSONHelper.toJsonString(object));
     }
 
     /**
@@ -1338,6 +1357,25 @@ public class HttpSupport implements RequestAccess {
         } catch (IOException e) {
             throw new WebException(e);
         }
+    }
+
+
+    /**
+     * Reads entire request data and converts it to {@link JSONMap}.
+     *
+     * @return data sent by client as {@link JSONMap}.
+     */
+    protected JSONMap getRequestJSONMap() {
+        return new JSONMap(getRequestString());
+    }
+
+    /**
+     * Reads entire request data and converts it to {@link JSONList}.
+     *
+     * @return data sent by client as {@link JSONList}.
+     */
+    protected JSONList getRequestJSONList() {
+        return new JSONList(getRequestString());
     }
 
     /**

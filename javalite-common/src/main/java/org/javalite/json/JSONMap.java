@@ -39,6 +39,15 @@ public class JSONMap extends HashMap<String, Object> {
         super(map(keysAndValues));
     }
 
+    /**
+     * Converts the String into a JSONMap.
+     *
+     * @param jsonString JSON Object document as string.
+     */
+    public JSONMap(String jsonString){
+        super(JSONHelper.toJSONMap(jsonString));
+    }
+
     public JSONMap(){}
 
     /**
@@ -285,7 +294,6 @@ public class JSONMap extends HashMap<String, Object> {
     }
 
     /**
-     *
      * @return a JSON representation  of this object
      */
     public String toJSON(){

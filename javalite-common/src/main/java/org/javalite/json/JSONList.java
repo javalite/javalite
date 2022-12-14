@@ -37,9 +37,15 @@ import java.util.Map;
  * @see JSONList#getMap(int)
  */
 public class JSONList extends ArrayList {
+
+
     public JSONList(List jsonList){
         super(jsonList);
     }
+
+    /**
+     * @param jsonList JSON array as string.
+     */
     public JSONList(String jsonList){
         super(JSONHelper.toList(jsonList));
     }
@@ -144,5 +150,12 @@ public class JSONList extends ArrayList {
      */
     public String toJSON(boolean pretty){
         return JSONHelper.toJsonString(this,  pretty);
+    }
+
+    /**
+     * @return a JSON representation  of this object
+     */
+    public String toJSON(){
+        return JSONHelper.toJsonString(this,  false);
     }
 }
