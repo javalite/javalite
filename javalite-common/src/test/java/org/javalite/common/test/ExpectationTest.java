@@ -16,6 +16,7 @@ limitations under the License.
 
 package org.javalite.common.test;
 
+import org.javalite.test.SystemStreamUtil;
 import org.javalite.test.jspec.TestException;
 import org.junit.Test;
 
@@ -165,5 +166,19 @@ public class ExpectationTest {
         List<String> numbers = list("one", "two", "three");
         the(numbers).shouldContain("one");
         the(numbers).shouldNotContain("four");
+    }
+
+
+    @Test
+    public void shouldTestDefect1259(){
+        try{            the("hello").shouldEqual(null);
+        }catch(Exception e){
+            the(e.getMessage()).shouldEqual("""
+                    Test object:
+                    java.lang.String == <hello>
+                    and expected
+                    null
+                    are not equal, but they should be.""");
+        }
     }
 }

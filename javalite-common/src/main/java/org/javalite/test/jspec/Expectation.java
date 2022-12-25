@@ -78,7 +78,7 @@ public class Expectation<T> {
         }
         sb.append("and expected\n");
         if (expected == null) {
-            sb.append("null");
+            sb.append("null").append("\n");
         } else {
             sb.append(expected.getClass().getName()).append(" == <").append(expected).append(">\n");
         }
