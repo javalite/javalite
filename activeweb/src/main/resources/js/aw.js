@@ -1,35 +1,13 @@
-/*
- Copyright 2009-2022 Igor Polevoy
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- */
-
-/*
- This file is a collection of unobtrusive JS that binds to link_to generated anchors typical for Ajax calls.
-
- author: Igor Polevoy
- */
 const __aw_bind = (container) => {
     container.querySelectorAll('a[data-link=aw]')
         .forEach(a => a.addEventListener('click', __aw_support));
 }
 const __aw_support = (ev) => {
-    ev.preventDefault();
     let anchor = ev.target;
     let destination = anchor.getAttribute("data-destination");
     let formId = anchor.getAttribute("data-form");
     let href = anchor.getAttribute("href");
-    let method = anchor.getAttribute("data-method") || "get";
+    let method = (anchor.getAttribute("data-method") || "get").toLowerCase();
     let before = anchor.getAttribute("data-before");
     let after = anchor.getAttribute("data-after");
     let beforeArg = anchor.getAttribute("data-before-arg");
@@ -38,6 +16,7 @@ const __aw_support = (ev) => {
     let csrfToken = anchor.getAttribute("data-csrf-token");
     let csrfParam = anchor.getAttribute("data-csrf-param");
     let confirmMessage = anchor.getAttribute("data-confirm");
+    let data = null;
 
     if (confirmMessage != null ) {
         if(!confirm(confirmMessage)){
@@ -46,13 +25,12 @@ const __aw_support = (ev) => {
     }
 
     if (before != null) {
-        eval(before)(beforeArg);
+        data = eval(before)(beforeArg);
     }
 
-    method = method.toLowerCase();
+    ev.preventDefault();
 
-    //!ajax
-    if (destination == null) {
+    if (destination == null && after == null) {
         if (formId !== null) {
             let form = document.getElementById(formId);
             if (form !== null) {
@@ -69,15 +47,36 @@ const __aw_support = (ev) => {
             } else {
                 console.error("Form not found with id=" + formId);
             }
-            return false;
+        } else {
+            let param = (form, key, value) => {
+                let input = document.createElement("input");
+                input.setAttribute("type", "hidden");
+                input.setAttribute("name", key);
+                input.setAttribute("value", value);
+                form.append(input);
+            }
+            let form = document.createElement("form");
+            form.setAttribute("method", method === "get" ? method : "post");
+            form.setAttribute("action", href);
+            if (["put", "delete"].indexOf(method) > -1) {
+                param(form, "_method", method);
+            }
+            if (csrfToken) {
+                param(form, csrfToken, csrfParam);
+            }
+            if (data !== null && data !== undefined && typeof data === "object") {
+                for([key, val] of Object.entries(data)) {
+                    param(form, key, val);
+                }
+            }
+            document.body.append(form);
+            form.submit();
         }
-        return true;
+        return false;
     }
-
 
     let contentType = "application/x-www-form-urlencoded";
     let encType;
-    let data;
     if (formId !== null) {
         let form = document.getElementById(formId);
         encType = form.getAttribute("enctype");
@@ -90,6 +89,7 @@ const __aw_support = (ev) => {
                 formData.set(csrfParam, csrfToken);
             }
         }
+
         if (contentType.startsWith("application/json")) {
             let object = {};
             formData.forEach((key,value) => {
@@ -98,10 +98,17 @@ const __aw_support = (ev) => {
             data = JSON.stringify(object);
         } else if (contentType.startsWith("application/x-www-form-urlencoded")) {
             let array = [];
-            formData.forEach((key,value) => {
-                array.push(key + "=" + encodeURIComponent(value));
-            })
-            data = array.join('&');
+            for (let entry of formData.entries()) {
+                array.push(encodeURIComponent(entry[0]) + '=' + encodeURIComponent(entry[1]));
+            }
+            if (array.length > 0) {
+                if (href.indexOf('?') === -1) {
+                    href += '?';
+                } else {
+                    href += '&'
+                }
+                href += new URLSearchParams(formData).toString();
+            }
         }
     }
 
@@ -126,7 +133,7 @@ const __aw_support = (ev) => {
                 }
             }
             if (after != null) {
-                eval(after)(afterArg, data);
+                eval(after)(afterArg, event.target.responseText);
             }
         } else {
             errorHandler(event);
