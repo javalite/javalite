@@ -1,6 +1,6 @@
 package org.javalite.async;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,7 +35,9 @@ public class BookCommand extends Command {
             counter.incrementAndGet();
         }
     }
+//TODO this method intersect with the book variable but returns a different type.
 
+    @JsonIgnore
     public Book getBook() {
         return new Book().fromMap(bookMap);
     }

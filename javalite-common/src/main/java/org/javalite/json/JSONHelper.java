@@ -18,7 +18,6 @@ package org.javalite.json;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -37,11 +36,13 @@ import static org.javalite.common.Collections.map;
  */
 
 public class JSONHelper {
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
 
     static {
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
     }
 
     /**
@@ -52,7 +53,7 @@ public class JSONHelper {
      */
     public static Map toMap(String json) {
         try {
-            return mapper.readValue(json, Map.class);
+            return objectMapper.readValue(json, Map.class);
         } catch (Exception e) {
             throw new JSONParseException("Failed to parse JSON string into a Java Map",e);
         }
@@ -87,7 +88,7 @@ public class JSONHelper {
     @SuppressWarnings("unchecked")
     public static Map<String, Object>[] toMaps(String json) {
         try {
-            return mapper.readValue(json, Map[].class);
+            return objectMapper.readValue(json, Map[].class);
         } catch (Exception e) {
             throw new JSONParseException("Failed to parse JSON string into a Java Maps",e);
         }
@@ -163,7 +164,7 @@ public class JSONHelper {
      */
     public static String toJsonString(Object val, boolean pretty) {
         try {
-            return pretty ? mapper.writerWithDefaultPrettyPrinter().with(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS).writeValueAsString(val) : mapper.writeValueAsString(val);
+            return pretty ? objectMapper.writerWithDefaultPrettyPrinter().with(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS).writeValueAsString(val) : objectMapper.writeValueAsString(val);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -217,7 +218,7 @@ public class JSONHelper {
      */
     public static List toList(String json) {
         try {
-            return mapper.readValue(json, List.class);
+            return objectMapper.readValue(json, List.class);
         } catch (Exception e) {
             throw new JSONParseException("Failed to parse JSON string into a Java List",e);
         }
@@ -336,25 +337,19 @@ public class JSONHelper {
         CLEAN_CHARS.put('\r', "");
         CLEAN_CHARS.put('\f', "");
     }
-
+//TODO toJsonString(Object object) ??
     /**
      * Converts an object to a JSON document. The class of the object must provide a default constructor.
      * This method can be used for platform-neutral serialization.
      *
-     * This method can be used in in the combination with the {@link #toObject(String, Class)} to serialize/deserialize objects.
+     * This method can be used in the combination with the {@link #toObject(String, Class)} to serialize/deserialize objects.
      *
      * @param object to convert to JSON.
      * @return JSON document representing the argument.
      */
     public static String toJSON(Object object){
         try{
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-
-            objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-
             objectMapper.writer().withoutAttribute("metaModelLocal").withoutAttribute("dialect").writeValue(bytes, object);
             return bytes.toString();
         }catch(IOException e){
@@ -367,15 +362,13 @@ public class JSONHelper {
      * Converts JSON document to an object. The class of the object must provide a default constructor.
      * This method can be used for platform-neutral serialization.
      *
-     * This method can be used in in the combination with the {@link #toJSON(Object)} to serialize/deserialize objects.
+     * This method can be used in the combination with the {@link #toJSON(Object)} to serialize/deserialize objects.
      *
      * @param json document to use for de-serialization.
      * @return an object serialized from the argument.
      */
-    public static <T> T toObject(String json, Class<T> hintClass){
+    public static <T> T toObject(String json, Class<T> hintClass) {
          try{
-             ObjectMapper objectMapper = new ObjectMapper();
-             objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
              return objectMapper.readValue(json, hintClass);
          }catch(IOException e){
              throw new JSONParseException("Failed to convert JSON to object.", e);

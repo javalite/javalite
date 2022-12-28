@@ -17,8 +17,8 @@ limitations under the License.
 
 package org.javalite.async;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.javalite.json.JSONHelper;
-import org.javalite.json.JSONMap;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -35,7 +35,11 @@ import java.util.zip.ZipOutputStream;
  */
 public abstract class Command {
 
-    private String jmsMessageId;
+    private static final String TYPE = "type";
+    private static final String PAYLOAD = "payload";
+
+    @JsonIgnore
+    private String jmsMessageID;
 
     /**
      * Method used by framework to de-serialize a command from JSON.
@@ -46,15 +50,15 @@ public abstract class Command {
      */
     static <T extends Command> T hydrate(String commandJSON) {
         try{
-            JSONMap map = JSONHelper.toJSONMap(commandJSON);
-            String commandClass = map.getString("type");
-            //TODO: there is a second parsing of the same JSON here:
-            Class c1 = Class.forName(commandClass);
-            return (T) JSONHelper.toObject(map.getMap("command").toJSON(), c1);
+            var map = JSONHelper.toJSONMap(commandJSON);
+            var type = map.getString(TYPE);
+            var command = map.getMap(PAYLOAD);
+            return (T) JSONHelper.toObject(command.toJSON(), Class.forName(type));
         }catch(Exception e){
             throw new AsyncException(e);
         }
     }
+//TODO toJsonString(Object object) || toJSON(Object object) ??
 
     /**
      * Serializes this object into XML. The output is used by {@link #hydrate(String)} to de-serialize a command
@@ -63,7 +67,11 @@ public abstract class Command {
      * @return XML representation of this instance.
      */
     final String dehydrate() {
-        return new CommandWrapper(this.getClass().getName(), this).toJSON();
+        return JSONHelper.toJson(
+                TYPE, getClass().getName(),
+//                PAYLOAD, JSONHelper.toJSONMap(JSONHelper.toJSON(this))
+                PAYLOAD, JSONHelper.toJSONMap(JSONHelper.toJsonString(this))
+        );
     }
 
 
@@ -109,11 +117,11 @@ public abstract class Command {
     }
 
     public String getJMSMessageID() {
-        return jmsMessageId;
+        return jmsMessageID;
     }
 
-    public void setJMSMessageID(String jmsMessageId) {
-        this.jmsMessageId = jmsMessageId;
+    public void setJMSMessageID(String jmsMessageID) {
+        this.jmsMessageID = jmsMessageID;
     }
 
 }
