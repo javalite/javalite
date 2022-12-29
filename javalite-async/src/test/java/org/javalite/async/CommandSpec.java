@@ -19,10 +19,10 @@ import static org.javalite.test.jspec.JSpec.the;
 public class CommandSpec {
 
     @Test
-    public void shouldSerializeDeserializeXML(){
+    public void shouldSerializeDeserializeJSON(){
         HelloCommand helloCommand = new HelloCommand("Thanks for all the fish...");
-        String xml = helloCommand.dehydrate();
-        HelloCommand helloCommand1 = Command.hydrate(xml);
+        String json = helloCommand.dehydrate();
+        HelloCommand helloCommand1 = Command.hydrate(json);
         a(helloCommand1.getMessage()).shouldBeEqual("Thanks for all the fish...");
         a(helloCommand).shouldNotBeTheSameAs(helloCommand1);
     }

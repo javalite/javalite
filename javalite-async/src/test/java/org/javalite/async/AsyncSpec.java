@@ -362,7 +362,7 @@ public class AsyncSpec {
         async.start();
         Book b = new Book();
         b.set("title", "Alice in Wonderland");
-        async.send(QUEUE_NAME, new BookCommand(b.toMap()), DeliveryMode.NON_PERSISTENT);
+        async.send(QUEUE_NAME, new BookCommand(b), DeliveryMode.NON_PERSISTENT);
         BookCommand bc = async.receiveCommand(QUEUE_NAME, BookCommand.class);
         the(bc.getBook().get("title")).shouldBeEqual("Alice in Wonderland");
     }

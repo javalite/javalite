@@ -56,6 +56,8 @@ import static org.javalite.activejdbc.ModelDelegate.metaModelOf;
 import static org.javalite.common.Inflector.*;
 import static org.javalite.common.Util.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * This class is a super class of all "models" and provides most functionality
  * necessary for implementation of Active Record pattern.
@@ -68,14 +70,32 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
     private static final Logger LOGGER = LoggerFactory.getLogger(Model.class);
 
     private Map<String, Object> attributes = new CaseInsensitiveMap<>();
+
+    @JsonIgnore
     private Set<String> dirtyAttributeNames = new CaseInsensitiveSet();
+
+    @JsonIgnore
     private boolean frozen;
+
+    @JsonIgnore
     private MetaModel metaModelLocal;
+
+    @JsonIgnore
     private ModelRegistry modelRegistryLocal;
+
+    @JsonIgnore
     private final Map<Class, Model> cachedParents = new HashMap<>();
+
+    @JsonIgnore
     private final Map<Class, List<Model>> cachedChildren = new HashMap<>();
+
+    @JsonIgnore
     private boolean manageTime = true;
+
+    @JsonIgnore
     private boolean compositeKeyPersisted;
+
+    @JsonIgnore
     private Errors errors = new Errors();
 
     protected Model() {
@@ -380,6 +400,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      * (Instance state differs from state in DB)
      * @return true if this instance was modified.
      */
+    @JsonIgnore
     public boolean isModified() {
         return !dirtyAttributeNames.isEmpty();
     }
@@ -425,6 +446,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      *
      * @return true if this is a new instance, not saved yet to DB, false otherwise
      */
+    @JsonIgnore
     public boolean isNew(){
         return getId() == null && !compositeKeyPersisted;
     }
@@ -2189,6 +2211,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      *
      * @return true if no errors were generated, otherwise returns false.
      */
+    @JsonIgnore
     public boolean isValid(){
         validate();
         return !hasErrors();
@@ -2922,6 +2945,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      *
      * @return of ID.
      */
+    @JsonIgnore
     public Object getId() {
         return get(getIdName());
     }
@@ -2931,6 +2955,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      *
      * @return Name of ID column.
      */
+    @JsonIgnore
     public String getIdName() {
         return metaModelLocal.getIdName();
     }
@@ -2940,6 +2965,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      *
      * @return a list of composite keys as specified  in {@link CompositePK}.
      */
+    @JsonIgnore
     public String[] getCompositeKeys() {
         return metaModelLocal.getCompositeKeys();
     }
@@ -3071,6 +3097,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      *
      * @return value of attribute corresponding to <code>getIdName()</code>, converted to a Long.
      */
+    @JsonIgnore
     public Long getLongId() {
         return getId() == null ? null: Convert.toLong(getId());
     }

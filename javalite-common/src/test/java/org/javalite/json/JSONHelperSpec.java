@@ -8,14 +8,13 @@ import java.util.List;
 import java.util.Map;
 
 import static org.javalite.common.Collections.map;
-import static org.javalite.json.JSONHelper.toJsonString;
-import static org.javalite.json.JSONHelper.toMap;
+import static org.javalite.json.JSONHelper.*;
 import static org.javalite.test.jspec.JSpec.*;
 
 /**
  * @author Igor Polevoy on 5/26/16.
  */
-public class JsonHelperSpec {
+public class JSONHelperSpec {
 
     @Test
     public void shouldConvertObject2JSON() {
@@ -43,13 +42,13 @@ public class JsonHelperSpec {
                 this.lastName = lastName;
             }
         }
-        a(toJsonString(new Person("John", "Smith"))).shouldBeEqual("{\"firstName\":\"John\",\"lastName\":\"Smith\"}");
+        a(toJSONString(new Person("John", "Smith"))).shouldBeEqual("{\"firstName\":\"John\",\"lastName\":\"Smith\"}");
     }
 
     @Test
     public void shouldConvertObject2JSONPrettyPrintString() {
         Map m = toMap("{ \"firstName\" : \"John\",\"lastName\" : \"Smith\", \"age\": 22, \"1\": 1 }");
-        String pretty = toJsonString(m, true);
+        String pretty = toJSONString(m, true);
         a(pretty).shouldBeEqual("{" + System.lineSeparator() +
                 "  \"1\" : 1," + System.lineSeparator() +
                 "  \"age\" : 22," + System.lineSeparator() +
@@ -134,12 +133,12 @@ public class JsonHelperSpec {
     public void shouldConvertToJsonObject() {
 
         try {
-            JSONHelper.toJsonObject("name");
+            JSONHelper.toJSON("name");
         } catch (Exception exception) {
             the(exception).shouldBeType(IllegalArgumentException.class);
         }
 
-        String result = JSONHelper.toJsonObject("name", "Joe", "age", 23, "dob", new Date());
+        String result = JSONHelper.toJSON("name", "Joe", "age", 23, "dob", new Date());
         Map mapResult = toMap(result);
         the(mapResult.get("name")).shouldBeEqual("Joe");
         the(mapResult.get("age")).shouldBeEqual(23);
@@ -148,7 +147,7 @@ public class JsonHelperSpec {
 
     @Test
     public void shouldConvertNull() {
-        String json = JSONHelper.toJsonObject("null", null);
+        String json = JSONHelper.toJSON("null", null);
         the(toMap(json).get("null")).shouldBeNull();
     }
 
@@ -186,7 +185,7 @@ public class JsonHelperSpec {
     public void shouldConvertWithNull() {
         Map map = map("name", "John", "married", null);
 
-        String json = JSONHelper.toJsonString(map);
+        String json = JSONHelper.toJSONString(map);
         the(json).shouldContain("\"name\":\"John\"");
         the(json).shouldContain("\"married\":null");
     }
@@ -196,7 +195,7 @@ public class JsonHelperSpec {
 
     @Test
     public void shouldSerializeJavaRecord() {
-        Map hm = toMap(toJsonString(new Human("Joe", "Shmoe")));
+        Map hm = toMap(toJSONString(new Human("Joe", "Shmoe")));
         the(hm.get("firstName")).shouldBeEqual("Joe");
         the(hm.get("lastName")).shouldBeEqual("Shmoe");
     }
@@ -204,7 +203,7 @@ public class JsonHelperSpec {
     @Test
     public void shouldGenerateJSONObjectFromPairs() {
 
-        String person = toJsonString("first_name", "Marilyn", "last_name", "Monroe");
+        String person = toJSON("first_name", "Marilyn", "last_name", "Monroe");
         Map personMap = JSONHelper.toJSONMap(person);
 
         the(personMap.get("first_name")).shouldBeEqual("Marilyn");

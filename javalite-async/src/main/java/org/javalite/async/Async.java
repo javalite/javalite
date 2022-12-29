@@ -487,7 +487,7 @@ public class Async {
         } catch (Exception e) {
             throw new AsyncException("Failed to send message", e);
         }finally {
-            LOGGER.debug(JSONHelper.toJsonString(map("message", "completed sending command", "time_millis", now - System.currentTimeMillis(), "command", command.getClass(), "queue", queueName)));
+            LOGGER.debug(JSONHelper.toJSONString(map("message", "completed sending command", "time_millis", now - System.currentTimeMillis(), "command", command.getClass(), "queue", queueName)));
         }
     }
 
@@ -663,7 +663,7 @@ public class Async {
         } catch (Exception e) {
             throw new AsyncException("Failed to send message", e);
         }finally {
-            LOGGER.debug(JSONHelper.toJsonString(map("message", "completed sending text message", "time_millis", now - System.currentTimeMillis(), "queue", queueName)));
+            LOGGER.debug(JSONHelper.toJSONString(map("message", "completed sending text message", "time_millis", now - System.currentTimeMillis(), "queue", queueName)));
         }
 
     }

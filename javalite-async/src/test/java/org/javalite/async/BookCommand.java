@@ -11,12 +11,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class BookCommand extends Command {
 
     private static AtomicInteger counter = new AtomicInteger(0);
-    private Map bookMap;
+    private Book book;
 
     public BookCommand(){}
 
-    public BookCommand(Map bookMap) {
-        this.bookMap = bookMap;
+    public BookCommand(Book book) {
+        this.book = book;
     }
 
 
@@ -35,10 +35,11 @@ public class BookCommand extends Command {
             counter.incrementAndGet();
         }
     }
-//TODO this method intersect with the book variable but returns a different type.
-
-    @JsonIgnore
     public Book getBook() {
-        return new Book().fromMap(bookMap);
+        return book;
+    }
+
+    public void setBook(Book book) {
+        this.book = book;
     }
 }

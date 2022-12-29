@@ -314,7 +314,7 @@ public class EndpointFinder {
 
         JSONMap baseMap =  JSONHelper.toJSONMap(baseTemplateContent);
         baseMap.put("paths", paths);
-        return JSONHelper.toJsonString(baseMap);
+        return JSONHelper.toJSONString(baseMap);
     }
 
 

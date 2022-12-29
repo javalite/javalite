@@ -59,6 +59,6 @@ public abstract class ConnectionConfig {
 
     @Override
     public String toString() {
-        return JSONHelper.toJsonString(map("class", getClass(), "environment", environment, "db_name", dbName, "testing", testing));
+        return JSONHelper.toJSONString(map("class", getClass(), "environment", environment, "db_name", dbName, "testing", testing));
     }
 }

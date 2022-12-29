@@ -100,8 +100,8 @@ public class JSONHelper {
      * @param val Java object
      * @return JSON string.
      */
-    public static String toJsonString(Object val) {
-        return toJsonString(val, false);
+    public static String toJSONString(Object val) {
+        return toJSONString(val, false);
     }
 
     /**
@@ -121,38 +121,15 @@ public class JSONHelper {
      *         "last_name": "Monroe"
      *     }
      * </pre>
-     * @param namesAndValues  is a list of name and value pairs  in a typical JavaLite fashion.
-     * @return JSON object with name and values passed in.
-     */
-    public static String toJsonString(Object ...namesAndValues) {
-        return toJsonString(map(namesAndValues), false);
-    }
-
-    /**
-     * Generates a JSON object from names and values. Example: this code:
-     *
-     * <pre>
-     *
-     *     String person = toJsonString("first_name", "Marilyn", "last_name", "Monroe");
-     * </pre>
-     *
-     * will generate this JSON string:
-     *
-     * <pre>
-     *
-     *     {
-     *         "first_name": "Marilyn",
-     *         "last_name": "Monroe"
-     *     }
-     * </pre>
-     *
-     * <strong>This method is a synonym for {@link #toJsonString(Object...)}.</strong>
      *
      * @param namesAndValues  is a list of name and value pairs  in a typical JavaLite fashion.
      * @return JSON object with name and values passed in
      */
-    public static String toJson(Object ...namesAndValues) {
-        return toJsonString(map(namesAndValues), false);
+    public static String toJSON(Object ...namesAndValues) {
+        if (namesAndValues.length % 2 != 0) {
+            throw new IllegalArgumentException("number or arguments must be even");
+        }
+        return toJSONString(map(namesAndValues), false);
     }
 
     /**
@@ -162,51 +139,12 @@ public class JSONHelper {
      * @param pretty enable/disable pretty print
      * @return JSON string.
      */
-    public static String toJsonString(Object val, boolean pretty) {
+    public static String toJSONString(Object val, boolean pretty) {
         try {
             return pretty ? objectMapper.writerWithDefaultPrettyPrinter().with(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS).writeValueAsString(val) : objectMapper.writeValueAsString(val);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * Converts input into a JSON object.
-     *
-     * @param namesAndValues - expected sequence of corresponding name and value pairs (number of parameters must be even   ).
-     * @return new string {name:value,name1:value1, etc.}
-     */
-    public static String toJsonObject(Object... namesAndValues) {
-
-        if (namesAndValues.length % 2 != 0) {
-            throw new IllegalArgumentException("number or arguments must be even");
-        }
-        StringBuilder sb = new StringBuilder("{");
-
-        int count = 0;
-
-        while (true) {
-            Object name = namesAndValues[count];
-            sb.append("\"").append(name).append("\":");
-            if (!(namesAndValues[count + 1] instanceof Number)) {
-                if (namesAndValues[count + 1] == null) {
-                    sb.append("null");
-                } else {
-                    sb.append("\"").append(namesAndValues[count + 1].toString()).append("\"");
-                }
-            } else {
-                sb.append(namesAndValues[count + 1].toString());
-            }
-
-            if (count < (namesAndValues.length - 2)) {
-                sb.append(",");
-                count += 2;
-            } else {
-                sb.append("}");
-                break;
-            }
-        }
-        return sb.toString();
     }
 
 

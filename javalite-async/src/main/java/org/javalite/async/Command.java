@@ -67,10 +67,10 @@ public abstract class Command {
      * @return XML representation of this instance.
      */
     final String dehydrate() {
-        return JSONHelper.toJson(
+        return JSONHelper.toJSON(
                 TYPE, getClass().getName(),
 //                PAYLOAD, JSONHelper.toJSONMap(JSONHelper.toJSON(this))
-                PAYLOAD, JSONHelper.toJSONMap(JSONHelper.toJsonString(this))
+                PAYLOAD, JSONHelper.toJSONMap(JSONHelper.toJSONString(this))
         );
     }
 

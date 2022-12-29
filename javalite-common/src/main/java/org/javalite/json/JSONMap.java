@@ -271,7 +271,7 @@ public class JSONMap extends HashMap<String, Object> {
      */
     @Override
     public String toString() {
-        return JSONHelper.toJsonString(this);
+        return JSONHelper.toJSONString(this);
     }
 
 
@@ -281,7 +281,7 @@ public class JSONMap extends HashMap<String, Object> {
      * @return a JSON representation  of this object
      */
     public String toJSON(boolean pretty){
-        return JSONHelper.toJsonString(this, pretty);
+        return JSONHelper.toJSONString(this, pretty);
     }
 
     /**
@@ -289,6 +289,6 @@ public class JSONMap extends HashMap<String, Object> {
      * @return a JSON representation  of this object
      */
     public String toJSON(){
-        return JSONHelper.toJsonString(this, false);
+        return JSONHelper.toJSONString(this, false);
     }
 }
