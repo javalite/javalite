@@ -2,13 +2,13 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>app-config-spec</artifactId>
     <packaging>jar</packaging>
-    <version>3.3-j11-SNAPSHOT</version>
+    <version>3.4-j11-SNAPSHOT</version>
     <name>JavaLite - AppConfig  Spec </name>
 
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>javalite</artifactId>
-        <version>3.3-j11-SNAPSHOT</version>
+        <version>3.4-j11-SNAPSHOT</version>
     </parent>
 
     <build>
