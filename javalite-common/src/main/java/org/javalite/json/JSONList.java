@@ -156,6 +156,6 @@ public class JSONList extends ArrayList {
      * @return a JSON representation  of this object
      */
     public String toJSON(){
-        return JSONHelper.toJsonString(this,  false);
+        return JSONHelper.toJSON(this,  false);
     }
 }

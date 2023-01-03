@@ -31,8 +31,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <skipTests>false</skipTests>
-        <slf4j.version>1.7.32</slf4j.version>
-        <log4j2.version>2.17.1</log4j2.version>
+        <slf4j.version>1.7.36</slf4j.version>
+        <log4j2.version>2.19.0</log4j2.version>
 
         <junit.version>4.13.1</junit.version>
         <javassist.version>3.27.0-GA</javassist.version>
@@ -81,7 +81,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-plugin-plugin</artifactId>
-                    <version>3.6.4</version>
+                    <version>3.7.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>

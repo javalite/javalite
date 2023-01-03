@@ -522,7 +522,7 @@ public class HttpSupport implements RequestAccess {
      */
     protected HttpBuilder respondJSON(Object object){
         header("Content-Type", "application/json");
-        return respond(JSONHelper.toJsonString(object));
+        return respond(JSONHelper.toJSON(object));
     }
 
     /**
