@@ -31,8 +31,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import static org.javalite.activejdbc.test.JdbcProperties.driver;
-import static org.javalite.common.Convert.toLocalDateTime;
-import static org.javalite.common.Convert.toLong;
+
 
 /**
  * @author Igor Polevoy
@@ -95,7 +94,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
 
         User u = User.findById(1);
         String json = u.toJson(true, "email", "last_name");
-        JSONHelper.toJsonString(json); // validate
+        JSONHelper.toJSONString(json); // validate
         the(json).shouldBeEqual("{\n" +
                 "  \"email\":\"mmonroe@yahoo.com\",\n" +
                 "  \"last_name\":\"Monroe\"\n" +
@@ -108,7 +107,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
         LazyList<User> personList = User.findAll().orderBy("id").include(Address.class);
 
         String json = personList.toJson(false);
-        JSONHelper.toJsonString(json); // validate
+        JSONHelper.toJSONString(json); // validate
     }
 
     @Test

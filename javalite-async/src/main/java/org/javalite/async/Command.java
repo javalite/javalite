@@ -17,12 +17,8 @@ limitations under the License.
 
 package org.javalite.async;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.security.AnyTypePermission;
-import com.thoughtworks.xstream.security.NoTypePermission;
-import org.javalite.async.xstream.CDATAXppDriver;
-import org.javalite.async.xstream.JSONListConverter;
-import org.javalite.async.xstream.JSONMapConverter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.javalite.json.JSONHelper;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -39,26 +35,43 @@ import java.util.zip.ZipOutputStream;
  */
 public abstract class Command {
 
-    private String jmsMessageId;
+    private static final String TYPE = "type";
+    private static final String PAYLOAD = "payload";
 
-    private static final XStream X_STREAM;
-    static {
-        X_STREAM = new XStream(new CDATAXppDriver());
-        X_STREAM.registerConverter(new JSONMapConverter(X_STREAM.getMapper()));
-        X_STREAM.registerConverter(new JSONListConverter(X_STREAM.getMapper()));
-        X_STREAM.addPermission(NoTypePermission.NONE );
-        X_STREAM.addPermission(AnyTypePermission.ANY);
-    }
+    @JsonIgnore
+    private String jmsMessageID;
 
     /**
-     * Method used by framework to de-serialize a command from XML.
+     * Method used by framework to de-serialize a command from JSON.
      *
-     * @param commandXml XML representation of a command.
+     * @param commandJSON JSON representation of a command.
      *
-     * @return new instance of a command initialized with data from <code>commandXml</code>  argument.
+     * @return new instance of a command initialized with data from <code>commandJSON</code>  argument.
      */
-    public static <T extends Command> T  fromXml(String commandXml) {
-        return (T) X_STREAM.fromXML(commandXml);
+    static <T extends Command> T hydrate(String commandJSON) {
+        try{
+            var map = JSONHelper.toJSONMap(commandJSON);
+            var type = map.getString(TYPE);
+            var command = map.getMap(PAYLOAD);
+            return (T) JSONHelper.toObject(command.toJSON(), Class.forName(type));
+        }catch(Exception e){
+            throw new AsyncException(e);
+        }
+    }
+//TODO toJsonString(Object object) || toJSON(Object object) ??
+
+    /**
+     * Serializes this object into XML. The output is used by {@link #hydrate(String)} to de-serialize a command
+     * after it passes through messaging broker.
+     *
+     * @return XML representation of this instance.
+     */
+    final String dehydrate() {
+        return JSONHelper.toJSON(
+                TYPE, getClass().getName(),
+//                PAYLOAD, JSONHelper.toJSONMap(JSONHelper.toJSON(this))
+                PAYLOAD, JSONHelper.toJSONMap(JSONHelper.toJSONString(this))
+        );
     }
 
 
@@ -68,15 +81,7 @@ public abstract class Command {
      */
     public abstract void execute();
 
-    /**
-     * Serializes this object into XML. The output is used by {@link #fromXml(String)} to de-serialize a command
-     * after it passes through messaging broker.
-     *
-     * @return XML representation of this instance.
-     */
-    public final String toXml() {
-        return X_STREAM.toXML(this);
-    }
+
 
     /**
      * Flattens(serializes, dehydrates, etc.) this instance to a binary representation.
@@ -89,7 +94,7 @@ public abstract class Command {
         ZipOutputStream stream = new ZipOutputStream(bout);
         ZipEntry ze = new ZipEntry("async_message");
         stream.putNextEntry(ze);
-        stream.write(toXml().getBytes());
+        stream.write(dehydrate().getBytes());
         stream.flush();
         stream.close();
         return  bout.toByteArray();
@@ -108,15 +113,15 @@ public abstract class Command {
         while((len = zin.read(buffer)) != -1) {
             bout.write(buffer, 0, len);
         }
-        return  (T) Command.fromXml(bout.toString());
+        return  (T) Command.hydrate(bout.toString());
     }
 
     public String getJMSMessageID() {
-        return jmsMessageId;
+        return jmsMessageID;
     }
 
-    public void setJMSMessageID(String jmsMessageId) {
-        this.jmsMessageId = jmsMessageId;
+    public void setJMSMessageID(String jmsMessageID) {
+        this.jmsMessageID = jmsMessageID;
     }
 
 }

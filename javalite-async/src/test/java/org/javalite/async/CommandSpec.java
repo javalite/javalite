@@ -19,10 +19,10 @@ import static org.javalite.test.jspec.JSpec.the;
 public class CommandSpec {
 
     @Test
-    public void shouldSerializeDeserializeXML(){
+    public void shouldSerializeDeserializeJSON(){
         HelloCommand helloCommand = new HelloCommand("Thanks for all the fish...");
-        String xml = helloCommand.toXml();
-        HelloCommand helloCommand1 = Command.fromXml(xml);
+        String json = helloCommand.dehydrate();
+        HelloCommand helloCommand1 = Command.hydrate(json);
         a(helloCommand1.getMessage()).shouldBeEqual("Thanks for all the fish...");
         a(helloCommand).shouldNotBeTheSameAs(helloCommand1);
     }
@@ -40,28 +40,7 @@ public class CommandSpec {
     @Test
     public void shouldSerializeJSONClasses(){
 
-        class MyCommand extends Command{
-            private JSONMap map;
-            private JSONList list;
-            public MyCommand(JSONMap map, JSONList list) {
-                this.map = map;
-                this.list = list;
-            }
 
-            @Override
-            public void execute() {
-                System.out.println("");
-            }
-
-            Map getMap(){
-                return map;
-            }
-
-            List getList(){
-                return list;
-            }
-
-        }
         JSONMap map = new JSONMap(map("name", "John"));
         MyCommand command1 = new MyCommand(map, new JSONList(list(1, 2,3)));
 
@@ -69,7 +48,8 @@ public class CommandSpec {
         the(command1.getList()).shouldContain(2);
         the(command1.getList()).shouldContain(3);
 
-        MyCommand  command = Command.fromXml(command1.toXml());
+        String x = command1.dehydrate();
+        MyCommand  command = Command.hydrate(x);
 
         the(command.getList()).shouldContain(1);
         the(command.getList()).shouldContain(2);

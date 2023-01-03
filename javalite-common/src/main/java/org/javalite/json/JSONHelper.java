@@ -16,9 +16,13 @@ limitations under the License.
 
 package org.javalite.json;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,11 +36,13 @@ import static org.javalite.common.Collections.map;
  */
 
 public class JSONHelper {
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
 
     static {
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
     }
 
     /**
@@ -47,7 +53,7 @@ public class JSONHelper {
      */
     public static Map toMap(String json) {
         try {
-            return mapper.readValue(json, Map.class);
+            return objectMapper.readValue(json, Map.class);
         } catch (Exception e) {
             throw new JSONParseException("Failed to parse JSON string into a Java Map",e);
         }
@@ -79,9 +85,10 @@ public class JSONHelper {
      * @param json JSON array
      * @return Java array.
      */
-    public static Map[] toMaps(String json) {
+    @SuppressWarnings("unchecked")
+    public static Map<String, Object>[] toMaps(String json) {
         try {
-            return mapper.readValue(json, Map[].class);
+            return objectMapper.readValue(json, Map[].class);
         } catch (Exception e) {
             throw new JSONParseException("Failed to parse JSON string into a Java Maps",e);
         }
@@ -93,8 +100,8 @@ public class JSONHelper {
      * @param val Java object
      * @return JSON string.
      */
-    public static String toJsonString(Object val) {
-        return toJsonString(val, false);
+    public static String toJSONString(Object val) {
+        return toJSONString(val, false);
     }
 
     /**
@@ -114,38 +121,15 @@ public class JSONHelper {
      *         "last_name": "Monroe"
      *     }
      * </pre>
-     * @param namesAndValues  is a list of name and value pairs  in a typical JavaLite fashion.
-     * @return JSON object with name and values passed in.
-     */
-    public static String toJsonString(Object ...namesAndValues) {
-        return toJsonString(map(namesAndValues), false);
-    }
-
-    /**
-     * Generates a JSON object from names and values. Example: this code:
-     *
-     * <pre>
-     *
-     *     String person = toJsonString("first_name", "Marilyn", "last_name", "Monroe");
-     * </pre>
-     *
-     * will generate this JSON string:
-     *
-     * <pre>
-     *
-     *     {
-     *         "first_name": "Marilyn",
-     *         "last_name": "Monroe"
-     *     }
-     * </pre>
-     *
-     * <strong>This method is a synonym for {@link #toJsonString(Object...)}.</strong>
      *
      * @param namesAndValues  is a list of name and value pairs  in a typical JavaLite fashion.
      * @return JSON object with name and values passed in
      */
-    public static String toJson(Object ...namesAndValues) {
-        return toJsonString(map(namesAndValues), false);
+    public static String toJSON(Object ...namesAndValues) {
+        if (namesAndValues.length % 2 != 0) {
+            throw new IllegalArgumentException("number or arguments must be even");
+        }
+        return toJSONString(map(namesAndValues), false);
     }
 
     /**
@@ -155,51 +139,12 @@ public class JSONHelper {
      * @param pretty enable/disable pretty print
      * @return JSON string.
      */
-    public static String toJsonString(Object val, boolean pretty) {
+    public static String toJSONString(Object val, boolean pretty) {
         try {
-            return pretty ? mapper.writerWithDefaultPrettyPrinter().with(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS).writeValueAsString(val) : mapper.writeValueAsString(val);
+            return pretty ? objectMapper.writerWithDefaultPrettyPrinter().with(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS).writeValueAsString(val) : objectMapper.writeValueAsString(val);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * Converts input into a JSON object.
-     *
-     * @param namesAndValues - expected sequence of corresponding name and value pairs (number of parameters must be even   ).
-     * @return new string {name:value,name1:value1, etc.}
-     */
-    public static String toJsonObject(Object... namesAndValues) {
-
-        if (namesAndValues.length % 2 != 0) {
-            throw new IllegalArgumentException("number or arguments must be even");
-        }
-        StringBuilder sb = new StringBuilder("{");
-
-        int count = 0;
-
-        while (true) {
-            Object name = namesAndValues[count];
-            sb.append("\"").append(name).append("\":");
-            if (!(namesAndValues[count + 1] instanceof Number)) {
-                if (namesAndValues[count + 1] == null) {
-                    sb.append("null");
-                } else {
-                    sb.append("\"").append(namesAndValues[count + 1].toString()).append("\"");
-                }
-            } else {
-                sb.append(namesAndValues[count + 1].toString());
-            }
-
-            if (count < (namesAndValues.length - 2)) {
-                sb.append(",");
-                count += 2;
-            } else {
-                sb.append("}");
-                break;
-            }
-        }
-        return sb.toString();
     }
 
 
@@ -211,7 +156,7 @@ public class JSONHelper {
      */
     public static List toList(String json) {
         try {
-            return mapper.readValue(json, List.class);
+            return objectMapper.readValue(json, List.class);
         } catch (Exception e) {
             throw new JSONParseException("Failed to parse JSON string into a Java List",e);
         }
@@ -329,5 +274,42 @@ public class JSONHelper {
         CLEAN_CHARS.put('\n', "");
         CLEAN_CHARS.put('\r', "");
         CLEAN_CHARS.put('\f', "");
+    }
+//TODO toJsonString(Object object) ??
+    /**
+     * Converts an object to a JSON document. The class of the object must provide a default constructor.
+     * This method can be used for platform-neutral serialization.
+     *
+     * This method can be used in the combination with the {@link #toObject(String, Class)} to serialize/deserialize objects.
+     *
+     * @param object to convert to JSON.
+     * @return JSON document representing the argument.
+     */
+    public static String toJSON(Object object){
+        try{
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            objectMapper.writer().withoutAttribute("metaModelLocal").withoutAttribute("dialect").writeValue(bytes, object);
+            return bytes.toString();
+        }catch(IOException e){
+            throw new JSONGenerateException("Failed to convert object  to JSON.", e);
+        }
+    }
+
+
+    /**
+     * Converts JSON document to an object. The class of the object must provide a default constructor.
+     * This method can be used for platform-neutral serialization.
+     *
+     * This method can be used in the combination with the {@link #toJSON(Object)} to serialize/deserialize objects.
+     *
+     * @param json document to use for de-serialization.
+     * @return an object serialized from the argument.
+     */
+    public static <T> T toObject(String json, Class<T> hintClass) {
+         try{
+             return objectMapper.readValue(json, hintClass);
+         }catch(IOException e){
+             throw new JSONParseException("Failed to convert JSON to object.", e);
+         }
     }
 }

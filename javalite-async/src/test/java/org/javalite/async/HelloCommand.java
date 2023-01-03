@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author Igor Polevoy on 4/5/15.
  */
-public class HelloCommand extends Command {
+public class    HelloCommand extends Command {
 
     private static AtomicInteger counter = new AtomicInteger(0);
     private String message;

@@ -354,9 +354,9 @@ public class RequestDispatcher implements Filter {
         addRequestHeaders(log);
 
         if(throwable != null && status >= 500){
-            logger.error(JSONHelper.toJsonString(log), throwable);
+            logger.error(JSONHelper.toJSONString(log), throwable);
         }else {
-            logger.info(JSONHelper.toJsonString(log));
+            logger.info(JSONHelper.toJSONString(log));
         }
     }
 

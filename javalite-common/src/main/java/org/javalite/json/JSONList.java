@@ -140,7 +140,7 @@ public class JSONList extends ArrayList {
      */
     @Override
     public String toString() {
-        return JSONHelper.toJsonString(this);
+        return JSONHelper.toJSONString(this);
     }
 
     /**
@@ -149,7 +149,7 @@ public class JSONList extends ArrayList {
      * @return a JSON representation  of this object
      */
     public String toJSON(boolean pretty){
-        return JSONHelper.toJsonString(this,  pretty);
+        return JSONHelper.toJSONString(this,  pretty);
     }
 
     /**

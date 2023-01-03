@@ -74,6 +74,6 @@ public class DBCommandListener extends CommandListener {
      * @param exception exception caught during command execution
      */
     protected void onException(Command command, Exception exception) {
-        logger.error(command.toXml() , exception);
+        logger.error(command.dehydrate() , exception);
     }
 }

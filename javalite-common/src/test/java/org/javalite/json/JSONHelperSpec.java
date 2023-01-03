@@ -8,19 +8,19 @@ import java.util.List;
 import java.util.Map;
 
 import static org.javalite.common.Collections.map;
-import static org.javalite.json.JSONHelper.toJsonString;
-import static org.javalite.json.JSONHelper.toMap;
+import static org.javalite.json.JSONHelper.*;
 import static org.javalite.test.jspec.JSpec.*;
 
 /**
  * @author Igor Polevoy on 5/26/16.
  */
-public class JsonHelperSpec {
+public class JSONHelperSpec {
 
     @Test
     public void shouldConvertObject2JSON() {
         class Person {
             String firstName, lastName;
+
             public Person(String firstName, String lastName) {
                 this.firstName = firstName;
                 this.lastName = lastName;
@@ -42,13 +42,13 @@ public class JsonHelperSpec {
                 this.lastName = lastName;
             }
         }
-        a(toJsonString(new Person("John", "Smith"))).shouldBeEqual("{\"firstName\":\"John\",\"lastName\":\"Smith\"}");
+        a(toJSONString(new Person("John", "Smith"))).shouldBeEqual("{\"firstName\":\"John\",\"lastName\":\"Smith\"}");
     }
 
     @Test
     public void shouldConvertObject2JSONPrettyPrintString() {
         Map m = toMap("{ \"firstName\" : \"John\",\"lastName\" : \"Smith\", \"age\": 22, \"1\": 1 }");
-        String pretty = toJsonString(m, true);
+        String pretty = toJSONString(m, true);
         a(pretty).shouldBeEqual("{" + System.lineSeparator() +
                 "  \"1\" : 1," + System.lineSeparator() +
                 "  \"age\" : 22," + System.lineSeparator() +
@@ -105,9 +105,9 @@ public class JsonHelperSpec {
     @Test
     public void shouldEscapeNewLine() {
         String result = JSONHelper.escapeControlChars("line 1" + System.getProperty("line.separator") + "line 2");
-        if(System.getProperty("os.name").contains("indows")){
+        if (System.getProperty("os.name").contains("indows")) {
             the(result).shouldBeEqual("line 1\\r\\nline 2");
-        }else{
+        } else {
             the(result).shouldBeEqual("line 1\\nline 2");
         }
     }
@@ -121,9 +121,9 @@ public class JsonHelperSpec {
     @Test
     public void shouldCleanSelectedChars() {
         String result;
-        if(System.getProperty("os.name").contains("indows")){
+        if (System.getProperty("os.name").contains("indows")) {
             result = JSONHelper.sanitize("line 1" + System.getProperty("line.separator") + "\tline 2", true, '\n', '\r');
-        }else {
+        } else {
             result = JSONHelper.sanitize("line 1" + System.getProperty("line.separator") + "\tline 2", true, '\n');
         }
         the(result).shouldBeEqual("line 1\tline 2");
@@ -133,12 +133,12 @@ public class JsonHelperSpec {
     public void shouldConvertToJsonObject() {
 
         try {
-            JSONHelper.toJsonObject("name");
+            JSONHelper.toJSON("name");
         } catch (Exception exception) {
             the(exception).shouldBeType(IllegalArgumentException.class);
         }
 
-        String result = JSONHelper.toJsonObject("name", "Joe", "age", 23, "dob", new Date());
+        String result = JSONHelper.toJSON("name", "Joe", "age", 23, "dob", new Date());
         Map mapResult = toMap(result);
         the(mapResult.get("name")).shouldBeEqual("Joe");
         the(mapResult.get("age")).shouldBeEqual(23);
@@ -147,7 +147,7 @@ public class JsonHelperSpec {
 
     @Test
     public void shouldConvertNull() {
-        String json = JSONHelper.toJsonObject("null", null);
+        String json = JSONHelper.toJSON("null", null);
         the(toMap(json).get("null")).shouldBeNull();
     }
 
@@ -162,21 +162,21 @@ public class JsonHelperSpec {
 
     @Test
     public void shouldParseJsonToMap() {
-        Map map= toMap(Util.readResource("/john.json"));
+        Map map = toMap(Util.readResource("/john.json"));
         the(map.get("first_name")).shouldBeEqual("John");
         the(map.get("last_name")).shouldBeEqual("Doe");
     }
 
     @Test
     public void shouldParseJsonToMaps() {
-        Map[] people= JSONHelper.toMaps(Util.readResource("/people.json"));
+        Map[] people = JSONHelper.toMaps(Util.readResource("/people.json"));
         the(people[0].get("first_name")).shouldBeEqual("John");
         the(people[1].get("first_name")).shouldBeEqual("Jane");
     }
 
     @Test
     public void shouldParseNull() {
-        Map person= toMap(Util.readResource("/contains_null.json"));
+        Map person = toMap(Util.readResource("/contains_null.json"));
         the(person.get("name")).shouldBeEqual("John");
         the(person.get("adult")).shouldBeNull();
     }
@@ -185,29 +185,66 @@ public class JsonHelperSpec {
     public void shouldConvertWithNull() {
         Map map = map("name", "John", "married", null);
 
-        String json = JSONHelper.toJsonString(map);
+        String json = JSONHelper.toJSONString(map);
         the(json).shouldContain("\"name\":\"John\"");
         the(json).shouldContain("\"married\":null");
     }
-    
-    record Human(String firstName, String lastName){}
-    
+
+    record Human(String firstName, String lastName) {
+    }
+
     @Test
-    public void shouldSerializeJavaRecord(){
-        Map hm = toMap(toJsonString(new Human("Joe", "Shmoe")));
+    public void shouldSerializeJavaRecord() {
+        Map hm = toMap(toJSONString(new Human("Joe", "Shmoe")));
         the(hm.get("firstName")).shouldBeEqual("Joe");
         the(hm.get("lastName")).shouldBeEqual("Shmoe");
     }
 
     @Test
-    public void shouldGenerateJSONObjectFromPairs(){
+    public void shouldGenerateJSONObjectFromPairs() {
 
-        String person = toJsonString("first_name", "Marilyn", "last_name", "Monroe");
+        String person = toJSON("first_name", "Marilyn", "last_name", "Monroe");
         Map personMap = JSONHelper.toJSONMap(person);
 
         the(personMap.get("first_name")).shouldBeEqual("Marilyn");
         the(personMap.get("last_name")).shouldBeEqual("Monroe");
 
+    }
+
+
+    static class Table {
+        private int legCount;
+
+        public Table(){}
+
+        public Table(int legCount) {
+            this.legCount = legCount;
+        }
+
+        public int getLegCount() {
+            return legCount;
+        }
+    }
+
+    @Test
+    public void shouldConvertObjectToJSON() {
+        Table t = new Table(3);
+        String json = JSONHelper.toJSON(t);
+        Map<String, Object> map = JSONHelper.toJSONMap(json);
+        the(map.get("legCount")).shouldEqual(3);
+    }
+
+    @Test
+    public void shouldConvertJSONToObject() {
+
+
+        String json = """
+                { "legCount" : 4 }
+                """;
+
+        Table t  = JSONHelper.toObject(json, Table.class);
+
+        the(t.legCount).shouldEqual(4);
     }
 }
 

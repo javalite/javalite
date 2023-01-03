@@ -240,7 +240,7 @@ public class JSONBase extends ValidationSupport {
 
     @Override
     public String toString() {
-        return JSONHelper.toJsonString(this.jsonMap);
+        return JSONHelper.toJSONString(this.jsonMap);
     }
 
     public JSONBase validateList(String pathToList){

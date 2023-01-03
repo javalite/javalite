@@ -1,5 +1,7 @@
 package org.javalite.async;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -9,11 +11,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class BookCommand extends Command {
 
     private static AtomicInteger counter = new AtomicInteger(0);
-    private Map bookMap;
+    private Book book;
 
+    public BookCommand(){}
 
-    public BookCommand(Map bookMap) {
-        this.bookMap = bookMap;
+    public BookCommand(Book book) {
+        this.book = book;
     }
 
 
@@ -32,8 +35,11 @@ public class BookCommand extends Command {
             counter.incrementAndGet();
         }
     }
-
     public Book getBook() {
-        return new Book().fromMap(bookMap);
+        return book;
+    }
+
+    public void setBook(Book book) {
+        this.book = book;
     }
 }
