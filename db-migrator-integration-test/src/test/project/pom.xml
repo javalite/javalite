@@ -38,7 +38,7 @@
                 <plugin>
                     <groupId>org.javalite</groupId>
                     <artifactId>db-migrator-maven-plugin</artifactId>
-                    <version>3.4-j11-SNAPSHOT</version>
+                    <version>3.4-j11-SNAPSHOT-SNAPSHOT</version>
                     <configuration>
                         <driver>${driver}</driver>
                         <url>${url}</url>
