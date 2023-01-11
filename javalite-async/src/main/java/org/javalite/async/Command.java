@@ -23,6 +23,7 @@ import org.javalite.json.JSONHelper;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -53,10 +54,23 @@ public abstract class Command {
             var map = JSONHelper.toJSONMap(commandJSON);
             var type = map.getString(TYPE);
             var command = map.getMap(PAYLOAD);
-            return (T) JSONHelper.toObject(command.toJSON(), Class.forName(type));
+            Class commandClass = Class.forName(type);
+            checkDefaultConstructor(commandClass);
+            return (T) JSONHelper.toObject(command.toJSON(), commandClass);
+        }catch (AsyncException e){
+            throw e;
         }catch(Exception e){
             throw new AsyncException(e);
         }
+    }
+
+    private static void checkDefaultConstructor(Class<?> commandClass) {
+        for (Constructor<?> constructor : commandClass.getConstructors()) {
+            if( constructor.getParameterCount() == 0){
+                return;
+            }
+        }
+         throw new AsyncException(commandClass + " does not have a required default constructor.");
     }
 //TODO toJsonString(Object object) || toJSON(Object object) ??
 

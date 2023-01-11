@@ -7,6 +7,7 @@ import org.javalite.json.JSONHelper;
 import org.javalite.common.Util;
 import org.javalite.common.Wait;
 import org.javalite.test.SystemStreamUtil;
+import org.javalite.test.jspec.ExceptionExpectation;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,8 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-import static org.javalite.test.jspec.JSpec.a;
-import static org.javalite.test.jspec.JSpec.the;
+import static org.javalite.test.jspec.JSpec.*;
 
 /**
  * @author Igor Polevoy on 4/5/15.
@@ -367,6 +367,22 @@ public class AsyncSpec {
         the(bc.getBook().get("title")).shouldBeEqual("Alice in Wonderland");
     }
 
+
+    @Test
+    public void should_trow_meaningful_message_if_command_has_no_default_constructor(){
+        async = new Async.AsyncBuilder(asyncRoot)
+                .queueConfigs(new QueueConfig(QUEUE_NAME))
+                .build();
+        async.start();
+        async.send(QUEUE_NAME, new Hello2Command("Hello"), DeliveryMode.NON_PERSISTENT);
+
+        try{
+            async.receiveCommand(QUEUE_NAME, Hello2Command.class); //<<--- will cause an exception because Hello2Command does not have a
+        }catch(Exception e){
+            the(e).shouldBeA(AsyncException.class);
+            the(e.getMessage()).shouldEqual("class org.javalite.async.Hello2Command does not have a required default constructor.");
+        }
+    }
 }
 
 

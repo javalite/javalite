@@ -564,7 +564,9 @@ public class Async {
                 command.setJMSMessageID(message.getJMSMessageID());
                 return command;
             }
-        } catch (Exception e) {
+        }catch (AsyncException e){
+            throw e;
+        }catch (Exception e) {
             throw new AsyncException("Could not get command", e);
         }
     }
