@@ -123,7 +123,8 @@ public class EndpointFinder<T extends AppController> {
     private List<EndPointDefinition> getEndpointDefinitions(ClassInfo controllerClassInfo, Format format) throws ClassNotFoundException, IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
         String controllerClassName = controllerClassInfo.getName();
-        Class<T> controllerClass = (Class<T>) Class.forName(controllerClassName);
+        Class<T> controllerClass = (Class<T>) Class.forName(controllerClassName, true, classLoader);
+
 
         if (AppController.restful(controllerClass)) {
             return getRestfulEndpointDefinitions(controllerClass, format);
