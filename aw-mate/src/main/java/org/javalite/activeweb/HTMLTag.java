@@ -10,7 +10,17 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
 
-public class TableTag implements TemplateDirectiveModel {
+/**
+ * Use this tag to embed a snippet of HTML into an OpenAPI document. It allows to write plain HTML in a separate  file, and use an HTML editor.
+ *
+ * <p>
+ * Usage:
+ * </p>
+ * <pre>
+ *     <html><@html file="src/test/resources/table1.html" /></html>
+ * </pre>
+ */
+public class HTMLTag implements TemplateDirectiveModel {
 
     @Override
     public void execute(Environment environment, Map params,
@@ -18,7 +28,7 @@ public class TableTag implements TemplateDirectiveModel {
                         TemplateDirectiveBody templateDirectiveBody /*unused*/) throws IOException {
 
         if(!params.containsKey("file")){
-            throw new IllegalArgumentException("Must provide a 'file' attribute for a table tag, example: <@table file=\"src/test/resources/table1.html\" />");
+            throw new IllegalArgumentException("Must provide a 'file' attribute for a table tag, example: <@html file=\"src/test/resources/table1.html\" />");
         }
 
         Writer writer = environment.getOut(); //to write output to

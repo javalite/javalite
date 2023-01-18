@@ -37,7 +37,7 @@ public class OpenAPITemplateManager {
         config = new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_21);
         config.setObjectWrapper(new DefaultObjectWrapper(freemarker.template.Configuration.VERSION_2_3_21));
         config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-        config.setSharedVariable("table", new TableTag());
+        config.setSharedVariable("html", new HTMLTag());
     }
 
     public String process(File templateFile) throws IOException, TemplateException {

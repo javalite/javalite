@@ -1,5 +1,5 @@
 {
-    "description" : "<@table file='src/test/resources/table1.html'/>"
+    "description" : "<@html file='src/test/resources/table1.html'/>"
 }
 
 

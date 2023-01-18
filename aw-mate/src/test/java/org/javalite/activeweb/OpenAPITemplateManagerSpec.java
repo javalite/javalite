@@ -15,7 +15,7 @@ public class OpenAPITemplateManagerSpec {
     public void shouldMergeTemplate() throws TemplateException, IOException {
         OpenAPITemplateManager m = new OpenAPITemplateManager();
         String result = m.process("""
-                <html><@table file="src/test/resources/table1.html" /></html>""");
+                <html><@html file="src/test/resources/table1.html" /></html>""");
 
         the(result).shouldBeEqual("<html><table> <tr> <td>First name</td> <td>Last name</td> </tr> <tr> <td>Freddie</td> <td>Mercury</td> </tr> </table></html>");
     }
@@ -35,9 +35,9 @@ public class OpenAPITemplateManagerSpec {
         OpenAPITemplateManager m = new OpenAPITemplateManager();
         try{
             m.process("""
-                <html><@table /></html>""");
+                <html><@html /></html>""");
         }catch(IllegalArgumentException e){
-            the(e.getMessage()).shouldBeEqual("Must provide a 'file' attribute for a table tag, example: <@table file=\"src/test/resources/table1.html\" />");
+            the(e.getMessage()).shouldBeEqual("Must provide a 'file' attribute for a table tag, example: <@html file=\"src/test/resources/table1.html\" />");
         }
     }
 }
