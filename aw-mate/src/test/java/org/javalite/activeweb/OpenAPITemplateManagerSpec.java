@@ -5,6 +5,7 @@ import org.javalite.json.JSONHelper;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import static org.javalite.test.jspec.JSpec.the;
@@ -28,6 +29,12 @@ public class OpenAPITemplateManagerSpec {
                 { "description" : "<table> <tr> <td>First name</td> <td>Last name</td> </tr> <tr> <td>Freddie</td> <td>Mercury</td> </tr> </table>" }""");
         String description = JSONHelper.toMap(jsonDoc).get("description").toString();
         the(description).shouldContain("Freddie");
+    }
+
+    @Test(expected = FileNotFoundException.class)
+    public void shouldThrowExceptionIfFileNotFound() throws TemplateException, IOException {
+        OpenAPITemplateManager m = new OpenAPITemplateManager();
+        m.process(new File("src/test/resources/does-not-exist.json"));
     }
 
     @Test

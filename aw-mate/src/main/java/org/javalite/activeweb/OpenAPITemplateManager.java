@@ -40,6 +40,7 @@ public class OpenAPITemplateManager {
         config.setSharedVariable("html", new HTMLTag());
     }
 
+    //exists for tests only
     public String process(File templateFile) throws IOException, TemplateException {
         return this.process(new String(Util.read(templateFile)));
     }

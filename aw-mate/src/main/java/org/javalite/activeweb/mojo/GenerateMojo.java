@@ -8,6 +8,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.javalite.activeweb.EndpointFinder;
 import org.javalite.activeweb.Format;
+import org.javalite.activeweb.OpenAPIException;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -84,12 +85,10 @@ public class GenerateMojo extends AbstractMojo {
             EndpointFinder endpointFinder = new EndpointFinder(getCombinedClassLoader(project));
             endpointFinder.setApiLocation(apiLocation);
             String mergedContent = generator.generate(templateFile, endpointFinder, localFormat);
-
             Files.writeString(Paths.get(targetFile), mergedContent);
-
             getLog().info("Output saved to: " + targetFile);
         } catch (Exception e) {
-            getLog().error("Failed to generate OpenAPI", e);
+          throw new OpenAPIException(e);
         }
     }
 }
