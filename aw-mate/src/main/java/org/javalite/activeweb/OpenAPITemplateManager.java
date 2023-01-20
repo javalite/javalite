@@ -15,10 +15,7 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import freemarker.template.TemplateExceptionHandler;
+import freemarker.template.*;
 import org.javalite.common.Util;
 
 import java.io.File;
@@ -33,22 +30,22 @@ import static org.javalite.common.Collections.map;
  */
 public class OpenAPITemplateManager {
     private freemarker.template.Configuration config;
-    public OpenAPITemplateManager() {
+
+    private String apiLocation;
+    public OpenAPITemplateManager(String apiLocation) throws TemplateException {
         config = new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_21);
         config.setObjectWrapper(new DefaultObjectWrapper(freemarker.template.Configuration.VERSION_2_3_21));
         config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
         config.setSharedVariable("html", new HTMLTag());
+        this.apiLocation = apiLocation;
+
     }
 
-    //exists for tests only
-    public String process(File templateFile) throws IOException, TemplateException {
-        return this.process(new String(Util.read(templateFile)));
-    }
 
-    public String process( String template) throws IOException, TemplateException {
+    public String process( String templateContent) throws IOException, TemplateException {
         StringWriter stringWriter = new StringWriter();
-        Template pageTemplate = new Template("t", template, config);
-        pageTemplate.process(map(), stringWriter);
+        Template pageTemplate = new Template("t", templateContent, config);
+        pageTemplate.process(map("apiLocation", apiLocation), stringWriter);
         return HTML.compress(stringWriter.toString());
     }
 }

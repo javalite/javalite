@@ -185,11 +185,12 @@ public class EndpointFinderSpec {
 
     @Test
     public void shouldFindCustomRoutesForPetStore() throws TemplateException, IOException {
+        String apiLocation = "src/test/open-api/";
         EndpointFinder endpointFinder = new EndpointFinder("app.config.RouteConfigPetStore", this.getClass().getClassLoader());
-        endpointFinder.setApiLocation("src/test/open-api");
+        endpointFinder.setApiLocation(apiLocation);
 
         Generator generator = new Generator();
-        String generated = generator.generate("src/test/open-api/base.json", endpointFinder, Format.JSON);
+        String generated = generator.generate(apiLocation, "base.json", endpointFinder, Format.JSON);
 
         JSONMap jsonMap = JSONHelper.toJSONMap(generated);
         JSONMap paths = jsonMap.getMap("paths");
@@ -212,11 +213,13 @@ public class EndpointFinderSpec {
     @Test
     public void should_find_routes_for_restful_controllers() throws TemplateException, IOException {
 
+        String apiLocation = "src/test/open-api3";
+
         EndpointFinder endpointFinder = new EndpointFinder("app.config.RouteConfig5", this.getClass().getClassLoader());
-        endpointFinder.setApiLocation("src/test/open-api3");
+        endpointFinder.setApiLocation(apiLocation);
 
         Generator generator = new Generator();
-        String generated = generator.generate("src/test/open-api3/base.json", endpointFinder, Format.JSON);
+        String generated = generator.generate(apiLocation, "base.json", endpointFinder, Format.JSON);
 
         JSONMap jsonMap = JSONHelper.toJSONMap(generated);
         JSONMap paths = jsonMap.getMap("paths");

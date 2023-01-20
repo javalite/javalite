@@ -6,15 +6,16 @@ import org.javalite.activeweb.Format;
 import org.javalite.activeweb.OpenAPITemplateManager;
 import org.javalite.common.Util;
 
+import java.io.File;
 import java.io.IOException;
 
 
 public class Generator {
 
-    public  String generate(String templateFile, EndpointFinder endpointFinder,  Format format) throws TemplateException, IOException {
-        String templateContent = Util.readFile(templateFile);
+    public  String generate(String apiLocation, String templateFile, EndpointFinder endpointFinder,  Format format) throws TemplateException, IOException {
+        String templateContent = Util.readFile(new File(apiLocation, templateFile));
         String content = endpointFinder.getOpenAPIDocs(templateContent, format);
-        OpenAPITemplateManager m = new OpenAPITemplateManager();
+        OpenAPITemplateManager m = new OpenAPITemplateManager(apiLocation);
         return m.process(content);
     }
 }

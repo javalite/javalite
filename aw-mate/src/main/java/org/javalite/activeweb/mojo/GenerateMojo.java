@@ -84,7 +84,7 @@ public class GenerateMojo extends AbstractMojo {
             Generator generator = new Generator();
             EndpointFinder endpointFinder = new EndpointFinder(getCombinedClassLoader(project));
             endpointFinder.setApiLocation(apiLocation);
-            String mergedContent = generator.generate(templateFile, endpointFinder, localFormat);
+            String mergedContent = generator.generate(apiLocation, templateFile, endpointFinder, localFormat);
             Files.writeString(Paths.get(targetFile), mergedContent);
             getLog().info("Output saved to: " + targetFile);
         } catch (Exception e) {
