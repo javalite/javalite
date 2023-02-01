@@ -170,7 +170,7 @@ import static org.javalite.common.Util.blank;
  *  Use a special attribute "data", whose value will be added to the resulting tag verbatim.
  *
  *<pre>
- &lt;@link_to data="data-greeting='hola' data-bye='astalavista'" ...  &gt;
+ &lt;@link_to data="data-greeting='hola' data-bye='hasta la vista'" ...  &gt;
  *</pre>
 
  *
