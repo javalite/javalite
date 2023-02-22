@@ -94,7 +94,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
 
         User u = User.findById(1);
         String json = u.toJson(true, "email", "last_name");
-        JSONHelper.toJSONString(json); // validate
+        JSONHelper.toJSON(json); // validate
         the(json).shouldBeEqual("{\n" +
                 "  \"email\":\"mmonroe@yahoo.com\",\n" +
                 "  \"last_name\":\"Monroe\"\n" +
@@ -107,7 +107,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
         LazyList<User> personList = User.findAll().orderBy("id").include(Address.class);
 
         String json = personList.toJson(false);
-        JSONHelper.toJSONString(json); // validate
+        JSONHelper.toJSON(json); // validate
     }
 
     @Test
@@ -149,7 +149,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
         String json = p.toJson(true);
 
         @SuppressWarnings("unchecked")
-        Map<String, String> map = JSONHelper.toMap(json);
+        var map = JSONHelper.toMap(json);
         LocalDateTime modelLDT  = p.getLocalDateTime("created_at");
         LocalDateTime mapLDT = Convert.toLocalDateTime(map.get("created_at"));
 
@@ -176,7 +176,7 @@ public class ToJsonSpec extends ActiveJDBCTest {
         a.add(Tag.create("content", "orm"));
         LazyList<Article> articles = Article.where("title = ?", "ActiveJDBC polymorphic associations").include(Tag.class, Comment.class);
 
-        Map[] maps = JSONHelper.toMaps(articles.toJson(true));
+        Map[] maps = JSONHelper.toList(articles.toJson(true)).getMaps();
 
         the(maps.length).shouldBeEqual(1);
         Map article = maps[0];

@@ -30,19 +30,20 @@ public class JSONListSpec {
     public void shouldFindMap() {
         String json = """
                 [
-                 {"name": "John"}
+                 {"name": "John"}, 2
                 ]
                 """;
 
         JSONList list = new JSONList(json);
         the(list.get(0)).shouldBeA(Map.class);
         the(list.getMap(0).get("name")).shouldBeEqual("John");
+        the(list.getMap(1)).shouldBeNull();
     }
 
 
     @Test
     public void shouldFindDeepList() {
-        JSONMap jsonMap = new JSONMap(JSONHelper.toMap(JSON));
+        JSONMap jsonMap = JSONHelper.toMap(JSON);
         JSONList glossList = jsonMap.getList("glossary.GlossDiv.GlossMap.GlossEntry.GlossDef.GlossSeeAlso");
 
         the(glossList.size()).shouldBeEqual(2);

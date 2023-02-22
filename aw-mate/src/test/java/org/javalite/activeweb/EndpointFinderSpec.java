@@ -36,7 +36,7 @@ public class EndpointFinderSpec {
         endpointFinder.setApiLocation("src/test/open-api");
 
         String formattedJSONString = endpointFinder.getOpenAPIDocs(BASE_TEMPLATE, Format.JSON);
-        JSONMap apiMap= JSONHelper.toJSONMap(formattedJSONString);
+        JSONMap apiMap= JSONHelper.toMap(formattedJSONString);
         JSONMap paths = apiMap.getMap("paths");
         the(paths.size()).shouldBeEqual(3);
         the(paths.get("/custom.post.summary")).shouldBeEqual("Show API version details - CustomController#index - @POST annotation");
@@ -57,7 +57,7 @@ public class EndpointFinderSpec {
         endpointFinder.setApiLocation("src/test/open-api2");
 
         String formattedJSONString = endpointFinder.getOpenAPIDocs(BASE_TEMPLATE, Format.JSON);
-        JSONMap apiMap= JSONHelper.toJSONMap(formattedJSONString);
+        JSONMap apiMap= JSONHelper.toMap(formattedJSONString);
         JSONMap paths = apiMap.getMap("paths");
         the(paths.keySet().size()).shouldBeEqual(19);
 
@@ -104,7 +104,7 @@ public class EndpointFinderSpec {
 
         String formattedJSONString = endpointFinder.getOpenAPIDocs(BASE_TEMPLATE, Format.JSON);
 
-        JSONMap apiMap= JSONHelper.toJSONMap(formattedJSONString);
+        JSONMap apiMap= JSONHelper.toMap(formattedJSONString);
         JSONMap paths = apiMap.getMap("paths");
         the(paths.keySet().size()).shouldBeEqual(18);
 
@@ -192,7 +192,7 @@ public class EndpointFinderSpec {
         Generator generator = new Generator();
         String generated = generator.generate(apiLocation, "base.json", endpointFinder, Format.JSON);
 
-        JSONMap jsonMap = JSONHelper.toJSONMap(generated);
+        JSONMap jsonMap = JSONHelper.toMap(generated);
         JSONMap paths = jsonMap.getMap("paths");
 
         the(paths.size()).shouldEqual(3);

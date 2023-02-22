@@ -71,7 +71,7 @@ public class JSONBase extends ValidationSupport {
         this(JSONHelper.toMap(json));
     }
 
-    public JSONBase(Map  jsonMap) {
+    public JSONBase(Map<String, Object>  jsonMap) {
         this.jsonMap = new JSONMap(jsonMap);
     }
 
@@ -240,7 +240,7 @@ public class JSONBase extends ValidationSupport {
 
     @Override
     public String toString() {
-        return JSONHelper.toJSONString(this.jsonMap);
+        return JSONHelper.toJSON(this.jsonMap);
     }
 
     public JSONBase validateList(String pathToList){

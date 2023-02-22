@@ -62,6 +62,6 @@ public class Context {
      */
     public static String toJSON(){
         Map context = contextTL.get();
-        return context == null || context.isEmpty() ? null : JSONHelper.toJSONString(context);
+        return context == null || context.isEmpty() ? null : JSONHelper.toJSON(context);
     }
 }

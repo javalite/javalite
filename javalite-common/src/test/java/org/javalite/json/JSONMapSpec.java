@@ -35,7 +35,7 @@ public class JSONMapSpec {
 
     @Test
     public void shouldFindImmediateChild() {
-        JSONMap jsonMap = JSONHelper.toJSONMap(JSON);
+        JSONMap jsonMap = JSONHelper.toMap(JSON);
         Map glossaryMap = (Map) jsonMap.get("glossary");
         the(glossaryMap.keySet().size()).shouldBeEqual(2);
         the(glossaryMap).shouldContain("title");
@@ -43,7 +43,7 @@ public class JSONMapSpec {
 
     @Test
     public void shouldFindDeepMap() {
-        JSONMap jsonMap = JSONHelper.toJSONMap(JSON);
+        JSONMap jsonMap = JSONHelper.toMap(JSON);
         Map glossMap = jsonMap.getMap("glossary.GlossDiv.GlossMap");
         the(glossMap.keySet().size()).shouldBeEqual(1);
         the(glossMap).shouldContain("GlossEntry");
@@ -52,14 +52,14 @@ public class JSONMapSpec {
 
     @Test
     public void shouldFindDeepAttribute() {
-        JSONMap jsonMap = JSONHelper.toJSONMap(JSON);
+        JSONMap jsonMap = JSONHelper.toMap(JSON);
         String title = jsonMap.getString("glossary.GlossDiv.GlossMap.GlossEntry.Acronym");
         the(title).shouldBeEqual("SGML");
     }
 
     @Test
     public void shouldFindDeepList() {
-        JSONMap jsonMap = JSONHelper.toJSONMap(JSON);
+        JSONMap jsonMap = JSONHelper.toMap(JSON);
         JSONList seeAlso = jsonMap.getList("glossary.GlossDiv.GlossMap.GlossEntry.GlossDef.GlossSeeAlso");
         the(seeAlso.size()).shouldBeEqual(2);
         the(seeAlso.get(0)).shouldBeEqual("GML");
@@ -68,7 +68,7 @@ public class JSONMapSpec {
 
     @Test
     public void shouldFindDeepInt() {
-        JSONMap jsonMap = JSONHelper.toJSONMap(JSON);
+        JSONMap jsonMap = JSONHelper.toMap(JSON);
         Integer items = jsonMap.getInteger("glossary.GlossDiv.GlossMap.GlossEntry.ItemsNumber");
         the(items).shouldBeEqual(123);
     }

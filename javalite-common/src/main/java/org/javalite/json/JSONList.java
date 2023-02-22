@@ -20,10 +20,7 @@ package org.javalite.json;
 import org.javalite.common.Convert;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Represents a <code>java.util.List</code> as an object  that fronts a chunk of a JSON object.
@@ -50,7 +47,7 @@ public class JSONList extends ArrayList {
         super(JSONHelper.toList(jsonList));
     }
 
-    public JSONList(){}
+    public JSONList() { }
 
     /**
      * Returns a JSONMap at a provided index. If the object is not a map, it  will throw an exception.
@@ -61,18 +58,17 @@ public class JSONList extends ArrayList {
      * @return instance of <code>JSONMap</code> at a specified index.
      */
     public JSONMap getMap(int index){
-        Object map = super.get(index);
-        if(map == null){
+        var o = super.get(index);
+        if (o == null) {
             return null;
-        }else if(map instanceof Map){
-            if(map instanceof  JSONMap){
-                return (JSONMap) map;
-            }else{
-                return new JSONMap((Map) map);
-            }
-        }else {
-            throw new JSONParseException("Object at index " + index + " is not a Map.");
         }
+        if (o instanceof Map<?, ?> map) {
+            if (o instanceof  JSONMap) {
+                return (JSONMap) map;
+            }
+            return new JSONMap(map);
+        }
+        return null;
     }
 
     /**
@@ -94,7 +90,7 @@ public class JSONList extends ArrayList {
                 return new JSONList((List) list);
             }
         }else{
-            throw new JSONParseException("Object at index " + index + " is not a List.");
+            throw new JSONParseException("Object at index " + index + " is not a List."); //TODO ????
         }
     }
 
@@ -140,7 +136,7 @@ public class JSONList extends ArrayList {
      */
     @Override
     public String toString() {
-        return JSONHelper.toJSONString(this);
+        return JSONHelper.toJSON(this);
     }
 
     /**
@@ -149,7 +145,37 @@ public class JSONList extends ArrayList {
      * @return a JSON representation  of this object
      */
     public String toJSON(boolean pretty){
-        return JSONHelper.toJSONString(this,  pretty);
+        return JSONHelper.toJSON(this,  pretty);
+    }
+
+    /**
+     *
+     * @return
+     */
+    public JSONMap[] getMaps() {
+        var maps = new ArrayList<JSONMap>(size());
+        for (int i = 0; i < size(); i++) {
+            var map = getMap(i);
+            if (map != null) {
+                maps.add(map);
+            }
+        }
+        return maps.toArray(new JSONMap[0]);
+    }
+
+    /**
+     *
+     * @return
+     */
+    public JSONList[] getLists() {
+        var lists = new ArrayList<JSONList>(size());
+        for (int i = 0; i < size(); i++) {
+            var list = getList(i);
+            if (list != null) {
+                lists.add(list);
+            }
+        }
+        return lists.toArray(new JSONList[0]);
     }
 
     /**

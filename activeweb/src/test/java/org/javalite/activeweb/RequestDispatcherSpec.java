@@ -249,9 +249,9 @@ public class RequestDispatcherSpec extends RequestSpec {
         // we need this because on different OSes log lines may come out or order!
         Map message = null;
         for (String line : lines) {
-            Map log = JSONHelper.toMap(line);
+            var log = JSONHelper.toMap(line);
             try {
-                message = (Map) log.get("message");
+                message = log.getMap("message");
             }catch(ClassCastException ignore){}
         }
 

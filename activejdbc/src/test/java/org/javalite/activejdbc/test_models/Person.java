@@ -37,6 +37,9 @@ public class Person extends Model {
         convertWith(new StringToTimestampConverter("yyyy-MM-dd"), "graduation_date");
     }
 
+    public Person() {
+    }
+
     @Override
     public void beforeClosingTag(StringBuilder sb, boolean pretty, String indent, String... attributeNames) {
         if (pretty) {

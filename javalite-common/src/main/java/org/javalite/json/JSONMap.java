@@ -30,13 +30,14 @@ public class JSONMap extends HashMap<String, Object> {
     }
 
     /**
-     * Creates a ne instance from the array,
+     * Creates an instance from the array,
      * where odd arguments are map keys and the even are values.
      *
      * @param keysAndValues keys and
      */
-    public JSONMap(String ... keysAndValues){
+    public JSONMap(String key, Object value, Object... keysAndValues){
         super(map(keysAndValues));
+        put(key, value);
     }
 
     /**
@@ -48,7 +49,7 @@ public class JSONMap extends HashMap<String, Object> {
         super(JSONHelper.toJSONMap(jsonString));
     }
 
-    public JSONMap(){}
+    public JSONMap() {}
 
     /**
      * Returns a <code>JSONList</code> for a list name. It is expected that this list is an immediate child of this map.
@@ -280,7 +281,7 @@ public class JSONMap extends HashMap<String, Object> {
      */
     @Override
     public String toString() {
-        return JSONHelper.toJSONString(this);
+        return JSONHelper.toJSON(this);
     }
 
 
@@ -290,13 +291,13 @@ public class JSONMap extends HashMap<String, Object> {
      * @return a JSON representation  of this object
      */
     public String toJSON(boolean pretty){
-        return JSONHelper.toJSONString(this, pretty);
+        return JSONHelper.toJSON(this, pretty);
     }
 
     /**
      * @return a JSON representation  of this object
      */
     public String toJSON(){
-        return JSONHelper.toJSONString(this, false);
+        return JSONHelper.toJSON(this, false);
     }
 }

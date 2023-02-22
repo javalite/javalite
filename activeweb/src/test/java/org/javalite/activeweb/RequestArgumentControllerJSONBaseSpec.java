@@ -1,6 +1,5 @@
 package org.javalite.activeweb;
 
-import org.javalite.common.Util;
 import org.javalite.json.JSONHelper;
 import org.junit.Test;
 

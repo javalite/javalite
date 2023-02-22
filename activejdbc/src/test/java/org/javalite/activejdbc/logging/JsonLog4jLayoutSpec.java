@@ -62,13 +62,13 @@ public class JsonLog4jLayoutSpec  extends ActiveJDBCTest{
         List<String> lines = getLogLines();
         the(lines.size()).shouldBeEqual(2);
         String logLine1 = lines.get(0);
-        Map log1 = JSONHelper.toMap(logLine1);
+        var log1 = JSONHelper.toMap(logLine1);
         a(log1.get("message")).shouldBeEqual("hello");
         a(log1.get("logger")).shouldBeEqual(getClass().getName());
         a(log1.get("level")).shouldBeEqual("INFO");
 
         String logLine2 = lines.get(1);
-        Map log2 = JSONHelper.toMap(logLine2);
+        var log2 = JSONHelper.toMap(logLine2);
         a(log2.get("message")).shouldBeEqual("world");
         a(log2.get("level")).shouldBeEqual("ERROR");
     }
@@ -94,8 +94,8 @@ public class JsonLog4jLayoutSpec  extends ActiveJDBCTest{
         String json = getLastLine();
 
         System.err.println(json);
-        Map logMap = JSONHelper.toMap(json);
-        Map message = (Map) logMap.get("message");
+        var logMap = JSONHelper.toMap(json);
+        var message = (Map) logMap.get("message");
 
         a(message.get("sql")).shouldContain("SELECT ");
         // on MSSQL: SELECT TOP 1 * FROM animals WHERE animal_id = ?
@@ -106,7 +106,7 @@ public class JsonLog4jLayoutSpec  extends ActiveJDBCTest{
         a(params.size()).shouldBeEqual(1);
         a(params.get(0)).shouldBeEqual(1);
 
-        Map context = (Map) logMap.get("context");
+        var context = (Map) logMap.get("context");
 
         the((context.get("user"))).shouldBeEqual("joeschmoe");
         the((context.get("user_id"))).shouldBeEqual("234");
@@ -121,14 +121,14 @@ public class JsonLog4jLayoutSpec  extends ActiveJDBCTest{
         Animal.findAll().size();
 
         String json = getLastLine();
-        Map logMap = JSONHelper.toMap(json);
+        var logMap = JSONHelper.toMap(json);
 
-        Map message = (Map) logMap.get("message");
+        var message = (Map) logMap.get("message");
 
         List params = (List) message.get("params");
         a(message.get("sql")).shouldBeEqual("SELECT * FROM animals");
         a(params.size()).shouldBeEqual(0);
-        Map context = (Map) logMap.get("context");
+        var context = (Map) logMap.get("context");
         the((context.get("user"))).shouldBeEqual("joeschmoe");
         the((context.get("user_id"))).shouldBeEqual("234");
         the((context.get("email"))).shouldBeEqual("joe@schmoe.me");
@@ -141,12 +141,12 @@ public class JsonLog4jLayoutSpec  extends ActiveJDBCTest{
         Animal.findAll().size();
 
         String json = getLastLine();
-        Map logMap = JSONHelper.toMap(json);
-        Map message = (Map) logMap.get("message");
+        var logMap = JSONHelper.toMap(json);
+        var message = (Map) logMap.get("message");
         List params = (List) message.get("params");
         a(message.get("sql")).shouldBeEqual("SELECT * FROM animals");
         a(params.size()).shouldBeEqual(0);
-        Map context = (Map) logMap.get("context");
+        var context = (Map) logMap.get("context");
         a(context).shouldBeNull();
     }
 
