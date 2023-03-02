@@ -221,7 +221,7 @@ public class EndpointFinderSpec {
         Generator generator = new Generator();
         String generated = generator.generate(apiLocation, "base.json", endpointFinder, Format.JSON);
 
-        JSONMap jsonMap = JSONHelper.toJSONMap(generated);
+        JSONMap jsonMap = JSONHelper.toMap(generated);
         JSONMap paths = jsonMap.getMap("paths");
 
         the(paths.get("/pet_rest.post.responses.200.description")).shouldEqual("Creates a pet");

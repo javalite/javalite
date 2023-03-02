@@ -79,4 +79,33 @@ public class JSONMapSpec {
         JSONMap jsonMap = new JSONMap("name", "John");
         the(jsonMap.get("name")).shouldBeEqual("John");
     }
+
+    @Test
+    public void shouldGetValueIfKeyWithDot() {
+        JSONMap jsonMap = new JSONMap("name.first", "John");
+        System.out.println(jsonMap.toJSON());
+        System.out.println(jsonMap.get("name.first"));
+
+    }
+
+    @Test
+    public void shouldPutByPath() {
+        var m = new JSONMap();
+        m.put("key1", "value1");
+        m.put("key2.subkey1", "value2");
+        m.put("key2.subkey2", "value3", true);
+        m.put("key2.subkey4", "value5", true);
+        m.put("key2.subkey3.subkey4", "value4", true);
+        m.put("key2.subkey3.subkey4.subkey5", "value6", true);
+        m.put("key2.subkey3.subkey5.subkey6.subkey7", "value7", true);
+        the(m.get("key1")).shouldEqual("value1");
+        the(m.get("key2.subkey1")).shouldEqual("value2");
+        the(m.get("key2.subkey3.subkey5.subkey6.subkey7")).shouldEqual("value7");
+        the(m.get("key2.subkey3.subkey5.subkey6.subkey7")).shouldNotBeEqual("value8");
+        the(m.get("key2.subkey3.subkey5.subkey7")).shouldBeNull();
+        the(m.get("key2.subkey3") instanceof Map).shouldBeTrue();
+        the(m.get("key2.subkey3.subkey5") instanceof Map).shouldBeTrue();
+        the(m.get("key2.subkey3.subkey5.subkey6") instanceof Map).shouldBeTrue();
+        the(m.get("key2.subkey3.subkey4.subkey5")).shouldBeEqual("value6");
+    }
 }

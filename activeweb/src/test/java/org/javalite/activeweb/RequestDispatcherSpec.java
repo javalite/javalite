@@ -18,6 +18,7 @@ package org.javalite.activeweb;
 
 import org.javalite.json.JSONHelper;
 import org.javalite.common.Util;
+import org.javalite.json.JSONParseException;
 import org.javalite.test.SystemStreamUtil;
 import org.javalite.test.XPathHelper;
 import org.junit.After;
@@ -252,7 +253,7 @@ public class RequestDispatcherSpec extends RequestSpec {
             var log = JSONHelper.toMap(line);
             try {
                 message = log.getMap("message");
-            }catch(ClassCastException ignore){}
+            }catch(JSONParseException ignore){}
         }
 
         if(message == null){

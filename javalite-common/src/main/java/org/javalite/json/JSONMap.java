@@ -25,8 +25,18 @@ import static org.javalite.common.Collections.map;
 
 public class JSONMap extends HashMap<String, Object> {
 
-    public JSONMap(Map map){
-        super(map);
+    public static final String KEY_DELIMITER = ".";
+    private static final String KEY_DELIMITER_REGEX = "\\.";
+
+    private static final int DEFAULT_CAPACITY = 11;
+
+    public JSONMap(Map<?, ?> map) {
+        super(map == null ? DEFAULT_CAPACITY : map.size());
+        if (map != null) {
+            for (Entry<?, ?> entry : map.entrySet()) {
+                put(entry.getKey().toString(), entry.getValue());
+            }
+        }
     }
 
     /**
@@ -35,7 +45,7 @@ public class JSONMap extends HashMap<String, Object> {
      *
      * @param keysAndValues keys and
      */
-    public JSONMap(String key, Object value, Object... keysAndValues){
+    public JSONMap(String key, Object value, Object... keysAndValues) {
         super(map(keysAndValues));
         put(key, value);
     }
@@ -45,56 +55,11 @@ public class JSONMap extends HashMap<String, Object> {
      *
      * @param jsonString JSON Object document as string.
      */
-    public JSONMap(String jsonString){
-        super(JSONHelper.toJSONMap(jsonString));
+    public JSONMap(String jsonString) {
+        super(JSONHelper.toMap(jsonString));
     }
 
-    public JSONMap() {}
-
-    /**
-     * Returns a <code>JSONList</code> for a list name. It is expected that this list is an immediate child of this map.
-     * If the object is not a list, the method will throw an exception.
-     * The object is similar to that of <code>Map.get("name")</code> but will also convert the returned value to a
-     * JSONList so you could go further down the JSON hierarchy.
-     *
-     * @param listName name (map key) of the list object in this map.
-     *
-     * @throws JSONParseException;
-     * @return instance of <code>JSONList</code> for a name
-     */
-    private JSONList getChildList(String listName){
-        if(!containsKey(listName)){
-            return null;
-        }
-        Object attr = get(listName);
-        if(attr instanceof List){
-            return new JSONList((List) attr);
-        }else {
-            throw new JSONParseException("Object named" + listName + " is not a List.");
-        }
-
-    }
-
-    /**
-     * Returns a <code>JSONMap</code> for a name. It is expected that this map is an immediate child of the current map.
-     * If the object is not a map, the method will throw an exception.
-     * The object is similar to that of <code>Map.get("name")</code> but will also convert the returned value to a
-     * JSONList so you could go further down the JSON hierarchy.
-     *
-     * @param attribute name (map key).
-     *
-     * @throws JSONParseException;
-     * @return instance of <code>JSONMap</code> for a name
-     */
-    private JSONMap getChildMap(String attribute){
-        Object map = super.get(attribute);
-        if(map == null){
-            return null;
-        }else if(map instanceof Map){
-            return new JSONMap((Map) map);
-        }else {
-            throw new JSONParseException("Object named: " + attribute + " is not a Map.");
-        }
+    public JSONMap() {
     }
 
     /**
@@ -122,29 +87,67 @@ public class JSONMap extends HashMap<String, Object> {
      */
     @Override
     public Object get(Object attributePath) {
-        if (!attributePath.toString().contains(".")) {
-            return super.get(attributePath);
-        } else {
-            StringTokenizer st = new StringTokenizer(attributePath.toString(), ".");
-            Object  parent = this;
-            Object  child = null;
-
-            while (st.hasMoreTokens()) {
-                String attr = st.nextToken();
-                if(parent instanceof  Map){
-                    child = ((Map)parent).get(attr);
+        var key = attributePath == null ? null : attributePath.toString();
+        if (containsKey(key) || key == null) {
+            return super.get(key);
+        } else if (key.contains(KEY_DELIMITER)) {
+            var keys = key.split(KEY_DELIMITER_REGEX);
+            Map parent = this;
+            Object child;
+            for (int i = 0; i < keys.length - 1; i++) {
+                var k = keys[i];
+                key = key.substring(k.length() + 1);
+                child = parent.get(k);
+                if (child instanceof Map map) {
+                    parent = map;
+                    if (parent.containsKey(key)) {
+                        return parent.get(key);
+                    }
+                } else {
+                    parent = null;
+                    break;
                 }
-
-                if(child !=  null && !st.hasMoreTokens()){
-                    return child;
-                }else if(child != null && st.hasMoreTokens() && child instanceof Map){
-                    parent = new JSONMap((Map) child);
-                }else if(child != null && !st.hasMoreTokens()){
-                    return child;
-                }
+            }
+            if (parent != null) {
+                parent.get(key);
             }
         }
         return null;
+    }
+
+
+    @Override
+    public Object put(String key, Object value) {
+        return put(key, value, false);
+    }
+
+    public Object put(String key, Object value, boolean create) {
+        if (key != null && key.contains(KEY_DELIMITER)) {
+            String[] keys = key.split(KEY_DELIMITER_REGEX);
+            Map parent = this;
+            Object child;
+            var pos = 0;
+            for (int i = 0; i < keys.length - 1; i++) {
+                var k = keys[i];
+                child = parent.get(k);
+                if (child == null) {
+                    if (create && i < keys.length - 1) {
+                        child = new JSONMap();
+                        parent.put(k, child);
+                    }
+                }
+                if (child instanceof Map map) {
+                    parent = map;
+                } else {
+                    break;
+                }
+                pos += k.length() + 1;
+            }
+            if (parent != this) {
+                return parent.put(key.substring(pos), value);
+            }
+        }
+        return super.put(key, value);
     }
 
     /**
@@ -174,11 +177,11 @@ public class JSONMap extends HashMap<String, Object> {
 
         Object o = get(attributePath);
 
-        if(o instanceof Map){
-            return new JSONMap((Map) o);
-        }else if(o != null){
-            throw  new JSONParseException(attributePath + " is not a Map");
-        }else {
+        if (o instanceof Map map) {
+            return map instanceof JSONMap jsonMap ? jsonMap : new JSONMap(map);
+        } else if (o != null) {
+            throw new JSONParseException(attributePath + " is not a Map");
+        } else {
             return null;
         }
     }
@@ -202,12 +205,12 @@ public class JSONMap extends HashMap<String, Object> {
 
         Object o = get(attributePath);
 
-        if(o instanceof List){
-            return new JSONList((List) o);
-        }else if(o != null){
+        if (o instanceof List) {
+            return new JSONList((List<?>) o);
+        } else if (o != null) {
 
             throw new JSONParseException(attributePath + " is not a List");
-        }else{
+        } else {
             return null;
         }
     }
@@ -216,68 +219,68 @@ public class JSONMap extends HashMap<String, Object> {
     /**
      * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
      */
-    public Boolean getBoolean(String attributePath){
+    public Boolean getBoolean(String attributePath) {
         return Convert.toBoolean(get(attributePath));
     }
 
     /**
      * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
      */
-    public BigDecimal getBigDecimal(String attributePath){
+    public BigDecimal getBigDecimal(String attributePath) {
         return Convert.toBigDecimal(get(attributePath));
     }
 
     /**
      * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
      */
-    public Date getDate(String attributePath){
+    public Date getDate(String attributePath) {
         return Convert.toSqlDate(get(attributePath));
     }
 
     /**
      * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
      */
-    public Double getDouble(String attributePath){
+    public Double getDouble(String attributePath) {
         return Convert.toDouble(get(attributePath));
     }
 
     /**
      * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
      */
-    public Float getFloat(String attributePath){
+    public Float getFloat(String attributePath) {
         return Convert.toFloat(get(attributePath));
     }
 
     /**
      * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
      */
-    public Integer getInteger(String attributePath){
+    public Integer getInteger(String attributePath) {
         return Convert.toInteger(get(attributePath));
     }
 
     /**
      * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
      */
-    public Long getLong(String attributePath){
+    public Long getLong(String attributePath) {
         return Convert.toLong(get(attributePath));
     }
 
     /**
      * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
      */
-    public Short getShort(String attributePath){
+    public Short getShort(String attributePath) {
         return Convert.toShort(get(attributePath));
     }
 
     /**
      * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
      */
-    public String getString(String attributePath){
+    public String getString(String attributePath) {
         return Convert.toString(get(attributePath));
     }
 
     /**
-     * @return  a JSON representation  of this object
+     * @return a JSON representation  of this object
      */
     @Override
     public String toString() {
@@ -287,17 +290,16 @@ public class JSONMap extends HashMap<String, Object> {
 
     /**
      * @param pretty - true for formatted JSON.
-     *
      * @return a JSON representation  of this object
      */
-    public String toJSON(boolean pretty){
+    public String toJSON(boolean pretty) {
         return JSONHelper.toJSON(this, pretty);
     }
 
     /**
      * @return a JSON representation  of this object
      */
-    public String toJSON(){
+    public String toJSON() {
         return JSONHelper.toJSON(this, false);
     }
 }

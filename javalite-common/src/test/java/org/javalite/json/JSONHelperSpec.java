@@ -200,7 +200,7 @@ public class JSONHelperSpec {
 
     @Test
     public void shouldSerializeJavaRecord() {
-        Map<String, Object> hm = JSONHelper.toMap(JSONHelper.toJSON(new Human("Joe", "Shmoe")));
+        var hm = JSONHelper.toMap(JSONHelper.toJSON(new Human("Joe", "Shmoe")));
         the(hm.get("firstName")).shouldBeEqual("Joe");
         the(hm.get("lastName")).shouldBeEqual("Shmoe");
     }

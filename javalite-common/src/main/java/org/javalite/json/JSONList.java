@@ -63,8 +63,8 @@ public class JSONList extends ArrayList {
             return null;
         }
         if (o instanceof Map<?, ?> map) {
-            if (o instanceof  JSONMap) {
-                return (JSONMap) map;
+            if (o instanceof  JSONMap jsonMap) {
+                return jsonMap;
             }
             return new JSONMap(map);
         }

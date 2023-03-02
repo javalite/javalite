@@ -29,7 +29,7 @@ public class RequestArgumentControllerJSONBaseSpec extends RequestSpec {
         request.setContent(university.getBytes());
         dispatcher.doFilter(request, response, filterChain);
         String result = response.getContentAsString();
-        Map controllerResponse = JSONHelper.toMap(result);
+        var controllerResponse = JSONHelper.toMap(result);
         the(controllerResponse).shouldContain("university.year");
         the(controllerResponse.get("university.year")).shouldBeEqual("value is missing");
     }

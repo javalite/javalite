@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * @author Igor Polevoy
  */
-public class IncludesTest extends ActiveJDBCTest{
+public class IncludesTest extends ActiveJDBCTest {
 
     @Test
     public void shouldBeAbleToIncludeParentOne2Many() {

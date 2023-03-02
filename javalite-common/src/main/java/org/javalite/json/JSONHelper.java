@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.util.StdDateFormat;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.javalite.common.Collections.map;
@@ -59,7 +58,7 @@ public class JSONHelper {
      */
     public static JSONMap toMap(String json) {
         try {
-            return new JSONMap(objectMapper.readValue(json, Map.class));
+            return objectMapper.readValue(json, JSONMap.class);
         } catch (Exception e) {
             throw new JSONParseException("Failed to parse JSON string into a JSONMap",e);
         }
@@ -73,26 +72,11 @@ public class JSONHelper {
      */
     public static JSONList toList(String json) {
         try {
-            return new JSONList(objectMapper.readValue(json, List.class));
+            return objectMapper.readValue(json, JSONList.class);
         } catch (Exception e) {
             throw new JSONParseException("Failed to parse JSON string into a JSONList",e);
         }
     }
-
-//    /**
-//     * Convert JSON Array to Java array of maps.
-//     *
-//     * @param json JSON array
-//     * @return Java array.
-//     */
-//    @SuppressWarnings("unchecked")
-//    public static JSONMap<String, Object>[] toJSONMaps(String json) {
-//        try {
-//            return objectMapper.readValue(json, Map[].class);
-//        } catch (Exception e) {
-//            throw new JSONParseException("Failed to parse JSON string into a Java Maps",e);
-//        }
-//    }
 
     /**
      * Convert Java object to a JSON string.

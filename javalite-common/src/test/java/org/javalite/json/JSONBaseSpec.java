@@ -48,7 +48,7 @@ public class JSONBaseSpec {
                 }
                 """;
 
-        JSONBase json = new JSONBase(JSONHelper.toMap(jsonString));
+        JSONBase json = new JSONBase(jsonString);
 
         the(json.get("university.students")).shouldBeA(List.class);
         JSONList list = json.getList("university.students");

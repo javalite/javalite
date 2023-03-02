@@ -60,7 +60,7 @@ import java.util.Map;
  */
 public class JSONBase extends ValidationSupport {
 
-    private JSONMap jsonMap;
+    private final JSONMap jsonMap;
 
     /**
      * Parses a JSON document from a string and creates an internal structure.
@@ -68,11 +68,11 @@ public class JSONBase extends ValidationSupport {
      * @param json JSON string.
      */
     public JSONBase(String json) {
-        this(JSONHelper.toMap(json));
+        this.jsonMap = JSONHelper.toMap(json);
     }
 
-    public JSONBase(Map<String, Object>  jsonMap) {
-        this.jsonMap = new JSONMap(jsonMap);
+    public JSONBase(Map<?, ?>  map) {
+        this.jsonMap = map instanceof JSONMap jm ? jm : new JSONMap(map);
     }
 
 
