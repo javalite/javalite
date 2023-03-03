@@ -30,6 +30,16 @@ public class JSONMap extends HashMap<String, Object> {
 
     private static final int DEFAULT_CAPACITY = 11;
 
+    private record Value(String fullKey, String lastKey, Map parent, Object value, boolean exists) {
+    }
+
+    private final Value NULL = new Value(null, null, this, null, false);
+
+    /**
+     * Creates an instance from the map.
+     * All keys will be converted to strings.
+     * @param map source map
+     */
     public JSONMap(Map<?, ?> map) {
         super(map == null ? DEFAULT_CAPACITY : map.size());
         if (map != null) {
@@ -59,6 +69,9 @@ public class JSONMap extends HashMap<String, Object> {
         super(JSONHelper.toMap(jsonString));
     }
 
+    /**
+     * Default constructor.
+     */
     public JSONMap() {
     }
 
@@ -85,53 +98,51 @@ public class JSONMap extends HashMap<String, Object> {
      * @param attributePath accepts a dot-delimited format: "university.students.joe" where every entry except the last one  must be a map
      * @return an object from the depths of the JSON structure.
      */
-    @Override
-    public Object get(Object attributePath) {
-        var key = attributePath == null ? null : attributePath.toString();
-        if (containsKey(key) || key == null) {
-            return super.get(key);
-        } else if (key.contains(KEY_DELIMITER)) {
-            var keys = key.split(KEY_DELIMITER_REGEX);
-            Map parent = this;
-            Object child;
-            for (int i = 0; i < keys.length - 1; i++) {
-                var k = keys[i];
-                key = key.substring(k.length() + 1);
-                child = parent.get(k);
-                if (child instanceof Map map) {
-                    parent = map;
-                    if (parent.containsKey(key)) {
-                        return parent.get(key);
-                    }
-                } else {
-                    parent = null;
-                    break;
-                }
-            }
-            if (parent != null) {
-                parent.get(key);
-            }
+    public Object getBy(String attributePath) {
+        return find(attributePath).value;
+    }
+
+    /**
+     * Returns true if object exists.
+     * @param attributePath accepts a dot-delimited format: "university.students.joe" where every entry except the last one  must be a map
+     * @return true if exists
+     */
+    public boolean containsKeyBy(String attributePath) {
+        return find(attributePath).exists;
+    }
+
+
+    /**
+     * Put the object deep into the structure of the JSON document.
+     * @param attributePath accepts a dot-delimited format: "university.students.joe" where every entry except the last one  must be a map
+     * @param value value
+     * @return previous value
+     */
+    public Object putBy(String attributePath, Object value) {
+        return putBy(attributePath, value, false);
+    }
+
+    /**
+     * Put an object deep to the structure of a JSON document.
+     * @param attributePath accepts a dot-delimited format: "university.students.joe" where every entry except the last one  must be a map
+     * @param value value
+     * @param create create intermediate objects if true
+     * @return previous value
+     */
+    public Object putBy(String attributePath, Object value, boolean create) {
+        if (attributePath == null) {
+            return null;
         }
-        return null;
-    }
-
-
-    @Override
-    public Object put(String key, Object value) {
-        return put(key, value, false);
-    }
-
-    public Object put(String key, Object value, boolean create) {
-        if (key != null && key.contains(KEY_DELIMITER)) {
-            String[] keys = key.split(KEY_DELIMITER_REGEX);
+        if (attributePath.contains(KEY_DELIMITER)) {
+            var parts = attributePath.split(KEY_DELIMITER_REGEX);
             Map parent = this;
             Object child;
             var pos = 0;
-            for (int i = 0; i < keys.length - 1; i++) {
-                var k = keys[i];
+            for (int i = 0; i < parts.length - 1; i++) {
+                var k = parts[i];
                 child = parent.get(k);
                 if (child == null) {
-                    if (create && i < keys.length - 1) {
+                    if (create && i < parts.length - 1) {
                         child = new JSONMap();
                         parent.put(k, child);
                     }
@@ -144,10 +155,41 @@ public class JSONMap extends HashMap<String, Object> {
                 pos += k.length() + 1;
             }
             if (parent != this) {
-                return parent.put(key.substring(pos), value);
+                return parent.put(attributePath.substring(pos), value);
             }
         }
-        return super.put(key, value);
+        return super.put(attributePath, value);
+    }
+
+    private Value find(String key) {
+        if (key != null) {
+            if (super.containsKey(key)) {
+                return new Value(key, key, this, super.get(key), true);
+            } else if (key.contains(KEY_DELIMITER)) {
+                var parts = key.split(KEY_DELIMITER_REGEX);
+                Map parent = this;
+                Object child;
+                var sKey = key;
+                for (int i = 0; i < parts.length - 1; i++) {
+                    var k = parts[i];
+                    sKey = sKey.substring(k.length() + 1);
+                    child = parent.get(k);
+                    if (child instanceof Map map) {
+                        parent = map;
+                        if (parent.containsKey(sKey)) {
+                            return new Value(key, sKey, parent, parent.get(sKey), true);
+                        }
+                    } else {
+                        parent = null;
+                        break;
+                    }
+                }
+                if (parent != null) {
+                    return new Value(key, sKey, parent, parent.get(sKey), parent.containsKey(sKey));
+                }
+            }
+        }
+        return NULL;
     }
 
     /**
@@ -175,7 +217,7 @@ public class JSONMap extends HashMap<String, Object> {
      */
     public JSONMap getMap(String attributePath) {
 
-        Object o = get(attributePath);
+        Object o = getBy(attributePath);
 
         if (o instanceof Map map) {
             return map instanceof JSONMap jsonMap ? jsonMap : new JSONMap(map);
@@ -203,7 +245,7 @@ public class JSONMap extends HashMap<String, Object> {
      */
     public JSONList getList(String attributePath) {
 
-        Object o = get(attributePath);
+        Object o = getBy(attributePath);
 
         if (o instanceof List) {
             return new JSONList((List<?>) o);
@@ -220,63 +262,63 @@ public class JSONMap extends HashMap<String, Object> {
      * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
      */
     public Boolean getBoolean(String attributePath) {
-        return Convert.toBoolean(get(attributePath));
+        return Convert.toBoolean(getBy(attributePath));
     }
 
     /**
      * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
      */
     public BigDecimal getBigDecimal(String attributePath) {
-        return Convert.toBigDecimal(get(attributePath));
+        return Convert.toBigDecimal(getBy(attributePath));
     }
 
     /**
      * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
      */
     public Date getDate(String attributePath) {
-        return Convert.toSqlDate(get(attributePath));
+        return Convert.toSqlDate(getBy(attributePath));
     }
 
     /**
      * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
      */
     public Double getDouble(String attributePath) {
-        return Convert.toDouble(get(attributePath));
+        return Convert.toDouble(getBy(attributePath));
     }
 
     /**
      * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
      */
     public Float getFloat(String attributePath) {
-        return Convert.toFloat(get(attributePath));
+        return Convert.toFloat(getBy(attributePath));
     }
 
     /**
      * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
      */
     public Integer getInteger(String attributePath) {
-        return Convert.toInteger(get(attributePath));
+        return Convert.toInteger(getBy(attributePath));
     }
 
     /**
      * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
      */
     public Long getLong(String attributePath) {
-        return Convert.toLong(get(attributePath));
+        return Convert.toLong(getBy(attributePath));
     }
 
     /**
      * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
      */
     public Short getShort(String attributePath) {
-        return Convert.toShort(get(attributePath));
+        return Convert.toShort(getBy(attributePath));
     }
 
     /**
      * @param attributePath accepts a dot-delimited format: "university.students" where every entry must  be a map.
      */
     public String getString(String attributePath) {
-        return Convert.toString(get(attributePath));
+        return Convert.toString(getBy(attributePath));
     }
 
     /**
