@@ -45,11 +45,6 @@ public class JSONHelper {
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
     }
 
-    protected static ObjectMapper getObjectMapper() {
-        return objectMapper;
-    }
-
-
     /**
      * Convenience method to convert String to {@link JSONMap}.
      *
@@ -85,7 +80,29 @@ public class JSONHelper {
      * @return JSON string.
      */
     public static String toJSON(Object val) {
-        return toJSON(val, false);
+        if (val != null && val.getClass().isArray()) {
+            var namesAndValues = (Object[]) val;
+            if (isNameValuePairs(namesAndValues)) {
+                val = map(namesAndValues);
+            }
+        }
+        try {
+            return objectMapper.writeValueAsString(val);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static boolean isNameValuePairs(Object[] array) {
+        if (array.length > 1 && array.length % 2 == 0) {
+            for (int i = 0; i < array.length; i+=2) {
+                if (!(array[i] instanceof String)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -110,24 +127,25 @@ public class JSONHelper {
      * @return JSON object with name and values passed in
      */
     public static String toJSON(String name, Object value, Object ...namesAndValues) {
-        if (namesAndValues.length % 2 != 0) {
+        if (name == null) {
+            throw new IllegalArgumentException("attribute name cannot be null");
+        }
+        if (namesAndValues.length > 0 && !isNameValuePairs(namesAndValues)) {
             throw new IllegalArgumentException("number or arguments must be even");
         }
         var map = map(namesAndValues);
         map.put(name, value);
-        return toJSON(map, false);
+        return toJSON(map);
     }
 
     /**
-     * Convert Java object to a JSON string.
-     *
+     * Convert Java object to a pretty JSON string.
      * @param val Java object
-     * @param pretty enable/disable pretty print
      * @return JSON string.
      */
-    public static String toJSON(Object val, boolean pretty) {
+    public static String toPrettyJSON(Object val) {
         try {
-            return pretty ? objectMapper.writerWithDefaultPrettyPrinter().with(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS).writeValueAsString(val) : objectMapper.writeValueAsString(val);
+            return objectMapper.writerWithDefaultPrettyPrinter().with(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS).writeValueAsString(val);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

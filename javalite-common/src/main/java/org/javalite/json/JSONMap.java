@@ -335,13 +335,13 @@ public class JSONMap extends HashMap<String, Object> {
      * @return a JSON representation  of this object
      */
     public String toJSON(boolean pretty) {
-        return JSONHelper.toJSON(this, pretty);
+        return pretty ? JSONHelper.toPrettyJSON(this) : JSONHelper.toJSON(this);
     }
 
     /**
      * @return a JSON representation  of this object
      */
     public String toJSON() {
-        return JSONHelper.toJSON(this, false);
+        return toJSON(false);
     }
 }
