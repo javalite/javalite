@@ -52,7 +52,7 @@ public class JSONHelperSpec {
     @Test
     public void shouldConvertObject2JSONPrettyPrintString() {
         var m = JSONHelper.toMap("{ \"firstName\" : \"John\",\"lastName\" : \"Smith\", \"age\": 22, \"1\": 1 }");
-        String pretty = JSONHelper.toJSON(m, true);
+        String pretty = JSONHelper.toPrettyJSON(m);
         a(pretty).shouldBeEqual("{" + System.lineSeparator() +
                 "  \"1\" : 1," + System.lineSeparator() +
                 "  \"age\" : 22," + System.lineSeparator() +
@@ -214,6 +214,44 @@ public class JSONHelperSpec {
         the(personMap.get("first_name")).shouldBeEqual("Marilyn");
         the(personMap.get("last_name")).shouldBeEqual("Monroe");
 
+        person = JSONHelper.toJSON("first_name", "Marilyn");
+        personMap = JSONHelper.toMap(person);
+        the(personMap.get("first_name")).shouldBeEqual("Marilyn");
+
+        var json = JSONHelper.toJSON("boolean", true);
+        var map = JSONHelper.toMap(json);
+        the(map.getBoolean("boolean")).shouldBeTrue();
+    }
+
+    @Test
+    public void shouldThrowException() {
+        int exceptionCount = 0;
+        try {
+            JSONHelper.toJSON(null, 1);
+        } catch (IllegalArgumentException e) {
+            exceptionCount++;
+        }
+        try {
+            JSONHelper.toJSON("name", 1, 2);
+        } catch (IllegalArgumentException e) {
+            exceptionCount++;
+        }
+        try {
+            JSONHelper.toJSON("name", 1, 2, 3);
+        } catch (IllegalArgumentException e) {
+            exceptionCount++;
+        }
+        try {
+            JSONHelper.toJSON("name", 1, null, 3);
+        } catch (IllegalArgumentException e) {
+            exceptionCount++;
+        }
+        try {
+            JSONHelper.toJSON("name", 1, "2", 3);
+        } catch (IllegalArgumentException e) {
+            exceptionCount++;
+        }
+        a(exceptionCount).shouldBeEqual(4);
     }
 
 

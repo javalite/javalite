@@ -14,8 +14,8 @@ public class ModelJSONSpec extends ActiveJDBCTest {
     @Test
     public void serializeAndDeserializeModel() {
         Person p = Person.findOrCreateIt("name", "yakka", "last_name", "newbie", "dob", getDate(1990, 8, 3));
-        var json = JSONHelper.toJSON(p, true);
-        Person ppp = new Person().fromMap(JSONHelper.toMap(JSONHelper.toJSON(p.toMap(), true)));
+        var json = JSONHelper.toPrettyJSON(p);
+        Person ppp = new Person().fromMap(JSONHelper.toMap(JSONHelper.toPrettyJSON(p.toMap())));
         Person pp = JSONHelper.toObject(json, Person.class);
         a(ppp.getId()).shouldBeEqual(pp.getId());
         a(ppp.get("updated_at")).shouldBeEqual(pp.get("updated_at"));

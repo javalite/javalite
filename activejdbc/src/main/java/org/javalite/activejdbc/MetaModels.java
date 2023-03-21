@@ -135,7 +135,7 @@ class MetaModels {
                     ASSOCIATIONS, associations
             ));
         });
-        return JSONHelper.toJSON(models,false);
+        return JSONHelper.toJSON(models);
     }
 
     protected void fromJSON(String json) {
