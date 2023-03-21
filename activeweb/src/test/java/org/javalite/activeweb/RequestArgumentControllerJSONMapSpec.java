@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * Tests validations and conversions for JSONBase objects.
@@ -30,7 +29,7 @@ public class RequestArgumentControllerJSONMapSpec extends RequestSpec {
         request.setContent(university.getBytes());
         dispatcher.doFilter(request, response, filterChain);
         String result = response.getContentAsString();
-        JSONMap controllerResponse = JSONHelper.toJSONMap(result);
+        JSONMap controllerResponse = JSONHelper.toMap(result);
         the(controllerResponse.getMap("university").get("name")).shouldBeEqual("Penn");
 
     }

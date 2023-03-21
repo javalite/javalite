@@ -36,12 +36,12 @@ public class EndpointFinderSpec {
         endpointFinder.setApiLocation("src/test/open-api");
 
         String formattedJSONString = endpointFinder.getOpenAPIDocs(BASE_TEMPLATE, Format.JSON);
-        JSONMap apiMap= JSONHelper.toJSONMap(formattedJSONString);
+        JSONMap apiMap= JSONHelper.toMap(formattedJSONString);
         JSONMap paths = apiMap.getMap("paths");
         the(paths.size()).shouldBeEqual(3);
-        the(paths.get("/custom.post.summary")).shouldBeEqual("Show API version details - CustomController#index - @POST annotation");
-        the(paths.get("/person_save.post.summary")).shouldBeEqual("Show API version details - CustomController#savePerson - @POST annotation");
-        the(paths.get("/hello.post.summary")).shouldBeEqual("Inherited method!!!");
+        the(paths.getBy("/custom.post.summary")).shouldBeEqual("Show API version details - CustomController#index - @POST annotation");
+        the(paths.getBy("/person_save.post.summary")).shouldBeEqual("Show API version details - CustomController#savePerson - @POST annotation");
+        the(paths.getBy("/hello.post.summary")).shouldBeEqual("Inherited method!!!");
 
         String x = SystemStreamUtil.getSystemErr();
 
@@ -57,34 +57,34 @@ public class EndpointFinderSpec {
         endpointFinder.setApiLocation("src/test/open-api2");
 
         String formattedJSONString = endpointFinder.getOpenAPIDocs(BASE_TEMPLATE, Format.JSON);
-        JSONMap apiMap= JSONHelper.toJSONMap(formattedJSONString);
+        JSONMap apiMap= JSONHelper.toMap(formattedJSONString);
         JSONMap paths = apiMap.getMap("paths");
         the(paths.keySet().size()).shouldBeEqual(19);
 
-        the(paths.get("/custom/index.post.summary")).shouldBeEqual("Show API version details - CustomController#index - @POST annotation");
-        the(paths.get("/custom/save_person.post.summary")).shouldBeEqual("Show API version details - CustomController#savePerson - @POST annotation");
+        the(paths.getBy("/custom/index.post.summary")).shouldBeEqual("Show API version details - CustomController#index - @POST annotation");
+        the(paths.getBy("/custom/save_person.post.summary")).shouldBeEqual("Show API version details - CustomController#savePerson - @POST annotation");
 
-        the(paths.get("/http_methods/do_head.head.description")).shouldBeEqual("docs for doHead");
-        the(paths.get("/http_methods/do_put.put.description")).shouldBeEqual("docs for doPut");
+        the(paths.getBy("/http_methods/do_head.head.description")).shouldBeEqual("docs for doHead");
+        the(paths.getBy("/http_methods/do_put.put.description")).shouldBeEqual("docs for doPut");
 
-        the(paths.get("/pet/update.put.responses.200.description")).shouldBeEqual("200 response");
-        the(paths.get("/pet/find_by_status.get.responses.200.description")).shouldBeEqual("200 response GET");
-        the(paths.get("/pet/add.post.responses.200.description")).shouldBeEqual("200 response POST");
-        the(paths.get("/pet/update_pet.post.responses.200.description")).shouldBeEqual("200 response POST");
-        the(paths.get("/pet/delete_pet.delete.responses.200.description")).shouldBeEqual("200 response DELETE");
-        the(paths.get("/pet/get_pet.get.responses.200.description")).shouldBeEqual("200 response GET");
+        the(paths.getBy("/pet/update.put.responses.200.description")).shouldBeEqual("200 response");
+        the(paths.getBy("/pet/find_by_status.get.responses.200.description")).shouldBeEqual("200 response GET");
+        the(paths.getBy("/pet/add.post.responses.200.description")).shouldBeEqual("200 response POST");
+        the(paths.getBy("/pet/update_pet.post.responses.200.description")).shouldBeEqual("200 response POST");
+        the(paths.getBy("/pet/delete_pet.delete.responses.200.description")).shouldBeEqual("200 response DELETE");
+        the(paths.getBy("/pet/get_pet.get.responses.200.description")).shouldBeEqual("200 response GET");
 
-        the(paths.get("/segments/foobar_2.get.responses.200.description")).shouldBeEqual("200 all good"); //<<-- from a file!
+        the(paths.getBy("/segments/foobar_2.get.responses.200.description")).shouldBeEqual("200 all good"); //<<-- from a file!
         the(paths).shouldContain("/segments/foobar");
         the(paths).shouldContain("/test/foo");
 
         //from RouteConfig - custom routes:
-        the(paths.get("/hello.post.summary")).shouldBeEqual("Inherited method!!!");
-        the(paths.get("/person_save.post.summary")).shouldBeEqual("Show API version details - CustomController#savePerson - @POST annotation");
+        the(paths.getBy("/hello.post.summary")).shouldBeEqual("Inherited method!!!");
+        the(paths.getBy("/person_save.post.summary")).shouldBeEqual("Show API version details - CustomController#savePerson - @POST annotation");
 
         //some random deeper spot checks:
-        the(paths.get("/http_methods/do_put.put.description")).shouldEqual("docs for doPut");
-        the(paths.get("/test/foo.post.summary")).shouldEqual("Inherited method!!!");
+        the(paths.getBy("/http_methods/do_put.put.description")).shouldEqual("docs for doPut");
+        the(paths.getBy("/test/foo.post.summary")).shouldEqual("Inherited method!!!");
     }
 
     @Test
@@ -104,13 +104,13 @@ public class EndpointFinderSpec {
 
         String formattedJSONString = endpointFinder.getOpenAPIDocs(BASE_TEMPLATE, Format.JSON);
 
-        JSONMap apiMap= JSONHelper.toJSONMap(formattedJSONString);
+        JSONMap apiMap= JSONHelper.toMap(formattedJSONString);
         JSONMap paths = apiMap.getMap("paths");
         the(paths.keySet().size()).shouldBeEqual(18);
 
         //NOTE: we have 14 items here, 12 coming from controllers, and another 2 from the RouteConfig.
         the(paths).shouldContain("/custom/index");
-        the(paths.get("/custom/index.post.summary")).shouldBeEqual("Show API version details - CustomController#index - @POST annotation"); // <<---- this is coming from annotation!!
+        the(paths.getBy("/custom/index.post.summary")).shouldBeEqual("Show API version details - CustomController#index - @POST annotation"); // <<---- this is coming from annotation!!
 
         the(paths).shouldContain("/http_methods/do_head");
         the(paths).shouldContain("/http_methods/do_put");
@@ -128,9 +128,9 @@ public class EndpointFinderSpec {
         the(paths).shouldContain("/test/foo");
 
         //some deeper spot checks:
-        the(paths.get("/http_methods/do_put.put.description")).shouldEqual("docs for doPut");
-        the(paths.get("/test/foo.post.summary")).shouldEqual("Inherited method!!!");
-        the(paths.get("/pet/update.put.responses.200.description")).shouldEqual("200 response");
+        the(paths.getBy("/http_methods/do_put.put.description")).shouldEqual("docs for doPut");
+        the(paths.getBy("/test/foo.post.summary")).shouldEqual("Inherited method!!!");
+        the(paths.getBy("/pet/update.put.responses.200.description")).shouldEqual("200 response");
     }
 
     @Test
@@ -148,7 +148,7 @@ public class EndpointFinderSpec {
         the(endPointDefinitions.get(0).getEndpointMethods().size()).shouldEqual(1);
 
         the(endPointDefinitions.get(0).getEndpointMethods().get(0).getHttpMethod()).shouldEqual(HttpMethod.GET);
-        the(endPointDefinitions.get(0).getEndpointMethods().get(0).getAPIAsMap().get("responses.200.description")).shouldEqual("200 all good");
+        the(endPointDefinitions.get(0).getEndpointMethods().get(0).getAPIAsMap().getBy("responses.200.description")).shouldEqual("200 all good");
     }
 
 
@@ -192,7 +192,7 @@ public class EndpointFinderSpec {
         Generator generator = new Generator();
         String generated = generator.generate(apiLocation, "base.json", endpointFinder, Format.JSON);
 
-        JSONMap jsonMap = JSONHelper.toJSONMap(generated);
+        JSONMap jsonMap = JSONHelper.toMap(generated);
         JSONMap paths = jsonMap.getMap("paths");
 
         the(paths.size()).shouldEqual(3);
@@ -221,15 +221,15 @@ public class EndpointFinderSpec {
         Generator generator = new Generator();
         String generated = generator.generate(apiLocation, "base.json", endpointFinder, Format.JSON);
 
-        JSONMap jsonMap = JSONHelper.toJSONMap(generated);
+        JSONMap jsonMap = JSONHelper.toMap(generated);
         JSONMap paths = jsonMap.getMap("paths");
 
-        the(paths.get("/pet_rest.post.responses.200.description")).shouldEqual("Creates a pet");
-        the(paths.get("/pet_rest.get.responses.200.description")).shouldEqual("List all pets");
-        the(paths.get("/pet_rest/{id}/edit_form.get.responses.200.description")).shouldEqual("Displays a form for editing an existing pet");
-        the(paths.get("/pet_rest/{id}.get.responses.200.description")).shouldEqual("Get a pet by ID");
-        the(paths.get("/pet_rest/{id}.delete.responses.200.description")).shouldEqual("Delete a pet by ID");
-        the(paths.get("/pet_rest/{id}.put.responses.200.description")).shouldEqual("Update a specific pet by ID");
-        the(paths.get("/pet_rest/new_form.get.responses.200.description")).shouldEqual("Displays a form for creation of a new pet");
+        the(paths.getBy("/pet_rest.post.responses.200.description")).shouldEqual("Creates a pet");
+        the(paths.getBy("/pet_rest.get.responses.200.description")).shouldEqual("List all pets");
+        the(paths.getBy("/pet_rest/{id}/edit_form.get.responses.200.description")).shouldEqual("Displays a form for editing an existing pet");
+        the(paths.getBy("/pet_rest/{id}.get.responses.200.description")).shouldEqual("Get a pet by ID");
+        the(paths.getBy("/pet_rest/{id}.delete.responses.200.description")).shouldEqual("Delete a pet by ID");
+        the(paths.getBy("/pet_rest/{id}.put.responses.200.description")).shouldEqual("Update a specific pet by ID");
+        the(paths.getBy("/pet_rest/new_form.get.responses.200.description")).shouldEqual("Displays a form for creation of a new pet");
     }
 }

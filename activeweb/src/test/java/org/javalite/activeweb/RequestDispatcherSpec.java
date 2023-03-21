@@ -18,6 +18,7 @@ package org.javalite.activeweb;
 
 import org.javalite.json.JSONHelper;
 import org.javalite.common.Util;
+import org.javalite.json.JSONParseException;
 import org.javalite.test.SystemStreamUtil;
 import org.javalite.test.XPathHelper;
 import org.junit.After;
@@ -249,10 +250,10 @@ public class RequestDispatcherSpec extends RequestSpec {
         // we need this because on different OSes log lines may come out or order!
         Map message = null;
         for (String line : lines) {
-            Map log = JSONHelper.toMap(line);
+            var log = JSONHelper.toMap(line);
             try {
-                message = (Map) log.get("message");
-            }catch(ClassCastException ignore){}
+                message = log.getMap("message");
+            }catch(JSONParseException ignore){}
         }
 
         if(message == null){

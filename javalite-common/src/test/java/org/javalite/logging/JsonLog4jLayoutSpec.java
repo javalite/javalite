@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Map;
 
 import static org.javalite.test.jspec.JSpec.a;
 import static org.javalite.test.jspec.JSpec.the;
@@ -60,13 +59,13 @@ public class JsonLog4jLayoutSpec {
         String[] lines = Util.split(out, System.getProperty("line.separator"));
         the(lines.length).shouldBeEqual(2);
         String logLine1 = lines[0];
-        Map log1 = JSONHelper.toMap(logLine1);
+        var log1 = JSONHelper.toMap(logLine1);
         a(log1.get("message")).shouldBeEqual("hello");
         a(log1.get("logger")).shouldBeEqual("org.javalite.logging.JsonLog4jLayoutSpec");
         a(log1.get("level")).shouldBeEqual("INFO");
 
         String logLine2 = lines[1];
-        Map log2 = JSONHelper.toMap(logLine2);
+        var log2 = JSONHelper.toMap(logLine2);
         a(log2.get("message")).shouldBeEqual("world");
 
         String timestamp = (String) log1.get("timestamp");

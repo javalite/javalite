@@ -15,23 +15,24 @@ limitations under the License.
 */
 package org.javalite.activejdbc;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.javalite.activejdbc.annotations.Cached;
 import org.javalite.activejdbc.annotations.CompositePK;
 import org.javalite.activejdbc.associations.*;
 import org.javalite.activejdbc.cache.CacheEventSquasher;
 import org.javalite.activejdbc.cache.QueryCache;
-import org.javalite.common.*;
-import org.javalite.conversion.BlankToNullConverter;
-import org.javalite.conversion.Converter;
-import org.javalite.conversion.ZeroToNullConverter;
 import org.javalite.activejdbc.dialects.Dialect;
 import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.activejdbc.logging.LogLevel;
-
-import org.javalite.json.JSONHelper;
-import org.javalite.json.JSONList;
-import org.javalite.json.JSONMap;
-import org.javalite.json.JSONParseException;
+import org.javalite.common.CaseInsensitiveMap;
+import org.javalite.common.CaseInsensitiveSet;
+import org.javalite.common.Convert;
+import org.javalite.common.Escape;
+import org.javalite.conversion.BlankToNullConverter;
+import org.javalite.conversion.Converter;
+import org.javalite.conversion.ZeroToNullConverter;
+import org.javalite.json.*;
 import org.javalite.validation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,20 +44,19 @@ import javax.xml.stream.XMLStreamReader;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.sql.*;
+import java.sql.Array;
+import java.sql.Clob;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.Collections;
-import java.util.Date;
 import java.util.Map.Entry;
 
 import static org.javalite.activejdbc.ModelDelegate.metaModelFor;
 import static org.javalite.activejdbc.ModelDelegate.metaModelOf;
 import static org.javalite.common.Inflector.*;
 import static org.javalite.common.Util.*;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * This class is a super class of all "models" and provides most functionality
@@ -65,37 +65,30 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author Igor Polevoy
  * @author Eric Nielsen
  */
+@JsonSerialize(using = ModelSerializer.class)
+@JsonDeserialize(using = ModelDeserializer.class)
 public abstract class Model extends CallbackSupport implements Externalizable, Validatable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Model.class);
 
     private Map<String, Object> attributes = new CaseInsensitiveMap<>();
 
-    @JsonIgnore
     private Set<String> dirtyAttributeNames = new CaseInsensitiveSet();
 
-    @JsonIgnore
     private boolean frozen;
 
-    @JsonIgnore
     private MetaModel metaModelLocal;
 
-    @JsonIgnore
     private ModelRegistry modelRegistryLocal;
 
-    @JsonIgnore
     private final Map<Class, Model> cachedParents = new HashMap<>();
 
-    @JsonIgnore
     private final Map<Class, List<Model>> cachedChildren = new HashMap<>();
 
-    @JsonIgnore
     private boolean manageTime = true;
 
-    @JsonIgnore
     private boolean compositeKeyPersisted;
 
-    @JsonIgnore
     private Errors errors = new Errors();
 
     protected Model() {
@@ -400,7 +393,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      * (Instance state differs from state in DB)
      * @return true if this instance was modified.
      */
-    @JsonIgnore
+    
     public boolean isModified() {
         return !dirtyAttributeNames.isEmpty();
     }
@@ -446,7 +439,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      *
      * @return true if this is a new instance, not saved yet to DB, false otherwise
      */
-    @JsonIgnore
+    
     public boolean isNew(){
         return getId() == null && !compositeKeyPersisted;
     }
@@ -2211,7 +2204,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      *
      * @return true if no errors were generated, otherwise returns false.
      */
-    @JsonIgnore
+    
     public boolean isValid(){
         validate();
         return !hasErrors();
@@ -2945,7 +2938,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      *
      * @return of ID.
      */
-    @JsonIgnore
+    
     public Object getId() {
         return get(getIdName());
     }
@@ -2955,7 +2948,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      *
      * @return Name of ID column.
      */
-    @JsonIgnore
+    
     public String getIdName() {
         return metaModelLocal.getIdName();
     }
@@ -2965,7 +2958,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      *
      * @return a list of composite keys as specified  in {@link CompositePK}.
      */
-    @JsonIgnore
+    
     public String[] getCompositeKeys() {
         return metaModelLocal.getCompositeKeys();
     }
@@ -3097,7 +3090,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      *
      * @return value of attribute corresponding to <code>getIdName()</code>, converted to a Long.
      */
-    @JsonIgnore
+    
     public Long getLongId() {
         return getId() == null ? null: Convert.toLong(getId());
     }
@@ -3123,7 +3116,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      * @return instance  a {@link JSONMap}.
      */
     public JSONMap getJSONMap(String attribute){
-         return JSONHelper.toJSONMap(getString(attribute));
+         return JSONHelper.toMap(getString(attribute));
     }
 
     /**
@@ -3135,7 +3128,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      * @return instance  a {@link JSONList}.
      */
     public JSONList getJSONList(String attribute){
-        return JSONHelper.toJSONList(getString(attribute));
+        return JSONHelper.toList(getString(attribute));
     }
 
 

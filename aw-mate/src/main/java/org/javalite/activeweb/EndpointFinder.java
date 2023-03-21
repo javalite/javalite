@@ -402,9 +402,9 @@ public class EndpointFinder<T extends AppController> {
             }
         }
 
-        JSONMap baseMap = JSONHelper.toJSONMap(baseTemplateContent);
+        JSONMap baseMap =  JSONHelper.toMap(baseTemplateContent);
         baseMap.put("paths", paths);
-        return JSONHelper.toJSONString(baseMap);
+        return JSONHelper.toJSON(baseMap);
     }
 
 

@@ -1,14 +1,18 @@
 package org.javalite.json;
 
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import org.javalite.common.Util;
 import org.junit.Test;
-
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.javalite.common.Collections.map;
-import static org.javalite.json.JSONHelper.*;
 import static org.javalite.test.jspec.JSpec.*;
 
 /**
@@ -42,13 +46,13 @@ public class JSONHelperSpec {
                 this.lastName = lastName;
             }
         }
-        a(toJSONString(new Person("John", "Smith"))).shouldBeEqual("{\"firstName\":\"John\",\"lastName\":\"Smith\"}");
+        a(JSONHelper.toJSON(new Person("John", "Smith"))).shouldBeEqual("{\"firstName\":\"John\",\"lastName\":\"Smith\"}");
     }
 
     @Test
     public void shouldConvertObject2JSONPrettyPrintString() {
-        Map m = toMap("{ \"firstName\" : \"John\",\"lastName\" : \"Smith\", \"age\": 22, \"1\": 1 }");
-        String pretty = toJSONString(m, true);
+        var m = JSONHelper.toMap("{ \"firstName\" : \"John\",\"lastName\" : \"Smith\", \"age\": 22, \"1\": 1 }");
+        String pretty = JSONHelper.toJSON(m, true);
         a(pretty).shouldBeEqual("{" + System.lineSeparator() +
                 "  \"1\" : 1," + System.lineSeparator() +
                 "  \"age\" : 22," + System.lineSeparator() +
@@ -60,7 +64,7 @@ public class JSONHelperSpec {
 
     @Test
     public void shouldConvertArray2List() {
-        List l = JSONHelper.toList("[1, 2]");
+        var l = JSONHelper.toList("[1, 2]");
         $(l.size()).shouldBeEqual(2);
         $(l.get(0)).shouldBeEqual(1);
         $(l.get(1)).shouldBeEqual(2);
@@ -68,7 +72,7 @@ public class JSONHelperSpec {
 
     @Test
     public void shouldConvertMap2Map() {
-        Map m = toMap("{ \"name\" : \"John\", \"age\": 22 }");
+        var m = JSONHelper.toMap("{ \"name\" : \"John\", \"age\": 22 }");
         $(m.size()).shouldBeEqual(2);
         $(m.get("name")).shouldBeEqual("John");
         $(m.get("age")).shouldBeEqual(22);
@@ -76,7 +80,8 @@ public class JSONHelperSpec {
 
     @Test
     public void shouldConvertMaps2Maps() {
-        Map[] maps = JSONHelper.toMaps("[{ \"name\" : \"John\", \"age\": 22 },{ \"name\" : \"Samantha\", \"age\": 21 }]");
+        var list = JSONHelper.toList("[{ \"name\" : \"John\", \"age\": 22 },{ \"name\" : \"Samantha\", \"age\": 21 }]");
+        var maps = list.getMaps();
         $(maps.length).shouldBeEqual(2);
         $(maps[0].get("name")).shouldBeEqual("John");
         $(maps[0].get("age")).shouldBeEqual(22);
@@ -139,7 +144,7 @@ public class JSONHelperSpec {
         }
 
         String result = JSONHelper.toJSON("name", "Joe", "age", 23, "dob", new Date());
-        Map mapResult = toMap(result);
+        var mapResult = JSONHelper.toMap(result);
         the(mapResult.get("name")).shouldBeEqual("Joe");
         the(mapResult.get("age")).shouldBeEqual(23);
         the(mapResult.get("dob")).shouldNotBeNull();
@@ -148,7 +153,7 @@ public class JSONHelperSpec {
     @Test
     public void shouldConvertNull() {
         String json = JSONHelper.toJSON("null", null);
-        the(toMap(json).get("null")).shouldBeNull();
+        the(JSONHelper.toMap(json).get("null")).shouldBeNull();
     }
 
     @Test
@@ -156,27 +161,27 @@ public class JSONHelperSpec {
         String quoted = Util.readResource("/double_quote.txt");
         String json = JSONHelper.sanitize(quoted);
         the(json).shouldBeEqual("text with double \\\" quote");
-        List l = JSONHelper.toList("[\"" + json + "\"]");
+        var l = JSONHelper.toList("[\"" + json + "\"]");
         the(l.get(0)).shouldBeEqual("text with double \" quote");
     }
 
     @Test
     public void shouldParseJsonToMap() {
-        Map map = toMap(Util.readResource("/john.json"));
+        var map = JSONHelper.toMap(Util.readResource("/john.json"));
         the(map.get("first_name")).shouldBeEqual("John");
         the(map.get("last_name")).shouldBeEqual("Doe");
     }
 
     @Test
     public void shouldParseJsonToMaps() {
-        Map[] people = JSONHelper.toMaps(Util.readResource("/people.json"));
+        var people = JSONHelper.toList(Util.readResource("/people.json")).getMaps();
         the(people[0].get("first_name")).shouldBeEqual("John");
         the(people[1].get("first_name")).shouldBeEqual("Jane");
     }
 
     @Test
     public void shouldParseNull() {
-        Map person = toMap(Util.readResource("/contains_null.json"));
+        var person = JSONHelper.toMap(Util.readResource("/contains_null.json"));
         the(person.get("name")).shouldBeEqual("John");
         the(person.get("adult")).shouldBeNull();
     }
@@ -185,7 +190,7 @@ public class JSONHelperSpec {
     public void shouldConvertWithNull() {
         Map map = map("name", "John", "married", null);
 
-        String json = JSONHelper.toJSONString(map);
+        String json = JSONHelper.toJSON(map);
         the(json).shouldContain("\"name\":\"John\"");
         the(json).shouldContain("\"married\":null");
     }
@@ -195,7 +200,7 @@ public class JSONHelperSpec {
 
     @Test
     public void shouldSerializeJavaRecord() {
-        Map hm = toMap(toJSONString(new Human("Joe", "Shmoe")));
+        var hm = JSONHelper.toMap(JSONHelper.toJSON(new Human("Joe", "Shmoe")));
         the(hm.get("firstName")).shouldBeEqual("Joe");
         the(hm.get("lastName")).shouldBeEqual("Shmoe");
     }
@@ -203,8 +208,8 @@ public class JSONHelperSpec {
     @Test
     public void shouldGenerateJSONObjectFromPairs() {
 
-        String person = toJSON("first_name", "Marilyn", "last_name", "Monroe");
-        Map personMap = JSONHelper.toJSONMap(person);
+        String person = JSONHelper.toJSON("first_name", "Marilyn", "last_name", "Monroe");
+        Map<String, Object> personMap = JSONHelper.toMap(person);
 
         the(personMap.get("first_name")).shouldBeEqual("Marilyn");
         the(personMap.get("last_name")).shouldBeEqual("Monroe");
@@ -230,7 +235,7 @@ public class JSONHelperSpec {
     public void shouldConvertObjectToJSON() {
         Table t = new Table(3);
         String json = JSONHelper.toJSON(t);
-        Map<String, Object> map = JSONHelper.toJSONMap(json);
+        Map<String, Object> map = JSONHelper.toMap(json);
         the(map.get("legCount")).shouldEqual(3);
     }
 
@@ -246,6 +251,54 @@ public class JSONHelperSpec {
 
         the(t.legCount).shouldEqual(4);
     }
+
+
+//    @JsonFilter("TestFilter")
+    @JsonIncludeProperties()
+    class TestObject {
+        private Map<String, Object> map = new HashMap<>();
+        private Map<String, Object> map2 = new HashMap<>();
+
+        public TestObject() {
+
+        }
+
+        public Map<String, Object> getMap() {
+            return map;
+        }
+
+        public void setMap(Map<String, Object> map) {
+            this.map = map;
+        }
+
+    }
+
+    class TestObject2 extends TestObject {
+
+        private String type = this.getClass().getName();
+        public String getType2() {
+            return type;
+        }
+
+        public void setType2(String type) {
+            this.type = type;
+        }
+    }
+
+    @Test
+    public void convertModelToJSON() throws JsonProcessingException {
+        var objectMapper = new ObjectMapper();
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
+        var filterProvider = new SimpleFilterProvider();
+        filterProvider.addFilter("TestFilter", SimpleBeanPropertyFilter.filterOutAllExcept("map2", "class.name"));
+        objectMapper.setFilterProvider(filterProvider);
+
+        System.out.println(objectMapper.writeValueAsString(new TestObject2()));
+    }
+
 }
 
 

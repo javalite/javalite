@@ -21,6 +21,7 @@ import org.javalite.activejdbc.logging.LogFilter;
 import org.javalite.activejdbc.logging.LogLevel;
 import org.javalite.common.CaseInsensitiveMap;
 import org.javalite.json.JSONHelper;
+import org.javalite.json.JSONMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,7 +135,7 @@ class MetaModels {
                     ASSOCIATIONS, associations
             ));
         });
-        return JSONHelper.toJSONString(models,false);
+        return JSONHelper.toJSON(models,false);
     }
 
     protected void fromJSON(String json) {
@@ -142,8 +143,7 @@ class MetaModels {
             MethodHandles.Lookup lookup = MethodHandles.lookup();
             MethodType methodType = MethodType.methodType(void.class, Map.class);
 
-            for(Object o : JSONHelper.toList(json)) {
-                Map metaModelMap = (Map) o;
+            for(JSONMap metaModelMap : JSONHelper.toList(json).getMaps()) {
 
                 MetaModel metaModel = new MetaModel(
                         (String) metaModelMap.get(DB_NAME),

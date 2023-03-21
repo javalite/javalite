@@ -51,7 +51,7 @@ public abstract class Command {
      */
     static <T extends Command> T hydrate(String commandJSON) {
         try{
-            var map = JSONHelper.toJSONMap(commandJSON);
+            var map = JSONHelper.toMap(commandJSON);
             var type = map.getString(TYPE);
             var command = map.getMap(PAYLOAD);
             Class commandClass = Class.forName(type);
@@ -84,7 +84,7 @@ public abstract class Command {
         return JSONHelper.toJSON(
                 TYPE, getClass().getName(),
 //                PAYLOAD, JSONHelper.toJSONMap(JSONHelper.toJSON(this))
-                PAYLOAD, JSONHelper.toJSONMap(JSONHelper.toJSONString(this))
+                PAYLOAD, JSONHelper.toMap(JSONHelper.toJSON(this))
         );
     }
 

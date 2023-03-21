@@ -20,11 +20,10 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.util.StdDateFormat;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.javalite.common.Collections.map;
@@ -41,23 +40,15 @@ public class JSONHelper {
 
     static {
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        objectMapper.setDateFormat(new StdDateFormat().withColonInTimeZone(false));
         objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
     }
 
-    /**
-     * Convert a JSON map to a Java Map
-     *
-     * @param json JSON map
-     * @return Java Map.
-     */
-    public static Map toMap(String json) {
-        try {
-            return objectMapper.readValue(json, Map.class);
-        } catch (Exception e) {
-            throw new JSONParseException("Failed to parse JSON string into a Java Map",e);
-        }
+    protected static ObjectMapper getObjectMapper() {
+        return objectMapper;
     }
+
 
     /**
      * Convenience method to convert String to {@link JSONMap}.
@@ -65,8 +56,12 @@ public class JSONHelper {
      * @param json String content of some JSON object.
      * @return instance of {@link JSONMap}.
      */
-    public static JSONMap toJSONMap(String json) {
-        return new JSONMap(toMap(json));
+    public static JSONMap toMap(String json) {
+        try {
+            return objectMapper.readValue(json, JSONMap.class);
+        } catch (Exception e) {
+            throw new JSONParseException("Failed to parse JSON string into a JSONMap",e);
+        }
     }
 
     /**
@@ -75,22 +70,11 @@ public class JSONHelper {
      * @param json String content of some JSON array.
      * @return instance of {@link JSONList}.
      */
-    public static JSONList toJSONList(String json) {
-        return new JSONList(toList(json));
-    }
-
-    /**
-     * Convert JSON Array to Java array of maps.
-     *
-     * @param json JSON array
-     * @return Java array.
-     */
-    @SuppressWarnings("unchecked")
-    public static Map<String, Object>[] toMaps(String json) {
+    public static JSONList toList(String json) {
         try {
-            return objectMapper.readValue(json, Map[].class);
+            return objectMapper.readValue(json, JSONList.class);
         } catch (Exception e) {
-            throw new JSONParseException("Failed to parse JSON string into a Java Maps",e);
+            throw new JSONParseException("Failed to parse JSON string into a JSONList",e);
         }
     }
 
@@ -100,8 +84,8 @@ public class JSONHelper {
      * @param val Java object
      * @return JSON string.
      */
-    public static String toJSONString(Object val) {
-        return toJSONString(val, false);
+    public static String toJSON(Object val) {
+        return toJSON(val, false);
     }
 
     /**
@@ -109,7 +93,7 @@ public class JSONHelper {
      *
      * <pre>
      *
-     *     String person = toJsonString("first_name", "Marilyn", "last_name", "Monroe");
+     *     String person = toJSON("first_name", "Marilyn", "last_name", "Monroe");
      * </pre>
      *
      * will generate this JSON string:
@@ -125,11 +109,13 @@ public class JSONHelper {
      * @param namesAndValues  is a list of name and value pairs  in a typical JavaLite fashion.
      * @return JSON object with name and values passed in
      */
-    public static String toJSON(Object ...namesAndValues) {
+    public static String toJSON(String name, Object value, Object ...namesAndValues) {
         if (namesAndValues.length % 2 != 0) {
             throw new IllegalArgumentException("number or arguments must be even");
         }
-        return toJSONString(map(namesAndValues), false);
+        var map = map(namesAndValues);
+        map.put(name, value);
+        return toJSON(map, false);
     }
 
     /**
@@ -139,26 +125,11 @@ public class JSONHelper {
      * @param pretty enable/disable pretty print
      * @return JSON string.
      */
-    public static String toJSONString(Object val, boolean pretty) {
+    public static String toJSON(Object val, boolean pretty) {
         try {
             return pretty ? objectMapper.writerWithDefaultPrettyPrinter().with(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS).writeValueAsString(val) : objectMapper.writeValueAsString(val);
         } catch (Exception e) {
             throw new RuntimeException(e);
-        }
-    }
-
-
-    /**
-     * Convert JSON array tp Java List
-     *
-     * @param json JSON array string.
-     * @return Java List instance.
-     */
-    public static List toList(String json) {
-        try {
-            return objectMapper.readValue(json, List.class);
-        } catch (Exception e) {
-            throw new JSONParseException("Failed to parse JSON string into a Java List",e);
         }
     }
 
@@ -274,25 +245,6 @@ public class JSONHelper {
         CLEAN_CHARS.put('\n', "");
         CLEAN_CHARS.put('\r', "");
         CLEAN_CHARS.put('\f', "");
-    }
-//TODO toJsonString(Object object) ??
-    /**
-     * Converts an object to a JSON document. The class of the object must provide a default constructor.
-     * This method can be used for platform-neutral serialization.
-     *
-     * This method can be used in the combination with the {@link #toObject(String, Class)} to serialize/deserialize objects.
-     *
-     * @param object to convert to JSON.
-     * @return JSON document representing the argument.
-     */
-    public static String toJSON(Object object){
-        try{
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            objectMapper.writer().withoutAttribute("metaModelLocal").withoutAttribute("dialect").writeValue(bytes, object);
-            return bytes.toString();
-        }catch(IOException e){
-            throw new JSONGenerateException("Failed to convert object  to JSON.", e);
-        }
     }
 
 

@@ -350,7 +350,7 @@ public abstract class Request {
      * @return instance  of {@link JSONMap}
      */
     public JSONMap jsonMap(String encoding){
-        return JSONHelper.toJSONMap(text(encoding));
+        return JSONHelper.toMap(text(encoding));
     }
 
     /**
@@ -360,7 +360,7 @@ public abstract class Request {
      */
 
     public JSONMap jsonMap(){
-        return JSONHelper.toJSONMap(text());
+        return JSONHelper.toMap(text());
     }
 
     /**
@@ -369,7 +369,7 @@ public abstract class Request {
      * @return instance  of {@link JSONList}
      */
     public JSONList jsonList(){
-        return JSONHelper.toJSONList(text());
+        return JSONHelper.toList(text());
     }
 
     /**
@@ -380,6 +380,6 @@ public abstract class Request {
      * @return instance  of {@link JSONList}
      */
     public JSONList jsonList(String encoding){
-        return JSONHelper.toJSONList(text(encoding));
+        return JSONHelper.toList(text(encoding));
     }
 }

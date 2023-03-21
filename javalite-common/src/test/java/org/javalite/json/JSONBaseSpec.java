@@ -1,6 +1,5 @@
 package org.javalite.json;
 
-import org.javalite.validation.EmailValidator;
 import org.javalite.validation.RangeValidator;
 import org.junit.Test;
 
@@ -37,7 +36,7 @@ public class JSONBaseSpec {
             }""";
 
 
-    Map universityMap = toMap(university);
+    JSONMap universityMap = toMap(university);
 
     @Test
     public void shouldGetList(){
@@ -49,7 +48,7 @@ public class JSONBaseSpec {
                 }
                 """;
 
-        JSONBase json = new JSONBase(toMap(jsonString));
+        JSONBase json = new JSONBase(jsonString);
 
         the(json.get("university.students")).shouldBeA(List.class);
         JSONList list = json.getList("university.students");

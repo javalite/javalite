@@ -1443,7 +1443,7 @@ public class HttpSupport implements RequestAccess {
      */
     protected Map[] jsonMaps() {
         checkJsonContentType();
-        return JSONHelper.toMaps(getRequestString());
+        return JSONHelper.toList(getRequestString()).getMaps();
     }
 
 

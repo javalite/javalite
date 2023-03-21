@@ -26,7 +26,7 @@ public class EndPointHttpMethod {
 
     public JSONMap getAPIAsMap(){
         try{
-            return httpMethodAPI != null ? JSONHelper.toJSONMap(httpMethodAPI) : new JSONMap();
+            return httpMethodAPI != null ? JSONHelper.toMap(httpMethodAPI) : new JSONMap();
         }catch(JSONParseException e){
              throw new JSONParseException("Failed to parse this into JSON: " + httpMethodAPI);
         }

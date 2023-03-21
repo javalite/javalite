@@ -148,7 +148,7 @@ class ControllerRunner {
     private Object getRequestObject(Route route) throws IllegalAccessException, InstantiationException, IOException, InvocationTargetException, NoSuchMethodException {
         String contentType = RequestContext.getHttpRequest().getContentType();
         boolean jsonRequest = contentType != null && contentType.toLowerCase().contains("application/json");
-        Map<String, String> requestMap;
+        JSONMap requestMap;
         InputStream in = route.getController().getRequestInputStream();
         String requestBody = Util.read(in);
         if(jsonRequest){
@@ -159,12 +159,12 @@ class ControllerRunner {
                 throw new ControllerException("Failed to convert JSON request to JSON document", e.getCause());
             }
         }else {
-            requestMap = route.getController().params1st();
+            requestMap = new JSONMap(route.getController().params1st());
         }
         return getObjectWithValues(route, requestMap);
     }
 
-    private Object getObjectWithValues(Route route, Map<String,String> requestMap) throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
+    private Object getObjectWithValues(Route route, JSONMap requestMap) throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
         Class argumentClass = route.getArgumentClass();
 
         if (JSONBase.class.isAssignableFrom(argumentClass)) {
@@ -183,7 +183,7 @@ class ControllerRunner {
 
 
 
-    private Object getJSONBase(Class argumentClass, Map<String, String> requestMap) throws InvocationTargetException, InstantiationException, IllegalAccessException {
+    private Object getJSONBase(Class argumentClass, JSONMap requestMap) throws InvocationTargetException, InstantiationException, IllegalAccessException {
         Constructor constructor;
         try {
             constructor = argumentClass.getDeclaredConstructor(Map.class);
@@ -192,7 +192,7 @@ class ControllerRunner {
             throw new ControllerException("Failed to find a constructor in " + argumentClass + " that accepts a Map.");
         }
     }
-    private Object getFilledPOJO(Class argumentClass, Map<String, String> requestMap) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    private Object getFilledPOJO(Class argumentClass, JSONMap requestMap) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Object requestObject = argumentClass.getDeclaredConstructor().newInstance();
         Map translatedRequestMap = translateMapToJava(requestMap);
         Field[] fields = argumentClass.getDeclaredFields();
@@ -258,7 +258,7 @@ class ControllerRunner {
     /**
      * Translates names from underscores and hyphens to Java CamelCase.
      */
-    private Map translateMapToJava(Map<String, String> requestMap) {
+    private Map translateMapToJava(JSONMap requestMap) {
         Map<String, Object> translatedMap = new HashMap<>();
         requestMap.keySet().forEach(key -> {
             translatedMap.put(Inflector.camelize(key, false), requestMap.get(key));
