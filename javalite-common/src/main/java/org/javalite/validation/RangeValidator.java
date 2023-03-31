@@ -21,6 +21,9 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.Locale;
 
+/**
+ * Validates a range between two numbers
+ */
 public class RangeValidator extends ValidatorAdapter {
     private final String attribute;
     private final Number min;

@@ -56,6 +56,7 @@ public class Defect329Test extends ActiveJDBCTest {
 
     @Test
     public void createItEmptyModelNoVersionShouldSaveRecord() {
+        Animal.deleteAll();// hack!
         Animal animal = Animal.createIt();
         the(animal).shouldNotBe("new");
 

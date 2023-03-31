@@ -19,6 +19,11 @@ package org.javalite.activejdbc.test_models;
 
 import org.javalite.activejdbc.Model;
 import org.javalite.conversion.BlankToNullConverter;
+import org.javalite.validation.NumericValidator;
+
+import java.text.NumberFormat;
+import java.util.Locale;
+
 
 public class Account extends Model {
 

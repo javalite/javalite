@@ -26,7 +26,9 @@ public class ValidationSpec {
         the(person).shouldBe("valid");
         person = new Person("John", "Doe", "abx-22-02", null);
 
+
         the(person).shouldNotBe("valid");
+        System.out.println(person.errors().get("dob"));
         the(person.errors().get("dob")).shouldBeEqual("attribute dob does not conform to format: yyyy-MM-dd");
     }
 

@@ -18,9 +18,14 @@ limitations under the License.
 package org.javalite.activejdbc.test_models;
 
 import org.javalite.activejdbc.Model;
+import org.javalite.validation.NumericValidator;
+
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public class Salary extends Model {
     static{
+        validateWith(new NumericValidator("salary", NumberFormat.getCurrencyInstance(Locale.US)));
         validatePresenceOf("salary").message("salary is missing!!!");
         zeroToNull("salary");
     }

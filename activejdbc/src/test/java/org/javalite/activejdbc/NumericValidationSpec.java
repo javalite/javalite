@@ -20,6 +20,7 @@ package org.javalite.activejdbc;
 import org.javalite.activejdbc.test.ActiveJDBCTest;
 import org.javalite.activejdbc.test_models.Account;
 import org.javalite.activejdbc.test_models.Page;
+import org.javalite.activejdbc.test_models.Salary;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,7 +39,6 @@ public class NumericValidationSpec extends ActiveJDBCTest {
         Account account = new Account();
         account.set("amount", 1);
         account.set("total", 1);
-        System.out.println(account.errors());
         a(account).shouldBe("valid");
     }
 
@@ -112,5 +112,15 @@ public class NumericValidationSpec extends ActiveJDBCTest {
         the(account).shouldNotBe("valid");
         the(account.errors().size()).shouldBeEqual(1);
         the(account.errors().get("total")).shouldBeEqual("incorrect 'total'");
+    }
+
+    @Test
+    public void shouldTestCustomNumericFormat(){
+
+        Salary salary = new Salary();
+        salary.set("salary", "$1.00");
+        the(salary).shouldBe("valid");
+        salary.set("salary", "#1.00");
+        the(salary).shouldNotBe("valid");
     }
 }

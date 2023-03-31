@@ -25,6 +25,7 @@ import java.text.ParsePosition;
 
 public class NumericValidator extends ValidatorAdapter {
     private final String attribute;
+    private NumberFormat numberFormat;
 
     private Double min;
     private Double max;
@@ -34,6 +35,12 @@ public class NumericValidator extends ValidatorAdapter {
 
     public NumericValidator(String attribute) {
         this.attribute = attribute;
+        this.numberFormat = NumberFormat.getInstance();
+    }
+
+    public NumericValidator(String attribute, NumberFormat numberFormat){
+        this.attribute = attribute;
+        this.numberFormat = numberFormat ;
     }
 
     @Override
@@ -59,9 +66,9 @@ public class NumericValidator extends ValidatorAdapter {
                 String input = value.toString();
                 // toString() is not Locale dependant...
                 // ... but NumberFormat is. For Polish locale where decimal separator is "," instead of ".". Might fail some tests...
-                NumberFormat nf = NumberFormat.getInstance();
-                nf.setParseIntegerOnly(onlyInteger);
-                nf.parse(input, pp);
+
+                numberFormat.setParseIntegerOnly(onlyInteger);
+                numberFormat.parse(input, pp);
                 if (pp.getIndex() != (input.length())) {
                     validatable.addFailedValidator(this, attribute);
                     setMessage("value is not a number");
