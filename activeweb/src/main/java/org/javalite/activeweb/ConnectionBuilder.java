@@ -40,7 +40,7 @@ public class ConnectionBuilder {
     
     ConnectionBuilder(String environment) {
         this.environment = environment;
-        LOGGER.info("Configuring connection in environment {}", environment);
+        LOGGER.debug("Configuring connection in environment {}", environment);
     }
 
     /**
@@ -48,7 +48,7 @@ public class ConnectionBuilder {
      */
     ConnectionBuilder(String environment, boolean override) {
         this.environment = environment;
-        LOGGER.info("Configuring connection in environment {}", environment);
+        LOGGER.debug("Configuring connection in environment {}", environment);
     }
 
     /**
@@ -61,7 +61,7 @@ public class ConnectionBuilder {
         connectionConfig.setEnvironment(environment);
         connectionConfig.setTesting(testing);
         DBConfiguration.addConnectionConfig(connectionConfig);
-        LOGGER.info("Configuring JNDI connection in environment {}, JNDI: {}", environment, jndi);
+        LOGGER.debug("Configuring JNDI connection in environment {}, JNDI: {}", environment, jndi);
     }
 
     /**
@@ -79,7 +79,7 @@ public class ConnectionBuilder {
         connectionConfig.setEnvironment(environment);
         connectionConfig.setTesting(testing);
         DBConfiguration.addConnectionConfig(connectionConfig);
-        LOGGER.info("Configuring JDBC connection in environment {}, URL: {}", environment, url);
+        LOGGER.debug("Configuring JDBC connection in environment {}, URL: {}", environment, url);
     }
 
     /**
@@ -95,7 +95,7 @@ public class ConnectionBuilder {
         connectionConfig.setEnvironment(environment);
         connectionConfig.setTesting(testing);
         DBConfiguration.addConnectionConfig(connectionConfig);
-        LOGGER.info("configuring JDBC connection in environment {}, URL: {}", environment, url);
+        LOGGER.debug("configuring JDBC connection in environment {}, URL: {}", environment, url);
     }
 
     /**
@@ -105,7 +105,7 @@ public class ConnectionBuilder {
      */
     public ConnectionBuilder db(String dbName) {
         this.dbName = dbName;
-        LOGGER.info("Using database name: " + dbName);
+        LOGGER.debug("Using database name: " + dbName);
         return this;
     }
 
@@ -118,7 +118,7 @@ public class ConnectionBuilder {
      */
     public ConnectionBuilder testing() {
          this.testing = true;
-        LOGGER.info("Using test mode.");
+        LOGGER.debug("Using test mode.");
         return this;
     }
 
@@ -133,6 +133,6 @@ public class ConnectionBuilder {
         connectionConfig.setEnvironment(environment);
         connectionConfig.setTesting(testing);
         DBConfiguration.addConnectionConfig(connectionConfig);
-        LOGGER.info("Configuring JDBC connection using data source: {}", dataSource.toString());
+        LOGGER.debug("Configuring JDBC connection using data source: {}", dataSource.toString());
     }
 }
