@@ -68,12 +68,12 @@ public class DBConfiguration {
                     && config.getEnvironment().equals(connectionConfig.getEnvironment())
                     && config.isTesting() == connectionConfig.isTesting()) {
 
-                LOGGER.info("Removing: " + connectionConfig);
+                LOGGER.debug("Removing: " + connectionConfig);
                 connectionConfigList.remove(config);
             }
         }
 
-        LOGGER.info("Adding: " + connectionConfig);
+        LOGGER.debug("Adding: " + connectionConfig);
         connectionConfigList.add(connectionConfig);
     }
 
