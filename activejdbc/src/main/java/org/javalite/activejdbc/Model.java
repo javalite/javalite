@@ -2849,12 +2849,11 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
 
         MetaModel metaModel = metaModelLocal;
         StringBuilder query = new StringBuilder().append("UPDATE ").append(metaModel.getTableName()).append(" SET ");
-        Set<String> attributeNames = metaModel.getAttributeNamesSkipGenerated(manageTime);
+
+        List<String> attributeNames = new ArrayList<>(metaModel.getAttributeNamesSkipGenerated(manageTime));
         attributeNames.retainAll(dirtyAttributeNames);
-        if(attributeNames.size() > 0) {
-            join(query, attributeNames, " = ?, ");
-            query.append(" = ?");
-        }
+
+        metaModel.getDialect().appendQuestionsForUpdate(metaModel, query, attributeNames);
 
         List<Object> values = getAttributeValues(attributeNames);
 
@@ -2910,7 +2909,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
         return updated > 0;
     }
 
-    private List<Object> getAttributeValues(Set<String> attributeNames) {
+    private List<Object> getAttributeValues( List<String> attributeNames) {
         List<Object> values = new ArrayList<>();
         for (String attribute : attributeNames) {
             values.add(get(attribute));

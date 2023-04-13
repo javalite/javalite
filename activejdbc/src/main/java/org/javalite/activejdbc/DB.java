@@ -1180,7 +1180,7 @@ public class DB implements Closeable{
      * <ol>
      *     <li>Transaction is opened in current (thread-bound) connection.</li>
      *     <li>{@code bodyHandler} is executed.</li>
-     *     <li>If {@code bodyHandler} execution completed with exception, transaction is committed.</li>
+     *     <li>If {@code bodyHandler} execution completed without exception, transaction is committed.</li>
      *       <li>If {@code bodyHandler} execution throws some exception:
      *         <ol>
      *            <li>Transaction is rolled-back.</li>
@@ -1229,7 +1229,7 @@ public class DB implements Closeable{
      * <ol>
      *   <li>Transaction is opened in current (thread-bound) connection.</li>
      *   <li>{@code bodyHandler} is executed.</li>
-     *   <li>If {@code bodyHandler} execution completed with exception, transaction is committed and code result is returned.</li>
+     *   <li>If {@code bodyHandler} execution completed without exception, transaction is committed and result is returned.</li>
      *   <li>If {@code bodyHandler} execution throws some exception:
      *     <ol>
      *       <li>Transaction is rolled-back.</li>

@@ -60,4 +60,5 @@ public interface Dialect extends Serializable{
     String update(MetaModel metaModel, Map<String, Object> attributes, String ... replacements);
     Array toArray(String typeName, Object value, Connection connection);
 
+    void appendQuestionsForUpdate(MetaModel metaModel, StringBuilder query, List<String> attributeNames);
 }

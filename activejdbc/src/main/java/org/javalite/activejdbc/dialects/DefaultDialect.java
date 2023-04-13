@@ -110,20 +110,20 @@ public class DefaultDialect implements Dialect {
         }
     }
 
-    protected void appendSelect(StringBuilder queryBuilder, String tableName, String[] columns, String tableAlias, String subQuery, List<String> orderBys) {
+    protected void appendSelect(StringBuilder query, String tableName, String[] columns, String tableAlias, String subQuery, List<String> orderBys) {
         if (tableName == null) {
-            queryBuilder.append(subQuery);
+            query.append(subQuery);
         } else {
             if (tableAlias == null) {
                 String cols = columns == null? "*" : join(columns, ",");
-                queryBuilder.append("SELECT ").append(cols).append(" FROM ").append(tableName);
+                query.append("SELECT ").append(cols).append(" FROM ").append(tableName);
             } else {
-                queryBuilder.append("SELECT ").append(tableAlias).append(".* FROM ").append(tableName).append(' ')
+                query.append("SELECT ").append(tableAlias).append(".* FROM ").append(tableName).append(' ')
                         .append(tableAlias);
             }
-            appendSubQuery(queryBuilder, subQuery);
+            appendSubQuery(query, subQuery);
         }
-        appendOrderBy(queryBuilder, orderBys);
+        appendOrderBy(query, orderBys);
     }
 
     @Override
@@ -322,5 +322,16 @@ public class DefaultDialect implements Dialect {
      */
     public Array toArray(String typeName, Object value, Connection connection) {
         throw new DBException("Not implemented for this dialect");
+    }
+
+    /**
+     * Appends something like this: "description = ?, status = ?" to the query parameter.
+     * @param metaModel metamodel instance
+     */
+    public void appendQuestionsForUpdate(MetaModel metaModel, StringBuilder query, List<String> attributeNames) {
+        if (attributeNames.size() > 0) {
+            join(query, attributeNames, " = ?, ");
+            query.append(" = ?");
+        }
     }
 }

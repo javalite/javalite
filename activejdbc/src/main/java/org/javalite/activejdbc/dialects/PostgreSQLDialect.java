@@ -61,13 +61,21 @@ public class PostgreSQLDialect extends DefaultDialect {
             if (addIdGeneratorCode) {
                 query.append(metaModel.getIdGeneratorCode()).append(", ");
             }
-            appendTypedQuestions(metaModel, query, columns);
+            appendTypedQuestionsInsert(metaModel, query, columns);
             query.append(')');
         }
         return query.toString();
     }
 
-    private void appendTypedQuestions(MetaModel metaModel, StringBuilder query, List<String> columns) {
+    /**
+     * Attention, this method has a side effect, it modifies the "query" parameter
+     *
+     * query - example passed in: "INSERT INTO statuses (status) VALUES ("
+     * query - after this method: "INSERT INTO statuses (status) VALUES (?::status_type"
+     *
+     * In other words,  it appends a type for every value placeholder.
+     */
+    public void appendTypedQuestionsInsert(MetaModel metaModel, StringBuilder query, List<String> columns) {
         Map<String, ColumnMetadata> columnMetadataMap = metaModel.getColumnMetadata();
 
         List<String> types = new ArrayList<>();
@@ -84,19 +92,36 @@ public class PostgreSQLDialect extends DefaultDialect {
             }else{
                 types.add("?::"+ type);
             }
-
         }
         query.append(Util.join(types, ","));
     }
 
-
     /**
-     * Converts the input
-     *
-     * @param value
-     * @param connection
-     * @return
+     * Appends PostgreSQL - specific code: "description = ?::varchar,status = ?::status_type"
      */
+    public void appendQuestionsForUpdate(MetaModel metaModel, StringBuilder query, List<String> columns) {
+        Map<String, ColumnMetadata> columnMetadataMap = metaModel.getColumnMetadata();
+
+        List<String> tokens = new ArrayList<>();
+        for (String column : columns) {
+            //WTF, Postgres????
+            String key = column.startsWith("\"") && column.endsWith("\"")
+                    ? column.substring(1, column.length() - 1)
+                    : column;
+
+            ColumnMetadata metadata = columnMetadataMap.get(key);
+            String  typeName =  metadata.getTypeName();
+            String  columnName  =  metadata.getColumnName();
+            if(typeName.equalsIgnoreCase("serial")){
+                tokens.add("?");
+            }else{
+                tokens.add(columnName + " = ?::"+ typeName);
+            }
+        }
+        query.append(Util.join(tokens, ","));
+    }
+
+
     public Array toArray(String typeName, Object value, Connection connection) {
         try {
             if (value == null) {

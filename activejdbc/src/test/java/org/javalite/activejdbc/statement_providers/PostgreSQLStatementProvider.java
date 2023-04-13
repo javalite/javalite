@@ -81,7 +81,7 @@ public class PostgreSQLStatementProvider implements StatementProvider {
             );
         } else if (table.equals("animals")) {
             statements =  Arrays.asList(
-                    "INSERT INTO animals VALUES(1, 'frog');"
+                    "INSERT INTO animals (animal_name) VALUES('frog');"
             );
         } else if (table.equals("patients")) {
             statements =  Arrays.asList(
