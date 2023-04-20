@@ -63,7 +63,7 @@ public class MergePropertiesSpec {
                 "books-table", "staging-books",
                 "driver", driver(),
                 "password", password(),
-                "url", "jdbc:mariadb://localhost:3307/test_project_stage",
+                "url", "jdbc:mariadb://localhost:3310/test_project_stage",
                 "username", user()));
     }
 
