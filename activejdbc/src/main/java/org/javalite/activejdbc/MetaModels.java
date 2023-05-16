@@ -24,9 +24,11 @@ import org.javalite.common.JsonHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Collections.emptyList;
 import static org.javalite.common.Collections.map;
@@ -51,7 +53,7 @@ class MetaModels {
     private final Map<String, MetaModel> metaModelsByClassName = new HashMap<>();
     //these are all many to many associations across all models.
     private final List<Many2ManyAssociation> many2ManyAssociations = new ArrayList<>();
-    private final Map<Class, ModelRegistry> modelRegistries = new HashMap<>();
+    private final Map<Class, ModelRegistry> modelRegistries = new ConcurrentHashMap<>();
 
     void addMetaModel(MetaModel mm, Class<? extends Model> modelClass) {
         Object o = metaModelsByClassName.put(modelClass.getName(), mm);
