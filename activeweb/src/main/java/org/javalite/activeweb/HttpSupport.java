@@ -503,7 +503,7 @@ public class HttpSupport implements RequestAccess {
             text = "null";
         }
         DirectResponse resp = new DirectResponse(text);
-        String contentType = RequestContext.getHttpRequest().getHeader("Content-Type");
+        String contentType = RequestContext.getHttpResponse().getContentType();
         //TODO: is this some spaghetti code? Seems we have Content-type in RequestContext as well as in ControllerResponse?
         if(contentType != null){
             resp.setContentType(contentType);
