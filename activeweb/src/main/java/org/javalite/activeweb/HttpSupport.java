@@ -212,7 +212,7 @@ public class HttpSupport implements RequestAccess {
          * @return instance of RenderBuilder
          */
         public HttpBuilder contentType(String contentType) {
-            controllerResponse.setContentType(contentType);
+            RequestContext.getHttpResponse().setContentType(contentType);
             return this;
         }
 
@@ -504,9 +504,8 @@ public class HttpSupport implements RequestAccess {
         }
         DirectResponse resp = new DirectResponse(text);
         String contentType = RequestContext.getHttpResponse().getContentType();
-        //TODO: is this some spaghetti code? Seems we have Content-type in RequestContext as well as in ControllerResponse?
         if(contentType != null){
-            resp.setContentType(contentType);
+            RequestContext.getHttpResponse().setContentType(contentType);
         }
 
         RequestContext.setControllerResponse(resp);
@@ -1229,7 +1228,16 @@ public class HttpSupport implements RequestAccess {
 
 
     private void addHeaders(String contentType, Map headers, int status){
+
+        //here we need to copy headers  set previously in the action before calling 'outputStream(..)' method
+
         RequestContext.setControllerResponse(new NopResponse(contentType, status));
+
+        Collection<String> names = RequestContext.getHttpResponse().getHeaderNames();
+        for (String name : names) {
+            Collection<String> values = RequestContext.getHttpResponse().getHeaders(name);
+            values.forEach(value -> RequestContext.getHttpResponse().addHeader(name, value));
+        }
 
         if (headers != null) {
             for (Object key : headers.keySet()) {

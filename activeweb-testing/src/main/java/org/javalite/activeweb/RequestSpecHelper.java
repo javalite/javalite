@@ -55,7 +55,7 @@ public class RequestSpecHelper extends SpecHelper{
      * @return  content type set on response by controller
      */
     protected String contentType(){
-        return RequestContext.getControllerResponse().getContentType();
+        return RequestContext.getHttpResponse().getContentType();
     }
 
     /**

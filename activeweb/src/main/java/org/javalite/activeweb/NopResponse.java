@@ -24,7 +24,7 @@ package org.javalite.activeweb;
 class NopResponse extends ControllerResponse{
 
     NopResponse(String contentType, int status){
-        setContentType(contentType);
+        RequestContext.getHttpResponse().setContentType(contentType);
         setStatus(status);
     }
     @Override

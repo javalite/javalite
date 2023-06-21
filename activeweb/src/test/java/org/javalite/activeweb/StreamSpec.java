@@ -99,4 +99,34 @@ public class StreamSpec extends RequestSpec {
         a(response.getContentAsString()).shouldBeEqual("hello");
         the(file.exists()).shouldBeFalse();
     }
+
+    @Test
+    public void shouldSetHeaderFromStream() throws ServletException, IOException {
+        request.setServletPath("/stream/withHeader");
+        request.setMethod("GET");
+
+        dispatcher.doFilter(request, response, filterChain);
+        the(response.getContentAsString()).shouldBeEqual("[1,2]");
+        the(response.getHeader("Content-type")).shouldEqual("application/json");
+    }
+
+    @Test
+    public void shouldSetHeaderBeforeStream() throws ServletException, IOException {
+        request.setServletPath("/stream/withHeaderBefore");
+        request.setMethod("GET");
+
+        dispatcher.doFilter(request, response, filterChain);
+        the(response.getContentAsString()).shouldBeEqual("[1,2]");
+        the(response.getHeader("Content-type")).shouldEqual("application/json");
+    }
+
+    @Test
+    public void shouldSetHeaderBeforeAndOnStream() throws ServletException, IOException {
+        request.setServletPath("/stream/withHeaderBeforeAndOn");
+        request.setMethod("GET");
+
+        dispatcher.doFilter(request, response, filterChain);
+        the(response.getContentAsString()).shouldBeEqual("blah");
+        the(response.getHeader("Content-type")).shouldEqual("text/xml");
+    }
 }

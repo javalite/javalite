@@ -271,7 +271,7 @@ public class RequestDispatcher implements Filter {
             } else {
                 RenderTemplateResponse resp = new RenderTemplateResponse(getMapWithExceptionDataAndSession(e), template, null);
                 resp.setLayout(layout);
-                resp.setContentType("text/html");
+                RequestContext.getHttpResponse().setContentType("text/html");
                 resp.setStatus(status);
                 resp.setTemplateManager(Configuration.getTemplateManager());
                 ParamCopy.copyInto(resp.values());
