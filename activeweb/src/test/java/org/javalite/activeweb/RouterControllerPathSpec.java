@@ -78,4 +78,11 @@ public class RouterControllerPathSpec {
         router.getControllerPathByURI("/admin/");//this should fail because "admin" package exists, and
         //no controller is specified after.
     }
+
+    @Test
+    public void shouldFindControllersWithNonPublicClassesInInheritanceAndPackageRouting() {
+        ControllerPath path = router.getControllerPathByURI("/issue1294/test");
+        a(path.getControllerPackage()).shouldBeEqual("issue1294");
+        a(path.getControllerName()).shouldBeEqual("test");
+    }
 }

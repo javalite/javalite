@@ -345,7 +345,8 @@ public class Configuration {
         CloseableList<ClassInfo> controllerInfos = new CloseableList<>();
         String controllerRootPackage = Configuration.getRootPackage() + ".controllers";
 
-        ClassGraph classGraph = new ClassGraph().acceptPackages(controllerRootPackage).enableClassInfo().enableMethodInfo().enableAnnotationInfo();
+        ClassGraph classGraph = new ClassGraph().acceptPackages(controllerRootPackage)
+                .enableClassInfo().enableMethodInfo().enableAnnotationInfo().ignoreClassVisibility();
 
         if (classLoader != null) {
             classGraph.overrideClassLoaders(classLoader);
@@ -353,7 +354,7 @@ public class Configuration {
 
         ScanResult scanResult = classGraph.scan();
         for (ClassInfo classInfo : scanResult.getSubclasses(AppController.class.getName())) {
-            if (!classInfo.isAbstract()) {
+            if (!classInfo.isAbstract() && classInfo.isPublic()) {
                 classInfo.getAnnotationInfo();
                 controllerInfos.add(classInfo);
             }
