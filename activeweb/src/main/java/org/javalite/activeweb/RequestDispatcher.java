@@ -249,10 +249,6 @@ public class RequestDispatcher implements Filter {
 
     private void renderSystemError(String template, String layout, int status, Throwable e) {
         try{
-
-//            Map info = map("request_properties", JsonHelper.toJsonString(RequestAccess.getRequestProperties()),
-//                            "request_headers" , JsonHelper.toJsonString(RequestAccess.headers()));
-
             RequestContext.getHttpResponse().setStatus(status);
 
             logDone(e);
