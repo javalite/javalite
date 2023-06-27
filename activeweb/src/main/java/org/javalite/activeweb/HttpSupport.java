@@ -1134,11 +1134,34 @@ public class HttpSupport implements RequestAccess {
     }
 
     /**
+     * Adds multiple header values to response. A single header can have multiple values.
+     *
+     * @param name name of header.
+     * @param values multiple values for the same header.
+     */
+    protected void header(String name, String ... values){
+        for (String value : values) {
+            RequestContext.getHttpResponse().addHeader(name, value);
+        }
+    }
+
+    /**
      * A convenience method. Sets the <code>"Content-Type"</code> header on the response to
      * <code>"application/json"</code>.
      */
     protected void applicationJSON(){
         RequestContext.getHttpResponse().addHeader("Content-Type", "application/json");
+        RequestContext.getHttpResponse().setContentType("application/json");
+    }
+
+    /**
+     * A convenience method. Sets the <code>"Content-Type"</code> header on the response.
+     *
+     * @param contentType value of a Content-type header.
+     */
+    protected void contentType(String contentType){
+        RequestContext.getHttpResponse().addHeader("Content-Type", contentType);
+        RequestContext.getHttpResponse().setContentType(contentType);
     }
 
     /**
@@ -1229,21 +1252,22 @@ public class HttpSupport implements RequestAccess {
 
     private void addHeaders(String contentType, Map headers, int status){
 
-        //here we need to copy headers  set previously in the action before calling 'outputStream(..)' method
-
-        RequestContext.setControllerResponse(new NopResponse(contentType, status));
-
-        Collection<String> names = RequestContext.getHttpResponse().getHeaderNames();
-        for (String name : names) {
-            Collection<String> values = RequestContext.getHttpResponse().getHeaders(name);
-            values.forEach(value -> RequestContext.getHttpResponse().addHeader(name, value));
-        }
+        RequestContext.setControllerResponse(new NopResponse(status));
 
         if (headers != null) {
             for (Object key : headers.keySet()) {
-                if (headers.get(key) != null)
+                if (headers.get(key) != null){
                     RequestContext.getHttpResponse().addHeader(key.toString(), headers.get(key).toString());
+                    if(key.toString().equalsIgnoreCase("content-type")){
+                        RequestContext.getHttpResponse().setContentType(headers.get(key).toString());
+                    }
+                }
             }
+        }
+
+        //override the content-type by the method argument such as outputStream("application/json", ...);
+        if(contentType != null){
+            RequestContext.getHttpResponse().setContentType(contentType);
         }
     }
 
