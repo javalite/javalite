@@ -315,8 +315,6 @@ class ControllerRunner {
             ParamCopy.copyInto((controllerResponse.values()));
             controllerResponse.process();
         }else {
-
-
             if(RequestContext.getHttpResponse().getContentType() == null){
                 RequestContext.getHttpResponse().setContentType(route.getController().getContentType());
             }
@@ -324,8 +322,7 @@ class ControllerRunner {
         }
     }
 
-    //this is configuration of explicit response. If render() method was called in controller, we already have instance of
-    // response on current thread.
+    // If render() method was called in controller, we already have instance of a response on a current thread.
     private void configureExplicitResponse(Route route, String controllerLayout, RenderTemplateResponse resp) throws InstantiationException, IllegalAccessException {
             if(!Configuration.getDefaultLayout().equals(controllerLayout) && resp.hasDefaultLayout()){
                 resp.setLayout(controllerLayout);
@@ -336,7 +333,7 @@ class ControllerRunner {
             resp.setTemplateManager(Configuration.getTemplateManager());
     }
 
-    // this is implicit processing - default behavior, really
+    // this is an implicit processing - default behavior, really
     private void createDefaultResponse(Route route, String controllerLayout){
            String controllerPath = Router.getControllerPath(route.getController().getClass());
             String template =  controllerPath + "/" + route.getActionName();

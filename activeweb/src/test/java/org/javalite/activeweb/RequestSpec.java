@@ -26,8 +26,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 
 import static org.javalite.test.SystemStreamUtil.replaceError;
 import static org.javalite.test.SystemStreamUtil.restoreSystemErr;

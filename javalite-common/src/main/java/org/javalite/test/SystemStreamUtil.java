@@ -35,6 +35,9 @@ public class SystemStreamUtil {
      * @return buffer accumulated with data as string.
      */
     public static String getSystemOut() {
+        if(outStream == null){
+            throw  new NullPointerException("Cannot call getSystemOut() because you did not replace this stream");
+        }
         return new String(outStream.toByteArray());
     }
 
@@ -42,7 +45,7 @@ public class SystemStreamUtil {
      * Restores <code>System.out</code> to former glory.
      */
     public static void restoreSystemOut() {
-        if (out == null) throw new NullPointerException("out cannot be null");
+        if (out == null) throw new NullPointerException("out cannot be null, are you sure you replaced it? ");
         System.setOut(out);
     }
 
@@ -63,6 +66,9 @@ public class SystemStreamUtil {
      * @return buffer accumulated with data as string.
      */
     public static String getSystemErr() {
+        if(errorStream == null){
+            throw  new NullPointerException("Cannot call getSystemErr() because you did not replace this stream");
+        }
         return new String(errorStream.toByteArray());
     }
 
@@ -70,7 +76,7 @@ public class SystemStreamUtil {
      * Restores <code>System.err</code> to former glory.
      */
     public static void restoreSystemErr() {
-        if (err == null) throw new NullPointerException("err cannot be null");
+        if (err == null) throw new NullPointerException("err cannot be null, are you sure you replaced it?");
         System.setErr(err);
     }
 }

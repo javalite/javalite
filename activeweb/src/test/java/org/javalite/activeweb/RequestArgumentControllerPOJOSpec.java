@@ -2,6 +2,8 @@ package org.javalite.activeweb;
 
 import org.javalite.json.JSONHelper;
 import org.javalite.common.Util;
+import org.javalite.json.JSONMap;
+import org.javalite.test.SystemStreamUtil;
 import org.junit.Test;
 
 import javax.servlet.ServletException;
@@ -83,7 +85,7 @@ public class RequestArgumentControllerPOJOSpec extends RequestSpec {
 
     @Test
     public void shouldRejectOverloadedMethods() throws IOException, ServletException {
-
+        SystemStreamUtil.replaceOut();
         request.setServletPath("/request_argument/overloaded1");
         request.setMethod("GET");
         request.setContentType("application/json");
@@ -91,7 +93,9 @@ public class RequestArgumentControllerPOJOSpec extends RequestSpec {
         request.setContent(Util.readResource("/person.json").getBytes());
         dispatcher.doFilter(request, response, filterChain);
         the(response.getStatus()).shouldBeEqual(500);
-        the(response.getContentAsString()).shouldContain("org.javalite.activeweb.AmbiguousActionException: Ambiguous overloaded method: overloaded1");
+        the(response.getContentAsString()).shouldContain("server error");
+        the(SystemStreamUtil.getSystemOut()).shouldContain("Ambiguous overloaded method: overloaded1");
+        SystemStreamUtil.restoreSystemOut();
     }
 
     @Test
@@ -103,9 +107,9 @@ public class RequestArgumentControllerPOJOSpec extends RequestSpec {
 
         request.setContent(Util.readResource("/person2.json").getBytes());
         dispatcher.doFilter(request, response, filterChain);
-        String result = response.getContentAsString();
+
         the(response.getStatus()).shouldBeEqual(500);
-        a(result).shouldContain("org.javalite.common.ConversionException: failed to convert: 'blah' to Integer");
+        the(new JSONMap(response.getContentAsString()).get("message")).shouldBeEqual("server error");
     }
 
     @Test

@@ -18,6 +18,7 @@ package org.javalite.activeweb;
 
 import app.controllers.MainController;
 import app.controllers.WildcardRouteController;
+import org.javalite.test.SystemStreamUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -91,8 +92,9 @@ public class RouterWildcardSpec extends RequestSpec {
     }
 
     @Test
-    public void shouldRejectUriPartWildcard() throws ClassLoadException {
+    public void shouldRejectUriPartWildcard() throws UnsupportedEncodingException {
 
+        SystemStreamUtil.replaceOut();
         routeConfig = new AbstractRouteConfig() {
             public void init(AppContext appContext) {
                 route("/greeting/*tail/incorrect").to(WildcardRouteController.class).action("hello");
@@ -101,14 +103,20 @@ public class RouterWildcardSpec extends RequestSpec {
 
         request.setServletPath("/greeting/1/2/3/4/tada");
         execDispatcher();
-        a(responseContent()).shouldContain("Cannot have URI segments past wild card");
+        the(SystemStreamUtil.getSystemOut()).shouldContain("Cannot have URI segments past wild card");
+        the(response.getContentAsString()).shouldEqual("server error");
+        the(response.getStatus()).shouldEqual(500);
+        SystemStreamUtil.restoreSystemOut();
     }
 
     @Test
     public void shouldGracefullyFailIfWildCardRouteMissing() throws ClassLoadException {
+        SystemStreamUtil.replaceOut();
         request.setServletPath("/wildcard_route/1/2/3/4/tada");
         execDispatcher();
         a(response.getStatus()).shouldBeEqual(404);
-        a(selectText("//div[@id='content']", responseContent())).shouldEqual("Failed to map resource to URI: /wildcard_route/1/2/3/4/tada");
+        the(SystemStreamUtil.getSystemOut()).shouldContain("Failed to map resource to URI: /wildcard_route/1/2/3/4/tada");
+
+        SystemStreamUtil.restoreSystemOut();
     }
 }

@@ -292,7 +292,7 @@ public class AbstractControllerConfigSpec  extends RequestSpec{
         request.setMethod("GET");
         dispatcher.doFilter(request, response, filterChain);
 
-        a(response.getContentAsString()).shouldContain("I'm a bad boy!");
+        a(response.getContentAsString()).shouldContain("server error");
 
         the(getLine(0)).shouldBeEqual("GlobalFilter1 before");
         the(getLine(1)).shouldBeEqual("GlobalFilter2 before");

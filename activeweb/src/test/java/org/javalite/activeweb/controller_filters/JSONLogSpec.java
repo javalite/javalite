@@ -98,12 +98,6 @@ public class JSONLogSpec extends RequestSpec {
         the(exception.get("message")).shouldBeEqual("blah!");
         the(exception.get("stacktrace")).shouldContain("java.lang.RuntimeException: blah!");
 
-        //Line 2
-        var log2 = JSONHelper.toMap(logs[2]);
-        the(log2.get("level")).shouldBeEqual("INFO");
-        the(log2.get("timestamp")).shouldNotBeNull();
-        the(log2.get("logger")).shouldBeEqual("org.javalite.activeweb.freemarker.FreeMarkerTemplateManager");
-        the(log2.get("message")).shouldBeEqual("Rendering template: '/system/error.ftl' with layout: '/layouts/default_layout.ftl'.");
     }
 
     @Test
@@ -124,14 +118,6 @@ public class JSONLogSpec extends RequestSpec {
         var message = (Map) log0.get("message");
         the(message.get("error")).shouldBeEqual("Failed to find an action method for action: 'notfound' in controller: app.controllers.LoggingController");
         the(message.get("status")).shouldBeEqual(404);
-
-
-        //Line 1
-        var log1 = JSONHelper.toMap(logs[1]);
-        the(log1.get("level")).shouldBeEqual("INFO");
-        the(log1.get("timestamp")).shouldNotBeNull();
-        the(log1.get("logger")).shouldBeEqual("org.javalite.activeweb.freemarker.FreeMarkerTemplateManager");
-        the(log1.get("message")).shouldBeEqual("Rendering template: '/system/404.ftl' with layout: '/layouts/default_layout.ftl'.");
     }
 
     @Test
@@ -156,13 +142,6 @@ public class JSONLogSpec extends RequestSpec {
         the(message.get("method")).shouldBeEqual("GET");
         the(message.get("status")).shouldBeEqual(404);
         the(message.get("error")).shouldBeEqual("java.lang.ClassNotFoundException: app.controllers.Fake11Controller");
-
-        //Line 1
-        var log2 = JSONHelper.toMap(logs[1]);
-        the(log2.get("level")).shouldBeEqual("INFO");
-        the(log2.get("timestamp")).shouldNotBeNull();
-        the(log2.get("logger")).shouldBeEqual("org.javalite.activeweb.freemarker.FreeMarkerTemplateManager");
-        the(log2.get("message")).shouldBeEqual("Rendering template: '/system/404.ftl' with layout: '/layouts/default_layout.ftl'.");
     }
 
     @Test

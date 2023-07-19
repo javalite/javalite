@@ -210,10 +210,10 @@ public class RequestDispatcher implements Filter {
             }
         } catch (CompilationException e) {
             renderSystemError(e);
-        } catch (ClassLoadException | ActionNotFoundException | ViewMissingException | RouteException | ControllerException e) {
-            renderSystemError("/system/404", useDefaultLayoutForErrors() ? getDefaultLayout():null, 404, e);
+        } catch (ClassLoadException | ActionNotFoundException | ViewMissingException | RouteException e) {
+            renderSystemError(404, e);
         } catch (Throwable e) {
-            renderSystemError("/system/error", useDefaultLayoutForErrors() ? getDefaultLayout():null, 500, e);
+            renderSystemError(500, e);
         }finally {
             RequestContext.clear();
             Context.clear();
@@ -226,13 +226,6 @@ public class RequestDispatcher implements Filter {
         }
     }
 
-    private Map getMapWithExceptionDataAndSession(Throwable e) {
-        return map("message", e.getMessage() == null ? e.toString() : e.getMessage(),
-                "stack_trace", Util.getStackTraceString(e),
-                "session", SessionHelper.getSessionAttributes());
-    }
-
-
     private boolean excluded(String servletPath) {
         for (String exclusion : exclusions) {
             if (servletPath.contains(exclusion))
@@ -243,11 +236,11 @@ public class RequestDispatcher implements Filter {
 
 
     private void renderSystemError(Throwable e) {
-        renderSystemError("/system/error", null, 500, e);
+        renderSystemError(500, e);
     }
 
 
-    private void renderSystemError(String template, String layout, int status, Throwable e) {
+    private void renderSystemError(int status, Throwable e) {
         try{
             RequestContext.getHttpResponse().setStatus(status);
 
@@ -265,21 +258,26 @@ public class RequestDispatcher implements Filter {
                     logger.error("Failed to send error response to client", ex);
                 }
             } else {
-                RenderTemplateResponse resp = new RenderTemplateResponse(getMapWithExceptionDataAndSession(e), template, null);
-                resp.setLayout(layout);
-                RequestContext.getHttpResponse().setContentType("text/html");
-                resp.setStatus(status);
-                resp.setTemplateManager(Configuration.getTemplateManager());
-                ParamCopy.copyInto(resp.values());
-                resp.process();
+
+                String message = status == 404 ? "resource not found" : "server error";
+
+                DirectResponse directResponse;
+                if ("application/json".equals(RequestContext.getHttpRequest().getContentType())) {
+                    directResponse = new DirectResponse("""
+                            {"message":"%s"}""".formatted(message));
+                    RequestContext.getHttpResponse().setContentType("application/json");
+                } else {
+                    directResponse = new DirectResponse(message);
+                    RequestContext.getHttpResponse().setContentType("text/plain");
+                }
+
+                directResponse.setStatus(status);
+                directResponse.process();
             }
         }catch(Throwable t){
 
-            if(t instanceof IllegalStateException){
-                logger.error("Failed to render a template: '" + template + "' because templates are rendered with Writer, but you probably already used OutputStream", t);
-            }else{
-                logger.error("ActiveWeb internal error: ", t);
-            }
+            logger.error("ActiveWeb internal error: ", t);
+
             try{
                 HttpServletResponseProxy httpServletResponseProxy = RequestContext.getHttpResponse();
                 if(httpServletResponseProxy == null){
@@ -292,14 +290,14 @@ public class RequestDispatcher implements Filter {
                     if(outputStream == null){
                         throw new WebException("Catastrophic failure: failed to find OutputStream...", t);
                     }else{
-                        outputStream.print("<div style='color:red'>internal error</div>");
+                        outputStream.print("internal error");
                     }
                 }else{
                     PrintWriter writer = httpServletResponseProxy.getWriter();
                     if(writer == null){
                         throw new WebException("Catastrophic failure: failed to find Writer...", t);
                     }else{
-                        writer.print("<div style='color:red'>internal error</div>");
+                        writer.print("internal error");
                     }
                 }
                 httpServletResponseProxy.setStatus(500);
