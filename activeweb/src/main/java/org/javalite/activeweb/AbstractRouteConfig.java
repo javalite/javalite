@@ -24,6 +24,12 @@ public abstract class AbstractRouteConfig implements InitConfig {
         return matchedRoute;
     }
 
+    public  ErrorRouteBuilder routeError(){
+        ErrorRouteBuilder builder = new ErrorRouteBuilder();
+        Configuration.setErrorRouteBuilder(builder);
+        return builder;
+    }
+
     public RouteBuilder route(RouteBuilder builder){
         routes.add(builder);
         return builder;

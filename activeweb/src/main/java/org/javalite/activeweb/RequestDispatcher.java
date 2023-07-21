@@ -15,6 +15,7 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
+import freemarker.template.TemplateNotFoundException;
 import org.javalite.activejdbc.DB;
 
 import org.javalite.app_config.AppConfig;
@@ -241,70 +242,89 @@ public class RequestDispatcher implements Filter {
 
 
     private void renderSystemError(int status, Throwable e) {
+        logger.error("Rendering error: ", e);
         try{
-            RequestContext.getHttpResponse().setStatus(status);
-
-            logDone(e);
-
-            HttpServletRequest req = RequestContext.getHttpRequest();
-            String requestedWith = req.getHeader("x-requested-with") == null ?
-                    req.getHeader("X-Requested-With") : req.getHeader("x-requested-with");
-
-            if (requestedWith != null && requestedWith.equalsIgnoreCase("XMLHttpRequest")) {
-                try {
-
-                    RequestContext.getHttpResponse().getWriter().write(Util.getStackTraceString(e));
-                } catch (Exception ex) {
-                    logger.error("Failed to send error response to client", ex);
-                }
-            } else {
-
-                String message = status == 404 ? "resource not found" : "server error";
-
-                DirectResponse directResponse;
-                if ("application/json".equals(RequestContext.getHttpRequest().getContentType())) {
-                    directResponse = new DirectResponse("""
-                            {"message":"%s"}""".formatted(message));
-                    RequestContext.getHttpResponse().setContentType("application/json");
-                } else {
-                    directResponse = new DirectResponse(message);
-                    RequestContext.getHttpResponse().setContentType("text/plain");
-                }
-
-                directResponse.setStatus(status);
-                directResponse.process();
+            ErrorRouteBuilder builder = Configuration.getErrorRouteBuilder();
+            if(builder != null){
+                logger.error("Error will be handled by: " + builder.getControllerClass(), e);
+                Route r = builder.getRoute(e);
+                RequestContext.setRoute(r); // a little hacky :(
+                runner.run(r);
+            }else{
+                sendDefaultResponse(status, e);
             }
         }catch(Throwable t){
-
             logger.error("ActiveWeb internal error: ", t);
-
             try{
-                HttpServletResponseProxy httpServletResponseProxy = RequestContext.getHttpResponse();
-                if(httpServletResponseProxy == null){
-                    throw new WebException("Catastrophic failure: failed to find HttpServletResponse...", t);
-                }
-
-                HttpServletResponseProxy.OutputType outputType = httpServletResponseProxy.getOutputType();
-                if(HttpServletResponseProxy.OutputType.OUTPUT_STREAM == outputType){
-                    ServletOutputStream outputStream = httpServletResponseProxy.getOutputStream();
-                    if(outputStream == null){
-                        throw new WebException("Catastrophic failure: failed to find OutputStream...", t);
-                    }else{
-                        outputStream.print("internal error");
-                    }
+                if(t instanceof  ActionNotFoundException
+                        || t instanceof TemplateNotFoundException){
+                    writeBack("resource not found", 404, t);
                 }else{
-                    PrintWriter writer = httpServletResponseProxy.getWriter();
-                    if(writer == null){
-                        throw new WebException("Catastrophic failure: failed to find Writer...", t);
-                    }else{
-                        writer.print("internal error");
-                    }
+                    writeBack("internal error", 500, t);
                 }
-                httpServletResponseProxy.setStatus(500);
             }catch(Exception ex){
                 logger.error("Exception trying to render error response", ex);
                 logger.error("Original error", t);
             }
+        }
+    }
+
+    private void writeBack(String message, int status, Throwable t) throws IOException {
+
+        HttpServletResponseProxy httpServletResponseProxy = RequestContext.getHttpResponse();
+        if(httpServletResponseProxy == null){
+            throw new WebException("Catastrophic failure: failed to find HttpServletResponse...", t);
+        }
+        HttpServletResponseProxy.OutputType outputType = httpServletResponseProxy.getOutputType();
+        if(HttpServletResponseProxy.OutputType.OUTPUT_STREAM == outputType){
+            ServletOutputStream outputStream = httpServletResponseProxy.getOutputStream();
+            if(outputStream == null){
+                throw new WebException("Catastrophic failure: failed to find OutputStream...", t);
+            }else{
+                outputStream.print(message); // "internal error"
+            }
+        }else{
+            PrintWriter writer = httpServletResponseProxy.getWriter();
+            if(writer == null){
+                throw new WebException("Catastrophic failure: failed to find Writer...", t);
+            }else{
+                writer.print(message);
+            }
+        }
+        httpServletResponseProxy.setStatus(status);
+    }
+
+    private void sendDefaultResponse(int status, Throwable e) {
+        RequestContext.getHttpResponse().setStatus(status);
+        logDone(e);
+
+        HttpServletRequest req = RequestContext.getHttpRequest();
+        String requestedWith = req.getHeader("x-requested-with") == null ?
+                req.getHeader("X-Requested-With") : req.getHeader("x-requested-with");
+
+        if (requestedWith != null && requestedWith.equalsIgnoreCase("XMLHttpRequest")) {
+            try {
+
+                RequestContext.getHttpResponse().getWriter().write(Util.getStackTraceString(e));
+            } catch (Exception ex) {
+                logger.error("Failed to send error response to client", ex);
+            }
+        } else {
+
+            String message = status == 404 ? "resource not found" : "server error";
+
+            DirectResponse directResponse;
+            if ("application/json".equals(RequestContext.getHttpRequest().getContentType())) {
+                directResponse = new DirectResponse("""
+                            {"message":"%s"}""".formatted(message));
+                RequestContext.getHttpResponse().setContentType("application/json");
+            } else {
+                directResponse = new DirectResponse(message);
+                RequestContext.getHttpResponse().setContentType("text/plain");
+            }
+
+            directResponse.setStatus(status);
+            directResponse.process();
         }
     }
 

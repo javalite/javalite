@@ -54,6 +54,7 @@ public abstract class RequestSpec implements JSpecSupport {
         RequestContext.clear();
         RequestContext.setTLs(request, response, config, new AppContext(), new RequestVo(), null);
         Configuration.getTemplateManager().setTemplateLocation("src/test/views");
+        Configuration.setErrorRouteBuilder(null);
     }
 
     @After

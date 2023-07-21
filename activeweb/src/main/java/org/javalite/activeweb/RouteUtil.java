@@ -8,6 +8,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
+import static org.javalite.common.Util.blank;
+
 /**
  * This class exists to aggregate some common functions that are used  by ActiveWeb as well as the Ope API plugin.
  */
