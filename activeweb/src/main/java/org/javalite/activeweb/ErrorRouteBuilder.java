@@ -25,7 +25,7 @@ import org.javalite.activeweb.controllers.AbstractSystemErrorController;
  *
  * @author Igor Polevoy
  */
-class ErrorRouteBuilder {
+public class ErrorRouteBuilder {
 
     private String actionName;
     private AbstractSystemErrorController controllerInstance;
