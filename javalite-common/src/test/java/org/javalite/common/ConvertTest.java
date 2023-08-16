@@ -373,6 +373,15 @@ public class ConvertTest implements JSpecSupport {
         the(lDate.getDayOfMonth()).shouldBeEqual(calendar.get(Calendar.DAY_OF_MONTH));
     }
 
+    @Test
+    public void shouldConvertToLocalDateNull (){
+        java.util.Date dateNull = null;
+        Object objNull = null;
+
+        the(Convert.toLocalDate(dateNull)).shouldBeNull();
+        the(Convert.toLocalDate(objNull)).shouldBeNull();
+    }
+
 
     @Test
     public void shouldConvertToLocalDateTime(){
