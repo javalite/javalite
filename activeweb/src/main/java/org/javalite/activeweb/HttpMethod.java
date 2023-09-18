@@ -33,6 +33,7 @@ import java.lang.reflect.InvocationTargetException;
 public enum HttpMethod {
     GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS;
 
+    private static boolean disableMethodSimulation = false;
     /**
      * Detects a method from annotation
      *
@@ -63,10 +64,13 @@ public enum HttpMethod {
      * Detects an HTTP method from a request.
      */
     static HttpMethod getMethod(HttpServletRequest request){
-        String methodParam = request.getParameter("_method");
         String requestMethod = request.getMethod();
-        requestMethod = requestMethod.equalsIgnoreCase("POST") && methodParam != null && methodParam.equalsIgnoreCase("DELETE")? "DELETE" : requestMethod;
-        requestMethod = requestMethod.equalsIgnoreCase("POST") && methodParam != null && methodParam.equalsIgnoreCase("PUT")? "PUT" : requestMethod;
+
+        if(!disableMethodSimulation){
+            String methodParam = request.getParameter("_method");
+            requestMethod = requestMethod.equalsIgnoreCase("POST") && methodParam != null && methodParam.equalsIgnoreCase("DELETE")? "DELETE" : requestMethod;
+            requestMethod = requestMethod.equalsIgnoreCase("POST") && methodParam != null && methodParam.equalsIgnoreCase("PUT")? "PUT" : requestMethod;
+        }
         requestMethod = requestMethod.equalsIgnoreCase("POST") && request.getHeader("X-HTTP-Method-Override") != null && request.getHeader("X-HTTP-Method-Override").equalsIgnoreCase("PATCH") ? "PATCH" : requestMethod;
         return HttpMethod.valueOf(requestMethod.toUpperCase());
     }
@@ -87,10 +91,15 @@ public enum HttpMethod {
         return annotation.getDeclaredConstructor().newInstance();
     }
 
+
     /**
      * @return true if a method has an intention to change a resource.
      */
     public boolean destructive(){
         return this.equals(PUT) || this.equals(POST) || this.equals(DELETE) || this.equals(PATCH);
+    }
+
+    public static void disableMethodSimulation(boolean disableMethodSimulation) {
+        HttpMethod.disableMethodSimulation = disableMethodSimulation;
     }
 }

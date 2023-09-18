@@ -19,6 +19,7 @@ import freemarker.template.TemplateNotFoundException;
 import org.javalite.activejdbc.DB;
 
 import org.javalite.app_config.AppConfig;
+import org.javalite.common.Convert;
 import org.javalite.json.JSONHelper;
 import org.javalite.common.Util;
 import org.javalite.logging.Context;
@@ -32,8 +33,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
-import static org.javalite.activeweb.Configuration.getDefaultLayout;
-import static org.javalite.activeweb.Configuration.useDefaultLayoutForErrors;
 import static org.javalite.common.Collections.map;
 import static org.javalite.common.Util.getCauseMessage;
 
@@ -53,6 +52,8 @@ public class RequestDispatcher implements Filter {
 
     public void init(FilterConfig filterConfig) throws ServletException {
         this.filterConfig = filterConfig;
+
+        HttpMethod.disableMethodSimulation(Convert.toBoolean(filterConfig.getInitParameter("disable_method_simulation")));
 
         Configuration.getTemplateManager().setServletContext(filterConfig.getServletContext());
         appContext = new AppContext();
