@@ -219,7 +219,7 @@ public class RouterCustomSpec extends RequestSpec {
         request.setServletPath("/photos/12");
         execDispatcher();
 
-        the(SystemStreamUtil.getSystemOut()).shouldContain("Cannot combine {controller} segment and .to(\"...\") method. Failed route: /photos/{controller}");
+        the(SystemStreamUtil.getSystemOut()).shouldContain("Cannot combine {controller} segment and .to(...) method. Failed route: /photos/{controller}");
 
         the(response.getContentAsString()).shouldBeEqual("server error");
         the(response.getStatus()).shouldBeEqual(500);

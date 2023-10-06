@@ -128,7 +128,7 @@ public class RouteBuilder {
         }
 
         if (controllerClass != null && hasControllerSegment) {
-            throw new IllegalArgumentException("Cannot combine {controller} segment and .to(\"...\") method. Failed route: " + routeConfig);
+            throw new IllegalArgumentException("Cannot combine {controller} segment and .to(...) method. Failed route: " + routeConfig);
         }
 
         this.controllerClass = controllerClass;

@@ -29,7 +29,7 @@ public class ContentTL {
     private ContentTL() {}
     
     static void reset(){
-        contentTL.set(new HashMap<String, List<String>>());
+        contentTL.set(new HashMap<>());
     }
     public static Map<String, List<String>> getAllContent() {
         return contentTL.get();
@@ -37,7 +37,7 @@ public class ContentTL {
 
     static void addContent(String name, String content) {
         if(contentTL.get().get(name) == null){
-            contentTL.get().put(name, new ArrayList<String>());
+            contentTL.get().put(name, new ArrayList<>());
         }
         List<String> contentList = ContentTL.contentTL.get().get(name);
         contentList.add(content);
