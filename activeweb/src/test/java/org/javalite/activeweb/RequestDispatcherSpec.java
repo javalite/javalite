@@ -16,6 +16,8 @@ limitations under the License.
 
 package org.javalite.activeweb;
 
+import org.javalite.common.Util;
+import org.javalite.json.JSONMap;
 import org.javalite.test.SystemStreamUtil;
 import org.javalite.test.XPathHelper;
 import org.junit.After;
@@ -179,6 +181,9 @@ public class RequestDispatcherSpec extends RequestSpec {
         the(response.getContentAsString()).shouldEqual("resource not found");
         the(response.getContentType()).shouldEqual("text/plain");
         the(response.getStatus()).shouldEqual(404);
+        String[] lines = Util.split(getSystemOut(), System.getProperty("line.separator"));
+        JSONMap line  = new JSONMap(lines[lines.length - 1]);
+        the(line.getString("message.error")).shouldEqual("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController");
     }
 
     @Test

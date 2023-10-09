@@ -112,7 +112,7 @@ public class JSONLogSpec extends RequestSpec {
 
         //Line 0
         var log0 = JSONHelper.toMap(logs[1]);
-        the(log0.get("level")).shouldBeEqual("INFO");
+        the(log0.get("level")).shouldBeEqual("WARN");
         the(log0.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
 
         var message = (Map) log0.get("message");
@@ -132,7 +132,7 @@ public class JSONLogSpec extends RequestSpec {
 
         //Line0
         var log1 = JSONHelper.toMap(logs[1]);
-        the(log1.get("level")).shouldBeEqual("INFO");
+        the(log1.get("level")).shouldBeEqual("WARN");
         the(log1.get("timestamp")).shouldNotBeNull();
         the(log1.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
         var message = (Map) log1.get("message");
@@ -177,7 +177,7 @@ public class JSONLogSpec extends RequestSpec {
 
         //Line 2
         var log2 = JSONHelper.toMap(logs[3]);
-        the(log2.get("level")).shouldBeEqual("INFO");
+        the(log2.get("level")).shouldBeEqual("WARN");
         the(log2.get("timestamp")).shouldNotBeNull();
         the(log2.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
         message = (Map) log2.get("message");

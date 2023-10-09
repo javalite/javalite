@@ -210,9 +210,11 @@ public class RequestDispatcher implements Filter {
                 logger.warn("No matching route for servlet path: " + request.getServletPath() + ", passing down to container.");
                 chain.doFilter(req, resp);//let it fall through
             }
-        } catch (CompilationException e) {
-            renderSystemError(e);
-        } catch (ClassLoadException | ActionNotFoundException | ViewMissingException | RouteException e) {
+        } catch (CompilationException
+                 | ClassLoadException
+                 | ActionNotFoundException
+                 | ViewMissingException
+                 | RouteException e) {
             renderSystemError(404, e);
         } catch (Throwable e) {
             renderSystemError(500, e);
@@ -243,7 +245,12 @@ public class RequestDispatcher implements Filter {
 
 
     private void renderSystemError(int status, Throwable e) {
-        logger.error("Rendering error: ", e);
+        if(status == 404){
+            logger.warn("Rendering error: " +  e.getMessage());
+        }else{
+            logger.error("Rendering error", e);
+        }
+
         try{
             ErrorRouteBuilder builder = Configuration.getErrorRouteBuilder();
             if(builder != null){
@@ -370,7 +377,9 @@ public class RequestDispatcher implements Filter {
 
         if(throwable != null && status >= 500){
             logger.error(JSONHelper.toJSON(log), throwable);
-        }else {
+        }if(throwable != null && status == 404) {
+            logger.warn(JSONHelper.toJSON(log), throwable.toString());
+        } else {
             logger.info(JSONHelper.toJSON(log));
         }
     }
