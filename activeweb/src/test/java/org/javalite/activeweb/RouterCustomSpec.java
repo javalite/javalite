@@ -260,7 +260,7 @@ public class RouterCustomSpec extends RequestSpec {
         a(responseContent()).shouldBeEqual("resource not found");
         String[] lines = Util.split(SystemStreamUtil.getSystemOut(), System.getProperty("line.separator"));
 
-        var log = JSONHelper.toMap(lines[3]);
+        var log = JSONHelper.toMap(lines[2]);
         Map message = log.getMap("message");
         a(message.get("error")).shouldContain("java.lang.ClassNotFoundException: app.controllers.GreetingController");
 
@@ -489,7 +489,9 @@ public class RouterCustomSpec extends RequestSpec {
         execDispatcher();
 
         the(SystemStreamUtil.getSystemOut()).shouldContain("Cannot map to a non-custom route with a 'strictMode' flag on.");
+        String out = SystemStreamUtil.getSystemOut();
         SystemStreamUtil.restoreSystemOut();
+        System.out.println(out);
     }
 
     @Test

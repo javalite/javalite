@@ -245,9 +245,7 @@ public class RequestDispatcher implements Filter {
 
 
     private void renderSystemError(int status, Throwable e) {
-        if(status == 404){
-            logger.warn("Rendering error: " +  e.getMessage());
-        }else{
+        if(status != 404){
             logger.error("Rendering error", e);
         }
 

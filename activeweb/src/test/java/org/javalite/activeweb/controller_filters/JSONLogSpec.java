@@ -111,7 +111,7 @@ public class JSONLogSpec extends RequestSpec {
         String[] logs = Util.split(out, System.getProperty("line.separator"));
 
         //Line 0
-        var log0 = JSONHelper.toMap(logs[1]);
+        var log0 = JSONHelper.toMap(logs[0]);
         the(log0.get("level")).shouldBeEqual("WARN");
         the(log0.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
 
@@ -131,7 +131,7 @@ public class JSONLogSpec extends RequestSpec {
         String[] logs = Util.split(out, System.getProperty("line.separator"));
 
         //Line0
-        var log1 = JSONHelper.toMap(logs[1]);
+        var log1 = JSONHelper.toMap(logs[0]);
         the(log1.get("level")).shouldBeEqual("WARN");
         the(log1.get("timestamp")).shouldNotBeNull();
         the(log1.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
@@ -176,7 +176,7 @@ public class JSONLogSpec extends RequestSpec {
 
 
         //Line 2
-        var log2 = JSONHelper.toMap(logs[3]);
+        var log2 = JSONHelper.toMap(logs[2]);
         the(log2.get("level")).shouldBeEqual("WARN");
         the(log2.get("timestamp")).shouldNotBeNull();
         the(log2.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
