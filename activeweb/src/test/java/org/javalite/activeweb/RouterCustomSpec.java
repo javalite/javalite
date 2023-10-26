@@ -489,9 +489,9 @@ public class RouterCustomSpec extends RequestSpec {
         execDispatcher();
 
         the(SystemStreamUtil.getSystemOut()).shouldContain("Cannot map to a non-custom route with a 'strictMode' flag on.");
-        String out = SystemStreamUtil.getSystemOut();
         SystemStreamUtil.restoreSystemOut();
-        System.out.println(out);
+        the(responseContent()).shouldEqual("resource not found");
+        the(response.getStatus()).shouldEqual(404);
     }
 
     @Test

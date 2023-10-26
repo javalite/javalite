@@ -93,7 +93,8 @@ public class Router {
 
         if(route != null){
             if(strictMode && nonCustomRoute){
-                throw new RouteException("Cannot map to a non-custom route with a 'strictMode' flag on.");
+                RequestContext.setRoute(route);//a little hacky too
+                throw new RouteException("Cannot map to a non-custom route with a 'strictMode' flag on. ");
             }
             route.setIgnoreSpecs(ignoreSpecs);
         }else{

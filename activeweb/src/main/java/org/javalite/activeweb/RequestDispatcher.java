@@ -35,6 +35,7 @@ import java.util.*;
 
 import static org.javalite.common.Collections.map;
 import static org.javalite.common.Util.getCauseMessage;
+import static org.javalite.json.JSONHelper.toJSON;
 
 /**
  * @author Igor Polevoy
@@ -190,7 +191,7 @@ public class RequestDispatcher implements Filter {
             }
 
 
-            if(route != null && route.ignores(path)){
+            if (route != null && route.ignores(path)) {
                 chain.doFilter(req, resp);
                 logger.debug("URI ignored: " + path);
                 return;
@@ -199,10 +200,10 @@ public class RequestDispatcher implements Filter {
             if (route != null) {
                 RequestContext.setRoute(route);
                 if (Configuration.logRequestParams()) {
-                    logger.info("{\"info\":\"executing controller\",\"controller\":\"" + route.getController().getClass().getName()
-                            + "\",\"action\":\""     + route.getActionName()
-                            + "\",\"method\":\""     + route.getHttpMethod()
-                            + "\"}");
+                    logger.info(toJSON("info","executing controller",
+                            "controller", route.getControllerClassName(),
+                            "action", route.getActionName(),
+                            "method", route.getHttpMethod()));
                 }
                 runner.run(route);
                 logDone(null);
@@ -374,11 +375,11 @@ public class RequestDispatcher implements Filter {
         addRequestHeaders(log);
 
         if(throwable != null && status >= 500){
-            logger.error(JSONHelper.toJSON(log), throwable);
+            logger.error(toJSON(log), throwable);
         }if(throwable != null && status == 404) {
-            logger.warn(JSONHelper.toJSON(log), throwable.toString());
+            logger.warn(toJSON(log), throwable.toString());
         } else {
-            logger.info(JSONHelper.toJSON(log));
+            logger.info(toJSON(log));
         }
     }
 
