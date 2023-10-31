@@ -17,20 +17,16 @@ limitations under the License.
 package org.javalite.instrumentation;
 
 import javassist.CtClass;
+import javassist.NotFoundException;
 
 import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.lang.reflect.Method;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.ProtectionDomain;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static java.util.Arrays.asList;
+import java.util.*;
 
 /**
  * @author igor, on 5/12/14.
@@ -40,7 +36,12 @@ public class JavaAgent {
     private static InstrumentationModelFinder modelFinder;
     private static ModelInstrumentation modelInstrumentation;
     private static final Set<ClassLoader> loaders = new HashSet<ClassLoader>();
-    private static Method modelFound;
+    private static Method modelFoundMethod;
+
+    private static final List<String> skipList = new ArrayList<>(Arrays.asList("rt.jar", "activejdbc-", "javalite-common", "mysql-connector", "slf4j",
+            "rt.jar", "jre", "jdk", "springframework", "servlet-api", "activeweb", "junit", "jackson", "jaxen",
+            "dom4j", "guice", "javax", "aopalliance", "commons-logging", "app-config", "freemarker",
+            "commons-fileupload", "hamcrest", "commons-fileupload", "commons-io", "javassist", "ehcache", "xml-apis"));
 
     private JavaAgent() {
         
@@ -54,7 +55,14 @@ public class JavaAgent {
             modelFinder = new InstrumentationModelFinder();
             modelInstrumentation = new ModelInstrumentation();
             //calling this via reflection because we do not want AJ dependency on instrumentation project
-            modelFound = Classes.ModelFinder.getDeclaredMethod("modelFound", String.class);
+            modelFoundMethod = Classes.ModelFinder.getDeclaredMethod("modelFound", String.class, String.class);
+            if (args != null && args.isBlank()) {
+                for(var s : args.split(",")) {
+                    if (!s.isBlank()) {
+                        skipList.add(s);
+                    }
+                }
+            }
         } catch (Exception e) {
             throw new InstrumentationException(e);
         }
@@ -64,52 +72,59 @@ public class JavaAgent {
             public synchronized byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined,
                                                  ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
                 try {
-
                     CtClass clazz = modelFinder.getClazz(className.replace('/', '.'));
                     if (modelFinder.isModel(clazz)) {
-                        if (!loaders.contains(loader) && loader instanceof URLClassLoader) {
+                        if (!loaders.contains(loader)) {
                             scanLoader(loader);
                             loaders.add(loader);
                             List<CtClass> models = modelFinder.getModels();
                             for (CtClass ctClass : models) {
-                                modelFound.invoke(null, ctClass.getName());
+                                modelFoundMethod.invoke(null, Instrumentation.getDatabaseName(ctClass), ctClass.getName());
                             }
                         }
                         byte[] bytecode = modelInstrumentation.instrument(clazz);
                         Logger.debug("Instrumented model: " + clazz.getName());
                         return bytecode;
-                    } else {
-                        return null;
                     }
-                } catch (Exception e) {
+                } catch (NotFoundException ignored) {
+                } catch (Throwable e) {
                     throw new InstrumentationException(e);
                 }
+                return null;
             }
         });
     }
 
-    private static void scanLoader(ClassLoader loader) throws ClassNotFoundException, IOException, URISyntaxException {
-        Logger.debug("Scanning  class loader:  " + loader);
-        //lets skip known jars to save some time
-        List<String> toSkipList = asList("rt.jar", "activejdbc-", "javalite-common", "mysql-connector", "slf4j",
-                "rt.jar", "jre", "jdk", "springframework", "servlet-api", "activeweb", "junit", "jackson", "jaxen",
-                "dom4j", "guice", "javax", "aopalliance", "commons-logging", "app-config", "freemarker",
-                "commons-fileupload", "hamcrest", "commons-fileupload", "commons-io", "javassist", "ehcache", "xml-apis");
-
+    private static void scanLoader(ClassLoader loader) throws IOException {
+        URL[] urls;
         if (loader instanceof URLClassLoader) {
-            URL[] urls = ((URLClassLoader) loader).getURLs();
-            for (URL url : urls) {
-                boolean skip = false;
-                for (String name : toSkipList) {
-                    if (url.getPath().contains(name)) {
-                        skip = true;
-                    }
+            urls = ((URLClassLoader) loader).getURLs();
+        } else {
+            Enumeration<URL> e = loader.getResources("");
+            List<URL> urlList = new ArrayList<>();
+            while(e.hasMoreElements()) {
+                URL url = e.nextElement();
+                urlList.add(url);
+            }
+            urls = urlList.toArray(new URL[0]);
+        }
+        for (URL url : urls) {
+            boolean skip = false;
+            for (String name : skipList) {
+                if (url.getPath().contains(name) || url.getProtocol().contains("jar")) {
+                    skip = true;
+                    break;
                 }
-
-                if (!skip) {
+            }
+            if (!skip) {
+                try {
                     modelFinder.processURL(url);
+                } catch (Exception e) {
+                    System.err.println(e.getMessage());
                 }
             }
         }
+
     }
+
 }

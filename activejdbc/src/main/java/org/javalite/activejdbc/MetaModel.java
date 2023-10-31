@@ -459,7 +459,7 @@ public class MetaModel implements Serializable {
         }
     }
 
-    protected static String getDbName(Class<? extends Model> modelClass) {
+    protected static String getDbName(Class<?> modelClass) {
         DbName dbNameAnnotation = modelClass.getAnnotation(DbName.class);
         return dbNameAnnotation == null ? DB.DEFAULT_NAME : dbNameAnnotation.value();
     }
