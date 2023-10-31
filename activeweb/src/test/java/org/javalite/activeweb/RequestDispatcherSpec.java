@@ -160,9 +160,9 @@ public class RequestDispatcherSpec extends RequestSpec {
         request.setMethod("GET");
 
         dispatcher.doFilter(request, response, filterChain);
-
-        a(getSystemOut().contains("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController")).shouldBeTrue();
-
+        JSONMap log =  new JSONMap(getSystemOut());
+        the(log.getString("message.error")).shouldEqual("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController");
+        the(log.getInteger("message.status")).shouldEqual(404);
         the(response.getContentAsString()).shouldEqual("resource not found");
         the(response.getContentType()).shouldEqual("text/plain");
         the(response.getStatus()).shouldEqual(404);

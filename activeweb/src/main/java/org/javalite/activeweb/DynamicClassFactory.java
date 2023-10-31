@@ -81,7 +81,7 @@ public abstract class DynamicClassFactory {
         String sourceFile = srcMainJava + System.getProperty("file.separator") + controllerFileName;
         OutputStream errorStream = new ByteArrayOutputStream();
         compiler.run(null, errorStream, errorStream, "-g:lines,source,vars" , "-g:lines,source,vars", "-d", targetClasses, "-cp", classpath, sourceFile);
-        return "Compiling: " + sourceFile + ", output: " + errorStream.toString();
+        return "Compiling: " + sourceFile + ", output: " + errorStream;
     }
 
     private static String getClasspath(List<URL> urls) {

@@ -253,10 +253,16 @@ public class RequestDispatcher implements Filter {
         try{
             ErrorRouteBuilder builder = Configuration.getErrorRouteBuilder();
             if(builder != null){
-                logger.error("Error will be handled by: " + builder.getControllerClass(), e);
+
                 Route r = builder.getRoute(e);
                 RequestContext.setRoute(r); // a little hacky :(
                 runner.run(r);
+                if(status == 404) {
+                    RequestContext.getHttpResponse().setStatus(404);
+                    logDone(null);
+                }else {
+                    logDone(e);
+                }
             }else{
                 sendDefaultResponse(status, e);
             }

@@ -108,7 +108,7 @@ public class RouterSystemErrorSpec extends RequestSpec {
         the(responseContent()).shouldContain("This is the error: java.lang.RuntimeException: Coming from controller: class app.controllers.NotOkController");
         the(response.getStatus()).shouldEqual(500);
 
-        the(SystemStreamUtil.getSystemOut()).shouldContain("Error will be handled by: class app.controllers.SystemErrorController");
+        the(SystemStreamUtil.getSystemOut()).shouldContain("java.lang.RuntimeException: Coming from controller: class app.controllers.NotOkController");
         SystemStreamUtil.restoreSystemOut();
     }
 
