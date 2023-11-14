@@ -49,7 +49,7 @@ public class JavaAgent {
     
     @SuppressWarnings("unchecked")
     public static void premain(String args, java.lang.instrument.Instrumentation inst) {
-
+        System.out.println("JAVAAGENT!!!");
         Logger.debug("You are using dynamic instrumentation...");
         try {
             modelFinder = new InstrumentationModelFinder();
