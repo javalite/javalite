@@ -1,6 +1,7 @@
 package org.javalite.activejdbc;
 
 import org.javalite.common.RuntimeUtil;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;

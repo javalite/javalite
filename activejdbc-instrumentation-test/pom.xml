@@ -23,6 +23,32 @@
 
     <build>
         <plugins>
+
+            <!-- this tells maven to copy the openejb-javaagent jar into your target/ directory -->
+            <!-- where surefire can see it -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.javalite</groupId>
+                                    <artifactId>activejdbc-instrumentation</artifactId>
+                                    <version>3.1-SNAPSHOT</version>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -33,6 +59,9 @@
                         <activejdbc.password>${jdbc.password}</activejdbc.password>
                         <activejdbc.driver>${jdbc.driver}</activejdbc.driver>
                     </systemPropertyVariables>
+                    <forkMode>pertest</forkMode>
+                    <argLine>-javaagent:${pom.basedir}/../activejdbc-instrumentation/target/activejdbc-instrumentation-3.1-SNAPSHOT.jar</argLine>
+                    <workingDirectory>${basedir}/target</workingDirectory>
                 </configuration>
             </plugin>
             <plugin>
@@ -110,6 +139,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.javalite</groupId>
