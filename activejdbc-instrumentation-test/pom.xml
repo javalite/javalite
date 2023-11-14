@@ -60,7 +60,7 @@
                         <activejdbc.driver>${jdbc.driver}</activejdbc.driver>
                     </systemPropertyVariables>
                     <forkMode>pertest</forkMode>
-                    <argLine>-javaagent:${pom.basedir}/../activejdbc-instrumentation/target/activejdbc-instrumentation-3.1-SNAPSHOT.jar</argLine>
+                    <argLine>-javaagent:${pom.basedir}/target/activejdbc-instrumentation-3.1-SNAPSHOT.jar</argLine>
                     <workingDirectory>${basedir}/target</workingDirectory>
                 </configuration>
             </plugin>
