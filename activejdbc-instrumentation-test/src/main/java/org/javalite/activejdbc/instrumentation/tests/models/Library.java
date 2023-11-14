@@ -15,15 +15,11 @@ limitations under the License.
 */
 
 
-package org.javalite.activejdbc.models;
+package org.javalite.activejdbc.instrumentation.tests.models;
 
 import org.javalite.activejdbc.Model;
-import org.javalite.activejdbc.annotations.BelongsTo;
+import org.javalite.activejdbc.annotations.Cached;
 
-
-@BelongsTo(parent = Library.class, foreignKeyName = "lib_id")
-public class Book  extends Model {
-    static {
-        validatePresenceOf("title", "author");
-    }
+@Cached
+public class Library extends Model {
 }

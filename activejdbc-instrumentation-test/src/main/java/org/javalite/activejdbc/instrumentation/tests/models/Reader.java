@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 
-package org.javalite.activejdbc.models;
+package org.javalite.activejdbc.instrumentation.tests.models;
 
 import org.javalite.activejdbc.Model;
 

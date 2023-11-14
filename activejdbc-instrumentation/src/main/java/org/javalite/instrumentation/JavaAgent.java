@@ -38,7 +38,7 @@ public class JavaAgent {
     private static final Set<ClassLoader> loaders = new HashSet<ClassLoader>();
     private static Method modelFoundMethod;
 
-    private static final List<String> skipList = new ArrayList<>(Arrays.asList("rt.jar", "activejdbc-", "javalite-common", "mysql-connector", "slf4j",
+    private static final List<String> skipList = new ArrayList<>(Arrays.asList("rt.jar", "javalite-common", "mysql-connector", "slf4j",
             "rt.jar", "jre", "jdk", "springframework", "servlet-api", "activeweb", "junit", "jackson", "jaxen",
             "dom4j", "guice", "javax", "aopalliance", "commons-logging", "app-config", "freemarker",
             "commons-fileupload", "hamcrest", "commons-fileupload", "commons-io", "javassist", "ehcache", "xml-apis"));
