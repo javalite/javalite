@@ -23,9 +23,6 @@
 
     <build>
         <plugins>
-
-            <!-- this tells maven to copy the openejb-javaagent jar into your target/ directory -->
-            <!-- where surefire can see it -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -59,7 +56,7 @@
                         <activejdbc.password>${jdbc.password}</activejdbc.password>
                         <activejdbc.driver>${jdbc.driver}</activejdbc.driver>
                     </systemPropertyVariables>
-                    <argLine>-javaagent:${basedir}/target/activejdbc-instrumentation-3.1-SNAPSHOT.jar</argLine>
+                    <argLine>-javaagent:${basedir}/target/activejdbc-instrumentation-${project.version}.jar</argLine>
                     <workingDirectory>${basedir}/target</workingDirectory>
                 </configuration>
             </plugin>

@@ -38,31 +38,17 @@ public class JavaAgent {
     private static final Set<ClassLoader> loaders = new HashSet<ClassLoader>();
     private static Method modelFoundMethod;
 
-    private static final List<String> skipList = new ArrayList<>(Arrays.asList("rt.jar", "javalite-common", "mysql-connector", "slf4j",
-            "rt.jar", "jre", "jdk", "springframework", "servlet-api", "activeweb", "junit", "jackson", "jaxen",
-            "dom4j", "guice", "javax", "aopalliance", "commons-logging", "app-config", "freemarker",
-            "commons-fileupload", "hamcrest", "commons-fileupload", "commons-io", "javassist", "ehcache", "xml-apis"));
-
     private JavaAgent() {
-        
     }
     
     @SuppressWarnings("unchecked")
     public static void premain(String args, java.lang.instrument.Instrumentation inst) {
-        System.out.println("JAVAAGENT!!!");
         Logger.debug("You are using dynamic instrumentation...");
         try {
             modelFinder = new InstrumentationModelFinder();
             modelInstrumentation = new ModelInstrumentation();
             //calling this via reflection because we do not want AJ dependency on instrumentation project
             modelFoundMethod = Classes.ModelFinder.getDeclaredMethod("modelFound", String.class, String.class);
-            if (args != null && args.isBlank()) {
-                for(var s : args.split(",")) {
-                    if (!s.isBlank()) {
-                        skipList.add(s);
-                    }
-                }
-            }
         } catch (Exception e) {
             throw new InstrumentationException(e);
         }
@@ -109,19 +95,12 @@ public class JavaAgent {
             urls = urlList.toArray(new URL[0]);
         }
         for (URL url : urls) {
-            boolean skip = false;
-            for (String name : skipList) {
-                if (url.getPath().contains(name) || url.getProtocol().contains("jar")) {
-                    skip = true;
-                    break;
-                }
-            }
-            if (!skip) {
-                try {
+            try {
+                if (!url.getProtocol().contains("jar")) {
                     modelFinder.processURL(url);
-                } catch (Exception e) {
-                    System.err.println(e.getMessage());
                 }
+            } catch (Exception e) {
+                System.err.printf("%s: %s%n", url, e.getMessage());
             }
         }
 
