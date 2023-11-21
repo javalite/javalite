@@ -35,8 +35,6 @@ import java.util.Arrays;
 public enum QueryCache {
     INSTANCE;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(QueryCache.class);
-
     private boolean enabled = false;
 
     private final CacheManager cacheManager;
