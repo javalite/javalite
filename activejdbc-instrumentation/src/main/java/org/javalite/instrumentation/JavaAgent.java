@@ -21,7 +21,6 @@ import javassist.NotFoundException;
 
 import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
-import java.lang.instrument.IllegalClassFormatException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -38,8 +37,7 @@ public class JavaAgent {
     private static final Set<ClassLoader> loaders = new HashSet<ClassLoader>();
     private static Method modelFoundMethod;
 
-    private JavaAgent() {
-    }
+    private JavaAgent() {}
     
     @SuppressWarnings("unchecked")
     public static void premain(String args, java.lang.instrument.Instrumentation inst) {
@@ -56,7 +54,7 @@ public class JavaAgent {
         inst.addTransformer(new ClassFileTransformer() {
             @Override
             public synchronized byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined,
-                                                 ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
+                                                 ProtectionDomain protectionDomain, byte[] classfileBuffer) {
                 try {
                     CtClass clazz = modelFinder.getClazz(className.replace('/', '.'));
                     if (modelFinder.isModel(clazz)) {
@@ -103,7 +101,5 @@ public class JavaAgent {
                 System.err.printf("%s: %s%n", url, e.getMessage());
             }
         }
-
     }
-
 }

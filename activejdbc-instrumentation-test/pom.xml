@@ -38,7 +38,7 @@
                                 <artifactItem>
                                     <groupId>org.javalite</groupId>
                                     <artifactId>activejdbc-instrumentation</artifactId>
-                                    <version>3.1-SNAPSHOT</version>
+                                    <version>${project.version}</version>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
                                 </artifactItem>
                             </artifactItems>
