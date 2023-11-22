@@ -325,7 +325,10 @@ public final class Convert {
         }
     }
 
-    public static LocalDate toLocalDate(java.util.Date date){
+    public static LocalDate toLocalDate(java.util.Date date) {
+        if (null == date) {
+            return null;
+        }
         Instant instant = Instant.ofEpochMilli(date.getTime());
         ZonedDateTime zone = instant.atZone(ZoneId.systemDefault());
         return zone.toLocalDate();
