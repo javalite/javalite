@@ -8,8 +8,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
-import static org.javalite.common.Util.blank;
-
 /**
  * This class exists to aggregate some common functions that are used  by ActiveWeb as well as the Ope API plugin.
  */
@@ -39,6 +37,10 @@ public class RouteUtil {
      * @return all methods matching a method name.
      */
     public static List<Method> getNamedMethods(Class<? extends AppController> controllerClass, String actionMethodName){
+
+        if(controllerClass == null){
+            return new ArrayList<>();
+        }
 
         Map<String, List<Method>> controllerMap  =  methodsTL.get();
 
