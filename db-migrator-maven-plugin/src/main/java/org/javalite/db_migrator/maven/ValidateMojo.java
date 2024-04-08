@@ -14,13 +14,14 @@ import java.util.List;
  * Validate current schema against available migrations.
  */
 @Mojo(name = "validate")
+@SuppressWarnings("unchecked")
 public class ValidateMojo extends AbstractDbMigrationMojo {
     public void executeMojo() throws MojoExecutionException {
         try {
             String path = toAbsolutePath(getMigrationsPath());
             getLog().info("Validating " + getUrl() + " using migrations from " + path);
             openConnection();
-            MigrationManager manager = new MigrationManager(getProject(), path, getUrl());
+            MigrationManager manager = new MigrationManager(getProject().getCompileClasspathElements(), path, getUrl());
             List<Migration> pendingMigrations = manager.getPendingMigrations();
 
             getLog().info("Database: " + getUrl());

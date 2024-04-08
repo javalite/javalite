@@ -1,5 +1,6 @@
 package org.javalite.db_migrator.maven;
 
+import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
@@ -15,15 +16,15 @@ import java.sql.SQLException;
  */
 @Mojo(name = "migrate", requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class MigrateMojo extends AbstractDbMigrationMojo {
-
+    @SuppressWarnings("unchecked")
     public void executeMojo() throws MojoExecutionException {
         try {
             String path = toAbsolutePath(getMigrationsPath());
             getLog().info("Migrating " + getUrl() + " using migrations at " + path);
             openConnection();
-            new MigrationManager(getProject(), path, getUrl(),
-                                getCurrentMergeProperties() == null ? null : getCurrentMergeProperties()).migrate(getLog(), getEncoding());
-        } catch(SQLException | IOException e){
+            new MigrationManager(getProject().getCompileClasspathElements(), path, getUrl(),
+                                getCurrentMergeProperties() == null ? null : getCurrentMergeProperties()).migrate(getEncoding());
+        } catch(SQLException | IOException | DependencyResolutionRequiredException e){
             throw new MojoExecutionException("Failed to migrate database " + getUrl(), e);
         } finally {
             Base.close();

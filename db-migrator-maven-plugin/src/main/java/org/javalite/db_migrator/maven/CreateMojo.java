@@ -14,6 +14,7 @@ import static org.javalite.db_migrator.DbUtils.exec;
 @Mojo(name = "create")
 public class CreateMojo extends AbstractDbMigrationMojo {
 
+    @SuppressWarnings("unchecked")
     public void executeMojo() throws MojoExecutionException {
 
         String databaseName = DbUtils.extractDatabaseName(getUrl());
@@ -30,7 +31,7 @@ public class CreateMojo extends AbstractDbMigrationMojo {
 
         try{
             openConnection();
-            new MigrationManager(getProject(), toAbsolutePath(getMigrationsPath(), true), getUrl()).createSchemaVersionTableIfDoesNotExist();
+            new MigrationManager(getProject().getCompileClasspathElements(), toAbsolutePath(getMigrationsPath(), true), getUrl()).createSchemaVersionTableIfDoesNotExist();
         }catch(Exception e){
             throw  new MojoExecutionException("failed to create SCHEMA_VERSION table", e);
         }finally {

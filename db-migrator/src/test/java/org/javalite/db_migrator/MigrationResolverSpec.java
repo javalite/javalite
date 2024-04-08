@@ -20,8 +20,9 @@ limitations under the License.
 
 package org.javalite.db_migrator;
 
-import org.apache.maven.project.MavenProject;
 import org.junit.Test;
+
+import java.util.ArrayList;
 
 import static org.javalite.test.jspec.JSpec.the;
 
@@ -30,7 +31,7 @@ public class MigrationResolverSpec {
 
     @Test
     public void shouldExtractVersionFromFileName() {
-        MigrationResolver resolver = new MigrationResolver(new MavenProject(), "blah");
+        MigrationResolver resolver = new MigrationResolver(new ArrayList<>(), "blah");
         the(resolver.extractVersion("20080718214030_tinman.sql")).shouldBeEqual("20080718214030");
     }
 }

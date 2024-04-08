@@ -3,20 +3,20 @@ package org.javalite.db_migrator;
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyShell;
-import org.apache.maven.project.MavenProject;
 import org.javalite.common.Templator;
 import org.javalite.common.Util;
 
 import java.io.File;
+import java.util.List;
 import java.util.Properties;
 
 public class GroovyMigration extends Migration {
 
-    private MavenProject mavenProject;
+    private List<String> paths;
 
-    public GroovyMigration(MavenProject mavenProject, String version, File migrationFile, Properties mergeProperties) {
+    public GroovyMigration(List<String> paths, String version, File migrationFile, Properties mergeProperties) {
         super(version, migrationFile, mergeProperties);
-        this.mavenProject = mavenProject;
+        this.paths = paths;
     }
 
     @Override
@@ -25,7 +25,7 @@ public class GroovyMigration extends Migration {
             String script = new String(Util.read(getMigrationFile()));
             GroovyShell shell = new GroovyShell(new Binding());
             GroovyClassLoader classLoader = shell.getClassLoader();
-            mavenProject.getCompileClasspathElements().forEach(o -> classLoader.addClasspath(o.toString()));
+            paths.forEach(classLoader::addClasspath);
             String groovyScript = mergeProperties == null ? script : Templator.mergeFromTemplate(script, mergeProperties, false);
             shell.evaluate(groovyScript);
         } catch (Exception e) {

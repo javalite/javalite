@@ -1,6 +1,5 @@
 package org.javalite.db_migrator;
 
-import org.apache.maven.project.MavenProject;
 import org.javalite.common.Templator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

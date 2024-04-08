@@ -1,7 +1,6 @@
 package org.javalite.db_migrator;
 
-import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.project.MavenProject;
+import groovy.util.logging.Slf4j;
 import org.javalite.activejdbc.Base;
 import org.javalite.cassandra.jdbc.CassandraJDBCConnection;
 
@@ -18,13 +17,13 @@ public class MigrationManager {
     private MigrationResolver migrationResolver;
 
 
-    public MigrationManager(MavenProject mavenProject, String migrationLocation, String url) throws SQLException {
-        this(mavenProject, migrationLocation, url, null);
+    public MigrationManager(List<String> paths, String migrationLocation, String url) throws SQLException {
+        this(paths, migrationLocation, url, null);
     }
 
-    public MigrationManager(MavenProject mavenProject, String migrationLocation, String url, Properties mergeProperties) throws SQLException {
+    public MigrationManager(List<String> paths, String migrationLocation, String url, Properties mergeProperties) throws SQLException {
         this.dbType = determineDatabaseType();
-        migrationResolver = new MigrationResolver(mavenProject, migrationLocation, mergeProperties);
+        migrationResolver = new MigrationResolver(paths, migrationLocation, mergeProperties);
         String databaseName;
 
         if(url != null){
@@ -56,24 +55,24 @@ public class MigrationManager {
     /**
      * Migrates the database to the latest version, enabling migrations if necessary.
      */
-    public void migrate(Log log, String encoding) {
+    public void migrate(String encoding) {
 
         createSchemaVersionTableIfDoesNotExist();
 
         final Collection<Migration> pendingMigrations = getPendingMigrations();
 
         if (pendingMigrations.isEmpty()) {
-            log.info("No new migrations are found");
+            System.out.println("No new migrations are found");
             return;
         }
-        log.info("Migrating database, applying " + pendingMigrations.size() + " migration(s)");
+        System.out.println("Migrating database, applying " + pendingMigrations.size() + " migration(s)");
         Migration currentMigration = null;
 
         try {
             Base.connection().setAutoCommit(false);
             for (Migration migration : pendingMigrations) {
                 currentMigration = migration;
-                log.info("Running migration " + currentMigration.getName());
+                System.out.println("Running migration " + currentMigration.getName());
                 long start = System.currentTimeMillis();
 
                 currentMigration.migrate(encoding);
@@ -85,7 +84,7 @@ public class MigrationManager {
             assert currentMigration != null;
             throw new MigrationException("Migration for version " + currentMigration.getVersion() + " failed, rolling back and terminating migration.", e);
         }
-        log.info("Migrated database");
+        System.out.println("Migrated database");
     }
 
     private DatabaseType determineDatabaseType() throws SQLException {

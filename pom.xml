@@ -222,6 +222,7 @@
         <module>activejdbc-instrumentation</module>
         <module>activejdbc</module>
         <!--module>activejdbc-kt</module-->
+        <module>db-migrator</module>
         <module>db-migrator-maven-plugin</module>
         <module>db-migrator-integration-test</module>
         <module>app-config</module>
@@ -434,6 +435,7 @@
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-artifact</artifactId>
                 <version>3.6.3</version>
+                <scope>provided</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

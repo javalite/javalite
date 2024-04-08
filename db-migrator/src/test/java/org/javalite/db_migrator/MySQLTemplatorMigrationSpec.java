@@ -1,12 +1,12 @@
 package org.javalite.db_migrator;
 
-import org.apache.maven.project.MavenProject;
 import org.javalite.activejdbc.Base;
-import org.javalite.common.Templator;
 import org.javalite.common.Util;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.ArrayList;
 
 import static org.javalite.db_migrator.DbUtils.countMigrations;
 import static org.javalite.db_migrator.DbUtils.exec;
@@ -33,9 +33,9 @@ public class MySQLTemplatorMigrationSpec {
 
 
 
-        migrationManager = new MigrationManager(new MavenProject(), "src/test/resources/test_migrations/mysql-templator/",
+        migrationManager = new MigrationManager(new ArrayList<>(), "src/test/resources/test_migrations/mysql-templator/",
                 url,
-                Util.readProperties("/test_migrations/templator/table-names.properties"));
+                Util.readProperties("/templator/table-names.properties"));
     }
 
     @After
@@ -48,7 +48,7 @@ public class MySQLTemplatorMigrationSpec {
 
     @Test
     public void shouldApplyPendingMigrations() {
-        migrationManager.migrate(new MockLog(), null);
+        migrationManager.migrate(null);
         the(countMigrations("schema_version")).shouldBeEqual(2);
         the(Base.count("books")).shouldBeEqual(9);
         the(Base.count("authors")).shouldBeEqual(2);

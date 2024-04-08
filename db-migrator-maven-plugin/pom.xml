@@ -66,6 +66,12 @@
     </build>
     <dependencies>
         <dependency>
+            <groupId>org.javalite</groupId>
+            <artifactId>db-migrator</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>

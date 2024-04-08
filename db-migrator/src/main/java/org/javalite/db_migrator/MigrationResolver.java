@@ -1,6 +1,5 @@
 package org.javalite.db_migrator;
 
-import org.apache.maven.project.MavenProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,18 +12,18 @@ public class MigrationResolver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MigrationResolver.class);
     private final String migrationsLocation;
-    private MavenProject mavenProject;
+    private List<String> paths;
 
     private Properties mergeProperties;
 
     private static final Pattern MIGRATION_FILE_PATTERN = Pattern.compile("^(\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d)_.*\\.(sql|groovy)");
 
-    public MigrationResolver(MavenProject mavenProject, String migrationsLocation) {
-        this(mavenProject, migrationsLocation, null);
+    public MigrationResolver(List<String> paths, String migrationsLocation) {
+        this(paths, migrationsLocation, null);
     }
 
-    public MigrationResolver(MavenProject mavenProject, String migrationsLocation, Properties mergeProperties) {
-        this.mavenProject = mavenProject;
+    public MigrationResolver(List<String> paths, String migrationsLocation, Properties mergeProperties) {
+        this.paths = paths;
         this.migrationsLocation = migrationsLocation;
         this.mergeProperties = mergeProperties;
     }
@@ -57,7 +56,7 @@ public class MigrationResolver {
             if(migrationFile.getName().endsWith("sql")){
                 migrations.add(new SQLMigration(version, migrationFile, mergeProperties));
             }else if(migrationFile.getName().endsWith("groovy")){
-                migrations.add(new GroovyMigration(mavenProject, version, migrationFile, mergeProperties));
+                migrations.add(new GroovyMigration(paths, version, migrationFile, mergeProperties));
             }else {
                 throw new RuntimeException("file type not supported");
             }

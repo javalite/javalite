@@ -1,10 +1,11 @@
 package org.javalite.db_migrator;
 
-import org.apache.maven.project.MavenProject;
 import org.javalite.activejdbc.Base;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.ArrayList;
 
 import static org.javalite.db_migrator.JdbcPropertiesOverride.*;
 import static org.javalite.test.jspec.JSpec.the;
@@ -27,7 +28,7 @@ public class MariaDBSQLMigrationSpec {
 
         String url = url() + "/" + databaseName;
         Base.open(driver(), url, user(), password());
-        migrationManager = new MigrationManager(new MavenProject(), "src/test/resources/test_migrations/mysql/", url);
+        migrationManager = new MigrationManager(new ArrayList<>(), "src/test/resources/test_migrations/mysql/", url);
     }
 
     @After
@@ -40,7 +41,7 @@ public class MariaDBSQLMigrationSpec {
 
     @Test
     public void shouldApplyPendingMigrations() {
-        migrationManager.migrate(new MockLog(), null);
+        migrationManager.migrate(null);
         the(countMigrations("schema_version")).shouldBeEqual(4);
         the(Base.count("books")).shouldBeEqual(9);
         the(Base.count("authors")).shouldBeEqual(2);

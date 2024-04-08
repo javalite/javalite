@@ -18,6 +18,7 @@ import java.util.List;
  * <p></p>
  */
 @Mojo(name = "check", defaultPhase = LifecyclePhase.PROCESS_TEST_RESOURCES)
+@SuppressWarnings("unchecked")
 public class CheckMojo extends AbstractDbMigrationMojo {
     public void executeMojo() throws MojoExecutionException {
         List<Migration> pendingMigrations;
@@ -25,7 +26,7 @@ public class CheckMojo extends AbstractDbMigrationMojo {
             String path = toAbsolutePath(getMigrationsPath());
             getLog().info("Checking " + getUrl() + " using migrations from " + path);
             openConnection();
-            MigrationManager manager = new MigrationManager(getProject(), path, getUrl());
+            MigrationManager manager = new MigrationManager(getProject().getCompileClasspathElements(), path, getUrl());
             pendingMigrations = manager.getPendingMigrations();
         } catch (Exception e) {
             throw new MojoExecutionException("Failed to check " + getUrl(), e);
