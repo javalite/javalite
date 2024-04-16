@@ -5,6 +5,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import static org.javalite.db_migrator.JdbcPropertiesOverride.*;
@@ -28,7 +29,7 @@ public class MariaDBSQLMigrationSpec {
 
         String url = url() + "/" + databaseName;
         Base.open(driver(), url, user(), password());
-        migrationManager = new MigrationManager(new ArrayList<>(), "src/test/resources/test_migrations/mysql/", url);
+        migrationManager = new MigrationManager(new ArrayList<>(), new File("src/test/resources/test_migrations/mysql/"));
     }
 
     @After
@@ -41,7 +42,7 @@ public class MariaDBSQLMigrationSpec {
 
     @Test
     public void shouldApplyPendingMigrations() {
-        migrationManager.migrate(null);
+        migrationManager.migrate();
         the(countMigrations("schema_version")).shouldBeEqual(4);
         the(Base.count("books")).shouldBeEqual(9);
         the(Base.count("authors")).shouldBeEqual(2);

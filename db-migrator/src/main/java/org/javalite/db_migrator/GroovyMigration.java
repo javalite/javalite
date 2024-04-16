@@ -14,15 +14,18 @@ public class GroovyMigration extends Migration {
 
     private List<String> paths;
 
-    public GroovyMigration(List<String> paths, String version, File migrationFile, Properties mergeProperties) {
-        super(version, migrationFile, mergeProperties);
+    /**
+     * @param paths list of paths to be added to the classpath before executing migrations.
+     */
+    public GroovyMigration(List<String> paths, String version, String fileName, String migrationContent, Properties mergeProperties) {
+        super(version, fileName, migrationContent, mergeProperties);
         this.paths = paths;
     }
 
     @Override
-    public void migrate(String encoding) {
+    public void migrate() {
         try {
-            String script = new String(Util.read(getMigrationFile()));
+            String script = getMigrationContent();
             GroovyShell shell = new GroovyShell(new Binding());
             GroovyClassLoader classLoader = shell.getClassLoader();
             paths.forEach(classLoader::addClasspath);

@@ -6,6 +6,8 @@ import org.javalite.activejdbc.Base;
 import org.javalite.db_migrator.DbUtils;
 import org.javalite.db_migrator.MigrationManager;
 
+import java.io.File;
+
 import static java.lang.String.format;
 import static org.javalite.db_migrator.DbUtils.blank;
 import static org.javalite.db_migrator.DbUtils.exec;
@@ -31,7 +33,7 @@ public class CreateMojo extends AbstractDbMigrationMojo {
 
         try{
             openConnection();
-            new MigrationManager(getProject().getCompileClasspathElements(), toAbsolutePath(getMigrationsPath(), true), getUrl()).createSchemaVersionTableIfDoesNotExist();
+            new MigrationManager(getProject().getCompileClasspathElements(), new File(toAbsolutePath(getMigrationsPath(), true))).createSchemaVersionTableIfDoesNotExist();
         }catch(Exception e){
             throw  new MojoExecutionException("failed to create SCHEMA_VERSION table", e);
         }finally {

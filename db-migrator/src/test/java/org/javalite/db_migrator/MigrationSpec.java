@@ -1,6 +1,7 @@
 package org.javalite.db_migrator;
 
 import org.javalite.activejdbc.Base;
+import org.javalite.common.Util;
 import org.javalite.db_migrator.mock.MockConnection;
 import org.junit.After;
 import org.junit.Before;
@@ -32,11 +33,12 @@ public class MigrationSpec {
 
 
     @Test
-    public void shouldBatchSimpleCommands() throws Exception {
+    public void shouldBatchSimpleCommands() {
 
-        SQLMigration m = new SQLMigration("123", new File("src/test/resources/sql/simple.sql"));
+        File f = new File("src/test/resources/sql/simple.sql");
+        SQLMigration m = new SQLMigration("123", f.getName(), Util.readFile(f), null);
 
-        m.migrate(null);
+        m.migrate();
         List statements = getStatements();
 
         a(statements.size()).shouldBeEqual(2);
@@ -49,18 +51,20 @@ public class MigrationSpec {
     }
 
     @Test
-    public void shouldHandleComplexCommands() throws Exception {
-        SQLMigration m = new SQLMigration("123", new File("src/test/resources/sql/complex.sql"));
-        m.migrate(null);
+    public void shouldHandleComplexCommands()  {
+        File f = new File("src/test/resources/sql/complex.sql");
+        SQLMigration m = new SQLMigration("123", f.getName(), Util.readFile(f) , null);
+        m.migrate();
         List statements = getStatements();
         a(statements.size()).shouldBeEqual(1);
         shouldBeEqual(statements.get(0), "/expected/dav_file.sql");
     }
 
     @Test
-    public void shouldBatchMySQLFunctionsAndProcedures() throws Exception {
-        SQLMigration m = new SQLMigration("123", new File("src/test/resources/sql/stored-procedure-mysql.sql"));
-        m.migrate(null);
+    public void shouldBatchMySQLFunctionsAndProcedures() {
+        File f = new File("src/test/resources/sql/stored-procedure-mysql.sql");
+        SQLMigration m = new SQLMigration("123", f.getName(), Util.readFile(f) , null);
+        m.migrate();
         List statements = getStatements();
         a(statements.size()).shouldBeEqual(3);
         a(statements.get(0)).shouldBeEqual("CREATE FUNCTION hello (s CHAR(20)) RETURNS CHAR(50) DETERMINISTIC RETURN CONCAT('Hello, ',s,'!')");
@@ -70,9 +74,10 @@ public class MigrationSpec {
     }
 
     @Test
-    public void shouldBatchPostgresFunctionsAndProcedures() throws Exception {
-        SQLMigration m = new SQLMigration("123", new File("src/test/resources/sql/stored-procedure-postgresql.sql"));
-        m.migrate(null);
+    public void shouldBatchPostgresFunctionsAndProcedures(){
+        File f = new File("src/test/resources/sql/stored-procedure-postgresql.sql");
+        SQLMigration m = new SQLMigration("123", f.getName(), Util.readFile(f), null);
+        m.migrate();
         List statements = getStatements();
         a(statements.size()).shouldBeEqual(4);
         shouldBeEqual(statements.get(0), "/expected/getQtyOrders.sql");
@@ -82,9 +87,10 @@ public class MigrationSpec {
     }
 
     @Test
-    public void shouldUseTheSameDelimiterUntilExplicitlyChanged() throws Exception {
-        SQLMigration m = new SQLMigration("123", new File("src/test/resources/sql/function-mysql.sql"));
-        m.migrate(null);
+    public void shouldUseTheSameDelimiterUntilExplicitlyChanged() {
+        File f =  new File("src/test/resources/sql/function-mysql.sql");
+        SQLMigration m = new SQLMigration("123", f.getName(), Util.readFile(f), null);
+        m.migrate();
         List statements = getStatements();
         a(statements.size()).shouldBeEqual(3);
         shouldBeEqual(statements.get(0), "/expected/drop_simple.sql");
@@ -93,9 +99,10 @@ public class MigrationSpec {
     }
 
     @Test
-    public void shouldExecuteLastStatementWhenDelimiterIsMissing() throws Exception {
-        SQLMigration m = new SQLMigration("123", new File("src/test/resources/sql/missing-last-deliminator.sql"));
-        m.migrate(null);
+    public void shouldExecuteLastStatementWhenDelimiterIsMissing() {
+        File f = new File("src/test/resources/sql/missing-last-deliminator.sql");
+        SQLMigration m = new SQLMigration("123", f.getName(), Util.readFile(f), null);
+        m.migrate();
         List statements = getStatements();
         a(statements.size()).shouldBeEqual(2);
         shouldBeEqual(statements.get(0), "/expected/create_users.sql");

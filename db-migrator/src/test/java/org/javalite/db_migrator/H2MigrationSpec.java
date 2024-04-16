@@ -5,6 +5,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import static org.javalite.db_migrator.DbUtils.*;
@@ -15,9 +16,8 @@ public class H2MigrationSpec {
 
     @Before
     public void setup() throws Exception {
-        String url = "jdbc:h2:mem:h2-migration-test;DB_CLOSE_DELAY=-1";
-        Base.open("org.h2.Driver", url , "sa", "");
-        migrationManager = new MigrationManager(new ArrayList<>(), "src/test/resources/test_migrations/h2/", url);
+        Base.open("org.h2.Driver", "jdbc:h2:mem:h2-migration-test;DB_CLOSE_DELAY=-1" , "sa", "");
+        migrationManager = new MigrationManager(new ArrayList<>(),  new File("src/test/resources/test_migrations/h2/"));
     }
 
     @After
@@ -27,7 +27,7 @@ public class H2MigrationSpec {
 
     @Test
     public void shouldApplyPendingMigrations() {
-        migrationManager.migrate(null);
+        migrationManager.migrate();
         the(countMigrations("schema_version")).shouldBeEqual(2);
     }
 }

@@ -1,38 +1,74 @@
 package org.javalite.db_migrator;
 
-import groovy.util.logging.Slf4j;
 import org.javalite.activejdbc.Base;
 import org.javalite.cassandra.jdbc.CassandraJDBCConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 
 import static org.javalite.db_migrator.DbUtils.databaseType;
 
+
 public class MigrationManager {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(MigrationManager.class);
 
     private DatabaseType dbType;
     private VersionStrategy versionStrategy;
     private MigrationResolver migrationResolver;
 
 
-    public MigrationManager(List<String> paths, String migrationLocation, String url) throws SQLException {
-        this(paths, migrationLocation, url, null);
+    public MigrationManager(List<String> paths, File migrationLocation)  {
+        this(paths, migrationLocation, null);
     }
 
-    public MigrationManager(List<String> paths, String migrationLocation, String url, Properties mergeProperties) throws SQLException {
+    public MigrationManager(List<String> paths, File migrationsLocation, Properties mergeProperties) {
+
+        try{
+            this.dbType = determineDatabaseType();
+            migrationResolver = new MigrationResolver(paths, migrationsLocation, mergeProperties);
+            String databaseName;
+
+            databaseName = DbUtils.extractDatabaseName(Base.connection().getMetaData().getURL());
+            versionStrategy = new VersionStrategy(databaseName, dbType);
+        }catch(Exception e){
+            throw new MigrationException(e);
+        }
+    }
+
+    public MigrationManager(List<String> paths, String classpathMigrationsLocation, Properties mergeProperties) throws SQLException {
         this.dbType = determineDatabaseType();
-        migrationResolver = new MigrationResolver(paths, migrationLocation, mergeProperties);
+        migrationResolver = new MigrationResolver(paths, classpathMigrationsLocation, mergeProperties);
         String databaseName;
 
-        if(url != null){
-            databaseName = DbUtils.extractDatabaseName(url);
-        }else{
-            throw new IllegalArgumentException("URL cannot be null");
-        }
+        databaseName = DbUtils.extractDatabaseName(Base.connection().getMetaData().getURL());
         versionStrategy = new VersionStrategy(databaseName, dbType);
     }
+
+    /**
+     * To be used in web apps that package migration files on the classpath
+     *
+     * @param classpathMigrationsLocation location of the migrations on teh classpath (not on file system).
+     * @throws SQLException
+     */
+    public MigrationManager(String classpathMigrationsLocation) {
+
+        try{
+            this.dbType = determineDatabaseType();
+            migrationResolver = new MigrationResolver(new ArrayList<>(), classpathMigrationsLocation, null);
+            String databaseName;
+
+            databaseName = DbUtils.extractDatabaseName(Base.connection().getMetaData().getURL());
+            versionStrategy = new VersionStrategy(databaseName, dbType);
+        }catch(Exception e){
+            throw new MigrationException(e);
+        }
+    }
+
 
     /**
      * Returns pending migrations.
@@ -55,27 +91,27 @@ public class MigrationManager {
     /**
      * Migrates the database to the latest version, enabling migrations if necessary.
      */
-    public void migrate(String encoding) {
+    public void migrate() {
 
         createSchemaVersionTableIfDoesNotExist();
 
         final Collection<Migration> pendingMigrations = getPendingMigrations();
 
         if (pendingMigrations.isEmpty()) {
-            System.out.println("No new migrations are found");
+            LOGGER.info("No new migrations are found");
             return;
         }
-        System.out.println("Migrating database, applying " + pendingMigrations.size() + " migration(s)");
+        LOGGER.info("Migrating database, applying " + pendingMigrations.size() + " migration(s)");
         Migration currentMigration = null;
 
         try {
             Base.connection().setAutoCommit(false);
             for (Migration migration : pendingMigrations) {
                 currentMigration = migration;
-                System.out.println("Running migration " + currentMigration.getName());
+                LOGGER.info("Running migration " + currentMigration.getFileName());
                 long start = System.currentTimeMillis();
 
-                currentMigration.migrate(encoding);
+                currentMigration.migrate();
                 versionStrategy.recordMigration(currentMigration.getVersion(), new Date(start), (start - System.currentTimeMillis()));
                 Base.connection().commit();
             }
@@ -84,7 +120,7 @@ public class MigrationManager {
             assert currentMigration != null;
             throw new MigrationException("Migration for version " + currentMigration.getVersion() + " failed, rolling back and terminating migration.", e);
         }
-        System.out.println("Migrated database");
+        LOGGER.info("Migrated database");
     }
 
     private DatabaseType determineDatabaseType() throws SQLException {

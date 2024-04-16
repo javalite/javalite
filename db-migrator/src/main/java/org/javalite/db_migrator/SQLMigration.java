@@ -1,13 +1,11 @@
 package org.javalite.db_migrator;
 
 import org.javalite.common.Templator;
+import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -23,24 +21,17 @@ public class SQLMigration extends Migration {
     private static final String DELIMITER_KEYWORD = "DELIMITER";
     private static final String[] COMMENT_CHARS = new String[]{"--", "#", "//"};
 
-    public SQLMigration(String version, File migrationFile) {
-        this(version, migrationFile, null);
-
-    }
-    public SQLMigration(String version, File migrationFile, Properties mergeProperties) {
-        super(version, migrationFile, mergeProperties);
+    public SQLMigration(String version, String fileName, String migrationContent, Properties mergeProperties) {
+        super(version, fileName, migrationContent, mergeProperties);
     }
 
 
-    void migrate(String encoding) {
+    void migrate() {
         try {
 
-            String path = getMigrationFile().getCanonicalPath();
-            Charset charset = encoding != null ? Charset.forName(encoding) : Charset.defaultCharset();
+            LOGGER.info("Reading file {}", getFileName());
 
-            LOGGER.info("Reading file {} using charset: {} ", path, charset);
-
-            List<String> lines = Files.readAllLines(Paths.get(path), charset);
+            String[] lines = Util.split(getMigrationContent(), System.getProperty("line.separator"));
             String delimiter = DEFAULT_DELIMITER;
             List<String> statements = new ArrayList<>();
 
@@ -70,7 +61,7 @@ public class SQLMigration extends Migration {
                 exec(mergeProperties == null ? statement : Templator.mergeFromTemplate(statement, mergeProperties, false));
             }
         } catch (Exception e) {
-            LOGGER.error("Error executing migration file: {}", getMigrationFile().toString(), e);
+            LOGGER.error("Error executing migration file: {}", getFileName(), e);
             throw new MigrationException(e);
         }
     }
@@ -83,5 +74,4 @@ public class SQLMigration extends Migration {
         }
         return false;
     }
-
 }

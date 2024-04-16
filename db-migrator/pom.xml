@@ -84,12 +84,6 @@
             <scope>test</scope>
         </dependency>
 
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.javalite</groupId>
             <artifactId>javalite-common</artifactId>
@@ -106,6 +100,15 @@
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
             <version>3.0.12</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.classgraph</groupId>
+            <artifactId>classgraph</artifactId>
         </dependency>
 
         <dependency>
