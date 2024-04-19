@@ -18,6 +18,7 @@ import static org.javalite.db_migrator.DatabaseType.*;
 
 import static org.javalite.db_migrator.DbUtils.countMigrations;
 import static org.javalite.db_migrator.DbUtils.exec;
+import static org.javalite.db_migrator.MigrationManager.MIGRATION_LOGGER;
 
 
 /**
@@ -26,8 +27,6 @@ import static org.javalite.db_migrator.DbUtils.exec;
 class VersionStrategy {
 
     private static final String DEFAULT_VALUE = "create table %s (%s varchar(32) not null unique, %s timestamp not null, %s int not null)";
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(VersionStrategy.class);
 
     private static final Map<DatabaseType, String> CREATE_VERSION_TABLE_MAP;
 
@@ -49,7 +48,7 @@ class VersionStrategy {
     }
 
     void createSchemaVersionTable(DatabaseType dbType) {
-        LOGGER.info("Creating schema version table for {}.", dbType);
+        MIGRATION_LOGGER.info("Creating schema version table for {}.", dbType);
         exec(format(CREATE_VERSION_TABLE_MAP.getOrDefault(dbType, DEFAULT_VALUE), getTableName(), "version", "applied_on", "duration"));
     }
 
@@ -80,7 +79,7 @@ class VersionStrategy {
     void recordMigration(String version, Date startTime, long duration) {
         if(databaseType.equals(CASSANDRA)){
             String useKeyspace = "USE " + this.databaseName;
-            LOGGER.info("Executing: " + useKeyspace);
+            MIGRATION_LOGGER.info("Executing: " + useKeyspace);
             exec(useKeyspace);
         }
 

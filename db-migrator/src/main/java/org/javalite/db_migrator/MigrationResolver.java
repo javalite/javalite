@@ -16,9 +16,10 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.javalite.db_migrator.MigrationManager.MIGRATION_LOGGER;
+
 public class MigrationResolver {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MigrationResolver.class);
 
 
     private File migrationsLocation; // directory on the file system where migrations reside
@@ -96,7 +97,7 @@ public class MigrationResolver {
 
     List<Migration> loadMigrationsFromFiles(){
         List<Migration> migrations = new ArrayList<>();
-        LOGGER.info("Trying migrations at: {} ", migrationsLocation.getAbsolutePath());
+        MIGRATION_LOGGER.info("Trying migrations at: {} ", migrationsLocation.getAbsolutePath());
         //assume flat directory of migrations
         File[] files = migrationsLocation.listFiles();
 
@@ -110,7 +111,7 @@ public class MigrationResolver {
         if(!migrationsLocation.isDirectory()){
             throw  new IllegalArgumentException(migrationsLocation + " is not a directory");
         }
-        LOGGER.info("Trying migrations at: {} ", migrationsLocation.getAbsolutePath());
+        MIGRATION_LOGGER.info("Trying migrations at: {} ", migrationsLocation.getAbsolutePath());
         // Extract versions and create executable migrations for each resource.
         for (File migrationFile: migrationsFiles) {
             String version = extractVersion(migrationFile.getName());

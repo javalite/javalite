@@ -10,13 +10,14 @@ import org.slf4j.LoggerFactory;
 import java.sql.Connection;
 
 import static org.javalite.db_migrator.DatabaseType.*;
+import static org.javalite.db_migrator.MigrationManager.MIGRATION_LOGGER;
 
 
 public class DbUtils {
 
     private static ThreadLocal<Connection> connectionTL = new ThreadLocal<Connection>();
 
-    private static Logger LOGGER = LoggerFactory.getLogger(DbUtils.class);
+
 
     private static final String POSTGRESQL_FRAGMENT = ":postgresql:";
     private static final String MYSQL_FRAGMENT = ":mysql:";
@@ -204,7 +205,7 @@ public class DbUtils {
 
     public static int exec(String statement, Object ... params){
         try {
-            LOGGER.info("Executing: <" + statement.trim() + ">");
+            MIGRATION_LOGGER.info("Executing: <" + statement.trim() + ">");
             return params.length == 0 ? Base.exec(statement.trim()) : Base.exec(statement.trim(), params);
 
         } catch (Exception e) {

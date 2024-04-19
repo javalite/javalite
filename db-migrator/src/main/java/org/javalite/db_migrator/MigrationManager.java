@@ -15,7 +15,7 @@ import static org.javalite.db_migrator.DbUtils.databaseType;
 
 public class MigrationManager {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(MigrationManager.class);
+    static final Logger MIGRATION_LOGGER = LoggerFactory.getLogger(MigrationManager.class);
 
     private DatabaseType dbType;
     private VersionStrategy versionStrategy;
@@ -98,17 +98,17 @@ public class MigrationManager {
         final Collection<Migration> pendingMigrations = getPendingMigrations();
 
         if (pendingMigrations.isEmpty()) {
-            LOGGER.info("No new migrations are found");
+            MIGRATION_LOGGER.info("No new migrations are found");
             return;
         }
-        LOGGER.info("Migrating database, applying " + pendingMigrations.size() + " migration(s)");
+        MIGRATION_LOGGER.info("Migrating database, applying " + pendingMigrations.size() + " migration(s)");
         Migration currentMigration = null;
 
         try {
             Base.connection().setAutoCommit(false);
             for (Migration migration : pendingMigrations) {
                 currentMigration = migration;
-                LOGGER.info("Running migration " + currentMigration.getFileName());
+                MIGRATION_LOGGER.info("Running migration " + currentMigration.getFileName());
                 long start = System.currentTimeMillis();
 
                 currentMigration.migrate();
@@ -120,7 +120,7 @@ public class MigrationManager {
             assert currentMigration != null;
             throw new MigrationException("Migration for version " + currentMigration.getVersion() + " failed, rolling back and terminating migration.", e);
         }
-        LOGGER.info("Migrated database");
+        MIGRATION_LOGGER.info("Migrated database");
     }
 
     private DatabaseType determineDatabaseType() throws SQLException {

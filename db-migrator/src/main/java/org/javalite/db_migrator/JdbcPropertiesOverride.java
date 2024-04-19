@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
+import static org.javalite.db_migrator.MigrationManager.MIGRATION_LOGGER;
+
 /**
  * This class serves as a source of JDBC connection properties for different environments during tests.
  *
@@ -16,7 +18,6 @@ import java.util.Properties;
  */
 public class JdbcPropertiesOverride {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(JdbcPropertiesOverride.class);
 
     private static final String driver;
     private static String url;
@@ -28,7 +29,7 @@ public class JdbcPropertiesOverride {
         try {
             String file = System.getProperty("jdbc.properties.file");
             if(file != null){
-                LOGGER.info("Located  database connection config file: " + file);
+                MIGRATION_LOGGER.info("Located  database connection config file: " + file);
                 Properties props = Util.readProperties(System.getProperty("jdbc.properties.file"));
                 fullUrl = props.getProperty("development.url");// this includes the database name. We need to remove it.
                 JdbcPropertiesOverride.url = fullUrl.substring(0, fullUrl.lastIndexOf("/"));

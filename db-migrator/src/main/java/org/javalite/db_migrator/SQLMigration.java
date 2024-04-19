@@ -12,11 +12,11 @@ import java.util.Properties;
 
 import static org.javalite.common.Util.blank;
 import static org.javalite.db_migrator.DbUtils.exec;
+import static org.javalite.db_migrator.MigrationManager.MIGRATION_LOGGER;
 
 
 public class SQLMigration extends Migration {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SQLMigration.class);
     private static final String DEFAULT_DELIMITER = ";";
     private static final String DELIMITER_KEYWORD = "DELIMITER";
     private static final String[] COMMENT_CHARS = new String[]{"--", "#", "//"};
@@ -29,7 +29,7 @@ public class SQLMigration extends Migration {
     void migrate() {
         try {
 
-            LOGGER.info("Reading file {}", getFileName());
+            MIGRATION_LOGGER.info("Reading file {}", getFileName());
 
             String[] lines = Util.split(getMigrationContent(), System.getProperty("line.separator"));
             String delimiter = DEFAULT_DELIMITER;
@@ -61,7 +61,7 @@ public class SQLMigration extends Migration {
                 exec(mergeProperties == null ? statement : Templator.mergeFromTemplate(statement, mergeProperties, false));
             }
         } catch (Exception e) {
-            LOGGER.error("Error executing migration file: {}", getFileName(), e);
+            MIGRATION_LOGGER.error("Error executing migration file: {}", getFileName(), e);
             throw new MigrationException(e);
         }
     }
