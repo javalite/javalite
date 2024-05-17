@@ -18,6 +18,8 @@ package org.javalite.activeweb;
 import freemarker.template.TemplateNotFoundException;
 import org.javalite.activejdbc.DB;
 
+import org.javalite.activeweb.proxy.HttpProxyException;
+import org.javalite.activeweb.proxy.HttpServletResponseProxy;
 import org.javalite.app_config.AppConfig;
 import org.javalite.common.Convert;
 import org.javalite.json.JSONHelper;
@@ -248,6 +250,13 @@ public class RequestDispatcher implements Filter {
 
 
     private void renderSystemError(int status, Throwable e) {
+
+        if(e.getCause() != null && e instanceof HttpProxyException){
+            RequestContext.getHttpResponse().setStatus(499);// side effect :(
+            logDone(e);
+            return;
+        }
+
         if(status != 404){
             logger.error("Rendering error", e);
         }
@@ -378,6 +387,11 @@ public class RequestDispatcher implements Filter {
 
         if (throwable != null) {
             log.put("error", JSONHelper.sanitize(throwable.getMessage() != null ? throwable.getMessage() : throwable.toString()));
+        }
+
+        //usage of the side effect: The status code is used to add a specific message to the log.
+        if(RequestContext.getHttpResponse().getStatus() == 499){
+         log.put("message", "Looks like the client abandoned this request...");
         }
 
         addRequestHeaders(log);

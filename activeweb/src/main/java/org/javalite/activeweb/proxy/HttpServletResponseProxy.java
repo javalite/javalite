@@ -1,4 +1,7 @@
-package org.javalite.activeweb;
+package org.javalite.activeweb.proxy;
+
+
+import org.javalite.activeweb.WebException;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
@@ -10,30 +13,29 @@ import java.util.Locale;
 
 public class HttpServletResponseProxy implements HttpServletResponse {
 
-    private HttpServletResponse target;
+    private HttpServletResponse servletResponse;
     private OutputType outputType;
 
-    enum OutputType{
+    public enum OutputType{
         WRITER, OUTPUT_STREAM
     }
 
-
-    HttpServletResponseProxy(HttpServletResponse target) {
-        this.target = target;
+    public HttpServletResponseProxy(HttpServletResponse target) {
+        this.servletResponse = target;
     }
 
-    HttpServletResponse getTarget() {
-        return target;
+    public HttpServletResponse getTarget() {
+        return servletResponse;
     }
 
     @Override
     public void addCookie(Cookie cookie) {
-        target.addCookie(cookie);
+        servletResponse.addCookie(cookie);
     }
 
     @Override
     public boolean containsHeader(String name) {
-        return target.containsHeader(name);
+        return servletResponse.containsHeader(name);
     }
 
     @Override
@@ -43,186 +45,186 @@ public class HttpServletResponseProxy implements HttpServletResponse {
 
     @Override
     public String encodeRedirectURL(String url) {
-        return target.encodeRedirectURL(url);
+        return servletResponse.encodeRedirectURL(url);
     }
 
     @Override
     public String encodeUrl(String url) {
-        return target.encodeUrl(url);
+        return servletResponse.encodeUrl(url);
     }
 
     @Override
     public String encodeRedirectUrl(String url) {
-        return target.encodeRedirectURL(url);
+        return servletResponse.encodeRedirectURL(url);
     }
 
     @Override
     public void sendError(int sc, String msg) throws IOException {
-        target.sendError(sc, msg);
+        servletResponse.sendError(sc, msg);
     }
 
     @Override
     public void sendError(int sc) throws IOException {
-        target.sendError(sc);
+        servletResponse.sendError(sc);
     }
 
     @Override
     public void sendRedirect(String location) throws IOException {
-        target.sendRedirect(location);
+        servletResponse.sendRedirect(location);
     }
 
     @Override
     public void setDateHeader(String name, long date) {
-        target.setDateHeader(name, date);
+        servletResponse.setDateHeader(name, date);
     }
 
     @Override
     public void addDateHeader(String name, long date) {
-        target.addDateHeader(name, date);
+        servletResponse.addDateHeader(name, date);
     }
 
     @Override
     public void setHeader(String name, String value) {
-        target.setHeader(name, value);
+        servletResponse.setHeader(name, value);
     }
 
     @Override
     public void addHeader(String name, String value) {
-        target.addHeader(name, value);
+        servletResponse.addHeader(name, value);
     }
 
     @Override
     public void setIntHeader(String name, int value) {
-        target.setIntHeader(name, value);
+        servletResponse.setIntHeader(name, value);
     }
 
     @Override
     public void addIntHeader(String name, int value) {
-        target.addIntHeader(name, value);
+        servletResponse.addIntHeader(name, value);
     }
 
     @Override
     public void setStatus(int sc) {
-        target.setStatus(sc);
+        servletResponse.setStatus(sc);
     }
 
     @Override
     public void setStatus(int sc, String sm) {
-        target.setStatus(sc, sm);
+        servletResponse.setStatus(sc, sm);
     }
 
     @Override
     public int getStatus() {
-        return target.getStatus();
+        return servletResponse.getStatus();
     }
 
     @Override
     public String getHeader(String name) {
-        return target.getHeader(name);
+        return servletResponse.getHeader(name);
     }
 
     @Override
     public Collection<String> getHeaders(String name) {
-        return target.getHeaders(name);
+        return servletResponse.getHeaders(name);
     }
 
     @Override
     public Collection<String> getHeaderNames() {
-        return target.getHeaderNames();
+        return servletResponse.getHeaderNames();
     }
 
     @Override
     public String getCharacterEncoding() {
-        return target.getCharacterEncoding();
+        return servletResponse.getCharacterEncoding();
     }
 
     @Override
     public String getContentType() {
-        return target.getContentType();
+        return servletResponse.getContentType();
     }
 
     @Override
     public ServletOutputStream getOutputStream() throws IOException {
         if(OutputType.WRITER == outputType){
-            throw new WebException("Cannot return OutputStream because Writer was already served.");
+            throw new WebException("Cannot return OutputStream because Writer was already used.");
         }else if(outputType == null) {
             outputType = OutputType.OUTPUT_STREAM;
         }
-        return target.getOutputStream();
+        return new ServletOutputStreamProxy(this.servletResponse.getOutputStream());
     }
 
     @Override
     public PrintWriter getWriter() throws IOException {
         if(OutputType.OUTPUT_STREAM == outputType){
-            throw new WebException("Cannot return Writer because OutputStream was already served.");
+            throw new WebException("Cannot return Writer because OutputStream was already used.");
         }else if(outputType == null){
             outputType = OutputType.WRITER;
         }
-        return target.getWriter();
+        return  new PrintWriterProxy(this.servletResponse.getWriter());
     }
 
-    OutputType getOutputType(){
+    public OutputType getOutputType(){
         return outputType;
     }
 
 
     @Override
     public void setCharacterEncoding(String charset) {
-        target.setCharacterEncoding(charset);
+        servletResponse.setCharacterEncoding(charset);
     }
 
     @Override
     public void setContentLength(int len) {
-        target.setContentLength(len);
+        servletResponse.setContentLength(len);
     }
 
     @Override
     public void setContentLengthLong(long len) {
-        target.setContentLengthLong(len);
+        servletResponse.setContentLengthLong(len);
     }
 
     @Override
     public void setContentType(String type) {
-        target.setContentType(type);
+        servletResponse.setContentType(type);
     }
 
     @Override
     public void setBufferSize(int size) {
-        target.setBufferSize(size);
+        servletResponse.setBufferSize(size);
     }
 
     @Override
     public int getBufferSize() {
-        return target.getBufferSize();
+        return servletResponse.getBufferSize();
     }
 
     @Override
     public void flushBuffer() throws IOException {
-        target.flushBuffer();
+        servletResponse.flushBuffer();
     }
 
     @Override
     public void resetBuffer() {
-        target.resetBuffer();
+        servletResponse.resetBuffer();
     }
 
     @Override
     public boolean isCommitted() {
-        return target.isCommitted();
+        return servletResponse.isCommitted();
     }
 
     @Override
     public void reset() {
-        target.reset();
+        servletResponse.reset();
     }
 
     @Override
     public void setLocale(Locale loc) {
-        target.setLocale(loc);
+        servletResponse.setLocale(loc);
     }
 
     @Override
     public Locale getLocale() {
-        return target.getLocale();
+        return servletResponse.getLocale();
     }
 }
