@@ -18,7 +18,8 @@ package org.javalite.activeweb;
 import freemarker.template.TemplateNotFoundException;
 import org.javalite.activejdbc.DB;
 
-import org.javalite.activeweb.proxy.HttpProxyException;
+import org.javalite.activeweb.proxy.ProxyWriterException;
+import org.javalite.activeweb.proxy.ProxyIOException;
 import org.javalite.activeweb.proxy.HttpServletResponseProxy;
 import org.javalite.app_config.AppConfig;
 import org.javalite.common.Convert;
@@ -215,14 +216,20 @@ public class RequestDispatcher implements Filter {
                 logger.warn("No matching route for servlet path: " + request.getServletPath() + ", passing down to container.");
                 chain.doFilter(req, resp);//let it fall through
             }
-        } catch (CompilationException
+        }catch (CompilationException
                  | ClassLoadException
                  | ActionNotFoundException
                  | ViewMissingException
                  | RouteException e) {
             renderSystemError(404, e);
         } catch (Throwable e) {
-            renderSystemError(500, e);
+            if(e.getClass().equals(ProxyWriterException.class)
+                    || e.getCause() != null && e.getCause().getClass().equals(ProxyIOException.class)){
+                RequestContext.getHttpResponse().setStatus(499);// side effect :(
+                logDone(e);
+            }else{
+                renderSystemError(500, e);
+            }
         }finally {
             RequestContext.clear();
             Context.clear();
@@ -243,19 +250,7 @@ public class RequestDispatcher implements Filter {
         return false;
     }
 
-
-    private void renderSystemError(Throwable e) {
-        renderSystemError(500, e);
-    }
-
-
     private void renderSystemError(int status, Throwable e) {
-
-        if(e.getCause() != null && e instanceof HttpProxyException){
-            RequestContext.getHttpResponse().setStatus(499);// side effect :(
-            logDone(e);
-            return;
-        }
 
         if(status != 404){
             logger.error("Rendering error", e);
@@ -282,9 +277,9 @@ public class RequestDispatcher implements Filter {
             try{
                 if(t instanceof  ActionNotFoundException
                         || t instanceof TemplateNotFoundException){
-                    writeBack("resource not found", 404, t);
+                    writeBack("resource not found", 404);
                 }else{
-                    writeBack("internal error", 500, t);
+                    writeBack("internal error", 500);
                 }
             }catch(Exception ex){
                 logger.error("Exception trying to render error response", ex);
@@ -293,29 +288,33 @@ public class RequestDispatcher implements Filter {
         }
     }
 
-    private void writeBack(String message, int status, Throwable t) throws IOException {
-
+    private void writeBack(String message, int status) throws IOException {
         HttpServletResponseProxy httpServletResponseProxy = RequestContext.getHttpResponse();
         if(httpServletResponseProxy == null){
-            throw new WebException("Catastrophic failure: failed to find HttpServletResponse...", t);
+            throw new WebException("Catastrophic failure: failed to find HttpServletResponse...");
         }
+
+        httpServletResponseProxy.setStatus(status);
         HttpServletResponseProxy.OutputType outputType = httpServletResponseProxy.getOutputType();
-        if(HttpServletResponseProxy.OutputType.OUTPUT_STREAM == outputType){
+        if(outputType == HttpServletResponseProxy.OutputType.OUTPUT_STREAM
+                || outputType == HttpServletResponseProxy.OutputType.NONE){
             ServletOutputStream outputStream = httpServletResponseProxy.getOutputStream();
             if(outputStream == null){
-                throw new WebException("Catastrophic failure: failed to find OutputStream...", t);
+                throw new WebException("Catastrophic failure: failed to find OutputStream...");
             }else{
                 outputStream.print(message); // "internal error"
+                outputStream.flush();
+
             }
-        }else{
+        }else if(HttpServletResponseProxy.OutputType.WRITER == outputType){
             PrintWriter writer = httpServletResponseProxy.getWriter();
             if(writer == null){
-                throw new WebException("Catastrophic failure: failed to find Writer...", t);
+                throw new WebException("Catastrophic failure: failed to find Writer...");
             }else{
                 writer.print(message);
+                writer.flush();
             }
         }
-        httpServletResponseProxy.setStatus(status);
     }
 
     private void sendDefaultResponse(int status, Throwable e) {
@@ -399,6 +398,8 @@ public class RequestDispatcher implements Filter {
         if(throwable != null && status >= 500){
             logger.error(toJSON(log), throwable);
         }if(throwable != null && status == 404) {
+            logger.warn(toJSON(log), throwable.toString());
+        }if(throwable != null && status == 499) {
             logger.warn(toJSON(log), throwable.toString());
         } else {
             logger.info(toJSON(log));

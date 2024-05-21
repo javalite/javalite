@@ -32,10 +32,8 @@ public class ServletOutputStreamProxy extends ServletOutputStream {
         try{
             target.write(b);
         }catch(Exception e){
-            throw new HttpProxyException(e);
+            throw new ProxyIOException(e);
         }
-
-
     }
 
     @Override
@@ -43,7 +41,7 @@ public class ServletOutputStreamProxy extends ServletOutputStream {
         try{
             target.print(s);
         }catch(Exception e){
-            throw new HttpProxyException(e);
+            throw new ProxyIOException(e);
         }
     }
 
@@ -52,7 +50,7 @@ public class ServletOutputStreamProxy extends ServletOutputStream {
         try{
             target.print(b);
         }catch(Exception e){
-            throw new HttpProxyException(e);
+            throw new ProxyIOException(e);
         }
     }
 
@@ -61,10 +59,8 @@ public class ServletOutputStreamProxy extends ServletOutputStream {
         try{
             target.print(c);
         }catch(Exception e){
-            throw new HttpProxyException(e);
+            throw new ProxyIOException(e);
         }
-
-
     }
 
     @Override
@@ -72,7 +68,7 @@ public class ServletOutputStreamProxy extends ServletOutputStream {
         try{
             target.print(i);
         }catch(Exception e){
-            throw new HttpProxyException(e);
+            throw new ProxyIOException(e);
         }
     }
 
@@ -81,7 +77,7 @@ public class ServletOutputStreamProxy extends ServletOutputStream {
         try{
             target.print(l);
         }catch(Exception e){
-            throw new HttpProxyException(e);
+            throw new ProxyIOException(e);
         }
     }
 
@@ -90,7 +86,7 @@ public class ServletOutputStreamProxy extends ServletOutputStream {
         try{
             target.print(f);
         }catch(Exception e){
-            throw new HttpProxyException(e);
+            throw new ProxyIOException(e);
         }
     }
 
@@ -99,13 +95,17 @@ public class ServletOutputStreamProxy extends ServletOutputStream {
         try{
             target.print(d);
         }catch(Exception e){
-            throw new HttpProxyException(e);
+            throw new ProxyIOException(e);
         }
     }
 
     @Override
     public void println() throws IOException {
-        target.println();
+        try{
+            target.println();
+        }catch(Exception e){
+            throw new ProxyIOException(e);
+        }
     }
 
     @Override
@@ -113,7 +113,7 @@ public class ServletOutputStreamProxy extends ServletOutputStream {
         try{
             target.print(s);
         }catch(Exception e){
-            throw new HttpProxyException(e);
+            throw new ProxyIOException(e);
         }
     }
 
@@ -122,7 +122,7 @@ public class ServletOutputStreamProxy extends ServletOutputStream {
         try{
             target.print(b);
         }catch(Exception e){
-            throw new HttpProxyException(e);
+            throw new ProxyIOException(e);
         }
     }
 
@@ -131,7 +131,7 @@ public class ServletOutputStreamProxy extends ServletOutputStream {
         try{
             target.print(c);
         }catch(Exception e){
-            throw new HttpProxyException(e);
+            throw new ProxyIOException(e);
         }
     }
 
@@ -140,7 +140,7 @@ public class ServletOutputStreamProxy extends ServletOutputStream {
         try{
             target.print(i);
         }catch(Exception e){
-            throw new HttpProxyException(e);
+            throw new ProxyIOException(e);
         }
     }
 
@@ -149,17 +149,16 @@ public class ServletOutputStreamProxy extends ServletOutputStream {
         try{
             target.print(l);
         }catch(Exception e){
-            throw new HttpProxyException(e);
+            throw new ProxyIOException(e);
         }
     }
 
     @Override
     public void println(float f) throws IOException {
-
         try{
             target.print(f);
         }catch(Exception e){
-            throw new HttpProxyException(e);
+            throw new ProxyIOException(e);
         }
     }
 
@@ -168,39 +167,35 @@ public class ServletOutputStreamProxy extends ServletOutputStream {
         try{
             target.print(d);
         }catch(Exception e){
-            throw new HttpProxyException(e);
+            throw new ProxyIOException(e);
         }
     }
 
     @Override
     public void write(byte[] b) throws IOException {
-
         try{
             target.write(b);
         }catch(Exception e){
-            throw new HttpProxyException(e);
+            throw new ProxyIOException(e);
         }
     }
 
     @Override
     public void write(byte[] b, int off, int len) throws IOException {
-
         try{
             target.write(b, off, len);
         }catch(Exception e){
-            throw new HttpProxyException(e);
+            throw new ProxyIOException(e);
         }
     }
 
     @Override
     public void flush(){
-
         try{
             target.flush();
-        }catch(Exception e){
-            throw new HttpProxyException(e);
+        }catch(IOException e){
+            throw new ProxyWriterException(e);
         }
-
     }
 
     @Override

@@ -14,16 +14,25 @@ import java.util.Locale;
 public class HttpServletResponseProxy implements HttpServletResponse {
 
     private HttpServletResponse servletResponse;
-    private OutputType outputType;
-
+    private PrintWriterProxy printWriterProxy;
+    private ServletOutputStreamProxy outputStreamProxy;
     public enum OutputType{
-        WRITER, OUTPUT_STREAM
+        WRITER, OUTPUT_STREAM, NONE
     }
 
     public HttpServletResponseProxy(HttpServletResponse target) {
         this.servletResponse = target;
     }
 
+    public OutputType getOutputType(){
+        if(outputStreamProxy != null){
+            return OutputType.OUTPUT_STREAM;
+        } else if (printWriterProxy != null) {
+            return OutputType.WRITER;
+        }else {
+            return OutputType.NONE;
+        }
+    }
     public HttpServletResponse getTarget() {
         return servletResponse;
     }
@@ -145,28 +154,25 @@ public class HttpServletResponseProxy implements HttpServletResponse {
 
     @Override
     public ServletOutputStream getOutputStream() throws IOException {
-        if(OutputType.WRITER == outputType){
+        if(printWriterProxy != null){
             throw new WebException("Cannot return OutputStream because Writer was already used.");
-        }else if(outputType == null) {
-            outputType = OutputType.OUTPUT_STREAM;
         }
-        return new ServletOutputStreamProxy(this.servletResponse.getOutputStream());
+        if(outputStreamProxy == null){
+            outputStreamProxy= new ServletOutputStreamProxy(this.servletResponse.getOutputStream());
+        }
+        return outputStreamProxy;
     }
 
     @Override
     public PrintWriter getWriter() throws IOException {
-        if(OutputType.OUTPUT_STREAM == outputType){
+        if(outputStreamProxy != null){
             throw new WebException("Cannot return Writer because OutputStream was already used.");
-        }else if(outputType == null){
-            outputType = OutputType.WRITER;
         }
-        return  new PrintWriterProxy(this.servletResponse.getWriter());
+        if(printWriterProxy == null){
+            printWriterProxy = new PrintWriterProxy(this.servletResponse.getWriter());
+        }
+        return  printWriterProxy;
     }
-
-    public OutputType getOutputType(){
-        return outputType;
-    }
-
 
     @Override
     public void setCharacterEncoding(String charset) {
