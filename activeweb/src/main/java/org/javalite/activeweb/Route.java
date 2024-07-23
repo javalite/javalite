@@ -1,7 +1,6 @@
 package org.javalite.activeweb;
 
 import org.javalite.activeweb.annotations.FailedValidationReply;
-import org.javalite.common.Inflector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

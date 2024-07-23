@@ -20,6 +20,7 @@ import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
 import org.javalite.activeweb.controller_filters.HttpSupportFilter;
+import org.javalite.activeweb.controllers.AbstractSystemErrorController;
 import org.javalite.activeweb.freemarker.AbstractFreeMarkerConfig;
 import org.javalite.activeweb.websockets.AbstractWebSocketConfig;
 import org.javalite.activeweb.websockets.AppEndpoint;
@@ -40,6 +41,7 @@ public class Configuration {
     private static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
     private static Injector injector;
     private static final Map<String, Class<? extends AppEndpoint>> mappings =  new HashMap<>();
+    private  static ErrorRouteBuilder builder;
 
     static List<String> getControllerPackages() {
         return controllerPackages;
@@ -325,8 +327,10 @@ public class Configuration {
         try(CloseableList<ClassInfo> infosList =  getControllerClassInfos(null)){
             for (ClassInfo classInfo : infosList) {
                 String className = classInfo.getName();
-                if (className.chars().filter(ch -> ch == '.').count() > 2) {
-                    subpackages.add(className.substring(className.indexOf("controllers.") + 12, className.lastIndexOf('.')));
+                if (!className.equals(AbstractSystemErrorController.class.getCanonicalName())) { // skip the known abstract class
+                    if (className.chars().filter(ch -> ch == '.').count() > 2) {
+                        subpackages.add(className.substring(className.indexOf("controllers.") + 12, className.lastIndexOf('.')));
+                    }
                 }
             }
         }
@@ -345,7 +349,8 @@ public class Configuration {
         CloseableList<ClassInfo> controllerInfos = new CloseableList<>();
         String controllerRootPackage = Configuration.getRootPackage() + ".controllers";
 
-        ClassGraph classGraph = new ClassGraph().acceptPackages(controllerRootPackage).enableClassInfo().enableMethodInfo().enableAnnotationInfo();
+        ClassGraph classGraph = new ClassGraph().acceptPackages(controllerRootPackage)
+                .enableClassInfo().enableMethodInfo().enableAnnotationInfo().ignoreClassVisibility();
 
         if (classLoader != null) {
             classGraph.overrideClassLoaders(classLoader);
@@ -353,7 +358,7 @@ public class Configuration {
 
         ScanResult scanResult = classGraph.scan();
         for (ClassInfo classInfo : scanResult.getSubclasses(AppController.class.getName())) {
-            if (!classInfo.isAbstract()) {
+            if (!classInfo.isAbstract() && classInfo.isPublic()) {
                 classInfo.getAnnotationInfo();
                 controllerInfos.add(classInfo);
             }
@@ -367,5 +372,13 @@ public class Configuration {
 
     public static Class<? extends AppEndpoint> getAppEndpointClass(String path){
          return mappings.get(path);
+    }
+
+    public static void setErrorRouteBuilder(ErrorRouteBuilder builder) {
+        Configuration.builder = builder;
+    }
+
+    public static ErrorRouteBuilder getErrorRouteBuilder() {
+        return Configuration.builder;
     }
 }

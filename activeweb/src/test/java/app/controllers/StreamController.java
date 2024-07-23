@@ -17,12 +17,10 @@ limitations under the License.
 package app.controllers;
 
 import org.javalite.activeweb.AppController;
-import org.javalite.activeweb.AppController;
 
 import static org.javalite.common.Collections.map;
 
 import java.io.*;
-import java.nio.file.Files;
 
 /**
  * @author Igor Polevoy
@@ -42,7 +40,7 @@ public class StreamController extends AppController {
         writer().write("hello");
     }
 
-    public void writeWithContentTypeAndHeaders() throws IOException {
+    public void writeWithContentTypeAndHeaders() {
         writer("text/xml", map("Content-Length", 5), 200).write("hello");
     }
 
@@ -50,8 +48,30 @@ public class StreamController extends AppController {
         outputStream("text/plain", map("Content-Length", 5), 200).write("hello".getBytes());
     }
 
-    public void deleteFile() throws IOException {
+    public void deleteFile()  {
         File f = new File(param("file"));
         sendFile(f, true);
+    }
+
+
+    public void withHeader() throws IOException {
+        OutputStream out  = outputStream("application/json");
+        out.write("[1,2]".getBytes());
+        out.flush();
+    }
+
+
+    public void withHeaderBefore() throws IOException {
+        header("Content-type", "application/json");
+        OutputStream out  = outputStream();
+        out.write("[1,2]".getBytes());
+        out.flush();
+    }
+
+    public void withHeaderBeforeAndOn() throws IOException {
+        header("Content-type", "application/xml");
+        OutputStream out  = outputStream("text/xml");
+        out.write("blah".getBytes());
+        out.flush();
     }
 }

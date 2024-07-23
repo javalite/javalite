@@ -24,9 +24,6 @@ import org.javalite.test.SystemStreamUtil;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
 /**
  * @author Igor Polevoy
  */

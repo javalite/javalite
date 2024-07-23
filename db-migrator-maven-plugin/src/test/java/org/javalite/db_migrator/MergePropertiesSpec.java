@@ -22,7 +22,7 @@ public class MergePropertiesSpec {
 
     @Test
     public void shouldUseMergePropertiesWithDefaultEnvironment() throws MojoExecutionException {
-        Map<String, Properties> envProperties = execute(null,"/test_migrations/templator/table-names.properties");
+        Map<String, Properties> envProperties = execute(null,"/templator/table-names.properties");
         the(envProperties.get("null")).shouldBeEqual(map("authors-table", "authors",
                 "books-table", "books",
                 "driver", driver(),
@@ -36,7 +36,7 @@ public class MergePropertiesSpec {
 
     @Test
     public void shouldUseMergePropertiesWithDevelopmentEnvironment() throws MojoExecutionException {
-        Map<String, Properties> envProperties = execute("development","/test_migrations/templator/table-names.properties");
+        Map<String, Properties> envProperties = execute("development","/templator/table-names.properties");
         the(envProperties.get("development")).shouldBeEqual(map(
                 "authors-table", "development-authors",
                 "books-table", "development-books",
@@ -50,7 +50,7 @@ public class MergePropertiesSpec {
 
     @Test
     public void shouldUseMergePropertiesWithDevelopmentAndStagingEnvironments() throws MojoExecutionException {
-        Map<String, Properties> envProperties = execute("development,staging","/test_migrations/templator/table-names.properties");
+        Map<String, Properties> envProperties = execute("development,staging","/templator/table-names.properties");
         the(envProperties.get("development")).shouldBeEqual(map(
                 "authors-table", "development-authors",
                 "books-table", "development-books",
@@ -63,7 +63,7 @@ public class MergePropertiesSpec {
                 "books-table", "staging-books",
                 "driver", driver(),
                 "password", password(),
-                "url", "jdbc:mariadb://localhost:3307/test_project_stage",
+                "url", "jdbc:mariadb://localhost:3309/test_project_stage",
                 "username", user()));
     }
 

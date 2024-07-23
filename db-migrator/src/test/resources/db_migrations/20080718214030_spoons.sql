@@ -1,0 +1,6 @@
+CREATE TABLE spoons (
+    id INT NOT NULL PRIMARY KEY,
+    material VARCHAR(20) NOT NULL UNIQUE,
+    type VARCHAR(1000) NOT NULL
+
+);

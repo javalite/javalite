@@ -117,6 +117,6 @@ public class ControllerRunnerSpec extends RequestSpec{
         request.setMethod("GET");
         dispatcher.doFilter(request, response, filterChain);
         the(response.getStatus()).shouldBeEqual(404);
-        the(response.getContentAsString()).shouldContain("Failed to find an action method for action: 'wait' in controller: app.controllers.AjaxController");
+        the(response.getContentAsString()).shouldContain("resource not found");
     }
 }

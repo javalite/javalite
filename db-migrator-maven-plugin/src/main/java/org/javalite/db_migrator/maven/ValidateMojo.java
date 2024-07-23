@@ -7,6 +7,7 @@ import org.javalite.activejdbc.Base;
 import org.javalite.db_migrator.Migration;
 import org.javalite.db_migrator.MigrationManager;
 
+import java.io.File;
 import java.util.List;
 
 
@@ -14,13 +15,14 @@ import java.util.List;
  * Validate current schema against available migrations.
  */
 @Mojo(name = "validate")
+@SuppressWarnings("unchecked")
 public class ValidateMojo extends AbstractDbMigrationMojo {
     public void executeMojo() throws MojoExecutionException {
         try {
             String path = toAbsolutePath(getMigrationsPath());
             getLog().info("Validating " + getUrl() + " using migrations from " + path);
             openConnection();
-            MigrationManager manager = new MigrationManager(getProject(), path, getUrl());
+            MigrationManager manager = new MigrationManager(getProject().getCompileClasspathElements(), new File(path));
             List<Migration> pendingMigrations = manager.getPendingMigrations();
 
             getLog().info("Database: " + getUrl());
@@ -28,7 +30,7 @@ public class ValidateMojo extends AbstractDbMigrationMojo {
             if (!pendingMigrations.isEmpty()) {
                 getLog().info("Pending Migrations: ");
                 for (Migration migration : pendingMigrations) {
-                    getLog().info(migration.getName());
+                    getLog().info(migration.getFileName());
                 }
             }else{
                 getLog().info("No pending migrations found");

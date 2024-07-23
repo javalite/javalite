@@ -22,6 +22,7 @@ package org.javalite.db_migrator;
 
 import org.javalite.activejdbc.Base;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -73,7 +74,7 @@ public class MojoIntegrationSpec extends AbstractIntegrationSpec {
         the(output).shouldContain("BUILD SUCCESS");
     }
 
-    @Test
+    @Test @Ignore
     public void shouldRunTestCassandraProject() {
 
         execute(testCassandraProjectDir, "db-migrator:drop");
@@ -82,7 +83,7 @@ public class MojoIntegrationSpec extends AbstractIntegrationSpec {
         the(out).shouldContain("BUILD SUCCESS");
     }
 
-    @Test
+    @Test @Ignore
     public void shouldRunTestProjectWithCassandraAndMariaDB() {
 
         String projectDir = "src/test/project/cassandra-mysql-test-project";

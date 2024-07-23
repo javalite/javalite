@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ModelFinder {
 
@@ -66,15 +67,6 @@ public class ModelFinder {
         return modelMap;
     }
 
-//    protected static Set<String> getModelsForDb(String dbName) throws ClassNotFoundException {
-//        Set<String> modelClassNames = getModelMap().get(dbName);
-//        if (modelClassNames == null || modelClassNames.isEmpty()){
-//            throw new InitException("you are trying to work with models, but no models are found. Maybe you have " +
-//                    "no models in project, or you did not instrument the models. It is expected that you have " +
-//                    "a file activejdbc_models.properties on classpath");
-//        }
-//        return modelClassNames;
-//    }
     protected static Set<Class<? extends Model>> getModelsForDb(String dbName) throws ClassNotFoundException {
         Set<String> modelClassNames = getModelMap().get(dbName);
         Set<Class<? extends Model>> classSet = new HashSet<>();
@@ -100,26 +92,10 @@ public class ModelFinder {
         }
         return classSet;
     }
-//
-//    //called dynamically from JavaAgent
-//    public static void modelFound(String modelClassName){
-//        synchronized (modelMap){
-//            if(!modelClassNames.contains(modelClassName))
-//                modelClassNames.add(modelClassName);
-//        }
-//    }
 
-//    @SuppressWarnings("unchecked")
-//    public static void registerModelClass(String className) throws IOException, ClassNotFoundException {
-//        Class clazz = Class.forName(className);
-//        if (!clazz.equals(Model.class) && Model.class.isAssignableFrom(clazz)) {
-//            String dbName = MetaModel.getDbName(clazz);
-//            Set<Class<? extends Model>> classSet = modelClasses.get(dbName);
-//            if (classSet == null) {
-//                modelClasses.put(dbName, classSet = new HashSet<>());
-//            } else if(classSet.contains(clazz)) return;
-//            classSet.add(clazz);
-//        }
-//    }
-//
+    public synchronized static void modelFound(String dbName, String modelClassName) throws ClassNotFoundException {
+        Set<String> models = getModelMap().computeIfAbsent(dbName, k -> ConcurrentHashMap.newKeySet());
+        models.add(modelClassName);
+    }
+
 }

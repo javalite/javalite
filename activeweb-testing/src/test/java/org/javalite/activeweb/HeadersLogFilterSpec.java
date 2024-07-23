@@ -45,11 +45,10 @@ public class HeadersLogFilterSpec extends TemplateIntegrationSpec {
         SystemStreamUtil.replaceOut();
         controller("abc-person").header("bogus", "value").get("pass_values");
         //request header:
-
-        a(SystemStreamUtil.getSystemOut().contains("Request headers: {\"bogus\" : \"value\"}")).shouldBeTrue();
+        the(SystemStreamUtil.getSystemOut()).shouldContain("\"message\":{\"request_headers\":{\"bogus\":\"value\"}}");
 
         //response header:
-        a(SystemStreamUtil.getSystemOut().contains("Response headers: {\"Content-Type\" : \"text/html\"}")).shouldBeTrue();
+        the(SystemStreamUtil.getSystemOut()).shouldContain("\"message\":{\"response_headers\":{\"Content-Type\":\"text/html\"}}");
 
         SystemStreamUtil.restoreSystemOut();
     }

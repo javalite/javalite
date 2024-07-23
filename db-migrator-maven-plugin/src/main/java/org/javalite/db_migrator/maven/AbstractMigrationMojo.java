@@ -15,9 +15,6 @@ public abstract class AbstractMigrationMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project}", readonly = true, required = true)
     protected MavenProject project;
 
-    @Parameter
-    private String encoding;
-
     @Parameter(defaultValue = "src/migrations/")
     private String migrationsPath;
 
@@ -35,9 +32,6 @@ public abstract class AbstractMigrationMojo extends AbstractMojo {
         this.project = project;
     }
 
-    public String getEncoding() {
-        return encoding;
-    }
 
     public String getMigrationsPath() {
         return migrationsPath;

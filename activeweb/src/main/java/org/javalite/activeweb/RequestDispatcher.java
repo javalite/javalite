@@ -15,9 +15,14 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
+import freemarker.template.TemplateNotFoundException;
 import org.javalite.activejdbc.DB;
 
+import org.javalite.activeweb.proxy.ProxyWriterException;
+import org.javalite.activeweb.proxy.ProxyIOException;
+import org.javalite.activeweb.proxy.HttpServletResponseProxy;
 import org.javalite.app_config.AppConfig;
+import org.javalite.common.Convert;
 import org.javalite.json.JSONHelper;
 import org.javalite.common.Util;
 import org.javalite.logging.Context;
@@ -31,10 +36,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
-import static org.javalite.activeweb.Configuration.getDefaultLayout;
-import static org.javalite.activeweb.Configuration.useDefaultLayoutForErrors;
 import static org.javalite.common.Collections.map;
 import static org.javalite.common.Util.getCauseMessage;
+import static org.javalite.json.JSONHelper.toJSON;
 
 /**
  * @author Igor Polevoy
@@ -53,6 +57,8 @@ public class RequestDispatcher implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
         this.filterConfig = filterConfig;
 
+        HttpMethod.disableMethodSimulation(Convert.toBoolean(filterConfig.getInitParameter("disable_method_simulation")));
+
         Configuration.getTemplateManager().setServletContext(filterConfig.getServletContext());
         appContext = new AppContext();
         filterConfig.getServletContext().setAttribute("appContext", appContext);
@@ -70,9 +76,11 @@ public class RequestDispatcher implements Filter {
     }
 
     protected void initApp(AppContext context){
+        initAppConfig(Configuration.getDbConfigClassName(), context, false);
+
         initAppConfig(Configuration.getBootstrapClassName(), context, true);
         //these are optional config classes:
-        initAppConfig(Configuration.getDbConfigClassName(), context, false);
+
         initAppConfig(Configuration.getControllerConfigClassName(), context, false);
     }
 
@@ -188,7 +196,7 @@ public class RequestDispatcher implements Filter {
             }
 
 
-            if(route != null && route.ignores(path)){
+            if (route != null && route.ignores(path)) {
                 chain.doFilter(req, resp);
                 logger.debug("URI ignored: " + path);
                 return;
@@ -197,10 +205,10 @@ public class RequestDispatcher implements Filter {
             if (route != null) {
                 RequestContext.setRoute(route);
                 if (Configuration.logRequestParams()) {
-                    logger.info("{\"info\":\"executing controller\",\"controller\":\"" + route.getController().getClass().getName()
-                            + "\",\"action\":\""     + route.getActionName()
-                            + "\",\"method\":\""     + route.getHttpMethod()
-                            + "\"}");
+                    logger.info(toJSON("info","executing controller",
+                            "controller", route.getControllerClassName(),
+                            "action", route.getActionName(),
+                            "method", route.getHttpMethod()));
                 }
                 runner.run(route);
                 logDone(null);
@@ -208,12 +216,20 @@ public class RequestDispatcher implements Filter {
                 logger.warn("No matching route for servlet path: " + request.getServletPath() + ", passing down to container.");
                 chain.doFilter(req, resp);//let it fall through
             }
-        } catch (CompilationException e) {
-            renderSystemError(e);
-        } catch (ClassLoadException | ActionNotFoundException | ViewMissingException | RouteException | ControllerException e) {
-            renderSystemError("/system/404", useDefaultLayoutForErrors() ? getDefaultLayout():null, 404, e);
+        }catch (CompilationException
+                 | ClassLoadException
+                 | ActionNotFoundException
+                 | ViewMissingException
+                 | RouteException e) {
+            renderSystemError(404, e);
         } catch (Throwable e) {
-            renderSystemError("/system/error", useDefaultLayoutForErrors() ? getDefaultLayout():null, 500, e);
+            if(e.getClass().equals(ProxyWriterException.class)
+                    || e.getCause() != null && e.getCause().getClass().equals(ProxyIOException.class)){
+                RequestContext.getHttpResponse().setStatus(499);// side effect :(
+                logDone(e);
+            }else{
+                renderSystemError(500, e);
+            }
         }finally {
             RequestContext.clear();
             Context.clear();
@@ -226,13 +242,6 @@ public class RequestDispatcher implements Filter {
         }
     }
 
-    private Map getMapWithExceptionDataAndSession(Throwable e) {
-        return map("message", e.getMessage() == null ? e.toString() : e.getMessage(),
-                "stack_trace", Util.getStackTraceString(e),
-                "session", SessionHelper.getSessionAttributes());
-    }
-
-
     private boolean excluded(String servletPath) {
         for (String exclusion : exclusions) {
             if (servletPath.contains(exclusion))
@@ -241,76 +250,104 @@ public class RequestDispatcher implements Filter {
         return false;
     }
 
+    private void renderSystemError(int status, Throwable e) {
 
-    private void renderSystemError(Throwable e) {
-        renderSystemError("/system/error", null, 500, e);
-    }
+        if(status != 404){
+            logger.error("Rendering error", e);
+        }
 
-
-    private void renderSystemError(String template, String layout, int status, Throwable e) {
         try{
+            ErrorRouteBuilder builder = Configuration.getErrorRouteBuilder();
+            if(builder != null){
 
-//            Map info = map("request_properties", JsonHelper.toJsonString(RequestAccess.getRequestProperties()),
-//                            "request_headers" , JsonHelper.toJsonString(RequestAccess.headers()));
-
-            RequestContext.getHttpResponse().setStatus(status);
-
-            logDone(e);
-
-            HttpServletRequest req = RequestContext.getHttpRequest();
-            String requestedWith = req.getHeader("x-requested-with") == null ?
-                    req.getHeader("X-Requested-With") : req.getHeader("x-requested-with");
-
-            if (requestedWith != null && requestedWith.equalsIgnoreCase("XMLHttpRequest")) {
-                try {
-
-                    RequestContext.getHttpResponse().getWriter().write(Util.getStackTraceString(e));
-                } catch (Exception ex) {
-                    logger.error("Failed to send error response to client", ex);
+                Route r = builder.getRoute(e);
+                RequestContext.setRoute(r); // a little hacky :(
+                runner.run(r);
+                if(status == 404) {
+                    RequestContext.getHttpResponse().setStatus(404);
+                    logDone(null);
+                }else {
+                    logDone(e);
                 }
-            } else {
-                RenderTemplateResponse resp = new RenderTemplateResponse(getMapWithExceptionDataAndSession(e), template, null);
-                resp.setLayout(layout);
-                resp.setContentType("text/html");
-                resp.setStatus(status);
-                resp.setTemplateManager(Configuration.getTemplateManager());
-                ParamCopy.copyInto(resp.values());
-                resp.process();
+            }else{
+                sendDefaultResponse(status, e);
             }
         }catch(Throwable t){
-
-            if(t instanceof IllegalStateException){
-                logger.error("Failed to render a template: '" + template + "' because templates are rendered with Writer, but you probably already used OutputStream", t);
-            }else{
-                logger.error("ActiveWeb internal error: ", t);
-            }
+            logger.error("ActiveWeb internal error: ", t);
             try{
-                HttpServletResponseProxy httpServletResponseProxy = RequestContext.getHttpResponse();
-                if(httpServletResponseProxy == null){
-                    throw new WebException("Catastrophic failure: failed to find HttpServletResponse...", t);
-                }
-
-                HttpServletResponseProxy.OutputType outputType = httpServletResponseProxy.getOutputType();
-                if(HttpServletResponseProxy.OutputType.OUTPUT_STREAM == outputType){
-                    ServletOutputStream outputStream = httpServletResponseProxy.getOutputStream();
-                    if(outputStream == null){
-                        throw new WebException("Catastrophic failure: failed to find OutputStream...", t);
-                    }else{
-                        outputStream.print("<div style='color:red'>internal error</div>");
-                    }
+                if(t instanceof  ActionNotFoundException
+                        || t instanceof TemplateNotFoundException){
+                    writeBack("resource not found", 404);
                 }else{
-                    PrintWriter writer = httpServletResponseProxy.getWriter();
-                    if(writer == null){
-                        throw new WebException("Catastrophic failure: failed to find Writer...", t);
-                    }else{
-                        writer.print("<div style='color:red'>internal error</div>");
-                    }
+                    writeBack("internal error", 500);
                 }
-                httpServletResponseProxy.setStatus(500);
             }catch(Exception ex){
                 logger.error("Exception trying to render error response", ex);
                 logger.error("Original error", t);
             }
+        }
+    }
+
+    private void writeBack(String message, int status) throws IOException {
+        HttpServletResponseProxy httpServletResponseProxy = RequestContext.getHttpResponse();
+        if(httpServletResponseProxy == null){
+            throw new WebException("Catastrophic failure: failed to find HttpServletResponse...");
+        }
+
+        httpServletResponseProxy.setStatus(status);
+        HttpServletResponseProxy.OutputType outputType = httpServletResponseProxy.getOutputType();
+        if(outputType == HttpServletResponseProxy.OutputType.OUTPUT_STREAM
+                || outputType == HttpServletResponseProxy.OutputType.NONE){
+            ServletOutputStream outputStream = httpServletResponseProxy.getOutputStream();
+            if(outputStream == null){
+                throw new WebException("Catastrophic failure: failed to find OutputStream...");
+            }else{
+                outputStream.print(message); // "internal error"
+                outputStream.flush();
+
+            }
+        }else if(HttpServletResponseProxy.OutputType.WRITER == outputType){
+            PrintWriter writer = httpServletResponseProxy.getWriter();
+            if(writer == null){
+                throw new WebException("Catastrophic failure: failed to find Writer...");
+            }else{
+                writer.print(message);
+                writer.flush();
+            }
+        }
+    }
+
+    private void sendDefaultResponse(int status, Throwable e) {
+        RequestContext.getHttpResponse().setStatus(status);
+        logDone(e);
+
+        HttpServletRequest req = RequestContext.getHttpRequest();
+        String requestedWith = req.getHeader("x-requested-with") == null ?
+                req.getHeader("X-Requested-With") : req.getHeader("x-requested-with");
+
+        if (requestedWith != null && requestedWith.equalsIgnoreCase("XMLHttpRequest")) {
+            try {
+
+                RequestContext.getHttpResponse().getWriter().write(Util.getStackTraceString(e));
+            } catch (Exception ex) {
+                logger.error("Failed to send error response to client", ex);
+            }
+        } else {
+
+            String message = status == 404 ? "resource not found" : "server error";
+
+            DirectResponse directResponse;
+            if ("application/json".equals(RequestContext.getHttpRequest().getContentType())) {
+                directResponse = new DirectResponse("""
+                            {"message":"%s"}""".formatted(message));
+                RequestContext.getHttpResponse().setContentType("application/json");
+            } else {
+                directResponse = new DirectResponse(message);
+                RequestContext.getHttpResponse().setContentType("text/plain");
+            }
+
+            directResponse.setStatus(status);
+            directResponse.process();
         }
     }
 
@@ -351,12 +388,21 @@ public class RequestDispatcher implements Filter {
             log.put("error", JSONHelper.sanitize(throwable.getMessage() != null ? throwable.getMessage() : throwable.toString()));
         }
 
+        //usage of the side effect: The status code is used to add a specific message to the log.
+        if(RequestContext.getHttpResponse().getStatus() == 499){
+         log.put("message", "Looks like the client abandoned this request...");
+        }
+
         addRequestHeaders(log);
 
         if(throwable != null && status >= 500){
-            logger.error(JSONHelper.toJSON(log), throwable);
-        }else {
-            logger.info(JSONHelper.toJSON(log));
+            logger.error(toJSON(log), throwable);
+        }if(throwable != null && status == 404) {
+            logger.warn(toJSON(log), throwable.toString());
+        }if(throwable != null && status == 499) {
+            logger.warn(toJSON(log), throwable.toString());
+        } else {
+            logger.info(toJSON(log));
         }
     }
 

@@ -26,11 +26,10 @@ import java.util.Map;
  */
 abstract class ControllerResponse {
 
-    private String contentType;
-    private int status = 200;
 
+    private int status = 200;
     private boolean statusSet;
-    private boolean contentTypeSet;
+
 
     int getStatus() {
         return status;
@@ -42,15 +41,6 @@ abstract class ControllerResponse {
         statusSet = true;
     }
 
-    String getContentType() {
-        return contentType;
-    }
-
-    void setContentType(String contentType) {
-        RequestContext.getHttpResponse().setContentType(contentType);
-        this.contentType = contentType;
-        contentTypeSet = true;
-    }
 
     protected Map values(){
         return new HashMap();
@@ -60,9 +50,6 @@ abstract class ControllerResponse {
 
         if(!statusSet){
             RequestContext.getHttpResponse().setStatus(status);
-        }
-        if(!contentTypeSet){
-            RequestContext.getHttpResponse().setContentType(contentType);
         }
         doProcess();
     }

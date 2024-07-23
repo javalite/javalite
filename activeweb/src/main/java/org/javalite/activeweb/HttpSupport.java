@@ -212,7 +212,7 @@ public class HttpSupport implements RequestAccess {
          * @return instance of RenderBuilder
          */
         public HttpBuilder contentType(String contentType) {
-            controllerResponse.setContentType(contentType);
+            RequestContext.getHttpResponse().setContentType(contentType);
             return this;
         }
 
@@ -503,10 +503,9 @@ public class HttpSupport implements RequestAccess {
             text = "null";
         }
         DirectResponse resp = new DirectResponse(text);
-        String contentType = RequestContext.getHttpRequest().getHeader("Content-Type");
-        //TODO: is this some spaghetti code? Seems we have Content-type in RequestContext as well as in ControllerResponse?
+        String contentType = RequestContext.getHttpResponse().getContentType();
         if(contentType != null){
-            resp.setContentType(contentType);
+            RequestContext.getHttpResponse().setContentType(contentType);
         }
 
         RequestContext.setControllerResponse(resp);
@@ -1135,11 +1134,34 @@ public class HttpSupport implements RequestAccess {
     }
 
     /**
+     * Adds multiple header values to response. A single header can have multiple values.
+     *
+     * @param name name of header.
+     * @param values multiple values for the same header.
+     */
+    protected void header(String name, String ... values){
+        for (String value : values) {
+            RequestContext.getHttpResponse().addHeader(name, value);
+        }
+    }
+
+    /**
      * A convenience method. Sets the <code>"Content-Type"</code> header on the response to
      * <code>"application/json"</code>.
      */
     protected void applicationJSON(){
         RequestContext.getHttpResponse().addHeader("Content-Type", "application/json");
+        RequestContext.getHttpResponse().setContentType("application/json");
+    }
+
+    /**
+     * A convenience method. Sets the <code>"Content-Type"</code> header on the response.
+     *
+     * @param contentType value of a Content-type header.
+     */
+    protected void contentType(String contentType){
+        RequestContext.getHttpResponse().addHeader("Content-Type", contentType);
+        RequestContext.getHttpResponse().setContentType(contentType);
     }
 
     /**
@@ -1229,13 +1251,23 @@ public class HttpSupport implements RequestAccess {
 
 
     private void addHeaders(String contentType, Map headers, int status){
-        RequestContext.setControllerResponse(new NopResponse(contentType, status));
+
+        RequestContext.setControllerResponse(new NopResponse(status));
 
         if (headers != null) {
             for (Object key : headers.keySet()) {
-                if (headers.get(key) != null)
+                if (headers.get(key) != null){
                     RequestContext.getHttpResponse().addHeader(key.toString(), headers.get(key).toString());
+                    if(key.toString().equalsIgnoreCase("content-type")){
+                        RequestContext.getHttpResponse().setContentType(headers.get(key).toString());
+                    }
+                }
             }
+        }
+
+        //override the content-type by the method argument such as outputStream("application/json", ...);
+        if(contentType != null){
+            RequestContext.getHttpResponse().setContentType(contentType);
         }
     }
 

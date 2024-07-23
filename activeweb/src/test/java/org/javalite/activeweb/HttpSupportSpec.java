@@ -16,6 +16,7 @@ limitations under the License.
 package org.javalite.activeweb;
 
 
+import org.javalite.test.SystemStreamUtil;
 import org.junit.Test;
 
 import javax.servlet.ServletException;
@@ -251,12 +252,16 @@ public class HttpSupportSpec extends RequestSpec{
 
     @Test
     public void shouldRequireContentTypeToConvertJSON() throws IOException, ServletException {
+        SystemStreamUtil.replaceOut();
         request.setServletPath("/json/map");
         request.setMethod("POST");
         request.setContent("{\"name\"}:\"John\"".getBytes());
         dispatcher.doFilter(request, response, filterChain);
-        String result = response.getContentAsString();
-        a(result).shouldContain("Trying to convert JSON to object, but Content-Type is null, not 'application/json'");
+
+        the(response.getContentAsString()).shouldContain("server error");
+        the(SystemStreamUtil.getSystemOut()).shouldContain("Trying to convert JSON to object, but Content-Type is null, not 'application/json'");
+        the(response.getStatus()).shouldBeEqual(500);
+        SystemStreamUtil.restoreSystemOut();
     }
 
     @Test

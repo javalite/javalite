@@ -116,7 +116,7 @@ class ControllerRunner {
                         //TODO: shall we get a Locale for errors() from the HTTP request?
                         DirectResponse dr = new DirectResponse(v.errors().toJSON());
                         dr.setStatus(autoReply.value());
-                        dr.setContentType("application/json");
+                        RequestContext.getHttpResponse().setContentType("application/json");
                         RequestContext.setControllerResponse(dr);
                     }
                 }
@@ -315,35 +315,34 @@ class ControllerRunner {
             ParamCopy.copyInto((controllerResponse.values()));
             controllerResponse.process();
         }else {
-            if(controllerResponse.getContentType() == null){
-                controllerResponse.setContentType(route.getController().getContentType());
+            if(RequestContext.getHttpResponse().getContentType() == null){
+                RequestContext.getHttpResponse().setContentType(route.getController().getContentType());
             }
             controllerResponse.process();
         }
     }
 
-    //this is configuration of explicit response. If render() method was called in controller, we already have instance of
-    // response on current thread.
+    // If render() method was called in controller, we already have instance of a response on a current thread.
     private void configureExplicitResponse(Route route, String controllerLayout, RenderTemplateResponse resp) throws InstantiationException, IllegalAccessException {
             if(!Configuration.getDefaultLayout().equals(controllerLayout) && resp.hasDefaultLayout()){
                 resp.setLayout(controllerLayout);
             }
-            if(resp.getContentType() == null){
-                resp.setContentType(route.getController().getContentType());
+            if(RequestContext.getHttpResponse().getContentType() == null){
+                RequestContext.getHttpResponse().setContentType(route.getController().getContentType());
             }
             resp.setTemplateManager(Configuration.getTemplateManager());
     }
 
-    // this is implicit processing - default behavior, really
-    private void createDefaultResponse(Route route, String controllerLayout) throws InstantiationException, IllegalAccessException {
+    // this is an implicit processing - default behavior, really
+    private void createDefaultResponse(Route route, String controllerLayout){
            String controllerPath = Router.getControllerPath(route.getController().getClass());
             String template =  controllerPath + "/" + route.getActionName();
             RenderTemplateResponse resp = new RenderTemplateResponse(route.getController().values(), template, RequestContext.getFormat());
             if(!Configuration.getDefaultLayout().equals(controllerLayout)){
                 resp.setLayout(controllerLayout);//could be a real layout ot null for no layout
             }
-            if(resp.getContentType() == null){
-                resp.setContentType(route.getController().getContentType());
+            if(RequestContext.getHttpResponse().getContentType() == null){
+                RequestContext.getHttpResponse().setContentType(route.getController().getContentType());
             }
             RequestContext.setControllerResponse(resp);
             resp.setTemplateManager(Configuration.getTemplateManager());

@@ -24,13 +24,15 @@ import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.layout.AbstractStringLayout;
 import org.javalite.common.Util;
+import org.javalite.json.JSONList;
+import org.javalite.json.JSONMap;
+import org.javalite.json.JSONParseException;
 
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static org.javalite.json.JSONHelper.escapeControlChars;
-import static org.javalite.json.JSONHelper.sanitize;
 
 /**
  * Layout for log4j to emit JSON format, including exceptions. In addition, it will also append all
@@ -42,7 +44,9 @@ import static org.javalite.json.JSONHelper.sanitize;
 @Plugin(name = "JsonLog4j2Layout", category = Node.CATEGORY, elementType = Layout.ELEMENT_TYPE, printObject = true)
 public class JsonLog4j2Layout extends AbstractStringLayout {
 
-    private SimpleDateFormat simpleDateFormat;
+    private static ThreadLocal<SimpleDateFormat> localFormatTL = new ThreadLocal<>();
+
+    private String dateFormat;
 
     protected JsonLog4j2Layout() {
         super(Charset.defaultCharset());
@@ -50,16 +54,8 @@ public class JsonLog4j2Layout extends AbstractStringLayout {
 
     protected JsonLog4j2Layout(Charset charset, String dateFormat) {
         super(charset);
-
-        try {
-            this.simpleDateFormat = new SimpleDateFormat(dateFormat);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Incorrect date pattern. "
-                    + "Ensure to use formats provided in https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html", e);
-        }
+        this.dateFormat = dateFormat;
     }
-
-
 
     /**
      * Formats a {@link org.apache.logging.log4j.core.LogEvent}.
@@ -69,40 +65,64 @@ public class JsonLog4j2Layout extends AbstractStringLayout {
      */
     @Override
     public String toSerializable(final LogEvent event) {
+
+        if(dateFormat !=null){
+            try {
+                if(localFormatTL.get() == null){
+                    localFormatTL.set(new SimpleDateFormat(dateFormat));
+                }
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Incorrect date pattern. "
+                        + "Ensure to use formats provided in https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html", e);
+            }
+        }
+
         String loggerName = event.getLoggerName();
         String level = event.getLevel().toString();
         String message = event.getMessage().getFormattedMessage();
-        if (!message.startsWith("{") && !message.startsWith("[")) {
-            message = "\"" + message + "\"";
+
+        Object messageObject;
+
+        if(message.startsWith("{")){
+            try{
+                messageObject = new JSONMap(message);
+            }catch(JSONParseException e){
+                messageObject = message;
+            }
+        } else if (message.startsWith("[")) {
+            try{
+                messageObject = new JSONList(message);
+            }catch(JSONParseException e){
+                messageObject = message;
+            }
+        } else{
+            messageObject = message;
         }
+
         String threadName = event.getThreadName();
         Date timeStamp = new Date(event.getTimeMillis());
-        String context = Context.toJSON();
 
-        Throwable throwable = event.getThrown();
+        String timestampString = localFormatTL.get() == null ? timeStamp.toString() : localFormatTL.get().format(timeStamp);
 
-        String exception = "";
-        if (throwable != null) {
-            exception = ",\"exception\":{\"message\":\"";
-            String exceptionMessage = throwable.getMessage() != null ? throwable.getMessage() : "";
-            //need to be careful here, sanitizing, since the message may already contain a chunk of JSON, so escaping or cleaning double quotes is not prudent:)
-            exception += sanitize(exceptionMessage, false, '\n', '\t', '\r') + "\",\"stacktrace\":\"" + escapeControlChars(Util.getStackTraceString(throwable)) + "\"}";
+        JSONMap log = new JSONMap("level", level, "timestamp", timestampString, "thread", threadName, "logger", loggerName,
+                "message", messageObject);
+
+        if (event.getThrown() != null) {
+            log.put("exception", new JSONMap(
+                    "message", event.getThrown().getMessage() != null ? event.getThrown().getMessage() : "",
+                    "stacktrace", escapeControlChars(Util.getStackTraceString(event.getThrown()))
+            ));
         }
 
-        String contextJson = context != null ? ",\"context\":" + context : "";
-
-        String timestampString = this.simpleDateFormat == null ? timeStamp.toString() : simpleDateFormat.format(timeStamp);
-
-        return "{\"level\":\"" + level + "\",\"timestamp\":\"" + timestampString
-                + "\",\"thread\":\"" + threadName + "\",\"logger\":\"" + loggerName + "\",\"message\":"
-                + message + contextJson + exception + "}" + System.getProperty("line.separator");
+        if(Context.toJSONMap() != null){
+            log.put("context", Context.toJSONMap());
+        }
+        return log.toJSON() + System.getProperty("line.separator");
     }
-
 
     @PluginFactory
     public static JsonLog4j2Layout createLayout(@PluginAttribute(value = "charset", defaultString = "UTF-8") Charset charset,
                                                 @PluginAttribute(value = "dateFormat", defaultString = "yyyy-MM-dd HH:mm:ss.SSS") String dateFormat) {
         return new JsonLog4j2Layout(charset, dateFormat);
     }
-
 }

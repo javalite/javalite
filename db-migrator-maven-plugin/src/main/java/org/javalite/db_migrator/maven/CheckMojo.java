@@ -8,6 +8,7 @@ import org.javalite.activejdbc.Base;
 import org.javalite.db_migrator.Migration;
 import org.javalite.db_migrator.MigrationManager;
 
+import java.io.File;
 import java.util.List;
 
 
@@ -18,6 +19,7 @@ import java.util.List;
  * <p></p>
  */
 @Mojo(name = "check", defaultPhase = LifecyclePhase.PROCESS_TEST_RESOURCES)
+@SuppressWarnings("unchecked")
 public class CheckMojo extends AbstractDbMigrationMojo {
     public void executeMojo() throws MojoExecutionException {
         List<Migration> pendingMigrations;
@@ -25,7 +27,7 @@ public class CheckMojo extends AbstractDbMigrationMojo {
             String path = toAbsolutePath(getMigrationsPath());
             getLog().info("Checking " + getUrl() + " using migrations from " + path);
             openConnection();
-            MigrationManager manager = new MigrationManager(getProject(), path, getUrl());
+            MigrationManager manager = new MigrationManager(getProject().getCompileClasspathElements(), new File(path));
             pendingMigrations = manager.getPendingMigrations();
         } catch (Exception e) {
             throw new MojoExecutionException("Failed to check " + getUrl(), e);
@@ -37,7 +39,7 @@ public class CheckMojo extends AbstractDbMigrationMojo {
 
         getLog().warn("Pending migration(s): ");
         for (Migration migration : pendingMigrations)
-            getLog().warn("Migration: " + migration.getName());
+            getLog().warn("Migration: " + migration.getFileName());
 
         getLog().warn("Run db-migrator:migrate to apply pending migrations.");
         throw new MojoExecutionException("Pending migration(s) exist, migrate your db and try again.");

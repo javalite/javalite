@@ -4,7 +4,7 @@
     <groupId>org.javalite</groupId>
     <artifactId>javalite</artifactId>
     <packaging>pom</packaging>
-    <version>3.0-SNAPSHOT</version>
+    <version>3.1-SNAPSHOT</version>
     <name>JavaLite - Java, light as a feather</name>
     <url>http://javalite.io</url>
 
@@ -38,8 +38,9 @@
         <javassist.version>3.27.0-GA</javassist.version>
         <junit-vintage-engine.version>5.7.0</junit-vintage-engine.version>
         <mariadb.connector.version>2.7.4</mariadb.connector.version>
-        <h2.version>2.1.210</h2.version>
         <spring.version>5.3.27</spring.version>
+        <h2.version>2.2.220</h2.version>
+       
     </properties>
 
     <licenses>
@@ -135,7 +136,7 @@
                         <argLine>-Duser.country=US -Duser.language=en</argLine>
                         <systemPropertyVariables>
                             <oracle.jdbc.J2EE13Compliant>true</oracle.jdbc.J2EE13Compliant>
-                            <activejdbc.log/>
+                            <activejdbc.log />
                         </systemPropertyVariables>
                         <useSystemClassLoader>false</useSystemClassLoader>
                     </configuration>
@@ -170,7 +171,19 @@
 
             </plugins>
         </pluginManagement>
-        <plugins>
+	<plugins>
+        <plugin>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+                <execution>
+                    <id>attach-sources</id>
+                    <phase>deploy</phase>
+                    <goals>
+                        <goal>jar-no-fork</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -188,7 +201,21 @@
                 </configuration>
             </plugin>
 
-        </plugins>
+        <plugin>
+            <!-- explicitly define maven-deploy-plugin after other to force exec order -->
+            <artifactId>maven-deploy-plugin</artifactId>
+            <executions>
+                <execution>
+                    <id>deploy</id>
+                    <phase>deploy</phase>
+                    <goals>
+                        <goal>deploy</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+
+    </plugins>
     </build>
 
     <modules>
@@ -196,11 +223,13 @@
         <module>activejdbc-instrumentation</module>
         <module>activejdbc</module>
         <!--module>activejdbc-kt</module-->
+        <module>db-migrator</module>
         <module>db-migrator-maven-plugin</module>
         <module>db-migrator-integration-test</module>
         <module>app-config</module>
         <module>app-config-spec</module>
         <module>activejdbc-static-metadata-test</module>
+        <module>activejdbc-instrumentation-test</module>
         <module>activeweb</module>
         <module>activeweb-testing</module>
         <module>activeweb-lessc-maven-plugin</module>
@@ -283,7 +312,7 @@
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>42.4.1</version>
+                <version>42.4.4</version>
                 <scope>test</scope>
             </dependency>
 
@@ -407,6 +436,12 @@
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-artifact</artifactId>
                 <version>3.6.3</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.github.classgraph</groupId>
+                <artifactId>classgraph</artifactId>
+                <version>4.8.149</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -16,9 +16,8 @@ limitations under the License.
 
 package org.javalite.activeweb;
 
-import org.javalite.json.JSONHelper;
 import org.javalite.common.Util;
-import org.javalite.json.JSONParseException;
+import org.javalite.json.JSONMap;
 import org.javalite.test.SystemStreamUtil;
 import org.javalite.test.XPathHelper;
 import org.junit.After;
@@ -27,11 +26,10 @@ import org.junit.Test;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-
 import java.io.IOException;
-import java.util.Map;
 
-import static org.javalite.test.SystemStreamUtil.*;
+import static org.javalite.test.SystemStreamUtil.getSystemErr;
+import static org.javalite.test.SystemStreamUtil.getSystemOut;
 
 
 /**
@@ -51,7 +49,6 @@ public class RequestDispatcherSpec extends RequestSpec {
         badFilterChain = (servletRequest, servletResponse) -> {
             throw new RuntimeException("I'm a bad... bad exception!");
         };
-        Configuration.setUseDefaultLayoutForErrors(true);
         SystemStreamUtil.replaceOut();
     }
 
@@ -110,9 +107,6 @@ public class RequestDispatcherSpec extends RequestSpec {
     /**
      * If there is exception in the FilterChain below RequestDispatcher, it should not
      * attempt to do anything to it.
-     *
-     * @throws IOException
-     * @throws ServletException
      */
     @Test
     public void shouldPassExternalExceptionUpTheStack() throws IOException, ServletException {
@@ -121,7 +115,10 @@ public class RequestDispatcherSpec extends RequestSpec {
         config.addInitParameter("exclusions", "css,images,js");
         dispatcher.init(config);
         dispatcher.doFilter(request, response, badFilterChain);
-        a(response.getContentAsString()).shouldContain("I'm a bad... bad exception!");
+
+        the(response.getContentAsString()).shouldContain("server error");
+        the(getSystemOut()).shouldContain("I'm a bad... bad exception!");
+        the(response.getStatus()).shouldEqual(500);
     }
 
     @Test
@@ -147,10 +144,12 @@ public class RequestDispatcherSpec extends RequestSpec {
         dispatcher.doFilter(request, response, filterChain);
 
         a(getSystemOut().contains("java.lang.ArithmeticException")).shouldBeTrue();
+        a(getSystemOut().contains("/ by zero")).shouldBeTrue();
 
-        a(response.getContentType()).shouldBeEqual("text/html");
 
-        a(response.getContentAsString()).shouldContain("/ by zero");// this is coming from a system/error.ftl
+        a(response.getContentType()).shouldBeEqual("text/plain");
+
+        a(response.getContentAsString()).shouldContain("server error");// this is coming from a system/error.ftl
         a(response.getStatus()).shouldBeEqual(500);
     }
 
@@ -161,15 +160,12 @@ public class RequestDispatcherSpec extends RequestSpec {
         request.setMethod("GET");
 
         dispatcher.doFilter(request, response, filterChain);
-
-        a(getSystemOut().contains("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController")).shouldBeTrue();
-
-
-        String html = response.getContentAsString();
-
-        a(XPathHelper.count("//div", html)).shouldBeEqual(3);
-        a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController");
-        a(response.getStatus()).shouldBeEqual(404);
+        JSONMap log =  new JSONMap(getSystemOut());
+        the(log.getString("message.error")).shouldEqual("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController");
+        the(log.getInteger("message.status")).shouldEqual(404);
+        the(response.getContentAsString()).shouldEqual("resource not found");
+        the(response.getContentType()).shouldEqual("text/plain");
+        the(response.getStatus()).shouldEqual(404);
     }
 
     @Test
@@ -181,14 +177,13 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
-        a(getSystemOut().contains("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController")).shouldBeTrue();
-
-        String html = response.getContentAsString();
-        System.out.println(html);
-
-        a(XPathHelper.count("//div", html)).shouldBeEqual(3);
-        a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController");
-
+        the(getSystemOut()).shouldContain("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController");
+        the(response.getContentAsString()).shouldEqual("resource not found");
+        the(response.getContentType()).shouldEqual("text/plain");
+        the(response.getStatus()).shouldEqual(404);
+        String[] lines = Util.split(getSystemOut(), System.getProperty("line.separator"));
+        JSONMap line  = new JSONMap(lines[lines.length - 1]);
+        the(line.getString("message.error")).shouldEqual("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController");
     }
 
     @Test
@@ -200,10 +195,10 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         a(getSystemOut().contains("are you sure it extends " + AppController.class.getName())).shouldBeTrue();
 
-        String html = response.getContentAsString();
+        the(response.getContentAsString()).shouldBeEqual("resource not found");
+        the(response.getStatus()).shouldBeEqual(404);
 
-        a(XPathHelper.count("//div", html)).shouldBeEqual(3);
-        a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("Class: app.controllers.BlahController is not the expected type, are you sure it extends org.javalite.activeweb.AppController?");
+        the(getSystemOut()).shouldContain("Class: app.controllers.BlahController is not the expected type, are you sure it extends org.javalite.activeweb.AppController?");
     }
 
 
@@ -215,15 +210,11 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
-        String out = getSystemOut();
-
         the(getSystemOut()).shouldContain("Failed to find an action method for action: 'hello' in controller: app.controllers.HelloController");
 
-        String html = response.getContentAsString();
-
+        the(response.getContentAsString()).shouldEqual("resource not found");
         the(response.getStatus()).shouldEqual(404);
-        a(XPathHelper.count("//div", html)).shouldBeEqual(3);
-        a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("Failed to find an action method for action: 'hello' in controller: app.controllers.HelloController");
+        the(getSystemOut()).shouldContain("Failed to find an action method for action: 'hello'");
     }
 
 
@@ -233,9 +224,11 @@ public class RequestDispatcherSpec extends RequestSpec {
         request.setServletPath("/restful1/blah");
         request.setMethod("GET");
         dispatcher.doFilter(request, response, filterChain);
+
+        the(response.getContentAsString()).shouldEqual("resource not found");
         the(response.getStatus()).shouldEqual(404);
-        String html = response.getContentAsString();
-        the(html).shouldContain("Failed to find an action method for action: 'show' in controller: app.controllers.Restful1Controller");
+        the(getSystemOut()).shouldContain("Failed to find an action method for action: 'show'");
+
    }
 
 
@@ -246,23 +239,11 @@ public class RequestDispatcherSpec extends RequestSpec {
         request.setMethod("GET");
 
         dispatcher.doFilter(request, response, filterChain);
-        String[] lines = Util.split(getSystemOut(), System.getProperty("line.separator"));
-        // we need this because on different OSes log lines may come out or order!
-        Map message = null;
-        for (String line : lines) {
-            var log = JSONHelper.toMap(line);
-            try {
-                message = log.getMap("message");
-            }catch(JSONParseException ignore){}
-        }
 
-        if(message == null){
-            throw new RuntimeException("Failed to find a message in log!");
-        }
-        the(message.get("error")).shouldContain("Failed to render template: '/hello/no-view.ftl' with layout: '/layouts/default_layout.ftl'");
-        String html = response.getContentAsString();
-        a(XPathHelper.count("//div", html)).shouldBeEqual(3);
-        a(XPathHelper.selectText("//div[@id='content']", html)).shouldContain("Failed to render template: '/hello/no-view.ftl' with layout: '/layouts/default_layout.ftl'");
+        the(getSystemOut()).shouldContain("Failed to render template: '/hello/no-view.ftl' with layout: '/layouts/default_layout.ftl'. Template not found for name");
+        the(response.getContentAsString()).shouldContain("resource not found");
+        the(response.getContentType()).shouldContain("text/plain");
+        the(response.getStatus()).shouldEqual(404);
     }
 
     @Test
@@ -272,22 +253,11 @@ public class RequestDispatcherSpec extends RequestSpec {
         request.setMethod("GET");
 
         dispatcher.doFilter(request, response, filterChain);
-        String html = response.getContentAsString();
-        a(XPathHelper.selectText("//div[@id='content']", html).contains("Unexpected end of file reached")).shouldBeTrue();
-    }
 
-
-    @Test
-    public void shouldSend500WithoutDefaultLayout() throws ServletException, IOException {
-
-        Configuration.setUseDefaultLayoutForErrors(false);
-        request.setServletPath("/hello/bad-bad-template");
-        request.setMethod("GET");
-
-        dispatcher.doFilter(request, response, filterChain);
-        String html = response.getContentAsString();
-
-        a(html.contains("default layout")).shouldBeFalse();
+        the(getSystemOut()).shouldContain("Failed to render template: '/hello/bad-bad-template.ftl");
+        the(response.getContentAsString()).shouldContain("server error");
+        the(response.getContentType()).shouldContain("text/plain");
+        the(response.getStatus()).shouldEqual(500);
     }
 
     @Test
@@ -380,30 +350,6 @@ public class RequestDispatcherSpec extends RequestSpec {
         a(response.getContentAsString()).shouldBeEqual("this is a  text page");
     }
 
-
-    @Test
-    public void shouldUseDefaultLayoutForApplicationError() throws IOException, ServletException {
-        request.setServletPath("/error");
-        request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
-        a(response.getContentAsString()).shouldContain("this is a header");
-        a(response.getContentAsString()).shouldContain("this is an application error");
-        a(response.getContentAsString()).shouldContain("this is a footer");
-    }
-
-
-    @Test
-    public void shouldTurnOffDefaultLayoutForApplicationError() throws IOException, ServletException {
-        request.setServletPath("/error");
-        request.setMethod("GET");
-        Configuration.setUseDefaultLayoutForErrors(false);
-        dispatcher.doFilter(request, response, filterChain);
-        a(response.getContentAsString()).shouldNotContain("this is a header");
-        a(response.getContentAsString()).shouldContain("this is an application error");
-        a(response.getContentAsString()).shouldNotContain("this is a footer");
-        Configuration.setUseDefaultLayoutForErrors(true);
-    }
-
     @Test
     public void shouldRenderSystemExceptionInCaseAjaxAndInternalError() throws IOException, ServletException {
         request.setServletPath("/ajax");
@@ -460,7 +406,9 @@ public class RequestDispatcherSpec extends RequestSpec {
         request.setMethod("PROPFIND");
         dispatcher.doFilter(request, response, filterChain);
 
-        the(response.getContentAsString()).shouldContain("Method not supported: PROPFIND");
+        the(getSystemOut()).shouldContain("Method not supported: PROPFIND");
+        the(response.getContentAsString()).shouldEqual("resource not found");
+        the(response.getContentType()).shouldEqual("text/plain");
         the(response.getStatus()).shouldEqual(404);
     }
 }

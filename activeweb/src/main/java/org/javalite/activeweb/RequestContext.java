@@ -15,6 +15,7 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
+import org.javalite.activeweb.proxy.HttpServletResponseProxy;
 import javax.servlet.FilterConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

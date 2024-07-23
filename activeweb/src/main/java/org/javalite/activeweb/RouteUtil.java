@@ -38,6 +38,10 @@ public class RouteUtil {
      */
     public static List<Method> getNamedMethods(Class<? extends AppController> controllerClass, String actionMethodName){
 
+        if(controllerClass == null){
+            return new ArrayList<>();
+        }
+
         Map<String, List<Method>> controllerMap  =  methodsTL.get();
 
         if(controllerMap == null){

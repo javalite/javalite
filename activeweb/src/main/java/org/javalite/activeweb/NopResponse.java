@@ -23,8 +23,7 @@ package org.javalite.activeweb;
  */
 class NopResponse extends ControllerResponse{
 
-    NopResponse(String contentType, int status){
-        setContentType(contentType);
+    NopResponse(int status){
         setStatus(status);
     }
     @Override

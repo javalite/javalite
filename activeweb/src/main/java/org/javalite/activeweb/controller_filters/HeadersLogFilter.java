@@ -16,6 +16,8 @@ limitations under the License.
 
 package org.javalite.activeweb.controller_filters;
 
+import org.javalite.json.JSONMap;
+
 import java.util.Map;
 
 /**
@@ -56,7 +58,7 @@ public class HeadersLogFilter extends AbstractLoggingFilter {
 
     @Override
     protected String getMessage() {
-        return "Request headers: " + format(headers());
+        return new JSONMap("request_headers", headers()).toJSON();
     }
 
     private String format(Map<String, String> headers){
@@ -76,8 +78,7 @@ public class HeadersLogFilter extends AbstractLoggingFilter {
     @Override
     public void after() {
         if(printResponseHeaders){
-            String message = format(getResponseHeaders());
-            log("Response headers: "  + message);
+            log(new JSONMap("response_headers", getResponseHeaders()).toJSON());
         }
     }
 }

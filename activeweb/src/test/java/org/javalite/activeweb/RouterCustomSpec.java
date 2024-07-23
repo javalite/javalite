@@ -209,6 +209,7 @@ public class RouterCustomSpec extends RequestSpec {
     @Test
     public void shouldRejectRouteIfBothToMethodAndControllerSegmentUsed() throws UnsupportedEncodingException {
 
+        SystemStreamUtil.replaceOut();
         routeConfig = new AbstractRouteConfig() {
             public void init(AppContext appContext) {
                 route("/photos/{controller}").to(PhotosController.class).action("show");
@@ -218,13 +219,17 @@ public class RouterCustomSpec extends RequestSpec {
         request.setServletPath("/photos/12");
         execDispatcher();
 
-        a(response.getContentAsString()).shouldContain("Cannot combine {controller} segment and .to(\"...\") method. Failed route: /photos/{controller}");
+        the(SystemStreamUtil.getSystemOut()).shouldContain("Cannot combine {controller} segment and .to(...) method. Failed route: /photos/{controller}");
 
+        the(response.getContentAsString()).shouldBeEqual("server error");
+        the(response.getStatus()).shouldBeEqual(500);
+        SystemStreamUtil.restoreSystemOut();
     }
 
     @Test
     public void shouldRejectRouteIfBothActionMethodAndActionSegmentUsed() throws UnsupportedEncodingException {
 
+        SystemStreamUtil.replaceOut();
         routeConfig = new AbstractRouteConfig() {
             public void init(AppContext appContext) {
                 route("/photos/{action}").to(PhotosController.class).action("show");
@@ -233,7 +238,9 @@ public class RouterCustomSpec extends RequestSpec {
 
         request.setServletPath("/photos/12");
         execDispatcher();
-        a(response.getContentAsString()).shouldContain("Cannot combine {action} segment and .action(\"...\") method. Failed route: /photos/{action}");
+        the(response.getContentAsString()).shouldBeEqual("server error");
+        the(SystemStreamUtil.getSystemOut()).shouldContain("Cannot combine {action} segment and .action(\\\"...\\\") method. Failed route: /photos/{action}");
+        SystemStreamUtil.restoreSystemOut();
     }
 
 
@@ -248,12 +255,16 @@ public class RouterCustomSpec extends RequestSpec {
         };
         request.setServletPath("/greeting");
         execDispatcher();
-        a(responseContent()).shouldContain("java.lang.ClassNotFoundException: app.controllers.GreetingController");
+
+        a(SystemStreamUtil.getSystemOut()).shouldContain("java.lang.ClassNotFoundException: app.controllers.GreetingController");
+        a(responseContent()).shouldBeEqual("resource not found");
         String[] lines = Util.split(SystemStreamUtil.getSystemOut(), System.getProperty("line.separator"));
-        SystemStreamUtil.restoreSystemOut();
+
         var log = JSONHelper.toMap(lines[2]);
         Map message = log.getMap("message");
         a(message.get("error")).shouldContain("java.lang.ClassNotFoundException: app.controllers.GreetingController");
+
+        SystemStreamUtil.restoreSystemOut();
     }
 
 
@@ -345,6 +356,7 @@ public class RouterCustomSpec extends RequestSpec {
     @Test
     public void should_override_package_and_controller_naming_conflict_issue400() {
 
+        SystemStreamUtil.replaceOut();
         //Success with custom route
         routeConfig = new AbstractRouteConfig() {
             public void init(AppContext appContext) {
@@ -362,12 +374,17 @@ public class RouterCustomSpec extends RequestSpec {
         };
 
         request.setServletPath("/api");
+        response =  new MockHttpServletResponse();
         execDispatcher();
-        the(responseContent()).shouldContain("Your controller and package named the same: controllerName=  'api' , controllerPackage= 'api'");
+        the(SystemStreamUtil.getSystemOut()).shouldContain("Your controller and package named the same: controllerName=  'api' , controllerPackage= 'api'");
+        the(responseContent()).shouldBeEqual("resource not found");
+        the(response.getStatus()).shouldBeEqual(404);
+
+        SystemStreamUtil.restoreSystemOut();
     }
 
     @Test
-    public void should_override_package_and_controller_naming_conflict_issue400_and_trailing_slash() {
+    public void should_override_package_and_controller_naming_conflict_issue400_and_trailing_slash() throws UnsupportedEncodingException {
 
         //Success with custom route
         routeConfig = new AbstractRouteConfig() {
@@ -385,17 +402,22 @@ public class RouterCustomSpec extends RequestSpec {
             public void init(AppContext appContext) {}
         };
 
+        SystemStreamUtil.replaceOut();
         request.setServletPath("/api/");
+        response =  new MockHttpServletResponse(); // calling two controllers   in the same test method  has some issues with sharing objects
         execDispatcher();
-        the(responseContent()).shouldContain("Your controller and package named the same: controllerName=  'api' , controllerPackage= 'api'");
+        the(SystemStreamUtil.getSystemOut()).shouldContain("Your controller and package named the same: controllerName=  'api' , controllerPackage= 'api'");
+        the(response.getContentAsString()).shouldBeEqual("resource not found");
+        SystemStreamUtil.restoreSystemOut();
     }
 
     /**
      *     //Same as above, but with a trailing slash in the custom route
      */
     @Test
-    public void should_override_package_and_controller_naming_conflict_issue400_and_trailing_slash2() {
+    public void should_override_package_and_controller_naming_conflict_issue400_and_trailing_slash2() throws UnsupportedEncodingException {
 
+        SystemStreamUtil.replaceOut();
         //Success with custom route
         routeConfig = new AbstractRouteConfig() {
             public void init(AppContext appContext) {
@@ -413,9 +435,13 @@ public class RouterCustomSpec extends RequestSpec {
         };
 
         request.setServletPath("/api/");
+        response = new MockHttpServletResponse();
         execDispatcher();
-        the(responseContent()).shouldContain("Your controller and package named the same: controllerName=  'api' , controllerPackage= 'api'");
+        the(SystemStreamUtil.getSystemOut()).shouldContain("Your controller and package named the same: controllerName=  'api' , controllerPackage= 'api'");
+        the(response.getContentAsString()).shouldBeEqual("resource not found");
+        the(response.getStatus()).shouldBeEqual(404);
 
+        SystemStreamUtil.restoreSystemOut();
     }
 
     @Test
@@ -464,6 +490,8 @@ public class RouterCustomSpec extends RequestSpec {
 
         the(SystemStreamUtil.getSystemOut()).shouldContain("Cannot map to a non-custom route with a 'strictMode' flag on.");
         SystemStreamUtil.restoreSystemOut();
+        the(responseContent()).shouldEqual("resource not found");
+        the(response.getStatus()).shouldEqual(404);
     }
 
     @Test
