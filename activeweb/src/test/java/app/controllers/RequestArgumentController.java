@@ -17,6 +17,11 @@ public class RequestArgumentController extends AppController {
         respond(person.errors().toJSON()).contentType("application/json");
     }
 
+    @POST
+    public void personRecord(PersonRecord person){
+        respond(person.toString());
+    }
+
 
     public void plant(Plant plant){
         respond("Errors: " + plant.errors().toString());

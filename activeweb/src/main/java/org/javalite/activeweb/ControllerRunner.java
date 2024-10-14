@@ -15,11 +15,13 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.google.inject.Injector;
 import org.javalite.activejdbc.Model;
 import org.javalite.json.JSONBase;
 import org.javalite.json.JSONHelper;
 import org.javalite.json.JSONMap;
+import org.javalite.json.JSONParseException;
 import org.javalite.validation.ImplicitConversionValidator;
 import org.javalite.validation.Validatable;
 import org.javalite.activeweb.annotations.FailedValidationReply;
@@ -37,6 +39,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.UnrecoverableEntryException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -171,7 +174,12 @@ class ControllerRunner {
             return getJSONBase(argumentClass, requestMap);
         }else if (JSONMap.class.equals(argumentClass)) {
             return new JSONMap(requestMap);
-        }else {
+        } else if (argumentClass.isRecord()) {
+
+                return JSONHelper.toObject(requestMap.toJSON(), argumentClass);
+
+        } else {
+
             Object requestObject = argumentClass.getDeclaredConstructor().newInstance();
             if (requestObject instanceof Model) {
                 return ((Model) requestObject).fromMap(requestMap);
