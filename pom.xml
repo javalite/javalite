@@ -39,7 +39,7 @@
         <junit-vintage-engine.version>5.10.0</junit-vintage-engine.version>
         <mariadb.connector.version>3.2.0</mariadb.connector.version>
         <h2.version>2.2.224</h2.version>
-        <spring.version>6.0.13</spring.version>
+        <spring.version>5.3.27</spring.version>
     </properties>
 
     <licenses>
@@ -77,7 +77,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.3.1</version>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-plugin-plugin</artifactId>

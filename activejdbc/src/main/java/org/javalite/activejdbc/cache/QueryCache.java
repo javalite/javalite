@@ -21,8 +21,6 @@ package org.javalite.activejdbc.cache;
 import org.javalite.activejdbc.InitException;
 import org.javalite.activejdbc.MetaModel;
 import org.javalite.activejdbc.Registry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
