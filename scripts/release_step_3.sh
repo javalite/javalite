@@ -1,3 +1,3 @@
 
 
-mvn release:perform --Dmaven.test.skip=true  -Pskip_integration_tests,pgp-sign
+mvn release:perform -Pskip_tests,skip_integration_tests
