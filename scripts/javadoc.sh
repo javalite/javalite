@@ -7,7 +7,7 @@ if [ $# -eq 0 ]
     exit 1
 fi
 
-mvn clean javadoc:aggregate
+mvn clean package javadoc:aggregate -Pskip_tests,skip_integration_tests
 rm -rf ../javalite.github.io/$1
 mkdir ../javalite.github.io/$1
 cp -r target/site/apidocs/* ../javalite.github.io/$1
