@@ -13,7 +13,7 @@
 
     <profiles>
         <profile>
-            <id>release</id>
+            <id>pgp-sign</id>
             <build>
                 <plugins>
                     <plugin>

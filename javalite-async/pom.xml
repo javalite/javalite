@@ -17,6 +17,20 @@
         <artemis.version>2.31.2</artemis.version>
     </properties>
 
+    <profiles>
+        <profile>
+            <id>pgp-sign</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
