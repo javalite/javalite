@@ -16,12 +16,12 @@
 
     <profiles>
         <profile>
-            <id>pgp-sign</id>
+            <id>gen-sources</id>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
+                        <artifactId>maven-source-plugin</artifactId>
                     </plugin>
                 </plugins>
             </build>
