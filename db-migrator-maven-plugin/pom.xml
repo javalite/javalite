@@ -19,7 +19,7 @@
 
     <profiles>
         <profile>
-            <id>skip_integration_tests</id>
+            <id>skip_tests</id>
             <build>
                 <plugins>
                     <plugin>
