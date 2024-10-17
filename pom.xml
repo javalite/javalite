@@ -142,8 +142,8 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>3.2.3</version>
                     <executions>
                         <execution>
                             <id>sign-artifacts</id>
@@ -173,15 +173,6 @@
 	<plugins>
         <plugin>
             <artifactId>maven-source-plugin</artifactId>
-            <executions>
-                <execution>
-                    <id>attach-sources</id>
-                    <phase>deploy</phase>
-                    <goals>
-                        <goal>jar-no-fork</goal>
-                    </goals>
-                </execution>
-            </executions>
         </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
