@@ -4,7 +4,7 @@ import org.javalite.json.JSONHelper;
 import org.javalite.json.JSONMap;
 import org.junit.Test;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 
 /**

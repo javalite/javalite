@@ -16,9 +16,10 @@ limitations under the License.
 package org.javalite.activeweb;
 
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload2.core.DiskFileItem;
+import org.apache.commons.fileupload2.core.DiskFileItemFactory;
+import org.apache.commons.fileupload2.jakarta.servlet6.JakartaServletDiskFileUpload;
+import org.apache.commons.fileupload2.jakarta.servlet6.JakartaServletFileUpload;
 import org.javalite.common.Convert;
 import org.javalite.json.JSONHelper;
 import org.javalite.common.Util;
@@ -29,10 +30,11 @@ import org.jsoup.safety.Safelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -753,22 +755,28 @@ public class HttpSupport implements RequestAccess {
             RequestContext.setFormItems(((AWMockMultipartHttpServletRequest) req).getFormItems());
         } else {
 
-            if (!ServletFileUpload.isMultipartContent(req))
+            if (!JakartaServletFileUpload.isMultipartContent(req))
                 throw new ControllerException("this is not a multipart request, be sure to add this attribute to the form: ... enctype=\"multipart/form-data\" ...");
 
-            DiskFileItemFactory factory = new DiskFileItemFactory();
+            DiskFileItemFactory factory = DiskFileItemFactory.builder()                    // Set factory constraints
+                    .setBufferSizeMax(Configuration.getMaxUploadSize())
+                    .setPath(Configuration.getTmpDir().getPath())
+                    .setBufferSizeMax(Configuration.getMaxUploadSize())
+                    .get();
 
-            factory.setSizeThreshold(Configuration.getMaxUploadSize());
-            factory.setRepository(Configuration.getTmpDir());
+            JakartaServletDiskFileUpload upload = new JakartaServletDiskFileUpload(factory);
 
-            ServletFileUpload upload = new ServletFileUpload(factory);
+            upload.setFileSizeMax(Configuration.getMaxUploadSize());
+
             if(encoding != null)
-                upload.setHeaderEncoding(encoding);
+                upload.setHeaderCharset(Charset.forName(encoding));
+
             upload.setFileSizeMax(maxUploadSize);
             try {
-                List<org.apache.commons.fileupload.FileItem> apacheFileItems = upload.parseRequest(RequestContext.getHttpRequest());
-                ArrayList items = new ArrayList<>();
-                for (FileItem apacheItem : apacheFileItems) {
+                List<DiskFileItem> apacheFileItems = upload.parseRequest(RequestContext.getHttpRequest());
+                upload.parseRequest(RequestContext.getHttpRequest());
+                List<FormItem> items = new ArrayList<>();
+                for (DiskFileItem apacheItem : apacheFileItems) {
                     ApacheFileItemFacade f = new ApacheFileItemFacade(apacheItem);
                     if(f.isFormField()){
                         items.add(new FormItem(f));

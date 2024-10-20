@@ -19,8 +19,8 @@ package org.javalite.activeweb;
 import org.javalite.test.SystemStreamUtil;
 import org.junit.Test;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import java.io.IOException;
 
 import static java.lang.String.format;
@@ -108,8 +108,8 @@ public class HttpSupportSpec extends RequestSpec{
     @Test
     public void shouldRetrieveCookies() throws IOException, ServletException {
 
-        javax.servlet.http.Cookie cookie = new javax.servlet.http.Cookie("test", "test value");
-        request.setCookies(new javax.servlet.http.Cookie[]{cookie});
+        jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie("test", "test value");
+        request.setCookies(new jakarta.servlet.http.Cookie[]{cookie});
         request.setServletPath("/http_support/will_retrieve_cookie");
         request.setMethod("GET");
         dispatcher.doFilter(request, response, filterChain);
@@ -126,7 +126,7 @@ public class HttpSupportSpec extends RequestSpec{
         request.setMethod("GET");
         dispatcher.doFilter(request, response, filterChain);
 
-        javax.servlet.http.Cookie cookie  = response.getCookie("user");
+        jakarta.servlet.http.Cookie cookie  = response.getCookie("user");
         a(cookie).shouldNotBeNull();
         a(cookie.getName()).shouldBeEqual("user");
         a(cookie.getValue()).shouldBeEqual("Fred");
@@ -211,7 +211,7 @@ public class HttpSupportSpec extends RequestSpec{
 
     @Test
     public void shouldCountCookies() throws IOException, ServletException {
-        request.setCookies(new javax.servlet.http.Cookie[]{new Cookie("name", "value"), new Cookie("name1", "value1")});
+        request.setCookies(new jakarta.servlet.http.Cookie[]{new Cookie("name", "value"), new Cookie("name1", "value1")});
         request.setServletPath("/http_support/get_cookies");
         request.setMethod("GET");
         dispatcher.doFilter(request, response, filterChain);

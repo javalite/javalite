@@ -16,24 +16,22 @@ limitations under the License.
 
 package org.javalite.activeweb;
 
+import org.apache.commons.fileupload2.core.FileItemInput;
 import org.javalite.common.Util;
-import org.apache.commons.fileupload.FileItemStream;
+
 
 import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Represents an form item from a multi-part form.
+ * Represents a form item from a multipart form.
  *
  * @author Igor Polevoy
  */
 public class FormItem {
 
-    private FileItemStream fileItemStream;
+    private FileItemInput fileItemInput;
 
-    FormItem(FileItemStream fileItemStream) {
-        this.fileItemStream = fileItemStream;
-    }
 
     /**
      * This constructor is used for testing.
@@ -45,16 +43,16 @@ public class FormItem {
      * @param content content in bytes.
      */
     public FormItem(String name, String fieldName, boolean isFile, String contentType, byte[] content) {
-        this.fileItemStream = new ApacheFileItemFacade(name, fieldName,contentType, isFile, content);
+        this.fileItemInput = new ApacheFileItemFacade(name, fieldName,contentType, isFile, content);
     }
 
     /**
      * Used internally.
      *
-     * @param apacheFileItemFacade instance of {@link ApacheFileItemFacade}
+     * @param fileItemInput instance of {@link ApacheFileItemFacade}
      */
-    FormItem(ApacheFileItemFacade apacheFileItemFacade) {
-        this.fileItemStream = apacheFileItemFacade;
+    FormItem(FileItemInput fileItemInput) {
+        this.fileItemInput = fileItemInput;
     }
 
     /**
@@ -63,7 +61,7 @@ public class FormItem {
      * @return file name.
      */
     public String getName() {
-        return fileItemStream.getName();
+        return fileItemInput.getName();
     }
 
     /**
@@ -71,7 +69,7 @@ public class FormItem {
      * @return file name.
      */
     public String getFileName(){
-        return fileItemStream.getName();
+        return fileItemInput.getName();
     }
 
     /**
@@ -80,7 +78,7 @@ public class FormItem {
      * @return form field name
      */
     public String getFieldName() {
-        return fileItemStream.getFieldName();
+        return fileItemInput.getFieldName();
     }
 
     /**
@@ -89,7 +87,7 @@ public class FormItem {
      * @return true if this is a file, false if not.
      */
     public boolean isFile() {
-        return !fileItemStream.isFormField();
+        return !fileItemInput.isFormField();
     }
 
     /**
@@ -98,7 +96,7 @@ public class FormItem {
      * @return content type of this form field.
      */
     public String getContentType() {
-        return fileItemStream.getContentType();
+        return fileItemInput.getContentType();
     }
 
     /**
@@ -107,7 +105,7 @@ public class FormItem {
      * @return true if this is a form field, false if not.
      */
     public boolean isFormField() {
-        return fileItemStream.isFormField();
+        return fileItemInput.isFormField();
     }
 
     /**
@@ -117,7 +115,7 @@ public class FormItem {
      */
     public InputStream getInputStream() {
         try {
-            return fileItemStream.openStream();
+            return fileItemInput.getInputStream();
         } catch (Exception e) {
             throw new ControllerException(e);
         }
@@ -131,7 +129,7 @@ public class FormItem {
      */
     public String getStreamAsString(){
         try {
-            return Util.read(fileItemStream.openStream());
+            return Util.read(fileItemInput.getInputStream());
         } catch (Exception e) {
             throw new ControllerException(e);
         }
@@ -144,7 +142,7 @@ public class FormItem {
      */
     public byte[] getBytes() {
         try {
-            return Util.bytes(fileItemStream.openStream());
+            return Util.bytes(fileItemInput.getInputStream());
         } catch (Exception e) {
             throw new ControllerException(e);
         }

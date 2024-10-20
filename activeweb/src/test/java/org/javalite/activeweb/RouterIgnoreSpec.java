@@ -5,7 +5,7 @@ import org.javalite.app_config.AppConfig;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 
 /**

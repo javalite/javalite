@@ -3,11 +3,12 @@ package org.javalite.activeweb.proxy;
 
 import org.javalite.activeweb.WebException;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Locale;
 
@@ -48,21 +49,16 @@ public class HttpServletResponseProxy implements HttpServletResponse {
     }
 
     @Override
-    public String encodeURL(String url) {
-        return encodeURL(url);
-    }
-
-    @Override
     public String encodeRedirectURL(String url) {
         return servletResponse.encodeRedirectURL(url);
     }
 
     @Override
-    public String encodeUrl(String url) {
-        return servletResponse.encodeUrl(url);
+    public String encodeURL(String url) {
+        return servletResponse.encodeURL(url);
     }
 
-    @Override
+
     public String encodeRedirectUrl(String url) {
         return servletResponse.encodeRedirectURL(url);
     }
@@ -80,6 +76,11 @@ public class HttpServletResponseProxy implements HttpServletResponse {
     @Override
     public void sendRedirect(String location) throws IOException {
         servletResponse.sendRedirect(location);
+    }
+
+    @Override
+    public void sendRedirect(String s, int i, boolean b) throws IOException {
+
     }
 
     @Override
@@ -115,11 +116,6 @@ public class HttpServletResponseProxy implements HttpServletResponse {
     @Override
     public void setStatus(int sc) {
         servletResponse.setStatus(sc);
-    }
-
-    @Override
-    public void setStatus(int sc, String sm) {
-        servletResponse.setStatus(sc, sm);
     }
 
     @Override
@@ -177,6 +173,11 @@ public class HttpServletResponseProxy implements HttpServletResponse {
     @Override
     public void setCharacterEncoding(String charset) {
         servletResponse.setCharacterEncoding(charset);
+    }
+
+    @Override
+    public void setCharacterEncoding(Charset encoding) {
+        HttpServletResponse.super.setCharacterEncoding(encoding);
     }
 
     @Override

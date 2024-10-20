@@ -7,7 +7,7 @@ import org.junit.*;
 import org.junit.runners.MethodSorters;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Collections;

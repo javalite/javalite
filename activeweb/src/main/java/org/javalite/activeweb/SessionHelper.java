@@ -16,7 +16,7 @@ limitations under the License.
 
 package org.javalite.activeweb;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
