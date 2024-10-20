@@ -17,7 +17,7 @@ limitations under the License.
 package org.javalite.activeweb;
 
 
-import javax.servlet.http.*;
+import jakarta.servlet.http.*;
 import java.util.*;
 
 /**

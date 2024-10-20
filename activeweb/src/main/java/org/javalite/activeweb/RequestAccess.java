@@ -5,11 +5,11 @@ import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.*;
 
 import static java.util.Arrays.asList;
-import static org.apache.commons.fileupload.FileUploadBase.MULTIPART;
+import static org.apache.commons.fileupload2.core.AbstractFileUpload.MULTIPART;
 import static org.javalite.common.Collections.list;
 
 /**
@@ -413,12 +413,12 @@ public interface RequestAccess {
      * @return collection of all cookies browser sent.
      */
     default List<Cookie> cookies(){
-        javax.servlet.http.Cookie[] servletCookies = RequestContext.getHttpRequest().getCookies();
+        jakarta.servlet.http.Cookie[] servletCookies = RequestContext.getHttpRequest().getCookies();
         if(servletCookies == null)
             return new ArrayList<>();
 
         List<Cookie> cookies = new ArrayList<>();
-        for (javax.servlet.http.Cookie servletCookie: servletCookies) {
+        for (jakarta.servlet.http.Cookie servletCookie: servletCookies) {
             Cookie cookie = Cookie.fromServletCookie(servletCookie);
             cookies.add(cookie);
         }
@@ -432,9 +432,9 @@ public interface RequestAccess {
      * @return a cookie by name, null if not found.
      */
     default Cookie cookie(String name){
-        javax.servlet.http.Cookie[] servletCookies = RequestContext.getHttpRequest().getCookies();
+        jakarta.servlet.http.Cookie[] servletCookies = RequestContext.getHttpRequest().getCookies();
         if (servletCookies != null) {
-            for (javax.servlet.http.Cookie servletCookie : servletCookies) {
+            for (jakarta.servlet.http.Cookie servletCookie : servletCookies) {
                 if (servletCookie.getName().equals(name)) {
                     return Cookie.fromServletCookie(servletCookie);
                 }

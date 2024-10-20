@@ -1,7 +1,7 @@
 package org.javalite.activeweb.proxy;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.WriteListener;
 import java.io.IOException;
 
 /**

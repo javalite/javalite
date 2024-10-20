@@ -27,7 +27,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.mock.web.MockFilterConfig;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 
 /**
  *

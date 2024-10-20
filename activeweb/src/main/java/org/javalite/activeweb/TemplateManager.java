@@ -15,7 +15,7 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 import java.io.Writer;
 import java.util.Map;
 

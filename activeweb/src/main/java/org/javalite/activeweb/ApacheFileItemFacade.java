@@ -1,18 +1,19 @@
 package org.javalite.activeweb;
 
-import org.apache.commons.fileupload.FileItemHeaders;
-import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload2.core.DiskFileItem;
+import org.apache.commons.fileupload2.core.FileItemInput;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 
-class ApacheFileItemFacade implements FileItemStream {
+class ApacheFileItemFacade implements FileItemInput {
     private String name, fieldName, contentType;
     private boolean isFile;
     private byte[] content;
     private InputStream inputStream;
+    private org.apache.commons.fileupload2.core.FileItemHeaders headers;
 
 
 
@@ -24,22 +25,12 @@ class ApacheFileItemFacade implements FileItemStream {
         this.content = content;
     }
 
-    ApacheFileItemFacade(org.apache.commons.fileupload.FileItem apacheFileItem) throws IOException {
+    ApacheFileItemFacade(DiskFileItem apacheFileItem) throws IOException {
         this.name = apacheFileItem.getName();
         this.fieldName = apacheFileItem.getFieldName();
         this.contentType = apacheFileItem.getContentType();
         this.isFile = !apacheFileItem.isFormField();
         this.inputStream = apacheFileItem.getInputStream();
-    }
-
-    public InputStream openStream() throws IOException {
-        if(content != null){
-            return new ByteArrayInputStream(content);
-        }else if(inputStream != null){
-            return inputStream;
-        }else{
-            throw new RuntimeException("this should never happen :(");
-        }
     }
 
     public String getContentType() {
@@ -54,15 +45,30 @@ class ApacheFileItemFacade implements FileItemStream {
         return fieldName;
     }
 
+    @Override
+    public InputStream getInputStream()  {
+        if(content != null){
+            return new ByteArrayInputStream(content);
+        }else if(inputStream != null){
+            return inputStream;
+        }else{
+            throw new RuntimeException("this should never happen :(");
+        }
+    }
+
     public boolean isFormField() {
         return !isFile;
     }
 
-    public FileItemHeaders getHeaders() {
-        throw new UnsupportedOperationException("not implemented");
+
+    @Override
+    public org.apache.commons.fileupload2.core.FileItemHeaders getHeaders() {
+        return headers;
     }
 
-    public void setHeaders(FileItemHeaders fileItemHeaders) {
-        throw new UnsupportedOperationException("not implemented");
+    @Override
+    public FileItemInput setHeaders(final org.apache.commons.fileupload2.core.FileItemHeaders headers) {
+        this.headers = headers;
+        return this;
     }
 }

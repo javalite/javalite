@@ -17,7 +17,7 @@ package org.javalite.activeweb;
 
 import org.javalite.activeweb.annotations.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 

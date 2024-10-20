@@ -19,7 +19,7 @@ import com.google.inject.Injector;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -436,11 +436,11 @@ public class RequestBuilder {
     }
 
     private void addCookiesInternal(MockHttpServletRequest request) {
-        List<javax.servlet.http.Cookie> servletCookieList = new ArrayList<>();
+        List<jakarta.servlet.http.Cookie> servletCookieList = new ArrayList<>();
         for(org.javalite.activeweb.Cookie cookie: cookies){
             servletCookieList.add(org.javalite.activeweb.Cookie.toServletCookie(cookie));
         }
-        javax.servlet.http.Cookie[] arr =  servletCookieList.toArray(new javax.servlet.http.Cookie[0]);
+        jakarta.servlet.http.Cookie[] arr =  servletCookieList.toArray(new jakarta.servlet.http.Cookie[0]);
         request.setCookies(arr);
     }
 

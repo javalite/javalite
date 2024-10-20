@@ -6,7 +6,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 
 /**
