@@ -1,19 +1,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>embeddded-tomcat</artifactId>
-    <version>3.1-SNAPSHOT</version>
-    <packaging>maven-plugin</packaging>
+    <artifactId>embedded-tomcat</artifactId>
+    <version>3.4-SNAPSHOT</version>
+    <packaging>jar</packaging>
     <name>JavaLite - Embedded Tomcat</name>
 
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>javalite</artifactId>
-        <version>3.1-SNAPSHOT</version>
+        <version>3.4-SNAPSHOT</version>
     </parent>
 
     <properties>
-        <tomcat.version>9.0.83</tomcat.version>
+        <tomcat.version>11.0.0</tomcat.version>
     </properties>
 
     <build>
@@ -34,7 +34,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
@@ -58,5 +58,6 @@
             <artifactId>activeweb</artifactId>
             <version>${project.version}</version>
         </dependency>
+
     </dependencies>
 </project>

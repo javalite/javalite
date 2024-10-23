@@ -225,6 +225,7 @@
         <module>async-pool-test</module>
         <module>aw-mate</module>
         <module>embedded-tomcat</module>
+        <module>embedded-tomcat-integration-test</module>
     </modules>
 
     <dependencyManagement>

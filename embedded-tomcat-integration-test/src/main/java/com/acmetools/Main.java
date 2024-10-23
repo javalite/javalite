@@ -1,10 +1,11 @@
-package org.javalite.embedded.tomcat;
+package com.acmetools;
 
 import org.apache.catalina.LifecycleException;
 import org.javalite.tomcat.EmbeddedTomcat;
 
 public class Main {
     public static void main(String[] args) throws LifecycleException {
-        new EmbeddedTomcat().start();
+        EmbeddedTomcat tomcat = new EmbeddedTomcat();
+        tomcat.start();
     }
 }

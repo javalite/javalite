@@ -2,7 +2,7 @@
 
 ## This script will instrument fast without Maven
 ## Adjust versions on the classpath if upgrading!
-export JAVALITE=3.1-SNAPSHOT
+export JAVALITE=3.4-SNAPSHOT
 
 export CLASSPATH=~/.m2/repository/org/javalite/activejdbc-instrumentation/$JAVALITE/activejdbc-instrumentation-$JAVALITE.jar
 export CLASSPATH=${CLASSPATH}:~/.m2/repository/org/javalite/activejdbc/$JAVALITE/activejdbc-$JAVALITE.jar
