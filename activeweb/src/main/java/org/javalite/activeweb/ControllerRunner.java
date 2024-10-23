@@ -175,9 +175,7 @@ class ControllerRunner {
         }else if (JSONMap.class.equals(argumentClass)) {
             return new JSONMap(requestMap);
         } else if (argumentClass.isRecord()) {
-
                 return JSONHelper.toObject(requestMap.toJSON(), argumentClass);
-
         } else {
 
             Object requestObject = argumentClass.getDeclaredConstructor().newInstance();

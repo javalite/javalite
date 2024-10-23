@@ -224,6 +224,7 @@
         <module>javalite-async</module>
         <module>async-pool-test</module>
         <module>aw-mate</module>
+        <module>embedded-tomcat</module>
     </modules>
 
     <dependencyManagement>
