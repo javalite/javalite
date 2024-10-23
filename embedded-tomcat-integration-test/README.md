@@ -1,4 +1,4 @@
-## Test project showcasing how to start TOmcat with JNDI in an embedded mode  
+## Test project showcasing how to start Tomcat with JNDI in an embedded mode  
 
 It includes a Maven Shade Plugin to generate a single executable file
 
@@ -7,17 +7,17 @@ How to execute:
 
 Include a database matching the connection parameters in the file `database.properties`
 
-## Create a database 
+### Create a database 
 
 Execute the Migration Plugin:
 
 ```
-mvn db-migrations:reset
+mvn db-migrator:reset
 ```
 
 This will drop a previous database, re-create a new one and will run migrations in a single step.
 
-## Build the project:
+### Build the project:
 
 ```
 mvn clean install

@@ -92,5 +92,10 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.javalite</groupId>
+            <artifactId>activeweb-testing</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
