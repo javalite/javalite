@@ -11,7 +11,7 @@
     <name>ACTIVE_ENV and active_env Test</name>
 
     <properties>
-        <javalite.version>3.1-SNAPSHOT</javalite.version>
+        <javalite.version>3.2-SNAPSHOT</javalite.version>
     </properties>
 
     <build>

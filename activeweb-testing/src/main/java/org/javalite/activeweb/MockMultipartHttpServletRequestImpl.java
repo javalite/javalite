@@ -18,8 +18,10 @@ package org.javalite.activeweb;
 
 import org.springframework.mock.web.MockHttpServletRequest;
 
-import javax.servlet.*;
-import javax.servlet.http.Part;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpUpgradeHandler;
+import jakarta.servlet.http.Part;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,6 +51,10 @@ public class MockMultipartHttpServletRequestImpl extends MockHttpServletRequest 
 
     // Below are Servlet 3 methods
     //Note that the @Override annotations are removed for backwards compatibility
+    @Override
+    public boolean authenticate(HttpServletResponse response) throws IOException, ServletException {
+        return false;
+    }
 
     @Override
     public Collection<Part> getParts() throws IOException, ServletException {
@@ -57,6 +63,11 @@ public class MockMultipartHttpServletRequestImpl extends MockHttpServletRequest 
 
     @Override
     public Part getPart(String s) throws IOException, ServletException {
+        return null;
+    }
+
+    @Override
+    public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
         return null;
     }
 

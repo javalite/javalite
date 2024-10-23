@@ -106,7 +106,7 @@ public class Cookie {
                 '}';
     }
 
-    static Cookie fromServletCookie(javax.servlet.http.Cookie servletCookie){
+    static Cookie fromServletCookie(jakarta.servlet.http.Cookie servletCookie){
         Cookie cookie = new Cookie(servletCookie.getName(), servletCookie.getValue());
         cookie.setMaxAge(servletCookie.getMaxAge());
         cookie.setDomain(servletCookie.getDomain());
@@ -117,8 +117,8 @@ public class Cookie {
         return cookie;
     }
 
-    static javax.servlet.http.Cookie toServletCookie(Cookie cookie){
-        javax.servlet.http.Cookie servletCookie = new javax.servlet.http.Cookie(cookie.getName(), cookie.getValue());
+    static jakarta.servlet.http.Cookie toServletCookie(Cookie cookie){
+        jakarta.servlet.http.Cookie servletCookie = new jakarta.servlet.http.Cookie(cookie.getName(), cookie.getValue());
         servletCookie.setMaxAge(cookie.getMaxAge());
         if (cookie.getDomain() != null)
                 servletCookie.setDomain(cookie.getDomain());
@@ -130,7 +130,7 @@ public class Cookie {
     }
 
     //Need to call this by reflection for backwards compatibility with Servlet 2.5
-    private static void setHttpOnlyReflect(org.javalite.activeweb.Cookie awCookie, javax.servlet.http.Cookie servletCookie){
+    private static void setHttpOnlyReflect(org.javalite.activeweb.Cookie awCookie, jakarta.servlet.http.Cookie servletCookie){
         try {
             servletCookie.getClass().getMethod("setHttpOnly", boolean.class).invoke(servletCookie, awCookie.isHttpOnly());
         } catch (Exception e) {
@@ -139,7 +139,7 @@ public class Cookie {
     }
 
     //Need to call this by reflection for backwards compatibility with Servlet 2.5
-    private static boolean isHttpOnlyReflect(javax.servlet.http.Cookie servletCookie){
+    private static boolean isHttpOnlyReflect(jakarta.servlet.http.Cookie servletCookie){
         try {
             return (Boolean)servletCookie.getClass().getMethod("isHttpOnly").invoke(servletCookie);
         } catch (Exception e) {

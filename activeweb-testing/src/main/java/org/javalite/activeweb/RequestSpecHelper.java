@@ -330,9 +330,9 @@ public class RequestSpecHelper extends SpecHelper{
      */
     protected Cookie[] getCookies(){
         if(RequestContext.getHttpResponse() == null) throw new IllegalStateException("response does not exist");
-        javax.servlet.http.Cookie[] servletCookies = ((MockHttpServletResponse) RequestContext.getHttpResponse().getTarget()).getCookies();
+        jakarta.servlet.http.Cookie[] servletCookies = ((MockHttpServletResponse) RequestContext.getHttpResponse().getTarget()).getCookies();
         List<Cookie> cookies = new ArrayList<>();
-        for(javax.servlet.http.Cookie cookie: servletCookies){
+        for(jakarta.servlet.http.Cookie cookie: servletCookies){
             cookies.add(Cookie.fromServletCookie(cookie));
         }
         return cookies.toArray(new Cookie[0]);

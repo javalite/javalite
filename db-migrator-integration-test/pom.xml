@@ -1,14 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>db-migrator-integration-test</artifactId>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.4-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>JavaLite - DB-Migrator Integration Test</name>
 
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>javalite</artifactId>
-        <version>3.1-SNAPSHOT</version>
+        <version>3.4-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -23,17 +23,6 @@
             </activation>
             <!--exists to be passed to test projects below -->
             <id>local</id>
-        </profile>
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
         </profile>
         <profile>
             <id>skip_integration_tests</id>

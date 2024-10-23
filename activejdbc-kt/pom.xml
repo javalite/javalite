@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>javalite</artifactId>
-        <version>3.1-SNAPSHOT</version>
+        <version>3.2-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -32,12 +32,12 @@
 
     <profiles>
         <profile>
-            <id>release</id>
+            <id>gen-sources</id>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
+                        <artifactId>maven-source-plugin</artifactId>
                     </plugin>
                 </plugins>
             </build>

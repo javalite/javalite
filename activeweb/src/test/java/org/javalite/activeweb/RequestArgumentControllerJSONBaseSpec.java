@@ -3,7 +3,7 @@ package org.javalite.activeweb;
 import org.javalite.json.JSONHelper;
 import org.junit.Test;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.util.Map;
 

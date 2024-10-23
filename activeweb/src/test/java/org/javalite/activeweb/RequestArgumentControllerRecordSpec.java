@@ -4,7 +4,7 @@ import org.javalite.common.Util;
 import org.javalite.test.SystemStreamUtil;
 import org.junit.Test;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 
 /**

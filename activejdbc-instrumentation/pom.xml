@@ -2,23 +2,37 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>activejdbc-instrumentation</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.4-SNAPSHOT</version>
     <name>JavaLite - ActiveJDBC Instrumentation Plugin</name>
 
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>javalite</artifactId>
-        <version>3.1-SNAPSHOT</version>
+        <version>3.4-SNAPSHOT</version>
     </parent>
 
     <profiles>
         <profile>
-            <id>release</id>
+            <id>gen-sources</id>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
+                        <artifactId>maven-source-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>skip_tests</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <skipTests>true</skipTests>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -33,7 +47,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.3</version>
+                <version>3.5.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -51,10 +65,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

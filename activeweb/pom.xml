@@ -3,16 +3,43 @@
 
     <artifactId>activeweb</artifactId>
     <packaging>jar</packaging>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.4-SNAPSHOT</version>
     <name>JavaLite - ActiveWeb: The Agile Java Web Framework</name>
     <description>Core functionality of the framework</description>
 
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>javalite</artifactId>
-        <version>3.1-SNAPSHOT</version>
+        <version>3.4-SNAPSHOT</version>
     </parent>
 
+    <profiles>
+        <profile>
+            <id>gen-sources</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>skip_tests</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <skipTests>true</skipTests>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
     <build>
         <plugins>
             <plugin>
@@ -64,8 +91,8 @@
         </dependency>
 
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
         </dependency>
       
         <dependency>
@@ -94,8 +121,8 @@
         </dependency>
 
         <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-fileupload2-jakarta-servlet6</artifactId>
         </dependency>
 
         <dependency>
@@ -114,7 +141,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
+            <artifactId>log4j-slf4j2-impl</artifactId>
         </dependency>
 
         <dependency>
@@ -122,13 +149,11 @@
             <artifactId>cdi-api</artifactId>
             <version>2.0</version>
         </dependency>
-
-<!--        <dependency>-->
-<!--            <groupId>org.eclipse.jetty.websocket</groupId>-->
-<!--            <artifactId>javax-websocket-server-impl</artifactId>-->
-<!--            <version>9.4.53.v20231009</version>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
-
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>javax-websocket-server-impl</artifactId>
+            <version>9.4.56.v20240826</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

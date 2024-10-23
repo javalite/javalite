@@ -16,7 +16,9 @@ limitations under the License.
 
 package org.javalite.activeweb;
 
-import org.apache.commons.fileupload.FileItemIterator;
+
+
+import org.apache.commons.fileupload2.core.FileItemInputIterator;
 
 import java.util.Iterator;
 
@@ -24,9 +26,9 @@ import java.util.Iterator;
  * @author Igor Polevoy
  */
 class FormItemIterator implements Iterator<FormItem> {
-    private FileItemIterator it;
+    private FileItemInputIterator it;
 
-    public FormItemIterator(FileItemIterator it) {
+    public FormItemIterator(FileItemInputIterator it) {
         this.it = it;
     }
 

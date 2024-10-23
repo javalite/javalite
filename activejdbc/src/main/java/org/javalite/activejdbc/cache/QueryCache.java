@@ -21,8 +21,6 @@ package org.javalite.activejdbc.cache;
 import org.javalite.activejdbc.InitException;
 import org.javalite.activejdbc.MetaModel;
 import org.javalite.activejdbc.Registry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
@@ -34,8 +32,6 @@ import java.util.Arrays;
  */
 public enum QueryCache {
     INSTANCE;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(QueryCache.class);
 
     private boolean enabled = false;
 

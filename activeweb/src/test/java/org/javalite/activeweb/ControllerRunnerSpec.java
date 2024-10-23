@@ -19,7 +19,7 @@ package org.javalite.activeweb;
 import org.javalite.test.XPathHelper;
 import org.junit.Test;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 
 /**

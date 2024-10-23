@@ -3,16 +3,43 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>activeweb-sass-maven-plugin</artifactId>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.4-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
     <name>JavaLite - ActiveWeb SASS Maven Plugin</name>
 
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>javalite</artifactId>
-        <version>3.1-SNAPSHOT</version>
+        <version>3.4-SNAPSHOT</version>
     </parent>
 
+    <profiles>
+        <profile>
+            <id>gen-sources</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>skip_tests</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <skipTests>true</skipTests>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <dependencies>
         <dependency>

@@ -3,19 +3,48 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>javalite-async</artifactId>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.4-SNAPSHOT</version>
     <name>JavaLite - Async Framework for Offline Processing</name>
     <packaging>jar</packaging>
 
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>javalite</artifactId>
-        <version>3.1-SNAPSHOT</version>
+        <version>3.4-SNAPSHOT</version>
     </parent>
 
     <properties>
-        <artemis.version>2.24.0</artemis.version>
+        <artemis.version>2.31.2</artemis.version>
     </properties>
+
+    <profiles>
+            <profile>
+                <id>skip_tests</id>
+                <build>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-surefire-plugin</artifactId>
+                            <configuration>
+                                <skipTests>true</skipTests>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </build>
+            </profile>
+
+        <profile>
+            <id>gen-sources</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>
@@ -82,7 +111,7 @@
 
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
+            <artifactId>log4j-slf4j2-impl</artifactId>
         </dependency>
 
     </dependencies>

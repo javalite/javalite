@@ -9,7 +9,7 @@
     <parent>
         <artifactId>javalite</artifactId>
         <groupId>org.javalite</groupId>
-        <version>3.1-SNAPSHOT</version>
+        <version>3.4-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -20,6 +20,23 @@
         <jdbc.password />
         <db>h2</db>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>skip_tests</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <skipTests>true</skipTests>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>
@@ -127,10 +144,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
             </plugin>
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
