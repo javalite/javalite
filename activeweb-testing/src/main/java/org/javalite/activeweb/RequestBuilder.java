@@ -16,6 +16,7 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import com.google.inject.Injector;
+import org.javalite.json.JSONHelper;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -275,7 +276,7 @@ public class RequestBuilder {
      * Convenience method. Expects the content to be some JSON document (object or array).
      * This method does NOT check the validity of the document. It is a responsibility of the controller.
      * <br>
-     * This method will automatically set the header "Content-Type" to be "application/json", and that is the convenience.
+     * This method will automatically set the header "Content-Type" to be "application/json".
      *
      * @param content JSON document is expected
      * @return self.
@@ -283,6 +284,21 @@ public class RequestBuilder {
     public RequestBuilder json(String content) {
         contentType("application/json");
         return content(content.getBytes());
+    }
+
+    /**
+     * Convenience method. Will serialize the  object to JSON.
+     * s
+     * <br>
+     * This method will automatically set the header "Content-Type"
+     * to be "application/json".
+     *
+     * @param request any object that can be serialized to JSON.
+     * @return self.
+     */
+    public RequestBuilder json(Object request) {
+        contentType("application/json");
+        return content(JSONHelper.toJSON(request));
     }
 
     /**

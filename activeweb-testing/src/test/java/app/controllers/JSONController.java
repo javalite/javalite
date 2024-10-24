@@ -18,4 +18,9 @@ public class JSONController extends AppController {
     public void index2(){
         respondJSON(getRequestJSONList());
     }
+
+    @POST
+    public void index3(){
+        respondJSON(getRequestJSONMap());
+    }
 }

@@ -61,4 +61,29 @@ public class JSONControllerSpec extends ControllerSpec {
         the(response).shouldContain("Doe");
         the(contentType()).shouldBeEqual("application/json");
     }
+
+    @Test
+    public void shouldConvertResponseToObject(){
+
+        String doc = """
+                {
+                    "firstName" : "John",
+                    "lastName" : "Deer"
+                }
+                """;
+        request().json(doc).post("index3");
+
+        the(responseObject(Person3.class).toString()).shouldBeEqual("Person3[firstName=John, lastName=Deer]");
+        the(contentType()).shouldBeEqual("application/json");
+    }
+
+    @Test
+    public void shouldConvertResponseToRecord(){
+
+        Person3 person3 = new Person3("John", "Doe");
+        request().json(person3).post("index3");
+
+        the(responseObject(Person3.class)).shouldBeEqual(person3);
+        the(contentType()).shouldBeEqual("application/json");
+    }
 }
