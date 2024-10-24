@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.javalite</groupId>
         <artifactId>javalite</artifactId>
-        <version>3.2-SNAPSHOT</version>
+        <version>3.4-SNAPSHOT</version>
     </parent>
 
     <properties>

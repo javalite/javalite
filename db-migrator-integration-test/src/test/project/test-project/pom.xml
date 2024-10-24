@@ -21,7 +21,7 @@
             <plugin>
                 <groupId>org.javalite</groupId>
                 <artifactId>db-migrator-maven-plugin</artifactId>
-                <version>3.2-SNAPSHOT</version>
+                <version>3.4-SNAPSHOT</version>
                 <configuration>
                     <environments>development</environments>
                     <configFile>${project.basedir}/../../../../../config/database.properties</configFile>

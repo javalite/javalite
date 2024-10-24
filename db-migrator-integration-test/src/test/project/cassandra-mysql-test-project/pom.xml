@@ -29,7 +29,7 @@
             <plugin>
                 <groupId>org.javalite</groupId>
                 <artifactId>db-migrator-maven-plugin</artifactId>
-                <version>3.2-SNAPSHOT</version>
+                <version>3.4-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <id>cassandra_migrations</id>
