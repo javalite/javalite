@@ -18,7 +18,7 @@ def fetch(location) {
     def url = new URL(location)
     def connection = url.openConnection()
 //   See:  Github.com > Profile > Setting > Developer Settings > Personal Access Tokens > Fine-grained tokens
-    connection.setRequestProperty("Authorization", "token ${System.getenv('GITHUB_KEY')}")
+    connection.setRequestProperty("Authorization", "token ${System.getenv('JAVALITE_GITHUB_TOKEN')}")
     connection.requestMethod = 'GET'
     try{
         return connection.content.text
