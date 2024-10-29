@@ -2,7 +2,6 @@ package org.javalite.db_migrator;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.javalite.db_migrator.maven.MigrateMojo;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashMap;
