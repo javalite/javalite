@@ -108,24 +108,25 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
             }
             for (String environment : environmentSet) {
                 getLog().info("Environment: " + environment);
-//                Side effects here:
+
                 url = properties.getProperty(environment + ".url");
                 driver = properties.getProperty(environment + ".driver");
                 username = properties.getProperty(environment + ".username");
                 password = properties.getProperty(environment + ".password");
                 prepareCurrentMergeProperties(environment, environmentSet, originMergeProperties);
                 currentEnvironment = environment;
+
+                getLog().info("*********** The following properties are configured: *************");
+                getLog().info("url: " + url);
+                getLog().info("driver: " + driver);
+                getLog().info("username: " + username);
+                getLog().info("environments: " + environments);
+                getLog().info("configFile: " + configFile);
+                getLog().info("mergeProperties: " + mergeProperties);
+
+                executeCurrentConfiguration();
             }
         }
-        getLog().info("*********** The following properties are configured: *************");
-        getLog().info("url: " + url);
-        getLog().info("driver: " + driver);
-        getLog().info("username: " + username);
-        getLog().info("environments: " + environments);
-        getLog().info("configFile: " + configFile);
-        getLog().info("mergeProperties: " + mergeProperties);
-
-        executeCurrentConfiguration();
 
     }
 

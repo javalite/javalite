@@ -49,7 +49,7 @@ public class MergePropertiesSpec {
         ));
     }
 
-    @Test @Ignore
+    @Test
     public void shouldUseMergePropertiesWithDevelopmentAndStagingEnvironments() throws MojoExecutionException {
         Map<String, Properties> envProperties = execute("development,staging","/templator/table-names.properties");
         the(envProperties.get("development")).shouldBeEqual(map(
