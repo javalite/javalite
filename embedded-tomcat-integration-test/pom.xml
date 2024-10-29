@@ -24,8 +24,11 @@
                 <artifactId>db-migrator-maven-plugin</artifactId>
                 <version>${project.version}</version>
                 <configuration>
-                    <configFile>${project.basedir}/src/main/resources/database.properties</configFile>
                     <environments>development</environments>
+                    <driver>org.mariadb.jdbc.Driver</driver>
+                    <url>jdbc:mariadb://localhost:3309/javalite_tomcat</url>
+                    <username>root</username>
+                    <password>p@ssw0rd</password>
                 </configuration>
                 <executions>
                     <execution>

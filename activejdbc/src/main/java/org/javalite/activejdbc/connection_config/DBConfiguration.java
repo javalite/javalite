@@ -24,10 +24,12 @@ import org.javalite.common.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
+import static org.javalite.common.Collections.li;
 import static org.javalite.common.Util.blank;
 
 /**
@@ -152,10 +154,10 @@ public class DBConfiguration {
      development.password=pwd
      development.url=jdbc:mysql://localhost/proj_dev
 
-     test.driver=org.mariadb.jdbc.Driver
-     test.username=mary
-     test.password=pwd1
-     test.url=jdbc:mysql://localhost/test
+     development.test.driver=org.mariadb.jdbc.Driver
+     development.test.username=mary
+     development.test.password=pwd1
+     development.test.url=jdbc:mysql://localhost/test
 
      production.jndi=java:comp/env/jdbc/prod
 
@@ -182,20 +184,34 @@ public class DBConfiguration {
      *             then on file system.
      */
     public static void loadConfiguration(String file) {
+        Properties props;
+        try{
+            props = Util.readProperties(file);
+        }catch (IOException e){
+            LOGGER.warn("Cannot load a file: " + file + ", loading from AppConfig");
+            props = AppConfig.getAllProperties();
+        }
+
         try {
-            Properties props = Util.readProperties(file);
-            Set<String> environments = props.stringPropertyNames().stream().map(n -> n.substring(0, n.lastIndexOf("."))).collect(toSet());
+
+            Set<String> environments = new HashSet<>(li(AppConfig.activeEnv()));
+            if(AppConfig.isInTestMode()){
+                environments.add(AppConfig.activeEnv() + ".test");
+            }
+
             for (String env : environments) {
                 String jndiName = env + "." + "jndi";
                 if (props.containsKey(jndiName)) {
                     createJndiConfig(env, props.getProperty(jndiName));
                 } else {
-                    String driver = props.getProperty(env + ".driver");
-                    String userName = props.getProperty(env + ".username");
-                    String password = props.getProperty(env + ".password");
-                    String url = props.getProperty(env + ".url");
-                    checkProps(driver, userName, password, url, env);
-                    createJdbcConfig(env, driver, url, userName, password);
+                    if(props.containsKey(env + ".driver")){
+                        String driver = props.getProperty(env + ".driver");
+                        String userName = props.getProperty(env + ".username");
+                        String password = props.getProperty(env + ".password");
+                        String url = props.getProperty(env + ".url");
+                        checkProps(driver, userName, password, url, env);
+                        createJdbcConfig(env, driver, url, userName, password);
+                    }
                 }
             }
         } catch (InitException e) {

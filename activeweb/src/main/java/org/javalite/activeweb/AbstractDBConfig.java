@@ -112,8 +112,8 @@ public abstract class AbstractDBConfig extends DBConfiguration implements InitCo
      *     <li>Only one database connection can be configured per environment (with the exception of development and test connections
      *     only in development environment)</li>
      *     <li>Currently additional database parameters need to be specified as a part of a database URL</li>
-     *     <li>Database connection named "test" in the database configuration file is for "development" environment and is
-     *     automatically marked for testing (will be used during tests)</li>
+     *     <li>Database connection named "test" in the database configuration file is for <code>development.test</code> environment and is
+     *     automatically marked for testing (will be used during tests). It can also be named <code>test</code></li>
      *     <li>If this method of configuration is too limiting, it is possible to mix and match both configuration
      *     methods - file-based, as well as DSL: {@link #environment(String)}</li>
      *     <li>All connections specified in a property file automatically assigned DB name "default". For more on

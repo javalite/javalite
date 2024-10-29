@@ -5,6 +5,7 @@ import org.javalite.activejdbc.connection_config.ConnectionJdbcConfig;
 import org.javalite.activejdbc.connection_config.ConnectionJndiConfig;
 
 import org.javalite.activejdbc.connection_config.DBConfiguration;
+import org.javalite.app_config.AppConfig;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -72,6 +73,7 @@ public class AbstractDBConfigSpec {
     @Test
     public void shouldConfigureJndiFromFile(){
 
+        AppConfig.setActiveEnv("production");
         class DBConfig extends AbstractDBConfig{
             public void init(AppContext appContext) {
                 configFile("/activejdbc.properties");
@@ -86,8 +88,8 @@ public class AbstractDBConfigSpec {
         a(jndiConfig.getDbName()).shouldBeEqual("default");
         a(jndiConfig.isTesting()).shouldBeFalse();
         a(jndiConfig.getEnvironment()).shouldBeEqual("production");
-
         a(jndiConfig.getDataSourceJndiName()).shouldBeEqual("java:comp/env/jdbc/prod");
+        AppConfig.setActiveEnv("development");
     }
 
     @Test

@@ -11,6 +11,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
+import static org.javalite.common.Util.blank;
+
 /**
  * This class allows configuration of applications for different deployment environments, such as development, test, staging, production, etc.
  * Configuration is done either with property files on the classpath, or on a file system.
@@ -70,25 +72,28 @@ import java.util.*;
  *
  * <h2>2. File configuration</h2>
  *
- * In addition to properties on classpath, you can also specify a single file for properties to loaded from a file system.
- * Use a system property with a full path to a file like:
+ * In addition to properties on classpath, you can also specify a single file for properties to be loaded from a file system.
+ * Use a path to a file like this:
  *
  * <pre>
- *     java -cp $CLASSPATH com.myproject.Main -Dapp_config.properties=/opt/directory1/myproject.properties
+ *     java -cp $CLASSPATH -Dapp_config.properties=/opt/directory1/myproject.properties com.myproject.Main
  * </pre>
  *
  * <blockquote><strong>The file-based configuration  overrides classpath one. If you have a property defined in both,
- * the classpath configuration will be completely ignored and the file property will be used.</strong></blockquote>
+ * the classpath configuration will be ignored and the file property will be used.</strong></blockquote>
  *
  * <h2>3. Environment Variables</h2>
  *
- * You can set the environment variables as well. As long as they are read as usual:
+ * You can set the environment variables as well. They are read using the same API:
  * <br>
  * <pre>String val = p("env_var_name") </pre>
  *
  * <br/>
- *  your program will read these values. The Environment Variables have the highest precedent and will override
- *  any other properties defined for this environment.
+ * The Environment Variables have the highest precedent and will override any other properties defined for this environment
+ * in the property files
+ *
+ * <br/>
+ * In case the property is not defined in the property files, it will be looked up in environment variables.
  *
  *
  *
@@ -99,16 +104,15 @@ import java.util.*;
  *
  * <pre>
  * first.name=John
-   phrase= And the name is ${first.name}
+ * phrase= And the name is ${first.name}
  * </pre>
  *
- * than this code will print <code>And the name is John</code>:
- *
+ * than this code
  * <pre>
- * System.out.println(p("phrase"));
- * </pre>
+ *  System.out.println(p("phrase"));
+ *  </pre>
  *
- * Note: The order of properties does not matter.
+ *  will print <code>And the name is John</code>. The order of properties for substitution does not matter.
  *
  * @author Igor Polevoy
  */
@@ -129,7 +133,7 @@ public class AppConfig implements Map<String, String> {
         }else if(sysProp != null){
             activeEnv = sysProp;
             LOGGER.warn("Setting environment to: '" + activeEnv + "' from a system property 'active_env'.");
-        }else if(envVar != null){
+        }else{
             activeEnv = envVar;
             LOGGER.warn("Setting environment to: '" + activeEnv + "' from an environment variable '" + envVar + "'.");
         }
@@ -160,11 +164,17 @@ public class AppConfig implements Map<String, String> {
         try {
 
             props = new HashMap<>();
+            // 1: load from classpath
             loadFromClasspath();
+
+            // 2: load from external property file
             String propName = "app_config.properties";
             if(System.getProperties().containsKey(propName)){
                 loadFromFileSystem(System.getProperty(propName));
             }
+
+            // 3: Load from environment variables
+            overloadFromSystemEnv();
 
             merge();
         } catch (ConfigInitException e) {
@@ -172,6 +182,17 @@ public class AppConfig implements Map<String, String> {
         }catch (Exception e){
             throw new ConfigInitException(e);
         }
+    }
+
+    private static void overloadFromSystemEnv() {
+        Map<String, String> sysEnv = new HashMap<>();
+        for (String key: props.keySet()){
+            String val = System.getenv(key);
+            if(!blank(val)){
+                sysEnv.put(key, val);
+            }
+        }
+        registerMap(sysEnv, "System.getenv()");
     }
 
     /**
@@ -192,6 +213,12 @@ public class AppConfig implements Map<String, String> {
     }
 
 
+    /**
+     * Loads system properties from an external file provided at the start with the <code>app_config.properties</code> system
+     * property. Values from this file will overshadow those provided in the package.
+     *
+     * @param filePath path to a file
+     */
     private static void loadFromFileSystem(String filePath) throws MalformedURLException {
         File f = new File(filePath);
         if(!f.exists() || f.isDirectory()){
@@ -214,8 +241,6 @@ public class AppConfig implements Map<String, String> {
         } else {
             registerProperties(url);
         }
-
-        registerMap(System.getenv(), "System.getenv()");
     }
 
     private static boolean isInited() {
@@ -290,6 +315,8 @@ public class AppConfig implements Map<String, String> {
 
     /**
      * Returns property value for a key.
+     * If the value is null, it  will be sourced from the system environment
+     * variables.
      *
      * @param key key of property.
      * @return value for this key, <code>null</code> if not found.
@@ -299,7 +326,7 @@ public class AppConfig implements Map<String, String> {
             init();
         }
         Property p = props.get(key);
-        return p == null ? null : p.getValue();
+        return p == null ? System.getenv(key) : p.getValue();
     }
 
 
@@ -314,13 +341,16 @@ public class AppConfig implements Map<String, String> {
     }
 
 
-    public static Map<String, String> getAllProperties() {
+    public static Properties getAllProperties() {
         if (!isInited()) {
             init();
         }
-        HashMap<String, String> plainProps = new HashMap<>();
+        Properties plainProps = new Properties();
         for (String name: props.keySet()) {
-            plainProps.put(name, props.get(name).getValue());
+            var val = props.get(name).getValue();
+            if(val != null){
+                plainProps.put(name, val);
+            }
         }
         return plainProps;
     }
