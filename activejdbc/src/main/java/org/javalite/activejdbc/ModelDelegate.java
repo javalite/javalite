@@ -246,13 +246,11 @@ public final class ModelDelegate {
             return instance;
         } catch(DBException e) {
             throw e;
-        } catch(InitException e) {
-            throw e;
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e.getMessage(), e);
         } catch (Exception e) {
             if (e instanceof NoSuchMethodException || e instanceof InvocationTargetException || e instanceof InstantiationException) {
-                throw new InitException("Failed to create a new instance of: " + metaModel.getModelClass() + ", are you sure this class has a default constructor?");
+                throw new InitException("Failed to create a new instance of: " + metaModel.getModelClass() + ", are you sure this class has a default constructor?", e);
             } else {
                 throw new RuntimeException(e.getMessage(), e);
             }
