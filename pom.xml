@@ -35,7 +35,7 @@
         <log4j2.version>2.21.1</log4j2.version>
         <junit.version>4.13.2</junit.version>
         <javassist.version>3.29.2-GA</javassist.version>
-        <junit-vintage-engine.version>5.10.0</junit-vintage-engine.version>
+        <junit-vintage-engine.version>5.11.2</junit-vintage-engine.version>
         <mariadb.connector.version>3.2.0</mariadb.connector.version>
         <h2.version>2.2.224</h2.version>
         <spring.version>6.1.14</spring.version>
