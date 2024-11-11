@@ -124,7 +124,7 @@
         <dependency>
             <groupId>com.datastax.oss</groupId>
             <artifactId>java-driver-core-shaded</artifactId>
-            <version>4.11.0</version>
+            <version>4.17.0</version>
             <optional>true</optional>
             <exclusions>
                 <exclusion>
