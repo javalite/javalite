@@ -43,6 +43,7 @@ public class JSONHelper {
         objectMapper.setDateFormat(new StdDateFormat().withColonInTimeZone(false));
         objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        objectMapper.findAndRegisterModules();
     }
 
     /**
