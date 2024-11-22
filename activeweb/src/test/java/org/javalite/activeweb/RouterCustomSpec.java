@@ -284,6 +284,22 @@ public class RouterCustomSpec extends RequestSpec {
     }
 
     @Test
+    public void shouldMatchWithWitHead(){
+
+        routeConfig = new AbstractRouteConfig() {
+            public void init(AppContext appContext) {
+                route("/greeting/{action}").to(Route2Controller.class).head();
+            }
+        };
+        request.setServletPath("/greeting/info");
+        request.setMethod("head");
+        execDispatcher();
+
+        the(responseContent()).shouldBeEqual("");
+        the(response.getHeader("Content-Length")).shouldBeEqual("23456");
+    }
+
+    @Test
     public void shouldMatchWithWithPATCH(){
 
         routeConfig = new AbstractRouteConfig() {

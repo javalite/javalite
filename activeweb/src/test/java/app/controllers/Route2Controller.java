@@ -1,6 +1,7 @@
 package app.controllers;
 
 import org.javalite.activeweb.AppController;
+import org.javalite.activeweb.annotations.HEAD;
 import org.javalite.activeweb.annotations.PATCH;
 import org.javalite.activeweb.annotations.POST;
 
@@ -9,6 +10,12 @@ import org.javalite.activeweb.annotations.POST;
  */
 public class Route2Controller extends AppController {
     public void hi(){}
+
+
+    @HEAD
+    public void info(){
+        respond("").header("Content-Length", "23456");
+    }
 
 
     @POST

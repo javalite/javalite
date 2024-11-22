@@ -39,8 +39,8 @@ public class RouteBuilder {
             routeConfig ; //what was specified in the  RouteConfig class
     private AppController controller;
     private Class<? extends AppController> controllerClass;
-    private List<Segment> segments = new ArrayList<>();
-    private List<HttpMethod> methods = new ArrayList<>();
+    private final List<Segment> segments = new ArrayList<>();
+    private final List<HttpMethod> methods = new ArrayList<>();
 
     private String wildcardName;
     private String wildCardValue;
@@ -178,6 +178,19 @@ public class RouteBuilder {
 
         if(!methods.contains(HttpMethod.POST)){
             methods.add(HttpMethod.POST);
+        }
+        return this;
+    }
+
+    /**
+     * Specifies that this route is mapped to HTTP HEAD method.
+     *
+     * @return instance of {@link RouteBuilder}.
+     */
+    public RouteBuilder head(){
+
+        if(!methods.contains(HttpMethod.HEAD)){
+            methods.add(HttpMethod.HEAD);
         }
         return this;
     }
