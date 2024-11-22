@@ -72,8 +72,6 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
 
     public final void execute() throws MojoExecutionException {
 
-
-
         Properties originMergeProperties = null;
         if (mergeProperties != null) {
             try {
@@ -126,6 +124,18 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
 
                 executeCurrentConfiguration();
             }
+        } else {
+
+            getLog().info("*********** The following properties are configured: *************");
+            getLog().info("url: " + url);
+            getLog().info("driver: " + driver);
+            getLog().info("username: " + username);
+            getLog().info("environments: " + environments);
+            getLog().info("configFile: " + configFile);
+            getLog().info("mergeProperties: " + mergeProperties);
+
+            executeCurrentConfiguration();
+
         }
 
     }
