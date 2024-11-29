@@ -23,6 +23,7 @@ import static org.javalite.app_config.AppConfig.pInteger;
 public class EmbeddedTomcat {
 
     private final Tomcat tomcat;
+    private Context context;
 
     public EmbeddedTomcat() {
         tomcat = new Tomcat();
@@ -38,7 +39,7 @@ public class EmbeddedTomcat {
         tomcat.setPort(pInteger("embedded.tomcat.port"));
         Connector connector = tomcat.getConnector();
         configureConnector(connector);
-        Context context = tomcat.addContext("", System.getProperty("java.io.tmpdir"));
+        context = tomcat.addContext("", System.getProperty("java.io.tmpdir"));
         configureRequestDispatcher(context);
         Tomcat.addServlet(context, "default", new DefaultServlet());
         context.addServletMappingDecoded("/", "default");
@@ -158,4 +159,13 @@ public class EmbeddedTomcat {
         }
         return resource;
     }
+
+    public Tomcat getTomcat() {
+ 		return tomcat;   	
+    }
+
+    public Context getContext() {
+    	return context;
+    }
+    
 }
