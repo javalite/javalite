@@ -19,7 +19,7 @@
         <jdbc.user>sa</jdbc.user>
         <jdbc.password />
         <db>h2</db>
-        <mysql.connector.java.version>8.0.28</mysql.connector.java.version>
+        <mysql.connector.java.version>8.0.30</mysql.connector.java.version>
     </properties>
 
     <profiles>
