@@ -153,7 +153,7 @@
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
-            <version>3.0.19</version>
+            <version>3.0.23</version>
         </dependency>
 
         <dependency>
