@@ -21,6 +21,9 @@ import app.services.*;
 import org.javalite.activeweb.ControllerSpec;
 import org.javalite.activeweb.mocks.GreeterMock;
 import org.junit.Test;
+import org.mockito.Mockito;
+
+import static org.mockito.Mockito.when;
 
 /** 
  * @author Igor Polevoy
@@ -54,5 +57,25 @@ public class InjectionControllerSpec extends ControllerSpec {
 
         request().get("index");
         a(responseContent()).shouldBeEqual("The greeting is: Hello from mock greeter");
+    }
+
+    @Test
+    public void shouldOverrideWithMockInstance(){
+        injector().bind(Greeter.class).toInstance((Greeter) () -> "and the answer is: hello").create();
+
+        request().get("index");
+        a(responseContent()).shouldBeEqual("The greeting is: and the answer is: hello");
+    }
+
+    @Test
+    public void shouldOverrideWithMockitoInstance(){
+
+        Greeter mock = Mockito.mock(Greeter.class);
+        when(mock.greet()).thenReturn("hello there!!!");
+
+        injector().bind(Greeter.class).toInstance(mock).create();
+
+        request().get("index");
+        a(responseContent()).shouldBeEqual("The greeting is: hello there!!!");
     }
 }

@@ -112,14 +112,37 @@ public class SpecHelper implements JSpecSupport{
         return new DynamicBuilder();
     }
 
+    protected static class Pair<T>{
+        /**
+         * class of a service to expose from injector
+         */
+        private Class<T> serviceClass;
+        private Class<T> implementationClass;
+        private Object implementationInstance;
+
+        Pair(Class<T> serviceClass, Object serviceInstance) {
+            this.serviceClass = serviceClass;
+            this.implementationInstance = serviceInstance;
+        }
+
+        Pair(Class<T> serviceClass, Class<T> implementationClass) {
+            this.serviceClass = serviceClass;
+            this.implementationClass = implementationClass;
+        }
+
+        boolean hasInstance(){
+            return this.implementationInstance != null;
+        }
+    }
+
     protected class DynamicBuilder{
-        List<List<Class>> pairs = new ArrayList<>();
+        List<Pair> pairs = new ArrayList<>();
 
         /**
          * @param interfaceClass class of an interface for Guice injector
          */
-        public DynamicBuilder bind(Class interfaceClass){
-            pairs.add(list(interfaceClass));
+        public DynamicBuilder bind(Class<?> interfaceClass){
+            pairs.add(new Pair(interfaceClass, null));
             return this;
         }
 
@@ -129,10 +152,16 @@ public class SpecHelper implements JSpecSupport{
          *
          * @param implementationClass implementation of an interface for Guice injector
          */
-        public DynamicBuilder to(Class implementationClass){
-            pairs.get(pairs.size() - 1).add(implementationClass);
+        public DynamicBuilder to(Class<?> implementationClass){
+            pairs.getLast().implementationClass = implementationClass;
             return this;
         }
+
+        public DynamicBuilder toInstance(Object implementationInstance){
+            pairs.getLast().implementationInstance = implementationInstance;
+            return this;
+        }
+
 
         public Injector create(){
             DynamicModule dynamicModule = new DynamicModule(pairs);
@@ -143,19 +172,21 @@ public class SpecHelper implements JSpecSupport{
     }
 
     private class DynamicModule extends AbstractModule{
-        private List<List<Class>> pairs;
+        private final List<Pair> pairs;
 
-        public DynamicModule(List<List<Class>> pairs) {
+        public DynamicModule(List<Pair> pairs) {
             this.pairs = pairs;
         }
 
         @Override
         protected void configure() {
-            for (List<Class> pair : pairs) {
-                if(pair.size() == 1){
-                    bind(pair.get(0)).asEagerSingleton();
-                }else {
-                    bind(pair.get(0)).to(pair.get(1)).asEagerSingleton();
+            for (Pair pair : pairs) {
+                if(pair.hasInstance()){
+                    bind(pair.serviceClass).toInstance(pair.implementationInstance);
+                }else if(pair.implementationClass != null){
+                    bind(pair.serviceClass).to(pair.implementationClass);
+                }else{
+                    bind(pair.serviceClass).asEagerSingleton();
                 }
             }
         }
