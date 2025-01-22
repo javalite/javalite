@@ -1,12 +1,12 @@
 package org.javalite.tomcat;
 
+import jakarta.servlet.MultipartConfigElement;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
+import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.util.descriptor.web.ContextResource;
-import org.apache.tomcat.util.descriptor.web.FilterDef;
-import org.apache.tomcat.util.descriptor.web.FilterMap;
 import org.javalite.activeweb.RequestDispatcher;
 import org.javalite.app_config.AppConfig;
 
@@ -18,7 +18,7 @@ import static org.javalite.app_config.AppConfig.pInteger;
 /**
  * Embedded Tomcat preconfigured for JavaLite. For the most part, this should work as expected.
  * If you need further customization, feel free to create your version by subclassing this class
- * and overriding any methods.
+ * and overriding any methods (all are protected for this purpose).
  */
 public class EmbeddedTomcat {
 
@@ -40,13 +40,31 @@ public class EmbeddedTomcat {
         Connector connector = tomcat.getConnector();
         configureConnector(connector);
         context = tomcat.addContext("", System.getProperty("java.io.tmpdir"));
-        configureRequestDispatcher(context);
-        Tomcat.addServlet(context, "default", new DefaultServlet());
-        context.addServletMappingDecoded("/", "default");
+        configureRequestDispatcher();
+        context.addServletMappingDecoded("/*", "default");
 
         // Configure JNDI DataSource in the context
         context.getNamingResources().addResource(configureDBConnectionPool());
     }
+
+    /**
+     * Sets up JavaLite RequestDispatcher servlet on the container.
+     */
+    protected void configureRequestDispatcher() {
+
+        RequestDispatcher requestDispatcher = new RequestDispatcher();
+        Wrapper wrapper = Tomcat.addServlet(context, "default", requestDispatcher);
+        wrapper.addInitParameter("exclusions", p("embedded.tomcat.servlet.exclusions"));
+        wrapper.addInitParameter("root_controller", p("embedded.tomcat.home.controller"));
+        wrapper.setMultipartConfigElement(new MultipartConfigElement(
+                System.getProperty("java.io.tmpdir"),
+                pInteger("embedded.tomcat.multipart.maxFileSize"),
+                pInteger("embedded.tomcat.multipart.maxRequestSize"),
+                pInteger("embedded.tomcat.multipart.fileSizeThreshold")
+        ));
+        wrapper.setLoadOnStartup(1);
+    }
+
 
     /**
      * Generally used in JavaLite to configure an instance of a tomcat Connector from AppConfig properties.
@@ -96,26 +114,6 @@ public class EmbeddedTomcat {
     }
 
     /**
-     * Sets up JavaLite ActiveWeb filter on the container.
-     *
-     * @param context   object to attach the filter to.
-     */
-    protected void configureRequestDispatcher(Context context) {
-        FilterDef filterDef = new FilterDef();
-        filterDef.addInitParameter("exclusions", p("embedded.tomcat.filter.exclusions"));
-        filterDef.addInitParameter("root_controller", p("embedded.tomcat.home.controller"));
-
-        filterDef.setFilterName(RequestDispatcher.class.getSimpleName());
-        filterDef.setFilterClass(RequestDispatcher.class.getName());
-        context.addFilterDef(filterDef);
-
-        FilterMap filterMap = new FilterMap();
-        filterMap.setFilterName(RequestDispatcher.class.getSimpleName());
-        filterMap.addURLPattern("/*");
-        context.addFilterMap(filterMap);
-    }
-
-    /**
      * Generally used in JavaLite to configure a database connection pool from AppConfig properties.
      * The following are some properties for configuring the embedded Tomcat DBCP pool.
      * Each property name has two parts:
@@ -134,7 +132,7 @@ public class EmbeddedTomcat {
      * embedded.tomcat.pool.initialSize=10
      * embedded.tomcat.pool.password=p@ssw0rd
      * embedded.tomcat.pool.username=root
-     * embedded.tomcat.pool.url=jdbc:mariadb://localhost:3309/javalite_tomcat
+     * embedded.tomcat.pool.url=jdbc:mariadb://localhost:3307/javalite_tomcat
      * embedded.tomcat.pool.name=jdbc/myDatabasePool
      * </pre>
      *
@@ -160,12 +158,19 @@ public class EmbeddedTomcat {
         return resource;
     }
 
+    /**
+     * Use this method to further configure your instance
+     * @return instance of Tomcat class
+     */
     public Tomcat getTomcat() {
  		return tomcat;   	
     }
 
+    /**
+     * Use this method to further configure your instance
+     * @return instance  of Tomcat Context
+     */
     public Context getContext() {
     	return context;
     }
-    
 }

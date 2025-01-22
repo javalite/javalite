@@ -33,10 +33,10 @@ public class FilterRequestPropertiesSpec extends TemplateIntegrationSpec {
     MockFilter filter;
 
     class MockFilter extends AppControllerFilter {
-        String path, method, uri, url;
+        String method, uri, url;
 
         public void before() {
-            path = path();
+
             method = method();
             uri = uri();
             url = url();
@@ -45,16 +45,15 @@ public class FilterRequestPropertiesSpec extends TemplateIntegrationSpec {
 
     @Before
     public void before() {
-        super.before();
         filter = new MockFilter();
-
+        setTemplateLocation("src/test/views");
     }
 
     @Test
     public void shouldSetProperPathValuesInRequest() {
         addFilter(StudentController.class, filter);
         controller("/student").get("index");
-        a(filter.path).shouldBeEqual("/student/index");
+
         a(filter.method).shouldBeEqual("GET");
         a(filter.uri).shouldBeEqual("/student/index");
         a(filter.url).shouldBeEqual("http://localhost/student/index");
@@ -64,7 +63,6 @@ public class FilterRequestPropertiesSpec extends TemplateIntegrationSpec {
     public void shouldSetProperPathValuesInRequestToControllerInSubPackage() {
         addFilter(RegistrationController.class, filter);
         controller("/level1/level2/registration").get("index");
-        a(filter.path).shouldBeEqual("/level1/level2/registration/index");
         a(filter.method).shouldBeEqual("GET");
         a(filter.uri).shouldBeEqual("/level1/level2/registration/index");
         a(filter.url).shouldBeEqual("http://localhost/level1/level2/registration/index");

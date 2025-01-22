@@ -29,9 +29,9 @@ public class ControllerRunnerSpec extends RequestSpec{
 
     @Test
     public void shouldCopySessionAttributesIntoView() throws IOException, ServletException {
-        request.setServletPath("/controller_runner");
+        request.setRequestURI("/controller_runner");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String html = response.getContentAsString();
         System.out.println("result:" + html);
 
@@ -40,10 +40,10 @@ public class ControllerRunnerSpec extends RequestSpec{
 
     @Test
     public void shouldCopyRequestParametersIntoView() throws IOException, ServletException {
-        request.setServletPath("/controller_runner/pass_params");
+        request.setRequestURI("/controller_runner/pass_params");
         request.setParameter("name", "Stiller");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String html = response.getContentAsString();
         a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("Stiller");
     }
@@ -52,10 +52,10 @@ public class ControllerRunnerSpec extends RequestSpec{
     @Test
     public void shouldCopyRequestAttributesIntoView() throws IOException, ServletException {
 
-        request.setServletPath("/controller_runner/pass_attributes");
+        request.setRequestURI("/controller_runner/pass_attributes");
         request.setMethod("GET");
         request.setAttribute("name", "Ben Stiller");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String html = response.getContentAsString();
         a(XPathHelper.selectText("//div[@id='content']", html)).shouldBeEqual("Ben Stiller");
     }
@@ -63,9 +63,9 @@ public class ControllerRunnerSpec extends RequestSpec{
     @Test
     public void shouldUseDefaultContentType() throws IOException, ServletException {
 
-        request.setServletPath("/default_content_type");
+        request.setRequestURI("/default_content_type");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         a(response.getContentType()).shouldBeEqual("text/html");
     }
 
@@ -73,26 +73,26 @@ public class ControllerRunnerSpec extends RequestSpec{
     @Test
     public void shouldUseCustomContentType() throws IOException, ServletException {
 
-        request.setServletPath("/custom_content_type");
+        request.setRequestURI("/custom_content_type");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         a(response.getContentType()).shouldBeEqual("application/json");
     }
 
     @Test
     public void shouldRespond405IfInvalidMethod() throws IOException, ServletException {
-        request.setServletPath("/invalid_method/get");
+        request.setRequestURI("/invalid_method/get");
         request.setMethod("POST");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         a(response.getContentAsString()).shouldBeEqual("405 - Method not allowed");
         a(response.getStatus()).shouldBeEqual(405);
         a(response.getHeader("Allow")).shouldBeEqual("GET");
 
         setup(); //  more than one HTTP request in the same test!
 
-        request.setServletPath("/invalid_method/get_post");
+        request.setRequestURI("/invalid_method/get_post");
         request.setMethod("PUT");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         a(response.getContentAsString()).shouldBeEqual("405 - Method not allowed");
         a(response.getStatus()).shouldBeEqual(405);
         a(response.getHeader("Allow")).shouldBeEqual("GET, POST");
@@ -101,10 +101,10 @@ public class ControllerRunnerSpec extends RequestSpec{
     @Test
     public void shouldFindAndCallInheritedActionMethods() throws IOException, ServletException {
 
-        request.setServletPath("/real/index");
+        request.setRequestURI("/real/index");
         request.setMethod("GET");
 
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         a(response.getContentAsString()).shouldBeEqual("OK");
     }
 
@@ -113,9 +113,9 @@ public class ControllerRunnerSpec extends RequestSpec{
      */
     @Test
     public void should404_OnObjectMethods() throws IOException, ServletException {
-        request.setServletPath("/ajax/wait");
+        request.setRequestURI("/ajax/wait");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         the(response.getStatus()).shouldBeEqual(404);
         the(response.getContentAsString()).shouldContain("resource not found");
     }

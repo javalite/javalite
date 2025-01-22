@@ -32,9 +32,9 @@ public class JSONLogSpec extends RequestSpec {
     @Test
     public void shouldPrintJSONLog() throws IOException, ServletException {
 
-        request.setServletPath("/logging");
+        request.setRequestURI("/logging");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
         a(response.getContentAsString()).shouldBeEqual("ok");
         String out = SystemStreamUtil.getSystemOut();
@@ -67,9 +67,9 @@ public class JSONLogSpec extends RequestSpec {
     @Test
     public void shouldPrintControllerException() throws IOException, ServletException {
 
-        request.setServletPath("/logging/error");
+        request.setRequestURI("/logging/error");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
         String out = SystemStreamUtil.getSystemOut();
         String[] logs = Util.split(out, System.getProperty("line.separator"));
@@ -103,9 +103,9 @@ public class JSONLogSpec extends RequestSpec {
     @Test
     public void shouldPrintSystem404IfActionMissing() throws IOException, ServletException {
 
-        request.setServletPath("/logging/notfound");
+        request.setRequestURI("/logging/notfound");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
         String out = SystemStreamUtil.getSystemOut();
         String[] logs = Util.split(out, System.getProperty("line.separator"));
@@ -123,9 +123,9 @@ public class JSONLogSpec extends RequestSpec {
     @Test
     public void shouldPrintSystem404IfControllerMissing() throws IOException, ServletException {
 
-        request.setServletPath("/fake11");
+        request.setRequestURI("/fake11");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
         String out = SystemStreamUtil.getSystemOut();
         String[] logs = Util.split(out, System.getProperty("line.separator"));
@@ -147,9 +147,9 @@ public class JSONLogSpec extends RequestSpec {
     @Test
     public void shouldPrintSystem404IfViewMissing() throws IOException, ServletException {
 
-        request.setServletPath("/logging/no-view");
+        request.setRequestURI("/logging/no-view");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
         String out = SystemStreamUtil.getSystemOut();
         String[] logs = Util.split(out, System.getProperty("line.separator"));
@@ -191,9 +191,9 @@ public class JSONLogSpec extends RequestSpec {
     @Test
     public void shouldPrintRedirectTarget() throws IOException, ServletException {
 
-        request.setServletPath("/logging/redirect1");
+        request.setRequestURI("/logging/redirect1");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
         String out = SystemStreamUtil.getSystemOut();
         String[] logs = Util.split(out, System.getProperty("line.separator"));
@@ -206,7 +206,7 @@ public class JSONLogSpec extends RequestSpec {
         the(message.get("controller")).shouldBeEqual("app.controllers.LoggingController");
         the(message.get("action")).shouldBeEqual("redirect1");
         the(message.get("method")).shouldBeEqual("GET");
-        the(message.get("url")).shouldBeEqual("http://localhost");
+        the(message.get("url")).shouldBeEqual("http://localhost/logging/redirect1");
         the(message.get("redirect_target")).shouldBeEqual("http://javalite.io");
         the(message.get("status")).shouldBeEqual(302);
     }

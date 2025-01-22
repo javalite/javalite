@@ -15,10 +15,10 @@ public class Issue304Spec extends RequestSpec  {
      */
     @Test
     public void shouldReadMultipleIDValues() throws IOException, ServletException {
-        request.setServletPath("/hello/ids");
+        request.setRequestURI("/hello/ids");
         request.setMethod("GET");
         request.setParameter("id", new String[]{"a","b","c"});
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         a(response.getContentAsString()).shouldBeEqual("[a, b, c]");
     }
 }

@@ -17,32 +17,32 @@ public class RequestArgumentControllerPOJOSpec extends RequestSpec {
 
     @Test
     public void shouldConvertJSONToPOJO() throws IOException, ServletException {
-        request.setServletPath("/request_argument/person");
+        request.setRequestURI("/request_argument/person");
         request.setMethod("GET");
         request.setContentType("application/json");
 
         request.setContent(Util.readResource("/person.json").getBytes());
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String result = response.getContentAsString();
         a(result).shouldBeEqual("Person{firstName='John', lastName='Doe', yearOfBirth=1234, married=false}");
     }
 
     @Test
     public void shouldConvertParamsToPOJOWithOneMissing() throws IOException, ServletException {
-        request.setServletPath("/request_argument/person");
+        request.setRequestURI("/request_argument/person");
         request.setMethod("GET");
 
         request.addParameter("first_name", "John");
         request.addParameter("last_name", "Doe");
 
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String result = response.getContentAsString();
         a(result).shouldBeEqual("Person{firstName='John', lastName='Doe', yearOfBirth=-1, married=false}");
     }
 
     @Test
     public void shouldConvertParamsToPOJO() throws IOException, ServletException {
-        request.setServletPath("/request_argument/person");
+        request.setRequestURI("/request_argument/person");
         request.setMethod("GET");
 
         request.addParameter("first_name", "John");
@@ -50,7 +50,7 @@ public class RequestArgumentControllerPOJOSpec extends RequestSpec {
         request.addParameter("year_of_birth", "1234");
         request.addParameter("married", "yes");
 
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String result = response.getContentAsString();
         a(result).shouldBeEqual("Person{firstName='John', lastName='Doe', yearOfBirth=1234, married=true}");
     }
@@ -59,12 +59,12 @@ public class RequestArgumentControllerPOJOSpec extends RequestSpec {
 
     @Test
     public void shouldInValidateRequestPOJO() throws IOException, ServletException {
-        request.setServletPath("/request_argument/plant");
+        request.setRequestURI("/request_argument/plant");
         request.setMethod("GET");
 
         request.addParameter("name", "Apple");
 
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String result = response.getContentAsString();
         a(result).shouldBeEqual("Errors: { group=<value is missing> }");
     }
@@ -72,13 +72,13 @@ public class RequestArgumentControllerPOJOSpec extends RequestSpec {
 
     @Test
     public void shouldValidateRequestPOJO() throws IOException, ServletException {
-        request.setServletPath("/request_argument/plant");
+        request.setRequestURI("/request_argument/plant");
         request.setMethod("GET");
 
         request.addParameter("name", "Apple");
         request.addParameter("group", "Fruit");
 
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String result = response.getContentAsString();
         a(result).shouldBeEqual("Errors: { }"); // all validators passed
     }
@@ -86,12 +86,12 @@ public class RequestArgumentControllerPOJOSpec extends RequestSpec {
     @Test
     public void shouldRejectOverloadedMethods() throws IOException, ServletException {
         SystemStreamUtil.replaceOut();
-        request.setServletPath("/request_argument/overloaded1");
+        request.setRequestURI("/request_argument/overloaded1");
         request.setMethod("GET");
         request.setContentType("application/json");
 
         request.setContent(Util.readResource("/person.json").getBytes());
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         the(response.getStatus()).shouldBeEqual(500);
         the(response.getContentAsString()).shouldContain("server error");
         the(SystemStreamUtil.getSystemOut()).shouldContain("Ambiguous overloaded method: overloaded1");
@@ -101,12 +101,12 @@ public class RequestArgumentControllerPOJOSpec extends RequestSpec {
     @Test
     public void should_fail_conversion_with_bad_properties_for_plain_POJO() throws IOException, ServletException {
 
-        request.setServletPath("/request_argument/person");
+        request.setRequestURI("/request_argument/person");
         request.setMethod("GET");
         request.setContentType("application/json");
 
         request.setContent(Util.readResource("/person2.json").getBytes());
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
         the(response.getStatus()).shouldBeEqual(500);
         the(new JSONMap(response.getContentAsString()).get("message")).shouldBeEqual("server error");
@@ -115,14 +115,14 @@ public class RequestArgumentControllerPOJOSpec extends RequestSpec {
     @Test
     public void should_generate_conversion_error_messages_for_Validatable() throws IOException, ServletException {
 
-        request.setServletPath("/request_argument/person2");
+        request.setRequestURI("/request_argument/person2");
         request.setMethod("GET");
 
         request.addParameter("first_name", "igor");
         request.addParameter("married", "true");
         request.addParameter("year_of_birth", "blah"); //<--- should fail
 
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
         Map resultMap = JSONHelper.toMap(response.getContentAsString());
 
@@ -135,12 +135,12 @@ public class RequestArgumentControllerPOJOSpec extends RequestSpec {
     @Test
     public void should_auto_reply_on_failed_validation_with_Validatable() throws IOException, ServletException {
 
-        request.setServletPath("/request_argument/plant2");
+        request.setRequestURI("/request_argument/plant2");
         request.setMethod("GET");
 
         request.addParameter("temperature", "120");
 
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
         the(response.getHeader("Content-type")).shouldEqual("application/json");
         var result = JSONHelper.toMap(response.getContentAsString());
@@ -154,12 +154,12 @@ public class RequestArgumentControllerPOJOSpec extends RequestSpec {
     @Test
     public void should_auto_reply_on_failed_validation_with_implicit_conversion_with_POJO() throws IOException, ServletException {
 
-        request.setServletPath("/request_argument/plant3");
+        request.setRequestURI("/request_argument/plant3");
         request.setMethod("GET");
 
         request.addParameter("temperature", "blah");
 
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
         var resultMap = JSONHelper.toMap(response.getContentAsString());
         the(resultMap.get("group")).shouldBeEqual("value is missing");
@@ -171,12 +171,12 @@ public class RequestArgumentControllerPOJOSpec extends RequestSpec {
 
     @Test
     public void should_check_FailedValidationReply_at_controller_level() throws IOException, ServletException {
-        request.setServletPath("/request_argument2/plant3");
+        request.setRequestURI("/request_argument2/plant3");
         request.setMethod("GET");
 
         request.addParameter("temperature", "blah");
 
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
         var resultMap = JSONHelper.toMap(response.getContentAsString());
         the(resultMap.get("group")).shouldBeEqual("value is missing");

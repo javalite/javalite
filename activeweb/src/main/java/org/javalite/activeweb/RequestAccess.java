@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.*;
 
 import static java.util.Arrays.asList;
-import static org.apache.commons.fileupload2.core.AbstractFileUpload.MULTIPART;
 import static org.javalite.common.Collections.list;
 
 /**
@@ -24,7 +23,7 @@ public interface RequestAccess {
 
     default boolean isMultipartContent() {
         String contentType = RequestContext.getHttpRequest().getContentType();
-        return contentType != null && contentType.toLowerCase(Locale.ENGLISH).startsWith(MULTIPART);
+        return contentType != null && contentType.toLowerCase(Locale.ENGLISH).startsWith("multipart/");
     }
 
     /**

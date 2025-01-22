@@ -16,6 +16,7 @@ limitations under the License.
 
 package org.javalite.activeweb;
 
+import jakarta.servlet.http.Part;
 import org.javalite.common.Util;
 
 import java.io.File;
@@ -32,27 +33,15 @@ public class FileItem extends FormItem{
     /**
      * Constructor to be used in tests.
      *
-     * @param name name of a file
+     * @param fileName name of a file
      * @param fieldName name of a field.
      * @param contentType content type for this file.
      * @param content content in bytes.
      */
-    public FileItem(String name, String fieldName,String contentType, byte[] content) {
-        super(name, fieldName, true, contentType, content); 
+    public FileItem(String fileName, String fieldName,String contentType, byte[] content) {
+        super(fileName, fieldName, true, contentType, content);
     }
 
-
-    /**
-     * Constructor to be used in tests. Content type set to "text/plain".
-     *
-     * @param name file name
-     * @param fieldName field name.
-     * @param content content to send.
-     * @throws IOException
-     */
-    public FileItem(String name, String fieldName, byte[] content) throws IOException {
-        super(name, fieldName, true, "text/plain", content);
-    }
 
 
     /**
@@ -66,7 +55,7 @@ public class FileItem extends FormItem{
         super(file.getName(), file.getName(), true, "text/plain", Util.bytes(new FileInputStream(file)));
     }
 
-    FileItem(ApacheFileItemFacade apacheFileItemFacade) {
-        super(apacheFileItemFacade);
+    FileItem(Part part) {
+        super(part);
     }
 }

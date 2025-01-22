@@ -76,14 +76,14 @@ public class RequestBuilder {
      * @see {@link #formItem(String, String, boolean, String, byte[])}
      *
      */
-    public RequestBuilder formItem(Object fieldName, Object value){
+    public RequestBuilder formItem(String fieldName, Object value){
         a(fieldName).shouldNotBeNull();
         a(value).shouldNotBeNull();
-        return formItem(fieldName.toString(), fieldName.toString(), false, "text/plain", value.toString().getBytes());
+        return formItem(null, fieldName, false, "text/plain", value.toString().getBytes());
     }
 
     /**
-     * Convenience method for sending pairs of name and values with multi-part request.
+     * Convenience method for sending pairs of name and values with multipart request.
      *
      * @param namesAndValues names and following corresponding values. The following pattern is expected:
      *                       name,value,name1,value1...
@@ -133,13 +133,13 @@ public class RequestBuilder {
     }
 
     private void checkContentType(){
-        if(contentType == null || !contentType.equals(MULTIPART)){
+        if(contentType == null || !contentType.startsWith(MULTIPART)){
             throw new IllegalArgumentException("Must set content type to: 'multipart/form-data' before adding a new form item" );
         }
     }
 
     private void checkParamAndMultipart() {
-        if(contentType != null && contentType.equals(MULTIPART) && values.size() > 0){
+        if(contentType != null && contentType.startsWith(MULTIPART) && values.size() > 0){
             throw new IllegalArgumentException("cannot use param() with content type: " + MULTIPART + ", use formItem()");
         }
     }
@@ -394,7 +394,7 @@ public class RequestBuilder {
 
         HttpServletRequest prevRequest = RequestContext.getHttpRequest();
 
-        if(contentType != null && contentType.equals(MULTIPART) && !formItems.isEmpty()){
+        if(contentType != null && contentType.startsWith(MULTIPART) && !formItems.isEmpty()){
             request = new MockMultipartHttpServletRequestImpl();
             for (FormItem item : formItems) {
                 ((AWMockMultipartHttpServletRequest) request).addFormItem(item);
@@ -426,7 +426,7 @@ public class RequestBuilder {
         if(!path.startsWith("/")){
             path = "/" + path;
         }
-        request.setServletPath(path);
+        request.setRequestURI(path);
         request.setRequestURI(path);
         request.setAttribute("id", id);
         request.setQueryString(queryString);

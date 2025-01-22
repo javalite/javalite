@@ -37,18 +37,9 @@ import static org.javalite.test.SystemStreamUtil.getSystemOut;
  */
 public class RequestDispatcherSpec extends RequestSpec {
 
-    private boolean fellThrough;
-
-    private FilterChain badFilterChain;
-
     @Before
     public void beforeStart() {
 
-        filterChain = (servletRequest, servletResponse) -> fellThrough = true;
-
-        badFilterChain = (servletRequest, servletResponse) -> {
-            throw new RuntimeException("I'm a bad... bad exception!");
-        };
         SystemStreamUtil.replaceOut();
     }
 
@@ -61,64 +52,47 @@ public class RequestDispatcherSpec extends RequestSpec {
     @Test
     public void shouldFallThroughIfRootControllerMissingAndRootPathRequired() throws IOException, ServletException {
 
-        request.setServletPath("/");
+        request.setRequestURI("/");
         request.setMethod("GET");
 
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         a(getSystemOut().contains("URI is: '/', but root controller not set")).shouldBeTrue();
     }
 
     @Test
     public void shouldExcludeImageExclusions() throws IOException, ServletException {
 
-        request.setServletPath("/images/greeting.jpg");
+        request.setRequestURI("/images/greeting.jpg");
         request.setMethod("GET");
         config.addInitParameter("exclusions", "css,images,js");
         dispatcher.init(config);
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
-        a(fellThrough).shouldBeTrue();
+        the(response.getContentAsString()).shouldBeEqual("");
     }
 
     @Test
     public void shouldExcludeCssExclusions() throws IOException, ServletException {
 
-        request.setServletPath("/css/main.css");
+        request.setRequestURI("/css/main.css");
         request.setMethod("GET");
         config.addInitParameter("exclusions", "css,images,js");
         dispatcher.init(config);
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
-        a(fellThrough).shouldBeTrue();
+        the(response.getContentAsString()).shouldBeEqual("");
     }
 
     @Test
     public void shouldExcludeHtmlExclusions() throws IOException, ServletException {
 
-        request.setServletPath("/index.html");
+        request.setRequestURI("/index.html");
         request.setMethod("GET");
         config.addInitParameter("exclusions", "css,images,js,html");
         dispatcher.init(config);
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
-        a(fellThrough).shouldBeTrue();
-    }
-
-    /**
-     * If there is exception in the FilterChain below RequestDispatcher, it should not
-     * attempt to do anything to it.
-     */
-    @Test
-    public void shouldPassExternalExceptionUpTheStack() throws IOException, ServletException {
-        request.setServletPath("/css/main.css");
-        request.setMethod("GET");
-        config.addInitParameter("exclusions", "css,images,js");
-        dispatcher.init(config);
-        dispatcher.doFilter(request, response, badFilterChain);
-
-        the(response.getContentAsString()).shouldContain("server error");
-        the(getSystemOut()).shouldContain("I'm a bad... bad exception!");
-        the(response.getStatus()).shouldEqual(500);
+        the(response.getContentAsString()).shouldBeEqual("");
     }
 
     @Test
@@ -126,10 +100,10 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         System.setProperty("active_reload", "true");
 
-        request.setServletPath("/hello");
+        request.setRequestURI("/hello");
         request.setMethod("GET");
 
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
         String html = response.getContentAsString();
         a(XPathHelper.count("//div", html)).shouldBeEqual(3);
@@ -138,10 +112,10 @@ public class RequestDispatcherSpec extends RequestSpec {
 
     @Test
     public void shouldRenderSystemErrorIfControllerFailsMiserably() throws ServletException, IOException {
-        request.setServletPath("/failing");
+        request.setRequestURI("/failing");
         request.setMethod("GET");
 
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
         a(getSystemOut().contains("java.lang.ArithmeticException")).shouldBeTrue();
         a(getSystemOut().contains("/ by zero")).shouldBeTrue();
@@ -156,10 +130,10 @@ public class RequestDispatcherSpec extends RequestSpec {
     @Test
     public void shouldSend404ErrorIfControllerMissing() throws IOException, ServletException {
 
-        request.setServletPath("/does_not_exist");
+        request.setRequestURI("/does_not_exist");
         request.setMethod("GET");
 
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         JSONMap log =  new JSONMap(getSystemOut());
         the(log.getString("message.error")).shouldEqual("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController");
         the(log.getInteger("message.status")).shouldEqual(404);
@@ -171,11 +145,11 @@ public class RequestDispatcherSpec extends RequestSpec {
     @Test
     public void shouldSendSystemErrorIfControllerCantCompile() throws IOException, ServletException {
 
-        request.setServletPath("/does_not_exist");
+        request.setRequestURI("/does_not_exist");
         request.setMethod("GET");
         request.getSession(true).setAttribute("message", "this is only a test");
 
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
         the(getSystemOut()).shouldContain("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController");
         the(response.getContentAsString()).shouldEqual("resource not found");
@@ -189,9 +163,9 @@ public class RequestDispatcherSpec extends RequestSpec {
     @Test
     public void shouldSend404IfControllerDoesNotExtendAppController() throws ServletException, IOException {
 
-        request.setServletPath("/blah");
+        request.setRequestURI("/blah");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
         a(getSystemOut().contains("are you sure it extends " + AppController.class.getName())).shouldBeTrue();
 
@@ -205,10 +179,10 @@ public class RequestDispatcherSpec extends RequestSpec {
     @Test
     public void shouldSend404IfActionMissing() throws ServletException, IOException {
 
-        request.setServletPath("/hello/hello");
+        request.setRequestURI("/hello/hello");
         request.setMethod("GET");
 
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
         the(getSystemOut()).shouldContain("Failed to find an action method for action: 'hello' in controller: app.controllers.HelloController");
 
@@ -221,9 +195,9 @@ public class RequestDispatcherSpec extends RequestSpec {
     @Test
     public void shouldSend404IfActionMissingOnRESTfulController() throws ServletException, IOException {
 
-        request.setServletPath("/restful1/blah");
+        request.setRequestURI("/restful1/blah");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
         the(response.getContentAsString()).shouldEqual("resource not found");
         the(response.getStatus()).shouldEqual(404);
@@ -235,10 +209,10 @@ public class RequestDispatcherSpec extends RequestSpec {
     @Test
     public void shouldSend404IfTemplateIsMissing() throws ServletException, IOException {
 
-        request.setServletPath("/hello/no-view");
+        request.setRequestURI("/hello/no-view");
         request.setMethod("GET");
 
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
         the(getSystemOut()).shouldContain("Failed to render template: '/hello/no-view.ftl' with layout: '/layouts/default_layout.ftl'. Template not found for name");
         the(response.getContentAsString()).shouldContain("resource not found");
@@ -249,10 +223,10 @@ public class RequestDispatcherSpec extends RequestSpec {
     @Test
     public void shouldSend500IfTemplateIsNotParsable() throws ServletException, IOException {
 
-        request.setServletPath("/hello/bad-bad-template");
+        request.setRequestURI("/hello/bad-bad-template");
         request.setMethod("GET");
 
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
         the(getSystemOut()).shouldContain("Failed to render template: '/hello/bad-bad-template.ftl");
         the(response.getContentAsString()).shouldContain("server error");
@@ -262,27 +236,27 @@ public class RequestDispatcherSpec extends RequestSpec {
 
     @Test
     public void shouldRenderWithDefaultLayout() throws ServletException, IOException {
-        request.setServletPath("/hello");
+        request.setRequestURI("/hello");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String html = response.getContentAsString();
         a(XPathHelper.selectText("//title", html)).shouldBeEqual("default layout");
     }
 
     @Test
     public void shouldRenderTemplateWithNoLayout() throws ServletException, IOException {
-        request.setServletPath("/hello/no_layout");
+        request.setRequestURI("/hello/no_layout");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String resp = response.getContentAsString();
         a(resp).shouldBeEqual("no layout");
     }
 
     @Test
     public void shouldRenderWithCustomLayout() throws ServletException, IOException {
-        request.setServletPath("/custom");
+        request.setRequestURI("/custom");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String html = response.getContentAsString();
         a(XPathHelper.selectText("//title", html)).shouldBeEqual("custom layout");
     }
@@ -290,9 +264,9 @@ public class RequestDispatcherSpec extends RequestSpec {
 
     @Test
     public void shouldRenderDifferentTemplateWithCustomLayout() throws ServletException, IOException {
-        request.setServletPath("/custom/different");
+        request.setRequestURI("/custom/different");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String html = response.getContentAsString();
         System.out.println(html);
         a(XPathHelper.selectText("//title", html)).shouldBeEqual("custom layout");
@@ -301,10 +275,10 @@ public class RequestDispatcherSpec extends RequestSpec {
 
     @Test
     public void shouldRenderErrorWithoutLayoutIfRequestIsAjax() throws ServletException, IOException {
-        request.setServletPath("/ajax");
+        request.setRequestURI("/ajax");
         request.setMethod("GET");
         request.addHeader("X-Requested-With", "XMLHttpRequest");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String out = response.getContentAsString();
         the(out.contains("java.lang.ArithmeticException: / by zero")).shouldBeTrue();
     }
@@ -320,81 +294,81 @@ public class RequestDispatcherSpec extends RequestSpec {
     @Test
     public void shouldNotWrapRuntimeException() throws IOException, ServletException {
 
-        request.setServletPath("/db_exception");
+        request.setRequestURI("/db_exception");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         a(response.getContentAsString()).shouldContain("this is an issue 88");
     }
 
     @Test
     public void shouldRenderTemplateWithFormatInUri() throws IOException, ServletException {
-        request.setServletPath("/document.xml");
+        request.setRequestURI("/document.xml");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         a(response.getContentAsString()).shouldBeEqual("<message>this is xml document</message>");
     }
 
     @Test
     public void shouldRenderTemplateWithFormatInController() throws IOException, ServletException {
-        request.setServletPath("/document/show.xml");
+        request.setRequestURI("/document/show.xml");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         a(response.getContentAsString()).shouldBeEqual("<message>XML from show action</message>");
     }
 
     @Test
     public void shouldOverrideTemplateFormatInController() throws IOException, ServletException {
-        request.setServletPath("/document/text.xml");
+        request.setRequestURI("/document/text.xml");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         a(response.getContentAsString()).shouldBeEqual("this is a  text page");
     }
 
     @Test
     public void shouldRenderSystemExceptionInCaseAjaxAndInternalError() throws IOException, ServletException {
-        request.setServletPath("/ajax");
+        request.setRequestURI("/ajax");
         request.setMethod("GET");
         request.addHeader("X-Requested-With", "XMLHttpRequest");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         a(response.getContentAsString()).shouldNotContain("html");
         a(response.getContentAsString()).shouldContain("java.lang.ArithmeticException: / by zero");
     }
 
     @Test
     public void shouldRecognizeAjax() throws IOException, ServletException {
-        request.setServletPath("/ajax/hello");
+        request.setRequestURI("/ajax/hello");
         request.setMethod("GET");
         request.addHeader("X-Requested-With", "XMLHttpRequest");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         a(response.getContentAsString()).shouldBeEqual("true");
     }
 
     @Test
     public void shouldIgnoreBadAjaxHeader() throws IOException, ServletException {
-        request.setServletPath("/ajax/hello");
+        request.setRequestURI("/ajax/hello");
         request.setMethod("GET");
         request.addHeader("X-Requested-With", "baaad header");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         a(response.getContentAsString()).shouldBeEqual("false");
     }
 
 
     @Test
     public void shouldRespondNullGracefully() throws IOException, ServletException {
-        request.setServletPath("/error/get_null");
+        request.setRequestURI("/error/get_null");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         the(response.getStatus()).shouldBeEqual(500);
         the(response.getContentAsString()).shouldBeEqual("null");
     }
 
     @Test
     public void shouldPassMultipleRequestValues() throws IOException, ServletException {
-        request.setServletPath("/hello/multivalues");
+        request.setRequestURI("/hello/multivalues");
         request.setMethod("GET");
         request.addParameter("account", "123");
         request.addParameter("account", "456");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         the(response.getContentAsString()).shouldContain("value: 123");
         the(response.getContentAsString()).shouldContain("value: 456");
     }
@@ -402,9 +376,9 @@ public class RequestDispatcherSpec extends RequestSpec {
     @Test
     public void shouldReturn404ForUnknownHTTPMethod() throws IOException, ServletException {
 
-        request.setServletPath("/hello/multivalues");
+        request.setRequestURI("/hello/multivalues");
         request.setMethod("PROPFIND");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
         the(getSystemOut()).shouldContain("Method not supported: PROPFIND");
         the(response.getContentAsString()).shouldEqual("resource not found");

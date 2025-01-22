@@ -29,7 +29,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.springframework.mock.web.MockFilterConfig;
+import org.springframework.mock.web.MockServletConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -56,7 +56,7 @@ public class SpecHelper implements JSpecSupport{
         setTemplateLocation("src/main/webapp/WEB-INF/views");//default location of all views
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setContextPath("/test_context");
-        RequestContext.setTLs(request, new MockHttpServletResponse(), new MockFilterConfig(),
+        RequestContext.setTLs(request, new MockHttpServletResponse(), new MockServletConfig(),
                 new AppContext(), new RequestVo(), null);
 
     }
@@ -112,11 +112,15 @@ public class SpecHelper implements JSpecSupport{
         return new DynamicBuilder();
     }
 
+    /**
+     * Contains a par of objects: a class of a service, and either
+     * an implementation class or an actual implementation instance, hence the name.
+     *
+     * @param <T>
+     */
     protected static class Pair<T>{
-        /**
-         * class of a service to expose from injector
-         */
-        private Class<T> serviceClass;
+
+        private final Class<T> serviceClass;
         private Class<T> implementationClass;
         private Object implementationInstance;
 
@@ -162,7 +166,6 @@ public class SpecHelper implements JSpecSupport{
             return this;
         }
 
-
         public Injector create(){
             DynamicModule dynamicModule = new DynamicModule(pairs);
             Injector injector = Guice.createInjector(dynamicModule);
@@ -184,7 +187,7 @@ public class SpecHelper implements JSpecSupport{
                 if(pair.hasInstance()){
                     bind(pair.serviceClass).toInstance(pair.implementationInstance);
                 }else if(pair.implementationClass != null){
-                    bind(pair.serviceClass).to(pair.implementationClass);
+                    bind(pair.serviceClass).to(pair.implementationClass).asEagerSingleton();
                 }else{
                     bind(pair.serviceClass).asEagerSingleton();
                 }

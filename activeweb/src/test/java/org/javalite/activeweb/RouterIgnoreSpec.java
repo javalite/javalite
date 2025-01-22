@@ -23,29 +23,29 @@ public class RouterIgnoreSpec extends RequestSpec  {
 
     @Test
     public void shouldIgnoreURI() throws IOException, ServletException {
-        request.setServletPath("/ignore123/show");
+        request.setRequestURI("/ignore123/show");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         a(response.getContentAsString()).shouldBeEqual("");
     }
 
 
     @Test
     public void shouldNotIgnoreURIInEnv() throws IOException, ServletException {
-        request.setServletPath("/ignore234/show");
+        request.setRequestURI("/ignore234/show");
         request.setMethod("GET");
         AppConfig.setActiveEnv("staging");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         a(response.getContentAsString()).shouldBeEqual("ok");
         AppConfig.setActiveEnv("development");//reset for other tests
     }
 
     @Test
     public void shouldIgnoreURIInAnotherEnv() throws IOException, ServletException {
-        request.setServletPath("/ignore234/show");
+        request.setRequestURI("/ignore234/show");
         request.setMethod("GET");
         AppConfig.setActiveEnv("on moon"); //this will be ignored, since all ignored, except staging
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         a(response.getContentAsString()).shouldBeEqual("");
         AppConfig.setActiveEnv("development");//reset for other tests
     }

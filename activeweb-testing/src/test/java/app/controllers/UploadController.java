@@ -105,7 +105,7 @@ public class UploadController extends AppController {
 
     @POST
     public void multipleArguments() {
-        respond(param("first_name", multipartFormItems()) + " " + param("last_name", multipartFormItems()));
+        respond(multipartFormItems().get(0).getStreamAsString() + " " +  multipartFormItems().get(1).getStreamAsString());
     }
 
     @POST

@@ -30,43 +30,43 @@ public class RequestArgumentControllerModelSpec extends RequestSpec {
 
     @Test
     public void shouldValidateModelAsArgument() throws IOException, ServletException {
-        request.setServletPath("/request_argument/get_total");
+        request.setRequestURI("/request_argument/get_total");
         request.setMethod("GET");
         request.addParameter("amount", "123");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         a(response.getContentAsString()).shouldBeEqual("Model: app.models.Account, table: 'accounts', attributes: {amount=123}, errors: { }"); // no validators that did not pass
     }
 
     @Test
     public void shouldInvalidateStringAsDouble() throws IOException, ServletException {
-        request.setServletPath("/request_argument/get_total");
+        request.setRequestURI("/request_argument/get_total");
         request.setMethod("GET");
 
         request.addParameter("amount", "123");
         request.addParameter("total", "abc"); //<--------- not a number, but a number is expected!
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         the(response.getContentAsString()).shouldBeEqual("Model: app.models.Account, table: 'accounts', attributes: {amount=123, total=abc}, errors: { total=<value is not an integer> }");
     }
 
     @Test
     public void shouldInvalidateOutOfRangeValue() throws IOException, ServletException {
-        request.setServletPath("/request_argument/get_total");
+        request.setRequestURI("/request_argument/get_total");
         request.setMethod("GET");
 
         request.addParameter("amount", "123");
         request.addParameter("total", "123");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         the(response.getContentAsString()).shouldBeEqual("Model: app.models.Account, table: 'accounts', attributes: {amount=123, total=123}, errors: { total=<value is greater than 100.0> }");
     }
 
     @Test
     public void should_convert_JSON_to_Model() throws IOException, ServletException {
-        request.setServletPath("/request_argument/get_total");
+        request.setRequestURI("/request_argument/get_total");
         request.setMethod("GET");
         request.setContentType("application/json; charset=utf-8");
 
         request.setContent("{ \"amount\" : 50, \"total\" : 30  }".getBytes());
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String result = response.getContentAsString();
         a(result).shouldBeEqual("Model: app.models.Account, table: 'accounts', attributes: {amount=50, total=30}, errors: { }");
     }

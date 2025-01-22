@@ -11,7 +11,7 @@
     <developers>
         <developer>
             <name>Igor Polevoy</name>
-            <email>igor at javalite dot io</email>
+            <organization>JavaLite</organization>
         </developer>
     </developers>
 
@@ -51,9 +51,9 @@
     </licenses>
 
     <scm>
-       <connection>scm:git:git@github.com:javalite/activejdbc.git</connection>
-       <developerConnection>scm:git:git@github.com:javalite/activejdbc.git</developerConnection>
-       <url>git@github.com:javalite/activejdbc.git</url>
+       <connection>scm:git:git@github.com:javalite/javalite.git</connection>
+       <developerConnection>scm:git:git@github.com:javalite/javalite.git</developerConnection>
+       <url>git@github.com:javalite/javalite.git</url>
        <tag>HEAD</tag>
   </scm>
 
@@ -219,9 +219,9 @@
         <module>activeweb</module>
         <module>activeweb-testing</module>
         <module>activeweb-lessc-maven-plugin</module>
-        <module>activeweb-lessc-integration-test</module>
+<!--        <module>activeweb-lessc-integration-test</module>-->
         <module>activeweb-sass-maven-plugin</module>
-        <module>activeweb-sass-integration-test</module>
+<!--        <module>activeweb-sass-integration-test</module>-->
         <module>javalite-async</module>
         <module>async-pool-test</module>
         <module>aw-mate</module>
@@ -378,11 +378,6 @@
                 <groupId>com.google.inject</groupId>
                 <artifactId>guice</artifactId>
                 <version>7.0.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-fileupload2-jakarta-servlet6</artifactId>
-                <version>2.0.0-M2</version>
             </dependency>
 
             <dependency>

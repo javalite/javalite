@@ -41,7 +41,7 @@ public class RouterSystemErrorSpec extends RequestSpec {
         try {
             dispatcher.setRouteConfig(routeConfig);
             dispatcher.init(config);
-            dispatcher.doFilter(request, response, filterChain);
+            dispatcher.service(request, response);
         } catch (IllegalArgumentException e) {
             throw e;
         } catch (Exception e) {
@@ -69,7 +69,7 @@ public class RouterSystemErrorSpec extends RequestSpec {
                 routeError().to(SystemErrorController.class).action("doesnotexist");
             }
         };
-        request.setServletPath("/blahblahblah");
+        request.setRequestURI("/blahblahblah");
         execDispatcher();
         the(responseContent()).shouldBeEqual("resource not found"); // this needs to come from the SystemErrorController
         the(response.getStatus()).shouldEqual(404);
@@ -87,7 +87,7 @@ public class RouterSystemErrorSpec extends RequestSpec {
                 routeError().to(SystemErrorController.class).action("render_error");
             }
         };
-        request.setServletPath("/ok"); // hitting the OkController
+        request.setRequestURI("/ok"); // hitting the OkController
         execDispatcher();
         the(responseContent()).shouldBeEqual("OK");
         the(response.getStatus()).shouldEqual(200);
@@ -102,7 +102,7 @@ public class RouterSystemErrorSpec extends RequestSpec {
                 routeError().to(SystemErrorController.class).action("render_error");
             }
         };
-        request.setServletPath("/not_ok"); // hitting the NotOkController
+        request.setRequestURI("/not_ok"); // hitting the NotOkController
         execDispatcher();
 
         the(responseContent()).shouldContain("This is the error: java.lang.RuntimeException: Coming from controller: class app.controllers.NotOkController");
@@ -124,7 +124,7 @@ public class RouterSystemErrorSpec extends RequestSpec {
                 routeError().to(SystemErrorController.class).action("render_error_from_view");
             }
         };
-        request.setServletPath("/not_ok"); // hitting the NotOkController
+        request.setRequestURI("/not_ok"); // hitting the NotOkController
         execDispatcher();
         the(responseContent()).shouldBeEqual("internal error");
         the(response.getStatus()).shouldEqual(500);
@@ -143,7 +143,7 @@ public class RouterSystemErrorSpec extends RequestSpec {
                 routeError().to(SystemErrorController.class).action("error");
             }
         };
-        request.setServletPath("/not_ok"); // hitting the NotOkController
+        request.setRequestURI("/not_ok"); // hitting the NotOkController
         execDispatcher();
         the(responseContent()).shouldBeEqual("""
                 <html>

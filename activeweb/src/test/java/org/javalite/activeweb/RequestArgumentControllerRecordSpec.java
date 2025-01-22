@@ -15,12 +15,12 @@ public class RequestArgumentControllerRecordSpec extends RequestSpec {
     @Test
     public void shouldConvertJSONToRecord() throws IOException, ServletException {
 
-        request.setServletPath("/request_argument/person_record");
+        request.setRequestURI("/request_argument/person_record");
         request.setMethod("POST");
         request.setContentType(" application/json");
 
         request.setContent(Util.readResource("/person_record.json").getBytes());
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String result = response.getContentAsString();
         a(result).shouldBeEqual("PersonRecord[firstName=John, lastName=Smith, yearOfBirth=1234]");
     }
@@ -30,13 +30,13 @@ public class RequestArgumentControllerRecordSpec extends RequestSpec {
 
         SystemStreamUtil.replaceOut();
 
-        request.setServletPath("/request_argument/person_record");
+        request.setRequestURI("/request_argument/person_record");
         request.setMethod("POST");
         request.setContentType(" application/json");
 
         request.setContent(Util.readResource("/bad_person_record.json").getBytes());
 
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String result = response.getContentAsString();
 
         the(result).shouldBeEqual("server error");

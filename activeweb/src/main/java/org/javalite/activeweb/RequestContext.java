@@ -15,6 +15,7 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
+import jakarta.servlet.ServletConfig;
 import org.javalite.activeweb.proxy.HttpServletResponseProxy;
 import jakarta.servlet.FilterConfig;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,7 +34,7 @@ public class RequestContext {
 
     private static ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
     private static ThreadLocal<HttpServletResponseProxy> response = new ThreadLocal<>();
-    private static ThreadLocal<FilterConfig> filterConfig = new ThreadLocal<>();
+    private static ThreadLocal<ServletConfig> servletConfig = new ThreadLocal<>();
     private static ThreadLocal<ControllerResponse> controllerResponse = new ThreadLocal<>();
     private static ThreadLocal<AppContext> appContext = new ThreadLocal<>();
     private static ThreadLocal<RequestVo> requestVo = new ThreadLocal<>();
@@ -105,6 +106,9 @@ public class RequestContext {
     static void setHttpResponse(HttpServletResponse resp){        
         response.set(new HttpServletResponseProxy(resp));
     }
+    static void setServletConfig(ServletConfig config){
+        servletConfig.set(config);
+    }
 
     static HttpServletResponseProxy getHttpResponse(){
         return response.get();
@@ -130,19 +134,16 @@ public class RequestContext {
         exceptionHappened.set(true);
     }
 
-    static FilterConfig getFilterConfig() {
-        return filterConfig.get();
+    static ServletConfig getServletConfig() {
+        return servletConfig.get();
     }
 
-    static void setFilterConfig(FilterConfig config) {
-        filterConfig.set(config);
-    }
 
-    static void setTLs(HttpServletRequest req, HttpServletResponse resp, FilterConfig conf, AppContext context,
+    static void setTLs(HttpServletRequest req, HttpServletResponse resp, ServletConfig conf, AppContext context,
                        RequestVo requestVo, String format) {
         setHttpRequest(req);
         setHttpResponse(resp);
-        setFilterConfig(conf);
+        setServletConfig(conf);
         setAppContext(context);
         setRequestVo(requestVo);
         setFormat(format);
@@ -177,7 +178,7 @@ public class RequestContext {
         response.set(null);
         controllerResponse.set(null);
         route.set(null);
-        filterConfig.set(null);
+        servletConfig.set(null);
         requestVo.set(null);
         format.set(null);
         encoding.set(null);

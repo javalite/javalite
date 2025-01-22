@@ -28,14 +28,14 @@ public class HeadMethodSpec extends RequestSpec {
 
     @Test
     public void shouldCallActionWithHeadAnnotation() throws IOException, ServletException {
-        request.setServletPath("/da_head");
+        request.setRequestURI("/da_head");
         request.setMethod("HEAD");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         a(response.getContentAsString()).shouldBeEqual("");
 
-        request.setServletPath("/da_head");
+        request.setRequestURI("/da_head");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         a(response.getContentAsString()).shouldBeEqual("hi");
     }
 }

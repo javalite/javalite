@@ -7,6 +7,12 @@ How to execute:
 
 Include a database matching the connection parameters in the file `database.properties`
 
+### Adjust DB connection properties: 
+
+* Migrator plugin: `pom.xml`
+* Tomcat DB connection pool`src/main/resources/app_config/development.properties`
+* DB Connection for tests: `src/main/java/app/config/DbConfig.java`
+
 ### Create a database 
 
 Execute the Migration Plugin:

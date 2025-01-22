@@ -25,7 +25,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.springframework.mock.web.MockFilterConfig;
+import org.springframework.mock.web.MockServletConfig;
 
 import jakarta.servlet.ServletException;
 
@@ -84,7 +84,7 @@ public abstract class AppIntegrationSpec extends IntegrationSpec{
 
     @Before @BeforeEach
     public void beforeAppIntegrationSpec() throws ServletException {
-        requestDispatcher.init(new MockFilterConfig());
+        requestDispatcher.init(new MockServletConfig());
         context = requestDispatcher.getContext();
 
         if(!suppressDb){

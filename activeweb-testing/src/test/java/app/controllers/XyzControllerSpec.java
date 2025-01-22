@@ -28,7 +28,7 @@ public class XyzControllerSpec extends TemplateIntegrationSpec {
     @Test
     public void shouldPrependControllerPathWithSlash(){
         controller("xyz").get("index");
-        a(vals().get("path").toString().startsWith("/")).shouldBeTrue();
+        a(vals().get("uri").toString().startsWith("/")).shouldBeTrue();
     }
 
     @Test
