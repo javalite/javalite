@@ -24,7 +24,7 @@ import org.javalite.activeweb.AppController;
  */
 public class XyzController extends AppController {
     public void index(){
-        assign("path", path());
+        assign("uri", uri());
     }
 
     public void hello(){

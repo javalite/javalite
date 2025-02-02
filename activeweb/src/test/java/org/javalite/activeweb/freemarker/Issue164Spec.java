@@ -28,10 +28,10 @@ public class Issue164Spec extends RequestSpec {
 
     @Test
     public void shouldGetHeaderValueInsideTag() throws ServletException, IOException {
-        request.setServletPath("/header");
+        request.setRequestURI("/header");
         request.setMethod("GET");
         request.addHeader("message", "Meaning of life is 42");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String html = response.getContentAsString();
         the(html).shouldContain("...and the header message is: Meaning of life is 42");
     }

@@ -12,10 +12,10 @@ public class Issue193Spec extends RequestSpec{
 
     @Test //https://github.com/javalite/activeweb/issues/244
     public void shouldSanitizeBadContent() throws IOException, ServletException {
-        request.setServletPath("/issue193");
+        request.setRequestURI("/issue193");
         request.setMethod("GET");
 
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String result = response.getContentAsString();
         a(result).shouldBeEqual("ok");
     }

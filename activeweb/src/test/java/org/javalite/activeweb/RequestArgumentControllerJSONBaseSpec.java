@@ -14,7 +14,7 @@ public class RequestArgumentControllerJSONBaseSpec extends RequestSpec {
 
     @Test
     public void shouldConvertJSONToJSONBase() throws IOException, ServletException {
-        request.setServletPath("/request_argument/update_university");
+        request.setRequestURI("/request_argument/update_university");
         request.setMethod("POST");
         request.setContentType("application/json");
 
@@ -27,7 +27,7 @@ public class RequestArgumentControllerJSONBaseSpec extends RequestSpec {
                 }""";
 
         request.setContent(university.getBytes());
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String result = response.getContentAsString();
         var controllerResponse = JSONHelper.toMap(result);
         the(controllerResponse).shouldContain("university.year");

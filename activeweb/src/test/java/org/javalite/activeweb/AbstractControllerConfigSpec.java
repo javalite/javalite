@@ -268,9 +268,9 @@ public class AbstractControllerConfigSpec  extends RequestSpec{
 
     @Test
     public void shouldTriggerFiltersInOrderOfDefinition() throws IOException, ServletException {
-        request.setServletPath("/do-filters");
+        request.setRequestURI("/do-filters");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
         a(response.getContentAsString()).shouldBeEqual("ok");
 
@@ -288,9 +288,9 @@ public class AbstractControllerConfigSpec  extends RequestSpec{
 
     @Test
     public void shouldExecuteAfterEvenIfException() throws IOException, ServletException {
-        request.setServletPath("/do-filters/bad-boy");
+        request.setRequestURI("/do-filters/bad-boy");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
         a(response.getContentAsString()).shouldContain("server error");
 

@@ -5,6 +5,8 @@ import org.javalite.activeweb.AppController;
 
 public class TomcatTestController extends AppController {
     public void index(){
-        respond("hello 123, number of records: " + Base.count("people"));
+        respond("Greeting: hello there! " +
+                "<br>Number of records: " + Base.count("people") +
+                "<br>Connection: " + Base.connection()); // indicates presence of a DB connection from the Tomcat pool
     }
 }

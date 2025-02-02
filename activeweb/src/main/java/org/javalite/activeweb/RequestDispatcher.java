@@ -16,6 +16,7 @@ limitations under the License.
 package org.javalite.activeweb;
 
 import freemarker.template.TemplateNotFoundException;
+import jakarta.servlet.http.HttpServlet;
 import org.javalite.activejdbc.DB;
 
 import org.javalite.activeweb.proxy.ProxyWriterException;
@@ -43,9 +44,9 @@ import static org.javalite.json.JSONHelper.toJSON;
 /**
  * @author Igor Polevoy
  */
-public class RequestDispatcher implements Filter {
+public class RequestDispatcher extends HttpServlet {
     private Logger logger = LoggerFactory.getLogger(getClass());
-    private FilterConfig filterConfig;
+    private ServletConfig servletConfig;
     private List<String> exclusions = new ArrayList<>();
     private ControllerRunner runner = new ControllerRunner();
     private AppContext appContext;
@@ -54,16 +55,17 @@ public class RequestDispatcher implements Filter {
 
     private static ThreadLocal<Long> time = new ThreadLocal<>();
 
-    public void init(FilterConfig filterConfig) throws ServletException {
-        this.filterConfig = filterConfig;
 
-        HttpMethod.disableMethodSimulation(Convert.toBoolean(filterConfig.getInitParameter("disable_method_simulation")));
+    public void init(ServletConfig servletConfig) throws ServletException {
+        this.servletConfig = servletConfig;
 
-        Configuration.getTemplateManager().setServletContext(filterConfig.getServletContext());
+        HttpMethod.disableMethodSimulation(Convert.toBoolean(servletConfig.getInitParameter("disable_method_simulation")));
+
+        Configuration.getTemplateManager().setServletContext(servletConfig.getServletContext());
         appContext = new AppContext();
-        filterConfig.getServletContext().setAttribute("appContext", appContext);
+        servletConfig.getServletContext().setAttribute("appContext", appContext);
 
-        String exclusionsParam = filterConfig.getInitParameter("exclusions");
+        String exclusionsParam = servletConfig.getInitParameter("exclusions");
         if (exclusionsParam != null) {
             exclusions.addAll(Arrays.asList(exclusionsParam.split(",")));
             for (int i = 0; i < exclusions.size(); i++) {
@@ -71,7 +73,7 @@ public class RequestDispatcher implements Filter {
             }
         }
         initApp(appContext);
-        encoding = filterConfig.getInitParameter("encoding");
+        encoding = servletConfig.getInitParameter("encoding");
         logger.info("ActiveWeb: starting the app in environment: " + AppConfig.activeEnv());
     }
 
@@ -98,7 +100,7 @@ public class RequestDispatcher implements Filter {
 
     private Router getRouter(AppContext context){
         String routeConfigClassName = Configuration.getRouteConfigClassName();
-        Router router = new Router(filterConfig.getInitParameter("root_controller"));
+        Router router = new Router(servletConfig.getInitParameter("root_controller"));
         AbstractRouteConfig routeConfigLocal;
         try {
             if(testMode){
@@ -151,13 +153,10 @@ public class RequestDispatcher implements Filter {
         }
     }
 
-    public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
 
             time.set(System.currentTimeMillis());
-
-            HttpServletRequest request = (HttpServletRequest) req;
-            HttpServletResponse response = (HttpServletResponse) resp;
 
             if(encoding != null){
                 logger.debug("Setting encoding: " + encoding);
@@ -165,10 +164,9 @@ public class RequestDispatcher implements Filter {
                 response.setCharacterEncoding(encoding);
             }
 
-            String path = request.getServletPath();
+            String path = request.getRequestURI();
 
             if(excluded(path)){
-                chain.doFilter(req, resp);
                 logger.debug("URI excluded: " + path);
                 return;
             }
@@ -182,7 +180,7 @@ public class RequestDispatcher implements Filter {
                 uri = path;
             }
 
-            RequestContext.setTLs(request, response, filterConfig, appContext, new RequestVo(), format);
+            RequestContext.setTLs(request, response, servletConfig, appContext, new RequestVo(), format);
             if (Util.blank(uri)) {
                 uri = "/";//different servlet implementations, damn.
             }
@@ -197,7 +195,6 @@ public class RequestDispatcher implements Filter {
 
 
             if (route != null && route.ignores(path)) {
-                chain.doFilter(req, resp);
                 logger.debug("URI ignored: " + path);
                 return;
             }
@@ -214,7 +211,6 @@ public class RequestDispatcher implements Filter {
                 logDone(null);
             } else {
                 logger.warn("No matching route for servlet path: " + request.getServletPath() + ", passing down to container.");
-                chain.doFilter(req, resp);//let it fall through
             }
         }catch (CompilationException
                  | ClassLoadException

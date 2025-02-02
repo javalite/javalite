@@ -42,7 +42,7 @@ public class RouterWildcardSpec extends RequestSpec {
         try {
             dispatcher.setRouteConfig(routeConfig);
             dispatcher.init(config);
-            dispatcher.doFilter(request, response, filterChain);
+            dispatcher.service(request, response);
         }catch(IllegalArgumentException e){
             throw e;
         } catch (Exception e) {
@@ -67,7 +67,7 @@ public class RouterWildcardSpec extends RequestSpec {
             }
         };
 
-        request.setServletPath("/greeting/1/2/3/4/tada");
+        request.setRequestURI("/greeting/1/2/3/4/tada");
         execDispatcher();
         a(responseContent()).shouldBeEqual("1/2/3/4/tada");
     }
@@ -81,7 +81,7 @@ public class RouterWildcardSpec extends RequestSpec {
                 route("/*path").to(MainController.class).action("index");
             }
         };
-        request.setServletPath("/access/one.two.three");
+        request.setRequestURI("/access/one.two.three");
         request.setMethod("GET");
         execDispatcher();
 
@@ -101,7 +101,7 @@ public class RouterWildcardSpec extends RequestSpec {
             }
         };
 
-        request.setServletPath("/greeting/1/2/3/4/tada");
+        request.setRequestURI("/greeting/1/2/3/4/tada");
         execDispatcher();
         the(SystemStreamUtil.getSystemOut()).shouldContain("Cannot have URI segments past wild card");
         the(response.getContentAsString()).shouldEqual("server error");
@@ -112,7 +112,7 @@ public class RouterWildcardSpec extends RequestSpec {
     @Test
     public void shouldGracefullyFailIfWildCardRouteMissing() throws ClassLoadException {
         SystemStreamUtil.replaceOut();
-        request.setServletPath("/wildcard_route/1/2/3/4/tada");
+        request.setRequestURI("/wildcard_route/1/2/3/4/tada");
         execDispatcher();
         a(response.getStatus()).shouldBeEqual(404);
         the(SystemStreamUtil.getSystemOut()).shouldContain("Failed to map resource to URI: /wildcard_route/1/2/3/4/tada");

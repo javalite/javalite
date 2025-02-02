@@ -16,10 +16,7 @@ limitations under the License.
 package org.javalite.activeweb;
 
 
-import org.apache.commons.fileupload2.core.DiskFileItem;
-import org.apache.commons.fileupload2.core.DiskFileItemFactory;
-import org.apache.commons.fileupload2.jakarta.servlet6.JakartaServletDiskFileUpload;
-import org.apache.commons.fileupload2.jakarta.servlet6.JakartaServletFileUpload;
+import jakarta.servlet.http.Part;
 import org.javalite.common.Convert;
 import org.javalite.json.JSONHelper;
 import org.javalite.common.Util;
@@ -34,7 +31,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -602,10 +598,10 @@ public class HttpSupport implements RequestAccess {
 
 
     /**
-     * Returns a collection of uploaded files from a multi-part port request.
+     * Returns a collection of uploaded files from a multipart port request.
      * Uses request encoding if one provided, and sets no limit on the size of upload.
      *
-     * @return a collection of uploaded files from a multi-part port request.
+     * @return a collection of uploaded files from a multipart port request.
      */
     protected Iterator<FormItem> uploadedFiles() {
         return uploadedFiles(null, -1);
@@ -741,49 +737,36 @@ public class HttpSupport implements RequestAccess {
      *
      * @param maxUploadSize maximum size of the upload in bytes. A value of -1 indicates no maximum.
      *
-     * @return a collection of uploaded files from a multi-part request.
+     * @return a collection of uploaded files from a multipart request.
      */
     protected List<FormItem> multipartFormItems(String encoding, long maxUploadSize) {
+        if (!isMultipartContent()){
+            throw new ControllerException("this is not a multipart request, be sure to add this attribute to the form: ... enctype=\"multipart/form-data\" ...");
+        }
+
         //we are thread safe, because controllers are pinned to a thread and discarded after each request.
+        //This is a guard  statement that will trigger if the same method multipartFormItems() is called multiple times
+        //during the same request. We do not want to process the form items for the same request again and again.
         if(RequestContext.getFormItems() != null ){
             return RequestContext.getFormItems();
         }
 
-        HttpServletRequest req = RequestContext.getHttpRequest();
 
+        HttpServletRequest req = RequestContext.getHttpRequest();
         if (req instanceof AWMockMultipartHttpServletRequest) {//running inside a test, and simulating upload.
             RequestContext.setFormItems(((AWMockMultipartHttpServletRequest) req).getFormItems());
         } else {
-
-            if (!JakartaServletFileUpload.isMultipartContent(req))
-                throw new ControllerException("this is not a multipart request, be sure to add this attribute to the form: ... enctype=\"multipart/form-data\" ...");
-
-            DiskFileItemFactory factory = DiskFileItemFactory.builder()                    // Set factory constraints
-                    .setBufferSizeMax(Configuration.getMaxUploadSize())
-                    .setPath(Configuration.getTmpDir().getPath())
-                    .setBufferSizeMax(Configuration.getMaxUploadSize())
-                    .get();
-
-            JakartaServletDiskFileUpload upload = new JakartaServletDiskFileUpload(factory);
-
-            upload.setFileSizeMax(Configuration.getMaxUploadSize());
-
-            if(encoding != null)
-                upload.setHeaderCharset(Charset.forName(encoding));
-
-            upload.setFileSizeMax(maxUploadSize);
             try {
-                List<DiskFileItem> apacheFileItems = upload.parseRequest(RequestContext.getHttpRequest());
-                upload.parseRequest(RequestContext.getHttpRequest());
+                Collection<Part> parts = RequestContext.getHttpRequest().getParts();
                 List<FormItem> items = new ArrayList<>();
-                for (DiskFileItem apacheItem : apacheFileItems) {
-                    ApacheFileItemFacade f = new ApacheFileItemFacade(apacheItem);
-                    if(f.isFormField()){
-                        items.add(new FormItem(f));
+                for (Part part : parts) {
+                   if(!Util.blank(part.getSubmittedFileName())){ // file item
+                       items.add(new FileItem(part));
                     }else{
-                        items.add(new org.javalite.activeweb.FileItem(f));
+                       items.add(new FormItem(part)); // form item
                     }
                 }
+
                 RequestContext.setFormItems(items);
             } catch (Exception e) {
                 throw new ControllerException(e);
@@ -1216,7 +1199,7 @@ public class HttpSupport implements RequestAccess {
      * @return a String specifying the real path, or null if the translation cannot be performed
      */
     protected String getRealPath(String path) {
-        return RequestContext.getFilterConfig().getServletContext().getRealPath(path);
+        return RequestContext.getServletConfig().getServletContext().getRealPath(path);
     }
 
     /**

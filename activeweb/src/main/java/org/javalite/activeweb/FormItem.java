@@ -16,7 +16,8 @@ limitations under the License.
 
 package org.javalite.activeweb;
 
-import org.apache.commons.fileupload2.core.FileItemInput;
+
+import jakarta.servlet.http.Part;
 import org.javalite.common.Util;
 
 
@@ -30,29 +31,29 @@ import java.io.InputStream;
  */
 public class FormItem {
 
-    private FileItemInput fileItemInput;
+    private Part jakartaPart;
 
 
     /**
      * This constructor is used for testing.
      * 
-     * @param name name of a file.
+     * @param fileName name of a file.
      * @param fieldName name of a field.
      * @param isFile true if this is a file, false if not.
      * @param contentType content type for this file.
      * @param content content in bytes.
      */
-    public FormItem(String name, String fieldName, boolean isFile, String contentType, byte[] content) {
-        this.fileItemInput = new ApacheFileItemFacade(name, fieldName,contentType, isFile, content);
+    public FormItem(String fileName, String fieldName, boolean isFile, String contentType, byte[] content) {
+        this.jakartaPart = new TestPart(fileName, fieldName,contentType, content);
     }
 
     /**
      * Used internally.
      *
-     * @param fileItemInput instance of {@link ApacheFileItemFacade}
+     * @param part instance of {@link Part}
      */
-    FormItem(FileItemInput fileItemInput) {
-        this.fileItemInput = fileItemInput;
+    FormItem(Part part) {
+        this.jakartaPart = part;
     }
 
     /**
@@ -61,7 +62,7 @@ public class FormItem {
      * @return file name.
      */
     public String getName() {
-        return fileItemInput.getName();
+        return jakartaPart.getName();
     }
 
     /**
@@ -69,7 +70,7 @@ public class FormItem {
      * @return file name.
      */
     public String getFileName(){
-        return fileItemInput.getName();
+        return jakartaPart.getSubmittedFileName();
     }
 
     /**
@@ -78,7 +79,7 @@ public class FormItem {
      * @return form field name
      */
     public String getFieldName() {
-        return fileItemInput.getFieldName();
+        return jakartaPart.getName();
     }
 
     /**
@@ -87,7 +88,7 @@ public class FormItem {
      * @return true if this is a file, false if not.
      */
     public boolean isFile() {
-        return !fileItemInput.isFormField();
+        return !Util.blank(jakartaPart.getSubmittedFileName());
     }
 
     /**
@@ -96,7 +97,7 @@ public class FormItem {
      * @return content type of this form field.
      */
     public String getContentType() {
-        return fileItemInput.getContentType();
+        return jakartaPart.getContentType();
     }
 
     /**
@@ -105,7 +106,7 @@ public class FormItem {
      * @return true if this is a form field, false if not.
      */
     public boolean isFormField() {
-        return fileItemInput.isFormField();
+        return !isFile();
     }
 
     /**
@@ -115,7 +116,7 @@ public class FormItem {
      */
     public InputStream getInputStream() {
         try {
-            return fileItemInput.getInputStream();
+            return jakartaPart.getInputStream();
         } catch (Exception e) {
             throw new ControllerException(e);
         }
@@ -129,7 +130,7 @@ public class FormItem {
      */
     public String getStreamAsString(){
         try {
-            return Util.read(fileItemInput.getInputStream());
+            return Util.read(jakartaPart.getInputStream());
         } catch (Exception e) {
             throw new ControllerException(e);
         }
@@ -142,7 +143,7 @@ public class FormItem {
      */
     public byte[] getBytes() {
         try {
-            return Util.bytes(fileItemInput.getInputStream());
+            return Util.bytes(jakartaPart.getInputStream());
         } catch (Exception e) {
             throw new ControllerException(e);
         }

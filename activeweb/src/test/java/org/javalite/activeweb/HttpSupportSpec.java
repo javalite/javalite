@@ -36,10 +36,10 @@ public class HttpSupportSpec extends RequestSpec{
     @Test
     public void shouldRenderImplicit() throws IOException, ServletException {
 
-        request.setServletPath("/http_support/will_render_implicit");
+        request.setRequestURI("/http_support/will_render_implicit");
         request.setMethod("GET");
 
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
         a(response.getContentAsString()).shouldContain("default layout");
         a(response.getContentAsString()).shouldContain("Smith");
@@ -51,10 +51,10 @@ public class HttpSupportSpec extends RequestSpec{
     @Test
     public void shouldRenderImplicitOverrideLayoutAndContentType() throws IOException, ServletException {
 
-        request.setServletPath("/http_support/will_render_explicit");
+        request.setRequestURI("/http_support/will_render_explicit");
         request.setMethod("GET");
 
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String html = response.getContentAsString();
         the(html).shouldContain("this is a custom layout");
         the(html).shouldContain("explicit template");
@@ -67,9 +67,9 @@ public class HttpSupportSpec extends RequestSpec{
     @Test
     public void shouldRenderDifferentExplicitView() throws IOException, ServletException {
 
-        request.setServletPath("/http_support/will_render_different_view");
+        request.setRequestURI("/http_support/will_render_different_view");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String html = response.getContentAsString();
 
         the(html).shouldContain("default layout");
@@ -82,9 +82,9 @@ public class HttpSupportSpec extends RequestSpec{
     @Test
     public void shouldRespondWithXML() throws IOException, ServletException {
 
-        request.setServletPath("/http_support/will_respond_with_xml");
+        request.setRequestURI("/http_support/will_respond_with_xml");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String html = response.getContentAsString();
 
         a(html).shouldBeEqual("pretend this is XML...");
@@ -95,9 +95,9 @@ public class HttpSupportSpec extends RequestSpec{
     @Test
     public void shouldStreamOutData() throws IOException, ServletException {
 
-        request.setServletPath("/http_support/will_stream_out");
+        request.setRequestURI("/http_support/will_stream_out");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String html = response.getContentAsString();
 
         a(html).shouldBeEqual("streaming data");
@@ -110,9 +110,9 @@ public class HttpSupportSpec extends RequestSpec{
 
         jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie("test", "test value");
         request.setCookies(new jakarta.servlet.http.Cookie[]{cookie});
-        request.setServletPath("/http_support/will_retrieve_cookie");
+        request.setRequestURI("/http_support/will_retrieve_cookie");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String html = response.getContentAsString();
 
         the(html).shouldContain("cookie name: test");
@@ -122,9 +122,9 @@ public class HttpSupportSpec extends RequestSpec{
     @Test
     public void shouldSendCookie() throws IOException, ServletException {
 
-        request.setServletPath("/http_support/will_send_cookie");
+        request.setRequestURI("/http_support/will_send_cookie");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
         jakarta.servlet.http.Cookie cookie  = response.getCookie("user");
         a(cookie).shouldNotBeNull();
@@ -135,44 +135,44 @@ public class HttpSupportSpec extends RequestSpec{
     @Test
     public void shouldRedirectToDifferentAction() throws IOException, ServletException {
 
-        request.setServletPath("/http_support/will_redirect");
+        request.setRequestURI("/http_support/will_redirect");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         a(response.getRedirectedUrl()).shouldBeEqual("another_controller/index");
     }
 
     @Test
     public void shouldRedirectToURL() throws IOException, ServletException {
-        request.setServletPath("/http_support/will_redirect_url");
+        request.setRequestURI("/http_support/will_redirect_url");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         a(response.getRedirectedUrl()).shouldBeEqual("http://yahoo.com");
     }
 
     @Test
     public void shouldRedirectToController() throws IOException, ServletException {
 
-        request.setServletPath("/http_support/will_redirect_to_controller");
+        request.setRequestURI("/http_support/will_redirect_to_controller");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         a(response.getRedirectedUrl()).shouldBeEqual("/test_context/hello/abc_action/123?name=john");
     }
 
     @Test
     public void shouldPassValuesAsVararg() throws IOException, ServletException {
 
-        request.setServletPath("/http_support/will_pass_vararg");
+        request.setRequestURI("/http_support/will_pass_vararg");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String html = response.getContentAsString();
         the(html).shouldContain("1,2");
     }
 
     @Test
     public void shouldPassValuesAsMap() throws IOException, ServletException {
-        request.setServletPath("/http_support/will_pass_map");
+        request.setRequestURI("/http_support/will_pass_map");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String html = response.getContentAsString();
         the(html).shouldContain("2,1");
     }
@@ -181,9 +181,9 @@ public class HttpSupportSpec extends RequestSpec{
     @Test
     public void shouldNotGetNPEWhenGettingNonExistentSessionValue1() throws IOException, ServletException {
 
-        request.setServletPath("/http_support/get_session_attr");
+        request.setRequestURI("/http_support/get_session_attr");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String html = response.getContentAsString();
         a(html).shouldEqual("false");
     }
@@ -192,9 +192,9 @@ public class HttpSupportSpec extends RequestSpec{
     public void shouldNotGetNPEWhenGettingNonExistentSessionValue2() throws IOException, ServletException {
 
         request.getSession().setAttribute("name", "igor");
-        request.setServletPath("/http_support/get_session_attr");
+        request.setRequestURI("/http_support/get_session_attr");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String html = response.getContentAsString();
         a(html).shouldEqual("true");
     }
@@ -202,9 +202,9 @@ public class HttpSupportSpec extends RequestSpec{
     @Test
     public void shouldNotGetNPEWhenGettingCookiesAndNoCookiesExist() throws IOException, ServletException {
 
-        request.setServletPath("/http_support/get_cookies");
+        request.setRequestURI("/http_support/get_cookies");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String html = response.getContentAsString();
         a(html).shouldEqual("0");
     }
@@ -212,20 +212,20 @@ public class HttpSupportSpec extends RequestSpec{
     @Test
     public void shouldCountCookies() throws IOException, ServletException {
         request.setCookies(new jakarta.servlet.http.Cookie[]{new Cookie("name", "value"), new Cookie("name1", "value1")});
-        request.setServletPath("/http_support/get_cookies");
+        request.setRequestURI("/http_support/get_cookies");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String html = response.getContentAsString();
         a(html).shouldEqual("2");
     }
 
     @Test //https://github.com/javalite/activeweb/issues/174
     public void shouldParseHasFromRequest() throws IOException, ServletException {
-        request.setServletPath("/hash/index");
+        request.setRequestURI("/hash/index");
         request.setMethod("POST");
         request.addParameter("account[name]", "John");
         request.addParameter("account[number]", "123");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String html = response.getContentAsString();
         a(html).shouldContain("name: John");
         a(html).shouldContain("name: John");
@@ -233,19 +233,19 @@ public class HttpSupportSpec extends RequestSpec{
 
     @Test //https://github.com/javalite/activeweb/issues/180
     public void shouldMergeTemplate() throws IOException, ServletException {
-        request.setServletPath("/merge");
+        request.setRequestURI("/merge");
         request.setMethod("GET");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String merged = response.getContentAsString();
         a(merged).shouldBeEqual(format("What is your name?%n- My name is John Doe"));
     }
 
     @Test //https://github.com/javalite/activeweb/issues/244
     public void shouldSanitizeBadContent() throws IOException, ServletException {
-        request.setServletPath("/Sanitize");
+        request.setRequestURI("/Sanitize");
         request.setMethod("POST");
         request.addParameter("attack", "<html><script> alert('hello');</script><div>this is a clean part</div></html>");
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String result = response.getContentAsString();
         a(result).shouldBeEqual("this is a clean part");
     }
@@ -253,10 +253,10 @@ public class HttpSupportSpec extends RequestSpec{
     @Test
     public void shouldRequireContentTypeToConvertJSON() throws IOException, ServletException {
         SystemStreamUtil.replaceOut();
-        request.setServletPath("/json/map");
+        request.setRequestURI("/json/map");
         request.setMethod("POST");
         request.setContent("{\"name\"}:\"John\"".getBytes());
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
 
         the(response.getContentAsString()).shouldContain("server error");
         the(SystemStreamUtil.getSystemOut()).shouldContain("Trying to convert JSON to object, but Content-Type is null, not 'application/json'");
@@ -266,36 +266,36 @@ public class HttpSupportSpec extends RequestSpec{
 
     @Test
     public void shouldConvertJSONMap() throws IOException, ServletException {
-        request.setServletPath("/json/map");
+        request.setRequestURI("/json/map");
         request.setMethod("POST");
         request.setContentType("application/json");
 
         request.setContent("{\"name\":\"John\"}".getBytes());
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String result = response.getContentAsString();
         a(result).shouldBeEqual("response: John");
     }
 
     @Test
     public void shouldConvertJSONMaps() throws IOException, ServletException {
-        request.setServletPath("/json/maps");
+        request.setRequestURI("/json/maps");
         request.setMethod("POST");
         request.setContentType("application/json");
 
         request.setContent("[{\"name\":\"John\"},{\"name\":\"Sam\"}]".getBytes());
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String result = response.getContentAsString();
         a(result).shouldBeEqual("response: John, Sam");
     }
 
     @Test
     public void shouldConvertJSONList() throws IOException, ServletException {
-        request.setServletPath("/json/list");
+        request.setRequestURI("/json/list");
         request.setMethod("POST");
         request.setContentType("application/json; charset=UTF-8"); // additional  value of Content-type
 
         request.setContent("[1,2,3]".getBytes());
-        dispatcher.doFilter(request, response, filterChain);
+        dispatcher.service(request, response);
         String result = response.getContentAsString();
         a(result).shouldBeEqual("response: 1, 2");
     }

@@ -48,7 +48,7 @@ public class RouterCustomSpec extends RequestSpec {
         try {
             dispatcher.setRouteConfig(routeConfig);
             dispatcher.init(config);
-            dispatcher.doFilter(request, response, filterChain);
+            dispatcher.service(request, response);
         }catch(IllegalArgumentException e){
             throw e;
         } catch (Exception e) {
@@ -78,7 +78,7 @@ public class RouterCustomSpec extends RequestSpec {
                 route("/").to(Route1Controller.class);
             }
         };
-        request.setServletPath("/");
+        request.setRequestURI("/");
         execDispatcher();
         a(responseContent()).shouldContain("route 1");
     }
@@ -91,7 +91,7 @@ public class RouterCustomSpec extends RequestSpec {
                 route("/greeting").to(Route2Controller.class).action("hi");
             }
         };
-        request.setServletPath("/greeting");
+        request.setRequestURI("/greeting");
         execDispatcher();
         a(responseContent()).shouldContain("route 2");
     }
@@ -105,7 +105,7 @@ public class RouterCustomSpec extends RequestSpec {
             }
         };
 
-        request.setServletPath("/show/route_3/1");
+        request.setRequestURI("/show/route_3/1");
         execDispatcher();
         a(responseContent()).shouldContain("route 3");
         a(responseContent()).shouldContain("and id: 1");
@@ -120,7 +120,7 @@ public class RouterCustomSpec extends RequestSpec {
             }
         };
 
-        request.setServletPath("/greeting/alex");
+        request.setRequestURI("/greeting/alex");
         execDispatcher();
         System.out.println(responseContent());
         a(responseContent()).shouldContain("user id is alex");
@@ -135,7 +135,7 @@ public class RouterCustomSpec extends RequestSpec {
                 route("/greeting/from_mars/{user_name}").to(SegmentRoute2Controller.class).action("hi");
             }
         };
-        request.setServletPath("/greeting/from_mars/alex");
+        request.setRequestURI("/greeting/from_mars/alex");
         execDispatcher();
 
         a(responseContent()).shouldContain("user name is alex");
@@ -150,7 +150,7 @@ public class RouterCustomSpec extends RequestSpec {
             }
         };
 
-        request.setServletPath("/greeting/1/from_mars/blue/greeting/123");
+        request.setRequestURI("/greeting/1/from_mars/blue/greeting/123");
         execDispatcher();
         a(responseContent()).shouldContain("user_id:1");
         a(responseContent()).shouldContain("fav_color:blue");
@@ -167,7 +167,7 @@ public class RouterCustomSpec extends RequestSpec {
             }
         };
 
-        request.setServletPath("/greeting");
+        request.setRequestURI("/greeting");
         execDispatcher();
         a(responseContent()).shouldContain("I'm an index page!!");
     }
@@ -182,7 +182,7 @@ public class RouterCustomSpec extends RequestSpec {
             }
         };
 
-        request.setServletPath("/edit/route_4/1/alex/blue");
+        request.setRequestURI("/edit/route_4/1/alex/blue");
         execDispatcher();
         a(responseContent()).shouldContain("id:1" + nl +
                 "user_name:alex" + nl +
@@ -200,7 +200,7 @@ public class RouterCustomSpec extends RequestSpec {
             }
         };
 
-        request.setServletPath("/photos/12");
+        request.setRequestURI("/photos/12");
         execDispatcher();
         a(responseContent()).shouldContain("id:12");
     }
@@ -216,7 +216,7 @@ public class RouterCustomSpec extends RequestSpec {
             }
         };
 
-        request.setServletPath("/photos/12");
+        request.setRequestURI("/photos/12");
         execDispatcher();
 
         the(SystemStreamUtil.getSystemOut()).shouldContain("Cannot combine {controller} segment and .to(...) method. Failed route: /photos/{controller}");
@@ -236,7 +236,7 @@ public class RouterCustomSpec extends RequestSpec {
             }
         };
 
-        request.setServletPath("/photos/12");
+        request.setRequestURI("/photos/12");
         execDispatcher();
         the(response.getContentAsString()).shouldBeEqual("server error");
         the(SystemStreamUtil.getSystemOut()).shouldContain("Cannot combine {action} segment and .action(\\\"...\\\") method. Failed route: /photos/{action}");
@@ -253,7 +253,7 @@ public class RouterCustomSpec extends RequestSpec {
                 route("/greeting").to(Route2Controller.class).post().action("hi");
             }
         };
-        request.setServletPath("/greeting");
+        request.setRequestURI("/greeting");
         execDispatcher();
 
         a(SystemStreamUtil.getSystemOut()).shouldContain("java.lang.ClassNotFoundException: app.controllers.GreetingController");
@@ -276,7 +276,7 @@ public class RouterCustomSpec extends RequestSpec {
                 route("/greeting/{action}").post().to(Route2Controller.class);
             }
         };
-        request.setServletPath("/greeting/save");
+        request.setRequestURI("/greeting/save");
         request.setMethod("post");
         execDispatcher();
 
@@ -291,7 +291,7 @@ public class RouterCustomSpec extends RequestSpec {
                 route("/greeting/{action}").to(Route2Controller.class).head();
             }
         };
-        request.setServletPath("/greeting/info");
+        request.setRequestURI("/greeting/info");
         request.setMethod("head");
         execDispatcher();
 
@@ -307,7 +307,7 @@ public class RouterCustomSpec extends RequestSpec {
                 route("/greeting/{action}").patch().to(Route2Controller.class);
             }
         };
-        request.setServletPath("/greeting/patch");
+        request.setRequestURI("/greeting/patch");
         request.setMethod("patch");
         execDispatcher();
 
@@ -324,7 +324,7 @@ public class RouterCustomSpec extends RequestSpec {
                 route("/da_value").get().to(SimpleValueController.class);
             }
         };
-        request.setServletPath("/da_value");
+        request.setRequestURI("/da_value");
         request.setParameter("name", "Joe");
         request.setMethod("get");
         execDispatcher();
@@ -332,7 +332,7 @@ public class RouterCustomSpec extends RequestSpec {
         a(responseContent()).shouldBeEqual("Joe");
 
         request = new MockHttpServletRequest();
-        request.setServletPath("/da_value");
+        request.setRequestURI("/da_value");
         request.setMethod("get");
         response = new MockHttpServletResponse();
         execDispatcher();
@@ -347,7 +347,7 @@ public class RouterCustomSpec extends RequestSpec {
                 route("/api/v2/{controller}/{aut_id}/").to(AuthorsController.class).action("findById");
             }
         };
-        request.setServletPath("/api/v2/authors/9");
+        request.setRequestURI("/api/v2/authors/9");
         execDispatcher();
 
         the(responseContent()).shouldBeEqual("findById found: 9");
@@ -362,7 +362,7 @@ public class RouterCustomSpec extends RequestSpec {
 
             }
         };
-        request.setServletPath("/api/test");
+        request.setRequestURI("/api/test");
         execDispatcher();
 
         the(responseContent()).shouldNotContain("IndexOutOfBoundsException");
@@ -380,7 +380,7 @@ public class RouterCustomSpec extends RequestSpec {
             }
         };
 
-        request.setServletPath("/api");
+        request.setRequestURI("/api");
         execDispatcher();
         the(responseContent()).shouldBeEqual("ApiController#index");
 
@@ -389,7 +389,7 @@ public class RouterCustomSpec extends RequestSpec {
             public void init(AppContext appContext) {}
         };
 
-        request.setServletPath("/api");
+        request.setRequestURI("/api");
         response =  new MockHttpServletResponse();
         execDispatcher();
         the(SystemStreamUtil.getSystemOut()).shouldContain("Your controller and package named the same: controllerName=  'api' , controllerPackage= 'api'");
@@ -409,7 +409,7 @@ public class RouterCustomSpec extends RequestSpec {
             }
         };
 
-        request.setServletPath("/api/");
+        request.setRequestURI("/api/");
         execDispatcher();
         the(responseContent()).shouldBeEqual("ApiController#index");
 
@@ -419,7 +419,7 @@ public class RouterCustomSpec extends RequestSpec {
         };
 
         SystemStreamUtil.replaceOut();
-        request.setServletPath("/api/");
+        request.setRequestURI("/api/");
         response =  new MockHttpServletResponse(); // calling two controllers   in the same test method  has some issues with sharing objects
         execDispatcher();
         the(SystemStreamUtil.getSystemOut()).shouldContain("Your controller and package named the same: controllerName=  'api' , controllerPackage= 'api'");
@@ -441,7 +441,7 @@ public class RouterCustomSpec extends RequestSpec {
             }
         };
 
-        request.setServletPath("/api/");
+        request.setRequestURI("/api/");
         execDispatcher();
         the(responseContent()).shouldBeEqual("ApiController#index");
 
@@ -450,7 +450,7 @@ public class RouterCustomSpec extends RequestSpec {
             public void init(AppContext appContext) {}
         };
 
-        request.setServletPath("/api/");
+        request.setRequestURI("/api/");
         response = new MockHttpServletResponse();
         execDispatcher();
         the(SystemStreamUtil.getSystemOut()).shouldContain("Your controller and package named the same: controllerName=  'api' , controllerPackage= 'api'");
@@ -470,7 +470,7 @@ public class RouterCustomSpec extends RequestSpec {
             }
         };
 
-        request.setServletPath("/options/blah");
+        request.setRequestURI("/options/blah");
         request.setMethod("OPTIONS");
         execDispatcher();
         the(responseContent()).shouldBeEqual("OptionsController#index");
@@ -484,7 +484,7 @@ public class RouterCustomSpec extends RequestSpec {
                 route("/options/blah").to(OptionsController.class).action("index").options();
             }
         };
-        request.setServletPath("/options/blah");
+        request.setRequestURI("/options/blah");
         request.setMethod("OPTIONS");
         execDispatcher();
         the(responseContent()).shouldBeEqual("OptionsController#index");
@@ -500,7 +500,7 @@ public class RouterCustomSpec extends RequestSpec {
                 route("/options/blah").to(OptionsController.class).action("index").options();
             }
         };
-        request.setServletPath("/home");
+        request.setRequestURI("/home");
         request.setMethod("GET");
         execDispatcher();
 
@@ -519,7 +519,7 @@ public class RouterCustomSpec extends RequestSpec {
                 strictMode();
             }
         };
-        request.setServletPath("/restful1");
+        request.setRequestURI("/restful1");
         request.setMethod("GET");
         execDispatcher();
 
@@ -539,14 +539,14 @@ public class RouterCustomSpec extends RequestSpec {
                 });
             }
         };
-        request.setServletPath("/one");
+        request.setRequestURI("/one");
         execDispatcher();
         the(responseContent()).shouldBeEqual("custom!");
 
         //reset the old object
         response = new MockHttpServletResponse();
 
-        request.setServletPath("/onetwothree");
+        request.setRequestURI("/onetwothree");
         execDispatcher();
         the(responseContent()).shouldBeEqual("custom!");
     }

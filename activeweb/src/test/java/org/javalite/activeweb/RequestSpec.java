@@ -17,15 +17,14 @@ limitations under the License.
 package org.javalite.activeweb;
 
 
+import jakarta.servlet.ServletException;
 import org.javalite.test.jspec.JSpecSupport;
 import org.junit.After;
 import org.junit.Before;
-import org.springframework.mock.web.MockFilterConfig;
+import org.springframework.mock.web.MockServletConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 
 import static org.javalite.test.SystemStreamUtil.replaceError;
 import static org.javalite.test.SystemStreamUtil.restoreSystemErr;
@@ -35,17 +34,17 @@ import static org.javalite.test.SystemStreamUtil.restoreSystemErr;
  */
 public abstract class RequestSpec implements JSpecSupport {
 
-    protected FilterChain filterChain = (servletRequest, servletResponse) -> {};
+
     protected RequestDispatcher dispatcher;
     protected MockHttpServletRequest request;
     protected MockHttpServletResponse response;
 
-    protected MockFilterConfig config;
+    protected MockServletConfig config;
 
     @Before
-    public final void setup() throws ServletException{
+    public final void setup() throws ServletException {
         replaceError();
-        config = new MockFilterConfig();
+        config = new MockServletConfig();
         dispatcher = new RequestDispatcher();
         request = new MockHttpServletRequest();
         request.setContextPath("/test_context");

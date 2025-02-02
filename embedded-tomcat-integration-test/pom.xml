@@ -48,7 +48,7 @@
                 <configuration>
                     <environments>development</environments>
                     <driver>org.mariadb.jdbc.Driver</driver>
-                    <url>jdbc:mariadb://localhost:3309/javalite_tomcat</url>
+                    <url>jdbc:mariadb://localhost:3307/javalite_tomcat</url>
                     <username>root</username>
                     <password>p@ssw0rd</password>
                 </configuration>
