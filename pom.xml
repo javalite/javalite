@@ -187,18 +187,28 @@
                 </configuration>
             </plugin>
 
+<!--        <plugin>-->
+<!--            &lt;!&ndash; explicitly define maven-deploy-plugin after other to force exec order &ndash;&gt;-->
+<!--            <artifactId>maven-deploy-plugin</artifactId>-->
+<!--            <executions>-->
+<!--                <execution>-->
+<!--                    <id>deploy</id>-->
+<!--                    <phase>deploy</phase>-->
+<!--                    <goals>-->
+<!--                        <goal>deploy</goal>-->
+<!--                    </goals>-->
+<!--                </execution>-->
+<!--            </executions>-->
+<!--        </plugin>-->
+
         <plugin>
-            <!-- explicitly define maven-deploy-plugin after other to force exec order -->
-            <artifactId>maven-deploy-plugin</artifactId>
-            <executions>
-                <execution>
-                    <id>deploy</id>
-                    <phase>deploy</phase>
-                    <goals>
-                        <goal>deploy</goal>
-                    </goals>
-                </execution>
-            </executions>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>0.7.0</version>
+            <extensions>true</extensions>
+            <configuration>
+                <publishingServerId>central</publishingServerId>
+            </configuration>
         </plugin>
 
     </plugins>
