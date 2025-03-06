@@ -64,8 +64,8 @@ public abstract class AbstractRouteConfig implements InitConfig {
 
     /**
      * Use in configuration  of custom routes in  order to exclude any other routing paths, such as Standard and Restful.
-     * Basically, if this method is called from <code>RouteConfig#init()<code/> method,  the routing system will ONLY allow routes
-     * configured in the <code>RouteConfig#init()<code/> method and not any other routes.
+     * Basically, if this method is called from <code>RouteConfig#init()</code> method,  the routing system will ONLY allow routes
+     * configured in the <code>RouteConfig#init()</code> method and not any other routes.
      *
      * <br/>
      * If this method is not called, all routes are enabled by default, standard, Restful as well as custom, which might not be a desired
