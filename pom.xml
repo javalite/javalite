@@ -209,10 +209,12 @@
             <version>0.7.0</version>
             <extensions>true</extensions>
             <configuration>
-                <publishingServerId>central</publishingServerId>
+                <publishingServerId>portal-snapshots</publishingServerId>
+<!--                <publishingServerId>central</publishingServerId>-->
+                <autoPublish>true</autoPublish>
+                <waitUntil>uploaded</waitUntil>
             </configuration>
         </plugin>
-
     </plugins>
     </build>
 
@@ -467,4 +469,11 @@
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>portal-snapshots</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
