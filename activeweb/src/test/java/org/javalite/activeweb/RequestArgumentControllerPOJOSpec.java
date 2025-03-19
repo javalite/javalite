@@ -84,6 +84,24 @@ public class RequestArgumentControllerPOJOSpec extends RequestSpec {
     }
 
     @Test
+    public void shouldPOJOWithPrimitives() throws IOException, ServletException {
+        request.setServletPath("/request_argument/primitives");
+        request.setMethod("POST");
+
+        request.addParameter("aString", "tada");
+        request.addParameter("anInteger", "1");
+        request.addParameter("aDouble", "2");
+        request.addParameter("aFloat", "3");
+        request.addParameter("aLong", "4");
+        request.addParameter("aBoolean", "true");
+
+        dispatcher.doFilter(request, response, filterChain);
+
+        //see checks inside the RequestArgumentController.primitives() method
+        the(response.getStatus()).shouldBeEqual(200);
+    }
+
+    @Test
     public void shouldRejectOverloadedMethods() throws IOException, ServletException {
         SystemStreamUtil.replaceOut();
         request.setServletPath("/request_argument/overloaded1");

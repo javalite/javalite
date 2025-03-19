@@ -27,6 +27,20 @@ public class RequestArgumentController extends AppController {
         respond("Errors: " + plant.errors().toString());
     }
 
+    @POST
+    public void primitives(Primitives primitives){
+
+        //let is break here:
+        assert primitives.aBoolean;
+        assert primitives.aString.equals("tada");
+        assert primitives.anInteger == 1;
+        assert primitives.aDouble == 2;
+        assert primitives.aFloat == 3;
+        assert primitives.aLong == 4;
+
+        respond("Success");
+    }
+
     @FailedValidationReply(400)
     public void plant2(Plant2 plant){
         respond("ok");

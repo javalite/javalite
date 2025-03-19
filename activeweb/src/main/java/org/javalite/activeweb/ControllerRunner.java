@@ -228,6 +228,8 @@ class ControllerRunner {
                 setField(requestObject, Convert.class.getMethod("toDouble", Object.class), value, field);
             } else if (typeName.equals("float") || typeName.equals(Float.class.getName())) {
                 setField(requestObject, Convert.class.getMethod("toFloat", Object.class), value, field);
+            } else if (typeName.equals("long") || typeName.equals(Long.class.getName())) {
+                setField(requestObject, Convert.class.getMethod("toLong", Object.class), value, field);
             } else if (typeName.equals("boolean") || typeName.equals(Boolean.class.getName())) {
                 setField(requestObject, Convert.class.getMethod("toBoolean", Object.class), value, field);
             } else if (typeName.equals(String.class.getName())) {
