@@ -36,8 +36,7 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.*;
 
-import static org.javalite.common.Util.blank;
-import static org.javalite.common.Util.empty;
+import static org.javalite.common.Util.*;
 
 /**
  * This class exists to offload some logic from {@link Model}  class.
@@ -383,6 +382,12 @@ public final class ModelDelegate {
 
     public static ValidationBuilder validateWith(Class<? extends Model> clazz, Validator validator) {
         return modelRegistryOf(clazz).validateWith(validator);
+    }
+
+    public static <T extends Model> LazyList<T> findByColumnIn(Class<T> clazz, String column, Collection<?> values) {
+        return empty(values) ?
+                new LazyList<>() :
+                new LazyList<>(" %s  IN (%s)".formatted(column, join(values, ", ")), metaModelOf(clazz));
     }
 
     public static <T extends Model> LazyList<T> where(Class<T> clazz, String subquery, Object... params) {
