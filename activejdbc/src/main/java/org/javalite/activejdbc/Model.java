@@ -393,7 +393,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      * (Instance state differs from state in DB)
      * @return true if this instance was modified.
      */
-
+    
     public boolean isModified() {
         return !dirtyAttributeNames.isEmpty();
     }
@@ -439,7 +439,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      *
      * @return true if this is a new instance, not saved yet to DB, false otherwise
      */
-
+    
     public boolean isNew(){
         return getId() == null && !compositeKeyPersisted;
     }
@@ -2204,7 +2204,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      *
      * @return true if no errors were generated, otherwise returns false.
      */
-
+    
     public boolean isValid(){
         validate();
         return !hasErrors();
@@ -2338,32 +2338,10 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
         return ModelDelegate.createIt(Model.<T>modelClass(), namesAndValues);
     }
 
-    /**
-     * Finds ain instance of a model by ID.
-     * @param id value to look for
-     * @return instance of a model or null if nothing found
-     */
     public static <T extends Model> T findById(Object id) {
         return ModelDelegate.findById(Model.<T>modelClass(), id);
     }
 
-    /**
-     * Searches for records by a collection of values in a column. This is a workaround for queries using an IN list:
-     * <code>select * from users where first_name in ('John', 'Jodi')</code>.
-     * Example of usage:
-     * <pre>
-     *     List&lt;Person&gt; people = Person.findByColumnIn("id", li(1, 2)).orderBy("id");
-     *</pre>
-     * In the code above the search is happening  by column "id" for values matching 1 or 2.
-     * The <code>orderBy(...)</code> is optional (same for any other methods of a <code>LazyList</code>).
-     *
-     * @param column name of column of interest.
-     * @param values number of matching values for this column.
-     * @return a number or matching objects.
-     */
-    public static <T extends Model> LazyList<T> findByColumnIn(String column, Collection<?> values) {
-        return ModelDelegate.findByColumnIn(Model.<T>modelClass(), column, values);
-    }
     /**
      * Composite PK values in exactly the same order as specified  in {@link CompositePK}.
      *
@@ -2959,7 +2937,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      *
      * @return of ID.
      */
-
+    
     public Object getId() {
         return get(getIdName());
     }
@@ -2969,7 +2947,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      *
      * @return Name of ID column.
      */
-
+    
     public String getIdName() {
         return metaModelLocal.getIdName();
     }
@@ -2979,7 +2957,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      *
      * @return a list of composite keys as specified  in {@link CompositePK}.
      */
-
+    
     public String[] getCompositeKeys() {
         return metaModelLocal.getCompositeKeys();
     }
@@ -3111,7 +3089,7 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      *
      * @return value of attribute corresponding to <code>getIdName()</code>, converted to a Long.
      */
-
+    
     public Long getLongId() {
         return getId() == null ? null: Convert.toLong(getId());
     }
