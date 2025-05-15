@@ -227,7 +227,7 @@ public class Route {
                 || actionName.equals("options") && httpMethod.equals(HttpMethod.OPTIONS)) {
             return true;
         } else {
-            LOGGER.warn("Cannot execute a non-restful action on a restful controller.");
+            LOGGER.warn("Cannot execute a non-restful action on a restful controller: {}#{}", this.controller.getClass().getName(), this.actionMethod.getName());
             return false;
         }
     }

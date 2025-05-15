@@ -25,7 +25,7 @@ public class MyRestfulControllerSpec extends AppIntegrationSpec {
         SystemStreamUtil.replaceOut();
         controller("/my_restful").post("index");
         the(statusCode()).shouldEqual(405);
-        the(SystemStreamUtil.getSystemOut()).shouldContain("Cannot execute a non-restful action on a restful controller.");
+        the(SystemStreamUtil.getSystemOut()).shouldContain("Cannot execute a non-restful action on a restful controller: app.controllers.MyRestfulController#index");
         SystemStreamUtil.restoreSystemOut();
     }
 }
