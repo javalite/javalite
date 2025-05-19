@@ -51,9 +51,12 @@ public class JSONMap extends HashMap<String, Object> {
 
     /**
      * Creates an instance from the array,
-     * where odd arguments are map keys and the even are values.
+     * where odd arguments are map keys and the even are values. The first two argument
+     * are the key and value of the first element of the map.
      *
-     * @param keysAndValues keys and
+     * @param key first key
+     * @param value first value
+     * @param keysAndValues keys and values. The total number of arguments needs to be even (key, value, key, value, etc.).
      */
     public JSONMap(String key, Object value, Object... keysAndValues) {
         super(map(keysAndValues));
