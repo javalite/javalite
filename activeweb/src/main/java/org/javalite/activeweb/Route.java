@@ -169,7 +169,7 @@ public class Route {
             DirectResponse res = new DirectResponse("405 - Method not allowed");
             //see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
             res.setStatus(405);
-            LOGGER.warn("Requested action does not support HTTP method: " + method.name() + ", returning status code 405.");
+            LOGGER.warn("{} action does not support HTTP method: " + method.name() + ", returning status code 405.", getControllerClassName() + "#" + getActionName());
             RequestContext.setControllerResponse(res);
             //see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
             RequestContext.getHttpResponse().setHeader("Allow", join(allowedActions(), ", "));
@@ -227,7 +227,7 @@ public class Route {
                 || actionName.equals("options") && httpMethod.equals(HttpMethod.OPTIONS)) {
             return true;
         } else {
-            LOGGER.warn("Cannot execute a non-restful action on a restful controller.");
+            LOGGER.warn("Cannot execute a non-restful action on a restful controller: {}", controller.getClass().getName() + "#" + actionMethod.getName() );
             return false;
         }
     }
