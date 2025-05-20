@@ -82,37 +82,20 @@ import static org.javalite.common.Util.blank;
  * <blockquote><strong>The file-based configuration  overrides classpath one. If you have a property defined in both,
  * the classpath configuration will be ignored and the file property will be used.</strong></blockquote>
  *
- * <h2>3. Environment Variable Override</h2>
+ * <h2>3. Environment Variables</h2>
  *
- * You can set environment variables to override properties from environment files. This may be done in order to
- * conceal some sensitive information (not to commit it to a code repository).
- * For Example, you can have a <code>development.properties</code> file with a property:
+ * You can set the environment variables as well. They are read using the same API:
  * <br>
- * <pre>database.password= </pre>
- * If you provide a System Environment Variable <code>export DATABASE_PASSWORD=password1</code>, then the environment variable
- * will override the file property. Reading this value needs to be done using a property name:
+ * <pre>String val = p("env_var_name") </pre>
  *
- * <pre>
- *     String val = p("database.password");
- * </pre>
- *
+ * <br/>
  * The Environment Variables have the highest precedent and will override any other properties defined for this environment
  * in the property files
  *
  * <br/>
- * In case the property is not defined in the property files looking it up will return <code>null</code>.
+ * In case the property is not defined in the property files, it will be looked up in environment variables.
  *
- * <br>
- * The naming convention when translating from property names to environment variable names are:
  *
- * <ul>
- *     <li>Dots (.) are converted to underscores (_) </li>
- *     <li>Dashes (-) are converted to underscores (_) </li>
- *     <li>lower case characters are converted to upper case: <code>database.user</code> is converted to <code>DATABASE_USER</code></li>
- * </ul>
- *
- * Please, note that the Environment variable override only works if a property is defined in the property file. If it is not,
- * then the lookup of a value will return null, even of a System env variable exists.
  *
  * <h2>Property substitution</h2>
  *
@@ -204,7 +187,7 @@ public class AppConfig implements Map<String, String> {
     private static void overloadFromSystemEnv() {
         Map<String, String> sysEnv = new HashMap<>();
         for (String key: props.keySet()){
-            String val = System.getenv(key.replace(".", "_").replace("-", "_").toUpperCase());
+            String val = System.getenv(key);
             if(!blank(val)){
                 sysEnv.put(key, val);
             }
@@ -291,10 +274,10 @@ public class AppConfig implements Map<String, String> {
             Property property = new Property(key, value, source);
             Property previous = props.put(key, property);
             if (previous != null) {
-                LOGGER.info("Duplicate property defined. Property: '" + key + "' found in: "
+                LOGGER.warn("Duplicate property defined. Property: '" + key + "' found in: "
                         + previous.getPropertyFile() + " and in: " + source
                         + ". Using the value from: "
-                        + source);
+                        + property.getPropertyFile());
             }
         }
     }
