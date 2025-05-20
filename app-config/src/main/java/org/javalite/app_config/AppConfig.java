@@ -360,8 +360,6 @@ public class AppConfig implements Map<String, String> {
             init();
         }
         Property p = props.get(propertyName);
-        String envName = propertyNameToEnvVarName(propertyName);
-        LOGGER.debug("Falling through to System.getenv(): {}", envName);
         return p == null ? System.getenv(propertyNameToEnvVarName(propertyName)) : p.getValue();
     }
 
