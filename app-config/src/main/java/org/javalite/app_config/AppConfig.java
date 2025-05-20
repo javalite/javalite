@@ -204,26 +204,12 @@ public class AppConfig implements Map<String, String> {
     private static void overloadFromSystemEnv() {
         Map<String, String> sysEnv = new HashMap<>();
         for (String key: props.keySet()){
-            String val = System.getenv(propertyNameToEnvVarName(key));
+            String val = System.getenv(key.replace(".", "_").replace("-", "_").toUpperCase());
             if(!blank(val)){
                 sysEnv.put(key, val);
             }
         }
         registerMap(sysEnv, "System.getenv()");
-    }
-
-    /**
-     * Translates a property name to an environment variable name.
-     * A typical Java property name uses lower case words punctuated by dots:
-     * <code>server.port</code>. However, environment variables typically use upper case
-     * characters and cannot have dots in a name. This method converts property names to environment variable names:
-     * <code>server.port</code> is converted to <code>SERVER_PORT</code>
-     * @param propName name of a Java property
-     *
-     * @return name of a property converted to system environment variable name.
-     */
-    public static String propertyNameToEnvVarName(String propName) {
-        return propName.replace(".", "_").replace("-", "_").toUpperCase();
     }
 
     /**
@@ -346,21 +332,18 @@ public class AppConfig implements Map<String, String> {
 
     /**
      * Returns property value for a key.
-     * <br/>
+     * If the value is null, it  will be sourced from the system environment
+     * variables.
      *
-     * If this method does not find a property defined in the property files, it converts the property name to
-     * environment variable name {@link #propertyNameToEnvVarName} and falls through
-     * to a corresponding environment variable value.
-     *
-     * @param propertyName name of a property.
-     * @return value for this property, <code>null</code> if not found.
+     * @param key key of property.
+     * @return value for this key, <code>null</code> if not found.
      */
-    public static String getProperty(String propertyName) {
+    public static String getProperty(String key) {
         if (!isInited()) {
             init();
         }
-        Property p = props.get(propertyName);
-        return p == null ? System.getenv(propertyNameToEnvVarName(propertyName)) : p.getValue();
+        Property p = props.get(key);
+        return p == null ? System.getenv(key) : p.getValue();
     }
 
 
