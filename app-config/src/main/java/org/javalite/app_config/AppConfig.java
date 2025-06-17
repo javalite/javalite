@@ -296,7 +296,11 @@ public class AppConfig implements Map<String, String> {
             val = props.get(name).getValue();
         }
         props.put(name, new Property(name, value, "dynamically added"));
-        LOGGER.debug("Temporary overriding property: " + name + ". Old value: " + val + ". New value: "  + value);
+
+        if(!value.equals(val)){
+            LOGGER.debug("Temporary overriding property: " + name + ". Old value: " + val + ". New value: "  + value);
+        }
+
         return val;
     }
 
