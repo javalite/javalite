@@ -40,7 +40,7 @@
         <junit-vintage-engine.version>5.11.3</junit-vintage-engine.version>
         <mariadb.connector.version>3.5.2</mariadb.connector.version>
         <h2.version>2.3.232</h2.version>
-        <spring.version>6.2.0</spring.version>
+        <spring.version>6.2.8</spring.version>
         <jackson.version>2.18.2</jackson.version>
     </properties>
 
