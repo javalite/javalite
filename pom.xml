@@ -41,7 +41,7 @@
         <mariadb.connector.version>3.5.3</mariadb.connector.version>
         <h2.version>2.3.232</h2.version>
         <spring.version>6.2.8</spring.version>
-        <jackson.version>2.18.2</jackson.version>
+        <jackson.version>2.19.1</jackson.version>
     </properties>
 
     <licenses>
