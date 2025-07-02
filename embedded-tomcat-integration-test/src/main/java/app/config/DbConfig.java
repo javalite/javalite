@@ -12,7 +12,7 @@ public class DbConfig extends AbstractDBConfig {
     public void init(AppContext appContext) {
         environment("development")
                 .testing()
-                .jdbc(  "org.mariadb.jdbc.Driver", "jdbc:mariadb://localhost:3309/javalite_tomcat",
+                .jdbc(  "org.mariadb.jdbc.Driver", "jdbc:mariadb://localhost:3309/javalite_db",
                         "root","p@ssw0rd");
         environment("development").jndi("java:comp/env/" + p("embedded.tomcat.pool.name"));
     }

@@ -7,7 +7,10 @@ import org.junit.jupiter.api.Test;
 public class TomcatTestControllerSpec extends DBControllerSpec {
 
     @Test
-    public void shouldTest(){
+    public void shouldFIndDBConnection(){
+
+        //This test ensures that the DBCOnfig was properly setup and can access the test DB connection
+
         System.out.println("inside test: " + Base.connection());
     }
 }

@@ -1,0 +1,28 @@
+services:
+  javalite-mariadb:
+    image: mariadb:latest
+    container_name: javalite-mariadb
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: p@ssw0rd
+      MYSQL_DATABASE: javalite_db
+    ports:
+      - "127.0.0.1:3309:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - javalite-network
+
+volumes:
+  mariadb_data:
+    driver: local
+
+networks:
+  javalite-network:
+    driver: bridge
