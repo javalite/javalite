@@ -402,7 +402,7 @@
             <dependency>
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
-                <version>1.16.2</version>
+                <version>1.21.1</version>
             </dependency>
 
             <dependency>
