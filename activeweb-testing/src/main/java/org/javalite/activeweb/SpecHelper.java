@@ -21,6 +21,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.util.Modules;
+import freemarker.cache.FileTemplateLoader;
 import org.javalite.activeweb.freemarker.FreeMarkerTag;
 import org.javalite.activeweb.freemarker.FreeMarkerTemplateManager;
 import org.javalite.common.Convert;
@@ -53,7 +54,15 @@ public class SpecHelper implements JSpecSupport{
     @Before @BeforeEach
     public void atStart() {
         sessionFacade = new SessionFacade();
-        setTemplateLocation("src/main/webapp/WEB-INF/views");//default location of all views
+        
+        if(Configuration.getFreeMarkerConfig() != null && 
+                Configuration.getFreeMarkerConfig().getConfiguration().getTemplateLoader() instanceof FileTemplateLoader){
+            //this is needed because the setDirectoryForTemplateLoading replaces 
+            // any current loader with FileTemplateLoader inside this method. 
+            // This will break projects that load templates from classlath.
+            setTemplateLocation("src/main/webapp/WEB-INF/views");//default location of all views
+        }
+        
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setContextPath("/test_context");
         RequestContext.setTLs(request, new MockHttpServletResponse(), new MockFilterConfig(),
