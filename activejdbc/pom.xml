@@ -93,7 +93,7 @@
             <id>mariadb</id>
             <properties>
                 <jdbc.driver>org.mariadb.jdbc.Driver</jdbc.driver>
-                <jdbc.url>jdbc:mariadb://127.0.0.1:3307/activejdbc</jdbc.url>
+                <jdbc.url>jdbc:mariadb://127.0.0.1:3309/activejdbc</jdbc.url>
                 <jdbc.user>root</jdbc.user>
                 <jdbc.password>p@ssw0rd</jdbc.password>
                 <db>mysql</db> <!-- we need this to read the file with schema statements -->
@@ -129,10 +129,13 @@
 
         <profile>
             <id>oracle</id>
-            <!--
-                Configure jdbc.driver, jdbc.url, jdbc.user, jdbc.password
-                and db properties in your ~/.m2/settings.xml
-            -->
+            <properties>
+                <jdbc.driver>oracle.jdbc.driver.OracleDriver</jdbc.driver>
+                <jdbc.url>jdbc:oracle:thin:@localhost:1521/javalite</jdbc.url>
+                <jdbc.user>system</jdbc.user>
+                <jdbc.password>p@ssw0rd</jdbc.password>
+                <db>oracle</db>
+            </properties>
             <dependencies>
                 <!-- https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc10 -->
                 <dependency>
@@ -147,7 +150,7 @@
             <id>postgresql</id>
             <properties>
                 <jdbc.driver>org.postgresql.Driver</jdbc.driver>
-                <jdbc.url>jdbc:postgresql://localhost:5432/postgres</jdbc.url>
+                <jdbc.url>jdbc:postgresql://localhost:5435/postgres</jdbc.url>
                 <jdbc.user>postgres</jdbc.user>
                 <jdbc.password>p@ssw0rd</jdbc.password>
                 <db>postgresql</db>

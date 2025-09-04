@@ -235,7 +235,8 @@ public class CacheTest extends ActiveJDBCTest {
 
     private List<String> getTwoSelects() {
         String out = SystemStreamUtil.getSystemOut();
-        List<String> lines = Arrays.asList(Util.split(out, System.getProperty("line.separator")));
-        return lines.stream().filter(line -> line.contains("SELECT")).collect(Collectors.toList());
+        List<String> lines = Arrays.asList(Util.split(out, System.lineSeparator()));
+        return lines.stream().filter(line -> line.contains("SELECT * FROM people") 
+                &&  !line.contains("org.mariadb.jdbc.client.impl.StandardClient")).collect(Collectors.toList()); // hack for MariDB driver
     }
 }

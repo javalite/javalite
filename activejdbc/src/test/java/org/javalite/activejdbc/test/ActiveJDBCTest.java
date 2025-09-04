@@ -128,33 +128,16 @@ public abstract class ActiveJDBCTest implements JSpecSupport {
     }
 
     private StatementProvider getStatementProvider(){
-        StatementProvider statementProvider;
-        switch (db()) {
-            case "mysql":
-                statementProvider = new MySQLStatementProvider();
-                break;
-            case "oracle":
-                statementProvider = new OracleStatementProvider();
-                break;
-            case "postgresql":
-                statementProvider = new PostgreSQLStatementProvider();
-                break;
-            case "h2":
-                statementProvider = new H2StatementProvider();
-                break;
-            case "mssql":
-                statementProvider = new MSSQLStatementProvider();
-                break;
-            case "db2":
-                statementProvider = new DB2StatementProvider();
-                break;
-            case "sqlite":
-                statementProvider = new SQLiteStatementProvider();
-                break;
-            default:
-                throw new RuntimeException("Unknown db:" + db());
-        }
-        return statementProvider;
+        return switch (db()) {
+            case "mysql" -> new MySQLStatementProvider();
+            case "oracle" -> new OracleStatementProvider();
+            case "postgresql" -> new PostgreSQLStatementProvider();
+            case "h2" -> new H2StatementProvider();
+            case "mssql" -> new MSSQLStatementProvider();
+            case "db2" -> new DB2StatementProvider();
+            case "sqlite" -> new SQLiteStatementProvider();
+            default -> throw new RuntimeException("Unknown db:" + db());
+        };
     }
 
     private void executeStatements(List<String> statements) {

@@ -1,2 +1,0 @@
-
-docker start javalite-mariadb

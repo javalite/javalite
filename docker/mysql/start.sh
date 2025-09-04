@@ -1,1 +1,0 @@
-docker  start `docker container  ls -a  | grep 8.0.27 | awk '{print $1}'`

@@ -165,7 +165,7 @@ public class DBConfiguration {
      production.remote.driver=org.mariadb.jdbc.Driver
      production.remote.username=root
      production.remote.password=xxx
-     production.remote.url=jdbc:mysql://127.0.0.1:3307/poj1_production
+     production.remote.url=jdbc:mysql://127.0.0.1:3309/poj1_production
 
      * </pre>
      *

@@ -1,1 +1,0 @@
-docker rm javalite-postgres

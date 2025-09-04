@@ -19,8 +19,120 @@ services:
     networks:
       - javalite-network
 
+  javalite-mysql:
+    image: mysql:8.0
+    container_name: javalite-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: p@ssw0rd
+      MYSQL_DATABASE: activejdbc
+    ports:
+      - "127.0.0.1:3308:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pp@ssw0rd"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - javalite-network
+
+  javalite-postgres:
+    image: postgres:15
+    container_name: javalite-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: p@ssw0rd
+    ports:
+      - "127.0.0.1:5435:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - javalite-network
+
+  javalite-oracle:
+    image: gvenzl/oracle-xe:21-slim
+    container_name: javalite-oracle
+    restart: unless-stopped
+    environment:
+      ORACLE_PASSWORD: p@ssw0rd
+      ORACLE_DATABASE: javalite
+    ports:
+      - "127.0.0.1:1521:1521"
+    volumes:
+      - oracle_data:/opt/oracle/oradata
+    healthcheck:
+      test: ["CMD-SHELL", "healthcheck.sh"]
+      start_period: 30s
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - javalite-network
+
+  # javalite-db2:
+  #   image: icr.io/db2_community/db2:latest
+  #   container_name: javalite-db2
+  #   restart: unless-stopped
+  #   privileged: true
+  #   environment:
+  #     LICENSE: accept
+  #     DB2INST1_PASSWORD: p@ssw0rd
+  #     DBNAME: javalite
+  #   ports:
+  #     - "127.0.0.1:50000:50000"
+  #   volumes:
+  #     - db2_data:/database
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "su - db2inst1 -c 'db2 connect to javalite && db2 select 1 from sysibm.sysdummy1'"]
+  #     start_period: 120s
+  #     interval: 60s
+  #     timeout: 30s
+  #     retries: 3
+  #   networks:
+  #     - javalite-network
+
+  javalite-sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: javalite-sqlserver
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: p@ssw0rd
+      MSSQL_PID: Express
+    ports:
+      - "127.0.0.1:1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P P@ssw0rd123 -Q 'SELECT 1'"]
+      start_period: 20s
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - javalite-network
+
 volumes:
   mariadb_data:
+    driver: local
+  mysql_data:
+    driver: local
+  postgres_data:
+    driver: local
+  oracle_data:
+    driver: local
+  sqlserver_data:
     driver: local
 
 networks:

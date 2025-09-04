@@ -1,5 +1,8 @@
 package org.javalite.activejdbc.dialects;
 
+import java.sql.Timestamp;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -106,7 +109,9 @@ public class MSSQLDialect extends DefaultDialect {
             if ("date".equalsIgnoreCase(typeName)) {
                 return java.sql.Date.valueOf((String) value);
             } else if ("datetime2".equalsIgnoreCase(typeName)) {
-                return java.sql.Timestamp.valueOf((String) value);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+                OffsetDateTime odt = OffsetDateTime.parse((String) value, formatter);
+                return Timestamp.from(odt.toInstant());
             }
         }
         return value;

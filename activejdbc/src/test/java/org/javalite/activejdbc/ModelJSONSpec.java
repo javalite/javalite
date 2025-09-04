@@ -19,7 +19,7 @@ public class ModelJSONSpec extends ActiveJDBCTest {
         Person pp = JSONHelper.toObject(json, Person.class);
         a(ppp.getId()).shouldBeEqual(pp.getId());
         a(ppp.get("updated_at")).shouldBeEqual(pp.get("updated_at"));
-        a(ppp.get("created_at")).shouldBeEqual(pp.get("created_at").toString());
+        a(ppp.get("created_at")).shouldBeEqual(pp.get("created_at"));
         a(ppp.get("dob")).shouldBeEqual(pp.get("dob"));
         a(ppp.get("name")).shouldBeEqual(pp.get("name"));
         System.out.println(p.toJson(true));
