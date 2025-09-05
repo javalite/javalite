@@ -2338,10 +2338,30 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
         return ModelDelegate.createIt(Model.<T>modelClass(), namesAndValues);
     }
 
+    /**
+     * Finds a model instance by ID. 
+     * @param id - ID of a record in the corresponding table. 
+     * @return found instance, or null.
+     */
     public static <T extends Model> T findById(Object id) {
-        return ModelDelegate.findById(Model.<T>modelClass(), id);
+        return ModelDelegate.findById(Model.modelClass(), id);
     }
 
+
+    /**
+     * Finds a model instance by ID. Allows to lock this record for update. 
+     * 
+     * @param id - ID of a record in the corresponding table.
+     * @param lockForUpdate true to lock this record for update till the current 
+     *                      transaction is committed or rolled back. Consult with your 
+     *                      database documentation for more information. 
+     *           
+     * @return found instance, or null.
+     */
+    public static <T extends Model> T findById(Object id, boolean lockForUpdate) {
+        return ModelDelegate.findById(Model.modelClass(), id, lockForUpdate);
+    }
+    
     /**
      * Composite PK values in exactly the same order as specified  in {@link CompositePK}.
      *

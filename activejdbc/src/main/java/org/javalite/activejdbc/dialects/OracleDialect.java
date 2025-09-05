@@ -53,7 +53,7 @@ public class OracleDialect extends DefaultDialect {
      * Can't think of an uglier thing. Shame on you, Oracle.
      */
     @Override
-    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset) {
+    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, boolean lockForUpdate) {
 
         boolean needLimit = limit != -1L;
         boolean needOffset = offset != -1L;
@@ -77,6 +77,11 @@ public class OracleDialect extends DefaultDialect {
             fullQuery.append(") t2) WHERE ROWNUM <= ").append(limit);            
         }
 
+
+        if(lockForUpdate){
+            fullQuery.append(" FOR UPDATE NOWAIT");
+        }
+        
         return fullQuery.toString();
     }
 

@@ -61,7 +61,7 @@ public class DefaultDialect implements Dialect {
     @Override
     public String selectStar(String table, String where) {
         return where != null ? "SELECT * FROM " + table + " WHERE " + where : selectStar(table);
-    }
+    }     
 
     /**
      * Produces a parametrized AND query.
@@ -128,7 +128,16 @@ public class DefaultDialect implements Dialect {
 
     @Override
     public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset) {
-        LOGGER.error("ERROR!!!! Limit and Offset are not supported by DefaultDialect");
+        return this.formSelect(tableName, columns, subQuery, orderBys, limit, offset, false);
+    }
+    
+    @Override
+    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, boolean lockForUpdate) {
+        
+        if(lockForUpdate){
+            throw new UnsupportedOperationException("lockForUpdate not supported in this dialect.");
+        }
+        
         StringBuilder queryBuilder = new StringBuilder();
         appendSelect(queryBuilder, tableName, columns, null, subQuery, orderBys);
         return queryBuilder.toString();

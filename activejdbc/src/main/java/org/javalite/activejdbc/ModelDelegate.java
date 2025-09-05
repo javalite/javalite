@@ -193,6 +193,13 @@ public final class ModelDelegate {
         if (id == null) { return null; }
         MetaModel metaModel = metaModelOf(clazz);
         LazyList<T> list = new LazyList<T>(metaModel.getIdName() + " = ?", metaModel, id).limit(1);
+        return ModelDelegate.findById(clazz, id, false);
+    }
+
+    public static <T extends Model> T findById(Class<T> clazz, Object id, boolean lockForUpdate) {
+        if (id == null) { return null; }
+        MetaModel metaModel = metaModelOf(clazz);
+        LazyList<T> list = new LazyList<T>(metaModel.getIdName() + " = ? ", metaModel, id).limit(1).lockForUpdate(lockForUpdate);
         return list.isEmpty() ? null : list.get(0);
     }
 

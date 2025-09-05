@@ -49,6 +49,7 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
     private long limit = -1, offset = -1;
     private final List<Association> includes = new ArrayList<>();
     private final boolean forPaginator;
+    private boolean lockForUpdate;
 
     protected LazyList(String subQuery, MetaModel metaModel, Object... params) {
         this.fullQuery = null;
@@ -104,7 +105,13 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
         this.limit = limit;
         return (LazyList<E>) this;
     }
-
+    
+    <E extends Model>  LazyList<E> lockForUpdate(boolean lockForUpdate){
+        this.lockForUpdate = lockForUpdate;
+        
+        return (LazyList<E>) this;
+    }
+    
     /**
      * This method sets an offset of a resultset. For instance, if the offset is 101, then the resultset will skip the
      * first 100 records.
@@ -289,10 +296,10 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
     public String toSql(boolean showParameters) {
         String sql;
         if(forPaginator){
-            sql = metaModel.getDialect().formSelect(null, null, fullQuery, orderBys, limit, offset);
+            sql = metaModel.getDialect().formSelect(null, null, fullQuery, orderBys, limit, offset, lockForUpdate);
         }else{
             sql = fullQuery != null ? fullQuery
-                    : metaModel.getDialect().formSelect(metaModel.getTableName(), null, subQuery, orderBys, limit, offset);
+                    : metaModel.getDialect().formSelect(metaModel.getTableName(), null, subQuery, orderBys, limit, offset, lockForUpdate);
         }
         if (showParameters) {
             StringBuilder sb = new StringBuilder(sql).append(", with parameters: ");

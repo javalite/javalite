@@ -13,7 +13,12 @@ public class DB2Dialect extends DefaultDialect {
 	private final List<String> EMPTY_LIST = new ArrayList<String>();
 	
 	@Override
-	public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset) {
+	public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, boolean lockForUpdate) {
+
+        if(lockForUpdate){
+            throw new UnsupportedOperationException("Lock for update not implemented for DB2Dialect");
+        }
+        
 		// if table name is null, sub query contains a full SQL statement
 		// we will need a more complex query if offset != -1
 		// example:
@@ -49,7 +54,7 @@ public class DB2Dialect extends DefaultDialect {
 				fullQuery.append(" FETCH FIRST ").append(limit).append(" ROWS ONLY");
 			}
 		}
-		
+        
 		return fullQuery.toString();
 	}
 	

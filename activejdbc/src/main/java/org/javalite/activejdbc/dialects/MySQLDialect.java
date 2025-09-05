@@ -25,7 +25,7 @@ import org.javalite.activejdbc.MetaModel;
  */
 public class MySQLDialect extends DefaultDialect {
     @Override
-    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset) {
+    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, boolean lockForUpdate) {
         if (limit == -1L && offset != -1L) {
             throw new IllegalArgumentException("MySQL does not support OFFSET without LIMIT. OFFSET is a parameter of LIMIT function");
         }
@@ -39,6 +39,10 @@ public class MySQLDialect extends DefaultDialect {
 
         if(offset != -1){
             fullQuery.append(" OFFSET ").append(offset);
+        }
+
+        if(lockForUpdate){
+            fullQuery.append(" FOR UPDATE ");
         }
 
         return fullQuery.toString();

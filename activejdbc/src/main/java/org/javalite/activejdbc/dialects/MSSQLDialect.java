@@ -30,7 +30,7 @@ public class MSSQLDialect extends DefaultDialect {
      * @return query with
      */
     @Override
-    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset) {
+    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, boolean lockForUpdate) {
         boolean needLimit = limit != -1;
         boolean needOffset = offset != -1;
 
@@ -64,6 +64,10 @@ public class MSSQLDialect extends DefaultDialect {
         } else {
             if (keepSelect) { fullQuery.append("SELECT"); }
             fullQuery.append(getAllColumns(columns)).append(" FROM ").append(tableName);
+            if(lockForUpdate){
+                fullQuery.append(" WITH (UPDLOCK) ");
+            }
+            
             appendSubQuery(fullQuery, subQuery);
         }
 

@@ -31,6 +31,8 @@ import org.javalite.activejdbc.associations.Many2ManyAssociation;
  */
 public interface Dialect extends Serializable{
 
+    String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, boolean lockForUpdate);
+    
     String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset);
 
     Object overrideDriverTypeConversion(MetaModel mm, String attributeName, Object value);

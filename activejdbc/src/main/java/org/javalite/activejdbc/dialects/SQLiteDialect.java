@@ -28,7 +28,10 @@ public class SQLiteDialect extends DefaultDialect {
     
     
     @Override
-    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset) {
+    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, boolean lockForUpdate) {
+        if(lockForUpdate){
+            throw new UnsupportedOperationException("Lock for update not implemented for SQLiteDialect");
+        }
         if (limit == -1L && offset != -1L) {
             throw new IllegalArgumentException("SQLite does not support OFFSET without LIMIT. OFFSET is a parameter of LIMIT function");
         }
