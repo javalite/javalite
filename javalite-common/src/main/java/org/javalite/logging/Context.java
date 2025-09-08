@@ -50,6 +50,16 @@ public class Context {
     }
 
     /**
+     * Returns a value from the context.
+     * 
+     * @param name name of a value 
+     * @return a value from the context
+     */
+    public static String get(String name) {
+        return contextTL.get().containsKey(name) ? contextTL.get().get(name).toString() : null;
+    }
+
+    /**
      * Clears current context of any values. Usually this is called at the end of a web request
      * or the end of some processing unit.
      */
