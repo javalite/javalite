@@ -453,7 +453,7 @@ public class Async {
 
         checkStarted();
 
-        long now  = System.currentTimeMillis();
+        long start  = System.currentTimeMillis();
         try(Session session = senderSessionPool.getSession()) {
             checkInRange(deliveryMode, 1, 2, "delivery mode");
             checkInRange(priority, 0, 9, "priority");
@@ -487,7 +487,7 @@ public class Async {
         } catch (Exception e) {
             throw new AsyncException("Failed to send message", e);
         }finally {
-            LOGGER.debug(JSONHelper.toJSON(map("message", "completed sending command", "time_millis", now - System.currentTimeMillis(), "command", command.getClass(), "queue", queueName)));
+            LOGGER.debug(JSONHelper.toJSON(map("message", "completed sending command", "time_millis", System.currentTimeMillis()  - start, "command", command.getClass(), "queue", queueName)));
         }
     }
 
