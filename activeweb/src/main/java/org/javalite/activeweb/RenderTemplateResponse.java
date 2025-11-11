@@ -16,6 +16,8 @@ limitations under the License.
 package org.javalite.activeweb;
 
 
+import org.javalite.activeweb.proxy.ProxyWriterException;
+
 import java.util.Map;
 
 /**
@@ -88,7 +90,7 @@ class RenderTemplateResponse extends ControllerResponse{
 
             templateManager.merge(values, template, layout, format, RequestContext.getHttpResponse().getWriter(), RequestContext.isCustomRoute());
         }
-        catch (IllegalStateException | ViewException e){
+        catch (IllegalStateException | ViewException | ProxyWriterException e){
             throw e;
         }
         catch (Exception e) {
