@@ -48,32 +48,87 @@ public class HttpSupport implements RequestAccess {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private static Pattern hashPattern = Pattern.compile("\\[.*\\]");
 
-    protected void logInfo(String info){
-        logger.info(info);
+
+    /**
+     * Logs at info level. 
+     *
+     * @param info - log statement
+     * @param params to replace <code>{}</code> placeholders in the log statement
+     */
+    protected void logInfo(String info,  Object ... params ){
+        logger.info(info, params);
     }
 
-    protected void logDebug(String info){
-        logger.debug(info);
+
+    /**
+     * Logs at debug level. 
+     *
+     * @param info - log statement
+     * @param params to replace <code>{}</code> placeholders in the log statement
+     */
+    protected void logDebug(String info, Object ... params ){
+        logger.debug(info, params);
     }
 
-    protected void logWarning(String info){
-        logger.warn(info);
+
+    /**
+     * Logs at warning level. 
+     *
+     * @param info - log statement
+     * @param params to replace <code>{}</code> placeholders in the log statement
+     */
+    protected void logWarning(String info, Object ... params ){
+        logger.warn(info, params);
     }
 
-    protected void logWarning(String info, Throwable e){
-        logger.warn(info, e);
+    /**
+     * Logs at warning level. 
+     *
+     * @param e - exception instance 
+     * @param warning - log statement
+     * @param params to replace <code>{}</code> placeholders in the log statement
+     */
+    protected void logWarning(String warning, Throwable e, Object ... params){
+        Object[] args = new Object[params.length + 1];
+        System.arraycopy(params, 0, args, 0, params.length);
+        args[params.length] = e;  // Exception as last vararg element
+        logger.warn(warning, args);
     }
 
-    protected void logError(String info){
-        logger.error(info);
+
+    /**
+     * Logs at error level. 
+     * 
+     * @param info - log statement
+     * @param params to replace <code>{}</code> placeholders in the log statement
+     */
+    protected void logError(String info, String ... params){
+        logger.error(info, (Object[]) params);
     }
 
+
+    /**
+     * Logs at error level. 
+     *
+     * @param e - exception instance
+     */
     protected void logError(Throwable e){
-        logger.error("", e);
+        logger.error(e.toString(), e);
     }
 
-    protected void logError(String info, Throwable e){
-        logger.error(info, e);
+
+    /**
+     * Logs at error level. 
+     *
+     * @param e - exception instance 
+     * @param error - log statement
+     * @param params to replace <code>{}</code> placeholders in the log statement
+     */
+    protected void logError(String error, Throwable e, String ... params){
+        Object[] args = new Object[params.length + 1];
+        System.arraycopy(params, 0, args, 0, params.length);
+        args[params.length] = e;  // Exception as last vararg element
+        logger.error(error, args);
     }
 
 

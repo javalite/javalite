@@ -20,4 +20,13 @@ public class LoggingController extends AppController {
     public void redirect1(){
         redirect("http://javalite.io");
     }
+    
+    public void log1(){
+        logInfo("info {}, {}", "one", "two" );
+        logWarning("warning {}, {}", "three", "four");
+        logWarning("warning {}, {}", new Exception("warning exception"), "five", "six");
+        logError("error {}, {}", "seven", "eight" );
+        logError("error {}, {}", new Exception("error exception"), "nine", "ten" );
+        respond("ok");
+    }
 }

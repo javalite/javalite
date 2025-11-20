@@ -16,7 +16,10 @@ limitations under the License.
 package org.javalite.activeweb;
 
 
+import org.javalite.common.Util;
 import org.javalite.test.SystemStreamUtil;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import jakarta.servlet.ServletException;
@@ -29,6 +32,18 @@ import static java.lang.String.format;
  * @author Igor Polevoy
  */
 public class HttpSupportSpec extends RequestSpec{
+
+    @Before
+    public void before(){
+        SystemStreamUtil.replaceOut();
+        System.setProperty("activeweb.log.request", "true");
+    }
+
+
+    @After
+    public void after(){
+        SystemStreamUtil.restoreSystemOut();
+    }
 
     /**
      * tests data set if no render or response or any other method called from action
@@ -298,5 +313,26 @@ public class HttpSupportSpec extends RequestSpec{
         dispatcher.doFilter(request, response, filterChain);
         String result = response.getContentAsString();
         a(result).shouldBeEqual("response: 1, 2");
+    }
+    
+    @Test
+    public void shouldLogWithParams() throws ServletException, IOException {
+
+            request.setServletPath("/logging/log1");
+            request.setMethod("GET");
+            dispatcher.doFilter(request, response, filterChain);
+            String out = SystemStreamUtil.getSystemOut();
+            String[] lines = Util.split(out, System.getProperty("line.separator"));
+
+            the(lines[1]).shouldContain("info one, two");
+            the(lines[2]).shouldContain("warning three, four");
+            the(lines[3]).shouldContain("warning exception");
+            the(lines[3]).shouldContain("warning five, six");
+            the(lines[4]).shouldContain("error seven, eight");
+            the(lines[5]).shouldContain("error exception");
+            the(lines[5]).shouldContain("error nine, ten");
+
+            String result = response.getContentAsString();
+            a(result).shouldBeEqual("ok");
     }
 }
