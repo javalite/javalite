@@ -31,6 +31,7 @@ public final class Collections {
      * @param values values to create array from.
      * @return array filled with values from arguments.
      */
+    @SafeVarargs
     public static <T> T[] arr(T... values) {
         return values;
     }
@@ -40,6 +41,7 @@ public final class Collections {
      * @param values values to create array from.
      * @return array filled with values from arguments.
      */
+    @SafeVarargs
     public static <T> T[] array(T... values) {
         return values;
     }
@@ -50,6 +52,7 @@ public final class Collections {
      * @param values values for a set.
      * @return set filled with values.
      */
+    @SafeVarargs
     public static <T> Set<T> set(T... values) {
         return new HashSet<T>(Arrays.asList(values));
     }
@@ -77,6 +80,7 @@ public final class Collections {
      * @param values values to create a list from.
      * @return list with values.
      */
+    @SafeVarargs
     public static <T> List<T> li(T... values) {
         return list(values);
     }
@@ -87,7 +91,8 @@ public final class Collections {
      * @param values values to create a list from.
      * @return list with values.
      */
+    @SafeVarargs
     public static <T> List<T> list(T... values) {
-        return new ArrayList<T>(Arrays.asList(values));
+        return new ArrayList(Arrays.asList(values));
     }
 }
