@@ -162,7 +162,16 @@ public class HttpServletResponseProxy implements HttpServletResponse {
     @Override
     public PrintWriter getWriter() throws IOException {
         if(outputStreamProxy != null){
-            throw new WebException("Cannot return Writer because OutputStream was already used.");
+            
+            throw new WebException("""
+                    Cannot return Writer because OutputStream was already used.
+                    Once outputStream() is called, you cannot use respond(), render(), or views.
+                    Check your controller for calls to outputStream() followed by rendering logic.
+                    You can either ask the framework to render the response with respond(), render() or
+                    you can render it yourself with the outputStream(...), but not both.
+                    
+                    """
+                    );
         }
         if(printWriterProxy == null){
             printWriterProxy = new PrintWriterProxy(this.servletResponse.getWriter());

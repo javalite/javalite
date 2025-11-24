@@ -32,7 +32,9 @@ class DirectResponse extends ControllerResponse {
             RequestContext.getHttpResponse().getWriter().write(text);
             RequestContext.getHttpResponse().getWriter().flush();
         }
-        catch (Exception e) {
+        catch (WebException we) {
+            throw we;
+        }catch (Exception e) {
             throw new ControllerException(e);
         }
     }
