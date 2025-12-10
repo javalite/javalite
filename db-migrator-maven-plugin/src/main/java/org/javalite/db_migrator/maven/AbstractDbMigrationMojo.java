@@ -29,22 +29,22 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
     @Parameter(property = "basedir", required = true)
     private String basedir;
 
-    @Parameter
+    @Parameter(property = "url")
     private String url;
 
-    @Parameter
+    @Parameter(property = "driver")
     private String driver;
 
-    @Parameter
+    @Parameter(property = "username")
     private String username;
 
-    @Parameter
+    @Parameter(property = "password")
     private String password;
 
-    @Parameter
+    @Parameter(property = "environments")
     private String environments;
 
-    @Parameter
+    @Parameter(property = "configFile")
     private String configFile;
 
     @Parameter
@@ -72,6 +72,17 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
 
     public final void execute() throws MojoExecutionException {
 
+        getLog().info("*********** The following configuration is provided: *************");
+        getLog().info("basedir: " + this.basedir);
+        getLog().info("url: " + this.url);
+        getLog().info("driver: " + this.driver);
+        getLog().info("username: " + this.username);
+        getLog().info("password: " + (!Util.blank(this.password) ? "****" : "null"));
+        getLog().info("environments: " + this.environments);
+        getLog().info("configFile: " + this.configFile);
+        getLog().info("mergeProperties: " + this.mergeProperties);
+        getLog().info("*********** End of configuration *************");
+        
         Properties originMergeProperties = null;
         if (mergeProperties != null) {
             try {
@@ -81,6 +92,7 @@ public abstract class AbstractDbMigrationMojo extends AbstractMigrationMojo {
             }
         }
         if (blank(environments)) {
+            getLog().info("The \"environments\" parameter is not provided");
             prepareCurrentMergeProperties(null, null, originMergeProperties);
             executeCurrentConfiguration();
         } else if(!blank(configFile)){
