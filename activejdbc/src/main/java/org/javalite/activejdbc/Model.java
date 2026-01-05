@@ -254,16 +254,22 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      * @param fireAfterLoad
      * @return the set of changed (i.e. dirty) attribute names
      */
-    protected Set<String> hydrate(Map<String, Object> attributesMap, boolean fireAfterLoad) throws SQLException {
+    protected Set<String> hydrate(Map<String, Object> attributesMap, boolean fireAfterLoad)  {
 
         Set<String> changedAttributeNames = new HashSet<>();
         Set<String> attributeNames = metaModelLocal.getAttributeNames();
         for (Map.Entry<String, Object> entry : attributesMap.entrySet()) {
             if (attributeNames.contains(entry.getKey()) ) {
                 if (entry.getValue() instanceof java.sql.Array && metaModelLocal.cached()) {
-                    var val = ((java.sql.Array)entry.getValue()).getArray();
-                    this.attributes.put(entry.getKey(), val);
-                    changedAttributeNames.add(entry.getKey());
+
+                    try {
+                        var val = ((java.sql.Array)entry.getValue()).getArray();
+                        this.attributes.put(entry.getKey(), val);
+                        changedAttributeNames.add(entry.getKey());
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    
                 }else if (entry.getValue() instanceof Clob && metaModelLocal.cached()) {
                     String convertedString = Convert.toString(entry.getValue());
                     if (willAttributeModifyModel(entry.getKey(), convertedString)) {
