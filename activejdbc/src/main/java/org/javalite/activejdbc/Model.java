@@ -46,6 +46,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.sql.Array;
 import java.sql.Clob;
+import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -253,14 +254,17 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
      * @param fireAfterLoad
      * @return the set of changed (i.e. dirty) attribute names
      */
-    protected Set<String> hydrate(Map<String, Object> attributesMap, boolean fireAfterLoad) {
+    protected Set<String> hydrate(Map<String, Object> attributesMap, boolean fireAfterLoad) throws SQLException {
 
         Set<String> changedAttributeNames = new HashSet<>();
         Set<String> attributeNames = metaModelLocal.getAttributeNames();
         for (Map.Entry<String, Object> entry : attributesMap.entrySet()) {
             if (attributeNames.contains(entry.getKey()) ) {
-
-                if (entry.getValue() instanceof Clob && metaModelLocal.cached()) {
+                if (entry.getValue() instanceof java.sql.Array && metaModelLocal.cached()) {
+                    var val = ((java.sql.Array)entry.getValue()).getArray();
+                    this.attributes.put(entry.getKey(), val);
+                    changedAttributeNames.add(entry.getKey());
+                }else if (entry.getValue() instanceof Clob && metaModelLocal.cached()) {
                     String convertedString = Convert.toString(entry.getValue());
                     if (willAttributeModifyModel(entry.getKey(), convertedString)) {
                         this.attributes.put(entry.getKey(), convertedString);
