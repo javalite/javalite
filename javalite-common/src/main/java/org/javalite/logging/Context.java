@@ -50,6 +50,16 @@ public class Context {
     }
 
     /**
+     * Adds a sub-object to the log line
+     * 
+     * @param name name of the object
+     * @param map - values
+     */
+    public static void put(String name, Map map) {
+        contextTL.get().putAll(map(name, map));
+    }
+
+    /**
      * Returns a value from the context.
      * 
      * @param name name of a value 
