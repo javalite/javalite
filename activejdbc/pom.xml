@@ -73,8 +73,8 @@
             <properties>
                 <jdbc.driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc.driver>
 <!--                <jdbc.url>jdbc:sqlserver://localhost:1433;databaseName=javalite</jdbc.url>-->
-                <jdbc.url>jdbc:sqlserver://localhost:1433</jdbc.url>
-                <jdbc.user>SA</jdbc.user>
+                <jdbc.url>jdbc:sqlserver://localhost:1433;encrypt=false;trustServerCertificate=true</jdbc.url>
+                <jdbc.user>sa</jdbc.user>
                 <jdbc.password>p@ssw0rd</jdbc.password>
                 <db>mssql</db>
             </properties>
@@ -83,7 +83,7 @@
                 <dependency>
                     <groupId>com.microsoft.sqlserver</groupId>
                     <artifactId>mssql-jdbc</artifactId>
-                    <version>9.4.1.jre16-preview</version>
+                    <version>12.8.1.jre11</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>

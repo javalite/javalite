@@ -15,6 +15,7 @@ limitations under the License.
 */
 package org.javalite.activejdbc.dialects;
 
+import org.javalite.activejdbc.LockMode;
 import org.javalite.activejdbc.MetaModel;
 import org.javalite.common.Convert;
 
@@ -53,7 +54,7 @@ public class OracleDialect extends DefaultDialect {
      * Can't think of an uglier thing. Shame on you, Oracle.
      */
     @Override
-    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, boolean lockForUpdate) {
+    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, LockMode lockMode) {
 
         boolean needLimit = limit != -1L;
         boolean needOffset = offset != -1L;
@@ -74,14 +75,24 @@ public class OracleDialect extends DefaultDialect {
                 fullQuery.append(" AND ROWNUM <= ").append(limit);
             }
         } else if (needLimit) {
-            fullQuery.append(") t2) WHERE ROWNUM <= ").append(limit);            
+            fullQuery.append(") t2) WHERE ROWNUM <= ").append(limit);
         }
 
-
-        if(lockForUpdate){
-            fullQuery.append(" FOR UPDATE NOWAIT");
+        switch(lockMode) {
+            case FOR_UPDATE:
+                fullQuery.append(" FOR UPDATE");
+                break;
+            case FOR_UPDATE_NOWAIT:
+                fullQuery.append(" FOR UPDATE NOWAIT");
+                break;
+            case FOR_UPDATE_SKIP_LOCKED:
+                fullQuery.append(" FOR UPDATE SKIP LOCKED"); // Oracle 11g+
+                break;
+            case NONE:
+                // No locking clause
+                break;
         }
-        
+
         return fullQuery.toString();
     }
 

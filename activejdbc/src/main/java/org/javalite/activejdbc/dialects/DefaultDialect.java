@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
 
 
 import org.javalite.activejdbc.DBException;
+import org.javalite.activejdbc.LockMode;
 import org.javalite.activejdbc.MetaModel;
 
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
@@ -127,17 +128,11 @@ public class DefaultDialect implements Dialect {
     }
 
     @Override
-    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset) {
-        return this.formSelect(tableName, columns, subQuery, orderBys, limit, offset, false);
-    }
-    
-    @Override
-    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, boolean lockForUpdate) {
-        
-        if(lockForUpdate){
-            throw new UnsupportedOperationException("lockForUpdate not supported in this dialect.");
+    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, LockMode lockMode) {
+        if(lockMode != LockMode.NONE){
+            throw new UnsupportedOperationException("Lock mode " + lockMode + " not supported in this dialect.");
         }
-        
+
         StringBuilder queryBuilder = new StringBuilder();
         appendSelect(queryBuilder, tableName, columns, null, subQuery, orderBys);
         return queryBuilder.toString();

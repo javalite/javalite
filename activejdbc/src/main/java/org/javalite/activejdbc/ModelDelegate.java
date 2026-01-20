@@ -190,17 +190,30 @@ public final class ModelDelegate {
     }
 
     public static <T extends Model> T findById(Class<T> clazz, Object id) {
-        if (id == null) { return null; }
-        MetaModel metaModel = metaModelOf(clazz);
-        LazyList<T> list = new LazyList<T>(metaModel.getIdName() + " = ?", metaModel, id).limit(1);
-        return ModelDelegate.findById(clazz, id, false);
+        return findById(clazz, id, LockMode.NONE);
     }
 
-    public static <T extends Model> T findById(Class<T> clazz, Object id, boolean lockForUpdate) {
+    /**
+     * Finds a model by ID with row-level locking.
+     *
+     * @param clazz model class
+     * @param id primary key value
+     * @param lockMode locking mode to apply
+     * @return found model instance, or null if not found
+     */
+    public static <T extends Model> T findById(Class<T> clazz, Object id, LockMode lockMode) {
         if (id == null) { return null; }
         MetaModel metaModel = metaModelOf(clazz);
-        LazyList<T> list = new LazyList<T>(metaModel.getIdName() + " = ? ", metaModel, id).limit(1).lockForUpdate(lockForUpdate);
+        LazyList<T> list = new LazyList<T>(metaModel.getIdName() + " = ?", metaModel, id).limit(1).lockMode(lockMode);
         return list.isEmpty() ? null : list.get(0);
+    }
+
+    /**
+     * @deprecated Use {@link #findById(Class, Object, LockMode)} instead.
+     */
+    @Deprecated
+    public static <T extends Model> T findById(Class<T> clazz, Object id, boolean lockForUpdate) {
+        return findById(clazz, id, lockForUpdate ? LockMode.FOR_UPDATE : LockMode.NONE);
     }
 
     public static <T extends Model> T findByCompositeKeys(Class<T> clazz, Object...values) {

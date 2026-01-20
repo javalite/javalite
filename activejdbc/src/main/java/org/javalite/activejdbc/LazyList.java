@@ -49,7 +49,7 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
     private long limit = -1, offset = -1;
     private final List<Association> includes = new ArrayList<>();
     private final boolean forPaginator;
-    private boolean lockForUpdate;
+    private LockMode lockMode = LockMode.NONE;
 
     protected LazyList(String subQuery, MetaModel metaModel, Object... params) {
         this.fullQuery = null;
@@ -105,10 +105,24 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
         this.limit = limit;
         return (LazyList<E>) this;
     }
-    
-    <E extends Model>  LazyList<E> lockForUpdate(boolean lockForUpdate){
-        this.lockForUpdate = lockForUpdate;
-        
+
+    /**
+     * Sets the row-level locking mode for this query.
+     *
+     * @param lockMode the locking behavior to apply
+     * @return this LazyList for method chaining
+     */
+    public <E extends Model> LazyList<E> lockMode(LockMode lockMode) {
+        this.lockMode = lockMode;
+        return (LazyList<E>) this;
+    }
+
+    /**
+     * @deprecated Use {@link #lockMode(LockMode)} instead. This method defaults to FOR_UPDATE (with WAIT).
+     */
+    @Deprecated
+    <E extends Model> LazyList<E> lockForUpdate(boolean lockForUpdate){
+        this.lockMode = lockForUpdate ? LockMode.FOR_UPDATE : LockMode.NONE;
         return (LazyList<E>) this;
     }
     
@@ -296,10 +310,10 @@ public class LazyList<T extends Model> extends AbstractLazyList<T> implements Ex
     public String toSql(boolean showParameters) {
         String sql;
         if(forPaginator){
-            sql = metaModel.getDialect().formSelect(null, null, fullQuery, orderBys, limit, offset, lockForUpdate);
+            sql = metaModel.getDialect().formSelect(null, null, fullQuery, orderBys, limit, offset, lockMode);
         }else{
             sql = fullQuery != null ? fullQuery
-                    : metaModel.getDialect().formSelect(metaModel.getTableName(), null, subQuery, orderBys, limit, offset, lockForUpdate);
+                    : metaModel.getDialect().formSelect(metaModel.getTableName(), null, subQuery, orderBys, limit, offset, lockMode);
         }
         if (showParameters) {
             StringBuilder sb = new StringBuilder(sql).append(", with parameters: ");

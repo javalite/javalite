@@ -16,6 +16,7 @@ limitations under the License.
 package org.javalite.activejdbc.dialects;
 
 import java.util.List;
+import org.javalite.activejdbc.LockMode;
 import org.javalite.activejdbc.MetaModel;
 import org.javalite.common.Convert;
 import org.javalite.common.Util;
@@ -28,9 +29,9 @@ public class SQLiteDialect extends DefaultDialect {
     
     
     @Override
-    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, boolean lockForUpdate) {
-        if(lockForUpdate){
-            throw new UnsupportedOperationException("Lock for update not implemented for SQLiteDialect");
+    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, LockMode lockMode) {
+        if(lockMode != LockMode.NONE){
+            throw new UnsupportedOperationException("Lock mode " + lockMode + " not supported in SQLite database");
         }
         if (limit == -1L && offset != -1L) {
             throw new IllegalArgumentException("SQLite does not support OFFSET without LIMIT. OFFSET is a parameter of LIMIT function");

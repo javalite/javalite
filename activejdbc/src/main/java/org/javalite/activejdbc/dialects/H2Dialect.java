@@ -3,6 +3,8 @@
  */
 package org.javalite.activejdbc.dialects;
 
+import org.javalite.activejdbc.LockMode;
+
 import java.util.List;
 
 /**
@@ -29,7 +31,7 @@ public class H2Dialect extends DefaultDialect {
      * @return query with
      */
     @Override
-    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, boolean lockForUpdate) {
+    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, LockMode lockMode) {
         StringBuilder fullQuery = new StringBuilder();
 
         appendSelect(fullQuery, tableName, columns, null, subQuery, orderBys);
@@ -41,9 +43,18 @@ public class H2Dialect extends DefaultDialect {
         if(offset != -1){
             fullQuery.append(" OFFSET ").append(offset);
         }
-        
-        if(lockForUpdate){
-            fullQuery.append(" FOR UPDATE ");
+
+        switch(lockMode) {
+            case FOR_UPDATE:
+            case FOR_UPDATE_NOWAIT:
+                // H2 doesn't distinguish between FOR_UPDATE and FOR_UPDATE_NOWAIT
+                fullQuery.append(" FOR UPDATE");
+                break;
+            case FOR_UPDATE_SKIP_LOCKED:
+                throw new UnsupportedOperationException("Lock mode FOR_UPDATE_SKIP_LOCKED is not supported in H2 database");
+            case NONE:
+                // No locking clause
+                break;
         }
 
         return fullQuery.toString();

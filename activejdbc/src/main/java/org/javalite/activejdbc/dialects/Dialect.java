@@ -22,7 +22,7 @@ import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 
-import org.javalite.activejdbc.DBException;
+import org.javalite.activejdbc.LockMode;
 import org.javalite.activejdbc.MetaModel;
 import org.javalite.activejdbc.associations.Many2ManyAssociation;
 
@@ -31,9 +31,52 @@ import org.javalite.activejdbc.associations.Many2ManyAssociation;
  */
 public interface Dialect extends Serializable{
 
-    String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, boolean lockForUpdate);
-    
-    String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset);
+    /**
+     * Forms a SELECT statement with optional locking.
+     *
+     * @param tableName table name
+     * @param columns columns to select
+     * @param subQuery sub-query (WHERE clause)
+     * @param orderBys order by clauses
+     * @param limit limit
+     * @param offset offset
+     * @param lockMode row-level locking mode
+     * @return formed SELECT statement
+     */
+    String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, LockMode lockMode);
+
+    /**
+     * Forms a SELECT statement with optional locking.
+     *
+     * @param tableName table name
+     * @param columns columns to select
+     * @param subQuery sub-query (WHERE clause)
+     * @param orderBys order by clauses
+     * @param limit limit
+     * @param offset offset
+     * @param lockForUpdate if true, adds FOR UPDATE clause (or database-specific equivalent)
+     * @return formed SELECT statement
+     * @deprecated Use {@link #formSelect(String, String[], String, List, long, long, LockMode)} instead.
+     */
+    @Deprecated
+    default String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, boolean lockForUpdate) {
+        return formSelect(tableName, columns, subQuery, orderBys, limit, offset, lockForUpdate ? LockMode.FOR_UPDATE : LockMode.NONE);
+    }
+
+    /**
+     * Forms a SELECT statement without locking.
+     *
+     * @param tableName table name
+     * @param columns columns to select
+     * @param subQuery sub-query (WHERE clause)
+     * @param orderBys order by clauses
+     * @param limit limit
+     * @param offset offset
+     * @return formed SELECT statement
+     */
+    default String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset) {
+        return formSelect(tableName, columns, subQuery, orderBys, limit, offset, LockMode.NONE);
+    }
 
     Object overrideDriverTypeConversion(MetaModel mm, String attributeName, Object value);
 

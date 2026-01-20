@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.javalite.activejdbc.DBException;
+import org.javalite.activejdbc.LockMode;
 import org.javalite.activejdbc.MetaModel;
 import org.javalite.common.Util;
 
@@ -30,13 +31,15 @@ public class MSSQLDialect extends DefaultDialect {
      * @return query with
      */
     @Override
-    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, boolean lockForUpdate) {
+    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, LockMode lockMode) {
         boolean needLimit = limit != -1;
         boolean needOffset = offset != -1;
 
         if(needOffset && (orderBys == null || orderBys.isEmpty())) {
         	throw new DBException("MSSQL offset queries require an order by column.");
         }
+
+        String lockHint = getLockHint(lockMode);
 
         boolean keepSelect = false;
         StringBuilder fullQuery = new StringBuilder();
@@ -64,10 +67,10 @@ public class MSSQLDialect extends DefaultDialect {
         } else {
             if (keepSelect) { fullQuery.append("SELECT"); }
             fullQuery.append(getAllColumns(columns)).append(" FROM ").append(tableName);
-            if(lockForUpdate){
-                fullQuery.append(" WITH (UPDLOCK) ");
+            if(lockHint != null){
+                fullQuery.append(" ").append(lockHint);
             }
-            
+
             appendSubQuery(fullQuery, subQuery);
         }
 
@@ -84,6 +87,22 @@ public class MSSQLDialect extends DefaultDialect {
         }
 
         return fullQuery.toString();
+    }
+
+    private String getLockHint(LockMode lockMode) {
+        switch(lockMode) {
+            case FOR_UPDATE:
+            case FOR_UPDATE_NOWAIT:
+                // SQL Server doesn't distinguish between FOR_UPDATE and FOR_UPDATE_NOWAIT
+                return "WITH (UPDLOCK)";
+            case FOR_UPDATE_SKIP_LOCKED:
+                // READPAST skips locked rows
+                return "WITH (UPDLOCK, READPAST)";
+            case NONE:
+                return null;
+            default:
+                return null;
+        }
     }
 
     private String getSQColumns(String[] columns){

@@ -18,6 +18,7 @@ limitations under the License.
 package org.javalite.activejdbc.dialects;
 
 import java.util.List;
+import org.javalite.activejdbc.LockMode;
 import org.javalite.activejdbc.MetaModel;
 
 /**
@@ -25,7 +26,7 @@ import org.javalite.activejdbc.MetaModel;
  */
 public class MySQLDialect extends DefaultDialect {
     @Override
-    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, boolean lockForUpdate) {
+    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, LockMode lockMode) {
         if (limit == -1L && offset != -1L) {
             throw new IllegalArgumentException("MySQL does not support OFFSET without LIMIT. OFFSET is a parameter of LIMIT function");
         }
@@ -41,8 +42,19 @@ public class MySQLDialect extends DefaultDialect {
             fullQuery.append(" OFFSET ").append(offset);
         }
 
-        if(lockForUpdate){
-            fullQuery.append(" FOR UPDATE ");
+        switch(lockMode) {
+            case FOR_UPDATE:
+                fullQuery.append(" FOR UPDATE");
+                break;
+            case FOR_UPDATE_NOWAIT:
+                fullQuery.append(" FOR UPDATE NOWAIT"); // MySQL 8.0+
+                break;
+            case FOR_UPDATE_SKIP_LOCKED:
+                fullQuery.append(" FOR UPDATE SKIP LOCKED"); // MySQL 8.0+
+                break;
+            case NONE:
+                // No locking clause
+                break;
         }
 
         return fullQuery.toString();

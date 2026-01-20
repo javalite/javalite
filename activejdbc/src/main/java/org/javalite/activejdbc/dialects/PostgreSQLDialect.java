@@ -1,6 +1,7 @@
 package org.javalite.activejdbc.dialects;
 
 import org.javalite.activejdbc.ColumnMetadata;
+import org.javalite.activejdbc.LockMode;
 import org.javalite.activejdbc.MetaModel;
 import org.javalite.common.ConversionException;
 import org.javalite.common.Util;
@@ -29,9 +30,9 @@ public class PostgreSQLDialect extends DefaultDialect {
      * @return query with
      */
     @Override
-    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, boolean lockForUpdate) {
+    public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, LockMode lockMode) {
         StringBuilder fullQuery = new StringBuilder();
-        
+
         appendSelect(fullQuery, tableName, columns, null, subQuery, orderBys);
 
         if(limit != -1){
@@ -41,11 +42,22 @@ public class PostgreSQLDialect extends DefaultDialect {
         if(offset != -1){
             fullQuery.append(" OFFSET ").append(offset);
         }
-        
-        if(lockForUpdate){
-            fullQuery.append(" FOR UPDATE NOWAIT");
+
+        switch(lockMode) {
+            case FOR_UPDATE:
+                fullQuery.append(" FOR UPDATE");
+                break;
+            case FOR_UPDATE_NOWAIT:
+                fullQuery.append(" FOR UPDATE NOWAIT");
+                break;
+            case FOR_UPDATE_SKIP_LOCKED:
+                fullQuery.append(" FOR UPDATE SKIP LOCKED");
+                break;
+            case NONE:
+                // No locking clause
+                break;
         }
-        
+
         return fullQuery.toString();
     }
 

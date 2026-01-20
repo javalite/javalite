@@ -1,5 +1,6 @@
 package org.javalite.activejdbc.dialects;
 
+import org.javalite.activejdbc.LockMode;
 import org.javalite.activejdbc.MetaModel;
 
 import java.util.ArrayList;
@@ -13,10 +14,10 @@ public class DB2Dialect extends DefaultDialect {
 	private final List<String> EMPTY_LIST = new ArrayList<String>();
 	
 	@Override
-	public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, boolean lockForUpdate) {
+	public String formSelect(String tableName, String[] columns, String subQuery, List<String> orderBys, long limit, long offset, LockMode lockMode) {
 
-        if(lockForUpdate){
-            throw new UnsupportedOperationException("Lock for update not implemented for DB2Dialect");
+        if(lockMode != LockMode.NONE){
+            throw new UnsupportedOperationException("Lock mode " + lockMode + " not supported in DB2 database");
         }
         
 		// if table name is null, sub query contains a full SQL statement

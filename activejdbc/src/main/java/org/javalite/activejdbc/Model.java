@@ -2349,25 +2349,49 @@ public abstract class Model extends CallbackSupport implements Externalizable, V
     }
 
     /**
-     * Finds a model instance by ID. 
-     * @param id - ID of a record in the corresponding table. 
+     * Finds a model instance by ID.
+     * @param id - ID of a record in the corresponding table.
      * @return found instance, or null.
      */
     public static <T extends Model> T findById(Object id) {
         return ModelDelegate.findById(Model.modelClass(), id);
     }
 
+    /**
+     * Finds a model instance by ID with row-level locking.
+     * <p>
+     * Example usage:
+     * <pre>
+     * // Lock with WAIT (blocks until lock is available)
+     * Person p = Person.findById(123, LockMode.FOR_UPDATE);
+     *
+     * // Lock with NOWAIT (fails immediately if already locked)
+     * Person p = Person.findById(123, LockMode.FOR_UPDATE_NOWAIT);
+     *
+     * // Lock and skip locked rows
+     * Person p = Person.findById(123, LockMode.FOR_UPDATE_SKIP_LOCKED);
+     * </pre>
+     *
+     * @param id ID of a record in the corresponding table
+     * @param lockMode locking behavior to apply
+     * @return found instance, or null if not found
+     */
+    public static <T extends Model> T findById(Object id, LockMode lockMode) {
+        return ModelDelegate.findById(Model.modelClass(), id, lockMode);
+    }
 
     /**
-     * Finds a model instance by ID. Allows to lock this record for update. 
-     * 
+     * Finds a model instance by ID. Allows to lock this record for update.
+     *
      * @param id - ID of a record in the corresponding table.
-     * @param lockForUpdate true to lock this record for update till the current 
-     *                      transaction is committed or rolled back. Consult with your 
-     *                      database documentation for more information. 
-     *           
+     * @param lockForUpdate true to lock this record for update till the current
+     *                      transaction is committed or rolled back. Consult with your
+     *                      database documentation for more information.
+     *
      * @return found instance, or null.
+     * @deprecated Use {@link #findById(Object, LockMode)} instead. This defaults to FOR_UPDATE (with WAIT).
      */
+    @Deprecated
     public static <T extends Model> T findById(Object id, boolean lockForUpdate) {
         return ModelDelegate.findById(Model.modelClass(), id, lockForUpdate);
     }
