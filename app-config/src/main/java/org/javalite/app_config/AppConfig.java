@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -95,7 +96,36 @@ import static org.javalite.common.Util.blank;
  * <br/>
  * In case the property is not defined in the property files, it will be looked up in environment variables.
  *
+ * <h2>4. Custom Configuration Provider</h2>
  *
+ * You can implement a custom configuration provider to load properties from any source such as AWS Secrets Manager,
+ * Azure Key Vault, HashiCorp Vault, or any other external configuration system.
+ *
+ * <p>
+ * To use a custom provider:
+ * </p>
+ * <ol>
+ *     <li>Implement the {@link AppConfigProvider} interface</li>
+ *     <li>Specify your provider class using the <code>app_config.provider</code> system property</li>
+ * </ol>
+ *
+ * <h3>Example:</h3>
+ * <pre>
+ * public class AwsSecretsProvider implements AppConfigProvider {
+ *     public Map&lt;String, String&gt; getProperties() {
+ *         // Load properties from AWS Secrets Manager
+ *         return secretsMap;
+ *     }
+ * }
+ * </pre>
+ *
+ * <p>Then run your application with:</p>
+ * <pre>
+ *     java -cp $CLASSPATH -Dapp_config.provider=com.myapp.AwsSecretsProvider com.myproject.Main
+ * </pre>
+ *
+ * <blockquote><strong>Provider properties are loaded after file-based properties but before environment variables.
+ * Environment variables will still have the highest precedence.</strong></blockquote>
  *
  * <h2>Property substitution</h2>
  *
@@ -173,7 +203,10 @@ public class AppConfig implements Map<String, String> {
                 loadFromFileSystem(System.getProperty(propName));
             }
 
-            // 3: Load from environment variables
+            // 3: load from a provider
+            loadFromProvider();
+
+            // 4: Load from environment variables
             overloadFromSystemEnv();
 
             merge();
@@ -181,6 +214,18 @@ public class AppConfig implements Map<String, String> {
             throw e;
         }catch (Exception e){
             throw new ConfigInitException(e);
+        }
+    }
+
+    private static void loadFromProvider() throws ClassNotFoundException, NoSuchMethodException,
+                                InvocationTargetException, InstantiationException, IllegalAccessException {
+
+        String providerClassName = System.getProperty("app_config.provider");
+        if(providerClassName != null){
+            Class<?> providerClass =  Class.forName(providerClassName);
+            AppConfigProvider provider = (AppConfigProvider) providerClass.getDeclaredConstructor().newInstance();
+            Map<String, String> properties = provider.getProperties();
+            registerMap(properties, "AppConfigProvider: " + providerClassName);
         }
     }
 

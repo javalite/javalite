@@ -72,4 +72,20 @@ public class AppConfigTest implements JSpecSupport {
     public void shouldShouldDetectRunningInTestMode(){
         the(AppConfig.isInTestMode()).shouldBeTrue();
     }
+
+    @Test
+    public void shouldLoadPropertiesFromProvider(){
+        System.setProperty("app_config.provider", "org.javalite.app_config.TestAppConfigProvider");
+        AppConfig.reload();
+
+        // Provider property should be loaded
+        the(p("provider.property")).shouldBeEqual("provider_value");
+
+        // Provider should override file properties
+        the(p("first.name")).shouldBeEqual("ProviderName");
+
+        // Clean up
+        System.clearProperty("app_config.provider");
+        AppConfig.reload();
+    }
 }
