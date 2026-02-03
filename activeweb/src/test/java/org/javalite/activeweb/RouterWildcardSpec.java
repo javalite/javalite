@@ -115,7 +115,7 @@ public class RouterWildcardSpec extends RequestSpec {
         request.setServletPath("/wildcard_route/1/2/3/4/tada");
         execDispatcher();
         a(response.getStatus()).shouldBeEqual(404);
-        the(SystemStreamUtil.getSystemOut()).shouldContain("Failed to map resource to URI: /wildcard_route/1/2/3/4/tada");
+        the(SystemStreamUtil.getSystemOut()).shouldContain("Route not found");
 
         SystemStreamUtil.restoreSystemOut();
     }

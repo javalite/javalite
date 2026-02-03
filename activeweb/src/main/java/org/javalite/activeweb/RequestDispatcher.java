@@ -385,7 +385,9 @@ public class RequestDispatcher implements Filter {
         }
 
         if (throwable != null) {
-            log.put("error", JSONHelper.sanitize(throwable.getMessage() != null ? throwable.getMessage() : throwable.toString()));
+            String errorMessage = status == 404 ? "Route not found" :
+                JSONHelper.sanitize(throwable.getMessage() != null ? throwable.getMessage() : throwable.toString());
+            log.put("error", errorMessage);
         }
 
         //usage of the side effect: The status code is used to add a specific message to the log.
@@ -397,9 +399,9 @@ public class RequestDispatcher implements Filter {
 
         if(throwable != null && status >= 500){
             logger.error(toJSON(log), throwable);
-        }if(throwable != null && status == 404) {
-            logger.warn(toJSON(log), throwable.toString());
-        }if(throwable != null && status == 499) {
+        }else if(throwable != null && status == 404) {
+            logger.info(toJSON(log));
+        }else if(throwable != null && status == 499) {
             logger.warn(toJSON(log), throwable.toString());
         } else {
             logger.info(toJSON(log));

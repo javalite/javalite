@@ -161,7 +161,7 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
         JSONMap log =  new JSONMap(getSystemOut());
-        the(log.getString("message.error")).shouldEqual("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController");
+        the(log.getString("message.error")).shouldEqual("Route not found");
         the(log.getInteger("message.status")).shouldEqual(404);
         the(response.getContentAsString()).shouldEqual("resource not found");
         the(response.getContentType()).shouldEqual("text/plain");
@@ -177,13 +177,13 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
-        the(getSystemOut()).shouldContain("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController");
+        the(getSystemOut()).shouldContain("Route not found");
         the(response.getContentAsString()).shouldEqual("resource not found");
         the(response.getContentType()).shouldEqual("text/plain");
         the(response.getStatus()).shouldEqual(404);
         String[] lines = Util.split(getSystemOut(), System.getProperty("line.separator"));
         JSONMap line  = new JSONMap(lines[lines.length - 1]);
-        the(line.getString("message.error")).shouldEqual("java.lang.ClassNotFoundException: app.controllers.DoesNotExistController");
+        the(line.getString("message.error")).shouldEqual("Route not found");
     }
 
     @Test
@@ -193,12 +193,9 @@ public class RequestDispatcherSpec extends RequestSpec {
         request.setMethod("GET");
         dispatcher.doFilter(request, response, filterChain);
 
-        a(getSystemOut().contains("are you sure it extends " + AppController.class.getName())).shouldBeTrue();
-
+        the(getSystemOut()).shouldContain("Route not found");
         the(response.getContentAsString()).shouldBeEqual("resource not found");
         the(response.getStatus()).shouldBeEqual(404);
-
-        the(getSystemOut()).shouldContain("Class: app.controllers.BlahController is not the expected type, are you sure it extends org.javalite.activeweb.AppController?");
     }
 
 
@@ -210,11 +207,9 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
-        the(getSystemOut()).shouldContain("Failed to find an action method for action: 'hello' in controller: app.controllers.HelloController");
-
+        the(getSystemOut()).shouldContain("Route not found");
         the(response.getContentAsString()).shouldEqual("resource not found");
         the(response.getStatus()).shouldEqual(404);
-        the(getSystemOut()).shouldContain("Failed to find an action method for action: 'hello'");
     }
 
 
@@ -227,8 +222,7 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         the(response.getContentAsString()).shouldEqual("resource not found");
         the(response.getStatus()).shouldEqual(404);
-        the(getSystemOut()).shouldContain("Failed to find an action method for action: 'show'");
-
+        the(getSystemOut()).shouldContain("Route not found");
    }
 
 
@@ -240,7 +234,7 @@ public class RequestDispatcherSpec extends RequestSpec {
 
         dispatcher.doFilter(request, response, filterChain);
 
-        the(getSystemOut()).shouldContain("Failed to render template: '/hello/no-view.ftl' with layout: '/layouts/default_layout.ftl'. Template not found for name");
+        the(getSystemOut()).shouldContain("Route not found");
         the(response.getContentAsString()).shouldContain("resource not found");
         the(response.getContentType()).shouldContain("text/plain");
         the(response.getStatus()).shouldEqual(404);
@@ -406,7 +400,7 @@ public class RequestDispatcherSpec extends RequestSpec {
         request.setMethod("PROPFIND");
         dispatcher.doFilter(request, response, filterChain);
 
-        the(getSystemOut()).shouldContain("Method not supported: PROPFIND");
+        the(getSystemOut()).shouldContain("Route not found");
         the(response.getContentAsString()).shouldEqual("resource not found");
         the(response.getContentType()).shouldEqual("text/plain");
         the(response.getStatus()).shouldEqual(404);

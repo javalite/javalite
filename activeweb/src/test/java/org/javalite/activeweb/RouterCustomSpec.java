@@ -256,13 +256,13 @@ public class RouterCustomSpec extends RequestSpec {
         request.setServletPath("/greeting");
         execDispatcher();
 
-        a(SystemStreamUtil.getSystemOut()).shouldContain("java.lang.ClassNotFoundException: app.controllers.GreetingController");
+        a(SystemStreamUtil.getSystemOut()).shouldContain("Route not found");
         a(responseContent()).shouldBeEqual("resource not found");
         String[] lines = Util.split(SystemStreamUtil.getSystemOut(), System.getProperty("line.separator"));
 
         var log = JSONHelper.toMap(lines[2]);
         Map message = log.getMap("message");
-        a(message.get("error")).shouldContain("java.lang.ClassNotFoundException: app.controllers.GreetingController");
+        a(message.get("error")).shouldContain("Route not found");
 
         SystemStreamUtil.restoreSystemOut();
     }
@@ -392,7 +392,7 @@ public class RouterCustomSpec extends RequestSpec {
         request.setServletPath("/api");
         response =  new MockHttpServletResponse();
         execDispatcher();
-        the(SystemStreamUtil.getSystemOut()).shouldContain("Your controller and package named the same: controllerName=  'api' , controllerPackage= 'api'");
+        the(SystemStreamUtil.getSystemOut()).shouldContain("Route not found");
         the(responseContent()).shouldBeEqual("resource not found");
         the(response.getStatus()).shouldBeEqual(404);
 
@@ -422,7 +422,7 @@ public class RouterCustomSpec extends RequestSpec {
         request.setServletPath("/api/");
         response =  new MockHttpServletResponse(); // calling two controllers   in the same test method  has some issues with sharing objects
         execDispatcher();
-        the(SystemStreamUtil.getSystemOut()).shouldContain("Your controller and package named the same: controllerName=  'api' , controllerPackage= 'api'");
+        the(SystemStreamUtil.getSystemOut()).shouldContain("Route not found");
         the(response.getContentAsString()).shouldBeEqual("resource not found");
         SystemStreamUtil.restoreSystemOut();
     }
@@ -453,7 +453,7 @@ public class RouterCustomSpec extends RequestSpec {
         request.setServletPath("/api/");
         response = new MockHttpServletResponse();
         execDispatcher();
-        the(SystemStreamUtil.getSystemOut()).shouldContain("Your controller and package named the same: controllerName=  'api' , controllerPackage= 'api'");
+        the(SystemStreamUtil.getSystemOut()).shouldContain("Route not found");
         the(response.getContentAsString()).shouldBeEqual("resource not found");
         the(response.getStatus()).shouldBeEqual(404);
 
@@ -504,7 +504,7 @@ public class RouterCustomSpec extends RequestSpec {
         request.setMethod("GET");
         execDispatcher();
 
-        the(SystemStreamUtil.getSystemOut()).shouldContain("Cannot map to a non-custom route with a 'strictMode' flag on.");
+        the(SystemStreamUtil.getSystemOut()).shouldContain("Route not found");
         SystemStreamUtil.restoreSystemOut();
         the(responseContent()).shouldEqual("resource not found");
         the(response.getStatus()).shouldEqual(404);
@@ -523,7 +523,7 @@ public class RouterCustomSpec extends RequestSpec {
         request.setMethod("GET");
         execDispatcher();
 
-        the(SystemStreamUtil.getSystemOut()).shouldContain("Cannot map to a non-custom route with a 'strictMode' flag on.");
+        the(SystemStreamUtil.getSystemOut()).shouldContain("Route not found");
         SystemStreamUtil.restoreSystemOut();
     }
 

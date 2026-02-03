@@ -112,11 +112,11 @@ public class JSONLogSpec extends RequestSpec {
 
         //Line 0
         var log0 = JSONHelper.toMap(logs[0]);
-        the(log0.get("level")).shouldBeEqual("WARN");
+        the(log0.get("level")).shouldBeEqual("INFO");
         the(log0.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
 
         var message = (Map) log0.get("message");
-        the(message.get("error")).shouldBeEqual("Failed to find an action method for action: 'notfound' in controller: app.controllers.LoggingController");
+        the(message.get("error")).shouldBeEqual("Route not found");
         the(message.get("status")).shouldBeEqual(404);
     }
 
@@ -132,7 +132,7 @@ public class JSONLogSpec extends RequestSpec {
 
         //Line0
         var log1 = JSONHelper.toMap(logs[0]);
-        the(log1.get("level")).shouldBeEqual("WARN");
+        the(log1.get("level")).shouldBeEqual("INFO");
         the(log1.get("timestamp")).shouldNotBeNull();
         the(log1.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
         var message = (Map) log1.get("message");
@@ -141,7 +141,7 @@ public class JSONLogSpec extends RequestSpec {
         the(message.get("duration_millis")).shouldNotBeNull();
         the(message.get("method")).shouldBeEqual("GET");
         the(message.get("status")).shouldBeEqual(404);
-        the(message.get("error")).shouldBeEqual("java.lang.ClassNotFoundException: app.controllers.Fake11Controller");
+        the(message.get("error")).shouldBeEqual("Route not found");
     }
 
     @Test
@@ -177,14 +177,14 @@ public class JSONLogSpec extends RequestSpec {
 
         //Line 2
         var log2 = JSONHelper.toMap(logs[2]);
-        the(log2.get("level")).shouldBeEqual("WARN");
+        the(log2.get("level")).shouldBeEqual("INFO");
         the(log2.get("timestamp")).shouldNotBeNull();
         the(log2.get("logger")).shouldBeEqual("org.javalite.activeweb.RequestDispatcher");
         message = (Map) log2.get("message");
 
         the(message.get("controller")).shouldBeEqual("app.controllers.LoggingController");
         the(message.get("action")).shouldBeEqual("no-view");
-        the(message.get("error")).shouldContain("Failed to render template: '/logging/no-view.ftl' with layout: '/layouts/default_layout.ftl'");
+        the(message.get("error")).shouldEqual("Route not found");
 
     }
 
