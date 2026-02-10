@@ -13,7 +13,7 @@
     </parent>
 
     <properties>
-        <tomcat.version>11.0.0</tomcat.version>
+        <tomcat.version>11.0.18</tomcat.version>
     </properties>
 
     <build>
