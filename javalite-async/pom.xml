@@ -15,6 +15,7 @@
 
     <properties>
         <artemis.version>2.44.0</artemis.version>
+
     </properties>
 
     <profiles>

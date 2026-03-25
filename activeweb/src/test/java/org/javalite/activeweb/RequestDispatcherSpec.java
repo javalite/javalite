@@ -23,10 +23,14 @@ import org.javalite.test.XPathHelper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 
 import static org.javalite.test.SystemStreamUtil.getSystemErr;
 import static org.javalite.test.SystemStreamUtil.getSystemOut;
@@ -404,5 +408,27 @@ public class RequestDispatcherSpec extends RequestSpec {
         the(response.getContentAsString()).shouldEqual("resource not found");
         the(response.getContentType()).shouldEqual("text/plain");
         the(response.getStatus()).shouldEqual(404);
+    }
+
+    @Test
+    public void shouldReturn499WhenClientDisconnectsDuringDirectResponse() throws IOException, ServletException {
+        MockHttpServletResponse brokenResponse = new MockHttpServletResponse() {
+            @Override
+            public PrintWriter getWriter() {
+                return new PrintWriter(new OutputStream() {
+                    @Override
+                    public void write(int b) {}
+                    @Override
+                    public void flush() throws IOException {
+                        throw new IOException("Client disconnected");
+                    }
+                });
+            }
+        };
+        request.setServletPath("/ok");
+        request.setMethod("GET");
+        dispatcher.doFilter(request, brokenResponse, filterChain);
+        the(brokenResponse.getStatus()).shouldBeEqual(499);
+        the(getSystemOut()).shouldNotContain("server error");
     }
 }

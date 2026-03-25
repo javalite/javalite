@@ -15,10 +15,13 @@ limitations under the License.
 */
 package org.javalite.activeweb;
 
+import org.javalite.activeweb.proxy.ProxyWriterException;
+
 /**
  * @author Igor Polevoy
  */
 class DirectResponse extends ControllerResponse {
+
     private String text;
 
     protected DirectResponse(String text) {
@@ -31,10 +34,9 @@ class DirectResponse extends ControllerResponse {
         try {
             RequestContext.getHttpResponse().getWriter().write(text);
             RequestContext.getHttpResponse().getWriter().flush();
-        }
-        catch (WebException we) {
-            throw we;
-        }catch (Exception e) {
+        } catch (ProxyWriterException | WebException pwe) {
+            throw pwe;
+        } catch (Exception e) {
             throw new ControllerException(e);
         }
     }
