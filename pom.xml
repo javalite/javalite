@@ -36,7 +36,7 @@
         <skipTests>false</skipTests>
         <publishingServerId>portal-snapshots</publishingServerId>
         <slf4j.version>2.0.17</slf4j.version>
-        <log4j2.version>2.21.1</log4j2.version>
+        <log4j2.version>2.25.3</log4j2.version>
         <junit.version>4.13.2</junit.version>
         <javassist.version>3.30.2-GA</javassist.version>
         <junit-vintage-engine.version>5.13.2</junit-vintage-engine.version>
