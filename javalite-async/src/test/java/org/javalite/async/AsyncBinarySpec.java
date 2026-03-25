@@ -30,6 +30,7 @@ public class AsyncBinarySpec {
     public void before() throws IOException {
         asyncRoot = Files.createTempDirectory(UUID.randomUUID().toString()).toFile().getCanonicalPath();
         HelloCommand.reset();
+        HelloInjectedCommand.result = null;
     }
 
     @After
@@ -144,7 +145,7 @@ public class AsyncBinarySpec {
 
         async.send(QUEUE_NAME, new HelloInjectedCommand("The greeting is: "));
 
-        Wait.waitFor(()-> async.getMessageCount(QUEUE_NAME) == 0);
+        Wait.waitFor(()-> HelloInjectedCommand.result != null);
 
         async.stop();
         a(HelloInjectedCommand.result).shouldBeEqual("The greeting is: hi");
