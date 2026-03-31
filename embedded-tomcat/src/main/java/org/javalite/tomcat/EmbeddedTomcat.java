@@ -19,6 +19,94 @@ import static org.javalite.app_config.AppConfig.pInteger;
  * Embedded Tomcat preconfigured for JavaLite. For the most part, this should work as expected.
  * If you need further customization, feel free to create your version by subclassing this class
  * and overriding any methods.
+ *
+ * <h2>Configuration</h2>
+ *
+ * All configuration is driven by {@link AppConfig} properties. Properties can come from any combination of:
+ * <ul>
+ *     <li>Classpath property files (<code>/app_config/development.properties</code>, etc.)</li>
+ *     <li>An external property file via <code>-Dapp_config.properties=/path/to/file.properties</code></li>
+ *     <li>A custom {@link org.javalite.app_config.AppConfigProvider} (e.g. AWS Secrets Manager)</li>
+ *     <li>Environment variables (highest precedence, override all other sources)</li>
+ * </ul>
+ *
+ * <h2>Environment Variable Naming</h2>
+ *
+ * Because environment variable names cannot contain dots, AppConfig translates between the two conventions:
+ * dots and dashes in property names become underscores, and letters are uppercased.
+ * For example, <code>embedded.tomcat.port</code> maps to the environment variable
+ * <code>EMBEDDED_TOMCAT_PORT</code>. Both uppercase and lowercase variants are accepted.
+ *
+ * <h2>Property Reference</h2>
+ *
+ * <h3>Core</h3>
+ * <pre>
+ * embedded.tomcat.port=8080
+ * embedded.tomcat.filter.exclusions=/images,/css,/js
+ * embedded.tomcat.home.controller=home
+ * </pre>
+ *
+ * <h3>Connector (see <a href="https://tomcat.apache.org/tomcat-11.0-doc/config/http.html">Tomcat Connector docs</a>)</h3>
+ * <pre>
+ * embedded.tomcat.connector.maxConnections=100
+ * embedded.tomcat.connector.maxThreads=50
+ * </pre>
+ *
+ * <h3>Connection pool (see <a href="https://commons.apache.org/proper/commons-dbcp/configuration.html">DBCP docs</a>)</h3>
+ * <pre>
+ * embedded.tomcat.pool.name=jdbc/myPool
+ * embedded.tomcat.pool.driverClassName=org.mariadb.jdbc.Driver
+ * embedded.tomcat.pool.url=jdbc:mariadb://localhost:3306/mydb
+ * embedded.tomcat.pool.username=root
+ * embedded.tomcat.pool.password=secret
+ * embedded.tomcat.pool.maxTotal=50
+ * embedded.tomcat.pool.maxIdle=5
+ * embedded.tomcat.pool.minIdle=2
+ * embedded.tomcat.pool.initialSize=10
+ * </pre>
+ *
+ * <h2>Configuration examples</h2>
+ *
+ * <h3>Property file only</h3>
+ * Define all properties in <code>production.properties</code> and deploy normally.
+ *
+ * <h3>Environment variables only</h3>
+ * <pre>
+ * export EMBEDDED_TOMCAT_PORT=8080
+ * export EMBEDDED_TOMCAT_POOL_URL=jdbc:mariadb://db-host:3306/mydb
+ * export EMBEDDED_TOMCAT_POOL_PASSWORD=secret
+ * </pre>
+ * No property file is required. {@link AppConfig#p(String)} and {@link AppConfig#getKeys(String)} both
+ * resolve env-var-only properties via name translation, so connector and pool configuration
+ * discovered through {@code getKeys("embedded.tomcat.connector")} and
+ * {@code getKeys("embedded.tomcat.pool")} will include env-var-only entries.
+ *
+ * <p><strong>Limitation:</strong> Connector and pool property names passed to Tomcat are derived
+ * by stripping the prefix from the property key. When a property exists only as an environment
+ * variable (never declared in a property file), the translation to lowercase loses camelCase
+ * information — for example, {@code EMBEDDED_TOMCAT_CONNECTOR_MAXTHREADS} translates to
+ * {@code maxthreads}, but Tomcat expects {@code maxThreads}. In practice this rarely matters:
+ * the properties most commonly supplied via environment variables are secrets such as
+ * {@code password}, {@code url}, and {@code username}, which are all lowercase. Tuning parameters
+ * with camelCase names (e.g. {@code maxThreads}, {@code connectionTimeout}) are not sensitive
+ * and are normally declared in a property file. For edge cases where full env-var-only
+ * configuration of camelCase properties is required, implement a custom
+ * {@link org.javalite.app_config.AppConfigProvider} to load those properties from any source
+ * and return them with the correct property names.</p>
+ *
+ * <h3>Mixed: files for defaults, env vars for secrets</h3>
+ * Commit non-sensitive defaults to a property file:
+ * <pre>
+ * embedded.tomcat.port=8080
+ * embedded.tomcat.pool.driverClassName=org.mariadb.jdbc.Driver
+ * embedded.tomcat.pool.url=jdbc:mariadb://localhost:3306/mydb
+ * embedded.tomcat.pool.maxTotal=50
+ * </pre>
+ * Then supply secrets at runtime via environment variables, which override the file values:
+ * <pre>
+ * export EMBEDDED_TOMCAT_POOL_USERNAME=root
+ * export EMBEDDED_TOMCAT_POOL_PASSWORD=secret
+ * </pre>
  */
 public class EmbeddedTomcat {
 

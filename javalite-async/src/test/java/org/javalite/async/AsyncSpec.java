@@ -346,7 +346,7 @@ public class AsyncSpec {
 
     private String getContextLine(String[] lines) {
         for (String line : lines) {
-            if(line.contains("ActiveMQ-client-global-threads") && line.contains("weight")){
+            if(line.contains("ContextCommand") && line.contains("weight")){
                 return line;
             }
         }

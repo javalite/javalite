@@ -179,6 +179,7 @@ public class AppConfig implements Map<String, String> {
      */
     public static void setActiveEnv(String activeEnv){
         AppConfig.activeEnv = activeEnv;
+        reload();
     }
 
     public static synchronized void init() {
@@ -231,13 +232,27 @@ public class AppConfig implements Map<String, String> {
 
     private static void overloadFromSystemEnv() {
         Map<String, String> sysEnv = new HashMap<>();
-        for (String key: props.keySet()){
-            String val = System.getenv(key);
-            if(!blank(val)){
+        for (String key : props.keySet()) {
+            String val = System.getenv(propertyNameToEnvVarName(key));
+            if (blank(val)) {
+                val = System.getenv(propertyNameToEnvVarName(key).toLowerCase());
+            }
+            if (!blank(val)) {
                 sysEnv.put(key, val);
             }
         }
         registerMap(sysEnv, "System.getenv()");
+    }
+
+    /**
+     * Translates a property name to an environment variable name.
+     * For example, <code>server.port</code> becomes <code>SERVER_PORT</code>.
+     *
+     * @param propName name of a Java property
+     * @return environment variable name equivalent
+     */
+    public static String propertyNameToEnvVarName(String propName) {
+        return propName.replace(".", "_").replace("-", "_").toUpperCase();
     }
 
     /**
@@ -375,7 +390,12 @@ public class AppConfig implements Map<String, String> {
             init();
         }
         Property p = props.get(key);
-        return p == null ? System.getenv(key) : p.getValue();
+        if (p != null) return p.getValue();
+        String val = System.getenv(propertyNameToEnvVarName(key));
+        if (blank(val)) {
+            val = System.getenv(propertyNameToEnvVarName(key).toLowerCase());
+        }
+        return blank(val) ? null : val;
     }
 
 
@@ -538,9 +558,19 @@ public class AppConfig implements Map<String, String> {
      */
     public static List<String> getKeys(String prefix) {
         List<String> res = new ArrayList<>();
-        for(String key: props.keySet()){
-            if(key.startsWith(prefix)){
+        for (String key : props.keySet()) {
+            if (key.startsWith(prefix)) {
                 res.add(key);
+            }
+        }
+        // Also find env-var-only keys whose translated name matches the prefix
+        String envPrefix = propertyNameToEnvVarName(prefix);
+        for (String envKey : System.getenv().keySet()) {
+            if (envKey.startsWith(envPrefix) || envKey.startsWith(envPrefix.toLowerCase())) {
+                String propKey = envKey.replace('_', '.').toLowerCase();
+                if (!props.containsKey(propKey) && !res.contains(propKey)) {
+                    res.add(propKey);
+                }
             }
         }
         return res;
