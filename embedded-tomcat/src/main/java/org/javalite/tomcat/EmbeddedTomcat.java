@@ -10,7 +10,9 @@ import org.apache.tomcat.util.descriptor.web.FilterMap;
 import org.javalite.activeweb.RequestDispatcher;
 import org.javalite.app_config.AppConfig;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.javalite.app_config.AppConfig.p;
 import static org.javalite.app_config.AppConfig.pInteger;
@@ -119,9 +121,53 @@ public class EmbeddedTomcat {
     }
 
     /**
+     * Validates that all required configuration properties are present.
+     * Collects every missing property before throwing, so the developer sees everything
+     * that needs to be set in one shot rather than fixing one property at a time.
+     *
+     * <p>This method is {@code public static} so it can also be called directly from tests
+     * or application startup code without instantiating a full container.</p>
+     *
+     * @throws IllegalStateException listing all missing required properties, including the
+     *         equivalent environment variable name for each one.
+     */
+    public static void validateRequiredProperties() {
+        String[] required = {
+            "embedded.tomcat.port",
+            "embedded.tomcat.filter.exclusions",
+            "embedded.tomcat.home.controller",
+            "embedded.tomcat.pool.name",
+            "embedded.tomcat.pool.driverClassName",
+            "embedded.tomcat.pool.url",
+            "embedded.tomcat.pool.username",
+            "embedded.tomcat.pool.password"
+        };
+
+        List<String> missing = new ArrayList<>();
+        for (String key : required) {
+            if (p(key) == null) {
+                missing.add(key);
+            }
+        }
+
+        if (!missing.isEmpty()) {
+            String missingList = missing.stream()
+                .map(k -> "  - " + k + "  (env var: " + AppConfig.propertyNameToEnvVarName(k) + ")")
+                .collect(Collectors.joining("\n"));
+            throw new IllegalStateException(
+                "EmbeddedTomcat cannot start. The following required properties are missing:\n" +
+                missingList + "\n" +
+                "Set them in your properties file (e.g. production.properties) or as the " +
+                "corresponding environment variables shown above."
+            );
+        }
+    }
+
+    /**
      * Configures instance of the container programmatically.
      */
     protected void configure(){
+        validateRequiredProperties();
         tomcat.setBaseDir(System.getProperty("java.io.tmpdir"));
         tomcat.enableNaming();
         tomcat.setPort(pInteger("embedded.tomcat.port"));
