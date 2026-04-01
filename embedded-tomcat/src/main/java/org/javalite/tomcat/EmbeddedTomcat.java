@@ -10,6 +10,9 @@ import org.apache.tomcat.util.descriptor.web.FilterMap;
 import org.javalite.activeweb.RequestDispatcher;
 import org.javalite.app_config.AppConfig;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -112,6 +115,8 @@ import static org.javalite.app_config.AppConfig.pInteger;
  */
 public class EmbeddedTomcat {
 
+    private static final Logger logger = LoggerFactory.getLogger(EmbeddedTomcat.class);
+
     private final Tomcat tomcat;
     private Context context;
 
@@ -134,8 +139,6 @@ public class EmbeddedTomcat {
     public static void validateRequiredProperties() {
         String[] required = {
             "embedded.tomcat.port",
-            "embedded.tomcat.filter.exclusions",
-            "embedded.tomcat.home.controller",
             "embedded.tomcat.pool.name",
             "embedded.tomcat.pool.driverClassName",
             "embedded.tomcat.pool.url",
@@ -236,8 +239,17 @@ public class EmbeddedTomcat {
      */
     protected void configureRequestDispatcher(Context context) {
         FilterDef filterDef = new FilterDef();
-        filterDef.addInitParameter("exclusions", p("embedded.tomcat.filter.exclusions"));
-        filterDef.addInitParameter("root_controller", p("embedded.tomcat.home.controller"));
+        String exclusions = p("embedded.tomcat.filter.exclusions");
+        if (exclusions == null) {
+            logger.warn("Property 'embedded.tomcat.filter.exclusions' is not set. No URL exclusions will be applied to the RequestDispatcher filter.");
+        }
+        filterDef.addInitParameter("exclusions", exclusions);
+
+        String homeController = p("embedded.tomcat.home.controller");
+        if (homeController == null) {
+            logger.warn("Property 'embedded.tomcat.home.controller' is not set. Requests to '/' will not be routed to any controller.");
+        }
+        filterDef.addInitParameter("root_controller", homeController);
 
         filterDef.setFilterName(RequestDispatcher.class.getSimpleName());
         filterDef.setFilterClass(RequestDispatcher.class.getName());
