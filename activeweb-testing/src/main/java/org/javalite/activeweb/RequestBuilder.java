@@ -323,6 +323,16 @@ public class RequestBuilder {
     }
 
     /**
+     * Simulate HTTP QUERY call to an action of controller.
+     *
+     * @param actionName name of action as on a URL - not CamelCase.
+     */
+    public void query(String actionName) {
+        realAction = actionName;
+        submitRequest(actionName, HttpMethod.QUERY);
+    }
+
+    /**
      * Simulate HTTP POST call to an action of controller.
      *
      * @param actionName name of action as on a URL - not CamelCase.

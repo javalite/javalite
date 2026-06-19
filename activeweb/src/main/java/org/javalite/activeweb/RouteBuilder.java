@@ -247,6 +247,19 @@ public class RouteBuilder {
         return this;
     }
 
+    /**
+     * Specifies that this route is mapped to HTTP QUERY method.
+     *
+     * @return instance of {@link RouteBuilder}.
+     */
+    public RouteBuilder query(){
+
+        if(!methods.contains(HttpMethod.QUERY)){
+            methods.add(HttpMethod.QUERY);
+        }
+        return this;
+    }
+
     protected String getActionName() {
         return actionName == null ? actionName = "index": actionName;
     }
