@@ -501,6 +501,14 @@ public interface RequestAccess {
         return isMethod("get");
     }
 
+    /**
+     * True if this request uses HTTP QUERY method, false otherwise.
+     *
+     * @return True if this request uses HTTP QUERY method, false otherwise.
+     */
+    default boolean isQuery() {
+        return isMethod("query");
+    }
 
     /**
      * True if this request uses HTTP POST method, false otherwise.

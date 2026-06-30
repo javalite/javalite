@@ -31,7 +31,7 @@ import java.lang.reflect.InvocationTargetException;
  * @since forever.
  */
 public enum HttpMethod {
-    GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS;
+    GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS, QUERY;
 
     private static boolean disableMethodSimulation = false;
     /**
@@ -55,6 +55,8 @@ public enum HttpMethod {
             return HEAD;
         }else if (annotation instanceof OPTIONS) {
             return OPTIONS;
+        }else if (annotation instanceof QUERY) {
+            return QUERY;
         }else{
             throw new IllegalArgumentException("Allowed annotations can be found in 'org.javalite.activeweb.annotations' package.");
         }
@@ -84,6 +86,7 @@ public enum HttpMethod {
             case HEAD -> getInstance(HEAD.class);
             case  PATCH -> getInstance(PATCH.class);
             case OPTIONS -> getInstance(OPTIONS.class);
+            case QUERY -> getInstance(QUERY.class);
         };
     }
 
