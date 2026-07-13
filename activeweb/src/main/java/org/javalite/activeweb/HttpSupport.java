@@ -821,12 +821,12 @@ public class HttpSupport implements RequestAccess {
 
             JakartaServletDiskFileUpload upload = new JakartaServletDiskFileUpload(factory);
 
-            upload.setFileSizeMax(Configuration.getMaxUploadSize());
+            upload.setMaxFileSize(Configuration.getMaxUploadSize());
 
             if(encoding != null)
                 upload.setHeaderCharset(Charset.forName(encoding));
 
-            upload.setFileSizeMax(maxUploadSize);
+            upload.setMaxFileSize(maxUploadSize);
             try {
                 List<DiskFileItem> apacheFileItems = upload.parseRequest(RequestContext.getHttpRequest());
                 upload.parseRequest(RequestContext.getHttpRequest());

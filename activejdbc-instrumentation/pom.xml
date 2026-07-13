@@ -46,6 +46,16 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-plugin-plugin</artifactId>
+                <configuration>
+                    <!-- artifactId does not follow the *-maven-plugin convention, so the
+                         prefix must be declared explicitly for maven-plugin-plugin >= 3.15.
+                         Value matches the prefix previously auto-computed from the artifactId. -->
+                    <goalPrefix>activejdbc-instrumentation</goalPrefix>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.6.1</version>
                 <executions>

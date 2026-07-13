@@ -4,3 +4,9 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    ignore:
+      # Jackson published no 2.20+ line; releases jump from 2.19.x to the 3.0
+      # release-candidate series. Stay on the stable 2.x line and never take a
+      # pre-release. See bad bump to non-existent 2.22.0 (commit e353ae03).
+      - dependency-name: "com.fasterxml.jackson*"
+        versions: [">=3.0.0-rc0"]
