@@ -17,7 +17,7 @@
 
     <properties>
         <javalite.version>3.4-SNAPSHOT</javalite.version>
-        <mariadb.connector.version>2.7.4</mariadb.connector.version>
+        <mariadb.connector.version>2.7.14</mariadb.connector.version>
     </properties>
 
     <build>
